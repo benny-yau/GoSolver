@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31424.327
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoSharp", "Go\GoSharp.csproj", "{122984F9-6F07-40F0-A76F-2D9DB818EBB4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0125E950-A2EE-4CD7-87E8-42CF7E1CD0CB}"
+	ProjectSection(SolutionItems) = preProject
+		.EditorConfig = .EditorConfig
+		Go.vsmdi = Go.vsmdi
+		Local.testsettings = Local.testsettings
+		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScenarioCollection", "ScenarioCollection\ScenarioCollection.csproj", "{899F0DC7-BB58-4F0F-AC5D-D914B0AEC74B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleGoSolver", "ConsoleGoSolver\ConsoleGoSolver.csproj", "{8576CE94-71F7-473C-A464-F02085A840AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoSharpBase", "GoSharpBase\GoSharpBase.csproj", "{070868AA-6C88-496C-A800-849998ED4405}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{122984F9-6F07-40F0-A76F-2D9DB818EBB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{122984F9-6F07-40F0-A76F-2D9DB818EBB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{122984F9-6F07-40F0-A76F-2D9DB818EBB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{122984F9-6F07-40F0-A76F-2D9DB818EBB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{899F0DC7-BB58-4F0F-AC5D-D914B0AEC74B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{899F0DC7-BB58-4F0F-AC5D-D914B0AEC74B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{899F0DC7-BB58-4F0F-AC5D-D914B0AEC74B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{899F0DC7-BB58-4F0F-AC5D-D914B0AEC74B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8576CE94-71F7-473C-A464-F02085A840AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8576CE94-71F7-473C-A464-F02085A840AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8576CE94-71F7-473C-A464-F02085A840AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8576CE94-71F7-473C-A464-F02085A840AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{070868AA-6C88-496C-A800-849998ED4405}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{070868AA-6C88-496C-A800-849998ED4405}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{070868AA-6C88-496C-A800-849998ED4405}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{070868AA-6C88-496C-A800-849998ED4405}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {48DF8E21-83A6-401E-BA36-425F45D20E46}
+	EndGlobalSection
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = Go.vsmdi
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,1292 @@
+using Go;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
+
+namespace ScenarioCollection
+{
+    public partial class Scenario
+    {
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public string GetCurrentMethod()
+        {
+            var st = new StackTrace();
+            var sf = st.GetFrame(1);
+            return sf.GetMethod().Name;
+        }
+
+        /*
+ 11 . O . . . . . . . . . . . . . . . . . 
+ 12 X X O O . . . . . . . . . . . . . . . 
+ 13 . . X O . . . . . . . . . . . . . . . 
+ 14 . . X . . . . . . . . . . . . . . . . 
+ 15 . X X O . . . . . . . . . . . . . . . 
+ 16 . X O . O . . . . . . . . . . . . . . 
+ 17 O X O . . . . . . . . . . . . . . . . 
+ 18 . O . . . . . . . . . . . . . . . . .
+         */
+        public Game Scenario6kyu15()
+        {
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black);
+            var g = new Game(gi);
+            gi.ScenarioName = GetCurrentMethod();
+            g.SetupMove(0, 12, Content.Black);
+            g.SetupMove(0, 17, Content.White);
+            g.SetupMove(1, 11, Content.White);
+            g.SetupMove(1, 12, Content.Black);
+            g.SetupMove(1, 15, Content.Black);
+            g.SetupMove(1, 16, Content.Black);
+            g.SetupMove(1, 17, Content.Black);
+            g.SetupMove(1, 18, Content.White);
+            g.SetupMove(2, 10, Content.White);
+            g.SetupMove(2, 12, Content.White);
+            g.SetupMove(2, 13, Content.Black);
+            g.SetupMove(2, 14, Content.Black);
+            g.SetupMove(2, 15, Content.Black);
+            g.SetupMove(2, 16, Content.White);
+            g.SetupMove(2, 17, Content.White);
+            g.SetupMove(3, 12, Content.White);
+            g.SetupMove(3, 13, Content.White);
+            g.SetupMove(3, 15, Content.White);
+            g.SetupMove(4, 16, Content.White);
+
+            gi.targetPoints = new List<Point>() { new Point(2, 15) };
+            for (int x = 0; x <= 1; x++)
+            {
+                for (int y = 12; y <= 18; y++)
+                    gi.movablePoints.Add(new Point(x, y));
+            }
+            gi.movablePoints.Add(new Point(2, 18));
+            gi.killMovablePoints.AddRange(gi.movablePoints);
+            gi.killMovablePoints.Add(new Point(0, 11));
+            gi.killMovablePoints.Add(new Point(3, 14));
+            gi.killMovablePoints.Add(new Point(3, 18));
+            gi.solutionPoints.Add(new List<Point>() { new Point(0, 14), new Point(0, 16), new Point(1, 13) });
+            gi.PlayerMoveJson = "[{\"FirstMove\":{\"x\":1,\"y\":13},\"SecondMove\":{\"x\":0,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":1,\"y\":14}}]},{\"FirstMove\":{\"x\":0,\"y\":15},\"SecondMove\":{\"x\":2,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":13}},{\"ThirdMove\":{\"x\":1,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":1,\"y\":14}}]},{\"FirstMove\":{\"x\":1,\"y\":14},\"SecondMove\":{\"x\":0,\"y\":13},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":16},\"SecondMove\":{\"x\":0,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":1,\"y\":14}},{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":13}},{\"ThirdMove\":{\"x\":1,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":13},\"SecondMove\":{\"x\":1,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":14},\"SecondMove\":{\"x\":0,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":13}}]},{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":1,\"y\":14}},{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":13},\"FourthMove\":{\"x\":3,\"y\":18}}]}]";
+
+            return g;
+        }
+
+
+        /*
+ 12 . . . O O O . . . . . . . . . . . . . 
+ 13 . . O . . X O O . . . . . . . . . . . 
+ 14 . . O . . . X O . . . . . . . . . . . 
+ 15 . . O X X . X O . . . . . . . . . . . 
+ 16 . . O X . X O . . . . . . . . . . . . 
+ 17 . . O X X O O . . . . . . . . . . . . 
+ 18 . . . . . . . . . . . . . . . . . . . 
+         */
+        public Game Scenario6kyu32()
+        {
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black);
+            var g = new Game(gi);
+            gi.ScenarioName = GetCurrentMethod();
+
+            g.SetupMove(2, 13, Content.White);
+            g.SetupMove(2, 14, Content.White);
+            g.SetupMove(2, 15, Content.White);
+            g.SetupMove(2, 16, Content.White);
+            g.SetupMove(2, 17, Content.White);
+            g.SetupMove(3, 12, Content.White);
+            g.SetupMove(3, 15, Content.Black);
+            g.SetupMove(3, 16, Content.Black);
+            g.SetupMove(3, 17, Content.Black);
+            g.SetupMove(4, 12, Content.White);
+            g.SetupMove(4, 15, Content.Black);
+            g.SetupMove(4, 17, Content.Black);
+            g.SetupMove(5, 12, Content.White);
+            g.SetupMove(5, 13, Content.Black);
+            g.SetupMove(5, 16, Content.Black);
+            g.SetupMove(5, 17, Content.White);
+            g.SetupMove(6, 13, Content.White);
+            g.SetupMove(6, 14, Content.Black);
+            g.SetupMove(6, 15, Content.Black);
+            g.SetupMove(6, 16, Content.White);
+            g.SetupMove(6, 17, Content.White);
+            g.SetupMove(7, 13, Content.White);
+            g.SetupMove(7, 14, Content.White);
+            g.SetupMove(7, 15, Content.White);
+
+            gi.targetPoints = new List<Point>() { new Point(3, 16) };
+            for (int x = 3; x <= 5; x++)
+            {
+                for (int y = 13; y <= 18; y++)
+                    gi.movablePoints.Add(new Point(x, y));
+            }
+            gi.movablePoints.Add(new Point(2, 18));
+            gi.killMovablePoints.AddRange(gi.movablePoints);
+            gi.killMovablePoints.Add(new Point(1, 18));
+            gi.killMovablePoints.Add(new Point(6, 18));
+            gi.solutionPoints.Add(new List<Point>() { new Point(4, 13) });
+
+            gi.PlayerMoveJson = "[{\"FirstMove\":{\"x\":4,\"y\":14},\"SecondMove\":{\"x\":5,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":13},\"FourthMove\":{\"x\":5,\"y\":15}},{\"ThirdMove\":{\"x\":5,\"y\":15},\"FourthMove\":{\"x\":4,\"y\":13}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":15}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":13},\"FourthMove\":{\"x\":4,\"y\":13}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":15}},{\"ThirdMove\":{\"x\":3,\"y\":14},\"FourthMove\":{\"x\":4,\"y\":13}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":15}},{\"ThirdMove\":{\"x\":4,\"y\":16},\"FourthMove\":{\"x\":5,\"y\":15}}]},{\"FirstMove\":{\"x\":3,\"y\":14},\"SecondMove\":{\"x\":5,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":5,\"y\":15},\"FourthMove\":{\"x\":4,\"y\":13}},{\"ThirdMove\":{\"x\":4,\"y\":13},\"FourthMove\":{\"x\":5,\"y\":15}},{\"ThirdMove\":{\"x\":4,\"y\":14},\"FourthMove\":{\"x\":5,\"y\":15}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":15}},{\"ThirdMove\":{\"x\":3,\"y\":13},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":14}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":15}},{\"ThirdMove\":{\"x\":4,\"y\":16},\"FourthMove\":{\"x\":5,\"y\":15}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":15}}]},{\"FirstMove\":{\"x\":3,\"y\":18},\"SecondMove\":{\"x\":5,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":13},\"FourthMove\":{\"x\":5,\"y\":15}},{\"ThirdMove\":{\"x\":5,\"y\":15},\"FourthMove\":{\"x\":4,\"y\":13}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":13}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":15}},{\"ThirdMove\":{\"x\":4,\"y\":16},\"FourthMove\":{\"x\":5,\"y\":15}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":15}},{\"ThirdMove\":{\"x\":3,\"y\":13},\"FourthMove\":{\"x\":5,\"y\":15}},{\"ThirdMove\":{\"x\":3,\"y\":14},\"FourthMove\":{\"x\":5,\"y\":15}},{\"ThirdMove\":{\"x\":4,\"y\":14},\"FourthMove\":{\"x\":5,\"y\":15}}]},{\"FirstMove\":{\"x\":4,\"y\":18},\"SecondMove\":{\"x\":4,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":14},\"FourthMove\":{\"x\":4,\"y\":13}},{\"ThirdMove\":{\"x\":4,\"y\":13},\"FourthMove\":{\"x\":3,\"y\":14}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":13}},{\"ThirdMove\":{\"x\":5,\"y\":15},\"FourthMove\":{\"x\":3,\"y\":13}},{\"ThirdMove\":{\"x\":4,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":13}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":13}},{\"ThirdMove\":{\"x\":3,\"y\":13},\"FourthMove\":{\"x\":3,\"y\":14}},{\"ThirdMove\":{\"x\":5,\"y\":14},\"FourthMove\":{\"x\":3,\"y\":13}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":13}}]},{\"FirstMove\":{\"x\":5,\"y\":15},\"SecondMove\":{\"x\":4,\"y\":13},\"SecondLevel\":[{\"ThirdMove\":{\"x\":5,\"y\":14},\"FourthMove\":{\"x\":3,\"y\":14}},{\"ThirdMove\":{\"x\":3,\"y\":13},\"FourthMove\":{\"x\":3,\"y\":14}},{\"ThirdMove\":{\"x\":4,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":14},\"FourthMove\":{\"x\":5,\"y\":14}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":14}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":14}},{\"ThirdMove\":{\"x\":3,\"y\":14},\"FourthMove\":{\"x\":5,\"y\":14}}]},{\"FirstMove\":{\"x\":5,\"y\":14},\"SecondMove\":{\"x\":4,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":14},\"FourthMove\":{\"x\":4,\"y\":13}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":13}},{\"ThirdMove\":{\"x\":4,\"y\":13},\"FourthMove\":{\"x\":3,\"y\":14}},{\"ThirdMove\":{\"x\":4,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":13}},{\"ThirdMove\":{\"x\":3,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":13}},{\"ThirdMove\":{\"x\":5,\"y\":15},\"FourthMove\":{\"x\":3,\"y\":13}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":13}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":13}}]},{\"FirstMove\":{\"x\":3,\"y\":13},\"SecondMove\":{\"x\":5,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":13},\"FourthMove\":{\"x\":5,\"y\":15}},{\"ThirdMove\":{\"x\":5,\"y\":15},\"FourthMove\":{\"x\":4,\"y\":13}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":15}},{\"ThirdMove\":{\"x\":3,\"y\":14},\"FourthMove\":{\"x\":5,\"y\":15}},{\"ThirdMove\":{\"x\":4,\"y\":14},\"FourthMove\":{\"x\":4,\"y\":13}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":15}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":15}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":15}},{\"ThirdMove\":{\"x\":4,\"y\":16},\"FourthMove\":{\"x\":5,\"y\":15}}]},{\"FirstMove\":{\"x\":5,\"y\":18},\"SecondMove\":{\"x\":4,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":14},\"FourthMove\":{\"x\":4,\"y\":13}},{\"ThirdMove\":{\"x\":5,\"y\":14},\"FourthMove\":{\"x\":4,\"y\":13}},{\"ThirdMove\":{\"x\":4,\"y\":13},\"FourthMove\":{\"x\":3,\"y\":14}},{\"ThirdMove\":{\"x\":3,\"y\":13},\"FourthMove\":{\"x\":4,\"y\":13}},{\"ThirdMove\":{\"x\":4,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":13}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":13}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":13}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":13}},{\"ThirdMove\":{\"x\":5,\"y\":15},\"FourthMove\":{\"x\":3,\"y\":13}}]},{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":5,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":5,\"y\":15},\"FourthMove\":{\"x\":4,\"y\":13}},{\"ThirdMove\":{\"x\":4,\"y\":13},\"FourthMove\":{\"x\":4,\"y\":14}},{\"ThirdMove\":{\"x\":4,\"y\":14},\"FourthMove\":{\"x\":5,\"y\":15}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":15}},{\"ThirdMove\":{\"x\":3,\"y\":14},\"FourthMove\":{\"x\":5,\"y\":15}},{\"ThirdMove\":{\"x\":3,\"y\":13},\"FourthMove\":{\"x\":5,\"y\":15}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":15}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":15}},{\"ThirdMove\":{\"x\":4,\"y\":16},\"FourthMove\":{\"x\":5,\"y\":15}}]},{\"FirstMove\":{\"x\":4,\"y\":16},\"SecondMove\":{\"x\":4,\"y\":13},\"SecondLevel\":[{\"ThirdMove\":{\"x\":5,\"y\":14},\"FourthMove\":{\"x\":3,\"y\":14}},{\"ThirdMove\":{\"x\":3,\"y\":13},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":15},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":15}},{\"ThirdMove\":{\"x\":4,\"y\":14},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":15}},{\"ThirdMove\":{\"x\":3,\"y\":14},\"FourthMove\":{\"x\":4,\"y\":18}}]}]";
+            return g;
+        }
+
+        /*
+ 15 O O O O O . . . . . . . . . . . . . . 
+ 16 X X X X O . O . . . . . . . . . . . . 
+ 17 . . O . X O . . . . . . . . . . . . . 
+ 18 . X O . . . . . . . . . . . . . . . .
+         */
+        public Game Scenario6kyu16()
+        {
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black);
+            var g = new Game(gi);
+            gi.ScenarioName = GetCurrentMethod();
+
+            g.SetupMove(0, 15, Content.White);
+            g.SetupMove(0, 16, Content.Black);
+            g.SetupMove(1, 15, Content.White);
+            g.SetupMove(1, 16, Content.Black);
+            g.SetupMove(1, 18, Content.Black);
+            g.SetupMove(2, 15, Content.White);
+            g.SetupMove(2, 16, Content.Black);
+            g.SetupMove(2, 17, Content.White);
+            g.SetupMove(2, 18, Content.White);
+            g.SetupMove(3, 15, Content.White);
+            g.SetupMove(3, 16, Content.Black);
+            g.SetupMove(4, 15, Content.White);
+            g.SetupMove(4, 16, Content.White);
+            g.SetupMove(4, 17, Content.Black);
+            g.SetupMove(5, 17, Content.White);
+            g.SetupMove(6, 16, Content.White);
+            gi.targetPoints = new List<Point>() { new Point(2, 16) };
+            for (int x = 0; x <= 5; x++)
+            {
+                for (int y = 17; y <= 18; y++)
+                    gi.movablePoints.Add(new Point(x, y));
+            }
+            gi.killMovablePoints.AddRange(gi.movablePoints);
+            gi.killMovablePoints.Add(new Point(6, 18));
+            gi.solutionPoints.Add(new List<Point>() { new Point(1, 17), new Point(4, 18), new Point(3, 17), new Point(5, 18), new Point(3, 18) });
+
+            gi.PlayerMoveJson = "[{\"FirstMove\":{\"x\":3,\"y\":17},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}}]},{\"FirstMove\":{\"x\":0,\"y\":17},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":18}}]},{\"FirstMove\":{\"x\":1,\"y\":17},\"SecondMove\":{\"x\":4,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}}]},{\"FirstMove\":{\"x\":4,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":4,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":17}}]},{\"FirstMove\":{\"x\":3,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}}]},{\"FirstMove\":{\"x\":5,\"y\":18},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}}]}]";
+
+            gi.ChallengeMoveJson = "[{\"FirstMove\":{\"x\":5,\"y\":18},\"SecondMove\":{\"x\":4,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}}]},{\"FirstMove\":{\"x\":3,\"y\":18},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":4,\"y\":18},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}}]},{\"FirstMove\":{\"x\":3,\"y\":17},\"SecondMove\":{\"x\":3,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}}]},{\"FirstMove\":{\"x\":6,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}}]},{\"FirstMove\":{\"x\":0,\"y\":17},\"SecondMove\":{\"x\":0,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}}]},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}}]}]";
+
+            return g;
+        }
+
+        /*
+ 10 . O . . . . . . . . . . . . . . . . . 
+ 11 . . . . . . . . . . . . . . . . . . . 
+ 12 . O O . . . . . . . . . . . . . . . . 
+ 13 X X . . . . . . . . . . . . . . . . . 
+ 14 . X O O O . . . . . . . . . . . . . . 
+ 15 . . X . . . . . . . . . . . . . . . . 
+ 16 . . X O . . . . . . . . . . . . . . . 
+ 17 . X O O . . . . . . . . . . . . . . . 
+ 18 . O . . . . . . . . . . . . . . . . .
+         */
+        public Game Scenario5kyu29()
+        {
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black, 12);
+            var g = new Game(gi);
+            gi.ScenarioName = GetCurrentMethod();
+
+            g.SetupMove(0, 13, Content.Black);
+            g.SetupMove(1, 10, Content.White);
+            g.SetupMove(1, 12, Content.White);
+            g.SetupMove(1, 13, Content.Black);
+            g.SetupMove(1, 14, Content.Black);
+            g.SetupMove(1, 17, Content.Black);
+            g.SetupMove(1, 18, Content.White);
+            g.SetupMove(2, 12, Content.White);
+            g.SetupMove(2, 14, Content.White);
+            g.SetupMove(2, 15, Content.Black);
+            g.SetupMove(2, 16, Content.Black);
+            g.SetupMove(2, 17, Content.White);
+            g.SetupMove(3, 14, Content.White);
+            g.SetupMove(3, 16, Content.White);
+            g.SetupMove(3, 17, Content.White);
+            g.SetupMove(4, 14, Content.White);
+            gi.targetPoints = new List<Point>() { new Point(2, 15) };
+            for (int x = 0; x <= 1; x++)
+            {
+                for (int y = 14; y <= 18; y++)
+                    gi.movablePoints.Add(new Point(x, y));
+            }
+
+            gi.movablePoints.Add(new Point(2, 18));
+            gi.killMovablePoints.AddRange(gi.movablePoints);
+            gi.killMovablePoints.Add(new Point(0, 12));
+            gi.killMovablePoints.Add(new Point(2, 13));
+            gi.killMovablePoints.Add(new Point(3, 15));
+            gi.killMovablePoints.Add(new Point(3, 18));
+
+            gi.solutionPoints.Add(new List<Point>() { new Point(0, 15), new Point(0, 17), new Point(1, 16) });
+
+            gi.PlayerMoveJson = "[{\"FirstMove\":{\"x\":0,\"y\":15},\"SecondMove\":{\"x\":0,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":15}}]},{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":18}}]},{\"FirstMove\":{\"x\":1,\"y\":15},\"SecondMove\":{\"x\":0,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":15}}]},{\"FirstMove\":{\"x\":0,\"y\":14},\"SecondMove\":{\"x\":0,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":13}}]},{\"FirstMove\":{\"x\":1,\"y\":16},\"SecondMove\":{\"x\":0,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":13}}]},{\"FirstMove\":{\"x\":0,\"y\":16},\"SecondMove\":{\"x\":0,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":15}}]},{\"FirstMove\":{\"x\":0,\"y\":17},\"SecondMove\":{\"x\":0,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":15}}]}]";
+
+            gi.ChallengeMoveJson = "[{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":12},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":13},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":16},\"SecondMove\":{\"x\":0,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":12},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":17},\"SecondMove\":{\"x\":1,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":12},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":12},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":13},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":16}}]},{\"FirstMove\":{\"x\":1,\"y\":16},\"SecondMove\":{\"x\":0,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":12},\"FourthMove\":{\"x\":1,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":13},\"FourthMove\":{\"x\":1,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":15}}]},{\"FirstMove\":{\"x\":2,\"y\":13},\"SecondMove\":{\"x\":0,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":12},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}}]},{\"FirstMove\":{\"x\":3,\"y\":15},\"SecondMove\":{\"x\":0,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":12},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":13},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":12},\"SecondMove\":{\"x\":0,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":3,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":12},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":13},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":16}}]},{\"FirstMove\":{\"x\":1,\"y\":15},\"SecondMove\":{\"x\":0,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":12},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":13},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}}]}]";
+            return g;
+        }
+
+        /*
+ 13 . . X . . . . . . . . . . . . . . . . 
+ 14 . . . . . . . . . . . . . . . . . . . 
+ 15 X X X . X X . X . . . . . . . . . . . 
+ 16 O X O O O X . X . . . . . . . . . . . 
+ 17 O O . . . . . X . . . . . . . . . . . 
+ 18 . O X O . X . . . . . . . . . . . . .
+         */
+        public Game Scenario6kyu13()
+        {
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
+            var g = new Game(gi);
+            gi.ScenarioName = GetCurrentMethod();
+            g.SetupMove(0, 15, Content.Black);
+            g.SetupMove(0, 16, Content.White);
+            g.SetupMove(0, 17, Content.White);
+            g.SetupMove(1, 15, Content.Black);
+            g.SetupMove(1, 16, Content.Black);
+            g.SetupMove(1, 17, Content.White);
+            g.SetupMove(1, 18, Content.White);
+            g.SetupMove(2, 13, Content.Black);
+            g.SetupMove(2, 15, Content.Black);
+            g.SetupMove(2, 16, Content.White);
+            g.SetupMove(2, 18, Content.Black);
+            g.SetupMove(3, 16, Content.White);
+            g.SetupMove(3, 18, Content.White);
+            g.SetupMove(4, 15, Content.Black);
+            g.SetupMove(4, 16, Content.White);
+            g.SetupMove(5, 15, Content.Black);
+            g.SetupMove(5, 16, Content.Black);
+            g.SetupMove(5, 18, Content.Black);
+            g.SetupMove(7, 15, Content.Black);
+            g.SetupMove(7, 16, Content.Black);
+            g.SetupMove(7, 17, Content.Black);
+
+            gi.targetPoints = new List<Point>() { new Point(2, 16) };
+            for (int x = 0; x <= 5; x++)
+            {
+                for (int y = 17; y <= 18; y++)
+                    gi.movablePoints.Add(new Point(x, y));
+            }
+            gi.movablePoints.Add(new Point(6, 18));
+            gi.killMovablePoints.AddRange(gi.movablePoints);
+            gi.killMovablePoints.Add(new Point(3, 15));
+            gi.killMovablePoints.Add(new Point(6, 17));
+            gi.killMovablePoints.Add(new Point(7, 18));
+            gi.solutionPoints.Add(new List<Point>() { new Point(3, 17), new Point(4, 17), new Point(4, 18), new Point(5, 17), new Point(6, 18) });
+            //no mapping required
+            return g;
+        }
+
+
+        /*
+ 12 . X . . . . . . . . . . . . . . . . . 
+ 13 . . . . . . . . . . . . . . . . . . . 
+ 14 . X X X . . . . . . . . . . . . . . . 
+ 15 O O O X . . . . . . . . . . . . . . . 
+ 16 . . O X . . . . . . . . . . . . . . . 
+ 17 . . O X . . . . . . . . . . . . . . . 
+ 18 . . . . . . . . . . . . . . . . . . .
+         */
+        public Game Scenario7kyu26()
+        {
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 16);
+            var g = new Game(gi);
+            gi.ScenarioName = GetCurrentMethod();
+
+
+            g.SetupMove(0, 15, Content.White);
+            g.SetupMove(1, 12, Content.Black);
+            g.SetupMove(1, 14, Content.Black);
+            g.SetupMove(1, 15, Content.White);
+            g.SetupMove(2, 14, Content.Black);
+            g.SetupMove(2, 15, Content.White);
+            g.SetupMove(2, 16, Content.White);
+            g.SetupMove(2, 17, Content.White);
+            g.SetupMove(3, 14, Content.Black);
+            g.SetupMove(3, 15, Content.Black);
+            g.SetupMove(3, 16, Content.Black);
+            g.SetupMove(3, 17, Content.Black);
+            gi.targetPoints = new List<Point>() { new Point(2, 16) };
+            for (int x = 0; x <= 3; x++)
+            {
+                for (int y = 16; y <= 18; y++)
+                    gi.movablePoints.Add(new Point(x, y));
+            }
+            gi.killMovablePoints.AddRange(gi.movablePoints);
+            gi.killMovablePoints.Add(new Point(0, 14));
+            gi.killMovablePoints.Add(new Point(4, 18));
+
+            gi.solutionPoints.Add(new List<Point>() { new Point(0, 17), new Point(1, 17), new Point(2, 18), new Point(1, 18), new Point(0, 16) });
+            gi.solutionPoints.Add(new List<Point>() { new Point(2, 18), new Point(1, 18), new Point(0, 17) });
+            gi.solutionPoints.Add(new List<Point>() { new Point(1, 17), new Point(1, 18), new Point(0, 17) });
+            gi.solutionPoints.Add(new List<Point>() { new Point(1, 18), new Point(2, 18), new Point(1, 17), new Point(0, 17), new Point(1, 16), });
+            gi.solutionPoints.Add(new List<Point>() { new Point(0, 17), new Point(1, 17), new Point(0, 16), new Point(2, 18), new Point(0, 18) });
+            gi.PlayerMoveJson = "[{\"FirstMove\":{\"x\":3,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":17}}]},{\"FirstMove\":{\"x\":0,\"y\":14},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}}]},{\"FirstMove\":{\"x\":0,\"y\":17},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":1,\"y\":17},\"SecondMove\":{\"x\":1,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}}]},{\"FirstMove\":{\"x\":1,\"y\":18},\"SecondMove\":{\"x\":2,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":17}}]},{\"FirstMove\":{\"x\":4,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":17}}]},{\"FirstMove\":{\"x\":0,\"y\":16},\"SecondMove\":{\"x\":0,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}}]},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}}]},{\"FirstMove\":{\"x\":1,\"y\":16},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}}]},{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}}]}]";
+            gi.ChallengeMoveJson = "[{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}}]},{\"FirstMove\":{\"x\":1,\"y\":17},\"SecondMove\":{\"x\":2,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":16},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}}]},{\"FirstMove\":{\"x\":1,\"y\":16},\"SecondMove\":{\"x\":2,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}}]},{\"FirstMove\":{\"x\":1,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}}]},{\"FirstMove\":{\"x\":3,\"y\":18},\"SecondMove\":{\"x\":2,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":14}}]},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":2,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}}]}]";
+            return g;
+        }
+
+
+        /*
+ 12 . . X X X X . . . . . . . . . . . . . 
+ 13 . . X O O O X . . . . . . . . . . . . 
+ 14 . X O X . O X . . . . . . . . . . . . 
+ 15 . X O . X O X . . . . . . . . . . . . 
+ 16 . X O . O O X . . . . . . . . . . . . 
+ 17 . X O . O X X . . . . . . . . . . . . 
+ 18 . X X O . . . . . . . . . . . . . . . 
+         */
+        public Game Scenario7kyu31()
+        {
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
+            var g = new Game(gi);
+            gi.ScenarioName = GetCurrentMethod();
+            g.SetupMove(1, 14, Content.Black);
+            g.SetupMove(1, 15, Content.Black);
+            g.SetupMove(1, 16, Content.Black);
+            g.SetupMove(1, 17, Content.Black);
+            g.SetupMove(1, 18, Content.Black);
+            g.SetupMove(2, 12, Content.Black);
+            g.SetupMove(2, 13, Content.Black);
+            g.SetupMove(2, 14, Content.White);
+            g.SetupMove(2, 15, Content.White);
+            g.SetupMove(2, 16, Content.White);
+            g.SetupMove(2, 17, Content.White);
+            g.SetupMove(2, 18, Content.Black);
+            g.SetupMove(3, 12, Content.Black);
+            g.SetupMove(3, 13, Content.White);
+            g.SetupMove(3, 14, Content.Black);
+            g.SetupMove(3, 18, Content.White);
+            g.SetupMove(4, 12, Content.Black);
+            g.SetupMove(4, 13, Content.White);
+            g.SetupMove(4, 15, Content.Black);
+            g.SetupMove(4, 16, Content.White);
+            g.SetupMove(4, 17, Content.White);
+            g.SetupMove(5, 12, Content.Black);
+            g.SetupMove(5, 13, Content.White);
+            g.SetupMove(5, 14, Content.White);
+            g.SetupMove(5, 15, Content.White);
+            g.SetupMove(5, 16, Content.White);
+            g.SetupMove(5, 17, Content.Black);
+            g.SetupMove(6, 13, Content.Black);
+            g.SetupMove(6, 14, Content.Black);
+            g.SetupMove(6, 15, Content.Black);
+            g.SetupMove(6, 16, Content.Black);
+            g.SetupMove(6, 17, Content.Black);
+            gi.targetPoints = new List<Point>() { new Point(2, 16) };
+            for (int x = 3; x <= 5; x++)
+            {
+                for (int y = 14; y <= 18; y++)
+                    gi.movablePoints.Add(new Point(x, y));
+            }
+            gi.killMovablePoints.AddRange(gi.movablePoints);
+            gi.killMovablePoints.Add(new Point(6, 18));
+            gi.solutionPoints.Add(new List<Point>() { new Point(3, 16), new Point(3, 17), new Point(3, 15), new Point(4, 14), new Point(3, 15) });
+            gi.PlayerMoveJson = "[{\"FirstMove\":{\"x\":5,\"y\":18},\"SecondMove\":{\"x\":4,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":15},\"FourthMove\":{\"x\":3,\"y\":16}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":15}},{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":15}},{\"ThirdMove\":{\"x\":3,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":15}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":15}}]},{\"FirstMove\":{\"x\":3,\"y\":15},\"SecondMove\":{\"x\":3,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":3,\"y\":16},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":15}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":15}},{\"ThirdMove\":{\"x\":4,\"y\":14},\"FourthMove\":{\"x\":3,\"y\":15}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":15}}]},{\"FirstMove\":{\"x\":3,\"y\":17},\"SecondMove\":{\"x\":4,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":15}},{\"ThirdMove\":{\"x\":4,\"y\":14},\"FourthMove\":{\"x\":3,\"y\":15}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":15},\"FourthMove\":{\"x\":3,\"y\":16}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":16}}]},{\"FirstMove\":{\"x\":4,\"y\":18},\"SecondMove\":{\"x\":4,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":15},\"FourthMove\":{\"x\":3,\"y\":16}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":15}},{\"ThirdMove\":{\"x\":3,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":15}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":15}},{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":15}}]},{\"FirstMove\":{\"x\":6,\"y\":18},\"SecondMove\":{\"x\":4,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":15},\"FourthMove\":{\"x\":3,\"y\":16}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":15}},{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":15}},{\"ThirdMove\":{\"x\":3,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":15}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":15}}]},{\"FirstMove\":{\"x\":4,\"y\":14},\"SecondMove\":{\"x\":3,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}}]}]";
+
+            gi.ChallengeMoveJson = "[{\"FirstMove\":{\"x\":3,\"y\":17},\"SecondMove\":{\"x\":3,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}}]},{\"FirstMove\":{\"x\":4,\"y\":18},\"SecondMove\":{\"x\":3,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":14},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}}]},{\"FirstMove\":{\"x\":4,\"y\":14},\"SecondMove\":{\"x\":3,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":15}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}}]},{\"FirstMove\":{\"x\":5,\"y\":18},\"SecondMove\":{\"x\":3,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":14},\"FourthMove\":{\"x\":3,\"y\":17}}]},{\"FirstMove\":{\"x\":3,\"y\":15},\"SecondMove\":{\"x\":3,\"y\":17}}]";
+            return g;
+        }
+
+        /*
+ 13 . . X . . . . . . . . . . . . . . . . 
+ 14 . X . . . . . . . . . . . . . . . . . 
+ 15 . O X X X . . . . . . . . . . . . . . 
+ 16 . O O O X . . . . . . . . . . . . . . 
+ 17 O O . . X . . . . . . . . . . . . . . 
+ 18 . . . O X . . . . . . . . . . . . . .
+         */
+        public Game Scenario6kyu9()
+        {
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
+            var g = new Game(gi);
+            gi.ScenarioName = GetCurrentMethod();
+
+            g.SetupMove(0, 17, Content.White);
+            g.SetupMove(1, 14, Content.Black);
+            g.SetupMove(1, 15, Content.White);
+            g.SetupMove(1, 16, Content.White);
+            g.SetupMove(1, 17, Content.White);
+            g.SetupMove(2, 13, Content.Black);
+            g.SetupMove(2, 15, Content.Black);
+            g.SetupMove(2, 16, Content.White);
+            g.SetupMove(3, 15, Content.Black);
+            g.SetupMove(3, 16, Content.White);
+            g.SetupMove(3, 18, Content.White);
+            g.SetupMove(4, 15, Content.Black);
+            g.SetupMove(4, 16, Content.Black);
+            g.SetupMove(4, 17, Content.Black);
+            g.SetupMove(4, 18, Content.Black);
+
+            gi.targetPoints = new List<Point>() { new Point(2, 16) };
+            for (int x = 0; x <= 3; x++)
+            {
+                for (int y = 15; y <= 18; y++)
+                    gi.movablePoints.Add(new Point(x, y));
+            }
+            gi.movablePoints.Add(new Point(0, 14));
+            gi.killMovablePoints.AddRange(gi.movablePoints);
+            gi.killMovablePoints.Add(new Point(0, 13));
+
+            gi.solutionPoints.Add(new List<Point>() { new Point(3, 17), new Point(0, 15), new Point(1, 18) });
+
+            gi.PlayerMoveJson = "[{\"FirstMove\":{\"x\":3,\"y\":17},\"SecondMove\":{\"x\":0,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":14},\"SecondMove\":{\"x\":1,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":15}}]},{\"FirstMove\":{\"x\":0,\"y\":13},\"SecondMove\":{\"x\":0,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":15},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}}]},{\"FirstMove\":{\"x\":1,\"y\":18},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":15}}]},{\"FirstMove\":{\"x\":2,\"y\":17},\"SecondMove\":{\"x\":0,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}}]},{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":16},\"SecondMove\":{\"x\":1,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":15}}]},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}}]}]";
+
+            gi.ChallengeMoveJson = "[{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":15}}]},{\"FirstMove\":{\"x\":0,\"y\":15},\"SecondMove\":{\"x\":1,\"y\":18}},{\"FirstMove\":{\"x\":1,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}}]},{\"FirstMove\":{\"x\":2,\"y\":17},\"SecondMove\":{\"x\":0,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":16},\"SecondMove\":{\"x\":2,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":2,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":15}}]},{\"FirstMove\":{\"x\":0,\"y\":14},\"SecondMove\":{\"x\":0,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}}]}]";
+            return g;
+        }
+
+        /*
+ 14 . X X X . . . . . . . . . . . . . . . 
+ 15 O . O X . . . . . . . . . . . . . . . 
+ 16 . O O O X . . . . . . . . . . . . . . 
+ 17 X . X O X . . . . . . . . . . . . . . 
+ 18 O . X O X . . . . . . . . . . . . . .
+         */
+        public Game Scenario7kyu25()
+        {
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
+            var g = new Game(gi);
+            gi.ScenarioName = GetCurrentMethod();
+            g.SetupMove(0, 15, Content.White);
+            g.SetupMove(0, 17, Content.Black);
+            g.SetupMove(0, 18, Content.White);
+            g.SetupMove(1, 14, Content.Black);
+            g.SetupMove(1, 16, Content.White);
+            g.SetupMove(2, 14, Content.Black);
+            g.SetupMove(2, 15, Content.White);
+            g.SetupMove(2, 16, Content.White);
+            g.SetupMove(2, 17, Content.Black);
+            g.SetupMove(2, 18, Content.Black);
+            g.SetupMove(3, 14, Content.Black);
+            g.SetupMove(3, 15, Content.Black);
+            g.SetupMove(3, 16, Content.White);
+            g.SetupMove(3, 17, Content.White);
+            g.SetupMove(3, 18, Content.White);
+            g.SetupMove(4, 16, Content.Black);
+            g.SetupMove(4, 17, Content.Black);
+            g.SetupMove(4, 18, Content.Black);
+            gi.targetPoints = new List<Point>() { new Point(2, 16) };
+            for (int x = 0; x <= 2; x++)
+            {
+                for (int y = 15; y <= 18; y++)
+                    gi.movablePoints.Add(new Point(x, y));
+            }
+            gi.killMovablePoints.AddRange(gi.movablePoints);
+            gi.killMovablePoints.Add(new Point(0, 14));
+
+            gi.solutionPoints.Add(new List<Point>() { new Point(1, 17), new Point(0, 16), new Point(1, 18), new Point(0, 18), new Point(1, 17) });
+            gi.PlayerMoveJson = "[{\"FirstMove\":{\"x\":1,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":15}}]},{\"FirstMove\":{\"x\":1,\"y\":15},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":1,\"y\":17},\"SecondMove\":{\"x\":0,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":14},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":16},\"SecondMove\":{\"x\":1,\"y\":17}}]";
+            gi.ChallengeMoveJson = "[{\"FirstMove\":{\"x\":0,\"y\":16},\"SecondMove\":{\"x\":1,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":14}}]},{\"FirstMove\":{\"x\":1,\"y\":15},\"SecondMove\":{\"x\":0,\"y\":14}}]";
+
+            return g;
+        }
+
+        /*
+ 14 X X X X X . . . . . . . . . . . . . . 
+ 15 X O O O X . . . . . . . . . . . . . . 
+ 16 O X O O X . . . . . . . . . . . . . . 
+ 17 O . O X O X . . . . . . . . . . . . . 
+ 18 . . . . O X . . . . . . . . . . . . .
+         */
+        public Game Scenario5kyu21()
+        {
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
+            var g = new Game(gi);
+            gi.ScenarioName = GetCurrentMethod();
+            g.SetupMove(0, 14, Content.Black);
+            g.SetupMove(0, 15, Content.Black);
+            g.SetupMove(0, 16, Content.White);
+            g.SetupMove(0, 17, Content.White);
+            g.SetupMove(1, 14, Content.Black);
+            g.SetupMove(1, 15, Content.White);
+            g.SetupMove(1, 16, Content.Black);
+            g.SetupMove(2, 14, Content.Black);
+            g.SetupMove(2, 15, Content.White);
+            g.SetupMove(2, 16, Content.White);
+            g.SetupMove(2, 17, Content.White);
+            g.SetupMove(3, 14, Content.Black);
+            g.SetupMove(3, 15, Content.White);
+            g.SetupMove(3, 16, Content.White);
+            g.SetupMove(3, 17, Content.Black);
+            g.SetupMove(4, 14, Content.Black);
+            g.SetupMove(4, 15, Content.Black);
+            g.SetupMove(4, 16, Content.Black);
+            g.SetupMove(4, 17, Content.White);
+            g.SetupMove(4, 18, Content.White);
+            g.SetupMove(5, 17, Content.Black);
+            g.SetupMove(5, 18, Content.Black);
+            gi.targetPoints = new List<Point>() { new Point(2, 16) };
+            for (int x = 0; x <= 4; x++)
+            {
+                for (int y = 16; y <= 18; y++)
+                    gi.movablePoints.Add(new Point(x, y));
+            }
+            gi.killMovablePoints.AddRange(gi.movablePoints);
+            gi.solutionPoints.Add(new List<Point>() { new Point(2, 18), new Point(1, 17), new Point(1, 18) });
+
+            gi.PlayerMoveJson = "[{\"FirstMove\":{\"x\":3,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":18}},{\"FirstMove\":{\"x\":1,\"y\":18},\"SecondMove\":{\"x\":2,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}}]},{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":18}},{\"FirstMove\":{\"x\":1,\"y\":17},\"SecondMove\":{\"x\":1,\"y\":18}}]";
+            gi.ChallengeMoveJson = "[{\"FirstMove\":{\"x\":3,\"y\":18},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}}]},{\"FirstMove\":{\"x\":1,\"y\":17},\"SecondMove\":{\"x\":1,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":17}},{\"FirstMove\":{\"x\":1,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":17}}]";
+            return g;
+
+        }
+
+        /*
+ 14 O O O . . . . . . . . . . . . . . . . 
+ 15 X X . . . . . . . . . . . . . . . . . 
+ 16 O X . O O . . . . . . . . . . . . . . 
+ 17 . X . X O . . . . . . . . . . . . . . 
+ 18 . O . X O . . . . . . . . . . . . . .
+         */
+        public Game Scenario4kyu28()
+        {
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black);
+            var g = new Game(gi);
+            gi.ScenarioName = GetCurrentMethod();
+            g.SetupMove(0, 14, Content.White);
+            g.SetupMove(0, 15, Content.Black);
+            g.SetupMove(0, 16, Content.White);
+            g.SetupMove(1, 14, Content.White);
+            g.SetupMove(1, 15, Content.Black);
+            g.SetupMove(1, 16, Content.Black);
+            g.SetupMove(1, 17, Content.Black);
+            g.SetupMove(1, 18, Content.White);
+            g.SetupMove(2, 14, Content.White);
+            g.SetupMove(3, 16, Content.White);
+            g.SetupMove(3, 17, Content.Black);
+            g.SetupMove(3, 18, Content.Black);
+            g.SetupMove(4, 16, Content.White);
+            g.SetupMove(4, 17, Content.White);
+            g.SetupMove(4, 18, Content.White);
+            gi.targetPoints = new List<Point>() { new Point(1, 17) };
+            for (int x = 0; x <= 3; x++)
+            {
+                for (int y = 16; y <= 18; y++)
+                    gi.movablePoints.Add(new Point(x, y));
+            }
+            gi.killMovablePoints.AddRange(gi.movablePoints);
+            gi.killMovablePoints.Add(new Point(2, 15));
+            gi.solutionPoints.Add(new List<Point>() { new Point(2, 17), new Point(0, 17), new Point(2, 18) });
+            gi.PlayerMoveJson = "[{\"FirstMove\":{\"x\":0,\"y\":17},\"SecondMove\":{\"x\":2,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}}]},{\"FirstMove\":{\"x\":2,\"y\":17},\"SecondMove\":{\"x\":0,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":15}}]},{\"FirstMove\":{\"x\":2,\"y\":16},\"SecondMove\":{\"x\":2,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":2,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":18}}]},{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":2,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}}]}]";
+
+            gi.ChallengeMoveJson = "[{\"FirstMove\":{\"x\":2,\"y\":16},\"SecondMove\":{\"x\":0,\"y\":17}},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":17}},{\"FirstMove\":{\"x\":2,\"y\":15},\"SecondMove\":{\"x\":0,\"y\":17}},{\"FirstMove\":{\"x\":0,\"y\":17},\"SecondMove\":{\"x\":2,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":18}}]},{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":18}}]";
+            return g;
+        }
+
+        /*
+ 15 . X X X . . . . . . . . . . . . . . . 
+ 16 . . O O X X . . . . . . . . . . . . . 
+ 17 . O . . O X . . . . . . . . . . . . . 
+ 18 . . O . . . . . . . . . . . . . . . .
+         */
+        public Game Scenario3kyu10()
+        {
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
+            var g = new Game(gi);
+            gi.ScenarioName = GetCurrentMethod();
+            g.SetupMove(1, 15, Content.Black);
+            g.SetupMove(1, 17, Content.White);
+            g.SetupMove(2, 15, Content.Black);
+            g.SetupMove(2, 16, Content.White);
+            g.SetupMove(2, 18, Content.White);
+            g.SetupMove(3, 15, Content.Black);
+            g.SetupMove(3, 16, Content.White);
+            g.SetupMove(4, 16, Content.Black);
+            g.SetupMove(4, 17, Content.White);
+            g.SetupMove(5, 16, Content.Black);
+            g.SetupMove(5, 17, Content.Black);
+            gi.targetPoints = new List<Point>() { new Point(2, 16) };
+            for (int x = 0; x <= 5; x++)
+            {
+                for (int y = 16; y <= 18; y++)
+                    gi.movablePoints.Add(new Point(x, y));
+            }
+            gi.movablePoints.Add(new Point(0, 15));
+            gi.killMovablePoints.AddRange(gi.movablePoints);
+            gi.killMovablePoints.Add(new Point(0, 14));
+            gi.killMovablePoints.Add(new Point(6, 18));
+            gi.solutionPoints.Add(new List<Point>() { new Point(3, 17), new Point(4, 18), new Point(1, 16), new Point(2, 17), new Point(0, 17) });
+            gi.solutionPoints.Add(new List<Point>() { new Point(3, 17), new Point(4, 18), new Point(0, 17) });
+            gi.solutionPoints.Add(new List<Point>() { new Point(3, 17), new Point(4, 18), new Point(5, 18), new Point(3, 18), new Point(1, 16), new Point(2, 17), new Point(0, 17) });
+            gi.solutionPoints.Add(new List<Point>() { new Point(3, 17), new Point(4, 18), new Point(5, 18), new Point(3, 18), new Point(0, 17) });
+            gi.solutionPoints.Add(new List<Point>() { new Point(3, 17), new Point(4, 18), new Point(1, 16), new Point(2, 17), new Point(5, 18), new Point(3, 18), new Point(0, 17) });
+            gi.PlayerMoveJson = "[{\"FirstMove\":{\"x\":0,\"y\":15},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":1,\"y\":16},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":5,\"y\":18},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":16},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":14},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":6,\"y\":18},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":17},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":3,\"y\":17},\"SecondMove\":{\"x\":4,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}}]},{\"FirstMove\":{\"x\":3,\"y\":18},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":4,\"y\":18},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}}]},{\"FirstMove\":{\"x\":1,\"y\":18},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":2,\"y\":17},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}}]}]";
+
+            gi.ChallengeMoveJson = "[{\"FirstMove\":{\"x\":4,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}}]},{\"FirstMove\":{\"x\":0,\"y\":17},\"SecondMove\":{\"x\":1,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":1,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":1,\"y\":16},\"SecondMove\":{\"x\":4,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":17}}]},{\"FirstMove\":{\"x\":2,\"y\":17},\"SecondMove\":{\"x\":4,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":17}}]},{\"FirstMove\":{\"x\":0,\"y\":16},\"SecondMove\":{\"x\":1,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":3,\"y\":18},\"SecondMove\":{\"x\":4,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":15},\"SecondMove\":{\"x\":1,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":5,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":17}}]}]";
+            return g;
+        }
+
+        /*
+ 15 . X X . . . . . . . . . . . . . . . . 
+ 16 . O O X X X X . . . . . . . . . . . . 
+ 17 . . . O O O X . . . . . . . . . . . . 
+ 18 . . . . . O . . . . . . . . . . . . .
+         */
+        public Game Scenario6kyu25()
+        {
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
+            var g = new Game(gi);
+            gi.ScenarioName = GetCurrentMethod();
+            g.SetupMove(1, 15, Content.Black);
+            g.SetupMove(1, 16, Content.White);
+            g.SetupMove(2, 15, Content.Black);
+            g.SetupMove(2, 16, Content.White);
+            g.SetupMove(3, 16, Content.Black);
+            g.SetupMove(3, 17, Content.White);
+            g.SetupMove(4, 16, Content.Black);
+            g.SetupMove(4, 17, Content.White);
+            g.SetupMove(5, 16, Content.Black);
+            g.SetupMove(5, 17, Content.White);
+            g.SetupMove(5, 18, Content.White);
+            g.SetupMove(6, 16, Content.Black);
+            g.SetupMove(6, 17, Content.Black);
+
+            gi.targetPoints = new List<Point>() { new Point(2, 16) };
+            for (int x = 0; x <= 5; x++)
+            {
+                for (int y = 16; y <= 18; y++)
+                    gi.movablePoints.Add(new Point(x, y));
+            }
+            gi.movablePoints.Add(new Point(0, 15));
+            gi.killMovablePoints.AddRange(gi.movablePoints);
+            gi.killMovablePoints.Add(new Point(0, 14));
+            gi.killMovablePoints.Add(new Point(6, 18));
+            gi.solutionPoints.Add(new List<Point>() { new Point(1, 17), new Point(2, 17), new Point(0, 16) });
+            gi.PlayerMoveJson = "[{\"FirstMove\":{\"x\":6,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":15},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":17},\"SecondMove\":{\"x\":0,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}}]},{\"FirstMove\":{\"x\":1,\"y\":17},\"SecondMove\":{\"x\":2,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}}]},{\"FirstMove\":{\"x\":1,\"y\":18},\"SecondMove\":{\"x\":2,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":3,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}}]},{\"FirstMove\":{\"x\":0,\"y\":14},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":16},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}}]},{\"FirstMove\":{\"x\":2,\"y\":17},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}}]},{\"FirstMove\":{\"x\":3,\"y\":18},\"SecondMove\":{\"x\":2,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}}]},{\"FirstMove\":{\"x\":4,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}}]}]";
+
+
+            return g;
+        }
+
+        /*
+ 14 . X X X . . . . . . . . . . . . . . . 
+ 15 . X O X O O O . . . . . . . . . . . . 
+ 16 O X O O X X O . . . . . . . . . . . . 
+ 17 . O O X . X O . . . . . . . . . . . . 
+ 18 . . . X . X O . . . . . . . . . . . .
+         */
+        public Game Scenario3kyu15()
+        {
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 24);
+            var g = new Game(gi);
+            gi.ScenarioName = GetCurrentMethod();
+            g.SetupMove(0, 16, Content.White);
+            g.SetupMove(1, 14, Content.Black);
+            g.SetupMove(1, 15, Content.Black);
+            g.SetupMove(1, 16, Content.Black);
+            g.SetupMove(1, 17, Content.White);
+            g.SetupMove(2, 14, Content.Black);
+            g.SetupMove(2, 15, Content.White);
+            g.SetupMove(2, 16, Content.White);
+            g.SetupMove(2, 17, Content.White);
+            g.SetupMove(3, 14, Content.Black);
+            g.SetupMove(3, 15, Content.Black);
+            g.SetupMove(3, 16, Content.White);
+            g.SetupMove(3, 17, Content.Black);
+            g.SetupMove(3, 18, Content.Black);
+            g.SetupMove(4, 15, Content.White);
+            g.SetupMove(4, 16, Content.Black);
+            g.SetupMove(5, 15, Content.White);
+            g.SetupMove(5, 16, Content.Black);
+            g.SetupMove(5, 17, Content.Black);
+            g.SetupMove(5, 18, Content.Black);
+            g.SetupMove(6, 15, Content.White);
+            g.SetupMove(6, 16, Content.White);
+            g.SetupMove(6, 17, Content.White);
+            g.SetupMove(6, 18, Content.White);
+
+            gi.targetPoints = new List<Point>() { new Point(2, 17) };
+            gi.survivalPoints = new List<Point>() { new Point(3, 17) };
+            for (int x = 0; x <= 5; x++)
+            {
+                for (int y = 16; y <= 18; y++)
+                    gi.movablePoints.Add(new Point(x, y));
+            }
+            gi.killMovablePoints.AddRange(gi.movablePoints);
+            gi.killMovablePoints.Add(new Point(0, 15));
+            gi.solutionPoints.Add(new List<Point>() { new Point(0, 17), new Point(0, 18), new Point(2, 18) });
+
+            gi.PlayerMoveJson = "[{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":4,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":4,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":4,\"y\":17}}]},{\"FirstMove\":{\"x\":1,\"y\":18},\"SecondMove\":{\"x\":4,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":4,\"y\":17},\"SecondMove\":{\"x\":0,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}}]},{\"FirstMove\":{\"x\":4,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":17},\"SecondMove\":{\"x\":0,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":15},\"SecondMove\":{\"x\":4,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}}]}]";
+
+            gi.ChallengeMoveJson = "[{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":2,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}}]},{\"FirstMove\":{\"x\":1,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}}]},{\"FirstMove\":{\"x\":4,\"y\":17},\"SecondMove\":{\"x\":4,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}}]},{\"FirstMove\":{\"x\":4,\"y\":18},\"SecondMove\":{\"x\":4,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}}]},{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":18}}]";
+            return g;
+        }
+
+        /*
+ 13 . . . O . . . . . . . . . . . . . . . 
+ 14 . . . O . . . . . . . . . . . . . . . 
+ 15 . . O O X X . . . . . . . . . . . . . 
+ 16 X X O X O . X . . . . . . . . . . . . 
+ 17 . . X X O . X . . . . . . . . . . . . 
+ 18 X X . O O . . . . . . . . . . . . . .
+         */
+        public Game Scenario3kyu24()
+        {
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
+            var g = new Game(gi);
+            gi.ScenarioName = GetCurrentMethod();
+
+            g.SetupMove(0, 18, Content.Black);
+            g.SetupMove(1, 18, Content.Black);
+            g.SetupMove(0, 16, Content.Black);
+            g.SetupMove(1, 16, Content.Black);
+            g.SetupMove(2, 17, Content.Black);
+            g.SetupMove(3, 17, Content.Black);
+            g.SetupMove(3, 16, Content.Black);
+            g.SetupMove(4, 15, Content.Black);
+            g.SetupMove(5, 15, Content.Black);
+            g.SetupMove(6, 16, Content.Black);
+            g.SetupMove(6, 17, Content.Black);
+
+            g.SetupMove(2, 16, Content.White);
+            g.SetupMove(2, 15, Content.White);
+            g.SetupMove(3, 15, Content.White);
+            g.SetupMove(3, 14, Content.White);
+            g.SetupMove(3, 13, Content.White);
+            g.SetupMove(3, 18, Content.White);
+            g.SetupMove(4, 18, Content.White);
+            g.SetupMove(4, 17, Content.White);
+            g.SetupMove(4, 16, Content.White);
+
+            gi.targetPoints = new List<Point>() { new Point(3, 18) };
+            gi.survivalPoints = new List<Point>() { new Point(2, 17) };
+
+            for (int x = 0; x <= 3; x++)
+            {
+                for (int y = 16; y <= 18; y++)
+                    gi.movablePoints.Add(new Point(x, y));
+            }
+            gi.killMovablePoints.AddRange(gi.movablePoints);
+            gi.killMovablePoints.AddRange(new List<Point>() { new Point(5, 16), new Point(5, 17), new Point(5, 18) });
+            gi.movablePoints.Add(new Point(0, 15));
+            gi.movablePoints.Add(new Point(1, 15));
+            gi.solutionPoints.Add(new List<Point>() { new Point(1, 17), new Point(1, 15), new Point(5, 16) });
+            gi.solutionPoints.Add(new List<Point>() { new Point(1, 17), new Point(1, 15), new Point(5, 17) });
+            gi.solutionPoints.Add(new List<Point>() { new Point(1, 17), new Point(1, 15), new Point(5, 18) });
+
+            gi.PlayerMoveJson = "[{\"FirstMove\":{\"x\":0,\"y\":17},\"SecondMove\":{\"x\":1,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":5,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":15}}]},{\"FirstMove\":{\"x\":1,\"y\":17},\"SecondMove\":{\"x\":1,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":15}}]},{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":15}}]},{\"FirstMove\":{\"x\":5,\"y\":16},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":18}}]},{\"FirstMove\":{\"x\":5,\"y\":17},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}}]},{\"FirstMove\":{\"x\":5,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}}]}]";
+            gi.ChallengeMoveJson = "[{\"FirstMove\":{\"x\":1,\"y\":15},\"SecondMove\":{\"x\":5,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":5,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":17}}]},{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":5,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":5,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":15},\"FourthMove\":{\"x\":5,\"y\":17}}]},{\"FirstMove\":{\"x\":0,\"y\":15},\"SecondMove\":{\"x\":5,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":15},\"FourthMove\":{\"x\":5,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":17}}]}]";
+            return g;
+        }
+
+
+        /*
+ 15 . O O O O . . . . . . . . . . . . . . 
+ 16 . O X X X O . . . . . . . . . . . . . 
+ 17 X X . . X O . . . . . . . . . . . . . 
+ 18 . O . . . O . . . . . . . . . . . . . 
+         */
+        public Game Scenario3kyu25()
+        {
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black);
+            var g = new Game(gi);
+            gi.ScenarioName = GetCurrentMethod();
+
+            g.SetupMove(0, 17, Content.Black);
+            g.SetupMove(1, 17, Content.Black);
+            g.SetupMove(2, 16, Content.Black);
+            g.SetupMove(3, 16, Content.Black);
+            g.SetupMove(4, 16, Content.Black);
+            g.SetupMove(4, 17, Content.Black);
+
+            g.SetupMove(1, 18, Content.White);
+            g.SetupMove(1, 16, Content.White);
+            g.SetupMove(1, 15, Content.White);
+            g.SetupMove(2, 15, Content.White);
+            g.SetupMove(3, 15, Content.White);
+            g.SetupMove(4, 15, Content.White);
+            g.SetupMove(5, 16, Content.White);
+            g.SetupMove(5, 17, Content.White);
+            g.SetupMove(5, 18, Content.White);
+
+            gi.targetPoints = new List<Point>() { new Point(0, 17) };
+            for (int x = 0; x <= 4; x++)
+            {
+                for (int y = 17; y <= 18; y++)
+                    gi.movablePoints.Add(new Point(x, y));
+            }
+            gi.killMovablePoints.AddRange(gi.movablePoints);
+            gi.killMovablePoints.Add(new Point(0, 16));
+            gi.solutionPoints.Add(new List<Point>() { new Point(2, 17), new Point(3, 18), new Point(4, 18), new Point(2, 18) });
+
+            gi.PlayerMoveJson = "[{\"FirstMove\":{\"x\":2,\"y\":17},\"SecondMove\":{\"x\":3,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":3,\"y\":17},\"SecondMove\":{\"x\":4,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}}]},{\"FirstMove\":{\"x\":3,\"y\":18},\"SecondMove\":{\"x\":2,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":4,\"y\":18},\"SecondMove\":{\"x\":2,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":2,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":3,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}}]}]";
+            gi.ChallengeMoveJson = "[{\"FirstMove\":{\"x\":4,\"y\":18},\"SecondMove\":{\"x\":3,\"y\":18}},{\"FirstMove\":{\"x\":3,\"y\":18},\"SecondMove\":{\"x\":4,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":18}}]},{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":4,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":-1,\"y\":-1}},{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":16},\"SecondMove\":{\"x\":2,\"y\":18}},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":3,\"y\":18}},{\"FirstMove\":{\"x\":3,\"y\":17},\"SecondMove\":{\"x\":0,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}}]}]";
+            return g;
+        }
+
+        /*
+ 13 . O . . . . . . . . . . . . . . . . . 
+ 14 . . O O . . . . . . . . . . . . . . . 
+ 15 . O . X O O . . . . . . . . . . . . . 
+ 16 . X . X X O . . . . . . . . . . . . . 
+ 17 . X . X O O . . . . . . . . . . . . . 
+ 18 . X . O . . . . . . . . . . . . . . . 
+         */
+        public Game Scenario3kyu28()
+        {
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black);
+            var g = new Game(gi);
+            gi.ScenarioName = GetCurrentMethod();
+
+            g.SetupMove(1, 18, Content.Black);
+            g.SetupMove(1, 17, Content.Black);
+            g.SetupMove(1, 16, Content.Black);
+            g.SetupMove(3, 17, Content.Black);
+            g.SetupMove(3, 16, Content.Black);
+            g.SetupMove(3, 15, Content.Black);
+            g.SetupMove(4, 16, Content.Black);
+
+            g.SetupMove(1, 15, Content.White);
+            g.SetupMove(2, 14, Content.White);
+            g.SetupMove(3, 14, Content.White);
+            g.SetupMove(4, 15, Content.White);
+            g.SetupMove(5, 15, Content.White);
+            g.SetupMove(5, 16, Content.White);
+            g.SetupMove(5, 17, Content.White);
+            g.SetupMove(4, 17, Content.White);
+            g.SetupMove(3, 18, Content.White);
+            g.SetupMove(1, 13, Content.White);
+
+            gi.targetPoints = new List<Point>() { new Point(1, 18) };
+            for (int x = 0; x <= 3; x++)
+            {
+                for (int y = 14; y <= 18; y++)
+                    gi.movablePoints.Add(new Point(x, y));
+            }
+            gi.movablePoints.Add(new Point(0, 13));
+            gi.movablePoints.Add(new Point(4, 18));
+            gi.killMovablePoints.AddRange(gi.movablePoints);
+            gi.killMovablePoints.Add(new Point(0, 12));
+            gi.killMovablePoints.Add(new Point(5, 18));
+            gi.solutionPoints.Add(new List<Point>() { new Point(2, 15), new Point(2, 17), new Point(2, 16) });
+            gi.PlayerMoveJson = "[{\"FirstMove\":{\"x\":0,\"y\":16},\"SecondMove\":{\"x\":2,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":16}}]},{\"FirstMove\":{\"x\":2,\"y\":16},\"SecondMove\":{\"x\":2,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":14}}]},{\"FirstMove\":{\"x\":2,\"y\":17},\"SecondMove\":{\"x\":2,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":17},\"SecondMove\":{\"x\":2,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":15}}]},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":15}},{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":15}}]},{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":2,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":15}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":15}}]},{\"FirstMove\":{\"x\":0,\"y\":14},\"SecondMove\":{\"x\":2,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":15},\"SecondMove\":{\"x\":2,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}}]},{\"FirstMove\":{\"x\":2,\"y\":15},\"SecondMove\":{\"x\":2,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":13},\"SecondMove\":{\"x\":2,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":15}}]},{\"FirstMove\":{\"x\":1,\"y\":14},\"SecondMove\":{\"x\":2,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":15}}]},{\"FirstMove\":{\"x\":4,\"y\":18},\"SecondMove\":{\"x\":2,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":15}}]}]";
+
+            gi.ChallengeMoveJson = "[{\"FirstMove\":{\"x\":1,\"y\":14},\"SecondMove\":{\"x\":2,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":12},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":4,\"y\":18},\"SecondMove\":{\"x\":2,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":12},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":5,\"y\":18},\"SecondMove\":{\"x\":2,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":12},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":13},\"SecondMove\":{\"x\":2,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":12},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":14},\"SecondMove\":{\"x\":2,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":12},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":15},\"SecondMove\":{\"x\":2,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":12},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":12},\"SecondMove\":{\"x\":2,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":16},\"SecondMove\":{\"x\":0,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":12},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":17},\"SecondMove\":{\"x\":0,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":12},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":17}}]},{\"FirstMove\":{\"x\":2,\"y\":17},\"SecondMove\":{\"x\":2,\"y\":16}},{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":2,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":12},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":2,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":12},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":2,\"y\":16},\"SecondMove\":{\"x\":2,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":12},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}}]}]";
+            return g;
+        }
+
+        /*
+ 15 . . . . X X . . . . . . . . . . . . . 
+ 16 . . X X . O X X X X X . . . . . . . . 
+ 17 . . X O O . O O O O X . . . . . . . . 
+ 18 . . . X O . . . . O X . . . . . . . .
+         */
+        public Game Scenario2kyu13()
+        {
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
+            var g = new Game(gi);
+            gi.ScenarioName = GetCurrentMethod();
+
+            g.SetupMove(2, 16, Content.Black);
+            g.SetupMove(2, 17, Content.Black);
+            g.SetupMove(3, 16, Content.Black);
+            g.SetupMove(3, 17, Content.White);
+            g.SetupMove(3, 18, Content.Black);
+            g.SetupMove(4, 15, Content.Black);
+            g.SetupMove(4, 17, Content.White);
+            g.SetupMove(4, 18, Content.White);
+            g.SetupMove(5, 15, Content.Black);
+            g.SetupMove(5, 16, Content.White);
+            g.SetupMove(6, 16, Content.Black);
+            g.SetupMove(6, 17, Content.White);
+            g.SetupMove(7, 16, Content.Black);
+            g.SetupMove(7, 17, Content.White);
+            g.SetupMove(8, 16, Content.Black);
+            g.SetupMove(8, 17, Content.White);
+            g.SetupMove(9, 16, Content.Black);
+            g.SetupMove(9, 17, Content.White);
+            g.SetupMove(9, 18, Content.White);
+            g.SetupMove(10, 16, Content.Black);
+            g.SetupMove(10, 17, Content.Black);
+            g.SetupMove(10, 18, Content.Black);
+
+            gi.targetPoints = new List<Point>() { new Point(6, 17) };
+            for (int x = 2; x <= 8; x++)
+            {
+                for (int y = 16; y <= 18; y++)
+                    gi.movablePoints.Add(new Point(x, y));
+            }
+            gi.killMovablePoints.AddRange(gi.movablePoints);
+            gi.killMovablePoints.Add(new Point(1, 18));
+            gi.solutionPoints.Add(new List<Point>() { new Point(7, 18), new Point(6, 18), new Point(5, 17) });
+
+            gi.PlayerMoveJson = "[{\"FirstMove\":{\"x\":4,\"y\":16},\"SecondMove\":{\"x\":5,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":7,\"y\":18}},{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":8,\"y\":18},\"FourthMove\":{\"x\":7,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}}]},{\"FirstMove\":{\"x\":5,\"y\":17},\"SecondMove\":{\"x\":5,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":16},\"FourthMove\":{\"x\":7,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":16}},{\"ThirdMove\":{\"x\":8,\"y\":18},\"FourthMove\":{\"x\":7,\"y\":18}},{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":16}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":7,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":16}}]},{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":4,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":17}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":7,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":8,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":17},\"FourthMove\":{\"x\":5,\"y\":18}}]},{\"FirstMove\":{\"x\":5,\"y\":18},\"SecondMove\":{\"x\":2,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":5,\"y\":17},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":16},\"FourthMove\":{\"x\":5,\"y\":17}},{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":7,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":17}},{\"ThirdMove\":{\"x\":8,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":17}}]},{\"FirstMove\":{\"x\":6,\"y\":18},\"SecondMove\":{\"x\":7,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":16},\"FourthMove\":{\"x\":5,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":17},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}}]},{\"FirstMove\":{\"x\":7,\"y\":18},\"SecondMove\":{\"x\":6,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":16},\"FourthMove\":{\"x\":5,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":17}}]},{\"FirstMove\":{\"x\":8,\"y\":18},\"SecondMove\":{\"x\":2,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":5,\"y\":17},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":7,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":16},\"FourthMove\":{\"x\":5,\"y\":17}},{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":7,\"y\":18}}]},{\"FirstMove\":{\"x\":1,\"y\":18},\"SecondMove\":{\"x\":4,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":17}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":7,\"y\":18}},{\"ThirdMove\":{\"x\":8,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":17},\"FourthMove\":{\"x\":5,\"y\":18}}]}]";
+
+            gi.ChallengeMoveJson = "[{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":-1,\"y\":-1}},{\"FirstMove\":{\"x\":4,\"y\":16},\"SecondMove\":{\"x\":-1,\"y\":-1}},{\"FirstMove\":{\"x\":5,\"y\":17},\"SecondMove\":{\"x\":-1,\"y\":-1}},{\"FirstMove\":{\"x\":5,\"y\":18},\"SecondMove\":{\"x\":-1,\"y\":-1}},{\"FirstMove\":{\"x\":6,\"y\":18},\"SecondMove\":{\"x\":5,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":16},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":16}},{\"ThirdMove\":{\"x\":8,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":16}},{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":16}}]},{\"FirstMove\":{\"x\":7,\"y\":18},\"SecondMove\":{\"x\":-1,\"y\":-1}},{\"FirstMove\":{\"x\":8,\"y\":18},\"SecondMove\":{\"x\":6,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":16},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":16}}]}]";
+            return g;
+        }
+
+        /*
+ 12 . O . O . . . . . . . . . . . . . . . 
+ 13 . . . . . . . . . . . . . . . . . . . 
+ 14 . X X O O . . . . . . . . . . . . . . 
+ 15 . O O X . X . . . . . . . . . . . . . 
+ 16 . O . X . . . . . . . . . . . . . . . 
+ 17 X . O X . . . . . . . . . . . . . . . 
+ 18 . . . . . . . . . . . . . . . . . . .
+         */
+        public Game Scenario2kyu19()
+        {
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var g = new Game(gi);
+            gi.ScenarioName = GetCurrentMethod();
+
+            g.SetupMove(0, 17, Content.Black);
+            g.SetupMove(1, 12, Content.White);
+            g.SetupMove(1, 14, Content.Black);
+            g.SetupMove(1, 15, Content.White);
+            g.SetupMove(1, 16, Content.White);
+            g.SetupMove(2, 14, Content.Black);
+            g.SetupMove(2, 15, Content.White);
+            g.SetupMove(2, 17, Content.White);
+            g.SetupMove(3, 12, Content.White);
+            g.SetupMove(3, 14, Content.White);
+            g.SetupMove(3, 15, Content.Black);
+            g.SetupMove(3, 16, Content.Black);
+            g.SetupMove(3, 17, Content.Black);
+            g.SetupMove(4, 14, Content.White);
+            g.SetupMove(5, 15, Content.Black);
+            gi.targetPoints = new List<Point>() { new Point(1, 16) };
+            for (int x = 0; x <= 3; x++)
+            {
+                for (int y = 14; y <= 18; y++)
+                    gi.movablePoints.Add(new Point(x, y));
+            }
+
+            gi.movablePoints.Add(new Point(0, 13));
+            gi.killMovablePoints.AddRange(gi.movablePoints);
+            gi.killMovablePoints.Add(new Point(4, 18));
+            gi.movablePoints.Add(new Point(1, 13));
+            gi.movablePoints.Add(new Point(2, 13));
+            gi.movablePoints.Add(new Point(0, 12));
+
+            gi.survivalPoints.Add(new Point(1, 14));
+            gi.solutionPoints.Add(new List<Point>() { new Point(1, 17), new Point(1, 13), new Point(0, 15), new Point(2, 13), new Point(0, 14) });
+            gi.solutionPoints.Add(new List<Point>() { new Point(1, 17), new Point(1, 13), new Point(0, 14) });
+
+            gi.PlayerMoveJson = "[{\"FirstMove\":{\"x\":3,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":13}}]},{\"FirstMove\":{\"x\":0,\"y\":14},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":13}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":13}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":13}}]},{\"FirstMove\":{\"x\":2,\"y\":16},\"SecondMove\":{\"x\":0,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":13}}]},{\"FirstMove\":{\"x\":0,\"y\":16},\"SecondMove\":{\"x\":0,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":13}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":13}}]},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":13}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":13}}]},{\"FirstMove\":{\"x\":1,\"y\":17},\"SecondMove\":{\"x\":1,\"y\":13},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":13}}]},{\"FirstMove\":{\"x\":1,\"y\":18},\"SecondMove\":{\"x\":2,\"y\":13},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}}]},{\"FirstMove\":{\"x\":0,\"y\":13},\"SecondMove\":{\"x\":1,\"y\":13},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":13}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":13}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":13}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":13}},{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":13}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":13}}]},{\"FirstMove\":{\"x\":4,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":13}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":13}}]},{\"FirstMove\":{\"x\":0,\"y\":15},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":13}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":13}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":13}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":13}}]},{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":13}},{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":1,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":13}}]}]";
+            gi.ChallengeMoveJson = "[{\"FirstMove\":{\"x\":1,\"y\":13},\"SecondMove\":{\"x\":0,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":12},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":12},\"SecondMove\":{\"x\":0,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":15},\"SecondMove\":{\"x\":0,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":12},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}}]},{\"FirstMove\":{\"x\":2,\"y\":16},\"SecondMove\":{\"x\":2,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":1,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":12},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":15}}]},{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":12},\"FourthMove\":{\"x\":2,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":13},\"SecondMove\":{\"x\":0,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":12},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}}]},{\"FirstMove\":{\"x\":2,\"y\":13},\"SecondMove\":{\"x\":0,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":12},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":14},\"SecondMove\":{\"x\":0,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":13}},{\"ThirdMove\":{\"x\":2,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":12},\"FourthMove\":{\"x\":2,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":16},\"SecondMove\":{\"x\":2,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":1,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":12},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":15}}]},{\"FirstMove\":{\"x\":1,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":12},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":3,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":12},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":12},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}}]}]";
+            return g;
+        }
+
+        /*
+ 14 . . X X X O O . . . . . . . . . . . . 
+ 15 . X . O O X O . . . . . . . . . . . . 
+ 16 . X O . . X O . . . . . . . . . . . . 
+ 17 . X X O O X O . . . . . . . . . . . . 
+ 18 . . . . . X . . . . . . . . . . . . .
+         */
+        public Game Scenario1kyu11()
+        {
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 10);
+            var g = new Game(gi);
+            gi.ScenarioName = GetCurrentMethod();
+
+            g.SetupMove(1, 15, Content.Black);
+            g.SetupMove(1, 16, Content.Black);
+            g.SetupMove(1, 17, Content.Black);
+            g.SetupMove(2, 14, Content.Black);
+            g.SetupMove(2, 16, Content.White);
+            g.SetupMove(2, 17, Content.Black);
+            g.SetupMove(3, 14, Content.Black);
+            g.SetupMove(3, 15, Content.White);
+            g.SetupMove(3, 17, Content.White);
+            g.SetupMove(4, 14, Content.Black);
+            g.SetupMove(4, 15, Content.White);
+            g.SetupMove(4, 17, Content.White);
+            g.SetupMove(5, 14, Content.White);
+            g.SetupMove(5, 15, Content.Black);
+            g.SetupMove(5, 16, Content.Black);
+            g.SetupMove(5, 17, Content.Black);
+            g.SetupMove(5, 18, Content.Black);
+            g.SetupMove(6, 14, Content.White);
+            g.SetupMove(6, 15, Content.White);
+            g.SetupMove(6, 16, Content.White);
+            g.SetupMove(6, 17, Content.White);
+
+            gi.targetPoints = new List<Point>() { new Point(3, 17) };
+            gi.movablePoints = new List<Point>();
+            for (int x = 2; x <= 5; x++)
+            {
+                for (int y = 15; y <= 18; y++)
+                    gi.movablePoints.Add(new Point(x, y));
+            }
+            gi.killMovablePoints.AddRange(gi.movablePoints);
+            gi.killMovablePoints.Add(new Point(1, 18));
+            gi.movablePoints.Add(new Point(6, 18));
+            gi.survivalPoints.Add(new Point(5, 15));
+            gi.solutionPoints.Add(new List<Point>() { new Point(3, 18), new Point(4, 18), new Point(4, 16), new Point(2, 18), new Point(2, 15) });
+
+            gi.PlayerMoveJson = "[{\"FirstMove\":{\"x\":2,\"y\":15},\"SecondMove\":{\"x\":6,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":16}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":16}}]},{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":6,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":15},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":16}}]},{\"FirstMove\":{\"x\":4,\"y\":16},\"SecondMove\":{\"x\":6,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":15},\"FourthMove\":{\"x\":3,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":16}}]},{\"FirstMove\":{\"x\":4,\"y\":18},\"SecondMove\":{\"x\":3,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":16}},{\"ThirdMove\":{\"x\":4,\"y\":16},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":15},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":16}}]},{\"FirstMove\":{\"x\":3,\"y\":18},\"SecondMove\":{\"x\":4,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":15},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}}]},{\"FirstMove\":{\"x\":3,\"y\":16},\"SecondMove\":{\"x\":4,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":15},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}}]},{\"FirstMove\":{\"x\":1,\"y\":18},\"SecondMove\":{\"x\":6,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":16}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":16}},{\"ThirdMove\":{\"x\":4,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":15},\"FourthMove\":{\"x\":3,\"y\":18}}]}]";
+            gi.ChallengeMoveJson = "[{\"FirstMove\":{\"x\":6,\"y\":18},\"SecondMove\":{\"x\":4,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}}]},{\"FirstMove\":{\"x\":3,\"y\":16},\"SecondMove\":{\"x\":2,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":15}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":15}},{\"ThirdMove\":{\"x\":4,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":15},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":4,\"y\":16},\"SecondMove\":{\"x\":4,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":15},\"FourthMove\":{\"x\":3,\"y\":16}}]},{\"FirstMove\":{\"x\":2,\"y\":15},\"SecondMove\":{\"x\":2,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":16}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":4,\"y\":18},\"SecondMove\":{\"x\":4,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":15},\"FourthMove\":{\"x\":3,\"y\":16}}]},{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":16}},{\"ThirdMove\":{\"x\":4,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":15},\"FourthMove\":{\"x\":4,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":15}}]}]";
+            return g;
+        }
+
+
+        /*
+ 13 X X X . . . . . . . . . . . . . . . . 
+ 14 . O . X . . . . . . . . . . . . . . . 
+ 15 . O . X . . . . . . . . . . . . . . . 
+ 16 . . O X . . . . . . . . . . . . . . . 
+ 17 O O X X . . . . . . . . . . . . . . . 
+ 18 . O . . . . . . . . . . . . . . . . .         
+         */
+        public Game Scenario1kyu25()
+        {
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
+            var g = new Game(gi);
+            gi.ScenarioName = GetCurrentMethod();
+
+            g.SetupMove(0, 17, Content.White);
+            g.SetupMove(1, 18, Content.White);
+            g.SetupMove(1, 17, Content.White);
+            g.SetupMove(1, 15, Content.White);
+            g.SetupMove(1, 14, Content.White);
+            g.SetupMove(2, 16, Content.White);
+            g.SetupMove(0, 13, Content.Black);
+            g.SetupMove(1, 13, Content.Black);
+            g.SetupMove(2, 13, Content.Black);
+            g.SetupMove(2, 17, Content.Black);
+            g.SetupMove(3, 14, Content.Black);
+            g.SetupMove(3, 15, Content.Black);
+            g.SetupMove(3, 16, Content.Black);
+            g.SetupMove(3, 17, Content.Black);
+
+            gi.targetPoints = new List<Point>() { new Point(1, 17) };
+            gi.movablePoints = new List<Point>();
+            for (int x = 0; x <= 2; x++)
+            {
+                for (int y = 14; y <= 18; y++)
+                    gi.movablePoints.Add(new Point(x, y));
+            }
+            gi.killMovablePoints.AddRange(gi.movablePoints);
+            gi.killMovablePoints.Add(new Point(3, 18));
+            gi.solutionPoints.Add(new List<Point>() { new Point(1, 16), new Point(0, 16), new Point(0, 14) });
+
+            gi.PlayerMoveJson = "[{\"FirstMove\":{\"x\":2,\"y\":14},\"SecondMove\":{\"x\":0,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":16}}]},{\"FirstMove\":{\"x\":2,\"y\":15},\"SecondMove\":{\"x\":1,\"y\":16}},{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":14},\"SecondMove\":{\"x\":0,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":15},\"SecondMove\":{\"x\":0,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":16},\"SecondMove\":{\"x\":2,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":14}},{\"ThirdMove\":{\"x\":2,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}}]},{\"FirstMove\":{\"x\":1,\"y\":16},\"SecondMove\":{\"x\":0,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":2,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":14}}]},{\"FirstMove\":{\"x\":3,\"y\":18},\"SecondMove\":{\"x\":2,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":16}}]}]";
+            gi.ChallengeMoveJson = "[{\"FirstMove\":{\"x\":0,\"y\":16},\"SecondMove\":{\"x\":0,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":1,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":14}}]},{\"FirstMove\":{\"x\":0,\"y\":15},\"SecondMove\":{\"x\":2,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":14}}]},{\"FirstMove\":{\"x\":0,\"y\":14},\"SecondMove\":{\"x\":2,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":14}},{\"ThirdMove\":{\"x\":2,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":14}}]},{\"FirstMove\":{\"x\":2,\"y\":14},\"SecondMove\":{\"x\":2,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":18}}]},{\"FirstMove\":{\"x\":2,\"y\":15},\"SecondMove\":{\"x\":0,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":14}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":14}},{\"ThirdMove\":{\"x\":2,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":18}}]},{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":2,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":2,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":14}}]},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":15}}]}]";
+            return g;
+        }
+
+        /*
+ 14 . X X X . X . . . . . . . . . . . . . 
+ 15 X O O O X . . . . . . . . . . . . . . 
+ 16 . X . O X . . . . . . . . . . . . . . 
+ 17 . O . O O X . . . . . . . . . . . . . 
+ 18 . . . . O X . . . . . . . . . . . . .
+         */
+        public Game Scenario1dan10()
+        {
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
+            var g = new Game(gi);
+            gi.ScenarioName = GetCurrentMethod();
+
+            g.SetupMove(1, 17, Content.White);
+            g.SetupMove(1, 15, Content.White);
+            g.SetupMove(2, 15, Content.White);
+            g.SetupMove(3, 15, Content.White);
+            g.SetupMove(3, 16, Content.White);
+            g.SetupMove(3, 17, Content.White);
+            g.SetupMove(4, 17, Content.White);
+            g.SetupMove(4, 18, Content.White);
+
+            g.SetupMove(0, 15, Content.Black);
+            g.SetupMove(1, 14, Content.Black);
+            g.SetupMove(1, 16, Content.Black);
+            g.SetupMove(2, 14, Content.Black);
+            g.SetupMove(3, 14, Content.Black);
+            g.SetupMove(4, 15, Content.Black);
+            g.SetupMove(4, 16, Content.Black);
+            g.SetupMove(5, 14, Content.Black);
+            g.SetupMove(5, 17, Content.Black);
+            g.SetupMove(5, 18, Content.Black);
+
+            gi.targetPoints = new List<Point>() { new Point(3, 17) };
+            gi.movablePoints = new List<Point>();
+            for (int x = 0; x <= 3; x++)
+            {
+                for (int y = 14; y <= 18; y++)
+                    gi.movablePoints.Add(new Point(x, y));
+            }
+            gi.killMovablePoints.AddRange(gi.movablePoints);
+            gi.killMovablePoints.Add(new Point(0, 13));
+            gi.solutionPoints.Add(new List<Point>() { new Point(2, 16), new Point(2, 17), new Point(0, 17), new Point(0, 16), new Point(1, 16) });
+            gi.PlayerMoveJson = "[{\"FirstMove\":{\"x\":0,\"y\":14},\"SecondMove\":{\"x\":2,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":16},\"SecondMove\":{\"x\":2,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":1,\"y\":18}}]},{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":2,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":17},\"SecondMove\":{\"x\":2,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":2,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}}]},{\"FirstMove\":{\"x\":1,\"y\":18},\"SecondMove\":{\"x\":2,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":18}}]},{\"FirstMove\":{\"x\":2,\"y\":16},\"SecondMove\":{\"x\":2,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":2,\"y\":17},\"SecondMove\":{\"x\":2,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":13},\"SecondMove\":{\"x\":2,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":17}}]},{\"FirstMove\":{\"x\":3,\"y\":18},\"SecondMove\":{\"x\":2,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":17}}]}]";
+            gi.ChallengeMoveJson = "[{\"FirstMove\":{\"x\":0,\"y\":17},\"SecondMove\":{\"x\":2,\"y\":17}},{\"FirstMove\":{\"x\":1,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}}]},{\"FirstMove\":{\"x\":2,\"y\":17},\"SecondMove\":{\"x\":0,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}}]},{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":14}}]},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}}]},{\"FirstMove\":{\"x\":3,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}}]},{\"FirstMove\":{\"x\":0,\"y\":14},\"SecondMove\":{\"x\":0,\"y\":13},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}}]},{\"FirstMove\":{\"x\":0,\"y\":16},\"SecondMove\":{\"x\":0,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}}]}]";
+            return g;
+        }
+
+        /*
+ 12 O O O O O . . . . . . . . . . . . . . 
+ 13 . X X X X O . . . . . . . . . . . . . 
+ 14 . . . . X O . . . . . . . . . . . . . 
+ 15 . . X X O . . . . . . . . . . . . . . 
+ 16 . X O O O . . . . . . . . . . . . . . 
+ 17 O X O . . O . . . . . . . . . . . . . 
+ 18 . O . . . . . . . . . . . . . . . . . 
+         */
+        public Game Scenario1dan31()
+        {
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black);
+            var g = new Game(gi);
+            gi.ScenarioName = GetCurrentMethod();
+
+            g.SetupMove(0, 12, Content.White);
+            g.SetupMove(0, 17, Content.White);
+            g.SetupMove(1, 12, Content.White);
+            g.SetupMove(1, 13, Content.Black);
+            g.SetupMove(1, 16, Content.Black);
+            g.SetupMove(1, 17, Content.Black);
+            g.SetupMove(1, 18, Content.White);
+            g.SetupMove(2, 12, Content.White);
+            g.SetupMove(2, 13, Content.Black);
+            g.SetupMove(2, 15, Content.Black);
+            g.SetupMove(2, 16, Content.White);
+            g.SetupMove(2, 17, Content.White);
+            g.SetupMove(3, 12, Content.White);
+            g.SetupMove(3, 13, Content.Black);
+            g.SetupMove(3, 15, Content.Black);
+            g.SetupMove(3, 16, Content.White);
+            g.SetupMove(4, 12, Content.White);
+            g.SetupMove(4, 13, Content.Black);
+            g.SetupMove(4, 14, Content.Black);
+            g.SetupMove(4, 15, Content.White);
+            g.SetupMove(4, 16, Content.White);
+            g.SetupMove(5, 13, Content.White);
+            g.SetupMove(5, 14, Content.White);
+            g.SetupMove(5, 17, Content.White);
+            gi.targetPoints = new List<Point>() { new Point(2, 15) };
+            gi.movablePoints = new List<Point>();
+            for (int x = 0; x <= 3; x++)
+            {
+                for (int y = 13; y <= 16; y++)
+                    gi.movablePoints.Add(new Point(x, y));
+            }
+            gi.movablePoints.Add(new Point(0, 17));
+            gi.movablePoints.Add(new Point(0, 18));
+            gi.movablePoints.Add(new Point(1, 17));
+            gi.movablePoints.Add(new Point(1, 18));
+            gi.movablePoints.Add(new Point(2, 18));
+            gi.killMovablePoints.AddRange(gi.movablePoints);
+            gi.killMovablePoints.Add(new Point(3, 18));
+            gi.solutionPoints.Add(new List<Point>() { new Point(0, 15), new Point(2, 14), new Point(1, 14) });
+
+            gi.PlayerMoveJson = "[{\"FirstMove\":{\"x\":1,\"y\":14},\"SecondMove\":{\"x\":0,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":15}},{\"ThirdMove\":{\"x\":3,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":1,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":15}}]},{\"FirstMove\":{\"x\":1,\"y\":15},\"SecondMove\":{\"x\":0,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":2,\"y\":14}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":13}},{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":13}},{\"ThirdMove\":{\"x\":3,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":13}},{\"ThirdMove\":{\"x\":2,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":14}}]},{\"FirstMove\":{\"x\":0,\"y\":13},\"SecondMove\":{\"x\":1,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":15}}]},{\"FirstMove\":{\"x\":2,\"y\":14},\"SecondMove\":{\"x\":1,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":13}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":3,\"y\":14},\"SecondMove\":{\"x\":1,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":14},\"SecondMove\":{\"x\":1,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":15},\"SecondMove\":{\"x\":2,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":1,\"y\":14}},{\"ThirdMove\":{\"x\":3,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":14}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":14}}]},{\"FirstMove\":{\"x\":0,\"y\":16},\"SecondMove\":{\"x\":1,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":2,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":3,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":15}}]},{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":3,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":13}}]}]";
+
+            gi.ChallengeMoveJson = "[{\"FirstMove\":{\"x\":0,\"y\":13},\"SecondMove\":{\"x\":0,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":14}},{\"ThirdMove\":{\"x\":1,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":14}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":14}},{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":14}},{\"ThirdMove\":{\"x\":3,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":14}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":14}}]},{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":13},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":14}},{\"ThirdMove\":{\"x\":1,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":14}},{\"ThirdMove\":{\"x\":2,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":14}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":3,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":14}}]},{\"FirstMove\":{\"x\":1,\"y\":14},\"SecondMove\":{\"x\":2,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":1,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":15}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":15}}]},{\"FirstMove\":{\"x\":0,\"y\":14},\"SecondMove\":{\"x\":0,\"y\":13},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":14}},{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":15}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":14}},{\"ThirdMove\":{\"x\":3,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":14}},{\"ThirdMove\":{\"x\":2,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":14}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":14}}]},{\"FirstMove\":{\"x\":2,\"y\":14},\"SecondMove\":{\"x\":1,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":13}}]},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":13},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":14}},{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":14}},{\"ThirdMove\":{\"x\":2,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":14}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":15}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":3,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":14}}]},{\"FirstMove\":{\"x\":0,\"y\":16},\"SecondMove\":{\"x\":0,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":14}},{\"ThirdMove\":{\"x\":2,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":14}},{\"ThirdMove\":{\"x\":3,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":14}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":14}},{\"ThirdMove\":{\"x\":1,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":14}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":1,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":15}}]},{\"FirstMove\":{\"x\":1,\"y\":15},\"SecondMove\":{\"x\":1,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":13}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":3,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":2,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":14}}]},{\"FirstMove\":{\"x\":3,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":3,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":13}},{\"ThirdMove\":{\"x\":2,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":14}}]},{\"FirstMove\":{\"x\":3,\"y\":14},\"SecondMove\":{\"x\":2,\"y\":14},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":13},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":13}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":15}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":15}},{\"ThirdMove\":{\"x\":1,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":15}}]}]";
+
+            return g;
+        }
+
+
+        /*
+ 14 . . O . . O . . . . . . . . . . . . . 
+ 15 . . . O . . . . . . . . . . . . . . . 
+ 16 . O O X X O O O . . . . . . . . . . . 
+ 17 O X X . . X X O . . . . . . . . . . . 
+ 18 . . . . . . . . . . . . . . . . . . .
+         */
+        public Game Scenario1dan21()
+        {
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black, 14);
+            var g = new Game(gi);
+            gi.ScenarioName = GetCurrentMethod();
+
+            g.SetupMove(0, 17, Content.White);
+            g.SetupMove(1, 16, Content.White);
+            g.SetupMove(2, 16, Content.White);
+            g.SetupMove(2, 14, Content.White);
+            g.SetupMove(3, 15, Content.White);
+            g.SetupMove(5, 14, Content.White);
+            g.SetupMove(5, 16, Content.White);
+            g.SetupMove(6, 16, Content.White);
+            g.SetupMove(7, 16, Content.White);
+            g.SetupMove(7, 17, Content.White);
+
+            g.SetupMove(1, 17, Content.Black);
+            g.SetupMove(2, 17, Content.Black);
+            g.SetupMove(3, 16, Content.Black);
+            g.SetupMove(4, 16, Content.Black);
+            g.SetupMove(5, 17, Content.Black);
+            g.SetupMove(6, 17, Content.Black);
+
+            gi.targetPoints = new List<Point>() { new Point(3, 16) };
+            gi.movablePoints = new List<Point>();
+            for (int x = 0; x <= 7; x++)
+            {
+                for (int y = 16; y <= 18; y++)
+                    gi.movablePoints.Add(new Point(x, y));
+            }
+            gi.killMovablePoints.AddRange(gi.movablePoints);
+            gi.killMovablePoints.Add(new Point(0, 15));
+            gi.killMovablePoints.Add(new Point(4, 15));
+            gi.killMovablePoints.Add(new Point(8, 18));
+            gi.solutionPoints.Add(new List<Point>() { new Point(4, 18), new Point(3, 17), new Point(1, 18), new Point(3, 18), new Point(6, 18) });
+
+            gi.PlayerMoveJson = "[{\"FirstMove\":{\"x\":3,\"y\":17},\"SecondMove\":{\"x\":4,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}}]},{\"FirstMove\":{\"x\":4,\"y\":17},\"SecondMove\":{\"x\":3,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}}]},{\"FirstMove\":{\"x\":1,\"y\":18},\"SecondMove\":{\"x\":3,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":15}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":6,\"y\":18}}]},{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}}]},{\"FirstMove\":{\"x\":3,\"y\":18},\"SecondMove\":{\"x\":4,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}}]},{\"FirstMove\":{\"x\":4,\"y\":18},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":18}}]},{\"FirstMove\":{\"x\":5,\"y\":18},\"SecondMove\":{\"x\":3,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":6,\"y\":18},\"SecondMove\":{\"x\":4,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}}]},{\"FirstMove\":{\"x\":7,\"y\":18},\"SecondMove\":{\"x\":4,\"y\":15},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":6,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":7,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":8,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":17}}]},{\"FirstMove\":{\"x\":0,\"y\":16},\"SecondMove\":{\"x\":4,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}}]}]";
+
+            gi.ChallengeMoveJson = "[{\"FirstMove\":{\"x\":7,\"y\":18},\"SecondMove\":{\"x\":6,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":8,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":15},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}}]},{\"FirstMove\":{\"x\":0,\"y\":16},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":8,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}}]},{\"FirstMove\":{\"x\":4,\"y\":15},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":8,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":15},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":8,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}}]},{\"FirstMove\":{\"x\":8,\"y\":18},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":8,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}}]},{\"FirstMove\":{\"x\":1,\"y\":18},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":8,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}}]},{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":15},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":8,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}}]},{\"FirstMove\":{\"x\":3,\"y\":17},\"SecondMove\":{\"x\":1,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":15},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":8,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}}]},{\"FirstMove\":{\"x\":3,\"y\":18},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":8,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}}]},{\"FirstMove\":{\"x\":6,\"y\":18},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":8,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":7,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}}]},{\"FirstMove\":{\"x\":4,\"y\":17},\"SecondMove\":{\"x\":3,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":8,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}}]},{\"FirstMove\":{\"x\":5,\"y\":18},\"SecondMove\":{\"x\":6,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":15},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":8,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":17}}]}]";
+
+            return g;
+        }
+
+        /*
+ 14 . . O O O O O . . . . . . . . . . . . 
+ 15 . O O X X X O . . . . . . . . . . . . 
+ 16 . O X . . X O . . . . . . . . . . . . 
+ 17 . O X X . X O . O . . . . . . . . . . 
+ 18 . X O . . . . . . . . . . . . . . . .
+         */
+        public Game Scenario1dan29()
+        {
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black);
+            var g = new Game(gi);
+            gi.ScenarioName = GetCurrentMethod();
+            g.SetupMove(1, 15, Content.White);
+            g.SetupMove(1, 16, Content.White);
+            g.SetupMove(1, 17, Content.White);
+            g.SetupMove(1, 18, Content.Black);
+            g.SetupMove(2, 14, Content.White);
+            g.SetupMove(2, 15, Content.White);
+            g.SetupMove(2, 16, Content.Black);
+            g.SetupMove(2, 17, Content.Black);
+            g.SetupMove(2, 18, Content.White);
+            g.SetupMove(3, 14, Content.White);
+            g.SetupMove(3, 15, Content.Black);
+            g.SetupMove(3, 17, Content.Black);
+            g.SetupMove(4, 14, Content.White);
+            g.SetupMove(4, 15, Content.Black);
+            g.SetupMove(5, 14, Content.White);
+            g.SetupMove(5, 15, Content.Black);
+            g.SetupMove(5, 16, Content.Black);
+            g.SetupMove(5, 17, Content.Black);
+            g.SetupMove(6, 14, Content.White);
+            g.SetupMove(6, 15, Content.White);
+            g.SetupMove(6, 16, Content.White);
+            g.SetupMove(6, 17, Content.White);
+            g.SetupMove(8, 17, Content.White);
+            gi.targetPoints = new List<Point>() { new Point(3, 17) };
+            gi.movablePoints = new List<Point>();
+            for (int x = 2; x <= 6; x++)
+            {
+                for (int y = 15; y <= 18; y++)
+                    gi.movablePoints.Add(new Point(x, y));
+            }
+            gi.movablePoints.Add(new Point(0, 18));
+            gi.movablePoints.Add(new Point(1, 18));
+            gi.movablePoints.Add(new Point(0, 17));
+            gi.killMovablePoints.AddRange(gi.movablePoints);
+            gi.killMovablePoints.Add(new Point(0, 16));
+            gi.killMovablePoints.Add(new Point(7, 18));
+            gi.solutionPoints.Add(new List<Point>() { new Point(4, 16), new Point(4, 18), new Point(5, 18), new Point(3, 18), new Point(4, 17) });
+            gi.PlayerMoveJson = "[{\"FirstMove\":{\"x\":3,\"y\":18},\"SecondMove\":{\"x\":4,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":16},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}}]},{\"FirstMove\":{\"x\":4,\"y\":17},\"SecondMove\":{\"x\":5,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":7,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}}]},{\"FirstMove\":{\"x\":5,\"y\":18},\"SecondMove\":{\"x\":4,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}}]},{\"FirstMove\":{\"x\":3,\"y\":16},\"SecondMove\":{\"x\":5,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":18}}]},{\"FirstMove\":{\"x\":4,\"y\":16},\"SecondMove\":{\"x\":4,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}}]},{\"FirstMove\":{\"x\":4,\"y\":18},\"SecondMove\":{\"x\":4,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":16},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":17},\"SecondMove\":{\"x\":5,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":18}}]},{\"FirstMove\":{\"x\":6,\"y\":18},\"SecondMove\":{\"x\":4,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":7,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":4,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":6,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}}]}]";
+            gi.ChallengeMoveJson = "[{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":4,\"y\":18}},{\"FirstMove\":{\"x\":6,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":17},\"SecondMove\":{\"x\":4,\"y\":18}},{\"FirstMove\":{\"x\":4,\"y\":18},\"SecondMove\":{\"x\":5,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}}]},{\"FirstMove\":{\"x\":5,\"y\":18},\"SecondMove\":{\"x\":4,\"y\":18}},{\"FirstMove\":{\"x\":0,\"y\":16},\"SecondMove\":{\"x\":0,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}}]},{\"FirstMove\":{\"x\":7,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}}]},{\"FirstMove\":{\"x\":3,\"y\":18},\"SecondMove\":{\"x\":5,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":17}},{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":4,\"y\":17},\"SecondMove\":{\"x\":0,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":6,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":7,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}}]}]";
+
+            return g;
+        }
+
+    }
+}
