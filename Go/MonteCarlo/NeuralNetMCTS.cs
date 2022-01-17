@@ -71,7 +71,7 @@ namespace Go
                 foreach (Node childNode in currentNode.ChildArray)
                 {
                     double U = (childNode.State.Stats["P"] / Pb) * Math.Sqrt(Nb) / (1 + childNode.State.Stats["N"]);
-                    double Q = childNode.State.Stats["Q"] * 0.2f;
+                    double Q = childNode.State.Stats["Q"];
                     if (Q + U > maxQU)
                     {
                         maxQU = Q + U;
@@ -88,7 +88,7 @@ namespace Go
         /// <summary>
         /// Get neural network value from leelaz.
         /// </summary>
-        internal static double evaluateLeaf(Node leafNode)
+        internal double evaluateLeaf(Node leafNode)
         {
             if (leafNode.State.HeatMap == null)
             {
@@ -103,6 +103,7 @@ namespace Go
                 for (int i = 0; i <= lastMoves.Count - 1; i++)
                 {
                     Point p = lastMoves[i];
+                    if (p.Equals(Game.PassMove)) continue;
                     Content c = (i % 2 == 0) ? startContent : startContent.Opposite();
                     MonteCarloGame.ConvertAndMakeMoveInLeelaBoard(p, c);
                 }
@@ -120,7 +121,7 @@ namespace Go
         /// <summary>
         /// Backfill stats in node based on winrate.
         /// </summary>
-        internal static void backFill(Node leafNode, double winrate)
+        internal void backFill(Node leafNode, double winrate)
         {
             List<Node> breadcrumbs = new List<Node>();
             Node node = leafNode;
@@ -129,11 +130,14 @@ namespace Go
                 breadcrumbs.Insert(0, node);
                 node = node.Parent;
             }
+
+            Content currentContent = GameHelper.GetContentForNextMove(leafNode.State.Game.Board).Opposite();
+            Boolean currentPlayer = (GameHelper.GetContentForNextMove(this.tree.AbsoluteRoot.State.Game.Board) == currentContent);
             for (int i = 0; i <= breadcrumbs.Count - 1; i++)
             {
                 Node breadcrumb = breadcrumbs[i];
                 breadcrumb.State.Stats["N"] += 1;
-                breadcrumb.State.Stats["W"] += winrate;
+                breadcrumb.State.Stats["W"] += (currentPlayer ? winrate : (1 - winrate));
                 breadcrumb.State.Stats["Q"] += breadcrumb.State.Stats["W"] / breadcrumb.State.Stats["N"];
             }
         }

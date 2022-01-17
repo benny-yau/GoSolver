@@ -19,7 +19,7 @@ namespace Go
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard[move];
-            
+
             List<Point> groupPoints = currentBoard.GetStoneAndDiagonalNeighbours(move.x, move.y).Where(n => tryBoard[n] == c).ToList();
             List<Group> groups = currentBoard.GetGroupsFromPoints(groupPoints).ToList();
             if (groups.Count <= 1) return false;
@@ -158,7 +158,7 @@ namespace Go
         /// <summary>
         /// Get linked diagonals of group.
         /// </summary>
-        private static List<LinkedPoint<Point>> GetGroupLinkedDiagonals(Board board, Group group)
+        public static List<LinkedPoint<Point>> GetGroupLinkedDiagonals(Board board, Group group)
         {
             List<LinkedPoint<Point>> rc = new List<LinkedPoint<Point>>();
             Content c = group.Content;
@@ -169,7 +169,7 @@ namespace Go
                     if (board[q] != c) continue;
                     if (PointsBetweenDiagonals(p, q).Any(r => board[r] == c)) continue;
                     if (board.GetGroupAt(p) == board.GetGroupAt(q)) continue;
-                        
+
                     //ensure diagonal is linked
                     if (CheckIsDiagonalLinked(p, q, board))
                         rc.Add(new LinkedPoint<Point>(q, p));

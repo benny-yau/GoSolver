@@ -1314,15 +1314,17 @@ namespace Go
             Point move = tryMove.Move;
             Board tryBoard = tryMove.TryGame.Board;
             Board currentBoard = tryMove.CurrentGame.Board;
-            Content c = tryMove.MoveContent.Opposite();
+            Content c = tryMove.MoveContent;
             //ensure is tiger mouth
             Board capturedBoard = ImmovableHelper.IsConfirmTigerMouth(currentBoard, tryBoard);
             if (capturedBoard == null) return false;
 
+            if (PlainTigerMouth(tryMove)) return true;
+
             //check eye points at diagonals of tiger mouth
-            List<Point> libertyPoint = tryBoard.GetStoneNeighbours().Where(n => tryBoard[n] != c).ToList();
+            List<Point> libertyPoint = tryBoard.GetStoneNeighbours().Where(n => tryBoard[n] != c.Opposite()).ToList();
             if (libertyPoint.Count != 1) return false;
-            List<Point> eyePoints = TigerMouthEyePoints(tryBoard, move, libertyPoint.First()).Where(e => tryBoard[e] != c).ToList();
+            List<Point> eyePoints = TigerMouthEyePoints(tryBoard, move, libertyPoint.First()).Where(e => tryBoard[e] != c.Opposite()).ToList();
             if (eyePoints.Count == 0) return false;
 
             //move is not within killer group
@@ -1345,6 +1347,28 @@ namespace Go
                     return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// Plain tiger mouth.
+        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q17077" />
+        /// Ensure neighbours are non killable <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario3dan22" />
+        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_GuanZiPu_Q18860" />
+        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario3dan22" />
+        /// </summary>
+        private static Boolean PlainTigerMouth(GameTryMove tryMove)
+        {
+            Point move = tryMove.Move;
+            Board tryBoard = tryMove.TryGame.Board;
+            Content c = tryMove.MoveContent;
+
+            //neighbours of tiger mouth groups are all empty or non killable groups
+            List<Point> neighbourPoints = new List<Point>();
+            tryBoard.GetGroupsFromStoneNeighbours(move).ForEach(group => neighbourPoints.AddRange(group.Neighbours));
+            neighbourPoints.Remove(tryMove.Move);
+            neighbourPoints = neighbourPoints.Where(n => tryBoard[n] == c).Distinct().ToList();
+            HashSet<Group> neighbourGroups = tryBoard.GetGroupsFromPoints(neighbourPoints);
+            return neighbourGroups.All(group => WallHelper.IsNonKillableGroup(tryBoard, group));
         }
 
 
@@ -1487,7 +1511,7 @@ namespace Go
                 return false;
             Board currentBoard = tryMove.CurrentGame.Board;
             Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, tryMove.Move);
-            if (killerGroup == null) return false;
+            if (killerGroup == null) return FillerMoveWithoutKillerGroup(tryMove);
 
             //check if any move in killer group
             if (killerGroup.Points.Count <= 5)
@@ -1505,11 +1529,34 @@ namespace Go
                 return false;
             Board currentBoard = tryMove.CurrentGame.Board;
             Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, tryMove.Move);
-            if (killerGroup == null || killerGroup.Points.Count > 5) return false;
+            if (killerGroup == null) return FillerMoveWithoutKillerGroup(tryMove);
+            if (killerGroup.Points.Count > 5) return false;
 
             GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
             if (opponentMove == null) return false;
             return SpecificEyeFillerMove(opponentMove, true);
+        }
+
+        /// <summary>
+        /// Filler moves without killer group. <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q6150" />
+        /// Ensure more than one point <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_B10_2" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_B40" />
+        /// Ensure two-point group is linked diagonally <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Side_B35" />
+        /// Ensure no opposite content at stone and diagonal <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q29998_2" />
+        /// </summary>
+        private static Boolean FillerMoveWithoutKillerGroup(GameTryMove tryMove)
+        {
+            Board tryBoard = tryMove.TryGame.Board;
+            //ensure more than one point
+            if (tryBoard.MoveGroup.Points.Count == 1) return false;
+            //ensure two-point group is linked diagonally
+            if (tryBoard.MoveGroup.Points.Count == 2 && LinkHelper.GetGroupLinkedDiagonals(tryBoard, tryBoard.MoveGroup).Count == 0)
+                return false;
+
+            //ensure no opposite content at stone and diagonal
+            if (tryBoard.GetStoneAndDiagonalNeighbours(tryMove.Move.x, tryMove.Move.y).Any(n => tryBoard[n] == tryMove.MoveContent.Opposite()))
+                return false;
+            return GenericEyeFillerMove(tryMove);
         }
 
         /// <summary>
@@ -1526,14 +1573,6 @@ namespace Go
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
             if (!tryMove.IsNegligible) return false;
-
-            //ensure survival move is not in killer role
-            Group killerGroup = BothAliveHelper.GetKillerGroupForUnknownContent(currentBoard, move, c);
-            if (killerGroup == null || killerGroup.Content != c.Opposite())
-                return false;
-
-            //neighbour groups should have liberty more than one
-            if (AtariHelper.AtariByGroup(currentBoard, killerGroup)) return false;
 
             //ensure not link for groups
             if (EyeFillerLinkForGroups(tryMove))
