@@ -131,14 +131,15 @@ namespace Go
                 node = node.Parent;
             }
 
-            Content currentContent = GameHelper.GetContentForNextMove(leafNode.State.Game.Board).Opposite();
-            Boolean currentPlayer = (GameHelper.GetContentForNextMove(this.tree.AbsoluteRoot.State.Game.Board) == currentContent);
+            Content c = GameHelper.GetContentForNextMove(leafNode.State.Game.Board).Opposite();
+            Boolean currentPlayer = (GameHelper.GetContentForNextMove(this.tree.Root.State.Game.Board) == c);
             for (int i = 0; i <= breadcrumbs.Count - 1; i++)
             {
                 Node breadcrumb = breadcrumbs[i];
-                breadcrumb.State.Stats["N"] += 1;
-                breadcrumb.State.Stats["W"] += (currentPlayer ? winrate : (1 - winrate));
-                breadcrumb.State.Stats["Q"] += breadcrumb.State.Stats["W"] / breadcrumb.State.Stats["N"];
+                Dictionary<String, double> stats = breadcrumb.State.Stats;
+                stats["N"] += 1;
+                stats["W"] += (currentPlayer ? winrate : (1 - winrate));
+                stats["Q"] += stats["W"] / stats["N"];
             }
         }
 

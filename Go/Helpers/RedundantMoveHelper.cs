@@ -9,9 +9,11 @@ namespace Go
     {
         #region find potential eye
         /// <summary>
-        /// Find potential eye that should not be filled. Find semi solid eyes for moves within killer group and uncovered eyes for moves not within any killer group.
-        /// Check knife five formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
-        /// Check two-by-three formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A18" />
+        /// Find potential eye that should not be filled. 
+        /// Check for killer formations 
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113_2" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A18" />
         /// </summary>
         public static Boolean FindPotentialEye(GameTryMove tryMove)
         {
@@ -21,11 +23,9 @@ namespace Go
             Content c = tryMove.MoveContent;
             //find uncovered eye
             if (!EyeHelper.FindUncoveredEye(currentBoard, move.x, move.y, c)) return false;
-            //not within killer group 
-            if (BothAliveHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite()) == null) return true;
-            //if within killer group check for killer formations
             if (tryBoard.MoveGroupLiberties != 1) return true;
             Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
+            //check for killer formations
             if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, capturedBoard))
                 return false;
             return true;
