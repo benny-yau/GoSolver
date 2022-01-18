@@ -100,26 +100,23 @@ namespace Go
 
                 Boolean noPossibleStates = false;
                 //ensure visit count has reached min requirement
-                if ((promisingNode == tree.Root || promisingNode.State.VisitCount >= VisitCountMinReq) && promisingNode.State.Depth > 0)
+                if (!promisingNode.Expanded && promisingNode.State.Depth > 0 && (promisingNode == tree.Root || promisingNode.State.VisitCount >= VisitCountMinReq))
                 {
-                    if (!promisingNode.Expanded)
-                    {
-                        //expand possible states
-                        List<State> possibleStates = promisingNode.State.AllPossibleStates;
-                        noPossibleStates = !ExpandNode(promisingNode, possibleStates);
+                    //expand possible states
+                    List<State> possibleStates = promisingNode.State.AllPossibleStates;
+                    noPossibleStates = !ExpandNode(promisingNode, possibleStates);
 
-                        if (promisingNode.ChildArray.Count > 0)
+                    if (promisingNode.ChildArray.Count > 0)
+                    {
+                        //select random node or confirmed alive node after expansion
+                        Node winNode = promisingNode.ChildArray.Where(m => m.State.WinOrLose).FirstOrDefault();
+                        if (winNode != null)
                         {
-                            //select random node or confirmed alive node after expansion
-                            Node winNode = promisingNode.ChildArray.Where(m => m.State.WinOrLose).FirstOrDefault();
-                            if (winNode != null)
-                            {
-                                HandleConfirmedCases(winNode);
-                                continue;
-                            }
-                            else
-                                promisingNode = RandomChildNode(promisingNode);
+                            HandleConfirmedCases(winNode);
+                            continue;
                         }
+                        else
+                            promisingNode = RandomChildNode(promisingNode);
                     }
                 }
                 //all nodes pruned
@@ -298,18 +295,16 @@ namespace Go
         /// </summary>
         private Boolean CheckAllChildNodesPruned(Node node, Boolean winResult)
         {
-            if (node.ChildArray.Count == 0)
-            {
-                DebugHelper.DebugWriteWithTab("All child nodes pruned.", mctsDepth);
-                if (AnswerFound(node))
-                    return true;
+            if (node.ChildArray.Count > 0) return false;
+            DebugHelper.DebugWriteWithTab("All child nodes pruned.", mctsDepth);
+            if (AnswerFound(node))
+                return true;
 
-                //if parent is not null then prune parent of win node moving up the tree by recursion
-                if (node.Parent != null)
-                {
-                    DebugHelper.DebugWriteWithTab("MCTS recursion up level. WinResult: " + winResult, mctsDepth);
-                    PrunePromisingNode(node.Parent, node, winResult, true);
-                }
+            //if parent is not null then prune parent of win node moving up the tree by recursion
+            if (node.Parent != null)
+            {
+                DebugHelper.DebugWriteWithTab("MCTS recursion up level. WinResult: " + winResult, mctsDepth);
+                PrunePromisingNode(node.Parent, node, winResult, true);
             }
             return false;
         }
@@ -410,18 +405,18 @@ namespace Go
         /// <summary>
         /// Back propagation phase - to increase score alternately up the levels for the winner.
         /// </summary>
-        private void BackPropagation(Node nodeToExplore, Boolean winOrLose, int incrementScore = winScore)
+        private void BackPropagation(Node node, Boolean winOrLose, int incrementScore = winScore)
         {
-            while (nodeToExplore != null)
+            while (node != null)
             {
-                nodeToExplore.State.IncrementVisit(Convert.ToInt32(winScore));
+                node.State.IncrementVisit(Convert.ToInt32(winScore));
 
                 if (winOrLose)
-                    nodeToExplore.State.AddScore(incrementScore);
+                    node.State.AddScore(incrementScore);
 
-                if (nodeToExplore.Parent == null)
+                if (node.Parent == null)
                     break;
-                nodeToExplore = nodeToExplore.Parent;
+                node = node.Parent;
                 winOrLose = !winOrLose;
             }
         }
@@ -444,22 +439,21 @@ namespace Go
         private ConfirmAliveResult HandleConfirmedCases(Node node)
         {
             ConfirmAliveResult confirmAlive = node.State.ConfirmAlive;
-            if (confirmAlive != ConfirmAliveResult.Unknown)
+            if (confirmAlive == ConfirmAliveResult.Unknown) return confirmAlive;
+
+            DebugHelper.DebugWriteWithTab("Confirm alive at: " + node.GetLastMoves() + " | " + confirmAlive.ToString(), mctsDepth);
+            Boolean winOrLose = node.State.WinOrLose;
+            if (winOrLose && AnswerFound(node))
+                return confirmAlive;
+            Node parentNode = node.Parent;
+            if (parentNode == null)
+                return confirmAlive;
+            if (!winOrLose)
+                Pruning(node, null);
+            else
             {
-                DebugHelper.DebugWriteWithTab("Confirm alive at: " + node.GetLastMoves() + " | " + confirmAlive.ToString(), mctsDepth);
-                Boolean winOrLose = node.State.WinOrLose;
-                if (winOrLose && AnswerFound(node))
-                    return confirmAlive;
-                Node parentNode = node.Parent;
-                if (parentNode == null)
-                    return confirmAlive;
-                if (!winOrLose)
-                    Pruning(node, null);
-                else
-                {
-                    if (parentNode.Parent != null)
-                        Pruning(parentNode, node);
-                }
+                if (parentNode.Parent != null)
+                    Pruning(parentNode, node);
             }
             return confirmAlive;
         }

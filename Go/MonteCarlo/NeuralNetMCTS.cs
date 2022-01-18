@@ -23,12 +23,9 @@ namespace Go
         internal override Node SelectPromisingNode(Node rootNode)
         {
             Node node = rootNode;
-            do
-            {
-                node = moveToLeaf(node);
-                double winrate = evaluateLeaf(node);
-                backFill(node, winrate);
-            } while (node.ChildArray.Count != 0);
+            node = moveToLeaf(node);
+            double winrate = evaluateLeaf(node);
+            backFill(node, winrate);
             return node;
         }
 
@@ -123,23 +120,15 @@ namespace Go
         /// </summary>
         internal void backFill(Node leafNode, double winrate)
         {
-            List<Node> breadcrumbs = new List<Node>();
             Node node = leafNode;
             while (node.Parent != null)
             {
-                breadcrumbs.Insert(0, node);
-                node = node.Parent;
-            }
-
-            Content c = GameHelper.GetContentForNextMove(leafNode.State.Game.Board).Opposite();
-            Boolean currentPlayer = (GameHelper.GetContentForNextMove(this.tree.Root.State.Game.Board) == c);
-            for (int i = 0; i <= breadcrumbs.Count - 1; i++)
-            {
-                Node breadcrumb = breadcrumbs[i];
-                Dictionary<String, double> stats = breadcrumb.State.Stats;
+                winrate = 1 - winrate;
+                Dictionary<String, double> stats = node.State.Stats;
                 stats["N"] += 1;
-                stats["W"] += (currentPlayer ? winrate : (1 - winrate));
+                stats["W"] += winrate;
                 stats["Q"] += stats["W"] / stats["N"];
+                node = node.Parent;
             }
         }
 

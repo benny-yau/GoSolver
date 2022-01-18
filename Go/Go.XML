@@ -755,9 +755,11 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.FindPotentialEye(Go.GameTryMove)">
             <summary>
-            Find potential eye that should not be filled. Find semi solid eyes for moves within killer group and uncovered eyes for moves not within any killer group.
-            Check knife five formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
-            Check two-by-three formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A18" />
+            Find potential eye that should not be filled. 
+            Check for killer formations 
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113_2" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A18" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.FindCoveredEyeMove(Go.GameTryMove)">
@@ -1028,6 +1030,15 @@
             Check corner three formation <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_Q18860" />
             </summary>
         </member>
+        <member name="M:Go.RedundantMoveHelper.PlainTigerMouth(Go.GameTryMove)">
+            <summary>
+            Plain tiger mouth.
+            <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q17077" />
+            Ensure neighbours are non killable <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario3dan22" />
+            <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_GuanZiPu_Q18860" />
+            <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario3dan22" />
+            </summary>
+        </member>
         <member name="M:Go.RedundantMoveHelper.TigerMouthEyePoints(Go.Board,Go.Point,Go.Point)">
             <summary>
             Get eye points at the opposite diagonals of the tiger mouth.
@@ -1057,6 +1068,15 @@
         <member name="M:Go.RedundantMoveHelper.KillEyeFillerMove(Go.GameTryMove)">
             <summary>
             Kill eye filler moves valid within only small space about five points. 
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.FillerMoveWithoutKillerGroup(Go.GameTryMove)">
+            <summary>
+            Filler moves without killer group. <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q6150" />
+            Ensure more than one point <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_B10_2" />
+            <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_B40" />
+            Ensure two-point group is linked diagonally <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Side_B35" />
+            Ensure no opposite content at stone and diagonal <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q29998_2" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.GenericEyeFillerMove(Go.GameTryMove)">
