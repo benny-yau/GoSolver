@@ -21,13 +21,23 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
+
+            if (!EyeHelper.FindEye(currentBoard, move.x, move.y, c)) return false;
             //find uncovered eye
-            if (!EyeHelper.FindUncoveredEye(currentBoard, move.x, move.y, c)) return false;
-            if (tryBoard.MoveGroupLiberties != 1) return true;
-            Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
-            //check for killer formations
-            if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, capturedBoard))
-                return false;
+            if (EyeHelper.FindUncoveredPoint(currentBoard, move.x, move.y, c))
+            {
+                if (tryBoard.MoveGroupLiberties != 1) return true;
+                Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
+                //check for killer formations
+                if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, capturedBoard))
+                    return false;
+            }
+            else
+            {
+                //covered eye with more than two liberties
+                if (currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).Any(group => currentBoard.GetGroupLiberties(group) <= 2))
+                    return false;
+            }
             return true;
         }
         #endregion
@@ -247,7 +257,8 @@ namespace Go
             Content c = tryMove.MoveContent;
 
             //move group more than one point
-            if (tryBoard.MoveGroup.Points.Count == 1) return false;
+            if (tryBoard.MoveGroup.Points.Count == 1 && tryBoard.GetClosestNeighbour(move.x, move.y, 2).Count > 0)
+                return false;
 
             //check connect and die
             if (!ImmovableHelper.CheckConnectAndDie(tryBoard)) return false;
@@ -256,6 +267,9 @@ namespace Go
             IEnumerable<Group> groups = tryBoard.GetNeighbourGroups(tryBoard.MoveGroup);
             if (groups.Any(group => tryBoard.GetGroupLiberties(group) <= 2 && !WallHelper.IsNonKillableGroup(tryBoard, group)))
                 return false;
+
+            if (RedundantSuicidalConnectAndDie(tryMove))
+                return true;
 
             //if all neighbour groups are killable, then check for killer formations 
             if (!groups.Any(group => WallHelper.IsNonKillableGroup(tryBoard, group)))
@@ -267,6 +281,27 @@ namespace Go
                     return false;
             }
             return true;
+        }
+
+        /// <summary>
+        /// Check for suicidal moves that have diagonal groups and not killer formation.
+        /// Ensure no diagonal at move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
+        /// </summary>
+        private static Boolean RedundantSuicidalConnectAndDie(GameTryMove tryMove)
+        {
+            if (!tryMove.IsNegligible) return false;
+            Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryMove.Move;
+            Content c = tryMove.MoveContent;
+            //ensure diagonal groups found
+            if (!LinkHelper.GetGroupLinkedDiagonals(tryBoard, tryBoard.MoveGroup, false).Any()) return false;
+            //ensure no diagonal at move
+            if (tryBoard.GetDiagonalNeighbours(move.x, move.y).Any(n => tryBoard[n] == c && !tryBoard.MoveGroup.Points.Contains(n))) return false;
+            //ensure no shared liberty with neighbour group
+            List<Group> neighbourGroups = tryBoard.GetNeighbourGroups(tryBoard.MoveGroup);
+            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty && !tryBoard.GetGroupsFromStoneNeighbours(n, c).Any(g => neighbourGroups.Contains(g))))
+                return true;
+            return false;
         }
 
         /// <summary>
@@ -694,7 +729,6 @@ namespace Go
 
             //get leap move by finding closest neighbours
             List<Point> closestNeighbours = tryBoard.GetClosestNeighbour(move.x, move.y, 3);
-            if (closestNeighbours.Count == 0) return true;
 
             List<KeyValuePair<Direction, Point>> leapMoves = GetLeapMove(move, closestNeighbours);
             if (leapMoves.Count == 0) return false;
@@ -1532,7 +1566,7 @@ namespace Go
 
         /// <summary>
         /// Filler moves without killer group. <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q6150" />
-        /// Ensure more than one point <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_B10_2" />
+        /// Check for one point leap move <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_B10_2" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_B40" />
         /// Ensure two-point group is linked diagonally <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Side_B35" />
         /// Ensure no opposite content at stone and diagonal <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q29998_2" />
@@ -1540,8 +1574,10 @@ namespace Go
         private static Boolean FillerMoveWithoutKillerGroup(GameTryMove tryMove)
         {
             Board tryBoard = tryMove.TryGame.Board;
-            //ensure more than one point
-            if (tryBoard.MoveGroup.Points.Count == 1) return false;
+            Point move = tryBoard.Move.Value;
+            //check for one point leap move
+            if (tryBoard.MoveGroup.Points.Count == 1 && !tryBoard.CornerPoint(move) && tryBoard.GetClosestNeighbour(move.x, move.y, 1).Count == 0) return false;
+
             //ensure two-point group is linked diagonally
             if (tryBoard.MoveGroup.Points.Count == 2 && LinkHelper.GetGroupLinkedDiagonals(tryBoard, tryBoard.MoveGroup).Count == 0)
                 return false;
@@ -1575,7 +1611,7 @@ namespace Go
             if (EyeFillerKo(tryMove))
                 return false;
 
-            List<Point> stoneNeighbours = tryBoard.GetStoneNeighbours();
+            List<Point> stoneNeighbours = tryBoard.GetStoneAndDiagonalNeighbours(move.x, move.y);
             List<Point> emptyNeighbours = stoneNeighbours.Where(p => tryBoard[p] == Content.Empty).ToList();
             int possibleEyes = PossibleEyesCreated(currentBoard, move, c);
 
@@ -1590,7 +1626,6 @@ namespace Go
                     //check any opponent stone at neighbour points
                     if (currentBoard.GetStoneNeighbours(p.x, p.y).Any(n => currentBoard[n] == c.Opposite()))
                         continue;
-
                     return true;
                 }
             }
