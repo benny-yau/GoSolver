@@ -158,7 +158,7 @@ namespace Go
         /// <summary>
         /// Get linked diagonals of group.
         /// </summary>
-        public static List<LinkedPoint<Point>> GetGroupLinkedDiagonals(Board board, Group group)
+        public static List<LinkedPoint<Point>> GetGroupLinkedDiagonals(Board board, Group group, Boolean checkLinked = true)
         {
             List<LinkedPoint<Point>> rc = new List<LinkedPoint<Point>>();
             Content c = group.Content;
@@ -171,7 +171,7 @@ namespace Go
                     if (board.GetGroupAt(p) == board.GetGroupAt(q)) continue;
 
                     //ensure diagonal is linked
-                    if (CheckIsDiagonalLinked(p, q, board))
+                    if (!checkLinked || CheckIsDiagonalLinked(p, q, board))
                         rc.Add(new LinkedPoint<Point>(q, p));
                 }
             }
