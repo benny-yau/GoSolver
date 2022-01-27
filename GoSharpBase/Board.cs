@@ -25,7 +25,8 @@ namespace Go
         public List<Point> LastMoves = new List<Point>();
 
         private List<Group> atariTargets;
-        public List<Group> AtariTargets {
+        public List<Group> AtariTargets
+        {
             get
             {
                 if (atariTargets == null)
@@ -314,9 +315,11 @@ namespace Go
         /// <summary>
         /// Get closest neighbour points to specific point by going in circles with increasing distance.
         /// </summary>
-        public List<Point> GetClosestNeighbour(int x, int y, int maxDistance = 2)
+        public List<Point> GetClosestNeighbour(Point p, int maxDistance = 2, Content c = Content.Unknown)
         {
-            Content c = this[x, y];
+            int x = p.x;
+            int y = p.y;
+            if (c == Content.Unknown) c = this[x, y];
             List<Point> result = new List<Point>();
             for (int i = 1; i <= maxDistance; i++)
             {
@@ -425,7 +428,7 @@ namespace Go
             AtariTargets = null;
             CapturedList.Clear();
         }
-        
+
         /// <summary>
         /// Create new board and make move on board.
         /// </summary>
