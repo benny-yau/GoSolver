@@ -300,7 +300,7 @@ namespace Go
             if (tryBoard.GetDiagonalNeighbours(move.x, move.y).Any(n => tryBoard[n] == c && !tryBoard.MoveGroup.Points.Contains(n))) return false;
             //ensure no shared liberty with neighbour group
             List<Group> neighbourGroups = tryBoard.GetNeighbourGroups(tryBoard.MoveGroup);
-            Boolean sharedLiberty = tryBoard.GetGroupLibertyPoints(tryBoard.MoveGroup).Any(n => tryBoard.GetGroupsFromStoneNeighbours(n, c).Any(g => neighbourGroups.Contains(g)));
+            Boolean sharedLiberty = tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty && tryBoard.GetGroupsFromStoneNeighbours(n, c).Any(g => neighbourGroups.Contains(g)));
             return !sharedLiberty;
         }
 
