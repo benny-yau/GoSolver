@@ -286,6 +286,7 @@ namespace Go
         /// <summary>
         /// Check for suicidal moves that have diagonal groups and not killer formation.
         /// Ensure no diagonal at move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
+        /// Ensure no shared liberty with neighbour group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A55" />
         /// </summary>
         private static Boolean RedundantSuicidalConnectAndDie(GameTryMove tryMove)
         {
@@ -299,7 +300,7 @@ namespace Go
             if (tryBoard.GetDiagonalNeighbours(move.x, move.y).Any(n => tryBoard[n] == c && !tryBoard.MoveGroup.Points.Contains(n))) return false;
             //ensure no shared liberty with neighbour group
             List<Group> neighbourGroups = tryBoard.GetNeighbourGroups(tryBoard.MoveGroup);
-            if (tryBoard.GetGroupLibertyPoints(tryBoard.MoveGroup).Any(n => !tryBoard.GetGroupsFromStoneNeighbours(n, c).Any(g => neighbourGroups.Contains(g))))
+            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty && !tryBoard.GetGroupsFromStoneNeighbours(n, c).Any(g => neighbourGroups.Contains(g))))
                 return true;
             return false;
         }
