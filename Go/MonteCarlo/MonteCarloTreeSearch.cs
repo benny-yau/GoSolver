@@ -131,8 +131,7 @@ namespace Go
 
                 //verify on depth reached or confirmed alive or no possible states to expand)
                 Boolean pruned = false;
-                Boolean reachedDepthToVerify = (promisingNode.Parent != null && promisingNode.Parent.CurrentDepth >= DepthToVerify);
-                if (reachedDepthToVerify || noPossibleStates)
+                if (ReachedDepthToVerify(promisingNode) || noPossibleStates)
                 {
                     tree.HitDepthToVerify = true;
                     Node verifyNode = noPossibleStates ? promisingNode : promisingNode.Parent;
@@ -184,6 +183,11 @@ namespace Go
             int noOfPossibleMoves = node.ChildArray.Count;
             int selectRandom = GlobalRandom.NextRange(0, noOfPossibleMoves);
             return node.ChildArray[selectRandom];
+        }
+
+        internal virtual Boolean ReachedDepthToVerify(Node node)
+        {
+            return node.Parent != null && node.Parent.CurrentDepth >= DepthToVerify;
         }
 
         /// <summary>
