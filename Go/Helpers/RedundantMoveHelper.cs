@@ -257,6 +257,9 @@ namespace Go
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
 
+            //ensure not negligible moves 
+            if (!tryMove.IsNegligible) return false;
+
             //check for one point move group
             if (tryBoard.MoveGroup.Points.Count == 1 && tryBoard.GetClosestNeighbour(move, 2).Count > 0 && tryBoard.GetClosestNeighbour(move, 2, c.Opposite()).Count >= 3)
                 return false;
@@ -275,8 +278,6 @@ namespace Go
             //if all neighbour groups are killable, then check for killer formations 
             if (!groups.Any(group => WallHelper.IsNonKillableGroup(tryBoard, group)))
             {
-                //ensure not negligible moves 
-                if (!tryMove.IsNegligible) return false;
 
                 //check for sieged scenario
                 List<Point> opponentStones = tryBoard.GetClosestNeighbour(move, 3, c.Opposite());
@@ -296,7 +297,6 @@ namespace Go
         /// </summary>
         private static Boolean RedundantSuicidalConnectAndDie(GameTryMove tryMove)
         {
-            if (!tryMove.IsNegligible) return false;
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
