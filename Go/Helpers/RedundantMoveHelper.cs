@@ -1630,10 +1630,11 @@ namespace Go
         /// <summary>
         /// Remove redundant moves that fill eyes instead of creating eyes within eye space for survival.
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_B3" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_B3_2" />
         /// Ensure not link for groups <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q5971" />
+        /// Get stone neighbours only for killer group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q15017" />
         /// Check any opponent stone at neighbour points <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q16827" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q16827_2" />
-        /// Check for killer group ko <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A67" />
         /// </summary>
         public static Boolean GenericEyeFillerMove(GameTryMove tryMove, Boolean isKillerGroup = false)
         {
@@ -1651,30 +1652,25 @@ namespace Go
             if (EyeFillerKo(tryMove))
                 return false;
 
+            //get stone neighbours only for killer group
             List<Point> stoneNeighbours = (isKillerGroup) ? tryBoard.GetStoneNeighbours() : tryBoard.GetStoneAndDiagonalNeighbours(move.x, move.y);
             List<Point> emptyNeighbours = stoneNeighbours.Where(p => tryBoard[p] == Content.Empty).ToList();
             Content cc = (isKillerGroup ? c.Opposite() : c);
+            //count eyes created at move
             int possibleEyes = PossibleEyesCreated(currentBoard, move, cc);
 
             foreach (Point p in emptyNeighbours)
             {
+                //count eyes created at empty neighbour points
                 int possibleEyesAtNeighbourPt = PossibleEyesCreated(currentBoard, p, cc);
                 //check if possibility of eyes created by move at any stone neighbour is more than at try move point
                 if (possibleEyesAtNeighbourPt > possibleEyes)
                 {
                     if (tryBoard.CornerPoint(p)) continue;
-                    (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, cc, currentBoard);
-                    if (suicidal) continue;
-                    //check for killer group ko 
-                    if (isKillerGroup && b != null && b.CapturedList.Count > 0)
-                    {
-                        Board b2 = tryBoard.MakeMoveOnNewBoard(p, c.Opposite(), true);
-                        if (b2 != null && KoHelper.IsKoFight(b2))
-                            continue;
-                    }
                     //corner point for try move
-                    if (tryBoard.CornerPoint(move) && !tryBoard.IsAtariMove)
+                    if (CheckCornerPointForFillerMove(tryBoard))
                         return true;
+
                     //check any opponent stone at neighbour points
                     if (!isKillerGroup && currentBoard.GetStoneNeighbours(p.x, p.y).Any(n => currentBoard[n] == c.Opposite()))
                         continue;
@@ -1683,6 +1679,18 @@ namespace Go
                 }
             }
             return false;
+        }
+
+        /// <summary>
+        /// Check corner point for filler move.
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A95" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A132" />
+        /// </summary>
+        private static Boolean CheckCornerPointForFillerMove(Board tryBoard)
+        {
+            if (!tryBoard.CornerPoint(tryBoard.Move.Value) || tryBoard.IsAtariMove) return false;
+            Boolean twoPointKill = (tryBoard.MoveGroup.Points.Count == 2 && tryBoard.MoveGroupLiberties <= 2 && tryBoard.GetStoneNeighbours().Any(q => tryBoard[q] == Content.Empty));
+            return !twoPointKill;
         }
 
         /// <summary>
@@ -1814,31 +1822,43 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A67_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29277" />
         /// Survival ko <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31498" />
+        /// Ko fight without killer group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36_3" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A67" />
         /// </summary>
         public static Boolean EyeFillerKo(GameTryMove tryMove)
         {
             Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard[move];
+
+            //check to ensure is ko
+            List<Point> eyePoints = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindNonSemiSolidEye(tryBoard, n, c)).ToList();
+            foreach (Point eyePoint in eyePoints)
+            {
+                //ko fight without killer group
+                Board b = tryBoard.MakeMoveOnNewBoard(eyePoint, c.Opposite(), true);
+                if (b != null && KoHelper.IsKoFight(b))
+                    return true;
+            }
+
+            //check to ensure group has only one liberty
             Boolean killKoEnabled = KoHelper.KoSurvivalEnabled(SurviveOrKill.Kill, tryMove.TryGame.GameInfo);
             if (killKoEnabled)
             {
                 GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
                 if (opponentMove == null) return false;
                 tryBoard = opponentMove.TryGame.Board;
+                c = tryBoard[tryBoard.Move.Value];
+                Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, tryMove.Move, c.Opposite());
+                if (killerGroup == null) return false;
+                eyePoints = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindNonSemiSolidEye(tryBoard, n, c)).ToList();
+                if (eyePoints.Count == 0) return false;
+
+                Board coveredBoard = BothAliveHelper.FillEyePointsBoard(tryBoard, killerGroup);
+                //group has one or no liberties
+                if (coveredBoard.GetGroupLiberties(move) <= 1)
+                    return true;
             }
-            Point move = tryBoard.Move.Value;
-            Content c = tryBoard[move];
-
-            //check to ensure is ko
-            List<Point> eyePoints = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindNonSemiSolidEye(tryBoard, n, c)).ToList();
-            if (eyePoints.Count != 1) return false;
-
-            //check to ensure group has only one liberty
-            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, tryMove.Move, c.Opposite());
-            if (killerGroup == null) return false;
-            Board coveredBoard = BothAliveHelper.FillEyePointsBoard(tryBoard, killerGroup);
-            //group has one or no liberties
-            if (coveredBoard.GetGroupLiberties(move) <= 1)
-                return true;
             return false;
         }
 
