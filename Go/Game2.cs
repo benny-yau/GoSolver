@@ -235,6 +235,9 @@ namespace Go
             move.IsRedundantKo = RedundantMoveHelper.RedundantKillerPreKoMove(move);
             if (move.IsRedundantKo)
                 return;
+            move.IsBaseLine = RedundantMoveHelper.BaseLineSurvivalMove(move);
+            if (move.IsBaseLine)
+                return;
             move.IsRedundantTigerMouth = RedundantMoveHelper.RedundantTigerMouthMove(move);
             if (move.IsRedundantTigerMouth)
                 return;

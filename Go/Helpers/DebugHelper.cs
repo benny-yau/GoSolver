@@ -34,7 +34,7 @@ namespace Go
                 msg += "(" + tryMove.Move.x + "," + tryMove.Move.y + ")";
             }
             content += "Game try moves: " + msg + Environment.NewLine;
-            if (redundantTryMoves == null) return content; 
+            if (redundantTryMoves == null) return content;
             msg = "";
             foreach (GameTryMove tryMove in redundantTryMoves)
             {
@@ -73,6 +73,28 @@ namespace Go
                 script += "g.MakeMove" + match.Value + ";" + Environment.NewLine;
             }
             return script;
+        }
+
+        public static String ShowMovablePoints(Game game, List<State> states)
+        {
+            string rc = "\n" + new String(' ', 4);
+            for (int j = 0; j < game.GameInfo.BoardSizeX; j++)
+            {
+                rc += j.ToString().PadRight(2, ' ');
+            }
+            for (int i = 0; i < game.GameInfo.BoardSizeY; i++)
+            {
+                rc += "\n" + i.ToString().PadLeft(3, ' ') + " ";
+                for (int j = 0; j < game.GameInfo.BoardSizeX; j++)
+                {
+                    if (states.Any(s => s.Game.Board.Move.Value.x == j && s.Game.Board.Move.Value.y == i))
+                        rc += "X";
+                    else
+                        rc += ".";
+                    rc += " ";
+                }
+            }
+            return rc;
         }
 
         public static void ReadCountFromFile()

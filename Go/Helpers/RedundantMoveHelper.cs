@@ -258,7 +258,7 @@ namespace Go
             Content c = tryMove.MoveContent;
 
             //check for one point move group
-            if (tryBoard.MoveGroup.Points.Count == 1 && tryBoard.GetClosestNeighbour(move, 2).Count > 0)
+            if (tryBoard.MoveGroup.Points.Count == 1 && tryBoard.GetClosestNeighbour(move, 2).Count > 0 && tryBoard.GetClosestNeighbour(move, 2, c.Opposite()).Count >= 3)
                 return false;
 
             //check connect and die
@@ -266,7 +266,7 @@ namespace Go
 
             //ensure no killable group with two or less liberties
             IEnumerable<Group> groups = tryBoard.GetNeighbourGroups(tryBoard.MoveGroup);
-            if (groups.Any(group => tryBoard.GetGroupLiberties(group) <= 2 && !WallHelper.IsNonKillableGroup(tryBoard, group)))
+            if (groups.Any(group => (tryBoard.GetGroupLiberties(group) == 1 || (group.Points.Count >= 2 && tryBoard.GetGroupLiberties(group) <= 2) && !WallHelper.IsNonKillableGroup(tryBoard, group))))
                 return false;
 
             if (RedundantSuicidalConnectAndDie(tryMove))
@@ -689,13 +689,13 @@ namespace Go
                 }
                 //if diagonal point is non killable group and point up is empty and not next to opponent stone then redundant
                 Boolean found = false;
-                if (tryBoard[pointUp] == Content.Empty && tryBoard[pointUpLeft] == c.Opposite() && WallHelper.IsNonKillableGroup(tryBoard, pointUpLeft))
+                if (tryBoard[pointUp] == Content.Empty && tryBoard[pointUpLeft] == c.Opposite() && CheckBaseLineDiagonalPoint(tryBoard, pointUpLeft))
                 {
                     Point pointRight = dh.GetPointInDirection(tryBoard, move, dh.GetNewDirection(Direction.Right, i));
                     if (tryBoard[pointRight] != c.Opposite())
                         found = true;
                 }
-                else if (tryBoard[pointUp] == Content.Empty && tryBoard[pointUpRight] == c.Opposite() && WallHelper.IsNonKillableGroup(tryBoard, pointUpRight))
+                else if (tryBoard[pointUp] == Content.Empty && tryBoard[pointUpRight] == c.Opposite() && CheckBaseLineDiagonalPoint(tryBoard, pointUpRight))
                 {
                     Point pointLeft = dh.GetPointInDirection(tryBoard, move, dh.GetNewDirection(Direction.Left, i));
                     if (tryBoard[pointLeft] != c.Opposite())
@@ -709,6 +709,20 @@ namespace Go
                     if (b != null && !ImmovableHelper.CheckConnectAndDie(b))
                         return true;
                 }
+            }
+            return false;
+        }
+
+        private static Boolean CheckBaseLineDiagonalPoint(Board tryBoard, Point point)
+        {
+            if (WallHelper.IsNonKillableGroup(tryBoard, point))
+                return true;
+            if (tryBoard.MoveGroup.Points.Count == 1 && tryBoard.GetGroupAt(point).Points.Count == 1)
+            {
+                Content c = tryBoard[tryBoard.Move.Value];
+                List<Point> opponentStones = tryBoard.GetClosestNeighbour(point, 3, c.Opposite());
+                if (!SiegedScenario(tryBoard, opponentStones, 1)) return true;
+                //if (!tryBoard.GetClosestNeighbour(point, 1).Any()) return true;
             }
             return false;
         }
@@ -1624,7 +1638,7 @@ namespace Go
         private static Boolean SiegedScenario(Board tryBoard, List<Point> points, int groupCount = 2)
         {
             HashSet<Group> groups = tryBoard.GetGroupsFromPoints(points);
-            return (groups.Count >= groupCount && groups.Count(group => group.Neighbours.Any(n => tryBoard[n] == group.Content.Opposite())) >= groupCount);
+            return (groups.Count >= groupCount && groups.Count(group => group.Neighbours.Except(tryBoard.MoveGroup.Points).Any(n => tryBoard[n] == group.Content.Opposite())) >= groupCount);
         }
 
         /// <summary>
