@@ -1591,6 +1591,7 @@ namespace Go
         /// Check two-point group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Side_B35" />
         /// Ensure no opposite content at stone neighbour points for killer group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q15017" />
         /// Ensure no opposite content at stone and diagonal <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q29998_2" />
+        /// Check if killer group created with opposite content within the group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_A171_101Weiqi" />
         /// </summary>
         private static Boolean FillerMoveWithoutKillerGroup(GameTryMove tryMove, Boolean isKillerGroup = false)
         {
@@ -1628,6 +1629,15 @@ namespace Go
             }//ensure no opposite content at stone and diagonal
             else if (!tryBoard.CornerPoint(tryMove.Move) && tryBoard.GetStoneAndDiagonalNeighbours(tryMove.Move.x, tryMove.Move.y).Any(n => tryBoard[n] == c.Opposite()))
                 return false;
+
+            //check if killer group created with opposite content within the group
+            if (tryMove.IncreasedKillerGroups)
+            {
+                IEnumerable<Group> createdGroups = BothAliveHelper.GetCorneredKillerGroup(tryBoard, false).Except(BothAliveHelper.GetCorneredKillerGroup(tryMove.CurrentGame.Board, false));
+                if (createdGroups.Any(group => group.Points.Any(p => tryBoard[p] == group.Content)))
+                    return false;
+            }
+
             return GenericEyeFillerMove(tryMove, isKillerGroup);
         }
 
@@ -1699,12 +1709,25 @@ namespace Go
         /// Check corner point for filler move.
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A95" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A132" />
+        /// Two point kill <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q16508" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A6" />
+        /// Check for siege formation <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
         /// </summary>
         private static Boolean CheckCornerPointForFillerMove(Board tryBoard)
         {
-            if (!tryBoard.CornerPoint(tryBoard.Move.Value) || tryBoard.IsAtariMove) return false;
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard[move];
+            if (!tryBoard.CornerPoint(move) || tryBoard.IsAtariMove) return false;
             Boolean twoPointKill = (tryBoard.MoveGroup.Points.Count == 2 && tryBoard.MoveGroupLiberties <= 2 && tryBoard.GetStoneNeighbours().Any(q => tryBoard[q] == Content.Empty));
-            return !twoPointKill;
+            if (twoPointKill) return false;
+
+            //check for siege formation
+            if (tryBoard.IsSinglePoint() && tryBoard.MoveGroupLiberties == 2 && tryBoard.GetDiagonalNeighbours(move.x, move.y).Any(n => tryBoard[n] == c.Opposite()))
+            {
+                List<Point> opponentStones = tryBoard.GetClosestNeighbour(move, 1, c.Opposite());
+                if (!SiegedScenario(tryBoard, opponentStones, 1)) return true;
+            }
+            return false;
         }
 
         /// <summary>
