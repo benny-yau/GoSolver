@@ -43,8 +43,17 @@ namespace Go
         /// </summary>
         public static Boolean IsKoFight(Board board)
         {
-            return (board.GetStoneNeighbours().Any(n => EyeHelper.FindEye(board, n, board[board.Move.Value])) && board.IsSinglePoint() && board.MoveGroupLiberties == 1) ;
+            return (board.GetStoneNeighbours().Any(n => EyeHelper.FindEye(board, n, board[board.Move.Value])) && board.IsSinglePoint() && board.MoveGroupLiberties == 1);
         }
+
+        public static Boolean IsReverseKoFight(Board board)
+        {
+            List<Point> eyePoints = board.GetStoneNeighbours().Where(n => EyeHelper.FindEye(board, n, board[board.Move.Value])).ToList();
+            foreach (Point eyePoint in eyePoints)
+                if (board.GetStoneNeighbours(eyePoint.x, eyePoint.y).Any(n => board.GetGroupAt(n).Liberties.Count == 1)) return true;
+            return false;
+        }
+
 
         /// <summary>
         /// <see cref="UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario_TianLongTu_Q17160" />

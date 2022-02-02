@@ -59,16 +59,8 @@ namespace Go
                 //check if both alive
                 if (mcts.AnswerNode.State.SurviveOrKill == SurviveOrKill.Survive && answerMove.Equals(Game.PassMove))
                 {
-                    Board b = g.Board;
-                    GameInfo gameInfo = g.GameInfo;
-                    //ensure all liberties are in killer groups
-                    List<Point> liberties = b.GetGroupLibertyPoints(gameInfo.targetPoints.First());
-                    List<Group> killerGroups = BothAliveHelper.GetCorneredKillerGroup(g.Board);
-                    if (killerGroups.Count > 0)
-                    {
-                        if (liberties.All(liberty => BothAliveHelper.GetKillerGroupFromCache(g.Board, liberty) != null))
-                            return (ConfirmAliveResult.BothAlive, mcts.AnswerNode);
-                    }
+                    if (ResultBothAlive(g))
+                        return (ConfirmAliveResult.BothAlive, mcts.AnswerNode);
                 }
 
                 //check if ko alive
@@ -88,6 +80,21 @@ namespace Go
 
             Node answerNode = (mcts.AnswerNode != null) ? mcts.AnswerNode : mcts.tree.Root;
             return (confirmAlive, answerNode);
+        }
+
+        private static Boolean ResultBothAlive(Game g)
+        {
+            //ensure all liberties are in killer groups
+            List<Group> killerGroups = BothAliveHelper.GetCorneredKillerGroup(g.Board);
+            if (killerGroups.Count == 0) return false;
+            List<Point> targets = LifeCheck.GetTargets(g.Board, g.GameInfo.targetPoints);
+            foreach (Point target in targets)
+            {
+                HashSet<Point> liberties = g.Board.GetGroupAt(target).Liberties;
+                if (liberties.All(liberty => BothAliveHelper.GetKillerGroupFromCache(g.Board, liberty) != null))
+                    return true;
+            }
+            return false;
         }
 
         #region neural network
@@ -160,7 +167,7 @@ namespace Go
                 }
                 if (line.Length != 76) return;
                 heatMapLines.Add(line);
-                
+
             }
             else
                 Console.WriteLine(line);

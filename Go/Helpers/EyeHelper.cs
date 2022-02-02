@@ -147,7 +147,7 @@ namespace Go
 
             //ensure all groups have more than one liberty
             HashSet<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(p, c.Opposite());
-            if (neighbourGroups.Count > 1 && neighbourGroups.Any(group => board.GetGroupLiberties(group) == 1))
+            if (neighbourGroups.Count > 1 && neighbourGroups.Any(group => group.Liberties.Count == 1))
                 return (false, null, null);
 
             //get suicide point or tiger's mouth at all diagonals
@@ -251,7 +251,7 @@ namespace Go
 
             //ensure all groups have more than one liberty
             List<Group> neighbourGroups = board.GetNeighbourGroups(killerGroup);
-            if (neighbourGroups.Count > 1 && neighbourGroups.Any(group => board.GetGroupLiberties(group) == 1))
+            if (neighbourGroups.Count > 1 && neighbourGroups.Any(group => group.Liberties.Count == 1))
                 return false;
 
             //find real eye

@@ -69,7 +69,7 @@ namespace Go
             foreach (Group group in groups)
             {
                 //find killer groups with no liberties left
-                if (filledBoard.GetGroupLiberties(group) == 0)
+                if (group.Liberties.Count == 0)
                 {
                     if (IsLibertyGroup(group, board))
                     {
@@ -116,10 +116,10 @@ namespace Go
             if (killerGroup != null) return killerGroup;
             return null;
         }
-        
+
         /// <summary>
-         /// Liberty group requires at least two content points and two empty points.
-         /// </summary>
+        /// Liberty group requires at least two content points and two empty points.
+        /// </summary>
         private static Boolean IsLibertyGroup(Group group, Board board)
         {
             if (group.Content == Content.Empty) return false;
@@ -174,7 +174,7 @@ namespace Go
 
             //ensure at least two liberties in survival neighbour group
             List<Group> neighbourGroups = board.GetNeighbourGroups(killerGroup);
-            if (neighbourGroups.Any(n => board.GetGroupLiberties(n) == 1))
+            if (neighbourGroups.Any(n => n.Liberties.Count == 1))
                 return false;
 
             Board filledBoard = FillEyePointsBoard(board, killerGroup);
@@ -192,18 +192,18 @@ namespace Go
                 //at least three content points in killer group
                 if (contentPoints.Count < 3) return false;
                 //two liberties for content group
-                Boolean oneLiberty = board.GetGroupsFromPoints(contentPoints).Any(group => board.GetGroupLiberties(group) == 1);
+                Boolean oneLiberty = board.GetGroupsFromPoints(contentPoints).Any(group => group.Liberties.Count == 1);
                 Boolean koEnabled = KoHelper.KoSurvivalEnabled(SurviveOrKill.Survive, board.GameInfo);
                 if (koEnabled && oneLiberty) return false;
-                else if (oneLiberty && (contentGroups.Count != 1 || contentGroups.Any(group => filledBoard.GetGroupLiberties(group) != 2))) return false;
+                else if (oneLiberty && (contentGroups.Count != 1 || contentGroups.Any(group => group.Liberties.Count != 2))) return false;
 
                 //ensure at least two liberties shared with killer group
                 IEnumerable<Point> killerLiberties = killerGroup.Points.Where(p => board[p] == Content.Empty);
-                Boolean sharedLiberty = neighbourGroups.All(neighbourGroup => board.GetGroupLibertyPoints(neighbourGroup).Intersect(killerLiberties).Count() >= 2);
+                Boolean sharedLiberty = neighbourGroups.All(neighbourGroup => neighbourGroup.Liberties.Intersect(killerLiberties).Count() >= 2);
                 if (!sharedLiberty) return false;
 
                 //ensure at least two liberties within killer group in survival neighbour group
-                if (neighbourGroups.Any(n => board.GetGroupLibertyPoints(n).Count(p => GetKillerGroupFromCache(board, p) != null) < 2))
+                if (neighbourGroups.Any(n => n.Liberties.Count(p => GetKillerGroupFromCache(board, p) != null) < 2))
                     return false;
 
                 //dead formations
@@ -217,16 +217,16 @@ namespace Go
             else if (killerGroups.Count >= 2) //complex seki
             {
                 //two liberties for content group
-                Boolean oneLiberty = board.GetGroupsFromPoints(contentPoints).Any(group => board.GetGroupLiberties(group) == 1);
+                Boolean oneLiberty = board.GetGroupsFromPoints(contentPoints).Any(group => group.Liberties.Count == 1);
                 if (oneLiberty) return false;
                 //ensure at least one liberty shared with killer group
                 IEnumerable<Group> groups = neighbourGroups.Where(group => !WallHelper.IsNonKillableGroup(board, group));
                 IEnumerable<Point> killerLiberties = killerGroup.Points.Where(p => board[p] == Content.Empty);
-                Boolean sharedLiberty = groups.All(neighbourGroup => filledBoard.GetGroupLibertyPoints(neighbourGroup).Intersect(killerLiberties).Any());
+                Boolean sharedLiberty = groups.All(neighbourGroup => neighbourGroup.Liberties.Intersect(killerLiberties).Any());
                 if (!sharedLiberty) return false;
 
                 //ensure at least two liberties within killer group in survival neighbour group
-                if (groups.Any(n => board.GetGroupLibertyPoints(n).Count(p => GetKillerGroupFromCache(board, p) != null) < 2))
+                if (groups.Any(n => n.Liberties.Count(p => GetKillerGroupFromCache(board, p) != null) < 2))
                     return false;
                 //find uncovered eye
                 if (FindUncoveredEyeInComplexSeki(board, killerGroups))

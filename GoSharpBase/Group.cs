@@ -11,10 +11,19 @@ namespace Go
     public class Group
     {
         private HashSet<Point> points = new HashSet<Point>();
+        private HashSet<Point> liberties = new HashSet<Point>();
         private HashSet<Point> neighbours = new HashSet<Point>();
 
         public Content Content { get; private set; }
         public Boolean? IsNonKillable { get; set; }
+
+        public HashSet<Point> Liberties
+        {
+            get
+            {
+                return liberties;
+            }
+        }
 
         public HashSet<Point> Neighbours
         {
@@ -47,9 +56,13 @@ namespace Go
             return points.Contains(new Point(x, y));
         }
 
-        public void AddNeighbour(int x, int y)
+        public void AddNeighbour(int x, int y, Boolean liberty = false)
         {
-            neighbours.Add(new Point(x, y));
+            Point p = new Point(x, y);
+            if (liberty)
+                liberties.Add(p);
+
+            neighbours.Add(p);
         }
 
         public override string ToString()

@@ -142,9 +142,7 @@ namespace Go
                 foreach (Group group in CapturedList)
                 {
                     foreach (Point p in group.Points)
-                    {
                         yield return p;
-                    }
                 }
             }
         }
@@ -189,7 +187,7 @@ namespace Go
             }
             else
             {
-                group.AddNeighbour(x, y);
+                group.AddNeighbour(x, y, this[x, y] == Content.Empty);
             }
         }
 
@@ -201,7 +199,7 @@ namespace Go
             get
             {
                 if (this.MoveGroup == null) return 0;
-                return this.GetGroupLiberties(this.MoveGroup);
+                return this.MoveGroup.Liberties.Count;
             }
         }
 
@@ -221,7 +219,7 @@ namespace Go
         public int GetGroupLiberties(Point p)
         {
             Group group = this.GetGroupAt(p);
-            return GetGroupLiberties(group);
+            return group.Liberties.Count;
         }
 
         /// <summary>
@@ -459,15 +457,9 @@ namespace Go
                 return MakeMoveResult.NotEmpty;
 
             this[x, y] = content; // make new move
-            MoveGroup = GetGroupAt(x, y);
 
             HashSet<Group> capturedGroups = GetCapturedGroups(x, y);
-            if (capturedGroups.Count == 0 && MoveGroupLiberties == 0) // suicide move
-            {
-                this[x, y] = Content.Empty;
-                return MakeMoveResult.Suicide;
-            }
-            else if (capturedGroups.Count > 0)
+            if (capturedGroups.Count > 0)
             {
                 if (capturedGroups.Count == 1)
                 {
@@ -484,7 +476,14 @@ namespace Go
                         singlePointCapture = points.First();
                     }
                 }
-                this.CapturedList = Capture(capturedGroups);
+            }
+            this.CapturedList = Capture(capturedGroups);
+            MoveGroup = GetGroupAt(x, y);
+
+            if (capturedGroups.Count == 0 && MoveGroupLiberties == 0) // suicide move
+            {
+                this[x, y] = Content.Empty;
+                return MakeMoveResult.Suicide;
             }
             LastMoves.Add(Move.Value);
             return MakeMoveResult.Legal;
@@ -537,7 +536,7 @@ namespace Go
             if (lastMove.Equals(PassMove)) return null;
             Content c = board[lastMove.Value];
 
-            IEnumerable<Group> groups = board.GetGroupsFromStoneNeighbours(lastMove.Value, c).Where(group => board.GetGroupLiberties(group) == 1);
+            IEnumerable<Group> groups = board.GetGroupsFromStoneNeighbours(lastMove.Value, c).Where(group => group.Liberties.Count == 1);
 
             //set atari targets in board 
             board.AtariTargets = groups.ToList();
@@ -551,7 +550,7 @@ namespace Go
         public static Boolean ResolveAtari(Board currentBoard, Board tryBoard)
         {
             //capture stones to resolve atari
-            if (tryBoard.CapturedList.Any(group => currentBoard.GetNeighbourGroups(group).Any(g => currentBoard.GetGroupLiberties(g) == 1)))
+            if (tryBoard.CapturedList.Any(group => currentBoard.GetNeighbourGroups(group).Any(g => g.Liberties.Count == 1)))
             {
                 tryBoard.AtariResolved = true;
                 return true;
@@ -563,7 +562,7 @@ namespace Go
                 Point move = tryBoard.Move.Value;
                 Content c = tryBoard[move];
                 HashSet<Group> groups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite());
-                if (groups.Any(group => currentBoard.GetGroupLiberties(group) == 1))
+                if (groups.Any(group => group.Liberties.Count == 1))
                 {
                     tryBoard.AtariResolved = true;
                     return true;

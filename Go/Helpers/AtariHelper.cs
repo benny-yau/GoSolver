@@ -34,7 +34,7 @@ namespace Go
 
         public static List<Group> AtariByGroup(Group atariGroup, Board board, Boolean excludeKo = false)
         {
-            List<Group> targetGroups = board.GetNeighbourGroups(atariGroup).Where(gr => board.GetGroupLiberties(gr) == 1).ToList();
+            List<Group> targetGroups = board.GetNeighbourGroups(atariGroup).Where(gr => gr.Liberties.Count == 1).ToList();
             //check for ko
             for (int i = targetGroups.Count - 1; i >= 0; i--)
             {
@@ -78,7 +78,7 @@ namespace Go
         /// </summary>
         public static (Boolean, Board) KoAtariByNeighbour(Board board, Group atariGroup, Point? excludePoint = null)
         {
-            List<Group> targetGroups = board.GetNeighbourGroups(atariGroup).Where(gr => board.GetGroupLiberties(gr) == 1).ToList();
+            List<Group> targetGroups = board.GetNeighbourGroups(atariGroup).Where(gr => gr.Liberties.Count == 1).ToList();
             foreach (Group targetGroup in targetGroups)
             {
                 //check for ko

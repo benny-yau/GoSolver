@@ -318,7 +318,7 @@ namespace Go
             {
                 List<Point> contentPoints = killerGroup.Points.Where(t => tryBoard[t] == killerGroup.Content).ToList();
                 Group group = tryBoard.GetGroupAt(contentPoints.First());
-                Point eyePoint = tryBoard.GetGroupLibertyPoints(group).FirstOrDefault(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 2);
+                Point eyePoint = group.Liberties.FirstOrDefault(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 2);
                 if (!Convert.ToBoolean(eyePoint.NotEmpty)) return false;
                 if (!tryBoard.PointWithinMiddleArea(eyePoint))
                     return true;
@@ -600,7 +600,7 @@ namespace Go
                 int maxLengthOfGrid = MaxLengthOfGrid(moveGroup);
                 int maxIntersect = moveGroup.Max(q => killBoard.GetStoneNeighbours(q.x, q.y).Intersect(moveGroup).Count());
                 HashSet<Group> neighbourGroups = killBoard.GetGroupsFromStoneNeighbours(p, killBoard.MoveGroup.Content);
-                int minNeighbourLiberties = (neighbourGroups.Count == 0) ? 0 : neighbourGroups.Min(group => killBoard.GetGroupLiberties(group));
+                int minNeighbourLiberties = (neighbourGroups.Count == 0) ? 0 : neighbourGroups.Min(group => group.Liberties.Count);
                 list.Add(new LinkedPoint<Point>(p, new { maxLengthOfGrid, maxIntersect, minNeighbourLiberties, killBoard }));
             }
             //order by grid length then by max of intersection then by minimum neighbour liberties

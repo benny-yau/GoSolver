@@ -35,7 +35,7 @@ namespace Go
             else
             {
                 //covered eye with more than two liberties
-                if (currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).Any(group => currentBoard.GetGroupLiberties(group) <= 2))
+                if (currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).Any(group => group.Liberties.Count <= 2))
                     return false;
             }
             return true;
@@ -67,8 +67,7 @@ namespace Go
             //if groups have liberty less or equals to two and moves at liberties are suicidal then not redundant
             foreach (Group group in currentBoard.GetGroupsFromStoneNeighbours(q, c.Opposite()))
             {
-                List<Point> groupLiberties = currentBoard.GetGroupLibertyPoints(group);
-                if (groupLiberties.Count <= 2 && groupLiberties.Any(x => ImmovableHelper.IsSuicidalMove(currentBoard, x, c)))
+                if (group.Liberties.Count <= 2 && group.Liberties.Any(x => ImmovableHelper.IsSuicidalMove(currentBoard, x, c)))
                     return false;
             }
 
@@ -269,7 +268,7 @@ namespace Go
 
             //ensure no killable group with two or less liberties
             IEnumerable<Group> groups = tryBoard.GetNeighbourGroups(tryBoard.MoveGroup);
-            if (groups.Any(group => (tryBoard.GetGroupLiberties(group) == 1 || (group.Points.Count >= 2 && tryBoard.GetGroupLiberties(group) <= 2) && !WallHelper.IsNonKillableGroup(tryBoard, group))))
+            if (groups.Any(group => (group.Liberties.Count == 1 || (group.Points.Count >= 2 && group.Liberties.Count <= 2) && !WallHelper.IsNonKillableGroup(tryBoard, group))))
                 return false;
 
             if (RedundantSuicidalConnectAndDie(tryMove))
@@ -1096,7 +1095,7 @@ namespace Go
 
                 //rare scenario connect and die
                 HashSet<Group> groups = b.GetGroupsFromStoneNeighbours(b.Move.Value, c.Opposite());
-                if (!b.IsAtariMove && groups.Count() == 2 && groups.All(group => b.GetGroupLiberties(group) <= 2))
+                if (!b.IsAtariMove && groups.Count() == 2 && groups.All(group => group.Liberties.Count <= 2))
                 {
                     if (groups.Any(group => ImmovableHelper.CheckConnectAndDie(b, group)))
                         result.Add(mustHaveNeutralMove);
@@ -1158,7 +1157,7 @@ namespace Go
             List<Point> contentPoints = killerGroup.Points.Where(t => board[t] == killerGroup.Content).ToList();
             foreach (Group group in board.GetGroupsFromPoints(contentPoints))
             {
-                if (board.GetGroupLiberties(group) == 1) return null;
+                if (group.Liberties.Count == 1) return null;
                 if (AtariHelper.AtariByGroup(board, group)) return null;
             }
             List<Point> killerLiberties = killerGroup.Points.Where(p => board[p] == Content.Empty).ToList();
@@ -1177,7 +1176,7 @@ namespace Go
                 {
                     if (groups.Contains(group)) continue;
                     groups.Add(group);
-                    List<Point> targetLiberties = tryBoard.GetGroupLibertyPoints(group);
+                    HashSet<Point> targetLiberties = group.Liberties;
                     if (targetLiberties.Count != 2) continue;
                     List<Point> sharedLiberties = targetLiberties.Intersect(killerLiberties).ToList();
                     if (sharedLiberties.Count >= 1 && sharedLiberties.Count <= 2)
@@ -1209,8 +1208,7 @@ namespace Go
             GameTryMove neutralPointMove = neutralPointMoves.FirstOrDefault(t => t.CurrentGame.Board.GetGroupsFromStoneNeighbours(t.Move, c).Count > 0);
             if (neutralPointMove == null) return null;
             Board tryBoard = neutralPointMove.TryGame.Board;
-            Group targetGroup = board.GetGroupsFromStoneNeighbours(neutralPointMove.Move, c).First();
-            List<Point> liberties = tryBoard.GetGroupLibertyPoints(targetGroup);
+            Group targetGroup = tryBoard.GetGroupsFromStoneNeighbours(neutralPointMove.Move, c).First();
             List<Point> neighbourLiberties;
             if (killerGroups.Count == 0)
             {
@@ -1220,7 +1218,7 @@ namespace Go
                 if (neighbourGroups.Any(group => AtariHelper.AtariByGroup(tryBoard, group))) return null;
                 //get the group other than neutral point group
                 Group neighbourGroup = neighbourGroups.First(group => !group.Equals(tryBoard.GetGroupAt(neutralPointMove.Move)));
-                neighbourLiberties = tryBoard.GetGroupLibertyPoints(neighbourGroup);
+                neighbourLiberties = neighbourGroup.Liberties.ToList();
             }
             else
             {
@@ -1229,9 +1227,9 @@ namespace Go
             }
 
             //compare liberties to see if target group can be killed
-            if (neighbourLiberties.Count == liberties.Count + 1)
+            if (neighbourLiberties.Count == targetGroup.Liberties.Count + 1)
                 return neutralPointMove;
-            else if (neighbourLiberties.Count == liberties.Count)
+            else if (neighbourLiberties.Count == targetGroup.Liberties.Count)
             {
                 //killer group available
                 if (killerGroups.Count > 0) return neutralPointMove;
@@ -1843,7 +1841,7 @@ namespace Go
                 killBoards.Add(p, b);
             }
             //check immovable at liberties
-            KeyValuePair<Point, Board> immovableAtLiberties = killBoards.FirstOrDefault(b => b.Value.MoveGroupLiberties == 2 && b.Value.GetGroupLibertyPoints(b.Value.MoveGroup).All(m => ImmovableHelper.IsSuicidalMoveForBothPlayers(b.Value, m)) && b.Value.GetNeighbourGroups(b.Value.MoveGroup).Count > 1);
+            KeyValuePair<Point, Board> immovableAtLiberties = killBoards.FirstOrDefault(b => b.Value.MoveGroupLiberties == 2 && b.Value.MoveGroup.Liberties.All(m => ImmovableHelper.IsSuicidalMoveForBothPlayers(b.Value, m)) && b.Value.GetNeighbourGroups(b.Value.MoveGroup).Count > 1);
             if (immovableAtLiberties.Value != null)
                 return !tryMove.Move.Equals(immovableAtLiberties.Key);
 
@@ -2071,7 +2069,7 @@ namespace Go
                 //check that ko fight is necessary
                 List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(capturedPoint, c.Opposite()).ToList();
                 ngroups.RemoveAll(ngroup => ngroup.Points.Contains(move));
-                if (ngroups.Count == 1 && tryBoard.GetNeighbourGroups(ngroups.First()).Any(group => tryBoard.GetGroupLiberties(group) <= 2 && !WallHelper.IsNonKillableGroup(tryBoard, group)))
+                if (ngroups.Count == 1 && tryBoard.GetNeighbourGroups(ngroups.First()).Any(group => group.Liberties.Count <= 2 && !WallHelper.IsNonKillableGroup(tryBoard, group)))
                     return false;
             }
 

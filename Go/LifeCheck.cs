@@ -51,7 +51,7 @@ namespace Go
 
             //ensure at least two liberties
             Group targetGroup = board.GetGroupAt(target);
-            if (board.GetGroupLiberties(targetGroup) == 1) return ConfirmAliveResult.Unknown;
+            if (targetGroup.Liberties.Count == 1) return ConfirmAliveResult.Unknown;
 
             //get extended groups from target group
             HashSet<Group> groups = LinkHelper.GetAllDiagonalConnectedGroups(board, targetGroup);
@@ -117,7 +117,7 @@ namespace Go
                 Board coveredBoard = new Board(board);
                 List<Group> neighbourGroups = board.GetNeighbourGroups(group);
                 //cover external liberties
-                neighbourGroups.ForEach(gr => board.GetGroupLibertyPoints(gr).Where(p => BothAliveHelper.GetKillerGroupFromCache(board, p, c.Opposite()) == null).ToList().ForEach(p => coveredBoard[p] = c));
+                neighbourGroups.ForEach(gr => gr.Liberties.Where(p => BothAliveHelper.GetKillerGroupFromCache(board, p, c.Opposite()) == null).ToList().ForEach(p => coveredBoard[p] = c));
                 //get middle point of group
                 Point q = group.Points.First(s => board.GetStoneNeighbours(s.x, s.y).Intersect(group.Points).Count() == 2);
                 //make move and check for unescapable group
@@ -209,7 +209,7 @@ namespace Go
             //join with another group with two liberties
             List<Group> groups = LinkHelper.GetPreviousMoveGroup(board, b);
             if (groups.Count == 1) return false;
-            return (groups.Count(group => board.GetGroupLiberties(group) == 2) >= 2);
+            return (groups.Count(group => group.Liberties.Count == 2) >= 2);
         }
 
         /// <summary>
@@ -262,7 +262,7 @@ namespace Go
             }
         }
 
-        
+
         /// <summary>
         /// Check opponent atari moves.
         /// </summary>

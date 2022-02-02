@@ -110,12 +110,8 @@ namespace Go
                     return (false, null);
                 Point q = libertyPoint.Value;
                 //check for ko possibility
-                if (targetGroup.Points.Count == 1 && EyeHelper.FindEye(board, q, c.Opposite()))
-                {
-                    List<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(q, c).ToList();
-                    if (neighbourGroups.Any(n => AtariHelper.AtariByGroup(board, n)))
-                        return (false, null);
-                }
+                if (targetGroup.Points.Count == 1 && CheckForKoInImmovablePoint(board, q, c))
+                    return (false, null);
 
                 //ensure no snapback
                 if (AllConnectAndDie(board, p, c))
@@ -124,6 +120,31 @@ namespace Go
                 return (true, q);
             }
             return (false, null);
+        }
+
+
+        /// <summary>
+        /// Check for ko possibility <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q30986" />
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q29998" />
+        /// </summary>
+        private static Boolean CheckForKoInImmovablePoint(Board board, Point q, Content c)
+        {
+            if (EyeHelper.FindEye(board, q, c.Opposite()))
+            {
+                List<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(q, c).ToList();
+                if (neighbourGroups.Any(n => AtariHelper.AtariByGroup(board, n)))
+                    return true;
+            }
+            List<Point> stoneNeighbours = board.GetStoneNeighbours(q.x, q.y);
+            if (stoneNeighbours.Any(n => board[n] == c)) return false;
+            List<Point> eyeNeighbour = stoneNeighbours.Where(n => board[n] == Content.Empty).ToList();
+            if (eyeNeighbour.Count == 1)
+            {
+                Board b = board.MakeMoveOnNewBoard(eyeNeighbour.First(), c.Opposite());
+                if (b != null && KoHelper.IsReverseKoFight(b))
+                    return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -253,12 +274,20 @@ namespace Go
 
         /// <summary>
         /// Is suicide move on capture.
+        /// Check ko <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WuQingYuan_Q31503" />
         /// </summary>
         public static (Boolean, Board) IsSuicidalOnCapture(Board tryBoard, Group targetGroup = null)
         {
             Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, targetGroup);
-            if (b == null || b.MoveGroupLiberties == 1)
+            if (b == null)
                 return (true, b);
+
+            if (b.MoveGroupLiberties == 1)
+            {
+                //check ko
+                Boolean isKo = (KoHelper.IsKoFight(b) && KoHelper.KoContentEnabled(b.MoveGroup.Content, b.GameInfo));
+                if (!isKo) return (true, b);
+            }
             return (false, b);
         }
 
@@ -270,18 +299,16 @@ namespace Go
         {
             if (board.PointWithinMiddleArea(libertyPoint.x, libertyPoint.y)) return false;
             if (board.InternalMakeMove(libertyPoint, c) != MakeMoveResult.Legal) return false;
-            List<Point> liberties = board.GetGroupLibertyPoints(libertyPoint);
+            HashSet<Point> liberties = board.GetGroupAt(libertyPoint).Liberties;
             if (liberties.Count == 1) return true;
-            if (liberties.Count == 2)
+            if (liberties.Count != 2) return false;
+            List<Point> capturePoint = liberties.Where(q => board.PointWithinMiddleArea(q.x, q.y)).ToList();
+            if (capturePoint.Count == 1)
             {
-                List<Point> capturePoint = liberties.Where(q => board.PointWithinMiddleArea(q.x, q.y)).ToList();
-                if (capturePoint.Count == 1)
-                {
-                    if (board.InternalMakeMove(capturePoint.First(), c.Opposite()) != MakeMoveResult.Legal) return false;
-                    if (board.MoveGroupLiberties == 1) return false;
-                    Point escapePoint = liberties.Except(capturePoint).First();
-                    return IsEndCrawlingMove(board, escapePoint, c);
-                }
+                if (board.InternalMakeMove(capturePoint.First(), c.Opposite()) != MakeMoveResult.Legal) return false;
+                if (board.MoveGroupLiberties == 1) return false;
+                Point escapePoint = liberties.Except(capturePoint).First();
+                return IsEndCrawlingMove(board, escapePoint, c);
             }
             return false;
         }
@@ -403,6 +430,7 @@ namespace Go
         /// <summary>
         /// Check for connect and die on board with captured suicide stone.
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
+        /// Reverse connect and die <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WindAndTime_Q29277" />
         /// </summary>
         public static Boolean CheckConnectAndDie(Board board, Group targetGroup = null)
         {
@@ -424,9 +452,15 @@ namespace Go
                         return true;
                     continue;
                 }
+
                 //check if connect and die
                 if (UnescapableGroup(b, targetGroup).Item1)
+                {
+                    //reverse connect and die
+                    if (CheckConnectAndDie(b, b.MoveGroup))
+                        continue;
                     return true;
+                }
             }
             return false;
         }
@@ -490,7 +524,7 @@ namespace Go
         /// </summary>
         private static Boolean CheckPreAtariNeighbour(Group targetGroup, Board board)
         {
-            List<Point> targetLiberties = board.GetGroupLibertyPoints(targetGroup);
+            HashSet<Point> targetLiberties = targetGroup.Liberties;
             if (targetLiberties.Count != 2) return false;
 
             //check if any liberty is suicidal
@@ -509,7 +543,7 @@ namespace Go
 
                 //check if immovable at liberties
                 List<Group> neighbourGroups = board.GetNeighbourGroups(targetGroup);
-                if (neighbourGroups.Any(group => board.GetGroupLiberties(group) == 2 && !AtariHelper.AtariByGroup(board, group) && board.GetGroupLibertyPoints(group).Any(p => ImmovableHelper.IsSuicidalMoveForBothPlayers(board, p))))
+                if (neighbourGroups.Any(group => group.Liberties.Count == 2 && !AtariHelper.AtariByGroup(board, group) && group.Liberties.Any(p => ImmovableHelper.IsSuicidalMoveForBothPlayers(board, p))))
                     return true;
             }
             return false;

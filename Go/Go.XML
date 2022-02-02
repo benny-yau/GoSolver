@@ -492,6 +492,12 @@
             Check for ko possibility <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q30986" />
             </summary>
         </member>
+        <member name="M:Go.ImmovableHelper.CheckForKoInImmovablePoint(Go.Board,Go.Point,Go.Content)">
+            <summary>
+            Check for ko possibility <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q30986" />
+            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q29998" />
+            </summary>
+        </member>
         <member name="M:Go.ImmovableHelper.IsConfirmTigerMouth(Go.Board,Go.Board,System.Nullable{Go.Point})">
             <summary>
             Capture suicide group and check for captured count greater than one or move liberty greater than one to ensure no ko or snapback.
@@ -532,6 +538,7 @@
         <member name="M:Go.ImmovableHelper.IsSuicidalOnCapture(Go.Board,Go.Group)">
             <summary>
             Is suicide move on capture.
+            Check ko <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WuQingYuan_Q31503" />
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.IsEndCrawlingMove(Go.Board,Go.Point,Go.Content)">
@@ -578,6 +585,7 @@
             <summary>
             Check for connect and die on board with captured suicide stone.
             <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
+            Reverse connect and die <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WindAndTime_Q29277" />
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.AllConnectAndDie(Go.Board,Go.Point,Go.Content)">
@@ -1082,11 +1090,20 @@
         <member name="M:Go.RedundantMoveHelper.FillerMoveWithoutKillerGroup(Go.GameTryMove,System.Boolean)">
             <summary>
             Filler moves without killer group. <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q6150" />
+            Filler moves with killer group <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_B3_2" />
             Check for one point leap move <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_B10_2" />
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_B40" />
             Check two-point group <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Side_B35" />
-            Ensure no opposite content at stone neighbour points for killer group <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q15017" />
+            Check if killer group created with opposite content within the group <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_A171_101Weiqi" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CheckOppositeContentForFillerMove(Go.GameTryMove,System.Boolean)">
+            <summary>
+            Check opposite content for filler move.
             Ensure no opposite content at stone and diagonal <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q29998_2" />
+            Ensure no opposite content at stone neighbour points for killer group <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q15017" />
+            Closest neighbour within killer group <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31537_2" />
+            <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31445" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SiegedScenario(Go.Board,System.Collections.Generic.List{Go.Point},System.Int32)">
@@ -1110,7 +1127,9 @@
             <summary>
             Check corner point for filler move.
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A95" />
-            <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A132" />
+            Two point kill <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q16508" />
+            <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A6" />
+            Check for siege formation <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.EyeFillerLinkForGroups(Go.GameTryMove)">
