@@ -16,19 +16,44 @@ namespace Go
         {
             if (emptyPoints.Count != 2) return false;
             int contentCount = contentPoints.Count;
+            return PreDeadFormation(board, killerGroup, contentPoints, emptyPoints);
+        }
+
+        /// <summary>
+        /// Check for dead formation in connect and die.
+        /// </summary>
+        public static Boolean DeadFormationInConnectAndDie(Board tryBoard)
+        {
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard[move];
+            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
+            if (killerGroup == null) return false;
+            List<Point> contentPoints = killerGroup.Points.Where(t => tryBoard[t] == c).ToList();
+            List<Point> emptyPoints = killerGroup.Points.Where(t => tryBoard[t] == Content.Empty).ToList();
+            return PreDeadFormation(tryBoard, killerGroup, contentPoints, emptyPoints);
+        }
+
+        public static Boolean PreDeadFormation(Board board, Group killerGroup, List<Point> contentPoints, List<Point> emptyPoints)
+        {
+            int contentCount = contentPoints.Count;
             if (contentCount == 3)
             {
-                if (TryFormationForBothAlive(board, killerGroup, emptyPoints, new List<Func<Board, Group, Boolean>>() { OneByThreeFormation, BoxFormation }))
+                if (TryKillFormation(board, killerGroup, emptyPoints, new List<Func<Board, Group, Boolean>>() { OneByThreeFormation, BoxFormation, CrowbarEdgeFormation, TwoByTwoFormation, BentFourCornerFormation }))
                     return true;
             }
             else if (contentCount == 4)
             {
-                if (TryFormationForBothAlive(board, killerGroup, emptyPoints, new List<Func<Board, Group, Boolean>>() { KnifeFiveFormation }))
+                if (TryKillFormation(board, killerGroup, emptyPoints, new List<Func<Board, Group, Boolean>>() { KnifeFiveFormation, OneByFourSideFormation }))
                     return true;
             }
             else if (contentCount == 5)
             {
-                if (TryFormationForBothAlive(board, killerGroup, emptyPoints, new List<Func<Board, Group, Boolean>>() { FlowerSixFormation }))
+                if (TryKillFormation(board, killerGroup, emptyPoints, new List<Func<Board, Group, Boolean>>() { FlowerSixFormation, TwoByFourSideFormation, CornerSixFormation }))
+                    return true;
+            }
+            else if (contentCount == 6)
+            {
+                if (TryKillFormation(board, killerGroup, emptyPoints, new List<Func<Board, Group, Boolean>>() { FlowerSevenSideFormation }))
                     return true;
             }
             return false;
@@ -37,7 +62,7 @@ namespace Go
         /// <summary>
         /// Make move at each of the empty points to test if formation created.
         /// </summary>
-        public static Boolean TryFormationForBothAlive(Board board, Group killerGroup, List<Point> emptyPoints, List<Func<Board, Group, Boolean>> functions)
+        public static Boolean TryKillFormation(Board board, Group killerGroup, List<Point> emptyPoints, List<Func<Board, Group, Boolean>> functions)
         {
             foreach (Point emptyPoint in emptyPoints)
             {
@@ -103,16 +128,7 @@ namespace Go
                 //crowbar edge formation
                 if (KillerFormationHelper.CrowbarEdgeFormation(tryBoard, tryBoard.MoveGroup)) return true;
                 //two-by-two formation
-                if (KillerFormationHelper.TwoByTwoFormation(tryBoard, tryBoard.MoveGroup))
-                {
-                    foreach (Point p in tryBoard.MoveGroup.Points)
-                    {
-                        (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c, capturedBoard);
-                        if (isSuicidal) continue;
-                        if (b != null && b.AtariTargets.Count == 1 && b.AtariTargets.First().Points.Count > 1)
-                            return true;
-                    }
-                }
+                if (KillerFormationHelper.TwoByTwoFormation(tryBoard, tryBoard.MoveGroup)) return true;
                 //bent four corner formation
                 if (KillerFormationHelper.BentFourCornerFormation(tryBoard, tryBoard.MoveGroup)) return true;
             }
@@ -257,7 +273,19 @@ namespace Go
          */
         public static Boolean TwoByTwoFormation(Board tryBoard, Group killerGroup)
         {
-            return TwoByTwoFormation(tryBoard, killerGroup.Points, killerGroup.Content);
+            if (TwoByTwoFormation(tryBoard, killerGroup.Points, killerGroup.Content))
+            {
+                Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
+                if (capturedBoard == null) return false;
+                foreach (Point p in tryBoard.MoveGroup.Points)
+                {
+                    (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, killerGroup.Content, capturedBoard);
+                    if (isSuicidal) continue;
+                    if (b != null && b.AtariTargets.Count == 1 && b.AtariTargets.First().Points.Count > 1)
+                        return true;
+                }
+            }
+            return false;
         }
 
         public static Boolean TwoByTwoFormation(Board tryBoard, IEnumerable<Point> killerPoints, Content c)

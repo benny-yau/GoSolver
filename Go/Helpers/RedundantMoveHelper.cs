@@ -271,19 +271,18 @@ namespace Go
             if (groups.Any(group => (group.Liberties.Count == 1 || (group.Points.Count >= 2 && group.Liberties.Count <= 2) && !WallHelper.IsNonKillableGroup(tryBoard, group))))
                 return false;
 
-            if (RedundantSuicidalConnectAndDie(tryMove))
-                return true;
-
             //if all neighbour groups are killable, then check for killer formations 
             if (!groups.Any(group => WallHelper.IsNonKillableGroup(tryBoard, group)))
             {
+                if (RedundantSuicidalConnectAndDie(tryMove))
+                    return true;
 
                 //check for sieged scenario
                 List<Point> opponentStones = tryBoard.GetClosestNeighbour(move, 3, c.Opposite());
                 if (!SiegedScenario(tryBoard, opponentStones, 1)) return true;
 
                 //check killer formation
-                if ((tryBoard.MoveGroup.Points.Count <= 4 || KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard)))
+                if (tryBoard.MoveGroup.Points.Count <= 4 || KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard))
                     return false;
             }
             return true;
@@ -293,6 +292,7 @@ namespace Go
         /// Check for suicidal moves that have diagonal groups and not killer formation.
         /// Ensure no diagonal at move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
         /// Ensure no shared liberty with neighbour group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A55" />
+        /// Check for killer formation <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_A26" />
         /// </summary>
         private static Boolean RedundantSuicidalConnectAndDie(GameTryMove tryMove)
         {
@@ -306,7 +306,14 @@ namespace Go
             //ensure no shared liberty with neighbour group
             List<Group> neighbourGroups = tryBoard.GetNeighbourGroups(tryBoard.MoveGroup);
             Boolean sharedLiberty = tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty && tryBoard.GetGroupsFromStoneNeighbours(n, c).Any(g => neighbourGroups.Contains(g)));
-            return !sharedLiberty;
+            if (sharedLiberty) return false;
+            //check for killer formation
+            if (tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindEye(tryBoard, n, c)))
+            {
+                if (KillerFormationHelper.DeadFormationInConnectAndDie(tryBoard))
+                    return false;
+            }
+            return true;
         }
 
         /// <summary>

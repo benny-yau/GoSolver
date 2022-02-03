@@ -622,7 +622,12 @@
             Formations that are essentially dead and do not require a pass move to test for both alive.
             </summary>
         </member>
-        <member name="M:Go.KillerFormationHelper.TryFormationForBothAlive(Go.Board,Go.Group,System.Collections.Generic.List{Go.Point},System.Collections.Generic.List{System.Func{Go.Board,Go.Group,System.Boolean}})">
+        <member name="M:Go.KillerFormationHelper.DeadFormationInConnectAndDie(Go.Board)">
+            <summary>
+            Check for dead formation in connect and die.
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.TryKillFormation(Go.Board,Go.Group,System.Collections.Generic.List{Go.Point},System.Collections.Generic.List{System.Func{Go.Board,Go.Group,System.Boolean}})">
             <summary>
             Make move at each of the empty points to test if formation created.
             </summary>
@@ -834,6 +839,7 @@
             Check for suicidal moves that have diagonal groups and not killer formation.
             Ensure no diagonal at move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
             Ensure no shared liberty with neighbour group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A55" />
+            Check for killer formation <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_A26" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SinglePointSuicidalMove(Go.GameTryMove,Go.GameTryMove)">
