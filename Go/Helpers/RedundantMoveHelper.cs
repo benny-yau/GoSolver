@@ -308,12 +308,6 @@ namespace Go
             List<Group> neighbourGroups = tryBoard.GetNeighbourGroups(tryBoard.MoveGroup);
             Boolean sharedLiberty = tryBoard.MoveGroup.Liberties.Any(n => tryBoard.GetGroupsFromStoneNeighbours(n, c).Any(g => neighbourGroups.Contains(g)));
             if (sharedLiberty) return false;
-            //check for killer formation
-            if (tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindEye(tryBoard, n, c)))
-            {
-                if (KillerFormationHelper.DeadFormationInConnectAndDie(tryBoard))
-                    return false;
-            }
             return true;
         }
 

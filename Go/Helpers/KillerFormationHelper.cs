@@ -19,20 +19,6 @@ namespace Go
             return PreDeadFormation(board, killerGroup, contentPoints, emptyPoints);
         }
 
-        /// <summary>
-        /// Check for dead formation in connect and die.
-        /// </summary>
-        public static Boolean DeadFormationInConnectAndDie(Board tryBoard)
-        {
-            Point move = tryBoard.Move.Value;
-            Content c = tryBoard[move];
-            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
-            if (killerGroup == null) return false;
-            List<Point> contentPoints = killerGroup.Points.Where(t => tryBoard[t] == c).ToList();
-            List<Point> emptyPoints = killerGroup.Points.Where(t => tryBoard[t] == Content.Empty).ToList();
-            return PreDeadFormation(tryBoard, killerGroup, contentPoints, emptyPoints);
-        }
-
         public static Boolean PreDeadFormation(Board board, Group killerGroup, List<Point> contentPoints, List<Point> emptyPoints)
         {
             int contentCount = contentPoints.Count;
@@ -89,12 +75,15 @@ namespace Go
         /// T side formation <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471" />
         /// Two-by-four side formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31682" />
         /// Corner six formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
+        /// Flower six formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16859" />
         /// Flower seven side formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B3" />
         /// </summary>
         public static Boolean SuicidalKillerFormations(Board tryBoard, Board currentBoard = null, Board capturedBoard = null)
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
+            if (tryBoard.MoveGroupLiberties > 2 || tryBoard.MoveGroup.Points.Count <= 4 && tryBoard.MoveGroupLiberties > 1)
+                return false;
             int moveCount = tryBoard.MoveGroup.Points.Count;
             if (moveCount == 2)
             {
@@ -138,7 +127,6 @@ namespace Go
                 //check kill group extension
                 if (CheckRedundantKillGroupExtension(tryBoard, currentBoard, capturedBoard))
                 {
-                    if (moveCount > 6) return false;
                     List<Group> groups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
                     if (KillerFormationHelper.GridDimensionChanged(groups.First().Points, tryBoard.MoveGroup.Points))
                         return false;
@@ -451,6 +439,7 @@ namespace Go
         public static Boolean OneByFourSideFormation(Board tryBoard, Group killerGroup)
         {
             Content c = killerGroup.Content;
+            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] != c)) return false;
             List<Point> contentPoints = killerGroup.Points.Where(t => tryBoard[t] == c).ToList();
             if (contentPoints.Count() != 5) return false;
             if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 3) == 1)
@@ -481,6 +470,7 @@ namespace Go
         public static Boolean TSideFormation(Board tryBoard, Group killerGroup)
         {
             Content c = killerGroup.Content;
+            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] != c)) return false;
             List<Point> contentPoints = killerGroup.Points.Where(t => tryBoard[t] == c).ToList();
             if (contentPoints.Count() != 5) return false;
             if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 3) == 1)
@@ -508,6 +498,7 @@ namespace Go
         public static Boolean TwoByFourSideFormation(Board tryBoard, Group killerGroup)
         {
             Content c = killerGroup.Content;
+            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] != c)) return false;
             List<Point> contentPoints = killerGroup.Points.Where(t => tryBoard[t] == c).ToList();
             if (contentPoints.Count() != 6) return false;
             if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 3) == 2)
