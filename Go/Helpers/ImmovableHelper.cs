@@ -249,7 +249,7 @@ namespace Go
             {
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalOnCapture(tryBoard, target);
                 if (suicidal) continue;
-                if (CheckConnectAndDie(b, group)) continue;
+                if (CheckConnectAndDie(b, group) || (target.Points.Count == 2 && CheckConnectAndDie(b, b.MoveGroup))) continue;
                 return b.Move;
             }
             return null;
@@ -401,7 +401,17 @@ namespace Go
                         return false;
 
                     //ensure move group contains previous group
-                    return b.MoveGroup.Points.Contains(group.Points.First());
+                    if (!b.MoveGroup.Points.Contains(group.Points.First())) return false;
+
+                    //check if target group is escapable
+                    (Boolean unEscapable, Point? p) = UnescapableGroup(tryBoard, group);
+                    if (p != null)
+                    {
+                        Board board = tryBoard.MakeMoveOnNewBoard(p.Value, tryBoard.MoveGroup.Content.Opposite(), true);
+                        if (UnescapableGroup(board, tryBoard.MoveGroup).Item1)
+                            return false;
+                    }
+                    return true;
                 }
             }
             return false;
