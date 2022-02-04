@@ -256,8 +256,8 @@ namespace Go
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
 
-            //ensure not negligible moves 
-            if (!tryMove.IsNegligible) return false;
+            //ensure not negligible moves except atari resolved
+            if (tryBoard.CapturedList.Count > 0 || (tryBoard.IsAtariMove && tryBoard.MoveGroupLiberties > 1)) return false;
 
             //check for one point move group
             if (tryBoard.MoveGroup.Points.Count == 1 && tryBoard.GetClosestNeighbour(move, 2).Count > 0 && tryBoard.GetClosestNeighbour(move, 2, c.Opposite()).Count >= 3)
@@ -268,7 +268,7 @@ namespace Go
 
             //ensure no killable group with two or less liberties
             IEnumerable<Group> groups = tryBoard.GetNeighbourGroups(tryBoard.MoveGroup);
-            if (groups.Any(group => (group.Liberties.Count == 1 || (group.Points.Count >= 2 && group.Liberties.Count <= 2) && !WallHelper.IsNonKillableGroup(tryBoard, group))))
+            if (groups.Any(group => (group.Points.Count >= 2 && group.Liberties.Count <= 2) && !WallHelper.IsNonKillableGroup(tryBoard, group)) && groups.Any(group => group.Liberties.Count > 2))
                 return false;
 
             //if all neighbour groups are killable, then check for killer formations 
@@ -292,6 +292,7 @@ namespace Go
         /// Check for suicidal moves that have diagonal groups and not killer formation.
         /// Ensure no diagonal at move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
         /// Ensure no shared liberty with neighbour group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A55" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
         /// Check for killer formation <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_A26" />
         /// </summary>
         private static Boolean RedundantSuicidalConnectAndDie(GameTryMove tryMove)
@@ -305,7 +306,7 @@ namespace Go
             if (tryBoard.GetDiagonalNeighbours(move.x, move.y).Any(n => tryBoard[n] == c && !tryBoard.MoveGroup.Points.Contains(n))) return false;
             //ensure no shared liberty with neighbour group
             List<Group> neighbourGroups = tryBoard.GetNeighbourGroups(tryBoard.MoveGroup);
-            Boolean sharedLiberty = tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty && tryBoard.GetGroupsFromStoneNeighbours(n, c).Any(g => neighbourGroups.Contains(g)));
+            Boolean sharedLiberty = tryBoard.MoveGroup.Liberties.Any(n => tryBoard.GetGroupsFromStoneNeighbours(n, c).Any(g => neighbourGroups.Contains(g)));
             if (sharedLiberty) return false;
             //check for killer formation
             if (tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindEye(tryBoard, n, c)))

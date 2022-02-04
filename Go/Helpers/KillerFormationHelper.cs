@@ -43,7 +43,7 @@ namespace Go
             }
             else if (contentCount == 4)
             {
-                if (TryKillFormation(board, killerGroup, emptyPoints, new List<Func<Board, Group, Boolean>>() { KnifeFiveFormation, OneByFourSideFormation }))
+                if (TryKillFormation(board, killerGroup, emptyPoints, new List<Func<Board, Group, Boolean>>() { KnifeFiveFormation, OneByFourSideFormation, TSideFormation }))
                     return true;
             }
             else if (contentCount == 5)
@@ -86,6 +86,7 @@ namespace Go
         /// Bent four corner formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie20" />
         /// Knife five formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113" />
         /// One-by-four side formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B32" />
+        /// T side formation <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471" />
         /// Two-by-four side formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31682" />
         /// Corner six formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
         /// Flower seven side formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B3" />
@@ -151,6 +152,10 @@ namespace Go
 
                     //one-by-four side formation
                     if (KillerFormationHelper.OneByFourSideFormation(tryBoard, tryBoard.MoveGroup))
+                        return true;
+
+                    //T side formation
+                    if (KillerFormationHelper.TSideFormation(tryBoard, tryBoard.MoveGroup))
                         return true;
                 }
                 else if (moveCount == 6)
@@ -458,8 +463,9 @@ namespace Go
                 if (endPoints.Any(p => tryBoard.CornerPoint(p))) return false;
                 if (endPoints.Count != 1) return false;
                 //check diagonal
+                Boolean oneLiberty = (killerGroup.Liberties.Count == 1);
                 Point q = endPoints.First();
-                if (tryBoard.GetDiagonalNeighbours(q.x, q.y).Where(n => !tryBoard.GetStoneNeighbours(n.x, n.y).Contains(middlePoint.First())).Any(n => tryBoard[n] == c))
+                if (tryBoard.GetDiagonalNeighbours(q.x, q.y).Where(n => !tryBoard.GetStoneNeighbours(n.x, n.y).Contains(middlePoint.First())).Any(n => tryBoard[n] == ((oneLiberty) ? c : Content.Empty)))
                     return true;
             }
             return false;
@@ -481,7 +487,14 @@ namespace Go
             {
                 List<Point> middlePoint = contentPoints.Where(p => tryBoard.PointWithinMiddleArea(p)).ToList();
                 if (middlePoint.Count != 2) return false;
-                return true;
+
+                List<Point> endPoints = contentPoints.Where(p => tryBoard.GetStoneNeighbours(p.x, p.y).Where(n => !tryBoard.PointWithinMiddleArea(n.x, n.y)).Intersect(contentPoints).Count() == 1).ToList();
+                Boolean oneLiberty = (killerGroup.Liberties.Count == 1);
+                foreach (Point q in endPoints)
+                {
+                    if (tryBoard.GetDiagonalNeighbours(q.x, q.y).Where(n => !killerGroup.Points.Contains(n)).Any(n => tryBoard[n] == ((oneLiberty) ? c : Content.Empty)))
+                        return true;
+                }
             }
             return false;
         }
@@ -501,9 +514,10 @@ namespace Go
             {
                 if (contentPoints.Count(p => !tryBoard.PointWithinMiddleArea(p)) != 4) return false;
                 List<Point> endPoints = contentPoints.Where(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 1).ToList();
+                Boolean oneLiberty = (killerGroup.Liberties.Count == 1);
                 foreach (Point q in endPoints)
                 {
-                    if (tryBoard.GetDiagonalNeighbours(q.x, q.y).Where(n => !killerGroup.Points.Contains(n)).Any(n => tryBoard[n] == c))
+                    if (tryBoard.GetDiagonalNeighbours(q.x, q.y).Where(n => !killerGroup.Points.Contains(n)).Any(n => tryBoard[n] == ((oneLiberty) ? c : Content.Empty)))
                         return true;
                 }
             }
