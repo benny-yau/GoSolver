@@ -77,47 +77,14 @@ namespace Go
         /// Corner six formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
         /// Flower six formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16859" />
         /// Flower seven side formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B3" />
-        /// Crowbar eye formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
-        /// Two liberties at corner <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_TianLongTu_Q16424_2" />
         /// </summary>
         public static Boolean SuicidalKillerFormations(Board tryBoard, Board currentBoard = null, Board capturedBoard = null)
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-
-            if (tryBoard.MoveGroupLiberties > 2) return false;
-
-            int moveCount = tryBoard.MoveGroup.Points.Count;
-            if (moveCount == 5)
-            {
-                //one-by-four side formation
-                if (KillerFormationHelper.OneByFourSideFormation(tryBoard, tryBoard.MoveGroup))
-                    return true;
-
-                //T side formation
-                if (KillerFormationHelper.TSideFormation(tryBoard, tryBoard.MoveGroup))
-                    return true;
-            }
-            else if (moveCount == 6)
-            {
-                //two-by-four side formation
-                if (KillerFormationHelper.TwoByFourSideFormation(tryBoard, tryBoard.MoveGroup))
-                    return true;
-            }
-
-            //ensure one liberty only or two liberty points at corner           
-            if (tryBoard.MoveGroupLiberties > 1 && !tryBoard.MoveGroup.Liberties.Any(p => tryBoard.CornerPoint(p) && tryBoard.GetStoneNeighbours(p.x, p.y).Any(n => tryBoard[n] == Content.Empty)))
-            {
-                if (KillerFormationHelper.KnifeFiveFormation(tryBoard, tryBoard.MoveGroup))
-                {
-                    //crowbar eye formation
-                    List<Group> previousMoveGroup = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
-                    if (previousMoveGroup.Count == 1 && KillerFormationHelper.CrowbarEyeFormation(currentBoard, previousMoveGroup.First()))
-                        return true;
-                }
+            if (tryBoard.MoveGroupLiberties > 2 || tryBoard.MoveGroup.Points.Count <= 4 && tryBoard.MoveGroupLiberties > 1)
                 return false;
-            }
-
+            int moveCount = tryBoard.MoveGroup.Points.Count;
             if (moveCount == 2)
             {
                 //two-point move
@@ -147,8 +114,7 @@ namespace Go
                 //one-by-three formation
                 if (KillerFormationHelper.OneByThreeFormation(tryBoard, tryBoard.MoveGroup)) return true;
                 //box formation
-                if (KillerFormationHelper.BoxFormation(tryBoard, tryBoard.MoveGroup))
-                    return true;
+                if (KillerFormationHelper.BoxFormation(tryBoard, tryBoard.MoveGroup)) return true;
                 //crowbar edge formation
                 if (KillerFormationHelper.CrowbarEdgeFormation(tryBoard, tryBoard.MoveGroup)) return true;
                 //two-by-two formation
@@ -171,11 +137,23 @@ namespace Go
                     //knife five formation
                     if (KillerFormationHelper.KnifeFiveFormation(tryBoard, tryBoard.MoveGroup))
                         return true;
+
+                    //one-by-four side formation
+                    if (KillerFormationHelper.OneByFourSideFormation(tryBoard, tryBoard.MoveGroup))
+                        return true;
+
+                    //T side formation
+                    if (KillerFormationHelper.TSideFormation(tryBoard, tryBoard.MoveGroup))
+                        return true;
                 }
                 else if (moveCount == 6)
                 {
                     //flower six formation
                     if (KillerFormationHelper.FlowerSixFormation(tryBoard, tryBoard.MoveGroup))
+                        return true;
+
+                    //two-by-four side formation
+                    if (KillerFormationHelper.TwoByFourSideFormation(tryBoard, tryBoard.MoveGroup))
                         return true;
 
                     //check for corner six formation
