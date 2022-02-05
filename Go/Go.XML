@@ -528,6 +528,7 @@
             Check if can escape by capturing neighbour group.
             Check snapback <see cref="!:UnitTestProject.AtariResponseMoveTest.AtariResponseMoveTest_Scenario_TianLongTu_Q16605" />
             Connect and die <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
+            Connect and die for move group <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_GuanZiPu_A3" />
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.IsSuicidalMove(Go.Board,Go.Point,Go.Content)">
@@ -568,15 +569,11 @@
             <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A55" />
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.IsSnapback(Go.Board,Go.Board,Go.Group)">
+        <member name="M:Go.ImmovableHelper.IsSnapback(Go.Board,Go.Group)">
             <summary>
             Snapback.
             Ensure move group contains previous group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16827" />
-            </summary>
-        </member>
-        <member name="M:Go.ImmovableHelper.CheckSnapbackAtari(Go.Board,Go.Board,Go.Group)">
-            <summary>
-            Atari on other groups for snapback.
+            Check if target group is escapable <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_B28" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B31" />
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_GuanZiPu_A3" />
             </summary>
@@ -622,11 +619,6 @@
             Formations that are essentially dead and do not require a pass move to test for both alive.
             </summary>
         </member>
-        <member name="M:Go.KillerFormationHelper.DeadFormationInConnectAndDie(Go.Board)">
-            <summary>
-            Check for dead formation in connect and die.
-            </summary>
-        </member>
         <member name="M:Go.KillerFormationHelper.TryKillFormation(Go.Board,Go.Group,System.Collections.Generic.List{Go.Point},System.Collections.Generic.List{System.Func{Go.Board,Go.Group,System.Boolean}})">
             <summary>
             Make move at each of the empty points to test if formation created.
@@ -643,9 +635,13 @@
             Bent four corner formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie20" />
             Knife five formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113" />
             One-by-four side formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B32" />
+            T side formation <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471" />
             Two-by-four side formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31682" />
             Corner six formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
+            Flower six formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16859" />
             Flower seven side formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B3" />
+            Crowbar eye formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
+            Two liberties at corner <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_TianLongTu_Q16424_2" />
             </summary>
         </member>
         <member name="M:Go.KillerFormationHelper.CheckRedundantKillGroupExtension(Go.Board,Go.Board,Go.Board)">
@@ -839,6 +835,7 @@
             Check for suicidal moves that have diagonal groups and not killer formation.
             Ensure no diagonal at move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
             Ensure no shared liberty with neighbour group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A55" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
             Check for killer formation <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_A26" />
             </summary>
         </member>

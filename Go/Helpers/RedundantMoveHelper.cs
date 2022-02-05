@@ -108,32 +108,28 @@ namespace Go
         /// Check for killer formation <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A67" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie20" />
         /// </summary>
-        public static Boolean FillKoEyeMove(GameTryMove move)
+        public static Boolean FillKoEyeMove(GameTryMove tryMove)
         {
-            if (!move.IsOpponentSuicide) return false;
-            Board tryBoard = move.TryGame.Board;
-            Board currentBoard = move.CurrentGame.Board;
+            Point move = tryMove.Move;
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            Content c = tryMove.MoveContent;
             //ensure is fill eye
-            if (!EyeHelper.FindEye(currentBoard, move.Move, move.MoveContent)) return false;
-            List<Group> groups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
-            Boolean isKill = GameHelper.GetContentForSurviveOrKill(tryBoard.GameInfo, SurviveOrKill.Kill) == move.MoveContent;
-            //ignore if connect more than two groups
-            if (groups.Count <= 2 || (isKill && groups.Count(group => !WallHelper.IsNonKillableGroup(currentBoard, group)) == 1))
-            {
-                //ensure is ko move
-                GameTryMove opponentMove = move.MakeMoveWithOpponentAtSamePoint();
-                if (opponentMove == null || !KoHelper.IsKoFight(opponentMove.TryGame.Board)) return false;
+            if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
+            if (!EyeHelper.FindEye(currentBoard, tryMove.Move, tryMove.MoveContent)) return false;
+            if (currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).Where(group => group.Points.Count == 1 && group.Liberties.Count == 1).Count() != 1) return false;
 
-                //check for killer formation
-                if (!isKill || groups.All(group => !WallHelper.IsNonKillableGroup(currentBoard, group)))
-                {
-                    if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard))
-                        return false;
-                }
-                move.IsFillKoEyeMove = true;
-                return true;
+            //ignore if connect more than two groups
+            List<Group> groups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
+            if (groups.Count > 2) return false;
+
+            //check for killer formation
+            if (tryBoard.GetNeighbourGroups(tryBoard.MoveGroup).All(group => !WallHelper.IsNonKillableGroup(tryBoard, group)))
+            {
+                if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard))
+                    return false;
             }
-            return false;
+            return true;
         }
         #endregion
 

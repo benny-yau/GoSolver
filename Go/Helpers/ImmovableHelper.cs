@@ -241,6 +241,7 @@ namespace Go
         /// Check if can escape by capturing neighbour group.
         /// Check snapback <see cref="UnitTestProject.AtariResponseMoveTest.AtariResponseMoveTest_Scenario_TianLongTu_Q16605" />
         /// Connect and die <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
+        /// Connect and die for move group <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_GuanZiPu_A3" />
         /// </summary>
         public static Point? EscapeByCapture(Board tryBoard, Group group)
         {
@@ -249,6 +250,7 @@ namespace Go
             {
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalOnCapture(tryBoard, target);
                 if (suicidal) continue;
+                //Connect and die
                 if (CheckConnectAndDie(b, group) || (target.Points.Count == 2 && CheckConnectAndDie(b, b.MoveGroup))) continue;
                 return b.Move;
             }
@@ -380,7 +382,7 @@ namespace Go
                 Board b = board.MakeMoveOnNewBoard(libertyPoint, c.Opposite(), true);
                 if (b == null) continue;
                 //capture move
-                if (IsSnapback(board, b, targetGroup))
+                if (IsSnapback(b, targetGroup))
                     return true;
             }
             return false;
@@ -389,50 +391,29 @@ namespace Go
         /// <summary>
         /// Snapback.
         /// Ensure move group contains previous group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16827" />
-        /// </summary>
-        public static Boolean IsSnapback(Board currentBoard, Board tryBoard, Group group)
-        {
-            if (tryBoard.IsAtariMove && tryBoard.MoveGroupLiberties == 1)
-            {
-                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalOnCapture(tryBoard);
-                if (suicidal && b != null && b.MoveGroup.Points.Count > 1)
-                {
-                    if (!CheckSnapbackAtari(tryBoard, currentBoard, group))
-                        return false;
-
-                    //ensure move group contains previous group
-                    if (!b.MoveGroup.Points.Contains(group.Points.First())) return false;
-
-                    //check if target group is escapable
-                    (Boolean unEscapable, Point? p) = UnescapableGroup(tryBoard, group);
-                    if (p != null)
-                    {
-                        Board board = tryBoard.MakeMoveOnNewBoard(p.Value, tryBoard.MoveGroup.Content.Opposite(), true);
-                        if (UnescapableGroup(board, tryBoard.MoveGroup).Item1)
-                            return false;
-                    }
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Atari on other groups for snapback.
+        /// Check if target group is escapable <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_B28" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B31" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_GuanZiPu_A3" />
         /// </summary>
-        private static Boolean CheckSnapbackAtari(Board tryBoard, Board currentBoard, Group group)
+        public static Boolean IsSnapback(Board tryBoard, Group group)
         {
-            List<Group> targetGroups = AtariHelper.AtariByGroup(group, currentBoard, true);
-            if (targetGroups.Count == 0) return true;
-            if (targetGroups.Count > 1) return false;
-
-            if (targetGroups.Count == 1)
+            if (!tryBoard.IsAtariMove || tryBoard.MoveGroupLiberties != 1) return false;
+            (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalOnCapture(tryBoard);
+            if (suicidal && b != null && b.MoveGroup.Points.Count > 1)
             {
-                Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, targetGroups.First());
-                if (b == null) return false;
-                if (b.GetGroupLiberties(group) == 2) return true;
+                //ensure move group contains previous group
+                if (!b.MoveGroup.Points.Contains(group.Points.First()))
+                    return false;
+
+                //check if target group is escapable
+                (Boolean unEscapable, Point? p) = UnescapableGroup(tryBoard, group);
+                if (p != null)
+                {
+                    Board board = tryBoard.MakeMoveOnNewBoard(p.Value, tryBoard.MoveGroup.Content.Opposite(), true);
+                    if (UnescapableGroup(board, tryBoard.MoveGroup).Item1)
+                        return false;
+                }
+                return true;
             }
             return false;
         }
@@ -458,7 +439,7 @@ namespace Go
                 if (isSuicidal)
                 {
                     //check snapback
-                    if (b != null && IsSnapback(board, b, targetGroup))
+                    if (b != null && IsSnapback(b, targetGroup))
                         return true;
                     continue;
                 }
