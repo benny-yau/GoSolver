@@ -105,6 +105,7 @@ namespace Go
         #region fill ko eye move
         /// <summary>
         /// Fill ko eye move. <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
+        /// Check for atari at ko point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
         /// Check for killer formation <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A67" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie20" />
         /// </summary>
@@ -115,10 +116,14 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
             //ensure is fill eye
-            if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
             if (!EyeHelper.FindEye(currentBoard, tryMove.Move, tryMove.MoveContent)) return false;
-            if (currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).Where(group => group.Points.Count == 1 && group.Liberties.Count == 1).Count() != 1) return false;
+            List<Group> targetGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).Where(group => group.Liberties.Count == 1).ToList();
+            if (targetGroups.Count != 1 || targetGroups.First().Points.Count != 1) return false;
+            //check for atari at ko point
+            if (AtariHelper.AtariByGroup(currentBoard, targetGroups.First()))
+                return true;
 
+            if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
             //ignore if connect more than two groups
             List<Group> groups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
             if (groups.Count > 2) return false;
@@ -232,7 +237,7 @@ namespace Go
                 if (SuicidalConnectAndDie(tryMove))
                     return true;
             }
-            return false;
+            return SuicidalWithinNonKillableGroup(tryMove);
         }
 
         /// <summary>
@@ -255,10 +260,6 @@ namespace Go
             //ensure not negligible moves except atari resolved
             if (tryBoard.CapturedList.Count > 0 || (tryBoard.IsAtariMove && tryBoard.MoveGroupLiberties > 1)) return false;
 
-            //check for one point move group
-            if (tryBoard.MoveGroup.Points.Count == 1 && tryBoard.GetClosestNeighbour(move, 2).Count > 0 && tryBoard.GetClosestNeighbour(move, 2, c.Opposite()).Count >= 3)
-                return false;
-
             //check connect and die
             if (!ImmovableHelper.CheckConnectAndDie(tryBoard)) return false;
 
@@ -266,9 +267,12 @@ namespace Go
             IEnumerable<Group> groups = tryBoard.GetNeighbourGroups(tryBoard.MoveGroup);
             if (groups.Any(group => (group.Points.Count >= 2 && group.Liberties.Count <= 2) && !WallHelper.IsNonKillableGroup(tryBoard, group)) && groups.Any(group => group.Liberties.Count > 2))
                 return false;
+            //check for one point move group
+            if (tryBoard.MoveGroup.Points.Count == 1 && tryBoard.GetClosestNeighbour(move, 2).Count > 0 && tryBoard.GetClosestNeighbour(move, 2, c.Opposite()).Count >= 3)
+                return false;
 
             //if all neighbour groups are killable, then check for killer formations 
-            if (!groups.Any(group => WallHelper.IsNonKillableGroup(tryBoard, group)))
+            if (groups.All(group => !WallHelper.IsNonKillableGroup(tryBoard, group)))
             {
                 if (RedundantSuicidalConnectAndDie(tryMove))
                     return true;
@@ -282,6 +286,27 @@ namespace Go
                     return false;
             }
             return true;
+        }
+
+        /// <summary>
+        /// Suicide within non killable group.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_2" />
+        /// </summary>
+        public static Boolean SuicidalWithinNonKillableGroup(GameTryMove tryMove)
+        {
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryMove.Move;
+            Content c = tryMove.MoveContent;
+            if (tryBoard.MoveGroup.Points.Count == 1 && tryMove.IsNegligible && !tryBoard.IsAtariMove)
+            {
+                Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
+                if (killerGroup == null || killerGroup.Points.Count(p => tryBoard[p] == c) != 1) return false;
+                IEnumerable<Group> groups = tryBoard.GetNeighbourGroups(killerGroup);
+                Boolean nonKillable = groups.Any(group => WallHelper.IsNonKillableGroup(tryBoard, group));
+                return nonKillable;
+            }
+            return false;
         }
 
         /// <summary>
@@ -334,6 +359,8 @@ namespace Go
         /// Suicide within real eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_ScenarioHighLevel28" />
         /// Check for snapback  <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B31" />
         /// Atari move required <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q2757" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18500_3" />
+        /// Check for non two-point group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31536" />
         /// Check for solid eye three or more liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_1887" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18796" />
         /// One liberty - kill from external <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_A19" />
@@ -370,9 +397,13 @@ namespace Go
             //atari move required
             if (tryBoard.IsAtariMove)
             {
+                //check for non two-point group
+                Boolean twoPointGroup = (eyeGroup != null && eyeGroup.Points.Count == 2);
+                if (!twoPointGroup && !tryBoard.CornerPoint(move) && tryBoard.AtariTargets.All(t => t.Points.Count == 1))
+                    return true;
                 //check for solid eye three or more liberties
-                if (EyeHelper.FindRealSolidEyes(move, c.Opposite(), capturedBoard))
-                    return (capturedBoard.MoveGroupLiberties > 3);
+                if (EyeHelper.FindRealSolidEyes(move, c.Opposite(), capturedBoard) && capturedBoard.MoveGroupLiberties > 3)
+                    return true;
                 return false;
             }
 
