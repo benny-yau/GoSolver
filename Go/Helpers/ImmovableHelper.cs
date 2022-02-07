@@ -125,7 +125,7 @@ namespace Go
 
         /// <summary>
         /// Check for ko possibility <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q30986" />
-        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q29998" />
+        /// Check for reverse ko fight <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q29998" />
         /// </summary>
         private static Boolean CheckForKoInImmovablePoint(Board board, Point q, Content c)
         {
@@ -135,6 +135,7 @@ namespace Go
                 if (neighbourGroups.Any(n => AtariHelper.AtariByGroup(board, n)))
                     return true;
             }
+            //check for reverse ko fight 
             List<Point> stoneNeighbours = board.GetStoneNeighbours(q.x, q.y);
             if (stoneNeighbours.Any(n => board[n] == c)) return false;
             List<Point> eyeNeighbour = stoneNeighbours.Where(n => board[n] == Content.Empty).ToList();

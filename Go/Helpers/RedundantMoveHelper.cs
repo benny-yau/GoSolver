@@ -108,6 +108,7 @@ namespace Go
         /// Check for atari at ko point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
         /// Check for killer formation <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A67" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie20" />
+        /// Check for weak eye group <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_B28" />
         /// </summary>
         public static Boolean FillKoEyeMove(GameTryMove tryMove)
         {
@@ -117,11 +118,18 @@ namespace Go
             Content c = tryMove.MoveContent;
             //ensure is fill eye
             if (!EyeHelper.FindEye(currentBoard, tryMove.Move, tryMove.MoveContent)) return false;
-            List<Group> targetGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).Where(group => group.Liberties.Count == 1).ToList();
-            if (targetGroups.Count != 1 || targetGroups.First().Points.Count != 1) return false;
+            List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).ToList();
+            List<Group> targetGroups = eyeGroups.Where(group => group.Liberties.Count == 1).ToList();
+            if (targetGroups.Count != 1 || targetGroups.All(t => t.Points.Count > 1)) return false;
+
             //check for atari at ko point
             if (AtariHelper.AtariByGroup(currentBoard, targetGroups.First()))
-                return true;
+            {
+                //check for weak eye group
+                Boolean weakEyeGroup = eyeGroups.Any(e => e.Points.Count == 1 && e.Liberties.Count <= 2 && tryBoard.GetNeighbourGroups(e).All(g => g.Liberties.Count > 1));
+                if (!weakEyeGroup)
+                    return true;
+            }
 
             if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
             //ignore if connect more than two groups
@@ -242,7 +250,6 @@ namespace Go
 
         /// <summary>
         /// Check for connect and die moves. <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738" />
-        /// Check for one point move group <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_TianLongTu_Q16571" />
         /// Ensure no killable group with two or less liberties <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31435" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B6" />
         /// Ensure not negligible moves <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471" />
@@ -263,13 +270,21 @@ namespace Go
             //check connect and die
             if (!ImmovableHelper.CheckConnectAndDie(tryBoard)) return false;
 
+            //check for one point move group
+            if (CheckOnePointMoveInConnectAndDie(tryMove))
+                return false;
+
             //ensure no killable group with two or less liberties
             IEnumerable<Group> groups = tryBoard.GetNeighbourGroups(tryBoard.MoveGroup);
-            if (groups.Any(group => (group.Points.Count >= 2 && group.Liberties.Count <= 2) && !WallHelper.IsNonKillableGroup(tryBoard, group)) && groups.Any(group => group.Liberties.Count > 2))
-                return false;
-            //check for one point move group
-            if (tryBoard.MoveGroup.Points.Count == 1 && tryBoard.GetClosestNeighbour(move, 2).Count > 0 && tryBoard.GetClosestNeighbour(move, 2, c.Opposite()).Count >= 3)
-                return false;
+            if (tryBoard.MoveGroup.Points.Count > 1)
+            {
+                Group weakGroup = groups.FirstOrDefault(group => (group.Points.Count >= 2 && group.Liberties.Count <= 2 && !WallHelper.IsNonKillableGroup(tryBoard, group)));
+                if (weakGroup != null && groups.Any(group => group.Liberties.Count > 2))
+                {
+                    if (tryBoard.GetNeighbourGroups(weakGroup).All(g => !WallHelper.IsNonKillableGroup(tryBoard, g)))
+                        return false;
+                }
+            }
 
             //if all neighbour groups are killable, then check for killer formations 
             if (groups.All(group => !WallHelper.IsNonKillableGroup(tryBoard, group)))
@@ -286,6 +301,31 @@ namespace Go
                     return false;
             }
             return true;
+        }
+
+        /// <summary>
+        /// Check for one point move group <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_TianLongTu_Q16571" />
+        /// Check reverse ko fight <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A80" />
+        /// Check opponent move liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_3" />
+        /// </summary>
+        private static Boolean CheckOnePointMoveInConnectAndDie(GameTryMove tryMove)
+        {
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryMove.Move;
+            Content c = tryMove.MoveContent;
+            if (tryBoard.MoveGroup.Points.Count != 1) return false;
+            if (tryBoard.GetNeighbourGroups(tryBoard.MoveGroup).Any(group => group.Liberties.Count <= 2)) return true;
+            //check reverse ko fight
+            if (tryBoard.GetStoneNeighbours().Any(n => ImmovableHelper.FindTigerMouth(tryBoard, c, n))) return true;
+            //check opponent move liberties
+            foreach (Point p in tryBoard.MoveGroup.Liberties)
+            {
+                Board b = tryBoard.MakeMoveOnNewBoard(p, c.Opposite());
+                if (b != null && b.MoveGroup.Points.Count >= 2 && b.MoveGroupLiberties <= 2)
+                    return true;
+            }
+            return false;
         }
 
         /// <summary>
