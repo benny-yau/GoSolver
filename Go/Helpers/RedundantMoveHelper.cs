@@ -106,9 +106,11 @@ namespace Go
         /// <summary>
         /// Fill ko eye move. <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
         /// Check for atari at ko point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
+        /// Check for weak eye group <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_B28" />
+        /// Ignore if connect more than two groups <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q17132" /> 
+        /// Ensure group more than one point have more than one liberty <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Nie20" /> 
         /// Check for killer formation <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A67" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie20" />
-        /// Check for weak eye group <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_B28" />
         /// </summary>
         public static Boolean FillKoEyeMove(GameTryMove tryMove)
         {
@@ -120,21 +122,25 @@ namespace Go
             if (!EyeHelper.FindEye(currentBoard, tryMove.Move, tryMove.MoveContent)) return false;
             List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).ToList();
             List<Group> targetGroups = eyeGroups.Where(group => group.Liberties.Count == 1).ToList();
-            if (targetGroups.Count != 1 || targetGroups.All(t => t.Points.Count > 1)) return false;
-
             //check for atari at ko point
-            if (AtariHelper.AtariByGroup(currentBoard, targetGroups.First()))
+            if (targetGroups.Count == 1)
             {
-                //check for weak eye group
-                Boolean weakEyeGroup = eyeGroups.Any(e => e.Points.Count == 1 && e.Liberties.Count <= 2 && tryBoard.GetNeighbourGroups(e).All(g => g.Liberties.Count > 1));
-                if (!weakEyeGroup)
-                    return true;
+                Group targetGroup = targetGroups.FirstOrDefault(t => t.Points.Count == 1 && AtariHelper.AtariByGroup(currentBoard, t));
+                if (targetGroup != null)
+                {
+                    //check for weak eye group
+                    Boolean weakEyeGroup = eyeGroups.Any(e => e.Points.Count == 1 && e.Liberties.Count <= 2 && tryBoard.GetNeighbourGroups(e).All(g => g.Liberties.Count > 1));
+                    if (!weakEyeGroup)
+                        return true;
+                }
             }
 
             if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
             //ignore if connect more than two groups
             List<Group> groups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
-            if (groups.Count > 2) return false;
+            if (groups.Count > 2 && eyeGroups.Any(e => e.Liberties.Count <= 2)) return false;
+            //ensure group more than one point have more than one liberty
+            if (eyeGroups.Any(e => e.Points.Count > 1 && e.Liberties.Count == 1)) return false;
 
             //check for killer formation
             if (tryBoard.GetNeighbourGroups(tryBoard.MoveGroup).All(group => !WallHelper.IsNonKillableGroup(tryBoard, group)))
