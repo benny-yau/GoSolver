@@ -77,6 +77,20 @@ namespace Go
 
         public static String ShowMovablePoints(Game game, List<State> states)
         {
+            List<Point> points = new List<Point>();
+            states.ForEach(t => points.Add(t.Game.Board.Move.Value));
+            return ShowMovablePoints(game, points);
+        }
+
+        public static String ShowMovablePoints(Game game, List<GameTryMove> gameTryMoves)
+        {
+            List<Point> points = new List<Point>();
+            gameTryMoves.ForEach(t => points.Add(t.TryGame.Board.Move.Value));
+            return ShowMovablePoints(game, points);
+        }
+
+        public static String ShowMovablePoints(Game game, List<Point> points)
+        {
             string rc = "\n" + new String(' ', 4);
             for (int j = 0; j < game.GameInfo.BoardSizeX; j++)
             {
@@ -87,7 +101,7 @@ namespace Go
                 rc += "\n" + i.ToString().PadLeft(3, ' ') + " ";
                 for (int j = 0; j < game.GameInfo.BoardSizeX; j++)
                 {
-                    if (states.Any(s => s.Game.Board.Move.Value.x == j && s.Game.Board.Move.Value.y == i))
+                    if (points.Any(p => p.x == j && p.y == i))
                         rc += "X";
                     else
                         rc += ".";

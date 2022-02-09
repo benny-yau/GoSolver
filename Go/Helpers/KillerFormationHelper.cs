@@ -61,6 +61,33 @@ namespace Go
             return false;
         }
 
+        /// <summary>
+        /// Suicidal killer formations within survival group without any real eye.
+        /// Check if real eye found in neighbour groups <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario5dan27" />
+        /// </summary>
+        public static Boolean SuicidalKillerFormations(Board tryBoard, Board currentBoard = null, Board capturedBoard = null)
+        {
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            if (!FindSuicidalKillerFormation(tryBoard, currentBoard, capturedBoard)) return false;
+            //check if real eye found in neighbour groups
+            if (tryBoard.MoveGroup.Points.Count <= 2 || (tryBoard.MoveGroup.Points.Count == 6 && KillerFormationHelper.CornerSixFormation(tryBoard, tryBoard.MoveGroup))) return true;
+            Group moveKillerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
+            if (moveKillerGroup == null) moveKillerGroup = tryBoard.MoveGroup;
+            List<Group> killerGroups = BothAliveHelper.GetCorneredKillerGroup(tryBoard, c.Opposite(), false);
+            killerGroups = killerGroups.Except(new List<Group> { moveKillerGroup }).ToList();
+            List<Group> neighbourGroups = tryBoard.GetNeighbourGroups(moveKillerGroup);
+            foreach (Group killerGroup in killerGroups)
+            {
+                List<Group> neighbourKillerGroups = tryBoard.GetNeighbourGroups(killerGroup);
+                if (!neighbourKillerGroups.Intersect(neighbourGroups).Any()) continue;
+                if (killerGroup.Points.Count <= 3 && EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, killerGroup, EyeType.SemiSolidEye))
+                    return false;
+                if (neighbourKillerGroups.Count == 1)
+                    return false;
+            }
+            return true;
+        }
 
         /// <summary>
         /// Two-point move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A48" />
@@ -78,12 +105,15 @@ namespace Go
         /// Flower six formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16859" />
         /// Flower seven side formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B3" />
         /// </summary>
-        public static Boolean SuicidalKillerFormations(Board tryBoard, Board currentBoard = null, Board capturedBoard = null)
+        private static Boolean FindSuicidalKillerFormation(Board tryBoard, Board currentBoard = null, Board capturedBoard = null)
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             if (tryBoard.MoveGroupLiberties > 2 || tryBoard.MoveGroup.Points.Count <= 4 && tryBoard.MoveGroupLiberties > 1)
                 return false;
+
+
+
             int moveCount = tryBoard.MoveGroup.Points.Count;
             if (moveCount == 2)
             {

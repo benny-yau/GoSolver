@@ -108,6 +108,7 @@ namespace Go
         /// Check for atari at ko point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
         /// Check for weak eye group <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_B28" />
         /// Ignore if connect more than two groups <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q17132" /> 
+        /// Check connect and die for covered eye <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A85" /> 
         /// Ensure group more than one point have more than one liberty <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Nie20" /> 
         /// Check for killer formation <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A67" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie20" />
@@ -139,6 +140,14 @@ namespace Go
             //ignore if connect more than two groups
             List<Group> groups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
             if (groups.Count > 2 && eyeGroups.Any(e => e.Liberties.Count <= 2)) return false;
+
+            //check connect and die for covered eye
+            if (groups.Count == 2 && eyeGroups.All(e => e.Liberties.Count > 1) && ImmovableHelper.AllConnectAndDie(currentBoard, move))
+            {
+                if (!ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.MoveGroup))
+                    return false;
+            }
+
             //ensure group more than one point have more than one liberty
             if (eyeGroups.Any(e => e.Points.Count > 1 && e.Liberties.Count == 1)) return false;
 
@@ -1585,8 +1594,6 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Board killerBoard = opponentMove.TryGame.Board;
 
-            Content c = GameHelper.GetContentForSurviveOrKill(gameInfo, SurviveOrKill.Survive);
-
             //if eye is empty then check if real eye
             if (EyeHelper.FindEye(killerBoard, eye))
                 return EyeHelper.FindSemiSolidEyes(eye, killerBoard).Item1;
@@ -1595,24 +1602,35 @@ namespace Go
             Group eyeGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, eye);
             if (eyeGroup == null) return false;
 
-            //filled eye with diagonal empty
-            List<Point> oppositeContent = eyeGroup.Points.Where(p => currentBoard[p] == c.Opposite()).ToList();
-            int eyeGroupCount = eyeGroup.Points.Count;
-            if (eyeGroupCount == 2)
-            {
-                if (oppositeContent.Count == 1 && !oppositeContent.First().Equals(eye))
-                    return true;
-                if (EyeHelper.FindRealEyesWithinTwoEmptyPoints(currentBoard, eyeGroup, EyeType.SemiSolidEye) != null)
-                    return true;
-            }
-            else if (eyeGroupCount == 3)
-            {
-                if (oppositeContent.Count == 2 && killerBoard.GetGroupsFromPoints(oppositeContent).Count == 2)
-                    return false;
-            }
             if (EyeHelper.FindRealEyeWithinEmptySpace(killerBoard, eyeGroup, EyeType.SemiSolidEye))
                 return true;
 
+            if (DiagonalRedundancy(tryMove, eye, eyeGroup))
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
+        /// Redundant eye diagonal move.
+        /// Two point empty group <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_XuanXuanGo_Q18331" />
+        /// </summary>
+        private static Boolean DiagonalRedundancy(GameTryMove tryMove, Point eye, Group eyeGroup)
+        {
+            Board currentBoard = tryMove.CurrentGame.Board;
+            int eyeGroupCount = eyeGroup.Points.Count;
+            GameInfo gameInfo = tryMove.TryGame.GameInfo;
+            Content c = GameHelper.GetContentForSurviveOrKill(gameInfo, SurviveOrKill.Survive);
+            if (eyeGroupCount == 2)
+            {
+                //diagonal eye empty
+                List<Point> oppositeContent = eyeGroup.Points.Where(p => currentBoard[p] == c.Opposite()).ToList();
+                if (oppositeContent.Count == 1 && !oppositeContent.First().Equals(eye))
+                    return true;
+                //two-point empty group
+                if (EyeHelper.FindRealEyesWithinTwoEmptyPoints(currentBoard, eyeGroup, EyeType.SemiSolidEye) != null)
+                    return true;
+            }
             return false;
         }
 
@@ -2132,10 +2150,6 @@ namespace Go
                 capturedPoint = tryBoard.GetStoneNeighbours().FirstOrDefault(n => EyeHelper.FindEye(tryBoard, n.x, n.y, c) || ImmovableHelper.FindTigerMouth(tryBoard, c, n));
                 if (!Convert.ToBoolean(capturedPoint.NotEmpty)) return true;
             }
-
-            GameInfo gameInfo = tryMove.CurrentGame.GameInfo;
-            Content content = GameHelper.GetContentForSurviveOrKill(gameInfo, SurviveOrKill.Kill);
-            if (c == content) return true;
 
             //check diagonals opposite of ko move direction are filled with same content
             List<Point> diagonals = RedundantMoveHelper.TigerMouthEyePoints(tryBoard, capturedPoint, move).Where(q => tryBoard[q] != c).ToList();
