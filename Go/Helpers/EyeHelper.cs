@@ -257,6 +257,9 @@ namespace Go
             //find real eye
             if (MakeMoveWithinEmptySpace(b, killerGroup, eyeType))
             {
+                if (neighbourGroups.Count == 1)
+                    return true;
+
                 //check connect and die
                 if (neighbourGroups.Any(group => ImmovableHelper.CheckConnectAndDie(board, group)))
                     return false;

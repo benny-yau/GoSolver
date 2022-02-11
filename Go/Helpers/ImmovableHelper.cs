@@ -252,7 +252,7 @@ namespace Go
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalOnCapture(tryBoard, target);
                 if (suicidal) continue;
                 //Connect and die
-                if (CheckConnectAndDie(b, group) || (target.Points.Count == 2 && CheckConnectAndDie(b, b.MoveGroup))) continue;
+                if (CheckConnectAndDie(b, b.GetGroupAt(group.Points.First())) || (target.Points.Count == 2 && CheckConnectAndDie(b, b.MoveGroup))) continue;
                 return b.Move;
             }
             return null;
@@ -392,9 +392,10 @@ namespace Go
         /// <summary>
         /// Snapback.
         /// Ensure move group contains previous group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16827" />
-        /// Check if target group is escapable <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_B28" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B31" />
+        /// Check if target group is escapable <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B31" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_GuanZiPu_A3" />
+        /// Check not more than two stones captured <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WuQingYuan_Q31471" />
+        /// Check if kill move can escape <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_B28" />
         /// </summary>
         public static Boolean IsSnapback(Board tryBoard, Group group)
         {
@@ -408,12 +409,15 @@ namespace Go
 
                 //check if target group is escapable
                 (Boolean unEscapable, Point? p) = UnescapableGroup(tryBoard, group);
-                if (p != null)
-                {
-                    Board board = tryBoard.MakeMoveOnNewBoard(p.Value, tryBoard.MoveGroup.Content.Opposite(), true);
-                    if (UnescapableGroup(board, tryBoard.MoveGroup).Item1)
-                        return false;
-                }
+                if (unEscapable) return true;
+                Board escapeBoard = tryBoard.MakeMoveOnNewBoard(p.Value, tryBoard.MoveGroup.Content.Opposite(), true);
+                //check not more than two stones captured
+                int capturedPoints = escapeBoard.CapturedPoints.Count();
+                Boolean capture = (capturedPoints > 0 && capturedPoints <= 2);
+                if (!capture) return false;
+                //check if kill move can escape
+                if (UnescapableGroup(escapeBoard, tryBoard.MoveGroup).Item1)
+                    return false;
                 return true;
             }
             return false;
@@ -434,13 +438,14 @@ namespace Go
             foreach (Point liberty in groupLiberties)
             {
                 (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board);
+                if (b == null) continue;
                 //check if captured
-                if (b != null && b.CapturedPoints.Contains(targetGroup.Points.First())) return true;
+                if (b.CapturedPoints.Contains(targetGroup.Points.First())) return true;
 
                 if (isSuicidal)
                 {
                     //check snapback
-                    if (b != null && IsSnapback(b, targetGroup))
+                    if (IsSnapback(b, targetGroup))
                         return true;
                     continue;
                 }
