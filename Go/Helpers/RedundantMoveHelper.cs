@@ -188,13 +188,13 @@ namespace Go
             if (atariTarget.Points.Count < 3) return false;
 
             //capture neighbour group
-            Point? captureMove = ImmovableHelper.EscapeByCapture(currentBoard, atariTarget);
-            if (captureMove != null && tryMove.Move.Equals(captureMove))
+            Board captureBoard = ImmovableHelper.EscapeByCapture(currentBoard, atariTarget);
+            if (captureBoard != null && tryMove.Move.Equals(captureBoard.Move))
                 return false;
 
             //group can escape at liberty
-            (Boolean result, Point? libertyPoint) = ImmovableHelper.UnescapableGroup(currentBoard, atariTarget, false);
-            if (result || tryMove.Move.Equals(libertyPoint))
+            (Boolean result, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(currentBoard, atariTarget, false);
+            if (result || tryMove.Move.Equals(escapeBoard.Move))
                 return false;
 
             //ensure survival move is neutral point
@@ -203,7 +203,7 @@ namespace Go
                 return false;
 
             //check redundant moves
-            if (ConnectedNonKillable(captureMove, currentBoard, c) || ConnectedNonKillable(libertyPoint, currentBoard, c))
+            if (ConnectedNonKillable(captureBoard) || ConnectedNonKillable(escapeBoard))
                 return true;
             return false;
         }
@@ -211,13 +211,10 @@ namespace Go
         /// <summary>
         /// Group becomes non killable after making move.
         /// </summary>
-        private static Boolean ConnectedNonKillable(Point? escapeMove, Board currentBoard, Content c)
+        private static Boolean ConnectedNonKillable(Board escapeBoard)
         {
-            if (escapeMove == null) return false;
-            Board board = currentBoard.MakeMoveOnNewBoard(escapeMove.Value, c.Opposite());
-            if (board == null)
-                return false;
-            return WallHelper.IsNonKillableGroup(board, escapeMove.Value);
+            if (escapeBoard == null) return false;
+            return WallHelper.IsNonKillableGroup(escapeBoard, escapeBoard.Move.Value);
         }
         #endregion
 
@@ -271,6 +268,7 @@ namespace Go
         /// Check for sieged scenario <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
         /// Check killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_2" />
+        /// Check redundant corner point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
         /// </summary>
         public static Boolean SuicidalConnectAndDie(GameTryMove tryMove)
         {
@@ -304,6 +302,10 @@ namespace Go
             //if all neighbour groups are killable, then check for killer formations 
             if (groups.All(group => !WallHelper.IsNonKillableGroup(tryBoard, group)))
             {
+                //check redundant corner point
+                if (CheckRedundantCornerPoint(tryBoard))
+                    return true;
+
                 if (RedundantSuicidalConnectAndDie(tryMove))
                     return true;
 
@@ -402,7 +404,6 @@ namespace Go
             if (capturedBoard.CapturedPoints.Count() > 1) return true;
             if (SuicideWithinRealEye(tryMove, capturedBoard))
                 return true;
-
             if (opponentTryMove == null && RedundantSuicideNearNonKillableGroup(tryMove, capturedBoard))
                 return true;
 
@@ -454,7 +455,7 @@ namespace Go
             {
                 //check for non two-point group
                 Boolean twoPointGroup = (eyeGroup != null && eyeGroup.Points.Count == 2);
-                if (!twoPointGroup && !tryBoard.CornerPoint(move) && tryBoard.AtariTargets.All(t => t.Points.Count == 1))
+                if (!twoPointGroup && tryBoard.GetDiagonalNeighbours(move.x, move.y).Any(n => tryBoard[n] == Content.Empty && (WallHelper.NoEyeForSurvival(tryBoard, n) || BothAliveHelper.GetKillerGroupFromCache(tryBoard, n, c.Opposite()) != null)))
                     return true;
                 //check for solid eye three or more liberties
                 if (EyeHelper.FindRealSolidEyes(move, c.Opposite(), capturedBoard) && capturedBoard.MoveGroupLiberties > 3)
@@ -1801,7 +1802,7 @@ namespace Go
                 if (possibleEyesAtNeighbourPt <= possibleEyes) continue;
                 if (tryBoard.CornerPoint(p)) continue;
                 //corner point for try move
-                if (CheckCornerPointForFillerMove(tryBoard))
+                if (CheckRedundantCornerPoint(tryBoard))
                     return true;
 
                 //check any opponent stone at neighbour points
@@ -1814,13 +1815,13 @@ namespace Go
         }
 
         /// <summary>
-        /// Check corner point for filler move.
+        /// Check redundant corner point.
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A95" />
         /// Two point kill <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q16508" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A6" />
-        /// Check for siege formation <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
+        /// Check for kill formation <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
         /// </summary>
-        private static Boolean CheckCornerPointForFillerMove(Board tryBoard)
+        private static Boolean CheckRedundantCornerPoint(Board tryBoard)
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard[move];
@@ -1829,13 +1830,12 @@ namespace Go
             Boolean twoPointKill = (tryBoard.MoveGroup.Points.Count == 2 && tryBoard.MoveGroupLiberties <= 2 && tryBoard.GetStoneNeighbours().Any(q => tryBoard[q] == Content.Empty));
             if (twoPointKill) return false;
 
-            //check for siege formation
+            //check for kill formation
             if (tryBoard.IsSinglePoint() && tryBoard.MoveGroupLiberties == 2)
             {
-                if (tryBoard.GetClosestNeighbour(move, 2, c.Opposite()).Count < 3) return false;
-                List<Point> opponentStones = tryBoard.GetClosestNeighbour(move, 1, c.Opposite());
-                if (!SiegedScenario(tryBoard, opponentStones, 1))
-                    return true;
+                Boolean killFormation = (tryBoard.GetClosestNeighbour(move, 2, c.Opposite()).Count >= 3 && !tryBoard.GetClosestNeighbour(move, 2, c).Any());
+                if (killFormation) return false;
+                return true;
             }
             return false;
         }

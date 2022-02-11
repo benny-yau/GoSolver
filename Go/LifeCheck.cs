@@ -312,12 +312,10 @@ namespace Go
             foreach (Group targetGroup in board.AtariTargets)
             {
                 //get liberty point for target group
-                (Boolean unEscapable, Point? libertyPoint) = ImmovableHelper.UnescapableGroup(board, targetGroup);
+                (Boolean unEscapable, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(board, targetGroup);
                 if (unEscapable) continue;
-                //make move to resolve atari
-                Board b = board.MakeMoveOnNewBoard(libertyPoint.Value, targetGroup.Content);
                 //check if any atari targets left
-                if (b != null && !board.AtariTargets.Any(t => b.GetGroupLiberties(t.Points.First()) == 1))
+                if (!board.AtariTargets.Any(t => escapeBoard.GetGroupLiberties(t.Points.First()) == 1))
                     return false;
             }
             return true;

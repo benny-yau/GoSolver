@@ -573,9 +573,10 @@
             <summary>
             Snapback.
             Ensure move group contains previous group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16827" />
-            Check if target group is escapable <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_B28" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B31" />
+            Check if target group is escapable <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B31" />
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_GuanZiPu_A3" />
+            Check not more than two stones captured <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WuQingYuan_Q31471" />
+            Check if kill move can escape <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_B28" />
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.CheckConnectAndDie(Go.Board,Go.Group)">
@@ -812,7 +813,7 @@
             Check connect and die <see cref="!:UnitTestProject.AtariResponseMoveTest.AtariResponseMoveTest_Scenario_TianLongTu_Q16490" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.ConnectedNonKillable(System.Nullable{Go.Point},Go.Board,Go.Content)">
+        <member name="M:Go.RedundantMoveHelper.ConnectedNonKillable(Go.Board)">
             <summary>
             Group becomes non killable after making move.
             </summary>
@@ -836,6 +837,7 @@
             Check for sieged scenario <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
             Check killer formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_2" />
+            Check redundant corner point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckOnePointMoveInConnectAndDie(Go.GameTryMove)">
@@ -1155,13 +1157,13 @@
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q16827_2" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.CheckCornerPointForFillerMove(Go.Board)">
+        <member name="M:Go.RedundantMoveHelper.CheckRedundantCornerPoint(Go.Board)">
             <summary>
-            Check corner point for filler move.
+            Check redundant corner point.
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A95" />
             Two point kill <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q16508" />
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A6" />
-            Check for siege formation <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
+            Check for kill formation <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.EyeFillerLinkForGroups(Go.GameTryMove)">

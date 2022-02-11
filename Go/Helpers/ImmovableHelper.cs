@@ -65,7 +65,7 @@ namespace Go
             else if (content == c.Opposite())
             {
                 //ensure group in tiger mouth cannot escape
-                (Boolean result, Point? libertyPoint) = UnescapableGroup(board, board.GetGroupAt(p));
+                (Boolean result, Point? libertyPoint, _) = UnescapableGroup(board, board.GetGroupAt(p));
                 if (result)
                     return libertyPoint.Value;
             }
@@ -105,7 +105,7 @@ namespace Go
             else //filled point
             {
                 Group targetGroup = board.GetGroupAt(p);
-                (Boolean unEscapable, Point? libertyPoint) = UnescapableGroup(board, targetGroup);
+                (Boolean unEscapable, Point? libertyPoint, _) = UnescapableGroup(board, targetGroup);
                 if (!unEscapable)
                     return (false, null);
                 Point q = libertyPoint.Value;
@@ -212,30 +212,30 @@ namespace Go
         /// Recursive connect and die <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A44_101Weiqi" />
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q17255" />
         /// </summary>
-        public static (Boolean, Point?) UnescapableGroup(Board tryBoard, Group group, Boolean checkAtari = true)
+        public static (Boolean, Point?, Board) UnescapableGroup(Board tryBoard, Group group, Boolean checkAtari = true)
         {
             Point? libertyPoint = ImmovableHelper.GetLibertyPointOfSuicide(tryBoard, group);
-            if (libertyPoint == null) return (false, libertyPoint);
+            if (libertyPoint == null) return (false, null, null);
 
             //check if atari any neighbour groups
             if (checkAtari)
             {
-                Point? captureMove = EscapeByCapture(tryBoard, group);
-                if (captureMove != null)
-                    return (false, captureMove);
+                Board captureBoard = EscapeByCapture(tryBoard, group);
+                if (captureBoard != null)
+                    return (false, captureBoard.Move.Value, captureBoard);
             }
 
             //move at liberty is suicidal or end crawling move
             (Boolean isSuicidal, Board escapeBoard) = IsSuicidalMove(libertyPoint.Value, group.Content, tryBoard);
             if (isSuicidal || IsEndCrawlingMove(new Board(tryBoard), libertyPoint.Value, group.Content))
             {
-                return (true, libertyPoint);
+                return (true, libertyPoint, escapeBoard);
             }
             //recursive connect and die
             if (CheckConnectAndDie(escapeBoard, escapeBoard.GetGroupAt(group.Points.First())))
-                return (true, libertyPoint);
+                return (true, libertyPoint, escapeBoard);
 
-            return (false, libertyPoint);
+            return (false, libertyPoint, escapeBoard);
         }
 
         /// <summary>
@@ -244,7 +244,7 @@ namespace Go
         /// Connect and die <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
         /// Connect and die for move group <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_GuanZiPu_A3" />
         /// </summary>
-        public static Point? EscapeByCapture(Board tryBoard, Group group)
+        public static Board EscapeByCapture(Board tryBoard, Group group)
         {
             List<Group> atariTargets = AtariHelper.AtariByGroup(group, tryBoard);
             foreach (Group target in atariTargets)
@@ -253,7 +253,7 @@ namespace Go
                 if (suicidal) continue;
                 //Connect and die
                 if (CheckConnectAndDie(b, b.GetGroupAt(group.Points.First())) || (target.Points.Count == 2 && CheckConnectAndDie(b, b.MoveGroup))) continue;
-                return b.Move;
+                return b;
             }
             return null;
         }
@@ -408,12 +408,11 @@ namespace Go
                     return false;
 
                 //check if target group is escapable
-                (Boolean unEscapable, Point? p) = UnescapableGroup(tryBoard, group);
+                (Boolean unEscapable, _, Board escapeBoard) = UnescapableGroup(tryBoard, group);
                 if (unEscapable) return true;
-                Board escapeBoard = tryBoard.MakeMoveOnNewBoard(p.Value, tryBoard.MoveGroup.Content.Opposite(), true);
                 //check not more than two stones captured
                 int capturedPoints = escapeBoard.CapturedPoints.Count();
-                Boolean capture = (capturedPoints > 0 && capturedPoints <= 2);
+                Boolean capture = (escapeBoard.CapturedList.Count == 1 && capturedPoints >= 1 && capturedPoints <= 2);
                 if (!capture) return false;
                 //check if kill move can escape
                 if (UnescapableGroup(escapeBoard, tryBoard.MoveGroup).Item1)
