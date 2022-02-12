@@ -348,6 +348,7 @@ namespace Go
         /// <summary>
         /// Suicide within non killable group.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_2" />
+        /// Check for pre atari move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
         /// </summary>
         public static Boolean SuicidalWithinNonKillableGroup(GameTryMove tryMove)
         {
@@ -355,15 +356,17 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
-            if (tryBoard.MoveGroup.Points.Count == 1 && tryMove.IsNegligible && !tryBoard.IsAtariMove)
-            {
-                Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
-                if (killerGroup == null || killerGroup.Points.Count(p => tryBoard[p] == c) != 1) return false;
-                IEnumerable<Group> groups = tryBoard.GetNeighbourGroups(killerGroup);
-                Boolean nonKillable = groups.Any(group => WallHelper.IsNonKillableGroup(tryBoard, group));
-                return nonKillable;
-            }
-            return false;
+            if (tryBoard.MoveGroup.Points.Count != 1 || !tryMove.IsNegligible || tryBoard.IsAtariMove) return false;
+            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
+            if (killerGroup == null || killerGroup.Points.Count(p => tryBoard[p] == c) != 1) return false;
+
+            IEnumerable<Group> groups = tryBoard.GetNeighbourGroups(killerGroup);
+            Boolean nonKillable = groups.Any(group => WallHelper.IsNonKillableGroup(tryBoard, group));
+            if (!nonKillable) return false;
+            //check for pre atari move
+            if (tryBoard.GetDiagonalNeighbours(move.x, move.y).Any(n => tryBoard[n] == c) && groups.Any(group => group.Points.Count == 2 && group.Liberties.Count <= 2))
+                return false;
+            return true;
         }
 
         /// <summary>
@@ -416,9 +419,6 @@ namespace Go
         /// Check for snapback  <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B31" />
         /// Atari move required <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q2757" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18500_3" />
-        /// Check for non two-point group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31536" />
-        /// Check for solid eye three or more liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_1887" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18796" />
         /// One liberty - kill from external <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_A19" />
         /// One liberty - suicide for both players <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_A19" />
@@ -455,11 +455,13 @@ namespace Go
             {
                 //check for non two-point group
                 Boolean twoPointGroup = (eyeGroup != null && eyeGroup.Points.Count == 2);
-                if (!twoPointGroup && tryBoard.GetDiagonalNeighbours(move.x, move.y).Any(n => tryBoard[n] == Content.Empty && (WallHelper.NoEyeForSurvival(tryBoard, n) || BothAliveHelper.GetKillerGroupFromCache(tryBoard, n, c.Opposite()) != null)))
+                if (!twoPointGroup && CheckNonTwoPointGroupInSuicideRealEye(tryMove))
                     return true;
-                //check for solid eye three or more liberties
-                if (EyeHelper.FindRealSolidEyes(move, c.Opposite(), capturedBoard) && capturedBoard.MoveGroupLiberties > 3)
+
+                //check two point group
+                if (twoPointGroup && CheckTwoPointGroupInSuicideRealEye(tryMove, capturedBoard))
                     return true;
+
                 return false;
             }
 
@@ -502,6 +504,48 @@ namespace Go
             }
             return true;
         }
+
+        /// <summary>
+        /// Check for non two-point group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31536" />
+        /// </summary>
+        private static Boolean CheckNonTwoPointGroupInSuicideRealEye(GameTryMove tryMove)
+        {
+            Point move = tryMove.Move;
+            Board tryBoard = tryMove.TryGame.Board;
+            Content c = tryMove.MoveContent;
+            List<Point> diagonals = tryBoard.GetDiagonalNeighbours(move.x, move.y).Where(n => tryBoard[n] != c.Opposite()).ToList();
+            if (diagonals.Count == 0) return false;
+            if (diagonals.Any(d => BothAliveHelper.GetKillerGroupFromCache(tryBoard, d, c.Opposite()) != null)) return true;
+            if (diagonals.Any(d => WallHelper.NoEyeForSurvival(tryBoard, d) && !WallHelper.IsNonKillableGroup(tryBoard, d)))
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Check for two-point group.
+        /// Check for liberty fight <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_1887" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18796" />
+        /// </summary>
+        private static Boolean CheckTwoPointGroupInSuicideRealEye(GameTryMove tryMove, Board capturedBoard)
+        {
+            Point move = tryMove.Move;
+            Board tryBoard = tryMove.TryGame.Board;
+            Content c = tryMove.MoveContent;
+            HashSet<Group> neighbourGroups = capturedBoard.GetGroupsFromStoneNeighbours(move, c);
+            if (neighbourGroups.Count() != 1) return false;
+            HashSet<Point> liberties = neighbourGroups.First().Liberties;
+            liberties.Remove(move);
+            if (liberties.Count > 2) return true;
+            foreach (Point liberty in liberties)
+            {
+                //check for liberty fight
+                Board b = capturedBoard.MakeMoveOnNewBoard(liberty, c, true);
+                if (b != null && b.MoveGroupLiberties > 2)
+                    return true;
+            }
+            return false;
+        }
+
 
         /// <summary>
         /// Kill move make suicide move with diagonally connected non killable group.
