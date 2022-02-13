@@ -796,10 +796,16 @@
             Check for atari at ko point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
             Check for weak eye group <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_B28" />
             Ignore if connect more than two groups <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q17132" /> 
-            Check connect and die for covered eye <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A85" /> 
             Ensure group more than one point have more than one liberty <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Nie20" /> 
             Check for killer formation <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A67" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie20" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.SuicideAtBigTigerMouth(Go.GameTryMove,System.Collections.Generic.List{Go.Group})">
+            <summary>
+            Suicide at big tiger mouth.
+            <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_B3" /> 
+            <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A85" /> 
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.AtariResponseMove(Go.GameTryMove)">
