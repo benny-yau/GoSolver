@@ -862,7 +862,13 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.RedundantSuicidalConnectAndDie(Go.GameTryMove)">
             <summary>
-            Check for suicidal moves that have diagonal groups and not killer formation.
+            Check for suicidal moves depending on diagonal groups.
+            Check liberties are connected <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
+            Check atari resolved <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi_2" />
+            Check for corner point <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q15082" />
+            Check diagonal at opposite corner of stone neighbours <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31493" />
+            Both groups have limited liberties <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17081_2" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A61" />
             Ensure no diagonal at move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
             Ensure no shared liberty with neighbour group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A55" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
@@ -891,6 +897,7 @@
         <member name="M:Go.RedundantMoveHelper.CheckNonTwoPointGroupInSuicideRealEye(Go.GameTryMove)">
             <summary>
             Check for non two-point group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31536" />
+            Check killer group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario4dan17_2" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckTwoPointGroupInSuicideRealEye(Go.GameTryMove,Go.Board)">
@@ -999,8 +1006,8 @@
             Neutral point at tiger mouth <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario5dan27_3" />
             Neutral point at bigger tiger mouth <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario5dan27_Variation" />
             Negative example <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A27" />
-            Test move with liberty of one <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23" />
-            Is suicide move for both current board and try board <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_GuanZiPu_Weiqi101_19138" />
+            <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23" />
+            <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_GuanZiPu_Weiqi101_19138" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.ValidateNeutralPoint(Go.GameTryMove)">
@@ -1077,7 +1084,7 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.RedundantTigerMouthMove(Go.GameTryMove)">
             <summary>
-            Find survival moves at tiger mouth that are redundant, and opponent suicide point for sorting game try moves.
+            Redundant tiger mouth.
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18473" />
             </summary>
         </member>
@@ -1087,17 +1094,10 @@
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_TianLongTu_Q16827" />
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_GuanZiPu_Q18860" />
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WuQingYuan_Q15126" />
-            <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WuQingYuan_Q15126" />
             Check two point atari move
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" />
             Check corner three formation <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_Q18860" />
-            </summary>
-        </member>
-        <member name="M:Go.RedundantMoveHelper.PlainTigerMouth(Go.GameTryMove)">
-            <summary>
-            Plain tiger mouth.
-            Not redundant tiger mouth. <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario3dan22" />
-            <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_GuanZiPu_Q18860" />
+            Find real eyes at both spaces <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_Nie4" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.TigerMouthEyePoints(Go.Board,Go.Point,Go.Point)">

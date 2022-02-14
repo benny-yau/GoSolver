@@ -335,6 +335,13 @@ namespace Go
             //if all neighbour groups are killable, then check for killer formations 
             if (groups.All(group => !WallHelper.IsNonKillableGroup(tryBoard, group)))
             {
+                //check killer move non killable group
+                foreach (Point p in tryBoard.MoveGroup.Liberties)
+                {
+                    Board b = tryBoard.MakeMoveOnNewBoard(p, c.Opposite());
+                    if (b != null && WallHelper.IsNonKillableGroup(b, b.MoveGroup))
+                        return true;
+                }
                 //check redundant corner point
                 if (CheckRedundantCornerPoint(tryBoard))
                     return true;
@@ -405,6 +412,11 @@ namespace Go
         /// <summary>
         /// Check for suicidal moves depending on diagonal groups.
         /// Check liberties are connected <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
+        /// Check atari resolved <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi_2" />
+        /// Check for corner point <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q15082" />
+        /// Check diagonal at opposite corner of stone neighbours <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31493" />
+        /// Both groups have limited liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17081_2" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A61" />
         /// Ensure no diagonal at move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
         /// Ensure no shared liberty with neighbour group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A55" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
@@ -412,6 +424,7 @@ namespace Go
         /// </summary>
         private static Boolean RedundantSuicidalConnectAndDie(GameTryMove tryMove)
         {
+            Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
@@ -419,12 +432,44 @@ namespace Go
             Boolean diagonalGroups = LinkHelper.GetGroupLinkedDiagonals(tryBoard, tryBoard.MoveGroup, false).Any();
             if (!diagonalGroups)
             {
-                //check liberties are connected
-                if (tryBoard.MoveGroup.Points.Count > 1 && tryMove.IsNegligible)
+                if (tryBoard.MoveGroup.Points.Count > 1)
                 {
+                    //check atari resolved
+                    if (tryBoard.AtariResolved) return false;
                     Point p = tryBoard.MoveGroup.Liberties.First();
-                    if (tryBoard.GetStoneNeighbours(p.x, p.y).Any(q => tryBoard.MoveGroup.Liberties.Contains(q)) && tryBoard.MoveGroup.Liberties.All(q => !tryBoard.CornerPoint(q)))
+                    //check liberties are connected
+                    if (tryBoard.GetStoneNeighbours(p.x, p.y).Any(q => tryBoard.MoveGroup.Liberties.Contains(q)))
+                    {
+                        //check for corner point
+                        if (tryBoard.MoveGroup.Liberties.Any(q => tryBoard.CornerPoint(q)))
+                            return false;
                         return true;
+                    }
+                }
+                else
+                {
+                    List<Point> stoneNeighbours = tryBoard.GetStoneNeighbours().Where(n => tryBoard[n] == c.Opposite()).ToList();
+                    if (stoneNeighbours.Count == 0) return false;
+                    Point p = stoneNeighbours.First();
+                    //stone neighbours at diagonal of each other
+                    if (stoneNeighbours.Any(n => tryBoard.GetDiagonalNeighbours(p.x, p.y).Intersect(stoneNeighbours).Any()))
+                    {
+                        //check diagonal at opposite corner of stone neighbours
+                        List<Point> diagonals = tryBoard.GetDiagonalNeighbours(move.x, move.y).Where(d => tryBoard[d] == c.Opposite()).ToList();
+                        if (diagonals.Any(d => !tryBoard.GetStoneNeighbours(d.x, d.y).Intersect(stoneNeighbours).Any()))
+                            return false;
+
+                        //both groups have limited liberties
+                        if (stoneNeighbours.Count == 2)
+                        {
+                            List<Point> cutDiagonal = LinkHelper.PointsBetweenDiagonals(stoneNeighbours[0], stoneNeighbours[1]);
+                            cutDiagonal.Remove(move);
+                            Board b = tryBoard.MakeMoveOnNewBoard(cutDiagonal.First(), c, true);
+                            if (b != null && stoneNeighbours.All(n => b.GetGroupLiberties(b.GetGroupAt(n)) <= 2))
+                                return false;
+                        }
+                        return true;
+                    }
                 }
                 return false;
             }
@@ -1812,7 +1857,6 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryBoard.Move.Value;
             Content c = tryMove.MoveContent;
-            if (tryBoard.CornerPoint(tryMove.Move)) return false;
             if (!isKillerGroup)
             {
                 //ensure no opposite content at stone and diagonal
