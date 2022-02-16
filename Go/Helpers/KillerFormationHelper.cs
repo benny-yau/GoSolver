@@ -67,11 +67,15 @@ namespace Go
         /// </summary>
         public static Boolean SuicidalKillerFormations(Board tryBoard, Board currentBoard = null, Board capturedBoard = null)
         {
-            Point move = tryBoard.Move.Value;
-            Content c = tryBoard.MoveGroup.Content;
             if (!FindSuicidalKillerFormation(tryBoard, currentBoard, capturedBoard)) return false;
             //check if real eye found in neighbour groups
             if (tryBoard.MoveGroup.Points.Count <= 2 || (tryBoard.MoveGroup.Points.Count == 6 && KillerFormationHelper.CornerSixFormation(tryBoard, tryBoard.MoveGroup))) return true;
+            return !CheckRealEyeInNeighbourGroups(tryBoard, tryBoard.Move.Value);
+        }
+
+        public static Boolean CheckRealEyeInNeighbourGroups(Board tryBoard, Point move)
+        {
+            Content c = tryBoard[move];
             Group moveKillerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
             if (moveKillerGroup == null) moveKillerGroup = tryBoard.MoveGroup;
             List<Group> killerGroups = BothAliveHelper.GetCorneredKillerGroup(tryBoard, c.Opposite(), false);
@@ -81,12 +85,12 @@ namespace Go
             {
                 List<Group> neighbourKillerGroups = tryBoard.GetNeighbourGroups(killerGroup);
                 if (!neighbourKillerGroups.Intersect(neighbourGroups).Any()) continue;
-                if (killerGroup.Points.Count <= 3 && EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, killerGroup, EyeType.SemiSolidEye))
-                    return false;
                 if (neighbourKillerGroups.Count == 1)
-                    return false;
+                    return true;
+                if (killerGroup.Points.Count <= 3 && EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, killerGroup, EyeType.SemiSolidEye))
+                    return true;
             }
-            return true;
+            return false;
         }
 
         /// <summary>
@@ -95,7 +99,9 @@ namespace Go
         /// Check for snapback <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234" />
         /// One-by-three formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A8" />
         /// Crowbar edge formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q6710" />
+        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16738" />
         /// Two-by-two formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40" />
+        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16738_2" />
         /// Bent four corner formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie20" />
         /// Knife five formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113" />
         /// One-by-four side formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B32" />
@@ -111,8 +117,6 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             if (tryBoard.MoveGroupLiberties > 2 || tryBoard.MoveGroup.Points.Count <= 4 && tryBoard.MoveGroupLiberties > 1)
                 return false;
-
-
 
             int moveCount = tryBoard.MoveGroup.Points.Count;
             if (moveCount == 2)
@@ -298,6 +302,7 @@ namespace Go
         {
             if (TwoByTwoFormation(tryBoard, killerGroup.Points, killerGroup.Content))
             {
+                Content c = killerGroup.Content;
                 Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
                 if (capturedBoard == null) return false;
                 foreach (Point p in tryBoard.MoveGroup.Points)
@@ -307,6 +312,9 @@ namespace Go
                     if (b != null && b.AtariTargets.Count == 1 && b.AtariTargets.First().Points.Count > 1)
                         return true;
                 }
+                List<Point> contentPoints = killerGroup.Points.Where(t => tryBoard[t] == c).ToList();
+                if (CheckSideFormationDiagonal(contentPoints, tryBoard, killerGroup))
+                    return true;
             }
             return false;
         }
@@ -389,7 +397,7 @@ namespace Go
             {
                 if (tryBoard.GetNeighbourGroups(tryBoard.MoveGroup).Count <= 1) return false;
                 List<Point> contentPoints = killerGroup.Points.Where(t => tryBoard[t] == killerGroup.Content).ToList();
-                if (contentPoints.Count(p => !tryBoard.PointWithinMiddleArea(p)) == 3)
+                if (contentPoints.Count(p => !tryBoard.PointWithinMiddleArea(p)) >= 2)
                     return true;
             }
             return false;
@@ -508,13 +516,8 @@ namespace Go
                 List<Point> middlePoint = contentPoints.Where(p => tryBoard.PointWithinMiddleArea(p)).ToList();
                 if (middlePoint.Count != 2) return false;
 
-                List<Point> endPoints = contentPoints.Where(p => tryBoard.GetStoneNeighbours(p.x, p.y).Where(n => !tryBoard.PointWithinMiddleArea(n.x, n.y)).Intersect(contentPoints).Count() == 1).ToList();
-                Boolean oneLiberty = (killerGroup.Liberties.Count == 1);
-                foreach (Point q in endPoints)
-                {
-                    if (tryBoard.GetDiagonalNeighbours(q.x, q.y).Where(n => !killerGroup.Points.Contains(n)).Any(n => tryBoard[n] == ((oneLiberty) ? c : Content.Empty)))
-                        return true;
-                }
+                if (CheckSideFormationDiagonal(contentPoints, tryBoard, killerGroup))
+                    return true;
             }
             return false;
         }
@@ -534,13 +537,21 @@ namespace Go
             if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 3) == 2)
             {
                 if (contentPoints.Count(p => !tryBoard.PointWithinMiddleArea(p)) != 4) return false;
-                List<Point> endPoints = contentPoints.Where(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 1).ToList();
-                Boolean oneLiberty = (killerGroup.Liberties.Count == 1);
-                foreach (Point q in endPoints)
-                {
-                    if (tryBoard.GetDiagonalNeighbours(q.x, q.y).Where(n => !killerGroup.Points.Contains(n)).Any(n => tryBoard[n] == ((oneLiberty) ? c : Content.Empty)))
-                        return true;
-                }
+                if (CheckSideFormationDiagonal(contentPoints, tryBoard, killerGroup))
+                    return true;
+            }
+            return false;
+        }
+
+        private static Boolean CheckSideFormationDiagonal(List<Point> contentPoints, Board tryBoard, Group killerGroup)
+        {
+            Content c = killerGroup.Content;
+            List<Point> endPoints = contentPoints.Where(p => tryBoard.GetStoneNeighbours(p.x, p.y).Where(n => !tryBoard.PointWithinMiddleArea(n.x, n.y)).Intersect(contentPoints).Count() == 1).ToList();
+            Boolean oneLiberty = (killerGroup.Liberties.Count == 1);
+            foreach (Point q in endPoints)
+            {
+                if (tryBoard.GetDiagonalNeighbours(q.x, q.y).Where(n => !killerGroup.Points.Contains(n)).Any(n => tryBoard[n] == ((oneLiberty) ? c : Content.Empty)))
+                    return true;
             }
             return false;
         }
