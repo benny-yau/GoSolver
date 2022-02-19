@@ -67,9 +67,13 @@ namespace Go
         /// </summary>
         public static Boolean SuicidalKillerFormations(Board tryBoard, Board currentBoard = null, Board capturedBoard = null)
         {
+            //find killer formation
             if (!FindSuicidalKillerFormation(tryBoard, currentBoard, capturedBoard)) return false;
-            //check if real eye found in neighbour groups
             if (tryBoard.MoveGroup.Points.Count <= 2 || (tryBoard.MoveGroup.Points.Count == 6 && KillerFormationHelper.CornerSixFormation(tryBoard, tryBoard.MoveGroup))) return true;
+            //check if neighbour group is non-killable
+            if (tryBoard.GetNeighbourGroups(tryBoard.MoveGroup).Any(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
+                return false;
+            //check if real eye found in neighbour groups
             return !CheckRealEyeInNeighbourGroups(tryBoard, tryBoard.Move.Value);
         }
 

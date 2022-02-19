@@ -29,7 +29,7 @@ namespace Go
         public bool IsRedundantTigerMouth { get; set; }
         public bool IsRedundantEyeFiller { get; set; }
         public bool IsLeapMove { get; set; }
-        public bool IsAtariResponse { get; set; }
+        public bool IsAtariRedundant { get; set; }
 
 
 
@@ -73,8 +73,8 @@ namespace Go
         }
 
         /// <summary>
-         /// Make ko move within board. Set KoGameCheck to mark game within ko and koMoveRepeat to limit ko repeats.
-         /// </summary>
+        /// Make ko move within board. Set KoGameCheck to mark game within ko and koMoveRepeat to limit ko repeats.
+        /// </summary>
         public void MakeKoMove(Point p, SurviveOrKill surviveOrKill)
         {
             this.TryGame.KoGameCheck = (surviveOrKill == SurviveOrKill.Kill) ? KoCheck.Kill : KoCheck.Survive;
@@ -86,7 +86,7 @@ namespace Go
         {
             get
             {
-                return IsEye || IsCoveredEyeMove || IsFillKoEyeMove || IsSuicidal || IsNeutralPoint || IsDiagonalEyeMove || IsRedundantKo || IsBaseLine || IsRedundantTigerMouth || IsRedundantEyeFiller || IsLeapMove || IsAtariResponse;
+                return IsEye || IsCoveredEyeMove || IsFillKoEyeMove || IsSuicidal || IsNeutralPoint || IsDiagonalEyeMove || IsRedundantKo || IsBaseLine || IsRedundantTigerMouth || IsRedundantEyeFiller || IsLeapMove || IsAtariRedundant;
             }
         }
         /// <summary>

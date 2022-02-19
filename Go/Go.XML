@@ -566,6 +566,7 @@
         <member name="M:Go.ImmovableHelper.CheckSnapback(Go.Board,Go.Point,Go.Content)">
             <summary>
             Simple snapback with liberty of two in the group.
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234" />
             <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A55" />
             </summary>
         </member>
@@ -579,7 +580,7 @@
             Check if kill move can escape <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_B28" />
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.CheckConnectAndDie(Go.Board,Go.Group)">
+        <member name="M:Go.ImmovableHelper.ConnectAndDie(Go.Board,Go.Group)">
             <summary>
             Check for connect and die on board with captured suicide stone.
             <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
@@ -808,6 +809,13 @@
             Suicide at big tiger mouth.
             <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_B3" /> 
             <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A85" /> 
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.AtariRedundantMove(Go.GameTryMove)">
+            <summary>
+            Redundant atari move that allows target group to escape.
+            <see cref="!:UnitTestProject.AtariResponseMoveTest.AtariResponseMoveTest_Scenario_XuanXuanGo_A46_101Weiqi_2" />
+            Check corner kill formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.AtariResponseMove(Go.GameTryMove)">

@@ -358,6 +358,7 @@ namespace Go
 
         /// <summary>
         /// Simple snapback with liberty of two in the group.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A55" />
         /// </summary>
         public static Boolean CheckSnapback(Board board, Point p, Content c = Content.Unknown)
@@ -427,25 +428,25 @@ namespace Go
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
         /// Reverse connect and die <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WindAndTime_Q29277" />
         /// </summary>
-        public static Boolean CheckConnectAndDie(Board board, Group targetGroup = null)
+        public static (Boolean, Board) ConnectAndDie(Board board, Group targetGroup = null)
         {
             targetGroup = (targetGroup) ?? board.MoveGroup;
             Content c = targetGroup.Content;
             List<Point> groupLiberties = board.GetGroupLibertyPoints(targetGroup);
-            if (groupLiberties.Count > 2) return false;
+            if (groupLiberties.Count > 2) return (false, null);
 
             foreach (Point liberty in groupLiberties)
             {
                 (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board);
                 if (b == null) continue;
                 //check if captured
-                if (b.CapturedPoints.Contains(targetGroup.Points.First())) return true;
+                if (b.CapturedPoints.Contains(targetGroup.Points.First())) return (true, b);
 
                 if (isSuicidal)
                 {
                     //check snapback
                     if (IsSnapback(b, targetGroup))
-                        return true;
+                        return (true, b);
                     continue;
                 }
 
@@ -453,13 +454,19 @@ namespace Go
                 if (UnescapableGroup(b, targetGroup).Item1)
                 {
                     //reverse connect and die
-                    if (CheckConnectAndDie(b, b.MoveGroup))
+                    if (ConnectAndDie(b, b.MoveGroup).Item1)
                         continue;
-                    return true;
+                    return (true, b);
                 }
             }
-            return false;
+            return (false, null);
         }
+
+        public static Boolean CheckConnectAndDie(Board board, Group targetGroup = null)
+        {
+            return ConnectAndDie(board, targetGroup).Item1;
+        }
+
 
         /// <summary>
         /// Check connect and die for captured board.

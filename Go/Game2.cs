@@ -209,6 +209,9 @@ namespace Go
             move.IsLeapMove = RedundantMoveHelper.SurvivalLeapMove(move);
             if (move.IsLeapMove)
                 return;
+            move.IsAtariRedundant = RedundantMoveHelper.AtariRedundantMove(move);
+            if (move.IsAtariRedundant)
+                return;
         }
 
 
@@ -247,8 +250,8 @@ namespace Go
             move.IsLeapMove = RedundantMoveHelper.KillLeapMove(move);
             if (move.IsLeapMove)
                 return;
-            move.IsAtariResponse = RedundantMoveHelper.AtariResponseMove(move);
-            if (move.IsAtariResponse)
+            move.IsAtariRedundant = RedundantMoveHelper.AtariRedundantMove(move);
+            if (move.IsAtariRedundant)
                 return;
         }
 

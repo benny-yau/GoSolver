@@ -195,6 +195,42 @@ namespace Go
         #endregion
 
         #region atari response move
+
+        /// <summary>
+        /// Redundant atari move that allows target group to escape.
+        /// <see cref="UnitTestProject.AtariResponseMoveTest.AtariResponseMoveTest_Scenario_XuanXuanGo_A46_101Weiqi_2" />
+        /// Check corner kill formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" />
+        /// </summary>
+        public static Boolean AtariRedundantMove(GameTryMove tryMove)
+        {
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            Content c = tryBoard.MoveGroup.Content;
+            if (GameHelper.GetContentForSurviveOrKill(tryBoard.GameInfo, SurviveOrKill.Kill) == c)
+            {
+                if (AtariResponseMove(tryMove))
+                    return true;
+            }
+            if (!tryBoard.IsAtariMove || tryBoard.AtariTargets.Count > 1) return false;
+            Group atariTarget = tryBoard.AtariTargets.First();
+            //ensure target group can escape
+            if (ImmovableHelper.UnescapableGroup(tryBoard, atariTarget).Item1) return false;
+            //check if any move can capture target group
+            (Boolean suicidal, Board board) = ImmovableHelper.ConnectAndDie(currentBoard, atariTarget);
+            if (!suicidal) return false;
+            //check corner kill formation
+            if (tryBoard.MoveGroup.Points.Count == 1 && tryBoard.MoveGroupLiberties == 1 && tryBoard.CornerPoint(tryBoard.MoveGroup.Liberties.First()))
+            {
+                if (KillerFormationHelper.PreDeadFormation(currentBoard, atariTarget, atariTarget.Points.ToList(), new List<Point>() { tryBoard.MoveGroup.Points.First() }))
+                    return false;
+            }
+            //check if target group move at liberty is suicidal and not atari other groups
+            Point liberty = board.GetGroupLibertyPoints(atariTarget).First();
+            if (ImmovableHelper.IsSuicidalMove(board, liberty, c.Opposite()) && !board.GetNeighbourGroups(atariTarget).Any(group => group.Liberties.Count == 1))
+                return true;
+            return false;
+        }
+
         /// <summary>
         /// Response to atari move in current board.
         /// <see cref="UnitTestProject.AtariResponseMoveTest.AtariResponseMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
@@ -261,13 +297,12 @@ namespace Go
                 return true;
 
             //test if opponent move at same point is suicidal for single point move
-            GameTryMove move = tryMove.MakeMoveWithOpponentAtSamePoint();
-            if (move == null) return false;
-            Board opponentTryBoard = move.TryGame.Board;
+            GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
+            if (opponentMove == null) return false;
+            Board opponentTryBoard = opponentMove.TryGame.Board;
             if (opponentTryBoard.MoveGroupLiberties == 1 && opponentTryBoard.IsSinglePoint())
-                return SinglePointSuicidalMove(move, tryMove);
-
-            return false;
+                return SinglePointSuicidalMove(opponentMove, tryMove);
+            return SuicidalWithinNonKillableGroup(opponentMove);
         }
 
 
@@ -743,7 +778,11 @@ namespace Go
             if (capturedBoard == null) return false;
             //captured more than move group
             if (capturedBoard.CapturedList.Count > 1)
-                return false;
+            {
+                Boolean coveredEye = (capturedBoard.CapturedList.Any(group => group.Points.Count <= 2 && !EyeHelper.FindRealEyeWithinEmptySpace(capturedBoard, group, EyeType.UnCoveredEye)));
+                if (!coveredEye)
+                    return true;
+            }
 
             //make move at liberty instead of suicide
             Point? liberty = capturedBoard.Move;

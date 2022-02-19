@@ -139,7 +139,7 @@ namespace Go
         {
             get
             {
-                foreach (Group group in CapturedList)
+                foreach (Group group in CapturedList.OrderByDescending(group => group.Points.Count))
                 {
                     foreach (Point p in group.Points)
                         yield return p;
@@ -234,12 +234,6 @@ namespace Go
                     libertyPoints.Add(n);
             }
             return libertyPoints;
-        }
-
-        public List<Point> GetGroupLibertyPoints(Point p)
-        {
-            Group group = this.GetGroupAt(p);
-            return GetGroupLibertyPoints(group);
         }
 
         public HashSet<Point> GetLibertiesOfGroups(List<Group> targetGroups)
