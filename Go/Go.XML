@@ -816,6 +816,7 @@
             Redundant atari move that allows target group to escape.
             <see cref="!:UnitTestProject.AtariResponseMoveTest.AtariResponseMoveTest_Scenario_XuanXuanGo_A46_101Weiqi_2" />
             Check corner kill formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" />
+            Check if atari on other groups <see cref="!:UnitTestProject.AtariResponseMoveTest.AtariResponseMoveTest_ScenarioHighLevel18" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.AtariResponseMove(Go.GameTryMove)">

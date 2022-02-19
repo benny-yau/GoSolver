@@ -200,6 +200,7 @@ namespace Go
         /// Redundant atari move that allows target group to escape.
         /// <see cref="UnitTestProject.AtariResponseMoveTest.AtariResponseMoveTest_Scenario_XuanXuanGo_A46_101Weiqi_2" />
         /// Check corner kill formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" />
+        /// Check if atari on other groups <see cref="UnitTestProject.AtariResponseMoveTest.AtariResponseMoveTest_ScenarioHighLevel18" />
         /// </summary>
         public static Boolean AtariRedundantMove(GameTryMove tryMove)
         {
@@ -224,11 +225,14 @@ namespace Go
                 if (KillerFormationHelper.PreDeadFormation(currentBoard, atariTarget, atariTarget.Points.ToList(), new List<Point>() { tryBoard.MoveGroup.Points.First() }))
                     return false;
             }
-            //check if target group move at liberty is suicidal and not atari other groups
+            //check if target group move at liberty is suicidal
             Point liberty = board.GetGroupLibertyPoints(atariTarget).First();
-            if (ImmovableHelper.IsSuicidalMove(board, liberty, c.Opposite()) && !board.GetNeighbourGroups(atariTarget).Any(group => group.Liberties.Count == 1))
-                return true;
-            return false;
+            (Boolean suicide, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board);
+            if (!suicide) return false;
+            //check if atari on other groups
+            if (b != null && b.GetNeighbourGroups(b.MoveGroup).Any(group => group.Liberties.Count == 1))
+                return false;
+            return true;
         }
 
         /// <summary>
