@@ -212,7 +212,7 @@ namespace Go
                 if (AtariResponseMove(tryMove))
                     return true;
             }
-            if (!tryBoard.IsAtariMove || tryBoard.AtariTargets.Count > 1) return false;
+            if (!tryBoard.IsAtariMove || tryBoard.AtariTargets.Count > 1 || tryBoard.AtariResolved || tryBoard.CapturedList.Count > 0) return false;
             Group atariTarget = tryBoard.AtariTargets.First();
             //ensure target group can escape
             if (ImmovableHelper.UnescapableGroup(tryBoard, atariTarget).Item1) return false;
@@ -343,6 +343,7 @@ namespace Go
         /// Check killer move non killable group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31563" />
         /// Find real eye at diagonals for single point move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_4" />
         /// Check redundant corner point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
+        /// Check for three neighbour groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30198" />
         /// </summary>
         public static Boolean SuicidalConnectAndDie(GameTryMove tryMove)
         {
@@ -405,8 +406,20 @@ namespace Go
                 List<Point> opponentStones = tryBoard.GetClosestNeighbour(move, 3, c.Opposite());
                 if (!SiegedScenario(tryBoard, opponentStones, 1)) return true;
 
+                if (tryBoard.MoveGroup.Points.Count <= 4)
+                {
+                    //check for no empty points and no diagonals for move
+                    if (tryBoard.MoveGroup.Points.Count > 1 && !tryBoard.GetStoneNeighbours(move.x, move.y).Any(n => tryBoard[n] == Content.Empty) && !tryBoard.GetDiagonalNeighbours(move.x, move.y).Any(n => tryBoard[n] == c) && !LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryBoard))
+                    {
+                        //check for three neighbour groups
+                        Boolean threeGroups = (tryBoard.MoveGroup.Points.Count == 2 && tryBoard.GetGroupsFromStoneNeighbours(move, c).Count > 2);
+                        if (!threeGroups)
+                            return true;
+                    }
+                    return false;
+                }
                 //check killer formation
-                if (tryBoard.MoveGroup.Points.Count <= 4 || KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard))
+                else if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard))
                     return false;
             }
             return true;

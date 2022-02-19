@@ -857,6 +857,7 @@
             Check killer move non killable group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31563" />
             Find real eye at diagonals for single point move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_4" />
             Check redundant corner point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
+            Check for three neighbour groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30198" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckOnePointMoveInConnectAndDie(Go.GameTryMove)">
