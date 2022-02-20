@@ -198,9 +198,10 @@ namespace Go
 
         /// <summary>
         /// Redundant atari move that allows target group to escape.
-        /// <see cref="UnitTestProject.AtariResponseMoveTest.AtariResponseMoveTest_Scenario_XuanXuanGo_A46_101Weiqi_2" />
+        /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_XuanXuanGo_A46_101Weiqi_2" />
         /// Check corner kill formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" />
-        /// Check if atari on other groups <see cref="UnitTestProject.AtariResponseMoveTest.AtariResponseMoveTest_ScenarioHighLevel18" />
+        /// Check two-point covered eye <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_TianLongTu_Q16525" />
+        /// Check if atari on other groups <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_ScenarioHighLevel18" />
         /// </summary>
         public static Boolean AtariRedundantMove(GameTryMove tryMove)
         {
@@ -219,30 +220,40 @@ namespace Go
             //check if any move can capture target group
             (Boolean suicidal, Board board) = ImmovableHelper.ConnectAndDie(currentBoard, atariTarget);
             if (!suicidal) return false;
+            //check if target group move at liberty is suicidal
+            Point liberty = board.GetGroupLibertyPoints(atariTarget).First();
+            (Boolean suicide, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board);
+            if (!suicide) return false;
+
             //check corner kill formation
             if (tryBoard.MoveGroup.Points.Count == 1 && tryBoard.MoveGroupLiberties == 1 && tryBoard.CornerPoint(tryBoard.MoveGroup.Liberties.First()))
             {
                 if (KillerFormationHelper.PreDeadFormation(currentBoard, atariTarget, atariTarget.Points.ToList(), new List<Point>() { tryBoard.MoveGroup.Points.First() }))
                     return false;
             }
-            //check if target group move at liberty is suicidal
-            Point liberty = board.GetGroupLibertyPoints(atariTarget).First();
-            (Boolean suicide, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board);
-            if (!suicide) return false;
+            //check two-point covered eye
+            if (b != null && b.MoveGroup.Points.Count == 2)
+            {
+                Board b2 = ImmovableHelper.CaptureSuicideGroup(b);
+                if (b2 != null && !EyeHelper.FindRealEyeWithinEmptySpace(b2, b.MoveGroup, EyeType.UnCoveredEye))
+                    return false;
+            }
+
             //check if atari on other groups
             if (b != null && b.GetNeighbourGroups(b.MoveGroup).Any(group => group.Liberties.Count == 1))
                 return false;
+
             return true;
         }
 
         /// <summary>
         /// Response to atari move in current board.
-        /// <see cref="UnitTestProject.AtariResponseMoveTest.AtariResponseMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
-        /// Capture neighbour group <see cref="UnitTestProject.AtariResponseMoveTest.AtariResponseMoveTest_Scenario_WindAndTime_Q30370" />
-        /// Check for snapback <see cref="UnitTestProject.AtariResponseMoveTest.AtariResponseMoveTest_Scenario4dan17" />
-        /// Check for ko <see cref="UnitTestProject.AtariResponseMoveTest.AtariResponseMoveTest_Scenario1dan10" />
-        /// Ensure survival move is neutral point <see cref="UnitTestProject.AtariResponseMoveTest.AtariResponseMoveTest_Scenario_Corner_A128" />
-        /// Check connect and die <see cref="UnitTestProject.AtariResponseMoveTest.AtariResponseMoveTest_Scenario_TianLongTu_Q16490" />
+        /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
+        /// Capture neighbour group <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WindAndTime_Q30370" />
+        /// Check for snapback <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario4dan17" />
+        /// Check for ko <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario1dan10" />
+        /// Ensure survival move is neutral point <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A128" />
+        /// Check connect and die <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_TianLongTu_Q16490" />
         /// </summary>
         public static Boolean AtariResponseMove(GameTryMove tryMove)
         {
