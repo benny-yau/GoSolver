@@ -317,7 +317,7 @@ namespace Go
             Board opponentTryBoard = opponentMove.TryGame.Board;
             if (opponentTryBoard.MoveGroupLiberties == 1 && opponentTryBoard.IsSinglePoint())
                 return SinglePointSuicidalMove(opponentMove, tryMove);
-            return SuicidalWithinNonKillableGroup(opponentMove);
+            return SuicidalWithinNonKillableGroup(opponentMove, tryMove);
         }
 
 
@@ -362,12 +362,14 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
+            HashSet<Point> movePoints = tryBoard.MoveGroup.Points;
 
             //ensure not negligible moves except atari resolved
             if (tryBoard.CapturedList.Count > 0 || (tryBoard.IsAtariMove && tryBoard.MoveGroupLiberties > 1)) return false;
 
             //check connect and die
-            if (!ImmovableHelper.CheckConnectAndDie(tryBoard)) return false;
+            (Boolean suicidal, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
+            if (!suicidal) return false;
 
             //check for one point move group
             if (CheckOnePointMoveInConnectAndDie(tryMove))
@@ -375,7 +377,7 @@ namespace Go
 
             //ensure no killable group with two or less liberties
             IEnumerable<Group> groups = tryBoard.GetNeighbourGroups(tryBoard.MoveGroup);
-            if (tryBoard.MoveGroup.Points.Count > 1)
+            if (movePoints.Count > 1)
             {
                 Group weakGroup = groups.FirstOrDefault(group => (group.Points.Count >= 2 && group.Liberties.Count <= 2 && !WallHelper.IsNonKillableGroup(tryBoard, group)));
                 if (weakGroup != null && groups.Any(group => group.Liberties.Count > 2))
@@ -395,7 +397,7 @@ namespace Go
                     //check killer move non killable group
                     if (WallHelper.IsNonKillableGroup(b, b.MoveGroup))
                         return true;
-                    if (tryBoard.MoveGroup.Points.Count == 1)
+                    if (movePoints.Count == 1)
                     {
                         //find real eye at diagonals for single point move
                         foreach (Point d in tryBoard.GetDiagonalNeighbours(move.x, move.y))
@@ -417,21 +419,53 @@ namespace Go
                 List<Point> opponentStones = tryBoard.GetClosestNeighbour(move, 3, c.Opposite());
                 if (!SiegedScenario(tryBoard, opponentStones, 1)) return true;
 
-                if (tryBoard.MoveGroup.Points.Count <= 4)
+                if (movePoints.Count <= 4)
                 {
                     //check for no empty points and no diagonals for move
-                    if (tryBoard.MoveGroup.Points.Count > 1 && !tryBoard.GetStoneNeighbours(move.x, move.y).Any(n => tryBoard[n] == Content.Empty) && !tryBoard.GetDiagonalNeighbours(move.x, move.y).Any(n => tryBoard[n] == c) && !LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryBoard))
+                    if (movePoints.Count > 1 && !tryBoard.GetStoneNeighbours(move.x, move.y).Any(n => tryBoard[n] == Content.Empty) && !tryBoard.GetDiagonalNeighbours(move.x, move.y).Any(n => tryBoard[n] == c) && !LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryBoard))
                     {
                         //check for three neighbour groups
-                        Boolean threeGroups = (tryBoard.MoveGroup.Points.Count == 2 && tryBoard.GetGroupsFromStoneNeighbours(move, c).Count > 2);
+                        Boolean threeGroups = (movePoints.Count == 2 && tryBoard.GetGroupsFromStoneNeighbours(move, c).Count > 2);
                         if (!threeGroups)
                             return true;
                     }
+                    //check for real eye in neighbour groups
+                    if (CheckAnyRealEyeInSuicidalConnectAndDie(tryBoard, captureBoard))
+                        return true;
                     return false;
                 }
                 //check killer formation
                 else if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard))
                     return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Check for real eye in neighbour groups.
+        /// Check for one-point eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A30" />
+        /// Check for two-point snapback <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A55" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_2" />
+        /// Check for covered eye group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A17" />
+        /// </summary>
+        private static Boolean CheckAnyRealEyeInSuicidalConnectAndDie(Board tryBoard, Board captureBoard)
+        {
+            HashSet<Point> movePoints = tryBoard.MoveGroup.Points;
+            Content c = tryBoard.MoveGroup.Content;
+            if (!KillerFormationHelper.CheckRealEyeInNeighbourGroups(tryBoard, tryBoard.Move.Value)) return false;
+            //check for one-point eye
+            Boolean onePointEye = (movePoints.Count == 1 && tryBoard.MoveGroup.Liberties.Any(liberty => EyeHelper.FindEye(tryBoard, liberty, c)));
+            if (onePointEye) return false;
+            //check for two-point snapback
+            Boolean twoPointSnapback = (movePoints.Count == 2 && tryBoard.MoveGroup.Liberties.Any(liberty => ImmovableHelper.IsSuicidalMove(tryBoard, liberty, c.Opposite())));
+            if (twoPointSnapback) return false;
+            Boolean coveredEyeGroup = false;
+            //check for covered eye group
+            if (movePoints.Count == 1 || movePoints.Count == 2)
+            {
+                Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(captureBoard, tryBoard.Move.Value, c.Opposite());
+                coveredEyeGroup = (killerGroup != null && !EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, killerGroup));
+                if (coveredEyeGroup) return false;
             }
             return true;
         }
@@ -465,8 +499,9 @@ namespace Go
         /// Suicide within non killable group.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_2" />
         /// Check for pre atari move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
+        /// Check for liberty fight suicide <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16925" />
         /// </summary>
-        public static Boolean SuicidalWithinNonKillableGroup(GameTryMove tryMove)
+        public static Boolean SuicidalWithinNonKillableGroup(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
@@ -480,8 +515,22 @@ namespace Go
             Boolean nonKillable = groups.Any(group => WallHelper.IsNonKillableGroup(tryBoard, group));
             if (!nonKillable) return false;
             //check for pre atari move
-            if (tryBoard.GetDiagonalNeighbours(move.x, move.y).Any(n => tryBoard[n] == c) && groups.Any(group => group.Points.Count == 2 && group.Liberties.Count <= 2))
+            if (tryBoard.GetDiagonalNeighbours(move.x, move.y).Any(n => tryBoard[n] == c) && groups.Any(group => group.Liberties.Count <= 2))
                 return false;
+            //check for liberty fight suicide
+            if (opponentMove != null && LinkHelper.IsAbsoluteLinkForGroups(currentBoard, opponentMove.TryGame.Board))
+            {
+                IEnumerable<Group> previousGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, opponentMove.TryGame.Board).Where(group => group.Liberties.Count == 3);
+                foreach (Group previousGroup in previousGroups)
+                {
+                    foreach (Point liberty in previousGroup.Liberties)
+                    {
+                        Board b = currentBoard.MakeMoveOnNewBoard(liberty, c);
+                        if (b != null && ImmovableHelper.CheckConnectAndDie(b))
+                            return false;
+                    }
+                }
+            }
             return true;
         }
 

@@ -814,20 +814,21 @@
         <member name="M:Go.RedundantMoveHelper.AtariRedundantMove(Go.GameTryMove)">
             <summary>
             Redundant atari move that allows target group to escape.
-            <see cref="!:UnitTestProject.AtariResponseMoveTest.AtariResponseMoveTest_Scenario_XuanXuanGo_A46_101Weiqi_2" />
+            <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_XuanXuanGo_A46_101Weiqi_2" />
             Check corner kill formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" />
-            Check if atari on other groups <see cref="!:UnitTestProject.AtariResponseMoveTest.AtariResponseMoveTest_ScenarioHighLevel18" />
+            Check two-point covered eye <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_TianLongTu_Q16525" />
+            Check if atari on other groups <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_ScenarioHighLevel18" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.AtariResponseMove(Go.GameTryMove)">
             <summary>
             Response to atari move in current board.
-            <see cref="!:UnitTestProject.AtariResponseMoveTest.AtariResponseMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
-            Capture neighbour group <see cref="!:UnitTestProject.AtariResponseMoveTest.AtariResponseMoveTest_Scenario_WindAndTime_Q30370" />
-            Check for snapback <see cref="!:UnitTestProject.AtariResponseMoveTest.AtariResponseMoveTest_Scenario4dan17" />
-            Check for ko <see cref="!:UnitTestProject.AtariResponseMoveTest.AtariResponseMoveTest_Scenario1dan10" />
-            Ensure survival move is neutral point <see cref="!:UnitTestProject.AtariResponseMoveTest.AtariResponseMoveTest_Scenario_Corner_A128" />
-            Check connect and die <see cref="!:UnitTestProject.AtariResponseMoveTest.AtariResponseMoveTest_Scenario_TianLongTu_Q16490" />
+            <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
+            Capture neighbour group <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WindAndTime_Q30370" />
+            Check for snapback <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario4dan17" />
+            Check for ko <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario1dan10" />
+            Ensure survival move is neutral point <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A128" />
+            Check connect and die <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_TianLongTu_Q16490" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.ConnectedNonKillable(Go.Board)">
@@ -860,6 +861,15 @@
             Check for three neighbour groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30198" />
             </summary>
         </member>
+        <member name="M:Go.RedundantMoveHelper.CheckAnyRealEyeInSuicidalConnectAndDie(Go.Board,Go.Board)">
+            <summary>
+            Check for real eye in neighbour groups.
+            Check for one-point eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A30" />
+            Check for two-point snapback <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A55" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_2" />
+            Check for covered eye group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A17" />
+            </summary>
+        </member>
         <member name="M:Go.RedundantMoveHelper.CheckOnePointMoveInConnectAndDie(Go.GameTryMove)">
             <summary>
             Check for one point move group <see cref="!:UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_TianLongTu_Q16571" />
@@ -867,11 +877,12 @@
             Check opponent move liberties <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_3" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.SuicidalWithinNonKillableGroup(Go.GameTryMove)">
+        <member name="M:Go.RedundantMoveHelper.SuicidalWithinNonKillableGroup(Go.GameTryMove,Go.GameTryMove)">
             <summary>
             Suicide within non killable group.
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_2" />
             Check for pre atari move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
+            Check for liberty fight suicide <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16925" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.RedundantSuicidalConnectAndDie(Go.GameTryMove)">
