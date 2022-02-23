@@ -102,6 +102,8 @@ namespace Go
         /// <summary>
         /// Suicide at covered eye.
         /// Make move at the other empty point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B57" />
+        /// Check for killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16424_2" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499_2" />
         /// </summary>
         public static Boolean SuicideAtCoveredEye(Board capturedBoard, Board tryBoard)
         {
@@ -120,7 +122,7 @@ namespace Go
                 Board b = ImmovableHelper.CaptureSuicideGroup(board);
                 if (b != null && FindCoveredEye(b, move, c))
                     return true;
-
+                //check for killer group
                 if (killerGroup == null) continue;
                 if (!tryBoard.GetStoneNeighbours().Any(p => tryBoard[p] == Content.Empty)) continue;
                 //make move at the other empty point

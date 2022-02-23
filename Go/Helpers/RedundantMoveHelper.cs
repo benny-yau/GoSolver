@@ -366,7 +366,7 @@ namespace Go
             if (tryBoard.CapturedList.Count > 0 || (tryBoard.IsAtariMove && tryBoard.MoveGroupLiberties > 1)) return false;
 
             //check connect and die
-            (Boolean suicidal, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
+            (Boolean suicidal, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard, tryBoard.MoveGroup, false);
             if (!suicidal) return false;
 
             //check for one point move group
@@ -1324,24 +1324,39 @@ namespace Go
             //neutral point at small tiger mouth
             Point tigerMouth = tryBoard.GetStoneNeighbours().FirstOrDefault(n => EyeHelper.FindEye(tryBoard, n));
             if (Convert.ToBoolean(tigerMouth.NotEmpty))
+            {
+                //redundant suicidal at tiger mouth
+                if (RedundantSuicidalForMustHaveNeutralPoint(currentBoard, c, tigerMouth))
+                    return (false, null);
                 return (true, tigerMouth);
-
+            }
             //neutral point at big tiger mouth
             List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).ToList();
             (Boolean suicide, Point? liberty) = SuicideAtBigTigerMouth(tryMove, eyeGroups);
             if (suicide)
             {
                 //redundant suicidal at tiger mouth
-                Board b = currentBoard.MakeMoveOnNewBoard(liberty.Value, c);
-                if (b != null && b.MoveGroupLiberties == 1 && !LinkHelper.IsAbsoluteLinkForGroups(currentBoard, b))
-                {
-                    if (b.GetGroupsFromStoneNeighbours(liberty.Value, c).All(group => group.Liberties.Count > 2))
-                        return (false, null);
-                }
+                if (RedundantSuicidalForMustHaveNeutralPoint(currentBoard, c, liberty.Value))
+                    return (false, null);
                 return (true, liberty.Value);
             }
 
             return (false, null);
+        }
+
+        /// <summary>
+        /// Redundant suicidal at tiger mouth.
+        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario5dan27_3" />
+        /// </summary>
+        private static Boolean RedundantSuicidalForMustHaveNeutralPoint(Board currentBoard, Content c, Point tigerMouth)
+        {
+            Board board = currentBoard.MakeMoveOnNewBoard(tigerMouth, c);
+            if (board != null && board.MoveGroupLiberties == 1 && !LinkHelper.IsAbsoluteLinkForGroups(currentBoard, board))
+            {
+                if (board.GetGroupsFromStoneNeighbours(tigerMouth, c).All(group => group.Liberties.Count > 2))
+                    return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -2068,10 +2083,32 @@ namespace Go
                     return true;
 
                 //check any opponent stone at neighbour points
-                if (!isKillerGroup && currentBoard.GetStoneNeighbours(p.x, p.y).Any(n => currentBoard[n] == c.Opposite()))
+                if (!isKillerGroup && CheckOpponentStoneAtFillerMove(tryMove, p))
                     continue;
-
                 return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Check opponent stone at filler move. <see cref="UnitTestProject.RedundantEyeFillerTest.BaseLineKillerMoveTest_Scenario_TianLongTu_Q16520" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A80_2" />
+        /// Check for opponent stone at try move <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q16827_2" />
+        /// </summary>
+        private static Boolean CheckOpponentStoneAtFillerMove(GameTryMove tryMove, Point p)
+        {
+            Point move = tryMove.TryGame.Board.Move.Value;
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Content c = tryMove.MoveContent;
+            List<Point> stoneNeighbours = currentBoard.GetStoneNeighbours(p.x, p.y).Where(n => currentBoard[n] == c.Opposite()).ToList();
+            if (stoneNeighbours.Any(n => currentBoard.GetGroupAt(n).Points.Count > 1))
+                return true;
+
+            //check for opponent stone at try move
+            if (stoneNeighbours.Count == 1 && currentBoard.GetGroupAt(stoneNeighbours.First()).Points.Count == 1)
+            {
+                if (currentBoard.GetStoneNeighbours(move.x, move.y).Any(n => currentBoard[n] == c.Opposite()))
+                    return true;
             }
             return false;
         }

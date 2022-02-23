@@ -241,6 +241,7 @@ namespace Go
         /// <summary>
         /// Check if can escape by capturing neighbour group.
         /// Check snapback <see cref="UnitTestProject.AtariResponseMoveTest.AtariResponseMoveTest_Scenario_TianLongTu_Q16605" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_2282" />
         /// Connect and die <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
         /// Connect and die for move group <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_GuanZiPu_A3" />
         /// </summary>
@@ -250,7 +251,7 @@ namespace Go
             foreach (Group target in atariTargets)
             {
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalOnCapture(tryBoard, target);
-                if (suicidal) continue;
+                if (b == null) continue;
                 //Connect and die
                 if (CheckConnectAndDie(b, b.GetGroupAt(group.Points.First())) || (target.Points.Count == 2 && CheckConnectAndDie(b, b.MoveGroup))) continue;
                 return b;
@@ -395,10 +396,11 @@ namespace Go
         /// Ensure move group contains previous group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16827" />
         /// Check if target group is escapable <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B31" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_GuanZiPu_A3" />
+        /// Check kill eye snapback <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B32" />
         /// Check not more than two stones captured <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WuQingYuan_Q31471" />
         /// Check if kill move can escape <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_B28" />
         /// </summary>
-        public static Boolean IsSnapback(Board tryBoard, Group group)
+        public static Boolean IsSnapback(Board tryBoard, Group group, Boolean checkkillEye = true)
         {
             if (!tryBoard.IsAtariMove || tryBoard.MoveGroupLiberties != 1) return false;
             (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalOnCapture(tryBoard);
@@ -411,9 +413,11 @@ namespace Go
                 //check if target group is escapable
                 (Boolean unEscapable, _, Board escapeBoard) = UnescapableGroup(tryBoard, group);
                 if (unEscapable) return true;
+                //check kill eye snapback
+                if (!checkkillEye) return false;
                 //check not more than two stones captured
                 int capturedPoints = escapeBoard.CapturedPoints.Count();
-                Boolean capture = (escapeBoard.CapturedList.Count == 1 && capturedPoints >= 1 && capturedPoints <= 2);
+                Boolean capture = (escapeBoard.CapturedList.Count == 1 && capturedPoints >= 1 && capturedPoints <= 2 && !EyeHelper.FindRealEyeWithinEmptySpace(escapeBoard, escapeBoard.CapturedList.First(), EyeType.UnCoveredEye));
                 if (!capture) return false;
                 //check if kill move can escape
                 if (UnescapableGroup(escapeBoard, tryBoard.MoveGroup).Item1)
@@ -428,7 +432,7 @@ namespace Go
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
         /// Reverse connect and die <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WindAndTime_Q29277" />
         /// </summary>
-        public static (Boolean, Board) ConnectAndDie(Board board, Group targetGroup = null)
+        public static (Boolean, Board) ConnectAndDie(Board board, Group targetGroup = null, Boolean checkKillEye = true)
         {
             targetGroup = (targetGroup) ?? board.MoveGroup;
             Content c = targetGroup.Content;
@@ -445,7 +449,7 @@ namespace Go
                 if (isSuicidal)
                 {
                     //check snapback
-                    if (IsSnapback(b, targetGroup))
+                    if (IsSnapback(b, targetGroup, checkKillEye))
                         return (true, b);
                     continue;
                 }
