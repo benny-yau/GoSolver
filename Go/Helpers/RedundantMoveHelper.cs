@@ -438,25 +438,34 @@ namespace Go
         /// Check for two-point snapback <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A55" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_2" />
         /// Check for covered eye group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A17" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30403_2" />
         /// </summary>
         private static Boolean CheckAnyRealEyeInSuicidalConnectAndDie(Board tryBoard, Board captureBoard)
         {
+            Point move = tryBoard.Move.Value;
             HashSet<Point> movePoints = tryBoard.MoveGroup.Points;
             Content c = tryBoard.MoveGroup.Content;
-            if (!KillerFormationHelper.CheckRealEyeInNeighbourGroups(tryBoard, tryBoard.Move.Value)) return false;
+            if (!KillerFormationHelper.CheckRealEyeInNeighbourGroups(tryBoard, move)) return false;
             //check for one-point eye
             Boolean onePointEye = (movePoints.Count == 1 && tryBoard.MoveGroup.Liberties.Any(liberty => EyeHelper.FindEye(tryBoard, liberty, c)));
             if (onePointEye) return false;
             //check for two-point snapback
             Boolean twoPointSnapback = (movePoints.Count == 2 && tryBoard.MoveGroup.Liberties.Any(liberty => ImmovableHelper.IsSuicidalMove(tryBoard, liberty, c.Opposite())));
             if (twoPointSnapback) return false;
-            Boolean coveredEyeGroup = false;
             //check for covered eye group
             if (movePoints.Count == 1 || movePoints.Count == 2)
             {
-                Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(captureBoard, tryBoard.Move.Value, c.Opposite());
-                coveredEyeGroup = (killerGroup != null && !EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, killerGroup));
-                if (coveredEyeGroup) return false;
+                List<Point> diagonals = LinkHelper.GetGroupDiagonals(captureBoard, tryBoard.MoveGroup).Select(q => q.Move).Where(q => captureBoard[q] == Content.Empty).ToList();
+                diagonals = captureBoard.GetStoneNeighbours().Intersect(diagonals).ToList();
+                if (diagonals.Count != 1) return true;
+                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(diagonals.First(), c, captureBoard);
+                if (!suicidal)
+                {
+                    Group capturedGroup = b.GetGroupAt(tryBoard.Move.Value);
+                    Board b2 = ImmovableHelper.CaptureSuicideGroup(b, capturedGroup);
+                    if (b2 != null && !EyeHelper.FindRealEyeWithinEmptySpace(b2, capturedGroup))
+                        return false;
+                }
             }
             return true;
         }

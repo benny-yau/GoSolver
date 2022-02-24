@@ -271,8 +271,15 @@ namespace Go
         {
             if (tryBoard == null) return (false, null);
             Board board = tryBoard.MakeMoveOnNewBoard(p, c, excludeKo);
-            if (board == null || board.MoveGroupLiberties == 1)
+            if (board == null)
                 return (true, board);
+
+            if (board.MoveGroupLiberties == 1)
+            {
+                //check ko
+                Boolean isKo = (KoHelper.IsKoFight(board) && KoHelper.KoContentEnabled(board.MoveGroup.Content, board.GameInfo));
+                if (!isKo) return (true, board);
+            }
             return (false, board);
         }
 
@@ -282,17 +289,17 @@ namespace Go
         /// </summary>
         public static (Boolean, Board) IsSuicidalOnCapture(Board tryBoard, Group targetGroup = null)
         {
-            Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, targetGroup);
-            if (b == null)
-                return (true, b);
+            Board board = ImmovableHelper.CaptureSuicideGroup(tryBoard, targetGroup);
+            if (board == null)
+                return (true, board);
 
-            if (b.MoveGroupLiberties == 1)
+            if (board.MoveGroupLiberties == 1)
             {
                 //check ko
-                Boolean isKo = (KoHelper.IsKoFight(b) && KoHelper.KoContentEnabled(b.MoveGroup.Content, b.GameInfo));
-                if (!isKo) return (true, b);
+                Boolean isKo = (KoHelper.IsKoFight(board) && KoHelper.KoContentEnabled(board.MoveGroup.Content, board.GameInfo));
+                if (!isKo) return (true, board);
             }
-            return (false, b);
+            return (false, board);
         }
 
         /// <summary>
