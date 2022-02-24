@@ -238,8 +238,9 @@ namespace Go
 
         /// <summary>
         /// Find if killer group of four points or less can produce real eye. 
-        /// Check connect and die <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Scenario_XuanXuanGo_B31" /> 
+        /// Check connect and die <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanQiJing_Weiqi101_2282" /> 
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150" /> 
+        /// Check snapback <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Scenario_XuanXuanGo_B31" /> 
         /// Check two point filled killer group <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanQiJing_A38" /> 
         /// Ensure all groups have more than one liberty <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31469" /> 
         /// </summary>
@@ -264,6 +265,10 @@ namespace Go
 
                 //check connect and die
                 if (neighbourGroups.Any(group => ImmovableHelper.CheckConnectAndDie(board, group)))
+                    return false;
+
+                //check snapback
+                if (neighbourGroups.Any(group => ImmovableHelper.CheckSnapback(board, group)))
                     return false;
 
                 //check two point filled killer group

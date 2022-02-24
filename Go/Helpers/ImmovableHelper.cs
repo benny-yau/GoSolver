@@ -432,7 +432,7 @@ namespace Go
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
         /// Reverse connect and die <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WindAndTime_Q29277" />
         /// </summary>
-        public static (Boolean, Board) ConnectAndDie(Board board, Group targetGroup = null, Boolean checkKillEye = true)
+        public static (Boolean, Board) ConnectAndDie(Board board, Group targetGroup = null)
         {
             targetGroup = (targetGroup) ?? board.MoveGroup;
             Content c = targetGroup.Content;
@@ -449,7 +449,7 @@ namespace Go
                 if (isSuicidal)
                 {
                     //check snapback
-                    if (IsSnapback(b, targetGroup, checkKillEye))
+                    if (IsSnapback(b, targetGroup, false))
                         return (true, b);
                     continue;
                 }

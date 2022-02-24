@@ -366,7 +366,7 @@ namespace Go
             if (tryBoard.CapturedList.Count > 0 || (tryBoard.IsAtariMove && tryBoard.MoveGroupLiberties > 1)) return false;
 
             //check connect and die
-            (Boolean suicidal, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard, tryBoard.MoveGroup, false);
+            (Boolean suicidal, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
             if (!suicidal) return false;
 
             //check for one point move group
@@ -2101,7 +2101,7 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Content c = tryMove.MoveContent;
             List<Point> stoneNeighbours = currentBoard.GetStoneNeighbours(p.x, p.y).Where(n => currentBoard[n] == c.Opposite()).ToList();
-            if (stoneNeighbours.Any(n => currentBoard.GetGroupAt(n).Points.Count > 1))
+            if (stoneNeighbours.Count > 1 || stoneNeighbours.Any(n => currentBoard.GetGroupAt(n).Points.Count > 1))
                 return true;
 
             //check for opponent stone at try move
