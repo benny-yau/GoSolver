@@ -132,7 +132,7 @@ namespace Go
                 if (EyeHelper.SuicideAtCoveredEye(capturedBoard, tryBoard))
                     return true;
                 //check for snapback
-                if (ImmovableHelper.CheckSnapback(tryBoard, move))
+                if (ImmovableHelper.CheckSnapbackInNeighbourGroups(tryBoard, tryBoard.MoveGroup))
                     return true;
             }
             else if (moveCount == 3)

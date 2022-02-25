@@ -567,7 +567,7 @@
             Is suicide move for both players.
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.CheckSnapback(Go.Board,Go.Point,Go.Content)">
+        <member name="M:Go.ImmovableHelper.CheckSnapbackInNeighbourGroups(Go.Board,Go.Group)">
             <summary>
             Simple snapback with liberty of two in the group.
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234" />
@@ -862,6 +862,8 @@
             Find real eye at diagonals for single point move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_4" />
             Check redundant corner point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
             Check for three neighbour groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30198" />
+            Check snapback <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234_2" />
+            Check for one-by-three kill <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18796_2" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckAnyRealEyeInSuicidalConnectAndDie(Go.Board,Go.Board)">
@@ -886,6 +888,7 @@
             Check for one point move group <see cref="!:UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_TianLongTu_Q16571" />
             Check reverse ko fight <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A80" />
             Check opponent move liberties <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_3" />
+            Check snapback at diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q6710_2" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SuicidalWithinNonKillableGroup(Go.GameTryMove,Go.GameTryMove)">

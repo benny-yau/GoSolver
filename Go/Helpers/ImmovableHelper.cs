@@ -369,10 +369,10 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A55" />
         /// </summary>
-        public static Boolean CheckSnapback(Board board, Point p, Content c = Content.Unknown)
+        public static Boolean CheckSnapbackInNeighbourGroups(Board board, Group moveGroup)
         {
-            c = (c == Content.Unknown) ? board.MoveGroup.Content : c;
-            IEnumerable<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(p, c);
+            Content c = board.MoveGroup.Content;
+            IEnumerable<Group> neighbourGroups = board.GetNeighbourGroups(moveGroup);
             return neighbourGroups.Any(group => CheckSnapback(board, group));
         }
 

@@ -353,6 +353,8 @@ namespace Go
         /// Find real eye at diagonals for single point move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_4" />
         /// Check redundant corner point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
         /// Check for three neighbour groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30198" />
+        /// Check snapback <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234_2" />
+        /// Check for one-by-three kill <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18796_2" />
         /// </summary>
         public static Boolean SuicidalConnectAndDie(GameTryMove tryMove)
         {
@@ -422,7 +424,16 @@ namespace Go
                     }
                     //check for real eye in neighbour groups
                     if (CheckAnyRealEyeInSuicidalConnectAndDie(tryBoard, captureBoard))
+                    {
+                        //check snapback
+                        if (ImmovableHelper.CheckSnapbackInNeighbourGroups(captureBoard, tryBoard.MoveGroup))
+                            return false;
+
+                        //check for one-by-three kill
+                        if (movePoints.Count == 4 && KillerFormationHelper.OneByThreeFormation(tryBoard, tryBoard.MoveGroup) && tryBoard.GetGroupsFromStoneNeighbours(move, c).Count > 1)
+                            return false;
                         return true;
+                    }
                     return false;
                 }
                 //check killer formation
@@ -501,6 +512,7 @@ namespace Go
         /// Check for one point move group <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_TianLongTu_Q16571" />
         /// Check reverse ko fight <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A80" />
         /// Check opponent move liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_3" />
+        /// Check snapback at diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q6710_2" />
         /// </summary>
         private static Boolean CheckOnePointMoveInConnectAndDie(GameTryMove tryMove)
         {
@@ -513,10 +525,22 @@ namespace Go
             //check reverse ko fight
             if (tryBoard.GetStoneNeighbours().Any(n => ImmovableHelper.FindTigerMouth(tryBoard, c, n))) return true;
             //check opponent move liberties
-            foreach (Point p in tryBoard.MoveGroup.Liberties)
+            List<Point> diagonals = tryBoard.GetDiagonalNeighbours(move.x, move.y).Where(n => tryBoard[n] == c).ToList();
+            if (diagonals.Count == 1)
             {
-                Board b = tryBoard.MakeMoveOnNewBoard(p, c.Opposite());
-                if (b != null && b.MoveGroup.Points.Count >= 2 && b.MoveGroupLiberties <= 2)
+                List<Point> diagonalCutPoints = LinkHelper.PointsBetweenDiagonals(move, diagonals.First()).Where(q => tryBoard[q] == Content.Empty).ToList();
+                foreach (Point p in tryBoard.MoveGroup.Liberties)
+                {
+                    Board b = tryBoard.MakeMoveOnNewBoard(p, c.Opposite());
+                    if (b != null && b.MoveGroup.Points.Count >= 2 && b.MoveGroupLiberties == 2)
+                        return true;
+                }
+            }
+            //check snapback at diagonal
+            List<Point> emptyDiagonals = tryBoard.GetDiagonalNeighbours(move.x, move.y).Where(n => tryBoard[n] == Content.Empty).ToList();
+            foreach (Point p in emptyDiagonals)
+            {
+                if (tryBoard.GetGroupsFromStoneNeighbours(p, c).Any(group => ImmovableHelper.CheckSnapback(tryBoard, group)))
                     return true;
             }
             return false;
@@ -677,7 +701,7 @@ namespace Go
             }
 
             //check for snapback
-            if (ImmovableHelper.CheckSnapback(tryBoard, move))
+            if (ImmovableHelper.CheckSnapbackInNeighbourGroups(tryBoard, tryBoard.MoveGroup))
                 return false;
 
             //atari move required
