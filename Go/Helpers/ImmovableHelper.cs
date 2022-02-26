@@ -437,6 +437,7 @@ namespace Go
         /// <summary>
         /// Check for connect and die on board with captured suicide stone.
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
+        /// Captured connect and die <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A36" />
         /// Reverse connect and die <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WindAndTime_Q29277" />
         /// </summary>
         public static (Boolean, Board) ConnectAndDie(Board board, Group targetGroup = null)
@@ -451,7 +452,13 @@ namespace Go
                 (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board);
                 if (b == null) continue;
                 //check if captured
-                if (b.CapturedPoints.Contains(targetGroup.Points.First())) return (true, b);
+                if (b.CapturedPoints.Contains(targetGroup.Points.First()))
+                {
+                    //captured connect and die
+                    if (ConnectAndDie(b, b.MoveGroup).Item1)
+                        continue;
+                    return (true, b);
+                }
 
                 if (isSuicidal)
                 {

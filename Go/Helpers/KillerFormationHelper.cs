@@ -64,12 +64,17 @@ namespace Go
         /// <summary>
         /// Suicidal killer formations within survival group without any real eye.
         /// Check if real eye found in neighbour groups <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario5dan27" />
+        /// Check for corner five and corner six <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_2" />
         /// </summary>
         public static Boolean SuicidalKillerFormations(Board tryBoard, Board currentBoard = null, Board capturedBoard = null)
         {
             //find killer formation
             if (!FindSuicidalKillerFormation(tryBoard, currentBoard, capturedBoard)) return false;
-            if (tryBoard.MoveGroup.Points.Count <= 2 || (tryBoard.MoveGroup.Points.Count == 6 && KillerFormationHelper.CornerSixFormation(tryBoard, tryBoard.MoveGroup))) return true;
+            if (tryBoard.MoveGroup.Points.Count <= 2) return true;
+
+            //check for corner five and corner six
+            if ((tryBoard.MoveGroup.Points.Count == 5 && KillerFormationHelper.CornerFiveFormation(tryBoard, tryBoard.MoveGroup)) || (tryBoard.MoveGroup.Points.Count == 6 && KillerFormationHelper.CornerSixFormation(tryBoard, tryBoard.MoveGroup))) return true;
+
             //check if neighbour group is non-killable
             if (tryBoard.GetNeighbourGroups(tryBoard.MoveGroup).Any(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
                 return false;
@@ -599,7 +604,7 @@ namespace Go
  17 X X . . . . . . . . . . . . . . . . . 
  18 X X X . . . . . . . . . . . . . . . . 
          */
-        public static Boolean TwoByThreeCornerFormation(Board tryBoard, Group killerGroup)
+        public static Boolean CornerFiveFormation(Board tryBoard, Group killerGroup)
         {
             List<Point> contentPoints = killerGroup.Points.Where(t => tryBoard[t] == killerGroup.Content).ToList();
             if (contentPoints.Count() != 5) return false;

@@ -338,14 +338,19 @@ namespace Go
             else if (tryBoard.MoveGroupLiberties == 2)
             {
                 if (SuicidalConnectAndDie(tryMove))
+                {
+                    //if (tryBoard.CapturedList.Count > 0)
+                    //    DebugHelper.PrintGameTryMovesToText(tryBoard, "SuicidalConnectAndDie_capture2.txt");
+
                     return true;
+                }
             }
             return SuicidalWithinNonKillableGroup(tryMove);
         }
 
         /// <summary>
         /// Check for connect and die moves. <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738" />
-        /// Ensure not negligible moves <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471" />
+        /// Check not negligible moves <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471" />
         /// Check for sieged scenario <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
         /// Check killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_2" />
@@ -364,8 +369,9 @@ namespace Go
             Content c = tryMove.MoveContent;
             HashSet<Point> movePoints = tryBoard.MoveGroup.Points;
 
-            //ensure not negligible moves except atari resolved
-            if (tryBoard.CapturedList.Count > 0 || (tryBoard.IsAtariMove && tryBoard.MoveGroupLiberties > 1)) return false;
+            //check not negligible moves
+            if ((tryBoard.IsAtariMove && tryBoard.MoveGroupLiberties > 1)) return false;
+            if (tryBoard.CapturedList.Count > 0 && tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindCoveredEye(tryBoard, n, c))) return false;
 
             //check connect and die
             (Boolean suicidal, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
@@ -590,6 +596,7 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
+            if (tryBoard.CapturedList.Count > 0) return false;
             //ensure diagonal groups found
             Boolean diagonalGroups = LinkHelper.GetGroupLinkedDiagonals(tryBoard, tryBoard.MoveGroup, false).Any();
             if (!diagonalGroups)
@@ -1266,8 +1273,10 @@ namespace Go
         public static Boolean NeutralPointSurvivalMove(GameTryMove tryMove, Boolean survivalMove = true)
         {
             if (survivalMove && !tryMove.IsNegligible)
-                return false;
-
+            {
+                if (!RedundantAtariAtCoveredEye(tryMove))
+                    return false;
+            }
             //validate neutral point
             Boolean isNeutralPoint = ValidateNeutralPoint(tryMove);
             if (isNeutralPoint)
@@ -1316,8 +1325,12 @@ namespace Go
         /// </summary>
         public static Boolean NeutralPointKillMove(GameTryMove tryMove)
         {
+            Board tryBoard = tryMove.TryGame.Board;
             if (!tryMove.IsNegligible)
-                return false;
+            {
+                if (!RedundantAtariAtCoveredEye(tryMove))
+                    return false;
+            }
             //make move from perspective of survival
             GameTryMove move = tryMove.MakeMoveWithOpponentAtSamePoint();
             if (move == null) return false;
@@ -1325,7 +1338,6 @@ namespace Go
             Boolean isNeutralPoint = NeutralPointSurvivalMove(move, false);
             if (isNeutralPoint)
             {
-                Board tryBoard = tryMove.TryGame.Board;
                 if (ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.MoveGroup)) return isNeutralPoint;
                 //must have neutral point
                 (Boolean mustHave, Point? linkPoint) = MustHaveNeutralPoint(move);
@@ -1336,6 +1348,30 @@ namespace Go
                 }
             }
             return isNeutralPoint;
+        }
+
+        /// <summary>
+        /// Redundant atari at covered eye.
+        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario4dan17" />
+        /// </summary>
+        private static Boolean RedundantAtariAtCoveredEye(GameTryMove tryMove)
+        {
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            Content c = tryBoard.MoveGroup.Content;
+            if (tryBoard.AtariResolved || tryBoard.CapturedList.Count > 0 || tryBoard.MoveGroupLiberties == 1) return false;
+            if (tryBoard.AtariTargets.Count == 1 && tryBoard.AtariTargets.First().Points.Count == 1)
+            {
+                Point p = tryBoard.AtariTargets.First().Points.First();
+                if (!tryBoard.GetStoneNeighbours(p.x, p.y).Any(q => EyeHelper.FindCoveredEye(currentBoard, q, c.Opposite()))) return false;
+                Board b = ImmovableHelper.CaptureSuicideGroup(p, tryBoard);
+                if (b != null && KoHelper.IsKoFight(b))
+                {
+                    if (b.GetNeighbourGroups(b.MoveGroup).All(group => group.Liberties.Count > 2))
+                        return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>

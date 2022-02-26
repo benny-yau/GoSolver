@@ -589,6 +589,7 @@
             <summary>
             Check for connect and die on board with captured suicide stone.
             <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
+            Captured connect and die <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A36" />
             Reverse connect and die <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WindAndTime_Q29277" />
             </summary>
         </member>
@@ -635,6 +636,7 @@
             <summary>
             Suicidal killer formations within survival group without any real eye.
             Check if real eye found in neighbour groups <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario5dan27" />
+            Check for corner five and corner six <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_2" />
             </summary>
         </member>
         <member name="M:Go.KillerFormationHelper.FindSuicidalKillerFormation(Go.Board,Go.Board,Go.Board)">
@@ -854,7 +856,7 @@
         <member name="M:Go.RedundantMoveHelper.SuicidalConnectAndDie(Go.GameTryMove)">
             <summary>
             Check for connect and die moves. <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738" />
-            Ensure not negligible moves <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471" />
+            Check not negligible moves <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471" />
             Check for sieged scenario <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
             Check killer formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_2" />
@@ -1038,6 +1040,12 @@
             Neutral point kill moves - Check if neutral point from point of view of survival
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_B12_2" />
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_Q18500_2" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.RedundantAtariAtCoveredEye(Go.GameTryMove)">
+            <summary>
+            Redundant atari at covered eye.
+            <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario4dan17" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.MustHaveNeutralPoint(Go.GameTryMove)">
