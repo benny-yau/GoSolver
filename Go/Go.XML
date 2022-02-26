@@ -1438,6 +1438,11 @@
             Check if non-killable at neighbour points that are empty.
             </summary>
         </member>
+        <member name="M:Go.WallHelper.StrongNeighbourGroups(Go.Board,System.Collections.Generic.IEnumerable{Go.Group})">
+            <summary>
+            Strong neighbour groups with more than two liberties or two liberties that are suicidal to opponent.
+            </summary>
+        </member>
         <member name="M:Go.GameMapping.GetMappedJson(Go.Game)">
             <summary>
             Retrieves the mapped json from GameInfo object.

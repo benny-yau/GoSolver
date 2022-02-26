@@ -338,12 +338,7 @@ namespace Go
             else if (tryBoard.MoveGroupLiberties == 2)
             {
                 if (SuicidalConnectAndDie(tryMove))
-                {
-                    //if (tryBoard.CapturedList.Count > 0)
-                    //    DebugHelper.PrintGameTryMovesToText(tryBoard, "SuicidalConnectAndDie_capture2.txt");
-
                     return true;
-                }
             }
             return SuicidalWithinNonKillableGroup(tryMove);
         }
@@ -1367,7 +1362,11 @@ namespace Go
                 Board b = ImmovableHelper.CaptureSuicideGroup(p, tryBoard);
                 if (b != null && KoHelper.IsKoFight(b))
                 {
-                    if (b.GetNeighbourGroups(b.MoveGroup).All(group => group.Liberties.Count > 2))
+                    List<Group> neighbourGroups = b.GetNeighbourGroups(b.MoveGroup);
+                    if (neighbourGroups.All(group => WallHelper.IsNonKillableGroup(b, group)))
+                        return true;
+
+                    if (WallHelper.StrongNeighbourGroups(b, neighbourGroups))
                         return true;
                 }
             }
@@ -1422,7 +1421,8 @@ namespace Go
             Board board = currentBoard.MakeMoveOnNewBoard(tigerMouth, c);
             if (board != null && board.MoveGroupLiberties == 1 && !LinkHelper.IsAbsoluteLinkForGroups(currentBoard, board))
             {
-                if (board.GetGroupsFromStoneNeighbours(tigerMouth, c).All(group => group.Liberties.Count > 2))
+                HashSet<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(tigerMouth, c);
+                if (WallHelper.StrongNeighbourGroups(board, neighbourGroups))
                     return true;
             }
             return false;

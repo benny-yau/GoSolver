@@ -75,7 +75,7 @@ namespace Go
         {
             return board.PointWithinBoard(p) && (board.GameInfo.IsMovablePoint[p.x, p.y] == true || board[p] == c);
         }
-        
+
         /// <summary>
         /// Non killable group cannot be surrounded and killed as neighbour points are not movable.
         /// </summary>
@@ -113,6 +113,18 @@ namespace Go
         public static Boolean IsNonKillableFromSetupMoves(Board board, Group group)
         {
             return group.Neighbours.Any(p => board[p] == Content.Empty && board.GameInfo.IsKillMovablePoint[p.x, p.y] != true);
+        }
+
+        /// <summary>
+        /// Strong neighbour groups with more than two liberties or two liberties that are suicidal to opponent.
+        /// </summary>
+        public static Boolean StrongNeighbourGroups(Board board, IEnumerable<Group> neighbourGroups)
+        {
+            if (!neighbourGroups.Any()) return false;
+            Content c = neighbourGroups.First().Content;
+            if (neighbourGroups.All(group => group.Liberties.Count > 2 || (group.Liberties.Count == 2 && group.Liberties.All(liberty => ImmovableHelper.IsSuicidalMove(board, liberty, c)))))
+                return true;
+            return false;
         }
     }
 }
