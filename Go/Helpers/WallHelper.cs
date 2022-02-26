@@ -122,7 +122,7 @@ namespace Go
         {
             if (!neighbourGroups.Any()) return false;
             Content c = neighbourGroups.First().Content;
-            if (neighbourGroups.All(group => group.Liberties.Count > 2 || (group.Liberties.Count == 2 && group.Liberties.All(liberty => ImmovableHelper.IsSuicidalMove(board, liberty, c)))))
+            if (neighbourGroups.All(group => group.Liberties.Count > 2 || (group.Liberties.Count == 2 && group.Liberties.All(liberty => ImmovableHelper.IsSuicidalMove(board, liberty, c.Opposite())))))
                 return true;
             return false;
         }
