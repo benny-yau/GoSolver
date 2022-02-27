@@ -159,7 +159,7 @@ namespace Go
                 if (externalMoves.Count > 0)
                 {
                     //enable pass move for ten thousand year ko
-                    if (externalMoves.Count == 1 && tryMoves.Count == 3)
+                    if (externalMoves.Count == 1)
                     {
                         Board b = board.MakeMoveOnNewBoard(externalMoves.First().Move, content, true);
                         if (b != null && UniquePatternsHelper.CheckForTenThousandYearKo(b))

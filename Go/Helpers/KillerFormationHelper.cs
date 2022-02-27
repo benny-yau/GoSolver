@@ -29,7 +29,7 @@ namespace Go
             }
             else if (contentCount == 4)
             {
-                if (TryKillFormation(board, killerGroup, emptyPoints, new List<Func<Board, Group, Boolean>>() { KnifeFiveFormation, OneByFourSideFormation, TSideFormation }))
+                if (TryKillFormation(board, killerGroup, emptyPoints, new List<Func<Board, Group, Boolean>>() { KnifeFiveFormation, OneByFourSideFormation, TSideFormation, ThreeByTwoSideFormation }))
                     return true;
             }
             else if (contentCount == 5)
@@ -115,6 +115,7 @@ namespace Go
         /// Knife five formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113" />
         /// One-by-four side formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B32" />
         /// T side formation <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471" />
+        /// Three-by-two formation <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A132" />
         /// Two-by-four side formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31682" />
         /// Corner six formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
         /// Flower six formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16859" />
@@ -187,6 +188,10 @@ namespace Go
 
                     //T side formation
                     if (KillerFormationHelper.TSideFormation(tryBoard, tryBoard.MoveGroup))
+                        return true;
+
+                    //three-by-two side formation
+                    if (KillerFormationHelper.ThreeByTwoSideFormation(tryBoard, tryBoard.MoveGroup))
                         return true;
                 }
                 else if (moveCount == 6)
@@ -546,6 +551,29 @@ namespace Go
             if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 3) == 2)
             {
                 if (contentPoints.Count(p => !tryBoard.PointWithinMiddleArea(p)) != 4) return false;
+                if (CheckSideFormationDiagonal(contentPoints, tryBoard, killerGroup))
+                    return true;
+            }
+            return false;
+        }
+
+        /*
+    15 . . . . . . . . . . . . . . . . . . .
+    16 . . . . . . . . . . . . . . . . . . . 
+    17 X X X . . . . . . . . . . . . . . . . 
+    18 . . X X . . . . . . . . . . . . . . . 
+            */
+        public static Boolean ThreeByTwoSideFormation(Board tryBoard, Group killerGroup)
+        {
+            Content c = killerGroup.Content;
+            List<Point> contentPoints = killerGroup.Points.Where(t => tryBoard[t] == c).ToList();
+            if (contentPoints.Count() != 5) return false;
+            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 2) == 3)
+            {
+                if (contentPoints.GroupBy(p => p.x).Any(group => group.Count() == 3) || contentPoints.GroupBy(p => p.y).Any(group => group.Count() == 3))
+                    return true;
+                Boolean edge = (contentPoints.Count(p => p.x == 0) == 2 || contentPoints.Count(p => p.x == tryBoard.SizeX - 1) == 2 || contentPoints.Count(p => p.y == 0) == 2 || contentPoints.Count(p => p.y == tryBoard.SizeY - 1) == 2);
+                if (!edge) return false;
                 if (CheckSideFormationDiagonal(contentPoints, tryBoard, killerGroup))
                     return true;
             }

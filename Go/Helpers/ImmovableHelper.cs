@@ -252,8 +252,16 @@ namespace Go
             {
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalOnCapture(tryBoard, target);
                 if (b == null) continue;
-                //Connect and die
-                if (CheckConnectAndDie(b, b.GetGroupAt(group.Points.First())) || (target.Points.Count == 2 && CheckConnectAndDie(b, b.MoveGroup))) continue;
+                //connect and die
+                if (CheckConnectAndDie(b, b.GetGroupAt(group.Points.First())))
+                    continue;
+                //connect and die for move group
+                if (target.Points.Count == 2)
+                {
+                    (_, Board b2) = ConnectAndDie(b, b.MoveGroup);
+                    if (b2 != null && UnescapableGroup(b2, b2.GetGroupAt(group.Points.First())).Item1)
+                        continue;
+                }
                 return b;
             }
             return null;

@@ -365,7 +365,6 @@ namespace Go
             HashSet<Point> movePoints = tryBoard.MoveGroup.Points;
 
             //check not negligible moves
-            if ((tryBoard.IsAtariMove && tryBoard.MoveGroupLiberties > 1)) return false;
             if (tryBoard.CapturedList.Count > 0 && tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindCoveredEye(tryBoard, n, c))) return false;
 
             //check connect and die
@@ -403,7 +402,7 @@ namespace Go
                     }
                 }
                 //check redundant corner point
-                if (CheckRedundantCornerPoint(tryBoard))
+                if (CheckRedundantCornerPoint(tryMove))
                     return true;
 
                 if (RedundantSuicidalConnectAndDie(tryMove))
@@ -483,8 +482,10 @@ namespace Go
         }
 
         /// <summary>
-        /// Ensure no killable group with two or less liberties <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31435" />
+        /// Check for any weak capture group in connect and die.
+        /// Check killable group with two or less liberties <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31435" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B6" />
+        /// Check for weak group capturing atari group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B17" />
         /// Check snapback <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario1dan4_2" />
         /// </summary>
         private static Boolean CheckWeakGroupInConnectAndDie(GameTryMove tryMove, Board captureBoard)
@@ -493,6 +494,15 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
             if (tryBoard.MoveGroup.Points.Count == 1) return false;
+            //check for weak group capturing atari group
+            if (tryBoard.IsAtariMove && captureBoard.MoveGroup.Points.Count == 1)
+            {
+                Board b = ImmovableHelper.CaptureSuicideGroup(captureBoard, tryBoard.AtariTargets.First());
+                if (b != null && ImmovableHelper.CheckConnectAndDie(b, captureBoard.MoveGroup))
+                    return true;
+            }
+
+            //check killable group with two or less liberties
             IEnumerable<Group> neighbourGroups = tryBoard.GetNeighbourGroups(tryBoard.MoveGroup);
             if (!neighbourGroups.Any(group => group.Liberties.Count > 2)) return false;
             Group weakGroup = neighbourGroups.FirstOrDefault(group => (group.Points.Count >= 2 && group.Liberties.Count == 2 && !WallHelper.IsNonKillableGroup(tryBoard, group)));
@@ -510,7 +520,9 @@ namespace Go
         }
 
         /// <summary>
-        /// Check for one point move group <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_TianLongTu_Q16571" />
+        /// Check for one point move group in connect and die.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B7" />
+        /// <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_TianLongTu_Q16571" />
         /// Check reverse ko fight <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A80" />
         /// Check opponent move liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_3" />
         /// Check snapback at diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q6710_2" />
@@ -522,6 +534,7 @@ namespace Go
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
             if (tryBoard.MoveGroup.Points.Count != 1) return false;
+            //check for two or less liberties in neighbour groups
             if (tryBoard.GetNeighbourGroups(tryBoard.MoveGroup).Any(group => group.Liberties.Count <= 2)) return true;
             //check reverse ko fight
             if (tryBoard.GetStoneNeighbours().Any(n => ImmovableHelper.FindTigerMouth(tryBoard, c, n))) return true;
@@ -2148,7 +2161,7 @@ namespace Go
                 if (possibleEyesAtNeighbourPt <= possibleEyes) continue;
                 if (tryBoard.CornerPoint(p)) continue;
                 //corner point for try move
-                if (CheckRedundantCornerPoint(tryBoard))
+                if (CheckRedundantCornerPoint(tryMove))
                     return true;
 
                 //check any opponent stone at neighbour points
@@ -2189,11 +2202,12 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A6" />
         /// Check for kill formation <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
         /// </summary>
-        private static Boolean CheckRedundantCornerPoint(Board tryBoard)
+        private static Boolean CheckRedundantCornerPoint(GameTryMove tryMove)
         {
+            Board tryBoard = tryMove.TryGame.Board;
             Point move = tryBoard.Move.Value;
             Content c = tryBoard[move];
-            if (!tryBoard.CornerPoint(move) || tryBoard.IsAtariMove) return false;
+            if (!tryBoard.CornerPoint(move) || tryBoard.IsAtariMove || !tryMove.IsNegligible) return false;
             //Two point kill
             Boolean twoPointKill = (tryBoard.MoveGroup.Points.Count == 2 && tryBoard.MoveGroupLiberties <= 2 && tryBoard.GetStoneNeighbours().Any(q => tryBoard[q] == Content.Empty));
             if (twoPointKill) return false;
