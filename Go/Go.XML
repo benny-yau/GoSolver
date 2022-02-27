@@ -639,6 +639,11 @@
             Check for corner five and corner six <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_2" />
             </summary>
         </member>
+        <member name="M:Go.KillerFormationHelper.CheckRealEyeInNeighbourGroups(Go.Board,Go.Point)">
+            <summary>
+            Check if real eye found in neighbour groups.
+            </summary>
+        </member>
         <member name="M:Go.KillerFormationHelper.FindSuicidalKillerFormation(Go.Board,Go.Board,Go.Board)">
             <summary>
             Two-point move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A48" />
@@ -672,6 +677,11 @@
             Covered eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31563_2" />
             Move group with three points <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario1kyu29" />
             Move group binding <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B19_2" />
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.CheckBothSideFormationDiagonal(System.Collections.Generic.List{Go.Point},Go.Board,Go.Group)">
+            <summary>
+            Check diagonals for side formations 
             </summary>
         </member>
         <member name="M:Go.KillerFormationHelper.WithinThreeByTwoGrid(Go.Group)">

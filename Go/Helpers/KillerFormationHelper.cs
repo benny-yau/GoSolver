@@ -82,11 +82,15 @@ namespace Go
             return !CheckRealEyeInNeighbourGroups(tryBoard, tryBoard.Move.Value);
         }
 
+        /// <summary>
+        /// Check if real eye found in neighbour groups.
+        /// </summary>
         public static Boolean CheckRealEyeInNeighbourGroups(Board tryBoard, Point move)
         {
             Content c = tryBoard[move];
             Group moveKillerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
             if (moveKillerGroup == null) moveKillerGroup = tryBoard.MoveGroup;
+            //get all killer groups except move killer group
             List<Group> killerGroups = BothAliveHelper.GetCorneredKillerGroup(tryBoard, c.Opposite(), false);
             killerGroups = killerGroups.Except(new List<Group> { moveKillerGroup }).ToList();
             List<Group> neighbourGroups = tryBoard.GetNeighbourGroups(moveKillerGroup);
@@ -94,9 +98,11 @@ namespace Go
             {
                 List<Group> neighbourKillerGroups = tryBoard.GetNeighbourGroups(killerGroup);
                 if (!neighbourKillerGroups.Intersect(neighbourGroups).Any()) continue;
+                //real eye with one neighbour group only
                 if (neighbourKillerGroups.Count == 1)
                     return true;
-                if (killerGroup.Points.Count <= 3 && EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, killerGroup, EyeType.SemiSolidEye))
+                //find real eye
+                if (EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, killerGroup, EyeType.SemiSolidEye))
                     return true;
             }
             return false;
@@ -327,7 +333,7 @@ namespace Go
                         return true;
                 }
                 List<Point> contentPoints = killerGroup.Points.Where(t => tryBoard[t] == c).ToList();
-                if (CheckSideFormationDiagonal(contentPoints, tryBoard, killerGroup))
+                if (CheckBothSideFormationDiagonal(contentPoints, tryBoard, killerGroup))
                     return true;
             }
             return false;
@@ -503,10 +509,8 @@ namespace Go
                 endPoints.RemoveAll(p => tryBoard.GetDiagonalNeighbours(p.x, p.y).Contains(middlePoint.First()));
                 if (endPoints.Any(p => tryBoard.CornerPoint(p))) return false;
                 if (endPoints.Count != 1) return false;
-                //check diagonal
-                Boolean oneLiberty = (killerGroup.Liberties.Count == 1);
-                Point q = endPoints.First();
-                if (tryBoard.GetDiagonalNeighbours(q.x, q.y).Where(n => !tryBoard.GetStoneNeighbours(n.x, n.y).Contains(middlePoint.First())).Any(n => tryBoard[n] == ((oneLiberty) ? c : Content.Empty)))
+                //check diagonal for end point at longer end
+                if (CheckSideFormationDiagonal(endPoints.First(), tryBoard, killerGroup))
                     return true;
             }
             return false;
@@ -530,7 +534,7 @@ namespace Go
                 List<Point> middlePoint = contentPoints.Where(p => tryBoard.PointWithinMiddleArea(p)).ToList();
                 if (middlePoint.Count != 2) return false;
 
-                if (CheckSideFormationDiagonal(contentPoints, tryBoard, killerGroup))
+                if (CheckBothSideFormationDiagonal(contentPoints, tryBoard, killerGroup))
                     return true;
             }
             return false;
@@ -551,7 +555,7 @@ namespace Go
             if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 3) == 2)
             {
                 if (contentPoints.Count(p => !tryBoard.PointWithinMiddleArea(p)) != 4) return false;
-                if (CheckSideFormationDiagonal(contentPoints, tryBoard, killerGroup))
+                if (CheckBothSideFormationDiagonal(contentPoints, tryBoard, killerGroup))
                     return true;
             }
             return false;
@@ -571,27 +575,32 @@ namespace Go
             if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 2) == 3)
             {
                 if (contentPoints.GroupBy(p => p.x).Any(group => group.Count() == 3) || contentPoints.GroupBy(p => p.y).Any(group => group.Count() == 3))
-                    return true;
-                Boolean edge = (contentPoints.Count(p => p.x == 0) == 2 || contentPoints.Count(p => p.x == tryBoard.SizeX - 1) == 2 || contentPoints.Count(p => p.y == 0) == 2 || contentPoints.Count(p => p.y == tryBoard.SizeY - 1) == 2);
-                if (!edge) return false;
-                if (CheckSideFormationDiagonal(contentPoints, tryBoard, killerGroup))
-                    return true;
+                {
+                    Boolean edge = (contentPoints.Count(p => p.x == 0) == 2 || contentPoints.Count(p => p.x == tryBoard.SizeX - 1) == 2 || contentPoints.Count(p => p.y == 0) == 2 || contentPoints.Count(p => p.y == tryBoard.SizeY - 1) == 2);
+                    if (!edge) return false;
+                    if (CheckBothSideFormationDiagonal(contentPoints, tryBoard, killerGroup))
+                        return true;
+                }
             }
             return false;
         }
 
-        private static Boolean CheckSideFormationDiagonal(List<Point> contentPoints, Board tryBoard, Group killerGroup)
+        /// <summary>
+        /// Check diagonals for side formations 
+        /// </summary>
+        private static Boolean CheckBothSideFormationDiagonal(List<Point> contentPoints, Board tryBoard, Group killerGroup)
+        {
+            List<Point> endPoints = contentPoints.Where(p => tryBoard.GetStoneNeighbours(p.x, p.y).Where(n => !tryBoard.PointWithinMiddleArea(n.x, n.y)).Intersect(contentPoints).Count() == 1).ToList();
+            return endPoints.Any(q => CheckSideFormationDiagonal(q, tryBoard, killerGroup));
+        }
+
+        private static Boolean CheckSideFormationDiagonal(Point endPoint, Board tryBoard, Group killerGroup)
         {
             Content c = killerGroup.Content;
-            List<Point> endPoints = contentPoints.Where(p => tryBoard.GetStoneNeighbours(p.x, p.y).Where(n => !tryBoard.PointWithinMiddleArea(n.x, n.y)).Intersect(contentPoints).Count() == 1).ToList();
             Boolean oneLiberty = (killerGroup.Liberties.Count == 1);
-            foreach (Point q in endPoints)
-            {
-                if (tryBoard.GetDiagonalNeighbours(q.x, q.y).Where(n => !killerGroup.Points.Contains(n)).Any(n => tryBoard[n] == ((oneLiberty) ? c : Content.Empty)))
-                    return true;
-            }
-            return false;
+            return (tryBoard.GetDiagonalNeighbours(endPoint.x, endPoint.y).Where(n => !killerGroup.Points.Contains(n)).Any(n => tryBoard[n] == ((oneLiberty) ? c : Content.Empty)));
         }
+
 
         /*
     15 . . . . . . . . . . . . . . . . . . .
