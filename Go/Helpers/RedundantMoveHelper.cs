@@ -316,7 +316,10 @@ namespace Go
             if (opponentMove == null) return false;
             Board opponentTryBoard = opponentMove.TryGame.Board;
             if (opponentTryBoard.MoveGroupLiberties == 1 && opponentTryBoard.IsSinglePoint())
-                return SinglePointSuicidalMove(opponentMove, tryMove);
+            {
+                if (SinglePointSuicidalMove(opponentMove, tryMove))
+                    return true;
+            }
             return SuicidalWithinNonKillableGroup(opponentMove, tryMove);
         }
 
@@ -345,7 +348,7 @@ namespace Go
 
         /// <summary>
         /// Check for connect and die moves. <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738" />
-        /// Check not negligible moves <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471" />
+        /// Check capture moves <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A75_101Weiqi" />
         /// Check for sieged scenario <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
         /// Check killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_2" />
@@ -364,15 +367,19 @@ namespace Go
             Content c = tryMove.MoveContent;
             HashSet<Point> movePoints = tryBoard.MoveGroup.Points;
 
-            //check not negligible moves
-            if (tryBoard.CapturedList.Count > 0 && tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindCoveredEye(tryBoard, n, c))) return false;
+            //check capture moves
+            if (tryBoard.CapturedList.Count > 0)
+            {
+                if (tryBoard.CapturedList.Any(g => AtariHelper.AtariByGroup(currentBoard, g))) return false;
+                if (tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindCoveredEye(tryBoard, n, c))) return false;
+            }
 
             //check connect and die
             (Boolean suicidal, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
             if (!suicidal) return false;
 
             //check for one point move group
-            if (CheckOnePointMoveInConnectAndDie(tryMove))
+            if (CheckOnePointMoveInConnectAndDie(tryMove, captureBoard))
                 return false;
 
             //ensure no killable group with two or less liberties
@@ -527,15 +534,18 @@ namespace Go
         /// Check opponent move liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_3" />
         /// Check snapback at diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q6710_2" />
         /// </summary>
-        private static Boolean CheckOnePointMoveInConnectAndDie(GameTryMove tryMove)
+        private static Boolean CheckOnePointMoveInConnectAndDie(GameTryMove tryMove, Board captureBoard)
         {
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
             if (tryBoard.MoveGroup.Points.Count != 1) return false;
+
             //check for two or less liberties in neighbour groups
-            if (tryBoard.GetNeighbourGroups(tryBoard.MoveGroup).Any(group => group.Liberties.Count <= 2)) return true;
+            if (tryBoard.GetNeighbourGroups(tryBoard.MoveGroup).Any(group => group.Liberties.Count <= 2 && group.Liberties.Any(liberty => !ImmovableHelper.IsSuicidalMove(captureBoard, liberty, c))))
+                return true;
+
             //check reverse ko fight
             if (tryBoard.GetStoneNeighbours().Any(n => ImmovableHelper.FindTigerMouth(tryBoard, c, n))) return true;
             //check opponent move liberties
