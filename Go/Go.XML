@@ -1066,6 +1066,7 @@
             <summary>
             Redundant atari at covered eye.
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario4dan17" />
+            Check for ko fight <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_A36" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.MustHaveNeutralPoint(Go.GameTryMove)">
@@ -1123,7 +1124,8 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.IsImmovableKill(Go.Game,System.Collections.Generic.List{Go.Group})">
             <summary>
-            Conditions for specific kill with immovable points.
+            Conditions for specific kill with immovable points. <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_A54" />
+            Covered eye liberty <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_A54_3" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SpecificKillWithImmovablePoints(Go.Board,System.Collections.Generic.List{Go.GameTryMove},Go.Group)">

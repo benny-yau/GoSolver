@@ -410,6 +410,7 @@ namespace Go
                         //find real eye at diagonals for single point move
                         foreach (Point d in tryBoard.GetDiagonalNeighbours(move.x, move.y))
                         {
+                            if (ImmovableHelper.FindTigerMouth(currentBoard, c.Opposite(), d)) continue;
                             Group killerGroupDiagonal = BothAliveHelper.GetKillerGroupFromCache(b, d, c.Opposite());
                             if (killerGroupDiagonal != null && EyeHelper.FindRealEyeWithinEmptySpace(b, killerGroupDiagonal))
                                 return true;
@@ -1379,6 +1380,7 @@ namespace Go
         /// <summary>
         /// Redundant atari at covered eye.
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario4dan17" />
+        /// Check for ko fight <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_A36" />
         /// </summary>
         private static Boolean RedundantAtariAtCoveredEye(GameTryMove tryMove)
         {
@@ -1393,15 +1395,9 @@ namespace Go
                 Board b = ImmovableHelper.CaptureSuicideGroup(p, tryBoard);
                 if (b != null && KoHelper.IsKoFight(b))
                 {
-                    if (!KoHelper.KoContentEnabled(c, currentBoard.GameInfo))
-                        return true;
-
-                    List<Group> neighbourGroups = b.GetNeighbourGroups(b.MoveGroup);
-                    if (neighbourGroups.All(group => WallHelper.IsNonKillableGroup(b, group)))
-                        return true;
-
-                    if (WallHelper.StrongNeighbourGroups(b, neighbourGroups))
-                        return true;
+                    //check for ko fight
+                    if (KoHelper.KoContentEnabled(c, currentBoard.GameInfo) && b.AtariTargets.Count > 0) return false;
+                    return true;
                 }
             }
             return false;
@@ -1612,7 +1608,8 @@ namespace Go
         }
 
         /// <summary>
-        /// Conditions for specific kill with immovable points.
+        /// Conditions for specific kill with immovable points. <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_A54" />
+        /// Covered eye liberty <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_A54_3" />
         /// </summary>
         public static Boolean IsImmovableKill(Game g, List<Group> killerGroups)
         {
@@ -1621,8 +1618,8 @@ namespace Go
             //more than one neighbour group
             if (g.Board.GetNeighbourGroups(killerGroup).Count == 1) return false;
             List<Point> killerLiberties = killerGroups[0].Points.Where(p => g.Board[p] == Content.Empty).ToList();
-            //ensure two killer liberties
-            if (killerLiberties.Count != 2)
+            //ensure two killer liberties without covered eye
+            if (killerLiberties.Count(liberty => !EyeHelper.FindCoveredEye(g.Board, liberty, killerGroup.Content)) != 2)
                 return false;
             return true;
         }
@@ -1638,11 +1635,7 @@ namespace Go
         {
             //check for atari
             List<Point> contentPoints = killerGroup.Points.Where(t => board[t] == killerGroup.Content).ToList();
-            foreach (Group group in board.GetGroupsFromPoints(contentPoints))
-            {
-                if (group.Liberties.Count == 1) return null;
-                if (AtariHelper.AtariByGroup(board, group)) return null;
-            }
+            if (board.GetGroupsFromPoints(contentPoints).Any(group => group.Liberties.Count == 1)) return null;
             List<Point> killerLiberties = killerGroup.Points.Where(p => board[p] == Content.Empty).ToList();
 
             HashSet<Group> groups = new HashSet<Group>();
@@ -1688,37 +1681,40 @@ namespace Go
                 return null;
 
             Content c = neutralPointMoves.First().MoveContent;
-            GameTryMove neutralPointMove = neutralPointMoves.FirstOrDefault(t => t.CurrentGame.Board.GetGroupsFromStoneNeighbours(t.Move, c).Count > 0);
+            //all moves are valid if liberty fight
+            GameTryMove neutralPointMove = neutralPointMoves.FirstOrDefault(t => t.TryGame.Board.GetGroupsFromStoneNeighbours(t.Move, c).Count > 0);
             if (neutralPointMove == null) return null;
             Board tryBoard = neutralPointMove.TryGame.Board;
-            Group targetGroup = tryBoard.GetGroupsFromStoneNeighbours(neutralPointMove.Move, c).First();
-            List<Point> neighbourLiberties;
-            if (killerGroups.Count == 0)
+            foreach (Group targetGroup in tryBoard.GetGroupsFromStoneNeighbours(neutralPointMove.Move, c))
             {
-                //ensure only two neighbour groups
-                List<Group> neighbourGroups = tryBoard.GetNeighbourGroups(targetGroup);
-                if (neighbourGroups.Count != 2) return null;
-                if (neighbourGroups.Any(group => AtariHelper.AtariByGroup(tryBoard, group))) return null;
-                //get the group other than neutral point group
-                Group neighbourGroup = neighbourGroups.First(group => !group.Equals(tryBoard.GetGroupAt(neutralPointMove.Move)));
-                neighbourLiberties = neighbourGroup.Liberties.ToList();
-            }
-            else
-            {
-                //include all empty points within killer group
-                neighbourLiberties = killerGroups.First().Points.Where(p => tryBoard[p] == Content.Empty).ToList();
-            }
+                List<Point> neighbourLiberties;
+                if (killerGroups.Count == 0)
+                {
+                    //ensure only two neighbour groups
+                    List<Group> neighbourGroups = tryBoard.GetNeighbourGroups(targetGroup);
+                    if (neighbourGroups.Count != 2) return null;
+                    if (neighbourGroups.Any(group => AtariHelper.AtariByGroup(tryBoard, group))) return null;
+                    //get the group other than neutral point group
+                    Group neighbourGroup = neighbourGroups.First(group => !group.Equals(tryBoard.GetGroupAt(neutralPointMove.Move)));
+                    neighbourLiberties = neighbourGroup.Liberties.ToList();
+                }
+                else
+                {
+                    //include all empty points within killer group
+                    neighbourLiberties = killerGroups.First().Points.Where(p => tryBoard[p] == Content.Empty).ToList();
+                }
 
-            //compare liberties to see if target group can be killed
-            if (neighbourLiberties.Count == targetGroup.Liberties.Count + 1)
-                return neutralPointMove;
-            else if (neighbourLiberties.Count == targetGroup.Liberties.Count)
-            {
-                //killer group available
-                if (killerGroups.Count > 0) return neutralPointMove;
-                //real solid eye found
-                if (neighbourLiberties.Any(liberty => (BothAliveHelper.GetKillerGroupFromCache(tryBoard, liberty, c) != null)))
+                //compare liberties to see if target group can be killed
+                if (neighbourLiberties.Count == targetGroup.Liberties.Count + 1)
                     return neutralPointMove;
+                else if (neighbourLiberties.Count == targetGroup.Liberties.Count)
+                {
+                    //killer group available
+                    if (killerGroups.Count > 0) return neutralPointMove;
+                    //real solid eye found
+                    if (neighbourLiberties.Any(liberty => BothAliveHelper.GetKillerGroupFromCache(tryBoard, liberty, c) != null))
+                        return neutralPointMove;
+                }
             }
             return null;
         }
