@@ -589,7 +589,6 @@
             <summary>
             Check for connect and die on board with captured suicide stone.
             <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
-            Captured connect and die <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A36" />
             Reverse connect and die <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WindAndTime_Q29277" />
             </summary>
         </member>
@@ -765,7 +764,12 @@
         </member>
         <member name="M:Go.LinkHelper.GetAllDiagonalConnectedGroups(Go.Board,Go.Group,System.Collections.Generic.HashSet{Go.Group})">
             <summary>
-            Get diagonal neighbours of group. Ensure connected parameter to check if is immovable for opponent at any of the two points between the diagonals.
+            Get all diagonal connected groups. Ensure connected parameter to check if is immovable for opponent at any of the two points between the diagonals.
+            </summary>
+        </member>
+        <member name="M:Go.LinkHelper.GetAllDiagonalConnectedGroupsIncludingEyes(Go.Board,System.Collections.Generic.HashSet{Go.Group})">
+            <summary>
+            Get all diagonal connected groups including eyes. 
             </summary>
         </member>
         <member name="M:Go.LinkHelper.GetGroupLinkedDiagonals(Go.Board,Go.Group,System.Boolean)">
@@ -868,6 +872,7 @@
             <summary>
             Check for connect and die moves. <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738" />
             Check capture moves <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A75_101Weiqi" />
+            Check atari moves <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30986" />
             Check for sieged scenario <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
             Check killer formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_2" />
@@ -1125,6 +1130,7 @@
             <summary>
             Specific kill with immovable points. At least two neighbour groups.
             Survival group has liberty less or equals to two <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario5dan27" />
+            <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16735" />
             At least one liberty shared with killer group <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_A54_2" />
             Check that survival cannot clear space <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_A54" />
             </summary>
@@ -1149,6 +1155,7 @@
             One neighbour group <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_XuanXuanGo_Q18500" />
             More than one neighbour group <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario5dan27_2" />
             Get all extended groups <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_XuanXuanGo_Q18340" />
+            Get all groups including eyes <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario4dan17_2" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.RedundantTigerMouthMove(Go.GameTryMove)">

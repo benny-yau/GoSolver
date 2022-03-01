@@ -134,7 +134,7 @@ namespace Go
 
 
         /// <summary>
-        /// Get diagonal neighbours of group. Ensure connected parameter to check if is immovable for opponent at any of the two points between the diagonals.
+        /// Get all diagonal connected groups. Ensure connected parameter to check if is immovable for opponent at any of the two points between the diagonals.
         /// </summary>
         public static void GetAllDiagonalConnectedGroups(Board board, Group group, HashSet<Group> groups)
         {
@@ -152,6 +152,20 @@ namespace Go
         {
             HashSet<Group> groups = new HashSet<Group>();
             GetAllDiagonalConnectedGroups(board, group, groups);
+            return groups;
+        }
+
+        /// <summary>
+        /// Get all diagonal connected groups including eyes. 
+        /// </summary>
+        public static HashSet<Group> GetAllDiagonalConnectedGroupsIncludingEyes(Board board, HashSet<Group> groups)
+        {
+            HashSet<Point> liberties = board.GetLibertiesOfGroups(groups.ToList());
+            foreach (Point liberty in liberties)
+            {
+                if (EyeHelper.FindEye(board, liberty, groups.First().Content))
+                    board.GetStoneNeighbours(liberty.x, liberty.y).Where(n => board.GetGroupAt(n).Points.Count == 1).ToList().ForEach(x => groups.Add(board.GetGroupAt(x)));
+            }
             return groups;
         }
 

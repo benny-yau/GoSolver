@@ -349,6 +349,7 @@ namespace Go
         /// <summary>
         /// Check for connect and die moves. <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738" />
         /// Check capture moves <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A75_101Weiqi" />
+        /// Check atari moves <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30986" />
         /// Check for sieged scenario <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
         /// Check killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_2" />
@@ -373,10 +374,17 @@ namespace Go
                 if (tryBoard.CapturedList.Any(g => AtariHelper.AtariByGroup(currentBoard, g))) return false;
                 if (tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindCoveredEye(tryBoard, n, c))) return false;
             }
-
             //check connect and die
             (Boolean suicidal, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
             if (!suicidal) return false;
+
+            //check atari moves
+            foreach (Group atariTarget in tryBoard.AtariTargets)
+            {
+                Board b = ImmovableHelper.CaptureSuicideGroup(captureBoard, atariTarget);
+                if (b != null && b.CapturedList.Count > 1)
+                    return false;
+            }
 
             //check for one point move group
             if (CheckOnePointMoveInConnectAndDie(tryMove, captureBoard))
@@ -1385,6 +1393,9 @@ namespace Go
                 Board b = ImmovableHelper.CaptureSuicideGroup(p, tryBoard);
                 if (b != null && KoHelper.IsKoFight(b))
                 {
+                    if (!KoHelper.KoContentEnabled(c, currentBoard.GameInfo))
+                        return true;
+
                     List<Group> neighbourGroups = b.GetNeighbourGroups(b.MoveGroup);
                     if (neighbourGroups.All(group => WallHelper.IsNonKillableGroup(b, group)))
                         return true;
@@ -1610,8 +1621,8 @@ namespace Go
             //more than one neighbour group
             if (g.Board.GetNeighbourGroups(killerGroup).Count == 1) return false;
             List<Point> killerLiberties = killerGroups[0].Points.Where(p => g.Board[p] == Content.Empty).ToList();
-            //killer liberties that connect to more than one of survival groups
-            if (killerLiberties.Any(liberty => g.Board.GetGroupsFromStoneNeighbours(liberty, killerGroup.Content).Count > 1))
+            //ensure two killer liberties
+            if (killerLiberties.Count != 2)
                 return false;
             return true;
         }
@@ -1619,6 +1630,7 @@ namespace Go
         /// <summary>
         /// Specific kill with immovable points. At least two neighbour groups.
         /// Survival group has liberty less or equals to two <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario5dan27" />
+        /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16735" />
         /// At least one liberty shared with killer group <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_A54_2" />
         /// Check that survival cannot clear space <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_A54" />
         /// </summary>
@@ -1751,6 +1763,7 @@ namespace Go
         /// One neighbour group <see cref="UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_XuanXuanGo_Q18500" />
         /// More than one neighbour group <see cref="UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario5dan27_2" />
         /// Get all extended groups <see cref="UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_XuanXuanGo_Q18340" />
+        /// Get all groups including eyes <see cref="UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario4dan17_2" />
         /// </summary>
         public static GameTryMove GetGenericNeutralMove(Game g, List<GameTryMove> tryMoves, List<GameTryMove> neutralPointMoves)
         {
@@ -1763,6 +1776,9 @@ namespace Go
             HashSet<Group> groups = new HashSet<Group>();
             List<Group> neighbourGroups = g.Board.GetNeighbourGroups(killerGroup);
             neighbourGroups.ForEach(gp => LinkHelper.GetAllDiagonalConnectedGroups(g.Board, gp, groups));
+
+            //get all groups including eyes
+            groups = LinkHelper.GetAllDiagonalConnectedGroupsIncludingEyes(g.Board, groups);
 
             //cover all neutral points
             Board coveredBoard = new Board(g.Board);
@@ -2491,12 +2507,7 @@ namespace Go
             if (!isSurvive)
             {
                 //include all stones at eye point
-                HashSet<Point> liberties = currentBoard.GetLibertiesOfGroups(groups.ToList());
-                foreach (Point liberty in liberties)
-                {
-                    if (EyeHelper.FindEye(currentBoard, liberty, groups.First().Content))
-                        currentBoard.GetStoneNeighbours(liberty.x, liberty.y).Where(n => currentBoard.GetGroupAt(n).Points.Count == 1).ToList().ForEach(x => targetGroups.Add(currentBoard.GetGroupAt(x)));
-                }
+                targetGroups = LinkHelper.GetAllDiagonalConnectedGroupsIncludingEyes(currentBoard, targetGroups);
             }
             //check for another ko other than current ko move
             foreach (Group group in targetGroups)
