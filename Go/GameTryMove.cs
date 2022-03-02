@@ -30,12 +30,7 @@ namespace Go
         public bool IsRedundantEyeFiller { get; set; }
         public bool IsLeapMove { get; set; }
         public bool IsAtariRedundant { get; set; }
-
-
-
-        public bool IsOpponentSuicide { get; set; }
         public bool IsKoFight { get; set; }
-        public bool IsResolveKoFight { get; set; }
         public bool MustHaveNeutralPoint { get; set; }
         public LinkedPoint<Point> LinkPoint { get; set; }
 
@@ -159,8 +154,7 @@ namespace Go
         public void ProcessGameTryMoves()
         {
             AtariHelper.FindAndResolveAtari(this);
-            ImmovableHelper.FindOpponentImmovable(this);
-            KoHelper.StartAndResolveKoFight(this);
+            KoHelper.CheckIsKoFight(this);
         }
 
         public override string ToString()

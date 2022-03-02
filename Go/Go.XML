@@ -471,11 +471,6 @@
             Requires that the root of the game starts from initial setup.
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.FindOpponentImmovable(Go.GameTryMove)">
-            <summary>
-            Find opponent suicide point and ko fight if not enabled for opponent.
-            </summary>
-        </member>
         <member name="M:Go.ImmovableHelper.SinglePointOpponentImmovable(Go.GameTryMove)">
             <summary>
             Eye point that is immovable to opponent.
@@ -718,17 +713,12 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Go.KoHelper.StartAndResolveKoFight(Go.GameTryMove)">
-            <summary>
-            Start ko and resolve ko fight.
-            </summary>
-        </member>
         <member name="M:Go.KoHelper.IsKoFight(Go.Board)">
             <summary>
             Is Ko fight, including both pre-ko and ko.
             </summary>
         </member>
-        <member name="M:Go.KoHelper.StartKoFight(Go.GameTryMove)">
+        <member name="M:Go.KoHelper.CheckIsKoFight(Go.GameTryMove)">
             <summary>
             <see cref="!:UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario_TianLongTu_Q17160" />
             </summary>
@@ -1071,7 +1061,8 @@
             Redundant atari at covered eye.
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario4dan17" />
             Check for ko fight <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_A36" />
-            Check for snapback <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Phenomena_B7" />
+            Check for groups with two or less liberties <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Phenomena_B7" />
+            <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_3" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.MustHaveNeutralPoint(Go.GameTryMove)">

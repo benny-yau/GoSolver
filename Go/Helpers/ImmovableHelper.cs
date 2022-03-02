@@ -9,29 +9,6 @@ namespace Go
     public class ImmovableHelper
     {
         /// <summary>
-        /// Find opponent suicide point and ko fight if not enabled for opponent.
-        /// </summary>
-        public static void FindOpponentImmovable(GameTryMove tryMove)
-        {
-            //opponent suicide point
-            GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint(false);
-            if (opponentMove == null)
-            {
-                tryMove.IsOpponentSuicide = true;
-                return;
-            }
-            //check if ko fight enabled
-            Board tryBoard = opponentMove.TryGame.Board;
-            if (KoHelper.IsKoFight(tryBoard))
-            {
-                Boolean koEnabled = KoHelper.KoContentEnabled(tryBoard.MoveGroup.Content, tryBoard.GameInfo);
-                tryMove.IsOpponentSuicide = !koEnabled;
-                return;
-            }
-            tryMove.IsOpponentSuicide = false;
-        }
-
-        /// <summary>
         /// Eye point that is immovable to opponent.
         /// </summary>
         public static Boolean SinglePointOpponentImmovable(GameTryMove tryMove)

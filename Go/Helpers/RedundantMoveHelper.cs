@@ -1387,7 +1387,8 @@ namespace Go
         /// Redundant atari at covered eye.
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario4dan17" />
         /// Check for ko fight <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_A36" />
-        /// Check for snapback <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Phenomena_B7" />
+        /// Check for groups with two or less liberties <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Phenomena_B7" />
+        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_3" />
         /// </summary>
         private static Boolean RedundantAtariAtCoveredEye(GameTryMove tryMove)
         {
@@ -1402,15 +1403,17 @@ namespace Go
                 Board b = ImmovableHelper.CaptureSuicideGroup(p, tryBoard);
                 if (b != null && KoHelper.IsKoFight(b))
                 {
-                    if (KoHelper.KoContentEnabled(c, currentBoard.GameInfo))
-                    {
-                        //check for ko fight
-                        if (b.AtariTargets.Count > 0) return false;
-                        //check for snapback
-                        if (b.GetNeighbourGroups(b.MoveGroup).Any(group => ImmovableHelper.CheckSnapback(b, group)))
-                            return false;
-                    }
-                    return true;
+                    //check for ko fight
+                    if (!KoHelper.KoContentEnabled(c, currentBoard.GameInfo))
+                        return true;
+
+                    List<Group> neighbourGroups = b.GetNeighbourGroups(b.MoveGroup);
+                    if (neighbourGroups.All(group => WallHelper.IsNonKillableGroup(b, group)))
+                        return true;
+
+                    //check for groups with two or less liberties
+                    if (WallHelper.StrongNeighbourGroups(b, neighbourGroups))
+                        return true;
                 }
             }
             return false;
@@ -1504,7 +1507,7 @@ namespace Go
             //Remove moves that are within killer group or ko not enabled
             neutralPointMoves.RemoveAll(n => n.TryGame.Board.MoveGroupLiberties == 1 || BothAliveHelper.GetKillerGroupFromCache(n.TryGame.Board, n.Move) != null);
             if (!KoHelper.KoSurvivalEnabled(SurviveOrKill.Kill, currentGame.GameInfo))
-                neutralPointMoves.RemoveAll(n => KoHelper.StartKoFight(n));
+                neutralPointMoves.RemoveAll(n => KoHelper.CheckIsKoFight(n));
 
             if (neutralPointMoves.Count == 0) return;
             GameTryMove genericNeutralMove = null;

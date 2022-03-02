@@ -38,7 +38,7 @@ namespace Go
             if (tryMoves != null)
             {
                 IEnumerable<Point> emptyPoints = killerGroups[0].Points.Where(p => board[p] == Content.Empty);
-                List<GameTryMove> externalMoves = tryMoves.Where(p => !(emptyPoints.Contains(p.Move) || p.IsKoFight || p.IsResolveKoFight)).ToList();
+                List<GameTryMove> externalMoves = tryMoves.Where(p => !(emptyPoints.Contains(p.Move) || p.IsKoFight)).ToList();
                 if (externalMoves.Count > 0) return false;
             }
 
@@ -62,7 +62,7 @@ namespace Go
                 List<Point> emptyPoints = killerGroup.Points.Where(t => tryBoard[t] == Content.Empty).ToList();
                 if (emptyPoints.Count != 2) return false;
                 //get end points of content group
-                List<Point> endPoints = contentPoints.Where(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 1).ToList();                
+                List<Point> endPoints = contentPoints.Where(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 1).ToList();
                 //both end points connect with one empty point each
                 Boolean endConnect = endPoints.All(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(emptyPoints).Count() == 1);
                 if (!endConnect) return false;

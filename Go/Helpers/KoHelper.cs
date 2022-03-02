@@ -30,15 +30,6 @@ namespace Go
         }
 
         /// <summary>
-        /// Start ko and resolve ko fight.
-        /// </summary>
-        public static void StartAndResolveKoFight(GameTryMove tryMove)
-        {
-            StartKoFight(tryMove);
-            ResolveKoFight(tryMove);
-        }
-
-        /// <summary>
         /// Is Ko fight, including both pre-ko and ko.
         /// </summary>
         public static Boolean IsKoFight(Board board)
@@ -58,7 +49,7 @@ namespace Go
         /// <summary>
         /// <see cref="UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario_TianLongTu_Q17160" />
         /// </summary>
-        public static Boolean StartKoFight(GameTryMove tryMove)
+        public static Boolean CheckIsKoFight(GameTryMove tryMove)
         {
             Board board = tryMove.TryGame.Board;
             if (IsKoFight(board))
@@ -69,19 +60,6 @@ namespace Go
             return false;
         }
 
-        public static Boolean ResolveKoFight(GameTryMove tryMove)
-        {
-            GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
-            if (opponentMove == null) return false;
-
-            Board board = opponentMove.TryGame.Board;
-            if (IsKoFight(board))
-            {
-                tryMove.IsResolveKoFight = true;
-                return true;
-            }
-            return false;
-        }
 
     }
 }

@@ -148,7 +148,7 @@ namespace Go
             }
 
             //sort game try moves
-            tryMoves = (from entry in tryMoves orderby entry.IsOpponentSuicide ascending, entry.TryGame.Board.AtariResolved descending, entry.IncreasedKillerGroups descending, entry.TryGame.Board.MoveGroupLiberties descending select entry).ToList();
+            tryMoves = (from entry in tryMoves orderby entry.TryGame.Board.AtariResolved descending, entry.IncreasedKillerGroups descending, entry.TryGame.Board.MoveGroupLiberties descending select entry).ToList();
 
             //check for bent four and both alive scenarios
             if (UniquePatternsHelper.CheckForBentFour(currentGame, tryMoves))
@@ -446,7 +446,7 @@ namespace Go
             }
 
             //sort game try moves
-            tryMoves = (from entry in tryMoves orderby entry.IsOpponentSuicide ascending, entry.TryGame.Board.AtariResolved descending, entry.TryGame.Board.MoveGroupLiberties descending select entry).ToList();
+            tryMoves = (from entry in tryMoves orderby entry.TryGame.Board.AtariResolved descending, entry.TryGame.Board.MoveGroupLiberties descending select entry).ToList();
 
             //restore redundant ko
             RestoreRedundantKo(tryMoves, redundantTryMoves, koBlockedMove);
