@@ -8,6 +8,7 @@ namespace Go
 {
     public enum EyeType
     {
+        CoveredEye,
         UnCoveredEye,
         SemiSolidEye,
         RealSolidEye
@@ -326,6 +327,8 @@ namespace Go
                     return killerGroup.Points.Any(k => board[k] == Content.Empty && FindSemiSolidEyes(k, board, c.Opposite()).Item1);
                 else if (eyeType == EyeType.UnCoveredEye)
                     return killerGroup.Points.Any(k => board[k] == Content.Empty && FindUncoveredEye(board, k.x, k.y, c.Opposite()));
+                else if (eyeType == EyeType.CoveredEye)
+                    return killerGroup.Points.Any(k => board[k] == Content.Empty && FindCoveredEye(board, k, c.Opposite()));
                 else if (eyeType == EyeType.RealSolidEye)
                     return killerGroup.Points.Any(k => board[k] == Content.Empty && FindRealSolidEyes(k, c.Opposite(), board));
             }
@@ -351,10 +354,18 @@ namespace Go
                 }
                 //make opponent move
                 result = MakeMoveWithinEmptySpace(b, killerGroup, eyeType);
-                if (content == c && result == false)
-                    return false;
-                if (content == c.Opposite() && result == true)
-                    return true;
+                if (eyeType == EyeType.CoveredEye)
+                {
+                    if (result) return true;
+                }
+                else
+                {
+                    //opponent to try all possible moves
+                    if (content == c && result == false)
+                        return false;
+                    if (content == c.Opposite() && result == true)
+                        return true;
+                }
             }
             return result;
         }

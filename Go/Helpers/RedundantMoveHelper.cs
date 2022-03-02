@@ -235,7 +235,7 @@ namespace Go
             if (b != null && b.MoveGroup.Points.Count == 2)
             {
                 Board b2 = ImmovableHelper.CaptureSuicideGroup(b);
-                if (b2 != null && !EyeHelper.FindRealEyeWithinEmptySpace(b2, b.MoveGroup, EyeType.UnCoveredEye))
+                if (b2 != null && EyeHelper.FindRealEyeWithinEmptySpace(b2, b.MoveGroup, EyeType.CoveredEye))
                     return false;
             }
 
@@ -927,7 +927,7 @@ namespace Go
             //captured more than move group
             if (capturedBoard.CapturedList.Count > 1)
             {
-                Boolean coveredEye = (capturedBoard.CapturedList.Any(group => group.Points.Count <= 2 && !EyeHelper.FindRealEyeWithinEmptySpace(capturedBoard, group, EyeType.UnCoveredEye)));
+                Boolean coveredEye = capturedBoard.CapturedList.Any(group => group.Points.Count <= 2 && EyeHelper.FindRealEyeWithinEmptySpace(capturedBoard, group, EyeType.CoveredEye));
                 if (!coveredEye)
                     return true;
             }
@@ -1005,29 +1005,35 @@ namespace Go
         }
 
         /// <summary>
-        /// Two point atari move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935" />
+        /// Two point atari move 
+        /// Check for three groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935" />
+        /// Check for ko fight 
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31672" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31428" />
         /// </summary>
         private static Boolean TwoPointAtariMove(Board tryBoard, Board capturedBoard)
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard[move];
             if (capturedBoard.CapturedPoints.Count() != 2 || !tryBoard.IsAtariMove) return false;
-            if (tryBoard.GetGroupsFromStoneNeighbours(move, c).Count == 1) return false;
-            foreach (Point p in capturedBoard.CapturedPoints)
+            //check for three groups
+            if (tryBoard.GetGroupsFromStoneNeighbours(move, c).Count > 2) return true;
+            //check for ko fight
+            if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
+            (Boolean isAtari, Board board) = AtariHelper.CheckAtariMove(capturedBoard, move, c);
+            if (isAtari && board.AtariTargets.Count == 1 && board.AtariTargets.First().Points.Count == 1)
             {
-                (Boolean isAtari, Board board) = AtariHelper.CheckAtariMove(capturedBoard, p, c);
-                if (isAtari) return true;
-                if (board == null) continue;
-                //atari on next move 
-                List<Point> diagonals = board.GetDiagonalNeighbours(p.x, p.y).Where(n => board[n] == Content.Empty).ToList();
-                if (diagonals.Count != 2) continue;
-                Point firstDiagonal = diagonals[0];
-                Point secondDiagonal = diagonals[1];
-                Board b = board.MakeMoveOnNewBoard(firstDiagonal, c.Opposite());
-                if (b != null && (!AtariHelper.CheckAtariMove(b, secondDiagonal, c).Item1)) continue;
-                Board b2 = board.MakeMoveOnNewBoard(secondDiagonal, c.Opposite());
-                if (b2 != null && (!AtariHelper.CheckAtariMove(b2, firstDiagonal, c).Item1)) continue;
-                return true;
+                Point? libertyPoint = ImmovableHelper.GetLibertyPointOfSuicide(board, board.AtariTargets.First());
+                if (libertyPoint == null) return false;
+                Point q = libertyPoint.Value;
+                if (EyeHelper.FindNonSemiSolidEye(capturedBoard, q, c.Opposite()))
+                    return true;
+
+                List<Point> emptyPoints = board.GetStoneNeighbours(q.x, q.y).Where(n => board[n] == Content.Empty).ToList();
+                if (emptyPoints.Count != 1) return false;
+                Board b = board.MakeMoveOnNewBoard(q, c.Opposite());
+                if (b != null && EyeHelper.FindCoveredEye(b, emptyPoints.First(), c.Opposite()))
+                    return true;
             }
             return false;
         }
@@ -1381,6 +1387,7 @@ namespace Go
         /// Redundant atari at covered eye.
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario4dan17" />
         /// Check for ko fight <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_A36" />
+        /// Check for snapback <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Phenomena_B7" />
         /// </summary>
         private static Boolean RedundantAtariAtCoveredEye(GameTryMove tryMove)
         {
@@ -1395,8 +1402,14 @@ namespace Go
                 Board b = ImmovableHelper.CaptureSuicideGroup(p, tryBoard);
                 if (b != null && KoHelper.IsKoFight(b))
                 {
-                    //check for ko fight
-                    if (KoHelper.KoContentEnabled(c, currentBoard.GameInfo) && b.AtariTargets.Count > 0) return false;
+                    if (KoHelper.KoContentEnabled(c, currentBoard.GameInfo))
+                    {
+                        //check for ko fight
+                        if (b.AtariTargets.Count > 0) return false;
+                        //check for snapback
+                        if (b.GetNeighbourGroups(b.MoveGroup).Any(group => ImmovableHelper.CheckSnapback(b, group)))
+                            return false;
+                    }
                     return true;
                 }
             }

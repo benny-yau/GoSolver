@@ -63,6 +63,10 @@ namespace Go
             File.AppendAllText(Directory.GetCurrentDirectory() + "\\GameBoards.txt", content);
             Debug.WriteLine(content);
         }
+        public static void PrintCountToText(int count, String fileName)
+        {
+            File.AppendAllText(Directory.GetCurrentDirectory() + "\\" + fileName, count.ToString() + Environment.NewLine);
+        }
 
         public static String CreateSetupMovesScript(String contents)
         {
