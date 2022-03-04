@@ -342,6 +342,17 @@ namespace Go
         }
 
         /// <summary>
+        /// Make move at liberty point of suicide group.
+        /// </summary>
+        public static Board MakeMoveAtLibertyPointOfSuicide(Board tryBoard, Group group, Content c)
+        {
+            Point? libertyPoint = ImmovableHelper.GetLibertyPointOfSuicide(tryBoard, group);
+            if (libertyPoint == null) return null;
+            Board board = tryBoard.MakeMoveOnNewBoard(libertyPoint.Value, c);
+            return board;
+        }
+
+        /// <summary>
         /// Is suicide move for both players.
         /// </summary>
         public static Boolean IsSuicidalMoveForBothPlayers(Board tryBoard, Point q)

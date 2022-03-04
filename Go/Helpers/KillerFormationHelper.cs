@@ -64,32 +64,53 @@ namespace Go
         /// <summary>
         /// Suicidal killer formations within survival group without any real eye.
         /// Check if real eye found in neighbour groups <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario5dan27" />
+        /// Check covered eye at non-killable group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
+        /// Allow two point group with killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18472" />
         /// Check for corner five and corner six <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_2" />
         /// </summary>
         public static Boolean SuicidalKillerFormations(Board tryBoard, Board currentBoard = null, Board capturedBoard = null)
         {
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+
+            //check if neighbour group is non-killable
+            if (!CheckCoveredEyeAtSuicideGroup(tryBoard) && tryBoard.GetNeighbourGroups(tryBoard.MoveGroup).Any(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
+                return false;
+
             //find killer formation
             if (!FindSuicidalKillerFormation(tryBoard, currentBoard, capturedBoard)) return false;
-            if (tryBoard.MoveGroup.Points.Count <= 2) return true;
+
+            //allow two point group with killer group
+            if (tryBoard.MoveGroup.Points.Count <= 2)
+            {
+                Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
+                if (killerGroup == null || killerGroup.Points.Count(p => tryBoard[p] == c) > 2) return true;
+            }
 
             //check for corner five and corner six
             if ((tryBoard.MoveGroup.Points.Count == 5 && KillerFormationHelper.CornerFiveFormation(tryBoard, tryBoard.MoveGroup)) || (tryBoard.MoveGroup.Points.Count == 6 && KillerFormationHelper.CornerSixFormation(tryBoard, tryBoard.MoveGroup))) return true;
 
-            //check if neighbour group is non-killable
-            if (tryBoard.GetNeighbourGroups(tryBoard.MoveGroup).Any(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
-                return false;
             //check if real eye found in neighbour groups
-            return !CheckRealEyeInNeighbourGroups(tryBoard, tryBoard.Move.Value);
+            if (CheckRealEyeInNeighbourGroups(capturedBoard ?? tryBoard, move, c))
+                return false;
+
+            return true;
         }
 
         /// <summary>
         /// Check if real eye found in neighbour groups.
+        /// Check for covered eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_3" />
+        /// Check covered eye at non killable group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
         /// </summary>
-        public static Boolean CheckRealEyeInNeighbourGroups(Board tryBoard, Point move)
+        public static Boolean CheckRealEyeInNeighbourGroups(Board tryBoard, Point move, Content c)
         {
-            Content c = tryBoard[move];
+            //check for covered eye
+            if (CheckCoveredEyeAtSuicideGroup(tryBoard))
+                return false;
+
             Group moveKillerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
             if (moveKillerGroup == null) moveKillerGroup = tryBoard.MoveGroup;
+
             //get all killer groups except move killer group
             List<Group> killerGroups = BothAliveHelper.GetCorneredKillerGroup(tryBoard, c.Opposite(), false);
             killerGroups = killerGroups.Except(new List<Group> { moveKillerGroup }).ToList();
@@ -105,6 +126,19 @@ namespace Go
                 if (EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, killerGroup, EyeType.SemiSolidEye))
                     return true;
             }
+            return false;
+        }
+
+        /// <summary>
+        /// Check for covered eye with one or more liberties for suicide group.
+        /// </summary>
+        public static Boolean CheckCoveredEyeAtSuicideGroup(Board tryBoard)
+        {
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            if (tryBoard.MoveGroup.Points.Count != 2) return false;
+            if (tryBoard.MoveGroup.Points.Any(p => tryBoard.GetDiagonalNeighbours(p.x, p.y).Count(q => tryBoard[q] == c && LinkHelper.PointsBetweenDiagonals(p, q).All(r => tryBoard[r] == c.Opposite())) == (tryBoard.PointWithinMiddleArea(p.x, p.y) ? 2 : 1)))
+                return true;
             return false;
         }
 
@@ -416,6 +450,7 @@ namespace Go
             if (CrowbarFormation(tryBoard, killerGroup))
             {
                 if (tryBoard.GetNeighbourGroups(tryBoard.MoveGroup).Count <= 1) return false;
+                if (!LinkHelper.GetGroupDiagonals(tryBoard, tryBoard.MoveGroup).Any(d => tryBoard[d.Move] == killerGroup.Content)) return false;
                 List<Point> contentPoints = killerGroup.Points.Where(t => tryBoard[t] == killerGroup.Content).ToList();
                 if (contentPoints.Count(p => !tryBoard.PointWithinMiddleArea(p)) >= 2)
                     return true;
@@ -610,7 +645,9 @@ namespace Go
         */
         public static Boolean CornerThreeFormation(Board tryBoard, Group killerGroup)
         {
-            List<Point> contentPoints = killerGroup.Points.Where(t => tryBoard[t] == killerGroup.Content).ToList();
+            Content c = killerGroup.Content;
+            if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
+            List<Point> contentPoints = killerGroup.Points.Where(t => tryBoard[t] == c).ToList();
             if (contentPoints.Count() != 3) return false;
             if (!contentPoints.Any(p => tryBoard.CornerPoint(p)) || contentPoints.Any(p => tryBoard.PointWithinMiddleArea(p.x, p.y))) return false;
             if (MaxLengthOfGrid(killerGroup.Points) != 1) return false;
@@ -628,7 +665,9 @@ namespace Go
         */
         public static Boolean CornerSixFormation(Board tryBoard, Group killerGroup)
         {
-            List<Point> contentPoints = killerGroup.Points.Where(t => tryBoard[t] == killerGroup.Content).ToList();
+            Content c = killerGroup.Content;
+            if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
+            List<Point> contentPoints = killerGroup.Points.Where(t => tryBoard[t] == c).ToList();
             if (contentPoints.Count() != 6) return false;
             if (!contentPoints.Any(p => tryBoard.CornerPoint(p))) return false;
             if (contentPoints.Where(p => tryBoard.PointWithinMiddleArea(p.x, p.y)).Count() != 1) return false;
@@ -643,7 +682,9 @@ namespace Go
          */
         public static Boolean CornerFiveFormation(Board tryBoard, Group killerGroup)
         {
-            List<Point> contentPoints = killerGroup.Points.Where(t => tryBoard[t] == killerGroup.Content).ToList();
+            Content c = killerGroup.Content;
+            if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
+            List<Point> contentPoints = killerGroup.Points.Where(t => tryBoard[t] == c).ToList();
             if (contentPoints.Count() != 5) return false;
             if (!contentPoints.Any(p => tryBoard.CornerPoint(p))) return false;
             if (contentPoints.Where(p => tryBoard.PointWithinMiddleArea(p.x, p.y)).Count() != 1) return false;

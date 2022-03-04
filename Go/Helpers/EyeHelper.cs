@@ -287,6 +287,8 @@ namespace Go
         /// </summary>
         private static Boolean CheckTwoPointFilledKillerGroup(Board board, Group killerGroup)
         {
+            Content c = killerGroup.Content.Opposite();
+            if (!KoHelper.KoContentEnabled(c.Opposite(), board.GameInfo)) return false;
             if (killerGroup.Points.Count != 3) return false;
             List<Point> contentPoints = killerGroup.Points.Where(t => board[t] == killerGroup.Content).ToList();
             if (contentPoints.Count != 2) return false;
@@ -296,7 +298,6 @@ namespace Go
 
             if (eyeDiagonals.Count != 1) return false;
             Board b = board;
-            Content c = killerGroup.Content.Opposite();
             //tiger mouth at diagonal
             Point? libertyPoint = ImmovableHelper.FindTigerMouth(board, eyeDiagonals.First(), c);
             if (libertyPoint != null && board[libertyPoint.Value] == Content.Empty)
@@ -305,7 +306,8 @@ namespace Go
                 if (b == null) return false;
             }
             //eye at diagonal
-            if (EyeHelper.FindEye(b, eyeDiagonals.First()))
+            Point eye = eyeDiagonals.First();
+            if (EyeHelper.FindEye(b, eye) && b.GetGroupsFromStoneNeighbours(eye, c).All(group => group.Liberties.Count > 1))
             {
                 Group diagonalGroup = b.GetGroupsFromStoneNeighbours(eyeDiagonals.First(), killerGroup.Content).Except(b.GetNeighbourGroups(killerGroup)).FirstOrDefault();
                 if (diagonalGroup != null && ImmovableHelper.CheckConnectAndDie(b, diagonalGroup))

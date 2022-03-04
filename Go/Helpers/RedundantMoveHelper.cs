@@ -155,7 +155,8 @@ namespace Go
             //check for killer formation
             if (tryBoard.GetNeighbourGroups(tryBoard.MoveGroup).All(group => !WallHelper.IsNonKillableGroup(tryBoard, group)))
             {
-                if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard))
+                Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
+                if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, capturedBoard))
                     return false;
             }
             return true;
@@ -199,6 +200,7 @@ namespace Go
         /// <summary>
         /// Redundant atari move that allows target group to escape.
         /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_XuanXuanGo_A46_101Weiqi_2" />
+        /// Check for snapback <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_TianLongTu_Q16919" />
         /// Check corner kill formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" />
         /// Check two-point covered eye <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_TianLongTu_Q16525" />
         /// Check if atari on other groups <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_ScenarioHighLevel18" />
@@ -220,6 +222,16 @@ namespace Go
             //check if any move can capture target group
             (Boolean suicidal, Board board) = ImmovableHelper.ConnectAndDie(currentBoard, atariTarget);
             if (!suicidal) return false;
+
+            //check for snapback
+            Board escapeBoard = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(board, atariTarget, c.Opposite());
+            if (escapeBoard != null)
+            {
+                Board captureBoard = ImmovableHelper.CaptureSuicideGroup(escapeBoard);
+                if (captureBoard != null && captureBoard.MoveGroup.Liberties.Count == 1)
+                    return false;
+            }
+
             //check if target group move at liberty is suicidal
             Point liberty = board.GetGroupLibertyPoints(atariTarget).First();
             (Boolean suicide, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board);
@@ -472,7 +484,7 @@ namespace Go
             Point move = tryBoard.Move.Value;
             HashSet<Point> movePoints = tryBoard.MoveGroup.Points;
             Content c = tryBoard.MoveGroup.Content;
-            if (!KillerFormationHelper.CheckRealEyeInNeighbourGroups(tryBoard, move)) return false;
+            if (!KillerFormationHelper.CheckRealEyeInNeighbourGroups(tryBoard, move, c)) return false;
             //check for one-point eye
             Boolean onePointEye = (movePoints.Count == 1 && tryBoard.MoveGroup.Liberties.Any(liberty => EyeHelper.FindEye(tryBoard, liberty, c)));
             if (onePointEye) return false;

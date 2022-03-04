@@ -557,6 +557,11 @@
             Get liberty point of suicide group.
             </summary>
         </member>
+        <member name="M:Go.ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(Go.Board,Go.Group,Go.Content)">
+            <summary>
+            Make move at liberty point of suicide group.
+            </summary>
+        </member>
         <member name="M:Go.ImmovableHelper.IsSuicidalMoveForBothPlayers(Go.Board,Go.Point)">
             <summary>
             Is suicide move for both players.
@@ -633,9 +638,16 @@
             Check for corner five and corner six <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_2" />
             </summary>
         </member>
-        <member name="M:Go.KillerFormationHelper.CheckRealEyeInNeighbourGroups(Go.Board,Go.Point)">
+        <member name="M:Go.KillerFormationHelper.CheckRealEyeInNeighbourGroups(Go.Board,Go.Point,Go.Content)">
             <summary>
             Check if real eye found in neighbour groups.
+            Check for covered eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_3" />
+            Check covered eye at non killable group <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.CheckCoveredEyeAtSuicideGroup(Go.Board)">
+            <summary>
+            Check for covered eye with one or more liberties for suicide group.
             </summary>
         </member>
         <member name="M:Go.KillerFormationHelper.FindSuicidalKillerFormation(Go.Board,Go.Board,Go.Board)">
@@ -827,6 +839,7 @@
             <summary>
             Redundant atari move that allows target group to escape.
             <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_XuanXuanGo_A46_101Weiqi_2" />
+            Check for snapback <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_TianLongTu_Q16919" />
             Check corner kill formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" />
             Check two-point covered eye <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_TianLongTu_Q16525" />
             Check if atari on other groups <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_ScenarioHighLevel18" />
