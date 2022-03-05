@@ -143,8 +143,8 @@ namespace Go
         }
 
         /// <summary>
-        /// Two-point move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A48" />
-        /// Covered eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B3_3" />
+        /// Two-point move with empty point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A48" />
+        /// Covered eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16424_2" />
         /// Check for snapback <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234" />
         /// One-by-three formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A8" />
         /// Crowbar edge formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q6710" />
@@ -171,12 +171,14 @@ namespace Go
             int moveCount = tryBoard.MoveGroup.Points.Count;
             if (moveCount == 2)
             {
-                //two-point move
+                //covered eye
+                if (CheckCoveredEyeAtSuicideGroup(tryBoard))
+                    return EyeHelper.SuicideAtCoveredEye(capturedBoard, tryBoard);
+
+                //two-point move with empty point
                 if (tryBoard.GetStoneNeighbours().Any(p => tryBoard[p] == Content.Empty))
                     return true;
-                //covered eye
-                if (EyeHelper.SuicideAtCoveredEye(capturedBoard, tryBoard))
-                    return true;
+
                 //check for snapback
                 if (ImmovableHelper.CheckSnapbackInNeighbourGroups(tryBoard, tryBoard.MoveGroup))
                     return true;

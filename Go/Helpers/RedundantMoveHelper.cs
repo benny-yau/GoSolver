@@ -989,28 +989,9 @@ namespace Go
             if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, capturedBoard))
             {
                 //check link to external group
-                if (IsLinkToExternalGroup(tryMove, tryLinkBoard)) return true;
-
-                //check atari by previous move group
-                HashSet<Group> atariGroups = AtariHelper.AtariByPreviousGroup(currentBoard, tryBoard);
-                if (atariGroups.Count == 0) return false;
-
-                //move group binding
-                if (moveCount >= 3 && LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Count >= 2)
-                    return false;
-
-                //two-point atari covered eye / suicide at covered eye
-                if (moveCount == 2 && (KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard, capturedBoard) || EyeHelper.SuicideAtCoveredEye(capturedBoard, tryBoard)))
-                    return false;
-
-                //exclude if corner point
-                if (atariGroups.Count == 1)
-                {
-                    Group group = atariGroups.First();
-                    if (group.Points.Count <= 2 && group.Points.Any(p => tryBoard.CornerPoint(p)))
-                        return false;
-                }
-                return true;
+                if (IsLinkToExternalGroup(tryMove, tryLinkBoard))
+                    return true;
+                return false;
             }
             //no hope of escape
             return true;
@@ -1054,10 +1035,11 @@ namespace Go
         /// <summary>
         /// Ensure link is connected to both stones from previous move group and to external group.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16520_2" />
-        /// Two-by-four side formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31682" />
+        /// Not more than three points <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31682" />
         /// Connect three or more groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B3" />
         /// No lost groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18402_2" />
         /// Check connect and die <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30403" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi_2" />
         /// </summary>
         private static Boolean IsLinkToExternalGroup(GameTryMove tryMove, Board tryLinkBoard)
         {
@@ -1079,18 +1061,16 @@ namespace Go
                 //connected to external group not from previous move group
                 if (!linkGroups.Except(groups).Any()) return false;
                 //check connect and die
-                if (LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryBoard) && ImmovableHelper.CheckConnectAndDie(tryLinkBoard))
+                if (ImmovableHelper.CheckConnectAndDie(tryLinkBoard))
                     return false;
                 //saved groups
                 List<Group> savedGroups = linkGroups.Intersect(groups).ToList();
                 if (savedGroups.Count == 0) return false;
                 List<Group> lostGroups = groups.Except(savedGroups).ToList();
                 //no lost groups
-                if (lostGroups.Count == 0 && groups.Count >= 2) return false;
-
-                //stones saved from previous move group are equal or more than lost stones
-                if (savedGroups.Sum(s => s.Points.Count) >= groups.Except(savedGroups).Sum(s => s.Points.Count))
-                    return true;
+                if (lostGroups.Count == 0) return true;
+                //not more than three points
+                if (lostGroups.Count == 1 && lostGroups.First().Points.Count <= 3) return true;
             }
             return false;
         }
