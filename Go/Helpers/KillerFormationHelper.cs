@@ -65,8 +65,6 @@ namespace Go
         /// Suicidal killer formations within survival group without any real eye.
         /// Check if real eye found in neighbour groups <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario5dan27" />
         /// Check covered eye at non-killable group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
-        /// Allow two point group with killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18472" />
-        /// Check for corner five and corner six <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_2" />
         /// </summary>
         public static Boolean SuicidalKillerFormations(Board tryBoard, Board currentBoard = null, Board capturedBoard = null)
         {
@@ -80,16 +78,6 @@ namespace Go
             //find killer formation
             if (!FindSuicidalKillerFormation(tryBoard, currentBoard, capturedBoard)) return false;
 
-            //allow two point group with killer group
-            if (tryBoard.MoveGroup.Points.Count <= 2)
-            {
-                Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
-                if (killerGroup == null || killerGroup.Points.Count(p => tryBoard[p] == c) > 2) return true;
-            }
-
-            //check for corner five and corner six
-            if ((tryBoard.MoveGroup.Points.Count == 5 && KillerFormationHelper.CornerFiveFormation(tryBoard, tryBoard.MoveGroup)) || (tryBoard.MoveGroup.Points.Count == 6 && KillerFormationHelper.CornerSixFormation(tryBoard, tryBoard.MoveGroup))) return true;
-
             //check if real eye found in neighbour groups
             if (CheckRealEyeInNeighbourGroups(capturedBoard ?? tryBoard, move, c))
                 return false;
@@ -100,13 +88,26 @@ namespace Go
         /// <summary>
         /// Check if real eye found in neighbour groups.
         /// Check for covered eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_3" />
-        /// Check covered eye at non killable group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
+        /// Allow two-point group without real eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18472" />
+        /// Check for corner five and corner six <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_2" />
         /// </summary>
         public static Boolean CheckRealEyeInNeighbourGroups(Board tryBoard, Point move, Content c)
         {
+
             //check for covered eye
             if (CheckCoveredEyeAtSuicideGroup(tryBoard))
                 return false;
+
+            //allow two-point group without real eye
+            if (tryBoard.MoveGroup.Points.Count <= 2)
+            {
+                Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
+                if (killerGroup != null && !EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, killerGroup))
+                    return false;
+            }
+
+            //check for corner five and corner six
+            if ((tryBoard.MoveGroup.Points.Count == 5 && KillerFormationHelper.CornerFiveFormation(tryBoard, tryBoard.MoveGroup)) || (tryBoard.MoveGroup.Points.Count == 6 && KillerFormationHelper.CornerSixFormation(tryBoard, tryBoard.MoveGroup))) return false;
 
             Group moveKillerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
             if (moveKillerGroup == null) moveKillerGroup = tryBoard.MoveGroup;

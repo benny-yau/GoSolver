@@ -368,8 +368,6 @@ namespace Go
         /// Check killer move non killable group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31563" />
         /// Find real eye at diagonals for single point move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_4" />
         /// Check redundant corner point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
-        /// Check for three neighbour groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30198" />
-        /// Check snapback <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234_2" />
         /// Check for one-by-three kill <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18796_2" />
         /// </summary>
         public static Boolean SuicidalConnectAndDie(GameTryMove tryMove)
@@ -451,18 +449,7 @@ namespace Go
                             return true;
                     }
                     //check for real eye in neighbour groups
-                    if (CheckAnyRealEyeInSuicidalConnectAndDie(tryBoard, captureBoard))
-                    {
-                        //check snapback
-                        if (ImmovableHelper.CheckSnapbackInNeighbourGroups(captureBoard, tryBoard.MoveGroup))
-                            return false;
-
-                        //check for one-by-three kill
-                        if (movePoints.Count == 4 && KillerFormationHelper.OneByThreeFormation(tryBoard, tryBoard.MoveGroup) && tryBoard.GetGroupsFromStoneNeighbours(move, c).Count > 1)
-                            return false;
-                        return true;
-                    }
-                    return false;
+                    return CheckAnyRealEyeInSuicidalConnectAndDie(tryBoard, captureBoard);
                 }
                 //check killer formation
                 else if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard))
@@ -476,6 +463,8 @@ namespace Go
         /// Check for one-point eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A30" />
         /// Check for two-point snapback <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A55" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_2" />
+        /// Check for three neighbour groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30198" />
+        /// Check snapback in neighbour groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234_2" />
         /// Check for covered eye group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A17" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30403_2" />
         /// </summary>
@@ -491,6 +480,12 @@ namespace Go
             //check for two-point snapback
             Boolean twoPointSnapback = (movePoints.Count == 2 && tryBoard.MoveGroup.Liberties.Any(liberty => ImmovableHelper.IsSuicidalMove(tryBoard, liberty, c.Opposite())));
             if (twoPointSnapback) return false;
+            //check snapback in neighbour groups
+            if (ImmovableHelper.CheckSnapbackInNeighbourGroups(captureBoard, tryBoard.MoveGroup))
+                return false;
+            //check for one-by-three kill
+            if (movePoints.Count == 4 && KillerFormationHelper.OneByThreeFormation(tryBoard, tryBoard.MoveGroup) && tryBoard.GetGroupsFromStoneNeighbours(move, c).Count > 1)
+                return false;
             //check for covered eye group
             if (movePoints.Count == 1 || movePoints.Count == 2)
             {
@@ -1457,7 +1452,7 @@ namespace Go
         private static Boolean RedundantSuicidalForMustHaveNeutralPoint(Board currentBoard, Content c, Point tigerMouth)
         {
             Board board = currentBoard.MakeMoveOnNewBoard(tigerMouth, c);
-            if (board != null && board.MoveGroupLiberties == 1 && !LinkHelper.IsAbsoluteLinkForGroups(currentBoard, board))
+            if (board != null && board.MoveGroupLiberties == 1)
             {
                 HashSet<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(tigerMouth, c);
                 if (WallHelper.StrongNeighbourGroups(board, neighbourGroups))
@@ -1496,10 +1491,8 @@ namespace Go
         /// </summary>
         public static void RestoreNeutralMove(Game currentGame, List<GameTryMove> tryMoves, List<GameTryMove> neutralPointMoves)
         {
-            //Remove moves that are within killer group or ko not enabled
+            //Remove moves that are within killer group
             neutralPointMoves.RemoveAll(n => n.TryGame.Board.MoveGroupLiberties == 1 || BothAliveHelper.GetKillerGroupFromCache(n.TryGame.Board, n.Move) != null);
-            if (!KoHelper.KoSurvivalEnabled(SurviveOrKill.Kill, currentGame.GameInfo))
-                neutralPointMoves.RemoveAll(n => KoHelper.CheckIsKoFight(n));
 
             if (neutralPointMoves.Count == 0) return;
             GameTryMove genericNeutralMove = null;
@@ -1509,6 +1502,14 @@ namespace Go
             {
                 tryMoves.Add(specificNeutralMove);
                 neutralPointMoves.Remove(specificNeutralMove);
+
+                //must have neutral point for specific neutral move
+                GameTryMove mustHaveNeutralMove = GetMustHaveNeutralMoveForSpecificNeutralMove(specificNeutralMove, neutralPointMoves);
+                if (mustHaveNeutralMove != null)
+                {
+                    tryMoves.Add(mustHaveNeutralMove);
+                    neutralPointMoves.Remove(mustHaveNeutralMove);
+                }
             }
             else
             {
@@ -1519,16 +1520,17 @@ namespace Go
                     tryMoves.Add(genericNeutralMove);
                     neutralPointMoves.Remove(genericNeutralMove);
                 }
+                else
+                {
+                    //must have neutral point
+                    List<GameTryMove> mustHaveNeutralMoves = GetMustHaveNeutralMove(currentGame, neutralPointMoves);
+                    foreach (GameTryMove tryMove in mustHaveNeutralMoves)
+                    {
+                        tryMoves.Add(tryMove);
+                        neutralPointMoves.Remove(tryMove);
+                    }
+                }
             }
-
-            //must have neutral point
-            List<GameTryMove> mustHaveNeutralMoves = GetMustHaveNeutralMove(currentGame, neutralPointMoves);
-            foreach (GameTryMove tryMove in mustHaveNeutralMoves)
-            {
-                tryMoves.Add(tryMove);
-                neutralPointMoves.Remove(tryMove);
-            }
-
             //return neutral move if no more moves
             if (neutralPointMoves.Count == 0) return;
             if (tryMoves.Count == 0)
@@ -1536,7 +1538,7 @@ namespace Go
             else if (tryMoves.Count == 1)
             {
                 //remaining move at liberty point
-                GameTryMove neutralPointMove = neutralPointMoves.Where(n => n.MustHaveNeutralPoint).FirstOrDefault(move => move.LinkPoint.Move.Equals(tryMoves.First().Move));
+                GameTryMove neutralPointMove = neutralPointMoves.FirstOrDefault(move => move.MustHaveNeutralPoint && move.LinkPoint.Move.Equals(tryMoves.First().Move));
                 if (neutralPointMove != null)
                     tryMoves.Add(neutralPointMove);
             }
@@ -1552,7 +1554,6 @@ namespace Go
         /// Check for tiger mouth <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Corner_A27" />
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Phenomena_Q25182" />
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_TianLongTu_Q16827" />
-        /// Rare scenario connect and die<see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
         /// Two must have neutral moves <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_GuanZiPu_Weiqi101_19138" />
         /// </summary>
         public static List<GameTryMove> GetMustHaveNeutralMove(Game currentGame, List<GameTryMove> neutralPointMoves)
@@ -1578,16 +1579,38 @@ namespace Go
                 Point tigerMouth = tryBoard.GetDiagonalNeighbours(liberty.x, liberty.y).FirstOrDefault(n => EyeHelper.FindEye(tryBoard, n, c) || ImmovableHelper.FindTigerMouth(tryBoard, c, n));
                 if (Convert.ToBoolean(tigerMouth.NotEmpty))
                     result.Add(mustHaveNeutralMove);
-
-                //rare scenario connect and die
-                HashSet<Group> groups = b.GetGroupsFromStoneNeighbours(b.Move.Value, c.Opposite());
-                if (!b.IsAtariMove && groups.Count() == 2 && groups.All(group => group.Liberties.Count <= 2))
-                {
-                    if (groups.Any(group => ImmovableHelper.CheckConnectAndDie(b, group)))
-                        result.Add(mustHaveNeutralMove);
-                }
             }
             return result;
+        }
+
+        /// <summary>
+        /// Get must have neutral move for specific neutral move.
+        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
+        /// </summary>
+        public static GameTryMove GetMustHaveNeutralMoveForSpecificNeutralMove(GameTryMove specificNeutralMove, List<GameTryMove> neutralPointMoves)
+        {
+            List<GameTryMove> mustHaveNeutralMoves = neutralPointMoves.Where(n => n.MustHaveNeutralPoint).ToList();
+            Board board = specificNeutralMove.TryGame.Board;
+            Content c = specificNeutralMove.MoveContent;
+
+            foreach (GameTryMove mustHaveNeutralMove in mustHaveNeutralMoves)
+            {
+                Board tryBoard = mustHaveNeutralMove.TryGame.Board;
+                //specific neutral move and must have neutral move target same group
+                if (tryBoard.GetNeighbourGroups(tryBoard.MoveGroup).Intersect(tryBoard.GetGroupsFromStoneNeighbours(board.Move.Value, c)).Any())
+                {
+                    Point liberty = mustHaveNeutralMove.LinkPoint.Move;
+                    Board b = tryBoard.MakeMoveOnNewBoard(liberty, c);
+                    if (b == null) continue;
+
+                    //connect and die for target group
+                    HashSet<Group> targetGroups = b.GetGroupsFromStoneNeighbours(b.Move.Value, c);
+                    if (targetGroups.Count <= 1) continue;
+                    if (targetGroups.Any(group => ImmovableHelper.CheckConnectAndDie(b, group)))
+                        return mustHaveNeutralMove;
+                }
+            }
+            return null;
         }
 
         /// <summary>
@@ -1737,15 +1760,6 @@ namespace Go
             Content c = neutralMove.MoveContent;
             //get target groups of neutral move
             HashSet<Group> groups = tryBoard.GetGroupsFromStoneNeighbours(neutralMove.Move, c);
-            if (groups.Count == 0)
-            {
-                //get target groups of stone neighbours of neutral move if neutral move does not have stone neighbour of opposite content
-                foreach (Point p in tryBoard.GetStoneNeighbours().Where(q => tryBoard[q] == c))
-                {
-                    groups = tryBoard.GetGroupsFromStoneNeighbours(p, c);
-                    if (groups.Count > 0) break;
-                }
-            }
 
             foreach (GameTryMove tryMove in tryMoves)
             {
@@ -1796,11 +1810,17 @@ namespace Go
 
             //get neutral points of killer group neighbours
             neutralPointMoves = neutralPointMoves.Where(n => libertyPoints.Contains(n.Move)).ToList();
-            List<GameTryMove> orderedMoves = new List<GameTryMove>();
             foreach (Point p in libertyPoints)
             {
                 GameTryMove neutralMove = neutralPointMoves.FirstOrDefault(n => n.Move.Equals(p));
                 if (neutralMove == null) continue;
+
+                //ensure target group has two or less liberties
+                Board b = neutralMove.TryGame.Board;
+                HashSet<Group> stoneNeighbours = coveredBoard.GetGroupsFromStoneNeighbours(b.Move.Value, b.MoveGroup.Content);
+                if (WallHelper.StrongNeighbourGroups(coveredBoard, stoneNeighbours))
+                    continue;
+
                 //restore the first generic neutral move if neighbour group not targeted by other try moves
                 if (CheckIfGroupAlreadyTargeted(neutralMove, tryMoves)) continue;
                 return neutralMove;
