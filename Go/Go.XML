@@ -278,9 +278,9 @@
             Get killer group cached in board for single point.
             </summary>
         </member>
-        <member name="M:Go.BothAliveHelper.GetKillerGroupForUnknownContent(Go.Board,Go.Point,Go.Content)">
+        <member name="M:Go.BothAliveHelper.GetKillerGroupForKillerRole(Go.Board,Go.Point,Go.Content)">
             <summary>
-            Get killer group with unknown content.
+            Get killer group for killer role.
             Survival in killer role <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3" />
             </summary>
         </member>

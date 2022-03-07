@@ -1702,7 +1702,8 @@ namespace Go
                     if (neighbourGroups.Count != 2) return null;
                     if (neighbourGroups.Any(group => AtariHelper.AtariByGroup(tryBoard, group))) return null;
                     //get the group other than neutral point group
-                    Group neighbourGroup = neighbourGroups.First(group => !group.Equals(tryBoard.GetGroupAt(neutralPointMove.Move)));
+                    Group neighbourGroup = neighbourGroups.FirstOrDefault(group => !group.Equals(tryBoard.MoveGroup) && !WallHelper.IsNonKillableGroup(tryBoard, group));
+                    if (neighbourGroup == null) return null;
                     neighbourLiberties = neighbourGroup.Liberties.ToList();
                 }
                 else
@@ -1718,10 +1719,11 @@ namespace Go
                 {
                     //killer group available
                     if (killerGroups.Count > 0) return neutralPointMove;
-                    //real solid eye found
-                    if (neighbourLiberties.Any(liberty => BothAliveHelper.GetKillerGroupFromCache(tryBoard, liberty, c) != null))
-                        return neutralPointMove;
                 }
+                //real solid eye found
+                if (neighbourLiberties.Any(liberty => EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, liberty, c)))
+                    return neutralPointMove;
+
             }
             return null;
         }

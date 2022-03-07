@@ -102,18 +102,19 @@ namespace Go
         }
 
         /// <summary>
-        /// Get killer group with unknown content.
+        /// Get killer group for killer role.
         /// Survival in killer role <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3" />
         /// </summary>
-        public static Group GetKillerGroupForUnknownContent(Board board, Point p, Content moveContent)
+        public static Group GetKillerGroupForKillerRole(Board board, Point p, Content c)
         {
-            List<Group> groups = GetCorneredGroup(board, moveContent.Opposite());
+            List<Group> groups = GetCorneredGroup(board, c);
             Group group = groups.FirstOrDefault(g => g.Points.Contains(p));
+            if (group == null) return null;
 
-            List<Group> killerGroups = GetCorneredGroup(board, moveContent);
+            List<Group> killerGroups = GetCorneredGroup(board, c.Opposite());
             Group killerGroup = killerGroups.FirstOrDefault(g => g.Points.Contains(p));
-            if (group != null && killerGroup != null && group.Points.Count < killerGroup.Points.Count) return group;
-            if (killerGroup != null) return killerGroup;
+            if (killerGroup == null) return group;
+            if (killerGroup != null && group.Points.Count < killerGroup.Points.Count) return group;
             return null;
         }
 

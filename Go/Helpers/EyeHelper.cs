@@ -282,6 +282,13 @@ namespace Go
             return false;
         }
 
+        public static Boolean FindRealEyeWithinEmptySpace(Board board, Point p, Content c, EyeType eyeType = EyeType.SemiSolidEye)
+        {
+            Group eyeGroup = BothAliveHelper.GetKillerGroupFromCache(board, p, c);
+            if (eyeGroup == null) return false;
+            return FindRealEyeWithinEmptySpace(board, eyeGroup, eyeType);
+        }
+
         /// <summary>
         /// Rare scenario to check for semi-solid eye within empty space.
         /// </summary>
