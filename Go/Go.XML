@@ -880,6 +880,7 @@
             Check for sieged scenario <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
             Check killer formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_2" />
+            Find uncovered eye suicide <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_GuanZiPu_A35" />
             Check killer move non killable group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31563" />
             Find real eye at diagonals for single point move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_4" />
             Check redundant corner point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
@@ -1161,7 +1162,7 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckIfGroupAlreadyTargeted(Go.GameTryMove,System.Collections.Generic.List{Go.GameTryMove})">
             <summary>
-            Ensure target group of neutral move is not already targeted by other try moves.
+            Ensure target group of neutral move is not already targeted by other try moves not within killer group.
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.GetGenericNeutralMove(Go.Game,System.Collections.Generic.List{Go.GameTryMove},System.Collections.Generic.List{Go.GameTryMove})">
@@ -1478,6 +1479,7 @@
         <member name="M:Go.WallHelper.StrongNeighbourGroups(Go.Board,System.Collections.Generic.IEnumerable{Go.Group})">
             <summary>
             Strong neighbour groups with more than two liberties or two liberties that are suicidal to opponent.
+            Exclude covered eye <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_GuanZiPu_A35" />
             </summary>
         </member>
         <member name="M:Go.GameMapping.GetMappedJson(Go.Game)">

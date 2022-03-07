@@ -117,14 +117,21 @@ namespace Go
 
         /// <summary>
         /// Strong neighbour groups with more than two liberties or two liberties that are suicidal to opponent.
+        /// Exclude covered eye <see cref="UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_GuanZiPu_A35" />
         /// </summary>
         public static Boolean StrongNeighbourGroups(Board board, IEnumerable<Group> neighbourGroups)
         {
             if (!neighbourGroups.Any()) return false;
             Content c = neighbourGroups.First().Content;
-            if (neighbourGroups.All(group => group.Liberties.Count > 2 || (group.Liberties.Count == 2 && group.Liberties.All(liberty => ImmovableHelper.IsSuicidalMove(board, liberty, c.Opposite())))))
-                return true;
-            return false;
+
+            foreach (Group group in neighbourGroups)
+            {
+                //exclude covered eye
+                int liberties = group.Liberties.Count(liberty => !EyeHelper.FindCoveredEye(board, liberty, c));
+                if (liberties < 2 || (liberties == 2 && group.Liberties.Any(liberty => !ImmovableHelper.IsSuicidalMove(board, liberty, c.Opposite()))))
+                    return false;
+            }
+            return true;
         }
     }
 }

@@ -365,6 +365,7 @@ namespace Go
         /// Check for sieged scenario <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
         /// Check killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_2" />
+        /// Find uncovered eye suicide <see cref="UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_GuanZiPu_A35" />
         /// Check killer move non killable group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31563" />
         /// Find real eye at diagonals for single point move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_4" />
         /// Check redundant corner point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
@@ -410,6 +411,8 @@ namespace Go
             {
                 foreach (Point p in tryBoard.MoveGroup.Liberties)
                 {
+                    //find uncovered eye suicide
+                    if (EyeHelper.FindUncoveredEye(tryBoard, p.x, p.y, c) && tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).All(group => group.Liberties.Count <= 2)) return true;
                     Board b = tryBoard.MakeMoveOnNewBoard(p, c.Opposite());
                     if (b == null) continue;
                     //check killer move non killable group
@@ -1724,7 +1727,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Ensure target group of neutral move is not already targeted by other try moves.
+        /// Ensure target group of neutral move is not already targeted by other try moves not within killer group.
         /// </summary>
         public static Boolean CheckIfGroupAlreadyTargeted(GameTryMove neutralMove, List<GameTryMove> tryMoves)
         {
