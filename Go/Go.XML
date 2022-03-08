@@ -829,7 +829,7 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie20" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.SuicideAtBigTigerMouth(Go.GameTryMove,System.Collections.Generic.List{Go.Group})">
+        <member name="M:Go.RedundantMoveHelper.SuicideAtBigTigerMouth(Go.GameTryMove,Go.Content)">
             <summary>
             Suicide at big tiger mouth.
             <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_B3" /> 
@@ -880,11 +880,15 @@
             Check for sieged scenario <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
             Check killer formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_2" />
-            Find uncovered eye suicide <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_GuanZiPu_A35" />
             Check killer move non killable group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31563" />
             Find real eye at diagonals for single point move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_4" />
             Check redundant corner point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
             Check for one-by-three kill <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18796_2" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.FindBloatedEyeSuicide(Go.Board,Go.Point,Go.Content)">
+            <summary>
+            Find bloated eye suicide <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_GuanZiPu_A35" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckAnyRealEyeInSuicidalConnectAndDie(Go.Board,Go.Board)">
@@ -1155,9 +1159,10 @@
             <summary>
             Specific kill with liberty fight. No killer group or only one neighbour group.
             <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario3kyu24_3" />
-            Real solid eye <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario3kyu24" />
             Crowbar formation <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
             Only one neighbour group for killer group <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q2413" />
+            Real solid eye found <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_B7" />
+            <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario3kyu24" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckIfGroupAlreadyTargeted(Go.GameTryMove,System.Collections.Generic.List{Go.GameTryMove})">

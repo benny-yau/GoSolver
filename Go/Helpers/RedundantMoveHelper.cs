@@ -145,7 +145,7 @@ namespace Go
             if (groups.Count == 2 && eyeGroups.All(e => e.Liberties.Count > 1))
             {
                 if (tryBoard.MoveGroupLiberties == 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.MoveGroup)) return true;
-                if (SuicideAtBigTigerMouth(tryMove, eyeGroups).Item1)
+                if (SuicideAtBigTigerMouth(tryMove, c).Item1)
                     return false;
             }
 
@@ -167,11 +167,12 @@ namespace Go
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_B3" /> 
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A85" /> 
         /// </summary>
-        private static (Boolean, Point?) SuicideAtBigTigerMouth(GameTryMove tryMove, List<Group> eyeGroups)
+        private static (Boolean, Point?) SuicideAtBigTigerMouth(GameTryMove tryMove, Content c)
         {
             Point move = tryMove.Move;
             Board tryBoard = tryMove.TryGame.Board;
             Board currentBoard = tryMove.CurrentGame.Board;
+            List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).ToList();
             List<Group> suicidalEyeGroups = eyeGroups.Where(e => e.Liberties.Count == 2 && tryBoard.GetNeighbourGroups(e).All(g => !WallHelper.IsNonKillableGroup(tryBoard, g))).ToList();
             foreach (Group eyeGroup in suicidalEyeGroups)
             {
@@ -365,7 +366,6 @@ namespace Go
         /// Check for sieged scenario <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
         /// Check killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_2" />
-        /// Find uncovered eye suicide <see cref="UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_GuanZiPu_A35" />
         /// Check killer move non killable group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31563" />
         /// Find real eye at diagonals for single point move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_4" />
         /// Check redundant corner point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
@@ -411,8 +411,8 @@ namespace Go
             {
                 foreach (Point p in tryBoard.MoveGroup.Liberties)
                 {
-                    //find uncovered eye suicide
-                    if (EyeHelper.FindUncoveredEye(tryBoard, p.x, p.y, c) && tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).All(group => group.Liberties.Count <= 2)) return true;
+                    //find bloated eye suicide
+                    if (FindBloatedEyeSuicide(tryBoard, p, c)) return true;
                     Board b = tryBoard.MakeMoveOnNewBoard(p, c.Opposite());
                     if (b == null) continue;
                     //check killer move non killable group
@@ -459,6 +459,23 @@ namespace Go
                     return false;
             }
             return true;
+        }
+
+        /// <summary>
+        /// Find bloated eye suicide <see cref="UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_GuanZiPu_A35" />
+        /// </summary>
+        public static Boolean FindBloatedEyeSuicide(Board board, Point p, Content c)
+        {
+            if (EyeHelper.FindEye(board, p, c) && !board.PointWithinMiddleArea(p.x, p.y))
+            {
+                List<Point> diagonalNeighbours = board.GetDiagonalNeighbours(p.x, p.y);
+                if (diagonalNeighbours.Count(q => board[q] == c.Opposite()) == 0 && diagonalNeighbours.Count(q => board[q] == Content.Empty) == 1)
+                {
+                    if (board.GetGroupsFromStoneNeighbours(p, c.Opposite()).All(group => group.Liberties.Count <= 2))
+                        return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>
@@ -535,13 +552,10 @@ namespace Go
             if (weakGroup == null) return false;
             if (tryBoard.GetNeighbourGroups(weakGroup).Any(g => WallHelper.IsNonKillableGroup(tryBoard, g))) return false;
 
+            //check snapback
             if (weakGroup.Liberties.Any(liberty => ImmovableHelper.IsSuicidalMove(currentBoard, liberty, c)))
-            {
-                //check snapback
-                if (ImmovableHelper.CheckConnectAndDie(captureBoard, captureBoard.GetGroupAt(weakGroup.Points.First())))
-                    return true;
-                return false;
-            }
+                return ImmovableHelper.CheckConnectAndDie(captureBoard, captureBoard.GetGroupAt(weakGroup.Points.First()));
+
             return true;
         }
 
@@ -1435,8 +1449,7 @@ namespace Go
                 return (true, tigerMouth);
             }
             //neutral point at big tiger mouth
-            List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).ToList();
-            (Boolean suicide, Point? liberty) = SuicideAtBigTigerMouth(tryMove, eyeGroups);
+            (Boolean suicide, Point? liberty) = SuicideAtBigTigerMouth(tryMove, c);
             if (suicide)
             {
                 //redundant suicidal at tiger mouth
@@ -1523,14 +1536,10 @@ namespace Go
                 tryMoves.Add(tryMove);
                 neutralPointMoves.Remove(tryMove);
             }
-            //return neutral move if no more moves
-            if (neutralPointMoves.Count == 0) return;
-            if (tryMoves.Count == 0)
-                tryMoves.Add(neutralPointMoves.First());
-            else if (tryMoves.Count == 1)
+            if (tryMoves.Count == 1)
             {
                 //remaining move at liberty point
-                GameTryMove neutralPointMove = neutralPointMoves.FirstOrDefault(move => move.MustHaveNeutralPoint && move.LinkPoint.Move.Equals(tryMoves.First().Move));
+                GameTryMove neutralPointMove = neutralPointMoves.FirstOrDefault(move => move.MustHaveNeutralPoint && move.LinkPoint.Move.Equals(tryMoves.First().Move) && SuicideAtBigTigerMouth(move, move.MoveContent).Item1);
                 if (neutralPointMove != null)
                     tryMoves.Add(neutralPointMove);
             }
@@ -1677,9 +1686,10 @@ namespace Go
         /// <summary>
         /// Specific kill with liberty fight. No killer group or only one neighbour group.
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario3kyu24_3" />
-        /// Real solid eye <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario3kyu24" />
         /// Crowbar formation <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
         /// Only one neighbour group for killer group <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q2413" />
+        /// Real solid eye found <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_B7" />
+        /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario3kyu24" />
         /// </summary>
         public static GameTryMove SpecificKillWithLibertyFight(Board board, List<GameTryMove> neutralPointMoves, List<Group> killerGroups)
         {
@@ -1705,25 +1715,24 @@ namespace Go
                     Group neighbourGroup = neighbourGroups.FirstOrDefault(group => !group.Equals(tryBoard.MoveGroup) && !WallHelper.IsNonKillableGroup(tryBoard, group));
                     if (neighbourGroup == null) return null;
                     neighbourLiberties = neighbourGroup.Liberties.ToList();
+
+                    //compare liberties to see if target group can be killed
+                    if (neighbourLiberties.Count == targetGroup.Liberties.Count + 1)
+                        return neutralPointMove;
                 }
                 else
                 {
                     //include all empty points within killer group
                     neighbourLiberties = killerGroups.First().Points.Where(p => tryBoard[p] == Content.Empty).ToList();
+
+                    //compare liberties to see if target group can be killed
+                    if (neighbourLiberties.Count == targetGroup.Liberties.Count)
+                        return neutralPointMove;
                 }
 
-                //compare liberties to see if target group can be killed
-                if (neighbourLiberties.Count == targetGroup.Liberties.Count + 1)
-                    return neutralPointMove;
-                else if (neighbourLiberties.Count == targetGroup.Liberties.Count)
-                {
-                    //killer group available
-                    if (killerGroups.Count > 0) return neutralPointMove;
-                }
                 //real solid eye found
                 if (neighbourLiberties.Any(liberty => EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, liberty, c)))
                     return neutralPointMove;
-
             }
             return null;
         }
