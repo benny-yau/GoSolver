@@ -980,7 +980,7 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.RedundantSuicideNearNonKillableGroup(Go.GameTryMove,Go.Board)">
             <summary>
-            Kill move make suicide move with diagonally connected non killable group.
+            Redundant suicide move next to non killable group.
             Suicidal move next to non killable group for survive <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A27_2" />
             Connect and die <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
             Liberty more than two required to prevent snapback <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680" />

@@ -721,9 +721,11 @@ namespace Go
             if (SuicideWithinRealEye(tryMove, capturedBoard))
                 return true;
             //ignore must-have moves for non killable group
-            if ((opponentTryMove == null || !LinkHelper.IsAbsoluteLinkForGroups(currentBoard, opponentTryMove.TryGame.Board)) && RedundantSuicideNearNonKillableGroup(tryMove, capturedBoard))
-                return true;
-
+            if (opponentTryMove == null || !LinkHelper.IsAbsoluteLinkForGroups(currentBoard, opponentTryMove.TryGame.Board))
+            {
+                if (RedundantSuicideNearNonKillableGroup(tryMove, capturedBoard))
+                    return true;
+            }
             return false;
         }
 
@@ -866,7 +868,7 @@ namespace Go
 
 
         /// <summary>
-        /// Kill move make suicide move with diagonally connected non killable group.
+        /// Redundant suicide move next to non killable group.
         /// Suicidal move next to non killable group for survive <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A27_2" />
         /// Connect and die <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
         /// Liberty more than two required to prevent snapback <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680" />
@@ -1893,7 +1895,7 @@ namespace Go
                 if (moveKillerGroup == null)
                 {
                     //check for non killable group
-                    if (currentBoard.GetGroupsFromStoneNeighbours(move, c).All(n => WallHelper.IsNonKillableGroup(currentBoard, n)))
+                    if (currentBoard.GetGroupsFromStoneNeighbours(move, c).Any(n => WallHelper.IsNonKillableGroup(currentBoard, n)))
                         return true;
                     //ensure killer group is empty
                     List<Point> contentPoints = killerGroup.Points.Where(t => currentBoard[t] == killerGroup.Content).ToList();
