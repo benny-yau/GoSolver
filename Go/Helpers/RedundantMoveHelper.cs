@@ -709,6 +709,7 @@ namespace Go
         /// </summary>
         public static Boolean SinglePointSuicidalMove(GameTryMove tryMove, GameTryMove opponentTryMove = null)
         {
+            Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             if (!tryMove.IsNegligible)
                 return false;
@@ -719,7 +720,8 @@ namespace Go
             if (capturedBoard.CapturedPoints.Count() > 1) return true;
             if (SuicideWithinRealEye(tryMove, capturedBoard))
                 return true;
-            if (opponentTryMove == null && RedundantSuicideNearNonKillableGroup(tryMove, capturedBoard))
+            //ignore must-have moves for non killable group
+            if ((opponentTryMove == null || !LinkHelper.IsAbsoluteLinkForGroups(currentBoard, opponentTryMove.TryGame.Board)) && RedundantSuicideNearNonKillableGroup(tryMove, capturedBoard))
                 return true;
 
             return false;
@@ -1047,7 +1049,8 @@ namespace Go
         /// <summary>
         /// Ensure link is connected to both stones from previous move group and to external group.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16520_2" />
-        /// Not more than three points <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31682" />
+        /// Lost group not more than three points <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31682" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17154" />
         /// Connect three or more groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B3" />
         /// No lost groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18402_2" />
         /// Check connect and die <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30403" />
@@ -1081,8 +1084,13 @@ namespace Go
                 List<Group> lostGroups = groups.Except(savedGroups).ToList();
                 //no lost groups
                 if (lostGroups.Count == 0) return true;
-                //not more than three points
-                if (lostGroups.Count == 1 && lostGroups.First().Points.Count <= 3) return true;
+                //lost group not more than three points
+                if (lostGroups.Count == 1 && lostGroups.First().Points.Count <= 3)
+                {
+                    if (lostGroups.First().Points.Count == 3 && tryLinkBoard.MoveGroupLiberties <= 2)
+                        return false;
+                    return true;
+                }
             }
             return false;
         }
@@ -1884,6 +1892,9 @@ namespace Go
                 if (KillerFormationHelper.CornerThreeFormation(tryBoard, tryBoard.MoveGroup)) continue;
                 if (moveKillerGroup == null)
                 {
+                    //check for non killable group
+                    if (currentBoard.GetGroupsFromStoneNeighbours(move, c).All(n => WallHelper.IsNonKillableGroup(currentBoard, n)))
+                        return true;
                     //ensure killer group is empty
                     List<Point> contentPoints = killerGroup.Points.Where(t => currentBoard[t] == killerGroup.Content).ToList();
                     if (contentPoints.Count == 0) return true;
