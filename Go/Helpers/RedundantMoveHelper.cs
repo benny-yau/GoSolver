@@ -1904,8 +1904,6 @@ namespace Go
                 {
                     //check for non killable group
                     HashSet<Group> neighbourGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c);
-                    if (neighbourGroups.Any(n => WallHelper.IsNonKillableGroup(currentBoard, n)))
-                        return true;
                     //check for strong neighbour groups
                     if (!isOpponent && WallHelper.StrongNeighbourGroups(currentBoard, neighbourGroups) && !capturedBoard.CornerPoint(capturedBoard.Move.Value))
                         return true;
