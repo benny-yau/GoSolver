@@ -607,24 +607,38 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_2" />
         /// Check for pre atari move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16925" />
+        /// Check opponent move suicide near non killable group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3kyu28_2" />
         /// </summary>
         public static Boolean SuicidalWithinNonKillableGroup(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
-            Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
-            Point move = tryMove.Move;
-            Content c = tryMove.MoveContent;
-            if (tryBoard.MoveGroup.Points.Count != 1 || !tryMove.IsNegligible || tryBoard.IsAtariMove) return false;
-            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
-            if (killerGroup == null || killerGroup.Points.Count(p => tryBoard[p] == c) != 1) return false;
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
 
-            IEnumerable<Group> groups = tryBoard.GetNeighbourGroups(killerGroup);
-            Boolean nonKillable = groups.Any(group => WallHelper.IsNonKillableGroup(tryBoard, group));
+            //check connect and die
+            (Boolean suicidal, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
+            if (!suicidal) return false;
+            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite());
+            List<Group> groups = captureBoard.GetNeighbourGroups(killerGroup ?? tryBoard.MoveGroup);
+            Boolean nonKillable = groups.Any(group => WallHelper.IsNonKillableGroup(captureBoard, group));
             if (!nonKillable) return false;
-            //check for pre atari move
-            if (tryBoard.GetDiagonalNeighbours(move.x, move.y).Any(n => tryBoard[n] == c) && groups.Any(group => group.Liberties.Count <= 2))
-                return false;
-            return true;
+
+            if (killerGroup != null && killerGroup.Points.Count(p => tryBoard[p] == c) <= 1)
+            {
+                //check for pre atari move
+                return groups.All(group => group.Liberties.Count > 2);
+            }
+            //check opponent move suicide near non killable group
+            if (killerGroup == null && opponentMove != null)
+            {
+                if (groups.All(group => group.Liberties.Count > 2))
+                {
+                    Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(captureBoard, tryBoard.MoveGroup, c);
+                    if (b != null && !LinkHelper.IsAbsoluteLinkForGroups(captureBoard, b))
+                        return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>
@@ -1902,11 +1916,16 @@ namespace Go
                 if (KillerFormationHelper.CornerThreeFormation(tryBoard, tryBoard.MoveGroup)) continue;
                 if (moveKillerGroup == null)
                 {
-                    //check for non killable group
-                    HashSet<Group> neighbourGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c);
-                    //check for strong neighbour groups
-                    if (!isOpponent && WallHelper.StrongNeighbourGroups(currentBoard, neighbourGroups) && !capturedBoard.CornerPoint(capturedBoard.Move.Value))
-                        return true;
+                    if (!isOpponent)
+                    {
+                        //check for non killable group
+                        HashSet<Group> neighbourGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c);
+                        if (neighbourGroups.Any(n => WallHelper.IsNonKillableGroup(currentBoard, n)))
+                            return true;
+                        //check for strong neighbour groups
+                        if (WallHelper.StrongNeighbourGroups(currentBoard, neighbourGroups) && !capturedBoard.CornerPoint(capturedBoard.Move.Value))
+                            return true;
+                    }
                     //ensure killer group is empty
                     List<Point> contentPoints = killerGroup.Points.Where(t => currentBoard[t] == killerGroup.Content).ToList();
                     if (contentPoints.Count == 0) return true;
