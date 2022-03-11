@@ -153,7 +153,7 @@ namespace Go
             if (eyeGroups.Any(e => e.Points.Count > 1 && e.Liberties.Count == 1)) return false;
 
             //check for killer formation
-            if (tryBoard.GetNeighbourGroups(tryBoard.MoveGroup).All(group => !WallHelper.IsNonKillableGroup(tryBoard, group)))
+            if (tryBoard.GetNeighbourGroups().All(group => !WallHelper.IsNonKillableGroup(tryBoard, group)))
             {
                 Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
                 if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, capturedBoard))
@@ -253,7 +253,7 @@ namespace Go
             }
 
             //check if atari on other groups
-            if (b != null && b.GetNeighbourGroups(b.MoveGroup).Any(group => group.Liberties.Count == 1))
+            if (b != null && b.GetNeighbourGroups().Any(group => group.Liberties.Count == 1))
                 return false;
 
             return true;
@@ -406,7 +406,7 @@ namespace Go
                 return false;
 
             //if all neighbour groups are killable, then check for killer formations 
-            IEnumerable<Group> neighbourGroups = tryBoard.GetNeighbourGroups(tryBoard.MoveGroup);
+            IEnumerable<Group> neighbourGroups = tryBoard.GetNeighbourGroups();
             if (neighbourGroups.Any(group => WallHelper.IsNonKillableGroup(tryBoard, group)))
                 return false;
             foreach (Point p in tryBoard.MoveGroup.Liberties)
@@ -421,7 +421,7 @@ namespace Go
                 if (movePoints.Count == 1 && tryMove.IsNegligible)
                 {
                     //find real eye at diagonals for single point move
-                    foreach (Point d in tryBoard.GetDiagonalNeighbours(move.x, move.y))
+                    foreach (Point d in tryBoard.GetDiagonalNeighbours())
                     {
                         if (ImmovableHelper.FindTigerMouth(currentBoard, c.Opposite(), d)) continue;
                         Group killerGroupDiagonal = BothAliveHelper.GetKillerGroupFromCache(b, d, c.Opposite());
@@ -444,7 +444,7 @@ namespace Go
             if (movePoints.Count <= 4)
             {
                 //check for no empty points and no diagonals for move
-                if (movePoints.Count > 1 && !tryBoard.GetStoneNeighbours(move.x, move.y).Any(n => tryBoard[n] == Content.Empty) && !tryBoard.GetDiagonalNeighbours(move.x, move.y).Any(n => tryBoard[n] == c) && !LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryBoard))
+                if (movePoints.Count > 1 && !tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty) && !tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c) && !LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryBoard))
                 {
                     //check for three neighbour groups
                     Boolean threeGroups = (movePoints.Count == 2 && tryBoard.GetGroupsFromStoneNeighbours(move, c).Count > 2);
@@ -545,7 +545,7 @@ namespace Go
             }
 
             //check killable group with two or less liberties
-            IEnumerable<Group> neighbourGroups = tryBoard.GetNeighbourGroups(tryBoard.MoveGroup);
+            IEnumerable<Group> neighbourGroups = tryBoard.GetNeighbourGroups();
             if (!neighbourGroups.Any(group => group.Liberties.Count > 2)) return false;
             Group weakGroup = neighbourGroups.FirstOrDefault(group => (group.Points.Count >= 2 && group.Liberties.Count == 2 && !WallHelper.IsNonKillableGroup(tryBoard, group)));
             if (weakGroup == null) return false;
@@ -575,13 +575,13 @@ namespace Go
             if (tryBoard.MoveGroup.Points.Count != 1) return false;
 
             //check for two or less liberties in neighbour groups
-            if (tryBoard.GetNeighbourGroups(tryBoard.MoveGroup).Any(group => group.Liberties.Count <= 2 && group.Liberties.Any(liberty => !ImmovableHelper.IsSuicidalMove(captureBoard, liberty, c))))
+            if (tryBoard.GetNeighbourGroups().Any(group => group.Liberties.Count <= 2 && group.Liberties.Any(liberty => !ImmovableHelper.IsSuicidalMove(captureBoard, liberty, c))))
                 return true;
 
             //check reverse ko fight
             if (tryBoard.GetStoneNeighbours().Any(n => ImmovableHelper.FindTigerMouth(tryBoard, c, n))) return true;
             //check opponent move liberties
-            List<Point> diagonals = tryBoard.GetDiagonalNeighbours(move.x, move.y).Where(n => tryBoard[n] == c).ToList();
+            List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] == c).ToList();
             if (diagonals.Count == 1)
             {
                 List<Point> diagonalCutPoints = LinkHelper.PointsBetweenDiagonals(move, diagonals.First()).Where(q => tryBoard[q] == Content.Empty).ToList();
@@ -593,7 +593,7 @@ namespace Go
                 }
             }
             //check snapback at diagonal
-            List<Point> emptyDiagonals = tryBoard.GetDiagonalNeighbours(move.x, move.y).Where(n => tryBoard[n] == Content.Empty).ToList();
+            List<Point> emptyDiagonals = tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] == Content.Empty).ToList();
             foreach (Point p in emptyDiagonals)
             {
                 if (tryBoard.GetGroupsFromStoneNeighbours(p, c).Any(group => ImmovableHelper.CheckSnapback(tryBoard, group)))
@@ -629,14 +629,11 @@ namespace Go
                 return groups.All(group => group.Liberties.Count > 2);
             }
             //check opponent move suicide near non killable group
-            if (killerGroup == null && opponentMove != null)
+            if (killerGroup == null && groups.All(group => group.Liberties.Count > 2))
             {
-                if (groups.All(group => group.Liberties.Count > 2))
-                {
-                    Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(captureBoard, tryBoard.MoveGroup, c);
-                    if (b != null && !LinkHelper.IsAbsoluteLinkForGroups(captureBoard, b))
-                        return true;
-                }
+                Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(captureBoard, tryBoard.MoveGroup, c);
+                if (b != null && !LinkHelper.IsAbsoluteLinkForGroups(captureBoard, b))
+                    return true;
             }
             return false;
         }
@@ -688,7 +685,7 @@ namespace Go
                     if (stoneNeighbours.Any(n => tryBoard.GetDiagonalNeighbours(p.x, p.y).Intersect(stoneNeighbours).Any()))
                     {
                         //check diagonal at opposite corner of stone neighbours
-                        List<Point> diagonals = tryBoard.GetDiagonalNeighbours(move.x, move.y).Where(d => tryBoard[d] == c.Opposite()).ToList();
+                        List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(d => tryBoard[d] == c.Opposite()).ToList();
                         if (diagonals.Any(d => !tryBoard.GetStoneNeighbours(d.x, d.y).Intersect(stoneNeighbours).Any()))
                             return false;
 
@@ -707,11 +704,11 @@ namespace Go
                 return false;
             }
             //ensure no diagonal at move
-            Boolean diagonalAtMove = tryBoard.GetDiagonalNeighbours(move.x, move.y).Any(n => tryBoard[n] == c && !tryBoard.MoveGroup.Points.Contains(n));
+            Boolean diagonalAtMove = tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c && !tryBoard.MoveGroup.Points.Contains(n));
             if (diagonalAtMove) return false;
 
             //ensure no shared liberty with neighbour group
-            List<Group> neighbourGroups = tryBoard.GetNeighbourGroups(tryBoard.MoveGroup);
+            List<Group> neighbourGroups = tryBoard.GetNeighbourGroups();
             Boolean sharedLiberty = tryBoard.MoveGroup.Liberties.Any(n => tryBoard.GetGroupsFromStoneNeighbours(n, c).Any(g => neighbourGroups.Contains(g)));
             if (sharedLiberty) return false;
             return true;
@@ -839,7 +836,7 @@ namespace Go
             Point move = tryMove.Move;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
-            List<Point> diagonals = tryBoard.GetDiagonalNeighbours(move.x, move.y).Where(n => tryBoard[n] != c.Opposite()).ToList();
+            List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] != c.Opposite()).ToList();
             if (diagonals.Count == 0) return false;
             //check killer group
             if (diagonals.Any(d => BothAliveHelper.GetKillerGroupFromCache(tryBoard, d, c.Opposite()) != null)) return true;
@@ -927,7 +924,7 @@ namespace Go
             Point p = board.Move.Value;
             Content c = board[p];
             //get diagonal neighbours that are non killable groups
-            IEnumerable<Point> diagonalNeighbours = board.GetDiagonalNeighbours(p.x, p.y);
+            IEnumerable<Point> diagonalNeighbours = board.GetDiagonalNeighbours();
             diagonalNeighbours = diagonalNeighbours.Where(n => WallHelper.IsNonKillableGroup(board, n));
 
             int neighbourCount = diagonalNeighbours.Count();
@@ -1191,8 +1188,7 @@ namespace Go
 
         #region leap move
         /// <summary>
-        /// Leap moves occur where there is one space between the move and the closest neighbour stone of same content.
-        /// The leap move is redundant where there is a non killable group one space above or below the space between the leap.
+        /// Leap moves are moves two spaces away from the closest neighbour stone of same content.
         /// <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_XuanXuanQiJing_A1" />
         /// </summary>
 
@@ -1203,44 +1199,21 @@ namespace Go
 
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
+            Content c = tryBoard.MoveGroup.Content;
 
-            if (!tryBoard.IsSinglePoint())
+            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c))
                 return false;
 
-            //get leap move by finding closest neighbours
-            List<Point> closestNeighbours = tryBoard.GetClosestNeighbour(move, 3);
-
-            List<KeyValuePair<Direction, Point>> leapMoves = GetLeapMove(move, closestNeighbours);
-            if (leapMoves.Count == 0) return false;
-
-            //leap move cannot be in both directions
-            if (leapMoves.Any(t => t.Key == Direction.Left) && leapMoves.Any(t => t.Key == Direction.Right))
-                return false;
-
-            if (leapMoves.Any(t => t.Key == Direction.Up) && leapMoves.Any(t => t.Key == Direction.Down))
-                return false;
-
-            //if movable points exist on bottom edge, then possible to leap in x-direction. if movable points exist on left edge, then possible to leap in y-direction.
-            List<int> coordinates = new List<int>();
-            for (int i = 0; i <= tryBoard.SizeX - 1; i++)
-                coordinates.Add(i);
-
-            Boolean x_axis = coordinates.Any(s => tryBoard.GameInfo.IsMovablePoint[s, tryBoard.SizeY - 1] == true); //bottom edge
-            Boolean y_axis = coordinates.Any(s => tryBoard.GameInfo.IsMovablePoint[0, s] == true); //left edge
-
-            if (x_axis && y_axis)
-                leapMoves = leapMoves.Where(t => (t.Key == Direction.Right) || (t.Key == Direction.Up)).ToList();
-            else if (x_axis)
-                leapMoves = leapMoves.Where(t => (t.Key == Direction.Left || t.Key == Direction.Right)).ToList();
-            else if (y_axis)
-                leapMoves = leapMoves.Where(t => (t.Key == Direction.Up || t.Key == Direction.Down)).ToList();
-            else
-                return false;
-
-            if (leapMoves.Count == 0) return false;
-
+            //find closest neighbours within two spaces
+            List<Point> closestNeighbours = tryBoard.GetClosestNeighbour(move, 2, c, false);
+            if (closestNeighbours.Count == 0)
+            {
+                Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
+                if (killerGroup == null || tryBoard.GetNeighbourGroups(killerGroup).Any(group => WallHelper.IsNonKillableGroup(tryBoard, group)))
+                    return true;
+            }
             //validate if leap move is redundant
-            if (leapMoves.Any(leapMove => ValidateLeapMove(tryBoard, move, leapMove)))
+            if (closestNeighbours.All(leapMove => ValidateLeapMove(tryBoard, move, leapMove)))
                 return true;
 
             return false;
@@ -1256,39 +1229,16 @@ namespace Go
         }
 
         /// <summary>
-        /// Get leap move where distance is two points away. Return result with leap in x or y direction and closest neighbour.
+        /// For leap on same line, check for non killable group between the two points as well as one space above or below the space between the leap.
+        /// For leap on different lines, check for non killable group between the two points from min to max of the lines.
         /// </summary>
-        public static List<KeyValuePair<Direction, Point>> GetLeapMove(Point move, List<Point> closestNeighbours)
+        public static Boolean ValidateLeapMove(Board tryBoard, Point p, Point q)
         {
-            List<KeyValuePair<Direction, Point>> result = new List<KeyValuePair<Direction, Point>>();
-            foreach (Point q in closestNeighbours)
-            {
-                (Direction direction, int x_dist, int y_dist) = DirectionHelper.GetDirectionFromTwoPoints(move, q);
-                x_dist = Math.Abs(x_dist);
-                y_dist = Math.Abs(y_dist);
-
-                if (x_dist <= 1 && y_dist <= 1)
-                    break;
-                else if (x_dist >= 2 && y_dist >= 2)
-                    break;
-                result.Add(new KeyValuePair<Direction, Point>(direction, q));
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// Check for non killable group next to leap point as well as one space above or below the space between the leap.
-        /// </summary>
-        public static Boolean ValidateLeapMove(Board tryBoard, Point p, KeyValuePair<Direction, Point> leapMove)
-        {
-            Direction direction = leapMove.Key;
-            Point q = leapMove.Value;
             Content c = tryBoard[p];
-
-            Boolean leapOnSameLine = (p.x.Equals(leapMove.Value.x) || p.y.Equals(leapMove.Value.y));
-            //get middle points between the leap
+            Boolean leapOnSameLine = (p.x.Equals(q.x) || p.y.Equals(q.y));
+            //get middle points between the leap points
             List<Point> middlePoints = new List<Point>();
-            if (direction == Direction.Left || direction == Direction.Right)
+            if (Math.Abs(p.x - q.x) == 2)
             {
                 int y_min = Math.Min(p.y, q.y);
                 int y_max = Math.Max(p.y, q.y);
@@ -1297,14 +1247,13 @@ namespace Go
                     y_min -= 1;
                     y_max += 1;
                 }
-
                 for (int i = y_min; i <= y_max; i++)
                 {
                     int middle_x = (p.x > q.x) ? q.x + 1 : q.x - 1;
                     middlePoints.Add(new Point(middle_x, i));
                 }
             }
-            else if (direction == Direction.Up || direction == Direction.Down)
+            else if (Math.Abs(p.y - q.y) == 2)
             {
                 int x_min = Math.Min(p.x, q.x);
                 int x_max = Math.Max(p.x, q.x);
@@ -1319,7 +1268,6 @@ namespace Go
                     middlePoints.Add(new Point(i, middle_y));
                 }
             }
-
             //check for non killable groups at middle points
             foreach (Point midPt in middlePoints)
             {
@@ -1334,7 +1282,7 @@ namespace Go
 
         #region neutral point
         /// <summary>
-        /// Neutral points are moves that cannot create eye for the survival. Neutral points are usually present on the external liberties of the target group and redundant for the survival to make the move.
+        /// Neutral points are moves that cannot create eye for the survival group. 
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WuQingYuan_Q30935" />
         /// </summary>
         public static Boolean NeutralPointSurvivalMove(GameTryMove tryMove, Boolean survivalMove = true)
@@ -1441,7 +1389,7 @@ namespace Go
                     if (!KoHelper.KoContentEnabled(c, currentBoard.GameInfo))
                         return true;
 
-                    List<Group> neighbourGroups = b.GetNeighbourGroups(b.MoveGroup);
+                    List<Group> neighbourGroups = b.GetNeighbourGroups();
                     if (neighbourGroups.All(group => WallHelper.IsNonKillableGroup(b, group)))
                         return true;
 
@@ -1511,14 +1459,13 @@ namespace Go
         /// Validate neutral point by checking if move creates eye for survival at any of the stone and diagonal neighbours.
         /// Check link for groups <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" />
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
-        /// 
         /// </summary>
         public static Boolean ValidateNeutralPoint(GameTryMove tryMove)
         {
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
             //ensure eye cannot be created at any stone or diagonal neighbours
-            IEnumerable<Point> neighbourPts = tryBoard.GetStoneAndDiagonalNeighbours(move.x, move.y);
+            IEnumerable<Point> neighbourPts = tryBoard.GetStoneAndDiagonalNeighbours();
             if (neighbourPts.Any(q => !WallHelper.NoEyeForSurvival(tryBoard, q)))
                 return false;
             //check link for groups
@@ -1526,8 +1473,6 @@ namespace Go
                 return false;
             return true;
         }
-
-
         #endregion
 
         #region restore neutral points
@@ -1987,7 +1932,7 @@ namespace Go
                 return false;
 
             //get diagonals
-            List<Point> diagonals = tryBoard.GetDiagonalNeighbours(move.x, move.y).Where(q => tryBoard[q] != c).ToList();
+            List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(q => tryBoard[q] != c).ToList();
             diagonals = diagonals.Where(eye => LinkHelper.PointsBetweenDiagonals(eye, move).All(d => tryBoard[d] == c)).ToList();
             if (diagonals.Count == 0)
                 return false;
@@ -1998,7 +1943,7 @@ namespace Go
             if (diagonals.All(eye => RealEyeAtDiagonal(tryMove, eye)))
             {
                 //check other surrounding points are not possible eyes
-                IEnumerable<Point> neighbourPts = tryBoard.GetStoneAndDiagonalNeighbours(move.x, move.y).Except(diagonals);
+                IEnumerable<Point> neighbourPts = tryBoard.GetStoneAndDiagonalNeighbours().Except(diagonals);
                 if (neighbourPts.Any(q => !WallHelper.NoEyeForSurvival(tryBoard, q)))
                     return false;
 
@@ -2128,7 +2073,7 @@ namespace Go
             //check for one point leap move
             if (tryBoard.MoveGroup.Points.Count == 1 && !tryBoard.CornerPoint(move))
             {
-                Boolean singlePoint = tryBoard.GetStoneAndDiagonalNeighbours(move.x, move.y).All(n => tryBoard[n] == Content.Empty);
+                Boolean singlePoint = tryBoard.GetStoneAndDiagonalNeighbours().All(n => tryBoard[n] == Content.Empty);
                 if (singlePoint)
                 {
                     //check survival move
@@ -2178,13 +2123,13 @@ namespace Go
             if (!isKillerGroup)
             {
                 //ensure no opposite content at stone and diagonal
-                if (tryBoard.GetStoneAndDiagonalNeighbours(tryMove.Move.x, tryMove.Move.y).Any(n => tryBoard[n] == c.Opposite()))
+                if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite()))
                     return true;
             }
             else
             {
                 //ensure no opposite content at stone neighbour points for killer group or any closest neighbour within killer group
-                if (tryBoard.GetStoneNeighbours(tryMove.Move.x, tryMove.Move.y).Any(n => tryBoard[n] == c.Opposite() && tryBoard.GetGroupLiberties(n) <= 2) || tryBoard.GetClosestNeighbour(tryMove.Move, 2).Any(n => BothAliveHelper.GetKillerGroupFromCache(tryBoard, n, c.Opposite()) != null))
+                if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == c.Opposite() && tryBoard.GetGroupLiberties(n) <= 2) || tryBoard.GetClosestNeighbour(tryMove.Move, 2).Any(n => BothAliveHelper.GetKillerGroupFromCache(tryBoard, n, c.Opposite()) != null))
                     return true;
             }
             return false;
@@ -2226,7 +2171,7 @@ namespace Go
                 return false;
 
             //get stone neighbours only for killer group
-            List<Point> stoneNeighbours = (isKillerGroup) ? tryBoard.GetStoneNeighbours() : tryBoard.GetStoneAndDiagonalNeighbours(move.x, move.y);
+            List<Point> stoneNeighbours = (isKillerGroup) ? tryBoard.GetStoneNeighbours() : tryBoard.GetStoneAndDiagonalNeighbours();
             List<Point> emptyNeighbours = stoneNeighbours.Where(p => tryBoard[p] == Content.Empty).ToList();
             Content cc = (isKillerGroup ? c.Opposite() : c);
             //count eyes created at move
@@ -2327,7 +2272,7 @@ namespace Go
                 return true;
 
             //check for opponent stones at diagonal
-            List<Point> diagonals = tryBoard.GetDiagonalNeighbours(move.x, move.y);
+            List<Point> diagonals = tryBoard.GetDiagonalNeighbours();
             List<Point> filledDiagonals = diagonals.Where(d => currentBoard[d] == c.Opposite()).ToList();
             if (filledDiagonals.Count > 0)
                 return true;
@@ -2395,7 +2340,7 @@ namespace Go
                 killBoards.Add(p, b);
             }
             //check immovable at liberties
-            KeyValuePair<Point, Board> immovableAtLiberties = killBoards.FirstOrDefault(b => b.Value.MoveGroupLiberties == 2 && b.Value.MoveGroup.Liberties.All(m => ImmovableHelper.IsSuicidalMoveForBothPlayers(b.Value, m)) && b.Value.GetNeighbourGroups(b.Value.MoveGroup).Count > 1);
+            KeyValuePair<Point, Board> immovableAtLiberties = killBoards.FirstOrDefault(b => b.Value.MoveGroupLiberties == 2 && b.Value.MoveGroup.Liberties.All(m => ImmovableHelper.IsSuicidalMoveForBothPlayers(b.Value, m)) && b.Value.GetNeighbourGroups().Count > 1);
             if (immovableAtLiberties.Value != null)
                 return !tryMove.Move.Equals(immovableAtLiberties.Key);
 

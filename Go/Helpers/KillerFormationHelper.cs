@@ -72,7 +72,7 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
 
             //check if neighbour group is non-killable
-            if (!CheckCoveredEyeAtSuicideGroup(tryBoard) && tryBoard.GetNeighbourGroups(tryBoard.MoveGroup).Any(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
+            if (!CheckCoveredEyeAtSuicideGroup(tryBoard) && tryBoard.GetNeighbourGroups().Any(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
                 return false;
 
             //find killer formation
@@ -296,7 +296,7 @@ namespace Go
                     return true;
 
                 //whole survival group dying
-                if (tryBoard.IsAtariMove && tryBoard.GetNeighbourGroups(tryBoard.MoveGroup).Count == 1) return true;
+                if (tryBoard.IsAtariMove && tryBoard.GetNeighbourGroups().Count == 1) return true;
 
                 //get empty point
                 Point p = killerGroup.Points.FirstOrDefault(k => tryBoard[k] == Content.Empty);
@@ -357,14 +357,14 @@ namespace Go
          */
         public static Boolean TwoByTwoFormation(Board tryBoard, Group killerGroup)
         {
-            if (TwoByTwoFormation(tryBoard, killerGroup.Points, killerGroup.Content))
+            Content c = killerGroup.Content;
+            if (TwoByTwoFormation(tryBoard, killerGroup.Points, c))
             {
-                Content c = killerGroup.Content;
                 Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
                 if (capturedBoard == null) return false;
                 foreach (Point p in tryBoard.MoveGroup.Points)
                 {
-                    (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, killerGroup.Content, capturedBoard);
+                    (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c, capturedBoard);
                     if (isSuicidal) continue;
                     if (b != null && b.AtariTargets.Count == 1 && b.AtariTargets.First().Points.Count > 1)
                         return true;
@@ -452,7 +452,7 @@ namespace Go
         {
             if (CrowbarFormation(tryBoard, killerGroup))
             {
-                if (tryBoard.GetNeighbourGroups(tryBoard.MoveGroup).Count <= 1) return false;
+                if (tryBoard.GetNeighbourGroups().Count <= 1) return false;
                 if (!LinkHelper.GetGroupDiagonals(tryBoard, tryBoard.MoveGroup).Any(d => tryBoard[d.Move] == killerGroup.Content)) return false;
                 List<Point> contentPoints = killerGroup.Points.Where(t => tryBoard[t] == killerGroup.Content).ToList();
                 if (contentPoints.Count(p => !tryBoard.PointWithinMiddleArea(p)) >= 2)
@@ -636,7 +636,7 @@ namespace Go
         {
             Content c = killerGroup.Content;
             Boolean oneLiberty = (killerGroup.Liberties.Count == 1);
-            return (tryBoard.GetDiagonalNeighbours(endPoint.x, endPoint.y).Where(n => !killerGroup.Points.Contains(n)).Any(n => tryBoard[n] == ((oneLiberty) ? c : Content.Empty)));
+            return tryBoard.GetDiagonalNeighbours(endPoint.x, endPoint.y).Where(n => !killerGroup.Points.Contains(n)).Any(n => tryBoard[n] == ((oneLiberty) ? c : Content.Empty));
         }
 
 

@@ -1045,24 +1045,19 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.SurvivalLeapMove(Go.GameTryMove)">
             <summary>
-            Leap moves occur where there is one space between the move and the closest neighbour stone of same content.
-            The leap move is redundant where there is a non killable group one space above or below the space between the leap.
+            Leap moves are moves two spaces away from the closest neighbour stone of same content.
             <see cref="!:UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_XuanXuanQiJing_A1" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.GetLeapMove(Go.Point,System.Collections.Generic.List{Go.Point})">
+        <member name="M:Go.RedundantMoveHelper.ValidateLeapMove(Go.Board,Go.Point,Go.Point)">
             <summary>
-            Get leap move where distance is two points away. Return result with leap in x or y direction and closest neighbour.
-            </summary>
-        </member>
-        <member name="M:Go.RedundantMoveHelper.ValidateLeapMove(Go.Board,Go.Point,System.Collections.Generic.KeyValuePair{Go.Direction,Go.Point})">
-            <summary>
-            Check for non killable group next to leap point as well as one space above or below the space between the leap.
+            For leap on same line, check for non killable group between the two points as well as one space above or below the space between the leap.
+            For leap on different lines, check for non killable group between the two points from min to max of the lines.
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.NeutralPointSurvivalMove(Go.GameTryMove,System.Boolean)">
             <summary>
-            Neutral points are moves that cannot create eye for the survival. Neutral points are usually present on the external liberties of the target group and redundant for the survival to make the move.
+            Neutral points are moves that cannot create eye for the survival group. 
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WuQingYuan_Q30935" />
             </summary>
         </member>
@@ -1109,7 +1104,6 @@
             Validate neutral point by checking if move creates eye for survival at any of the stone and diagonal neighbours.
             Check link for groups <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" />
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
-            
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.RestoreNeutralMove(Go.Game,System.Collections.Generic.List{Go.GameTryMove},System.Collections.Generic.List{Go.GameTryMove})">

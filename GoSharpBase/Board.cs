@@ -278,7 +278,6 @@ namespace Go
 
         public List<Point> GetStoneNeighbours()
         {
-            if (this.Move == null) return new List<Point>();
             Point p = this.Move.Value;
             return GetStoneNeighbours(p.x, p.y);
         }
@@ -296,6 +295,12 @@ namespace Go
             return rc;
         }
 
+        public List<Point> GetDiagonalNeighbours()
+        {
+            Point p = this.Move.Value;
+            return GetDiagonalNeighbours(p.x, p.y);
+        }
+
         /// <summary>
         /// Get all surrounding points, both stone and diagonal neighbours.
         /// </summary>
@@ -303,11 +308,16 @@ namespace Go
         {
             return GetStoneNeighbours(x, y).Union(GetDiagonalNeighbours(x, y)).ToList();
         }
+        public List<Point> GetStoneAndDiagonalNeighbours()
+        {
+            Point p = this.Move.Value;
+            return GetStoneAndDiagonalNeighbours(p.x, p.y);
+        }
 
         /// <summary>
         /// Get closest neighbour points to specific point by going in circles with increasing distance.
         /// </summary>
-        public List<Point> GetClosestNeighbour(Point p, int maxDistance = 2, Content c = Content.Unknown)
+        public List<Point> GetClosestNeighbour(Point p, int maxDistance = 2, Content c = Content.Unknown, Boolean excludeCorner = true)
         {
             int x = p.x;
             int y = p.y;
@@ -327,7 +337,8 @@ namespace Go
                         result.Add(new Point(x - j, y + i)); //bottom
                 }
             }
-            result.RemoveAll(r => Math.Abs(r.x - x) >= 2 && Math.Abs(r.x - x) == Math.Abs(r.y - y));
+            if (excludeCorner)
+                result.RemoveAll(r => Math.Abs(r.x - x) >= Math.Max(2, maxDistance) && Math.Abs(r.x - x) == Math.Abs(r.y - y));
             return result;
         }
 
@@ -349,8 +360,9 @@ namespace Go
             return neighbourGroups;
         }
 
-        public List<Group> GetNeighbourGroups(Group group)
+        public List<Group> GetNeighbourGroups(Group group = null)
         {
+            if (group == null) group = this.MoveGroup;
             return GetDistinctNeighbourGroups(group).ToList();
         }
 
