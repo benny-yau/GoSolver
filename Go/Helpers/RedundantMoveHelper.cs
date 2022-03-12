@@ -605,9 +605,9 @@ namespace Go
         /// <summary>
         /// Suicide within non killable group.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_2" />
-        /// Check for pre atari move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
+        /// Ensure more than two liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16925" />
-        /// Check opponent move suicide near non killable group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3kyu28_2" />
+        /// Suicide near non killable group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3kyu28_2" />
         /// </summary>
         public static Boolean SuicidalWithinNonKillableGroup(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
@@ -615,6 +615,7 @@ namespace Go
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
 
+            if (tryBoard.MoveGroupLiberties != 2) return false;
             //check connect and die
             (Boolean suicidal, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
             if (!suicidal) return false;
@@ -623,14 +624,12 @@ namespace Go
             Boolean nonKillable = groups.Any(group => WallHelper.IsNonKillableGroup(captureBoard, group));
             if (!nonKillable) return false;
 
-            if (killerGroup != null && killerGroup.Points.Count(p => tryBoard[p] == c) <= 1)
+            //ensure more than two liberties
+            if (!groups.All(group => group.Liberties.Count > 2)) return false;
+            if (killerGroup != null) return true;
+            else
             {
-                //check for pre atari move
-                return groups.All(group => group.Liberties.Count > 2);
-            }
-            //check opponent move suicide near non killable group
-            if (killerGroup == null && groups.All(group => group.Liberties.Count > 2))
-            {
+                //suicide near non killable group
                 Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(captureBoard, tryBoard.MoveGroup, c);
                 if (b != null && !LinkHelper.IsAbsoluteLinkForGroups(captureBoard, b))
                     return true;
@@ -1868,7 +1867,7 @@ namespace Go
                         if (neighbourGroups.Any(n => WallHelper.IsNonKillableGroup(currentBoard, n)))
                             return true;
                         //check for strong neighbour groups
-                        if (WallHelper.StrongNeighbourGroups(currentBoard, neighbourGroups) && !capturedBoard.CornerPoint(capturedBoard.Move.Value))
+                        if (WallHelper.StrongNeighbourGroups(currentBoard, neighbourGroups) && capturedBoard.MoveGroupLiberties > 2)
                             return true;
                     }
                     //ensure killer group is empty
