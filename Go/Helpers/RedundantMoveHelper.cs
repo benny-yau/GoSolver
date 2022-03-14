@@ -362,6 +362,8 @@ namespace Go
         /// <summary>
         /// Check for connect and die moves. <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738" />
         /// Check capture moves <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A75_101Weiqi" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A75_101Weiqi" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113_3" />
         /// Check atari moves <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30986" />
         /// Check for sieged scenario <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
         /// Check killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
@@ -379,15 +381,18 @@ namespace Go
             Content c = tryMove.MoveContent;
             HashSet<Point> movePoints = tryBoard.MoveGroup.Points;
 
+            //check connect and die
+            (Boolean suicidal, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
+            if (!suicidal) return false;
+
             //check capture moves
             if (tryBoard.CapturedList.Count > 0)
             {
                 if (tryBoard.CapturedList.Any(g => AtariHelper.AtariByGroup(currentBoard, g))) return false;
                 if (tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindCoveredEye(tryBoard, n, c))) return false;
+                if (!KillerFormationHelper.TryKillFormation(captureBoard, c, new List<Point> { tryBoard.CapturedList.First().Points.First() }, new List<Func<Board, Group, Boolean>>() { KillerFormationHelper.KnifeFiveFormation }))
+                    return true;
             }
-            //check connect and die
-            (Boolean suicidal, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
-            if (!suicidal) return false;
 
             //check atari moves
             foreach (Group atariTarget in tryBoard.AtariTargets)
@@ -575,7 +580,7 @@ namespace Go
             if (tryBoard.MoveGroup.Points.Count != 1) return false;
 
             //check for two or less liberties in neighbour groups
-            if (tryBoard.GetNeighbourGroups().Any(group => group.Liberties.Count <= 2 && group.Liberties.Any(liberty => !ImmovableHelper.IsSuicidalMove(captureBoard, liberty, c))))
+            if (tryBoard.GetNeighbourGroups().Any(group => group.Liberties.Count <= 2 && group.Liberties.Any(liberty => !ImmovableHelper.IsSuicidalMove(captureBoard, liberty, c)) && !AtariHelper.AtariByGroup(tryBoard, group)))
                 return true;
 
             //check reverse ko fight
@@ -585,7 +590,7 @@ namespace Go
             if (diagonals.Count == 1)
             {
                 List<Point> diagonalCutPoints = LinkHelper.PointsBetweenDiagonals(move, diagonals.First()).Where(q => tryBoard[q] == Content.Empty).ToList();
-                foreach (Point p in tryBoard.MoveGroup.Liberties)
+                foreach (Point p in diagonalCutPoints)
                 {
                     Board b = tryBoard.MakeMoveOnNewBoard(p, c.Opposite());
                     if (b != null && b.MoveGroup.Points.Count >= 2 && b.MoveGroupLiberties == 2)

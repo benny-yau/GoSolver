@@ -626,7 +626,7 @@
             Formations that are essentially dead and do not require a pass move to test for both alive.
             </summary>
         </member>
-        <member name="M:Go.KillerFormationHelper.TryKillFormation(Go.Board,Go.Group,System.Collections.Generic.List{Go.Point},System.Collections.Generic.List{System.Func{Go.Board,Go.Group,System.Boolean}})">
+        <member name="M:Go.KillerFormationHelper.TryKillFormation(Go.Board,Go.Content,System.Collections.Generic.List{Go.Point},System.Collections.Generic.List{System.Func{Go.Board,Go.Group,System.Boolean}})">
             <summary>
             Make move at each of the empty points to test if formation created.
             </summary>
@@ -876,6 +876,8 @@
             <summary>
             Check for connect and die moves. <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738" />
             Check capture moves <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A75_101Weiqi" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A75_101Weiqi" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113_3" />
             Check atari moves <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30986" />
             Check for sieged scenario <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
             Check killer formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />

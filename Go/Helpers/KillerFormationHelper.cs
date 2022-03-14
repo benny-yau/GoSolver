@@ -22,24 +22,25 @@ namespace Go
         public static Boolean PreDeadFormation(Board board, Group killerGroup, List<Point> contentPoints, List<Point> emptyPoints)
         {
             int contentCount = contentPoints.Count;
+            Content c = killerGroup.Content;
             if (contentCount == 3)
             {
-                if (TryKillFormation(board, killerGroup, emptyPoints, new List<Func<Board, Group, Boolean>>() { OneByThreeFormation, BoxFormation, CrowbarEdgeFormation, TwoByTwoFormation, BentFourCornerFormation }))
+                if (TryKillFormation(board, c, emptyPoints, new List<Func<Board, Group, Boolean>>() { OneByThreeFormation, BoxFormation, CrowbarEdgeFormation, TwoByTwoFormation, BentFourCornerFormation }))
                     return true;
             }
             else if (contentCount == 4)
             {
-                if (TryKillFormation(board, killerGroup, emptyPoints, new List<Func<Board, Group, Boolean>>() { KnifeFiveFormation, OneByFourSideFormation, TSideFormation, ThreeByTwoSideFormation }))
+                if (TryKillFormation(board, c, emptyPoints, new List<Func<Board, Group, Boolean>>() { KnifeFiveFormation, OneByFourSideFormation, TSideFormation, ThreeByTwoSideFormation }))
                     return true;
             }
             else if (contentCount == 5)
             {
-                if (TryKillFormation(board, killerGroup, emptyPoints, new List<Func<Board, Group, Boolean>>() { FlowerSixFormation, TwoByFourSideFormation, CornerSixFormation }))
+                if (TryKillFormation(board, c, emptyPoints, new List<Func<Board, Group, Boolean>>() { FlowerSixFormation, TwoByFourSideFormation, CornerSixFormation }))
                     return true;
             }
             else if (contentCount == 6)
             {
-                if (TryKillFormation(board, killerGroup, emptyPoints, new List<Func<Board, Group, Boolean>>() { FlowerSevenSideFormation }))
+                if (TryKillFormation(board, c, emptyPoints, new List<Func<Board, Group, Boolean>>() { FlowerSevenSideFormation }))
                     return true;
             }
             return false;
@@ -48,11 +49,11 @@ namespace Go
         /// <summary>
         /// Make move at each of the empty points to test if formation created.
         /// </summary>
-        public static Boolean TryKillFormation(Board board, Group killerGroup, List<Point> emptyPoints, List<Func<Board, Group, Boolean>> functions)
+        public static Boolean TryKillFormation(Board board, Content c, List<Point> emptyPoints, List<Func<Board, Group, Boolean>> functions)
         {
             foreach (Point emptyPoint in emptyPoints)
             {
-                Board b = board.MakeMoveOnNewBoard(emptyPoint, killerGroup.Content);
+                Board b = board.MakeMoveOnNewBoard(emptyPoint, c);
                 if (b == null) return false;
                 Group group = b.GetGroupAt(emptyPoint);
                 if (functions.Any(func => func(b, group)))
