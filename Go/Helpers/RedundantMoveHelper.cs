@@ -362,7 +362,7 @@ namespace Go
         /// <summary>
         /// Check for connect and die moves. <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738" />
         /// Check capture moves <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A75_101Weiqi" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A75_101Weiqi" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.CheckForRecursionTest_Scenario_Corner_B41" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113_3" />
         /// Check atari moves <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30986" />
         /// Check for sieged scenario <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
@@ -390,8 +390,9 @@ namespace Go
             {
                 if (tryBoard.CapturedList.Any(g => AtariHelper.AtariByGroup(currentBoard, g))) return false;
                 if (tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindCoveredEye(tryBoard, n, c))) return false;
-                if (!KillerFormationHelper.TryKillFormation(captureBoard, c, new List<Point> { tryBoard.CapturedList.First().Points.First() }, new List<Func<Board, Group, Boolean>>() { KillerFormationHelper.KnifeFiveFormation }))
-                    return true;
+                if (KillerFormationHelper.TryKillFormation(captureBoard, c, new List<Point> { tryBoard.CapturedList.First().Points.First() }, new List<Func<Board, Group, Boolean>>() { KillerFormationHelper.OneByThreeFormation, KillerFormationHelper.KnifeFiveFormation }))
+                    return false;
+                return true;
             }
 
             //check atari moves
@@ -410,7 +411,7 @@ namespace Go
             if (CheckWeakGroupInConnectAndDie(tryMove, captureBoard))
                 return false;
 
-            //if all neighbour groups are killable, then check for killer formations 
+            //check for non killable groups
             IEnumerable<Group> neighbourGroups = tryBoard.GetNeighbourGroups();
             if (neighbourGroups.Any(group => WallHelper.IsNonKillableGroup(tryBoard, group)))
                 return false;
