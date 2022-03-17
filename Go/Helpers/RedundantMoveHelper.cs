@@ -411,10 +411,6 @@ namespace Go
             if (CheckWeakGroupInConnectAndDie(tryMove, captureBoard))
                 return false;
 
-            //check for non killable groups
-            IEnumerable<Group> neighbourGroups = tryBoard.GetNeighbourGroups();
-            if (neighbourGroups.Any(group => WallHelper.IsNonKillableGroup(tryBoard, group)))
-                return false;
             foreach (Point p in tryBoard.MoveGroup.Liberties)
             {
                 //find bloated eye suicide
@@ -422,7 +418,7 @@ namespace Go
                 Board b = tryBoard.MakeMoveOnNewBoard(p, c.Opposite());
                 if (b == null) continue;
                 //check killer move non killable group
-                if (WallHelper.IsNonKillableGroup(b, b.MoveGroup))
+                if (WallHelper.IsNonKillableGroup(b, b.MoveGroup) && b.MoveGroupLiberties > 2)
                     return true;
                 if (movePoints.Count == 1 && tryMove.IsNegligible)
                 {
@@ -564,8 +560,14 @@ namespace Go
             return true;
         }
 
+
         /// <summary>
         /// Check for one point move group in connect and die.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario2dan21" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_2398" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
+        /// <see cref="UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18473" />
+        /// One point move near non killable group
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B7" />
         /// <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_TianLongTu_Q16571" />
         /// Check reverse ko fight <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A80" />
@@ -586,25 +588,6 @@ namespace Go
 
             //check reverse ko fight
             if (tryBoard.GetStoneNeighbours().Any(n => ImmovableHelper.FindTigerMouth(tryBoard, c, n))) return true;
-            //check opponent move liberties
-            List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] == c).ToList();
-            if (diagonals.Count == 1)
-            {
-                List<Point> diagonalCutPoints = LinkHelper.PointsBetweenDiagonals(move, diagonals.First()).Where(q => tryBoard[q] == Content.Empty).ToList();
-                foreach (Point p in diagonalCutPoints)
-                {
-                    Board b = tryBoard.MakeMoveOnNewBoard(p, c.Opposite());
-                    if (b != null && b.MoveGroup.Points.Count >= 2 && b.MoveGroupLiberties == 2)
-                        return true;
-                }
-            }
-            //check snapback at diagonal
-            List<Point> emptyDiagonals = tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] == Content.Empty).ToList();
-            foreach (Point p in emptyDiagonals)
-            {
-                if (tryBoard.GetGroupsFromStoneNeighbours(p, c).Any(group => ImmovableHelper.CheckSnapback(tryBoard, group)))
-                    return true;
-            }
             return false;
         }
 
@@ -1025,12 +1008,8 @@ namespace Go
 
             //killer formations
             if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, capturedBoard))
-            {
-                //check link to external group
-                if (IsLinkToExternalGroup(tryMove, tryLinkBoard))
-                    return true;
                 return false;
-            }
+
             //no hope of escape
             return true;
         }
@@ -1065,56 +1044,6 @@ namespace Go
                 Board b = board.MakeMoveOnNewBoard(q, c.Opposite());
                 if (b != null && EyeHelper.FindCoveredEye(b, emptyPoints.First(), c.Opposite()))
                     return true;
-            }
-            return false;
-        }
-
-
-        /// <summary>
-        /// Ensure link is connected to both stones from previous move group and to external group.
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16520_2" />
-        /// Lost group not more than three points <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31682" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17154" />
-        /// Connect three or more groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B3" />
-        /// No lost groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18402_2" />
-        /// Check connect and die <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30403" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi_2" />
-        /// </summary>
-        private static Boolean IsLinkToExternalGroup(GameTryMove tryMove, Board tryLinkBoard)
-        {
-            Point move = tryMove.Move;
-            Board tryBoard = tryMove.TryGame.Board;
-            Board currentBoard = tryMove.CurrentGame.Board;
-            Content c = tryMove.MoveContent;
-            if (tryLinkBoard.MoveGroupLiberties == 1)
-                return false;
-            //get previous move group
-            List<Group> groups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
-            //connect three or more groups
-            if (groups.Count >= 3) return false;
-            //connected to previous move group
-            Boolean moveConnected = tryLinkBoard.GetStoneNeighbours().Any(p => groups.Any(group => group.Points.Contains(p)));
-            if (moveConnected && LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryLinkBoard))
-            {
-                HashSet<Group> linkGroups = currentBoard.GetGroupsFromStoneNeighbours(tryLinkBoard.Move.Value, c.Opposite());
-                //connected to external group not from previous move group
-                if (!linkGroups.Except(groups).Any()) return false;
-                //check connect and die
-                if (ImmovableHelper.CheckConnectAndDie(tryLinkBoard))
-                    return false;
-                //saved groups
-                List<Group> savedGroups = linkGroups.Intersect(groups).ToList();
-                if (savedGroups.Count == 0) return false;
-                List<Group> lostGroups = groups.Except(savedGroups).ToList();
-                //no lost groups
-                if (lostGroups.Count == 0) return true;
-                //lost group not more than three points
-                if (lostGroups.Count == 1 && lostGroups.First().Points.Count <= 3)
-                {
-                    if (lostGroups.First().Points.Count == 3 && tryLinkBoard.MoveGroupLiberties <= 2)
-                        return false;
-                    return true;
-                }
             }
             return false;
         }

@@ -83,6 +83,14 @@ namespace Go
             if (CheckRealEyeInNeighbourGroups(capturedBoard ?? tryBoard, move, c))
                 return false;
 
+            //check link to external group
+            if (capturedBoard != null)
+            {
+                Point? liberty = capturedBoard.Move;
+                Board tryLinkBoard = currentBoard.MakeMoveOnNewBoard(liberty.Value, c);
+                if (IsLinkToExternalGroup(tryBoard, currentBoard, tryLinkBoard))
+                    return false;
+            }
             return true;
         }
 
@@ -308,6 +316,52 @@ namespace Go
             return false;
         }
 
+        /// <summary>
+        /// Ensure link is connected to both stones from previous move group and to external group.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16520_2" />
+        /// Lost group not more than three points <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31682" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17154" />
+        /// Connect three or more groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B3" />
+        /// No lost groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18402_2" />
+        /// Check connect and die <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30403" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi_2" />
+        /// </summary>
+        private static Boolean IsLinkToExternalGroup(Board tryBoard, Board currentBoard, Board tryLinkBoard)
+        {
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            if (tryLinkBoard.MoveGroupLiberties == 1)
+                return false;
+            //get previous move group
+            List<Group> groups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
+            //connect three or more groups
+            if (groups.Count >= 3) return false;
+            //connected to previous move group
+            Boolean moveConnected = tryLinkBoard.GetStoneNeighbours().Any(p => groups.Any(group => group.Points.Contains(p)));
+            if (moveConnected && LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryLinkBoard))
+            {
+                HashSet<Group> linkGroups = currentBoard.GetGroupsFromStoneNeighbours(tryLinkBoard.Move.Value, c.Opposite());
+                //connected to external group not from previous move group
+                if (!linkGroups.Except(groups).Any()) return false;
+                //check connect and die
+                if (ImmovableHelper.CheckConnectAndDie(tryLinkBoard))
+                    return false;
+                //saved groups
+                List<Group> savedGroups = linkGroups.Intersect(groups).ToList();
+                if (savedGroups.Count == 0) return false;
+                List<Group> lostGroups = groups.Except(savedGroups).ToList();
+                //no lost groups
+                if (lostGroups.Count == 0) return true;
+                //lost group not more than three points
+                if (lostGroups.Count == 1 && lostGroups.First().Points.Count <= 3)
+                {
+                    if (lostGroups.First().Points.Count == 3 && tryLinkBoard.MoveGroupLiberties <= 2)
+                        return false;
+                    return true;
+                }
+            }
+            return false;
+        }
 
         /*
  15 . . . . . . . . . . . . . . . . . . .
