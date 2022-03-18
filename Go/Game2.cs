@@ -185,11 +185,11 @@ namespace Go
             move.IsFillKoEyeMove = RedundantMoveHelper.FillKoEyeMove(move);
             if (move.IsFillKoEyeMove)
                 return;
-            move.IsNeutralPoint = RedundantMoveHelper.NeutralPointSurvivalMove(move);
-            if (move.IsNeutralPoint)
-                return;
             move.IsSuicidal = RedundantMoveHelper.SuicidalRedundantMove(move);
             if (move.IsSuicidal)
+                return;
+            move.IsNeutralPoint = RedundantMoveHelper.NeutralPointSurvivalMove(move);
+            if (move.IsNeutralPoint)
                 return;
             move.IsDiagonalEyeMove = RedundantMoveHelper.SurvivalEyeDiagonalMove(move);
             if (move.IsDiagonalEyeMove)
@@ -226,11 +226,11 @@ namespace Go
             move.IsFillKoEyeMove = RedundantMoveHelper.FillKoEyeMove(move);
             if (move.IsFillKoEyeMove)
                 return;
-            move.IsNeutralPoint = RedundantMoveHelper.NeutralPointKillMove(move);
-            if (move.IsNeutralPoint)
-                return;
             move.IsSuicidal = RedundantMoveHelper.SuicidalRedundantMove(move);
             if (move.IsSuicidal)
+                return;
+            move.IsNeutralPoint = RedundantMoveHelper.NeutralPointKillMove(move);
+            if (move.IsNeutralPoint)
                 return;
             move.IsNeutralPoint = RedundantMoveHelper.KillEyeDiagonalMove(move);
             if (move.IsNeutralPoint)

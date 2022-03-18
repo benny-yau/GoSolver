@@ -615,14 +615,10 @@ namespace Go
 
             //ensure more than two liberties
             if (!groups.All(group => group.Liberties.Count > 2)) return false;
-            if (killerGroup != null) return true;
-            else
-            {
-                //suicide near non killable group
-                Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(captureBoard, tryBoard.MoveGroup, c);
-                if (b != null && !LinkHelper.IsAbsoluteLinkForGroups(captureBoard, b))
-                    return true;
-            }
+            //suicide near non killable group
+            Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(captureBoard, tryBoard.MoveGroup, c);
+            if (b != null && !LinkHelper.IsAbsoluteLinkForGroups(captureBoard, b))
+                return true;
             return false;
         }
 
@@ -2105,7 +2101,7 @@ namespace Go
                 return false;
 
             //get stone neighbours only for killer group
-            List<Point> stoneNeighbours = (isKillerGroup) ? tryBoard.GetStoneNeighbours() : tryBoard.GetStoneAndDiagonalNeighbours();
+            List<Point> stoneNeighbours = tryBoard.GetStoneNeighbours();
             List<Point> emptyNeighbours = stoneNeighbours.Where(p => tryBoard[p] == Content.Empty).ToList();
             Content cc = (isKillerGroup ? c.Opposite() : c);
             //count eyes created at move
