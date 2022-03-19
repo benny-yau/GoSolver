@@ -925,6 +925,7 @@
         <member name="M:Go.RedundantMoveHelper.CheckWeakGroupInConnectAndDie(Go.GameTryMove,Go.Board)">
             <summary>
             Check for any weak capture group with two or less liberties in connect and die.
+            Check for double atari for one-point move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29481" />
             Check killable group with two or less liberties <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31435" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B6" />
             Check for weak group capturing atari group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B17" />
@@ -1286,8 +1287,9 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckOpponentStoneAtFillerMove(Go.GameTryMove,Go.Point)">
             <summary>
-            Check opponent stone at filler move. <see cref="!:UnitTestProject.RedundantEyeFillerTest.BaseLineKillerMoveTest_Scenario_TianLongTu_Q16520" />
-            <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A80_2" />
+            Check opponent stone at filler move. 
+            <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q29378" />
+            <see cref="!:UnitTestProject.RedundantEyeFillerTest.BaseLineKillerMoveTest_Scenario_TianLongTu_Q16520" />
             Check for opponent stone at try move <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q16827_2" />
             </summary>
         </member>

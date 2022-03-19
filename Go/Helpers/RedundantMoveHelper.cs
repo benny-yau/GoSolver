@@ -520,6 +520,7 @@ namespace Go
 
         /// <summary>
         /// Check for any weak capture group with two or less liberties in connect and die.
+        /// Check for double atari for one-point move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29481" />
         /// Check killable group with two or less liberties <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31435" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B6" />
         /// Check for weak group capturing atari group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B17" />
@@ -530,7 +531,16 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
-            if (tryBoard.MoveGroup.Points.Count == 1) return false;
+            if (tryBoard.MoveGroup.Points.Count == 1)
+            {
+                //check for double atari for one-point move
+                foreach (Point liberty in captureBoard.MoveGroup.Liberties)
+                {
+                    Board b = captureBoard.MakeMoveOnNewBoard(liberty, c);
+                    if (b != null && b.AtariTargets.Count >= 2) return true;
+                }
+                return false;
+            }
             //check for weak group capturing atari group
             if (tryBoard.IsAtariMove && captureBoard.MoveGroup.Points.Count == 1)
             {
@@ -2136,8 +2146,9 @@ namespace Go
         }
 
         /// <summary>
-        /// Check opponent stone at filler move. <see cref="UnitTestProject.RedundantEyeFillerTest.BaseLineKillerMoveTest_Scenario_TianLongTu_Q16520" />
-        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A80_2" />
+        /// Check opponent stone at filler move. 
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q29378" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.BaseLineKillerMoveTest_Scenario_TianLongTu_Q16520" />
         /// Check for opponent stone at try move <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q16827_2" />
         /// </summary>
         private static Boolean CheckOpponentStoneAtFillerMove(GameTryMove tryMove, Point p)
@@ -2146,7 +2157,7 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Content c = tryMove.MoveContent;
             List<Point> stoneNeighbours = currentBoard.GetStoneNeighbours(p.x, p.y).Where(n => currentBoard[n] == c.Opposite()).ToList();
-            if (stoneNeighbours.Count > 1 || stoneNeighbours.Any(n => currentBoard.GetGroupAt(n).Points.Count > 1))
+            if (stoneNeighbours.Any())
                 return true;
 
             //check for opponent stone at try move
