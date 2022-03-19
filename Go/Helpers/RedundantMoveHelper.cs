@@ -436,6 +436,7 @@ namespace Go
             if (CheckRedundantCornerPoint(tryMove))
                 return true;
 
+            //check diagonals
             if (CheckDiagonalForSuicidalConnectAndDie(tryMove))
                 return true;
 
@@ -445,14 +446,6 @@ namespace Go
 
             if (movePoints.Count <= 4)
             {
-                //check for no empty points and no diagonals for move
-                if (movePoints.Count > 1 && !tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty) && !tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c) && !LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryBoard))
-                {
-                    //check for three neighbour groups
-                    Boolean threeGroups = (movePoints.Count == 2 && tryBoard.GetGroupsFromStoneNeighbours(move, c).Count > 2);
-                    if (!threeGroups)
-                        return true;
-                }
                 //check for real eye in neighbour groups
                 return CheckAnyRealEyeInSuicidalConnectAndDie(tryBoard, captureBoard);
             }
@@ -484,8 +477,8 @@ namespace Go
         /// Check for one-point eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A30" />
         /// Check for two-point snapback <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A55" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_2" />
-        /// Check for three neighbour groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30198" />
         /// Check snapback in neighbour groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234_2" />
+        /// Check for one-by-three kill <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18796_2" />
         /// Check for covered eye group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A17" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30403_2" />
         /// </summary>
@@ -526,7 +519,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Check for any weak capture group in connect and die.
+        /// Check for any weak capture group with two or less liberties in connect and die.
         /// Check killable group with two or less liberties <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31435" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B6" />
         /// Check for weak group capturing atari group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B17" />
@@ -624,6 +617,8 @@ namespace Go
 
         /// <summary>
         /// Check for suicidal moves depending on diagonal groups.
+        /// Ensure no diagonal at move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
+        /// Check for three neighbour groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30198" />
         /// Check liberties are connected <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
         /// Check atari resolved <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi_2" />
         /// Check for corner point <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q15082" />
@@ -631,17 +626,25 @@ namespace Go
         /// Check diagonal at opposite corner of stone neighbours <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31493" />
         /// Both groups have limited liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17081_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A61" />
-        /// Ensure no diagonal at move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
         /// Ensure no shared liberty with neighbour group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A55" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
         /// Check for killer formation <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_A26" />
         /// </summary>
         private static Boolean CheckDiagonalForSuicidalConnectAndDie(GameTryMove tryMove)
         {
+            Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
-            if (tryBoard.CapturedList.Count > 0) return false;
+
+            //check for no empty points and no diagonals for move
+            if (tryBoard.MoveGroup.Points.Count > 1 && !tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty) && !tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c) && !LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryBoard))
+            {
+                //check for three neighbour groups
+                Boolean threeGroups = (tryBoard.MoveGroup.Points.Count == 2 && tryBoard.GetGroupsFromStoneNeighbours(move, c).Count > 2);
+                if (!threeGroups)
+                    return true;
+            }
             //ensure diagonal groups found
             Boolean diagonalGroups = LinkHelper.GetGroupLinkedDiagonals(tryBoard, tryBoard.MoveGroup, false).Any();
             if (!diagonalGroups)
@@ -1408,6 +1411,7 @@ namespace Go
         #region restore neutral points
         /// <summary>
         /// Neutral points for kill moves have to be restored on end game one at a time to surround external liberties of target group in order to kill it
+        /// No try moves left <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Side_A20" />
         /// Remaining move at liberty point <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
         /// </summary>
         public static void RestoreNeutralMove(Game currentGame, List<GameTryMove> tryMoves, List<GameTryMove> neutralPointMoves)
@@ -1441,7 +1445,10 @@ namespace Go
                 tryMoves.Add(tryMove);
                 neutralPointMoves.Remove(tryMove);
             }
-            if (tryMoves.Count == 1)
+            //no try moves left
+            if (tryMoves.Count == 0 && neutralPointMoves.Count > 0)
+                tryMoves.Add(neutralPointMoves.First());
+            else if (tryMoves.Count == 1)
             {
                 //remaining move at liberty point
                 GameTryMove neutralPointMove = neutralPointMoves.FirstOrDefault(move => move.MustHaveNeutralPoint && move.LinkPoint.Move.Equals(tryMoves.First().Move) && SuicideAtBigTigerMouth(move, move.MoveContent).Item1);
@@ -1591,8 +1598,9 @@ namespace Go
         /// <summary>
         /// Specific kill with liberty fight. No killer group or only one neighbour group.
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario3kyu24_3" />
-        /// Crowbar formation <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
-        /// Only one neighbour group for killer group <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q2413" />
+        /// Find neighbour groups at diagonal cut <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario3kyu24_5" />
+        /// Contains killer group <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q2413" />
+        /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
         /// Real solid eye found <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_B7" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario3kyu24" />
         /// </summary>
@@ -1610,11 +1618,12 @@ namespace Go
             foreach (Group targetGroup in tryBoard.GetGroupsFromStoneNeighbours(neutralPointMove.Move, c))
             {
                 List<Point> neighbourLiberties;
-                if (killerGroups.Count == 0)
+                if (killerGroups.Count == 0) //no killer group
                 {
-                    //ensure only two neighbour groups
-                    List<Group> neighbourGroups = tryBoard.GetNeighbourGroups(targetGroup);
-                    if (neighbourGroups.Count != 2) return null;
+                    //find neighbour groups at diagonal cut
+                    (_, List<Point> pointsBetweenDiagonals) = LinkHelper.FindDiagonalCut(tryBoard, targetGroup);
+                    if (pointsBetweenDiagonals == null) return null;
+                    HashSet<Group> neighbourGroups = tryBoard.GetGroupsFromPoints(pointsBetweenDiagonals);
                     if (neighbourGroups.Any(group => AtariHelper.AtariByGroup(tryBoard, group))) return null;
                     //get the group other than neutral point group
                     Group neighbourGroup = neighbourGroups.FirstOrDefault(group => !group.Equals(tryBoard.MoveGroup) && !WallHelper.IsNonKillableGroup(tryBoard, group));
@@ -1625,7 +1634,7 @@ namespace Go
                     if (neighbourLiberties.Count == targetGroup.Liberties.Count + 1)
                         return neutralPointMove;
                 }
-                else
+                else //contains killer group
                 {
                     //include all empty points within killer group
                     neighbourLiberties = killerGroups.First().Points.Where(p => tryBoard[p] == Content.Empty).ToList();

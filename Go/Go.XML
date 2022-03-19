@@ -802,6 +802,11 @@
             Get the opposite diagonals of the two diagonal points.
             </summary>
         </member>
+        <member name="M:Go.LinkHelper.FindDiagonalCut(Go.Board,Go.Group)">
+            <summary>
+            Diagonal cut between two neighbour groups.
+            </summary>
+        </member>
         <member name="M:Go.LinkHelper.GetPreviousMoveGroup(Go.Board,Go.Board)">
             <summary>
             Get stones within move group on current board.
@@ -911,15 +916,15 @@
             Check for one-point eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A30" />
             Check for two-point snapback <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A55" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_2" />
-            Check for three neighbour groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30198" />
             Check snapback in neighbour groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234_2" />
+            Check for one-by-three kill <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18796_2" />
             Check for covered eye group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A17" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30403_2" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckWeakGroupInConnectAndDie(Go.GameTryMove,Go.Board)">
             <summary>
-            Check for any weak capture group in connect and die.
+            Check for any weak capture group with two or less liberties in connect and die.
             Check killable group with two or less liberties <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31435" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B6" />
             Check for weak group capturing atari group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B17" />
@@ -953,6 +958,8 @@
         <member name="M:Go.RedundantMoveHelper.CheckDiagonalForSuicidalConnectAndDie(Go.GameTryMove)">
             <summary>
             Check for suicidal moves depending on diagonal groups.
+            Ensure no diagonal at move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
+            Check for three neighbour groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30198" />
             Check liberties are connected <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
             Check atari resolved <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi_2" />
             Check for corner point <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q15082" />
@@ -960,7 +967,6 @@
             Check diagonal at opposite corner of stone neighbours <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31493" />
             Both groups have limited liberties <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17081_2" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A61" />
-            Ensure no diagonal at move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
             Ensure no shared liberty with neighbour group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A55" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
             Check for killer formation <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_A26" />
@@ -1116,6 +1122,7 @@
         <member name="M:Go.RedundantMoveHelper.RestoreNeutralMove(Go.Game,System.Collections.Generic.List{Go.GameTryMove},System.Collections.Generic.List{Go.GameTryMove})">
             <summary>
             Neutral points for kill moves have to be restored on end game one at a time to surround external liberties of target group in order to kill it
+            No try moves left <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Side_A20" />
             Remaining move at liberty point <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
             </summary>
         </member>
@@ -1163,8 +1170,9 @@
             <summary>
             Specific kill with liberty fight. No killer group or only one neighbour group.
             <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario3kyu24_3" />
-            Crowbar formation <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
-            Only one neighbour group for killer group <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q2413" />
+            Find neighbour groups at diagonal cut <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario3kyu24_5" />
+            Contains killer group <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q2413" />
+            <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
             Real solid eye found <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_B7" />
             <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario3kyu24" />
             </summary>

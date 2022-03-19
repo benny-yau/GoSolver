@@ -251,6 +251,22 @@ namespace Go
         }
 
         /// <summary>
+        /// Diagonal cut between two neighbour groups.
+        /// </summary>
+        public static (Point?, List<Point>) FindDiagonalCut(Board board, Group group)
+        {
+            Content c = group.Content;
+            List<LinkedPoint<Point>> diagonals = GetGroupDiagonals(board, group).Where(d => board[d.Move] == c).ToList();
+            foreach (LinkedPoint<Point> diagonal in diagonals)
+            {
+                List<Point> pointsBetweenDiagonals = PointsBetweenDiagonals(diagonal.Move, (Point)diagonal.CheckMove);
+                if (pointsBetweenDiagonals.All(d => board[d] == c.Opposite()) && board.GetGroupAt(diagonal.Move).Liberties.Count > 1)
+                    return (diagonal.Move, pointsBetweenDiagonals);
+            }
+            return (null, null);
+        }
+
+        /// <summary>
         /// Get stones within move group on current board.
         /// </summary>
         public static List<Group> GetPreviousMoveGroup(Board currentBoard, Board tryBoard)
