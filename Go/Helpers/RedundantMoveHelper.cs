@@ -504,7 +504,6 @@ namespace Go
             if (movePoints.Count == 1 || movePoints.Count == 2)
             {
                 List<Point> diagonals = LinkHelper.GetGroupDiagonals(captureBoard, tryBoard.MoveGroup).Select(q => q.Move).Where(q => captureBoard[q] == Content.Empty).ToList();
-                diagonals = captureBoard.GetStoneNeighbours().Intersect(diagonals).ToList();
                 if (diagonals.Count != 1) return true;
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(diagonals.First(), c, captureBoard);
                 if (!suicidal)
@@ -632,6 +631,7 @@ namespace Go
         /// Check liberties are connected <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
         /// Check atari resolved <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi_2" />
         /// Check for corner point <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q15082" />
+        /// Check for box formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16748" />
         /// Stone neighbours at diagonal of each other <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q2757" />
         /// Check diagonal at opposite corner of stone neighbours <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31493" />
         /// Both groups have limited liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17081_2" />
@@ -669,6 +669,9 @@ namespace Go
                     {
                         //check for corner point
                         if (tryBoard.MoveGroup.Liberties.Any(q => tryBoard.CornerPoint(q)))
+                            return false;
+                        //check for box formation
+                        if (KillerFormationHelper.BoxFormation(tryBoard, tryBoard.MoveGroup))
                             return false;
                         return true;
                     }

@@ -60,9 +60,8 @@ namespace Go
         /// Both diagonals empty <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_4" />
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_2" />
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q17078" />
-        /// Check for double linkage <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_3" />
         /// </summary>
-        public static Boolean CheckIsDiagonalLinked(Point pointA, Point pointB, Board board)
+        public static Boolean CheckIsDiagonalLinked(Point pointA, Point pointB, Board board, Boolean doubleLinkage = true)
         {
             Content c = board[pointA];
             List<Point> diagonals = LinkHelper.PointsBetweenDiagonals(pointA, pointB);
@@ -87,34 +86,43 @@ namespace Go
                     if (ImmovableAtLinkDiagonal(b, c, q))
                         return true;
                 }
+                if (doubleLinkage && !CheckDoubleLinkage(board, diagonals, c))
+                    return false;
 
-                //check for double linkage
-                foreach (Point p in diagonals)
-                {
-                    if (!board.PointWithinMiddleArea(p)) continue;
-                    //ensure three opponent groups
-                    List<Point> opponentStones = board.GetStoneNeighbours(p.x, p.y).Where(n => board[n] == c).ToList();
-                    if (board.GetGroupsFromPoints(opponentStones).Count != 3) continue;
-                    Point q = diagonals.First(d => !d.Equals(p));
-                    //find the other diagonal
-                    List<Point> otherDiagonals = board.GetDiagonalNeighbours(p.x, p.y).Where(n => board.GetStoneNeighbours(n.x, n.y).Intersect(opponentStones).Count() >= 2).ToList();
-                    Point otherDiagonal = otherDiagonals.Where(d => !d.Equals(q)).FirstOrDefault();
-                    if (!Convert.ToBoolean(otherDiagonal.NotEmpty)) continue;
-
-                    //make opponent move at diagonal
-                    (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board, true);
-                    if (suicidal) continue;
-
-                    //check if immovable already
-                    if (!ImmovableAtLinkDiagonal(b, c, otherDiagonal))
-                        return false;
-                }
                 return true;
             }
             //check if immovable for any diagonal separated by opposite content
             if (diagonals.Any(diagonal => ImmovableAtLinkDiagonal(board, c, diagonal)))
                 return true;
             return false;
+        }
+
+        /// <summary>
+        /// Check for double linkage <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_3" />
+        /// </summary>
+        private static Boolean CheckDoubleLinkage(Board board, List<Point> diagonals, Content c)
+        {
+            foreach (Point p in diagonals)
+            {
+                if (!board.PointWithinMiddleArea(p)) continue;
+                //ensure three opponent groups
+                List<Point> opponentStones = board.GetStoneNeighbours(p.x, p.y).Where(n => board[n] == c).ToList();
+                if (board.GetGroupsFromPoints(opponentStones).Count != 3) continue;
+                Point q = diagonals.First(d => !d.Equals(p));
+                //find the other diagonal
+                List<Point> otherDiagonals = board.GetDiagonalNeighbours(p.x, p.y).Where(n => board.GetStoneNeighbours(n.x, n.y).Intersect(opponentStones).Count() >= 2).ToList();
+                Point otherDiagonal = otherDiagonals.Where(d => !d.Equals(q)).FirstOrDefault();
+                if (!Convert.ToBoolean(otherDiagonal.NotEmpty)) continue;
+
+                //make opponent move at diagonal
+                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board, true);
+                if (suicidal) continue;
+
+                //check if immovable already
+                if (!ImmovableAtLinkDiagonal(b, c, otherDiagonal))
+                    return false;
+            }
+            return true;
         }
 
         /// <summary>
@@ -213,15 +221,22 @@ namespace Go
         public static Boolean IsDiagonallyConnectedGroups(Board board, Group group, Group findGroup, HashSet<Group> groups)
         {
             groups.Add(group);
-            List<LinkedPoint<Point>> diagonalPoints = GetGroupLinkedDiagonals(board, group);
+            //find group diagonals of same content
+            List<LinkedPoint<Point>> diagonalPoints = GetGroupDiagonals(board, group).Where(d => board[d.Move] == group.Content).ToList();
             foreach (LinkedPoint<Point> diagonalPoint in diagonalPoints)
             {
                 Group g = board.GetGroupAt(diagonalPoint.Move);
-                if (findGroup == g)
+                if (findGroup == g && CheckIsDiagonalLinked(diagonalPoint.Move, (Point)diagonalPoint.CheckMove, board, false))
                     return true;
+
+                //check for links with double linkage
+                if (!CheckIsDiagonalLinked(diagonalPoint.Move, (Point)diagonalPoint.CheckMove, board))
+                    continue;
 
                 if (groups.Contains(g)) continue;
                 groups.Add(g);
+
+                //get diagonal connected groups recursively
                 Boolean connected = IsDiagonallyConnectedGroups(board, g, findGroup, groups);
                 if (connected) return true;
             }
