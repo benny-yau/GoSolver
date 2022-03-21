@@ -226,8 +226,8 @@ namespace Go
             foreach (LinkedPoint<Point> diagonalPoint in diagonalPoints)
             {
                 Group g = board.GetGroupAt(diagonalPoint.Move);
-                if (findGroup == g && CheckIsDiagonalLinked(diagonalPoint.Move, (Point)diagonalPoint.CheckMove, board, false))
-                    return true;
+                if (findGroup == g)
+                    return CheckIsDiagonalLinked(diagonalPoint.Move, (Point)diagonalPoint.CheckMove, board, false);
 
                 //check for links with double linkage
                 if (!CheckIsDiagonalLinked(diagonalPoint.Move, (Point)diagonalPoint.CheckMove, board))

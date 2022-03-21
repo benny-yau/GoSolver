@@ -15,7 +15,6 @@ namespace Go
         public static Boolean DeadFormationInBothAlive(Board board, Group killerGroup, List<Point> contentPoints, List<Point> emptyPoints)
         {
             if (emptyPoints.Count != 2) return false;
-            int contentCount = contentPoints.Count;
             return PreDeadFormation(board, killerGroup, contentPoints, emptyPoints);
         }
 
@@ -712,6 +711,16 @@ namespace Go
             //ensure at least two atari targets
             if (tryBoard.AtariTargets.Count <= 1) return false;
             return true;
+        }
+
+        public static Boolean PossibleCornerThreeFormation(Board currentBoard, Point p, Content c)
+        {
+            Point corner = currentBoard.GetStoneNeighbours(p.x, p.y).FirstOrDefault(n => currentBoard.CornerPoint(n));
+            if (!Convert.ToBoolean(corner.NotEmpty)) return false;
+            if (currentBoard.GetStoneNeighbours(corner.x, corner.y).Any(n => currentBoard[n] != Content.Empty)) return false;
+            if (currentBoard.GetDiagonalNeighbours(p.x, p.y).Any(n => currentBoard.PointWithinMiddleArea(n.x, n.y) && EyeHelper.FindSemiSolidEyes(n, currentBoard, c).Item1))
+                return true;
+            return false;
         }
 
 

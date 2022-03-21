@@ -1777,6 +1777,7 @@ namespace Go
         /// Check two point atari move
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" />
         /// Check corner three formation <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_Q18860" />
+        /// Check possible corner three formation <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WuQingYuan_Q31503_2" />
         /// Check for strong neighbour groups <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario3dan22" />
         /// Find real eyes at both spaces <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_Nie4" />
@@ -1811,6 +1812,8 @@ namespace Go
                 if (TwoPointAtariMove(tryBoard, capturedBoard)) continue;
                 //check corner three formation
                 if (KillerFormationHelper.CornerThreeFormation(tryBoard, tryBoard.MoveGroup)) continue;
+                //check possible corner three formation
+                if (KillerFormationHelper.PossibleCornerThreeFormation(currentBoard, move, c.Opposite())) continue;
                 if (moveKillerGroup == null)
                 {
                     if (!isOpponent)
