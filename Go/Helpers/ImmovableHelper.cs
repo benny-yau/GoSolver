@@ -257,13 +257,18 @@ namespace Go
             if (tryBoard == null) return (false, null);
             Board board = tryBoard.MakeMoveOnNewBoard(p, c, excludeKo);
             if (board == null)
-                return (true, board);
+                return (true, null);
 
             if (board.MoveGroupLiberties == 1)
             {
                 //check ko
-                Boolean isKo = (KoHelper.IsKoFight(board) && KoHelper.KoContentEnabled(board.MoveGroup.Content, board.GameInfo));
-                if (!isKo) return (true, board);
+                if (KoHelper.IsKoFight(board))
+                {
+                    Boolean koEnabled = KoHelper.KoContentEnabled(board.MoveGroup.Content, board.GameInfo);
+                    if (!koEnabled) return (true, null);
+                    else return (false, board);
+                }
+                return (true, board);
             }
             return (false, board);
         }
@@ -447,7 +452,7 @@ namespace Go
                 (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board);
                 if (b == null) continue;
                 //check if captured
-                if (b.CapturedPoints.Contains(targetGroup.Points.First()))
+                if (b.CapturedPoints.Contains(targetGroup.Points.First())) //!(isSuicidal && KoHelper.IsKoFight(b)) && 
                     return (true, b);
 
                 if (isSuicidal)

@@ -880,6 +880,7 @@ namespace Go
         /// Liberty more than two required to prevent snapback <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680" />
         /// Diagonal neighbours that are non killable groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17160" />
         /// Opponent suicide <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3kyu28_2" />
+        /// Check corner point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30370" />
         /// </summary>
         private static Boolean RedundantSuicideNearNonKillableGroup(GameTryMove tryMove, Board capturedBoard, GameTryMove opponentTryMove = null)
         {
@@ -899,12 +900,14 @@ namespace Go
 
             if (GameHelper.GetContentForSurviveOrKill(tryBoard.GameInfo, SurviveOrKill.Survive) == c)
             {
+                //check corner point
+                if (capturedBoard.CornerPoint(capturedBoard.Move.Value)) return false;
                 //for survive, any suicidal move next to non killable group is redundant
                 List<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(p);
                 if (neighbourGroups.Any(group => WallHelper.IsNonKillableGroup(tryBoard, group)))
                 {
                     //check connect and die
-                    Boolean connectAndDie = (ImmovableHelper.AllConnectAndDie(capturedBoard, p));
+                    Boolean connectAndDie = ImmovableHelper.AllConnectAndDie(capturedBoard, p);
                     return !connectAndDie;
                 }
                 return false;
@@ -1424,6 +1427,7 @@ namespace Go
         #region restore neutral points
         /// <summary>
         /// Neutral points for kill moves have to be restored on end game one at a time to surround external liberties of target group in order to kill it
+        /// Two pre-atari moves <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A55" />
         /// No try moves left <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Side_A20" />
         /// Remaining move at liberty point <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
         /// </summary>
@@ -1443,6 +1447,13 @@ namespace Go
             }
             else
             {
+                //check pre-atari moves
+                List<GameTryMove> preAtariMoves = neutralPointMoves.Where(move => ImmovableHelper.PreAtariMove(move.TryGame.Board)).ToList();
+                foreach (GameTryMove tryMove in preAtariMoves)
+                {
+                    tryMoves.Add(tryMove);
+                    neutralPointMoves.Remove(tryMove);
+                }
                 //generic neutral point
                 genericNeutralMove = GetGenericNeutralMove(currentGame, tryMoves, neutralPointMoves);
                 if (genericNeutralMove != null)
@@ -1526,7 +1537,6 @@ namespace Go
         /// <summary>
         /// Get specific neutral move to target survival groups with limited liberties.
         /// Two specific moves <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B51" />
-        /// Pre-atari move <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16594" />
         /// Check snapback <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_ScenarioHighLevel18" />
         /// </summary>
         public static GameTryMove GetSpecificNeutralMove(Game g, List<GameTryMove> neutralPointMoves)
@@ -1539,11 +1549,6 @@ namespace Go
             else
                 gameTryMove = SpecificKillWithLibertyFight(g.Board, neutralPointMoves, killerGroups);
 
-            if (gameTryMove != null)
-                return gameTryMove;
-
-            //check pre-atari move
-            gameTryMove = neutralPointMoves.FirstOrDefault(move => ImmovableHelper.PreAtariMove(move.TryGame.Board));
             return gameTryMove;
 
         }
@@ -2106,6 +2111,8 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_B3_2" />
         /// Ensure not link for groups <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q5971" />
         /// Get stone neighbours only for killer group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q15017" />
+        /// Eye created by try move <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q6150_2" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q29378" />
         /// Check any opponent stone at neighbour points <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q16827" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q16827_2" />
         /// </summary>
@@ -2128,6 +2135,11 @@ namespace Go
             //get stone neighbours only for killer group
             List<Point> stoneNeighbours = tryBoard.GetStoneNeighbours();
             List<Point> emptyNeighbours = stoneNeighbours.Where(p => tryBoard[p] == Content.Empty).ToList();
+
+            //eye created by try move
+            if (!isKillerGroup && emptyNeighbours.Any(n => EyeHelper.FindSemiSolidEyes(n, tryBoard, c).Item1))
+                return false;
+
             Content cc = (isKillerGroup ? c.Opposite() : c);
             //count eyes created at move
             int possibleEyes = PossibleEyesCreated(currentBoard, move, cc);
@@ -2153,8 +2165,7 @@ namespace Go
 
         /// <summary>
         /// Check opponent stone at filler move. 
-        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q29378" />
-        /// <see cref="UnitTestProject.RedundantEyeFillerTest.BaseLineKillerMoveTest_Scenario_TianLongTu_Q16520" />
+        /// <see cref="UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_TianLongTu_Q16520" />
         /// Check for opponent stone at try move <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q16827_2" />
         /// </summary>
         private static Boolean CheckOpponentStoneAtFillerMove(GameTryMove tryMove, Point p)
@@ -2163,7 +2174,7 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Content c = tryMove.MoveContent;
             List<Point> stoneNeighbours = currentBoard.GetStoneNeighbours(p.x, p.y).Where(n => currentBoard[n] == c.Opposite()).ToList();
-            if (stoneNeighbours.Any())
+            if (stoneNeighbours.Count > 1 || stoneNeighbours.Any(n => currentBoard.GetGroupAt(n).Points.Count > 1))
                 return true;
 
             //check for opponent stone at try move
