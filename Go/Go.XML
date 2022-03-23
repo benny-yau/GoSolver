@@ -646,7 +646,7 @@
             Check for corner five and corner six <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_2" />
             </summary>
         </member>
-        <member name="M:Go.KillerFormationHelper.CheckCoveredEyeAtSuicideGroup(Go.Board)">
+        <member name="M:Go.KillerFormationHelper.CheckCoveredEyeAtSuicideGroup(Go.Board,Go.Group)">
             <summary>
             Check for covered eye with one or more liberties for suicide group.
             </summary>
@@ -761,7 +761,7 @@
             Is linked by stone only, ignoring whether empty points are immovable.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.CheckIsDiagonalLinked(Go.Point,Go.Point,Go.Board,System.Boolean)">
+        <member name="M:Go.LinkHelper.CheckIsDiagonalLinked(Go.Point,Go.Point,Go.Board)">
             <summary>
             Check if diagonals are linked either by same content or immovable.
             Both diagonals empty <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_4" />
@@ -769,9 +769,11 @@
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q17078" />
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.CheckDoubleLinkage(Go.Board,System.Collections.Generic.List{Go.Point},Go.Content)">
+        <member name="M:Go.LinkHelper.CheckDoubleLinkage(Go.Board,Go.LinkedPoint{Go.Point},System.Collections.Generic.IEnumerable{Go.Group})">
             <summary>
-            Check for double linkage <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_3" />
+            Check for double linkage.
+            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_2" />
+            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_3" />
             </summary>
         </member>
         <member name="M:Go.LinkHelper.ImmovableAtLinkDiagonal(Go.Board,Go.Content,Go.Point)">
@@ -796,7 +798,7 @@
             Get linked diagonals of group.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.IsDiagonallyConnectedGroups(Go.Board,Go.Group,Go.Group,System.Collections.Generic.HashSet{Go.Group})">
+        <member name="M:Go.LinkHelper.IsDiagonallyConnectedGroups(System.Collections.Generic.HashSet{Go.Group},System.Collections.Generic.HashSet{Go.Group},Go.Board,Go.Group,Go.Group)">
             <summary>
             Find if two groups are connected diagonally.
             </summary>
@@ -922,7 +924,8 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_2" />
             Check snapback in neighbour groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234_2" />
             Check for one-by-three kill <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18796_2" />
-            Check for covered eye group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A17" />
+            Check for covered eye group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q6150" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A17" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30403_2" />
             </summary>
         </member>
@@ -1642,10 +1645,14 @@
             Double tiger mouth <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_B3" />
             </summary>
         </member>
-        <member name="M:Go.LifeCheck.TigerMouthExceptions(Go.Board,Go.Content,Go.Point,Go.Point)">
+        <member name="M:Go.LifeCheck.TigerMouthExceptions(Go.Board,Go.Content,Go.LinkedPoint{Go.Point},Go.Point)">
             <summary>
             Atari, resolve atari, and captured at tiger mouth liberty move.
-            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150_2" />
+            Possible corner three formation
+            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A139_2" />
+            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31503" />
+            Suicidal at tiger mouth  <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31177" />
+            Check for atari that is not tiger mouth  <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150_2" />
             </summary>
         </member>
         <member name="M:Go.LifeCheck.CheckLibertyPointOfTigerMouths(Go.Board,Go.Content,Go.Point,Go.Point)">

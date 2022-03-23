@@ -60,7 +60,7 @@ namespace Go
             {
                 Group group = possibleEyes[i];
                 //ensure group is connected to target
-                if (!board.GetNeighbourGroups(group).Intersect(groups).Any())
+                if (board.GetNeighbourGroups(group).Except(groups).Any())
                     continue;
 
                 if (group.Points.Count > 1)
@@ -157,7 +157,7 @@ namespace Go
                 else libertyPoints.Add(libertyPoint.Value);
 
                 //check for other exceptions
-                if (TigerMouthExceptions(board, c, tigerMouth.Move, libertyPoint.Value))
+                if (TigerMouthExceptions(board, c, tigerMouth, libertyPoint.Value))
                 {
                     eyeGroups.RemoveAll(group => group.Points.Contains((Point)tigerMouth.CheckMove));
                     if (eyeGroups.Count < 2) return;
@@ -167,18 +167,26 @@ namespace Go
 
         /// <summary>
         /// Atari, resolve atari, and captured at tiger mouth liberty move.
-        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150_2" />
+        /// Possible corner three formation
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A139_2" />
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31503" />
+        /// Suicidal at tiger mouth  <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31177" />
+        /// Check for atari that is not tiger mouth  <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150_2" />
         /// </summary>
-        public static Boolean TigerMouthExceptions(Board board, Content c, Point tigerMouth, Point libertyPoint)
+        public static Boolean TigerMouthExceptions(Board board, Content c, LinkedPoint<Point> tigerMouth, Point libertyPoint)
         {
-            Point p = tigerMouth;
-            Point q = libertyPoint;
-            if (board[p] != Content.Empty || board[q] != Content.Empty) return false;
+            if (board[tigerMouth.Move] != Content.Empty || board[libertyPoint] != Content.Empty) return false;
+            //possible corner three formation
+            if (KillerFormationHelper.PossibleCornerThreeFormation(board, tigerMouth.Move, c))
+                return true;
+            //suicidal at tiger mouth
+            if (board.GetGroupsFromStoneNeighbours(tigerMouth.Move, c.Opposite()).All(n => n.Liberties.Count <= 2) && ImmovableHelper.IsSuicidalMove(board, tigerMouth.Move, c))
+                return true;
 
-            (Boolean suicidal, Board b1) = ImmovableHelper.IsSuicidalMove(q, c.Opposite(), board, true);
+            (Boolean suicidal, Board b1) = ImmovableHelper.IsSuicidalMove(libertyPoint, c.Opposite(), board, true);
             if (suicidal) return false;
             //check for atari that is not tiger mouth  
-            if (b1.AtariTargets.Where(t => !b1.GetGroupsFromStoneNeighbours(tigerMouth, c.Opposite()).Contains(t)).Count() > 0)
+            if (b1.AtariTargets.Where(t => !b1.GetGroupsFromStoneNeighbours(tigerMouth.Move, c.Opposite()).Contains(t)).Count() > 0)
                 return true;
             //check for captured list
             if (b1.CapturedList.Count > 0)
@@ -188,11 +196,11 @@ namespace Go
             if (b1.AtariResolved) return true;
 
             //check liberty point
-            if (CheckLibertyPointOfTigerMouths(board, c, tigerMouth, libertyPoint))
+            if (CheckLibertyPointOfTigerMouths(board, c, tigerMouth.Move, libertyPoint))
                 return true;
 
             //check if another tiger mouth present at diagonal neighbours
-            return DoubleTigerMouthLink(board, c, tigerMouth, libertyPoint);
+            return DoubleTigerMouthLink(board, c, tigerMouth.Move, libertyPoint);
         }
 
         /// <summary>

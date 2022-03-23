@@ -141,12 +141,13 @@ namespace Go
         /// <summary>
         /// Check for covered eye with one or more liberties for suicide group.
         /// </summary>
-        public static Boolean CheckCoveredEyeAtSuicideGroup(Board tryBoard)
+        public static Boolean CheckCoveredEyeAtSuicideGroup(Board tryBoard, Group group = null)
         {
+            if (group == null) group = tryBoard.MoveGroup;
             Point move = tryBoard.Move.Value;
-            Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.MoveGroup.Points.Count != 2) return false;
-            if (tryBoard.MoveGroup.Points.Any(p => tryBoard.GetDiagonalNeighbours(p.x, p.y).Count(q => tryBoard[q] == c && LinkHelper.PointsBetweenDiagonals(p, q).All(r => tryBoard[r] == c.Opposite())) == (tryBoard.PointWithinMiddleArea(p.x, p.y) ? 2 : 1)))
+            Content c = group.Content;
+            if (group.Points.Count != 2) return false;
+            if (group.Points.Any(p => tryBoard.GetDiagonalNeighbours(p.x, p.y).Count(q => tryBoard[q] == c && LinkHelper.PointsBetweenDiagonals(p, q).All(r => tryBoard[r] == c.Opposite())) == (tryBoard.PointWithinMiddleArea(p.x, p.y) ? 2 : 1)))
                 return true;
             return false;
         }
