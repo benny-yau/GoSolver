@@ -83,13 +83,13 @@ namespace Go
                     if (ImmovableHelper.IsSuicidalMove(q, c, b).Item1)
                         return false;
                     //check if immovable already
-                    if (ImmovableAtLinkDiagonal(b, c, q))
+                    if (ImmovableHelper.IsImmovablePoint(q, c, b).Item1)
                         return true;
                 }
                 return true;
             }
             //check if immovable for any diagonal separated by opposite content
-            if (diagonals.Any(diagonal => ImmovableAtLinkDiagonal(board, c, diagonal)))
+            if (diagonals.Any(diagonal => ImmovableHelper.IsImmovablePoint(diagonal, c, board).Item1))
                 return true;
             return false;
         }
@@ -98,6 +98,8 @@ namespace Go
         /// Check for double linkage.
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_2" />
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_3" />
+        /// Check for double tiger mouth exception <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571" />
+        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150" />
         /// </summary>
         private static Boolean CheckDoubleLinkage(Board board, LinkedPoint<Point> diagonalLink, IEnumerable<Group> groups)
         {
@@ -105,8 +107,13 @@ namespace Go
             if (threeGroups.Count != 3) return true;
             Content c = threeGroups.First().Content;
             List<Point> diagonals = LinkHelper.PointsBetweenDiagonals(diagonalLink.Move, (Point)diagonalLink.CheckMove);
+
             foreach (Point p in diagonals)
             {
+                //check for double tiger mouth exception
+                (Boolean immovable, Point? isTigerMouth) = ImmovableHelper.IsImmovablePoint(p, c, board);
+                if (isTigerMouth != null && LifeCheck.DoubleTigerMouthLink(board, c, p, isTigerMouth.Value)) return false;
+
                 //ensure three opponent groups
                 List<Point> opponentStones = board.GetStoneNeighbours(p.x, p.y).Where(n => board[n] == c).ToList();
                 HashSet<Group> neighbourGroups = board.GetGroupsFromPoints(opponentStones);
@@ -118,27 +125,11 @@ namespace Go
 
                 //check if any of the other two diagonals are immovable
                 List<Point> otherDiagonals = board.GetDiagonalNeighbours(p.x, p.y).Where(n => board.GetStoneNeighbours(n.x, n.y).Intersect(opponentStones).Count() >= 2).ToList();
-                if (otherDiagonals.All(d => !ImmovableAtLinkDiagonal(b, c, d)))
+                if (otherDiagonals.All(d => !ImmovableHelper.IsImmovablePoint(d, c, b).Item1))
                     return false;
             }
             return true;
         }
-
-        /// <summary>
-        /// Immovable at link diagonal.
-        /// Check for double tiger mouth <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571" />
-        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150" />
-        /// </summary>
-        private static Boolean ImmovableAtLinkDiagonal(Board board, Content c, Point diagonal)
-        {
-            (Boolean immovable, Point? isTigerMouth) = ImmovableHelper.IsImmovablePoint(diagonal, c, board);
-            if (!immovable) return false;
-            if (isTigerMouth == null) return true;
-            //check for double tiger mouth
-            if (!LifeCheck.DoubleTigerMouthLink(board, c, diagonal, isTigerMouth.Value)) return true;
-            return false;
-        }
-
 
         /// <summary>
         /// Get all diagonal connected groups. Ensure connected parameter to check if is immovable for opponent at any of the two points between the diagonals.

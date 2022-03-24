@@ -774,12 +774,7 @@
             Check for double linkage.
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_2" />
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_3" />
-            </summary>
-        </member>
-        <member name="M:Go.LinkHelper.ImmovableAtLinkDiagonal(Go.Board,Go.Content,Go.Point)">
-            <summary>
-            Immovable at link diagonal.
-            Check for double tiger mouth <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571" />
+            Check for double tiger mouth exception <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571" />
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150" />
             </summary>
         </member>
