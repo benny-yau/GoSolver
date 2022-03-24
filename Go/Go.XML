@@ -1656,10 +1656,11 @@
             to ensure not liberty point of another tiger mouth.
             </summary>
         </member>
-        <member name="M:Go.LifeCheck.DoubleTigerMouthLink(Go.Board,Go.Content,Go.Point,Go.Point)">
+        <member name="M:Go.LifeCheck.DoubleTigerMouthLink(Go.Board,Go.Content,Go.Point,Go.Point,System.Collections.Generic.List{Go.Group})">
             <summary>
             Double tiger mouth one of which is link for groups.
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571" />
+            Check for three groups <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571" />
             </summary>
         </member>
         <member name="M:Go.LifeCheck.GetTigerMouthsInTwoPointGroup(Go.Board,Go.Group,System.Collections.Generic.List{Go.LinkedPoint{Go.Point}})">

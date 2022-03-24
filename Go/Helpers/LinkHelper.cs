@@ -112,7 +112,15 @@ namespace Go
             {
                 //check for double tiger mouth exception
                 (Boolean immovable, Point? isTigerMouth) = ImmovableHelper.IsImmovablePoint(p, c, board);
-                if (isTigerMouth != null && LifeCheck.DoubleTigerMouthLink(board, c, p, isTigerMouth.Value)) return false;
+                if (isTigerMouth != null)
+                {
+                    HashSet<Group> tigerMouthGroups = board.GetGroupsFromStoneNeighbours(p, c.Opposite());
+                    if (tigerMouthGroups.Any(g => g.Points.Count == 1) && tigerMouthGroups.Intersect(threeGroups).Count() == 2)
+                    {
+                        if (LifeCheck.DoubleTigerMouthLink(board, c, p, isTigerMouth.Value, threeGroups))
+                            return false;
+                    }
+                }
 
                 //ensure three opponent groups
                 List<Point> opponentStones = board.GetStoneNeighbours(p.x, p.y).Where(n => board[n] == c).ToList();

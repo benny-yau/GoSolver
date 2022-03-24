@@ -223,17 +223,16 @@ namespace Go
         /// <summary>
         /// Double tiger mouth one of which is link for groups.
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571" />
+        /// Check for three groups <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571" />
         /// </summary>
-        public static Boolean DoubleTigerMouthLink(Board board, Content c, Point tigerMouth, Point libertyPoint)
+        public static Boolean DoubleTigerMouthLink(Board board, Content c, Point tigerMouth, Point libertyPoint, List<Group> threeGroups = null)
         {
-            Point p = tigerMouth;
-            Point q = libertyPoint;
-            if (board[p] != Content.Empty || board[q] != Content.Empty) return false;
+            if (board[tigerMouth] != Content.Empty || board[libertyPoint] != Content.Empty) return false;
             //make killer move at liberty
-            Board b1 = board.MakeMoveOnNewBoard(q, c.Opposite(), true);
+            Board b1 = board.MakeMoveOnNewBoard(libertyPoint, c.Opposite(), true);
             if (b1 == null || b1.MoveGroupLiberties <= 3) return false;
             //get all stone neigbours of liberty
-            List<Point> diagonals = board.GetStoneNeighbours(q.x, q.y);
+            List<Point> diagonals = board.GetStoneNeighbours(libertyPoint.x, libertyPoint.y);
             diagonals.Remove(tigerMouth);
             diagonals = diagonals.Where(d => board[d] == Content.Empty && ImmovableHelper.FindTigerMouth(board, c, d)).ToList();
             foreach (Point diagonal in diagonals)
@@ -245,7 +244,12 @@ namespace Go
                 //ensure link for groups
                 Board b2 = b1.MakeMoveOnNewBoard(diagonal, c);
                 if (b2 != null && LinkHelper.LinkForGroups(b2, b1))
+                {
+                    //check for three groups
+                    if (threeGroups != null && board.GetGroupsFromStoneNeighbours(diagonal, c.Opposite()).Intersect(threeGroups).Count() != 2)
+                        continue;
                     return true;
+                }
             }
             return false;
         }
