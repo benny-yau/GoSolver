@@ -32,9 +32,14 @@ namespace Go
         /// <summary>
         /// Is Ko fight, including both pre-ko and ko.
         /// </summary>
-        public static Boolean IsKoFight(Board board)
+        public static Boolean IsKoFight(Board board, Group group = null)
         {
-            return (board.GetStoneNeighbours().Any(n => EyeHelper.FindEye(board, n, board[board.Move.Value])) && board.IsSinglePoint() && board.MoveGroupLiberties == 1);
+            if (group == null) group = board.MoveGroup;
+            if (group.Points.Count != 1) return false;
+            Content c = group.Content;
+            Point move = group.Points.First();
+            Point eyePoint = board.GetStoneNeighbours(move.x, move.y).FirstOrDefault(n => EyeHelper.FindEye(board, n, c));
+            return (Convert.ToBoolean(eyePoint.NotEmpty) && group.Points.Count == 1 && group.Liberties.Count == 1 && !board.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()).Any(g => g != group && g.Liberties.Count == 1));
         }
 
         public static Boolean IsReverseKoFight(Board board)

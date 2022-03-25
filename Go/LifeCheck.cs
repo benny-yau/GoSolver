@@ -186,12 +186,8 @@ namespace Go
             (Boolean suicidal, Board b1) = ImmovableHelper.IsSuicidalMove(libertyPoint, c.Opposite(), board, true);
             if (suicidal) return false;
             //check for atari that is not tiger mouth  
-            if (b1.AtariTargets.Where(t => !b1.GetGroupsFromStoneNeighbours(tigerMouth.Move, c.Opposite()).Contains(t)).Count() > 0)
+            if (b1.AtariTargets.Count() > 0 || b1.CapturedList.Count > 0)
                 return true;
-            //check for captured list
-            if (b1.CapturedList.Count > 0)
-                return true;
-            //check for resolve atari
             Board.ResolveAtari(board, b1);
             if (b1.AtariResolved) return true;
 
@@ -317,7 +313,7 @@ namespace Go
         /// Double atari by opponent breaks eye.
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60" />
         /// </summary>
-        private static Boolean DoubleAtariCapture(Board board)
+        public static Boolean DoubleAtariCapture(Board board)
         {
             //more than one atari target
             if (board.AtariTargets.Count <= 1) return false;

@@ -490,9 +490,11 @@
             Check for ko possibility <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q30986" />
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.CheckForKoInImmovablePoint(Go.Board,Go.Point,Go.Content)">
+        <member name="M:Go.ImmovableHelper.CheckForKoInImmovablePoint(Go.Board,Go.Group,Go.Point)">
             <summary>
-            Check for ko possibility <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q30986" />
+            Check for ko in immovable point.
+            check for ko by capture neighbour groups <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q30986" />
+            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16446" />
             Check for reverse ko fight <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q29998" />
             </summary>
         </member>
@@ -738,7 +740,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Go.KoHelper.IsKoFight(Go.Board)">
+        <member name="M:Go.KoHelper.IsKoFight(Go.Board,Go.Group)">
             <summary>
             Is Ko fight, including both pre-ko and ko.
             </summary>
@@ -776,6 +778,13 @@
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_3" />
             Check for double tiger mouth exception <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571" />
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150" />
+            </summary>
+        </member>
+        <member name="M:Go.LinkHelper.CheckDoubleAtariForLinks(Go.Board,System.Collections.Generic.HashSet{Go.Group},Go.Group,Go.LinkedPoint{Go.Point})">
+            <summary>
+            Check double atari for links.
+            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_7" />
+            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_Nie60" />
             </summary>
         </member>
         <member name="M:Go.LinkHelper.GetAllDiagonalConnectedGroups(Go.Board,Go.Group,System.Collections.Generic.HashSet{Go.Group})">

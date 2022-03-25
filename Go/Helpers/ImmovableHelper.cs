@@ -87,7 +87,7 @@ namespace Go
                     return (false, null);
                 Point q = libertyPoint.Value;
                 //check for ko possibility
-                if (targetGroup.Points.Count == 1 && CheckForKoInImmovablePoint(board, q, c))
+                if (CheckForKoInImmovablePoint(board, targetGroup, q))
                     return (false, null);
 
                 //ensure no snapback
@@ -101,17 +101,25 @@ namespace Go
 
 
         /// <summary>
-        /// Check for ko possibility <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q30986" />
+        /// Check for ko in immovable point.
+        /// check for ko by capture neighbour groups <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q30986" />
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16446" />
         /// Check for reverse ko fight <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q29998" />
         /// </summary>
-        private static Boolean CheckForKoInImmovablePoint(Board board, Point q, Content c)
+        private static Boolean CheckForKoInImmovablePoint(Board board, Group targetGroup, Point q)
         {
+            if (targetGroup.Points.Count != 1) return false;
+            Content c = targetGroup.Content.Opposite();
+            //check for ko by capture neighbour groups
             if (EyeHelper.FindEye(board, q, c.Opposite()))
             {
                 List<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(q, c).ToList();
                 if (neighbourGroups.Any(n => AtariHelper.AtariByGroup(board, n)))
                     return true;
             }
+            if (KoHelper.KoContentEnabled(c.Opposite(), board.GameInfo) && KoHelper.IsKoFight(board, targetGroup))
+                return true;
+
             //check for reverse ko fight 
             List<Point> stoneNeighbours = board.GetStoneNeighbours(q.x, q.y);
             if (stoneNeighbours.Any(n => board[n] == c)) return false;
@@ -452,7 +460,7 @@ namespace Go
                 (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board);
                 if (b == null) continue;
                 //check if captured
-                if (b.CapturedPoints.Contains(targetGroup.Points.First())) //!(isSuicidal && KoHelper.IsKoFight(b)) && 
+                if (b.CapturedPoints.Contains(targetGroup.Points.First()))
                     return (true, b);
 
                 if (isSuicidal)

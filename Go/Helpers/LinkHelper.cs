@@ -140,6 +140,37 @@ namespace Go
         }
 
         /// <summary>
+        /// Check double atari for links.
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_7" />
+        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_Nie60" />
+        /// </summary>
+        private static Boolean CheckDoubleAtariForLinks(Board board, HashSet<Group> groups, Group group, LinkedPoint<Point> diagonalPoint)
+        {
+            Content c = group.Content;
+            List<Point> diagonals = LinkHelper.PointsBetweenDiagonals(diagonalPoint.Move, (Point)diagonalPoint.CheckMove);
+            diagonals.RemoveAll(diagonal => board[diagonal] != Content.Empty);
+            if (diagonals.Count != 1) return false;
+            Point d = diagonals.First();
+            List<Group> tigerMouthGroups = board.GetGroupsFromStoneNeighbours(d, c.Opposite()).Where(n => n.Liberties.Count == 2).ToList();
+            foreach (Group tigerMouthGroup in tigerMouthGroups)
+            {
+                foreach (Point p in board.GetGroupLibertyPoints(tigerMouthGroup))
+                {
+                    (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board);
+                    if (suicidal || b.AtariTargets.Count < 2) continue;
+                    (Boolean unEscapable, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(b, b.GetGroupAt(tigerMouthGroup.Points.First()));
+                    if (escapeBoard == null) return true;
+                    foreach (Group targetGroup in AtariHelper.AtariByGroup(escapeBoard.GetGroupAt(p), escapeBoard))
+                    {
+                        if (groups.Any(g => g.Points.Contains(targetGroup.Points.First())))
+                            return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Get all diagonal connected groups. Ensure connected parameter to check if is immovable for opponent at any of the two points between the diagonals.
         /// </summary>
         public static void GetAllDiagonalConnectedGroups(Board board, Group group, HashSet<Group> groups)
@@ -226,6 +257,10 @@ namespace Go
 
                 //check for links with double linkage
                 if (!CheckDoubleLinkage(board, diagonalPoint, groups.Union(new HashSet<Group> { g })))
+                    continue;
+
+                //check double atari for links
+                if (CheckDoubleAtariForLinks(board, groups, g, diagonalPoint))
                     continue;
 
                 allConnectedGroups.Add(g);
