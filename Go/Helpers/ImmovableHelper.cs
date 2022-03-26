@@ -58,7 +58,6 @@ namespace Go
         /// Immovable point to check for links and diagonal points in semi solid eye. For empty point, return if point is immovable which can be a suicide point or tiger's mouth. If not empty point, then check if opponent can escape. Return if immovable and liberty point at tiger mouth.
         /// Empty point <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_GuanZiPu_A3" />
         /// Check connect and die <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A28" />
-        /// Ensure no snapback <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WuQingYuan_Q31680" />
         /// Check for ko possibility <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q30986" />
         /// </summary>
         public static (Boolean, Point?) IsImmovablePoint(Point p, Content c, Board board)
@@ -89,11 +88,6 @@ namespace Go
                 //check for ko possibility
                 if (CheckForKoInImmovablePoint(board, targetGroup, q))
                     return (false, null);
-
-                //ensure no snapback
-                if (AllConnectAndDie(board, p, c))
-                    return (false, null);
-
                 return (true, q);
             }
             return (false, null);
@@ -110,15 +104,23 @@ namespace Go
         {
             if (targetGroup.Points.Count != 1) return false;
             Content c = targetGroup.Content.Opposite();
+            if (!KoHelper.KoContentEnabled(c.Opposite(), board.GameInfo)) return false;
             //check for ko by capture neighbour groups
             if (EyeHelper.FindEye(board, q, c.Opposite()))
             {
                 List<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(q, c).ToList();
-                if (neighbourGroups.Any(n => AtariHelper.AtariByGroup(board, n)))
+                if (neighbourGroups.All(n => n.Liberties.Count == 1))
+                {
+                    foreach (Group group in neighbourGroups)
+                    {
+                        (Boolean unEscapable, _, Board b) = ImmovableHelper.UnescapableGroup(board, group);
+                        if (!unEscapable && KoHelper.IsKoFight(b, b.GetGroupAt(targetGroup.Points.First())))
+                            return true;
+                    }
+                }
+                if (KoHelper.IsKoFight(board, targetGroup))
                     return true;
             }
-            if (KoHelper.KoContentEnabled(c.Opposite(), board.GameInfo) && KoHelper.IsKoFight(board, targetGroup))
-                return true;
 
             //check for reverse ko fight 
             List<Point> stoneNeighbours = board.GetStoneNeighbours(q.x, q.y);

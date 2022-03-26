@@ -42,16 +42,29 @@ namespace Go
             return (Convert.ToBoolean(eyePoint.NotEmpty) && group.Points.Count == 1 && group.Liberties.Count == 1 && !board.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()).Any(g => g != group && g.Liberties.Count == 1));
         }
 
+        /// <summary>
+        /// Reverse ko fight.
+        /// </summary>
         public static Boolean IsReverseKoFight(Board board)
         {
-            List<Point> eyePoints = board.GetStoneNeighbours().Where(n => EyeHelper.FindEye(board, n, board[board.Move.Value])).ToList();
+            Content c = board.MoveGroup.Content;
+            List<Point> eyePoints = board.GetStoneNeighbours().Where(n => EyeHelper.FindEye(board, n, c)).ToList();
             foreach (Point eyePoint in eyePoints)
-                if (board.GetStoneNeighbours(eyePoint.x, eyePoint.y).Any(n => board.GetGroupAt(n).Liberties.Count == 1)) return true;
+            {
+                List<Group> eyeGroups = board.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()).ToList();
+                if (board.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()).Any(n => n != board.MoveGroup && n.Points.Count == 1 && n.Liberties.Count == 1))
+                {
+                    if (eyeGroups.Count(g => g.Liberties.Count == 1) != 1) continue;
+                    if (ImmovableHelper.CheckConnectAndDie(board)) continue;
+                    return true;
+                }
+            }
             return false;
         }
 
 
         /// <summary>
+        /// Check if ko fight for try move.
         /// <see cref="UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario_TianLongTu_Q17160" />
         /// </summary>
         public static Boolean CheckIsKoFight(GameTryMove tryMove)

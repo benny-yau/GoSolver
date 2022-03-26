@@ -486,7 +486,6 @@
             Immovable point to check for links and diagonal points in semi solid eye. For empty point, return if point is immovable which can be a suicide point or tiger's mouth. If not empty point, then check if opponent can escape. Return if immovable and liberty point at tiger mouth.
             Empty point <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_GuanZiPu_A3" />
             Check connect and die <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A28" />
-            Ensure no snapback <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WuQingYuan_Q31680" />
             Check for ko possibility <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q30986" />
             </summary>
         </member>
@@ -745,8 +744,14 @@
             Is Ko fight, including both pre-ko and ko.
             </summary>
         </member>
+        <member name="M:Go.KoHelper.IsReverseKoFight(Go.Board)">
+            <summary>
+            Reverse ko fight.
+            </summary>
+        </member>
         <member name="M:Go.KoHelper.CheckIsKoFight(Go.GameTryMove)">
             <summary>
+            Check if ko fight for try move.
             <see cref="!:UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario_TianLongTu_Q17160" />
             </summary>
         </member>
