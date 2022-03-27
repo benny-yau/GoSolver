@@ -1400,7 +1400,7 @@
             Kill double ko <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A23" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.CheckRedundantKo(Go.GameTryMove,System.Boolean)">
+        <member name="M:Go.RedundantMoveHelper.CheckRedundantKo(Go.GameTryMove)">
             <summary>
             Check if redundant ko from point of view of survival. Check ko move not required to create eyes at the two diagonals of ko eye opposite of ko move direction.
             ko fight necessary (avoid use of atari resolved) <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario2kyu18" /> 

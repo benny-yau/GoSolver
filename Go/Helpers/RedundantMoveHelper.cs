@@ -1259,6 +1259,7 @@ namespace Go
         {
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
+            Content c = tryMove.MoveContent;
             if (!tryBoard.IsSinglePoint()) return true;
             if (!KoHelper.KoSurvivalEnabled(SurviveOrKill.Survive, tryBoard.GameInfo))
                 return true;
@@ -1271,15 +1272,16 @@ namespace Go
             if (p1.Equals(Game.PassMove) || p2.Equals(Game.PassMove))
                 return true;
 
-            Content c = tryMove.MoveContent;
             if (tryBoard[p1] == Content.Empty && tryBoard[p2] == Content.Empty)
             {
-                Board b = new Board(tryBoard);
-                b[p2] = c;
-                List<Point> diagonals = b.GetDiagonalNeighbours(p1.x, p1.y);
-                diagonals = diagonals.Where(diagonal => BothAliveHelper.GetKillerGroupFromCache(tryBoard, diagonal) != null).ToList();
-                if (diagonals.Any(diagonal => b[diagonal] == Content.Empty && ImmovableHelper.FindTigerMouth(b, c, diagonal)))
-                    return RedundantMoveHelper.CheckRedundantKo(tryMove, true);
+                Board b = tryBoard.MakeMoveOnNewBoard(p2, c, true);
+                if (b.GetGroupsFromStoneNeighbours(p1, c.Opposite()).All(group => group.Points.Count == 1))
+                {
+                    List<Point> diagonals = b.GetDiagonalNeighbours(p1.x, p1.y);
+                    diagonals = diagonals.Where(diagonal => BothAliveHelper.GetKillerGroupFromCache(tryBoard, diagonal) != null).ToList();
+                    if (diagonals.Any(diagonal => b[diagonal] == Content.Empty && ImmovableHelper.FindTigerMouth(b, c, diagonal)))
+                        return false;
+                }
             }
             return true;
         }
@@ -1451,8 +1453,11 @@ namespace Go
             {
                 //check pre-atari moves
                 List<GameTryMove> preAtariMoves = neutralPointMoves.Where(move => ImmovableHelper.PreAtariMove(move.TryGame.Board)).ToList();
-                foreach (GameTryMove tryMove in preAtariMoves)
+                for (int i = preAtariMoves.Count - 1; i >= 0; i--)
                 {
+                    GameTryMove tryMove = preAtariMoves[i];
+                    preAtariMoves.Remove(tryMove);
+                    if (CheckIfGroupAlreadyTargeted(tryMove, preAtariMoves)) continue;
                     tryMoves.Add(tryMove);
                     neutralPointMoves.Remove(tryMove);
                 }
@@ -2506,7 +2511,7 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q2413" /> 
         /// Real eye at diagonal <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi" /> 
         /// </summary>
-        public static Boolean CheckRedundantKo(GameTryMove tryMove, Boolean isNeutralMove = false)
+        public static Boolean CheckRedundantKo(GameTryMove tryMove)
         {
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
@@ -2530,18 +2535,6 @@ namespace Go
                 ngroups.RemoveAll(ngroup => ngroup.Points.Contains(move));
                 if (ngroups.Count == 1 && tryBoard.GetNeighbourGroups(ngroups.First()).Any(group => group.Liberties.Count <= 2 && !WallHelper.IsNonKillableGroup(tryBoard, group)))
                     return false;
-            }
-
-            //if is neutral move and eye is empty point then ensure killer group is all empty points
-            if (isNeutralMove)
-            {
-                Point eye = diagonals.FirstOrDefault(d => tryBoard[d] == Content.Empty);
-                if (Convert.ToBoolean(eye.NotEmpty))
-                {
-                    Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, eye);
-                    if (killerGroup != null && !killerGroup.Points.All(q => tryBoard[q] == Content.Empty))
-                        return false;
-                }
             }
 
             //if all diagonals are real eyes then redundant
