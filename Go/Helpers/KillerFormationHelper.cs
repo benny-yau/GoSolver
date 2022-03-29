@@ -72,7 +72,7 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
 
             //check if neighbour group is non-killable
-            if (!CheckCoveredEyeAtSuicideGroup(tryBoard) && tryBoard.GetNeighbourGroups().Any(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
+            if (!EyeHelper.CheckCoveredEyeAtSuicideGroup(tryBoard) && tryBoard.GetNeighbourGroups().Any(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
                 return false;
 
             //find killer formation
@@ -103,7 +103,7 @@ namespace Go
         {
 
             //check for covered eye
-            if (CheckCoveredEyeAtSuicideGroup(tryBoard))
+            if (EyeHelper.CheckCoveredEyeAtSuicideGroup(tryBoard))
                 return false;
 
             //allow two-point group without real eye
@@ -139,20 +139,6 @@ namespace Go
         }
 
         /// <summary>
-        /// Check for covered eye with one or more liberties for suicide group.
-        /// </summary>
-        public static Boolean CheckCoveredEyeAtSuicideGroup(Board tryBoard, Group group = null)
-        {
-            if (group == null) group = tryBoard.MoveGroup;
-            Point move = tryBoard.Move.Value;
-            Content c = group.Content;
-            if (group.Points.Count != 2) return false;
-            if (group.Points.Any(p => tryBoard.GetDiagonalNeighbours(p.x, p.y).Count(q => tryBoard[q] == c && LinkHelper.PointsBetweenDiagonals(p, q).All(r => tryBoard[r] == c.Opposite())) == (tryBoard.PointWithinMiddleArea(p.x, p.y) ? 2 : 1)))
-                return true;
-            return false;
-        }
-
-        /// <summary>
         /// Two-point move with empty point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A48" />
         /// Covered eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16424_2" />
         /// Check for snapback <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234" />
@@ -182,7 +168,7 @@ namespace Go
             if (moveCount == 2)
             {
                 //covered eye
-                if (CheckCoveredEyeAtSuicideGroup(tryBoard))
+                if (EyeHelper.CheckCoveredEyeAtSuicideGroup(tryBoard))
                     return EyeHelper.SuicideAtCoveredEye(capturedBoard, tryBoard);
 
                 //two-point move with empty point

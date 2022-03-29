@@ -93,6 +93,30 @@ namespace Go
         }
 
         /// <summary>
+        /// Find covered eye within empty space after capture.
+        /// </summary>
+        public static Boolean FindCoveredEyeByCapture(Board capturedBoard, Group capturedGroup)
+        {
+            int capturedCount = capturedGroup.Points.Count;
+            return (capturedCount == 1 || capturedCount == 2) && EyeHelper.FindRealEyeWithinEmptySpace(capturedBoard, capturedGroup, EyeType.CoveredEye);
+        }
+
+
+        /// <summary>
+        /// Check for covered eye with one or more liberties for suicide group.
+        /// </summary>
+        public static Boolean CheckCoveredEyeAtSuicideGroup(Board tryBoard, Group group = null)
+        {
+            if (group == null) group = tryBoard.MoveGroup;
+            Point move = tryBoard.Move.Value;
+            Content c = group.Content;
+            if (group.Points.Count != 2) return false;
+            if (group.Points.Any(p => tryBoard.GetDiagonalNeighbours(p.x, p.y).Count(q => tryBoard[q] == c && LinkHelper.PointsBetweenDiagonals(p, q).All(r => tryBoard[r] == c.Opposite())) == (tryBoard.PointWithinMiddleArea(p.x, p.y) ? 2 : 1)))
+                return true;
+            return false;
+        }
+
+        /// <summary>
         /// Find eye that is not semi solid eye.
         /// </summary>
         public static Boolean FindNonSemiSolidEye(Board board, Point p, Content c)

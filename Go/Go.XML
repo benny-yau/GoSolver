@@ -382,6 +382,16 @@
             Find false eye which has one or more diagonal points covered by opposite content.
             </summary>
         </member>
+        <member name="M:Go.EyeHelper.FindCoveredEyeByCapture(Go.Board,Go.Group)">
+            <summary>
+            Find covered eye within empty space after capture.
+            </summary>
+        </member>
+        <member name="M:Go.EyeHelper.CheckCoveredEyeAtSuicideGroup(Go.Board,Go.Group)">
+            <summary>
+            Check for covered eye with one or more liberties for suicide group.
+            </summary>
+        </member>
         <member name="M:Go.EyeHelper.FindNonSemiSolidEye(Go.Board,Go.Point,Go.Content)">
             <summary>
             Find eye that is not semi solid eye.
@@ -645,11 +655,6 @@
             Check for covered eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_3" />
             Allow two-point group without real eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18472" />
             Check for corner five and corner six <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_2" />
-            </summary>
-        </member>
-        <member name="M:Go.KillerFormationHelper.CheckCoveredEyeAtSuicideGroup(Go.Board,Go.Group)">
-            <summary>
-            Check for covered eye with one or more liberties for suicide group.
             </summary>
         </member>
         <member name="M:Go.KillerFormationHelper.FindSuicidalKillerFormation(Go.Board,Go.Board,Go.Board)">
@@ -1229,6 +1234,17 @@
             Check for strong neighbour groups <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario3dan22" />
             Find real eyes at both spaces <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_Nie4" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.TigerMouthWithoutDiagonalMouth(Go.GameTryMove,Go.Board)">
+            <summary>
+            Redundant tiger mouth without diagonal mouth.
+            <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A26" />
+            Check for covered eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q30225" />
+            Check for three groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q1970" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935" />
+            Check for strong neighbour groups <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario3dan22" />
+            <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16605" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.TigerMouthEyePoints(Go.Board,Go.Point,Go.Point)">

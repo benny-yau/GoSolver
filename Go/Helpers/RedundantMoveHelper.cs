@@ -248,7 +248,7 @@ namespace Go
             if (b != null && b.MoveGroup.Points.Count == 2)
             {
                 Board b2 = ImmovableHelper.CaptureSuicideGroup(b);
-                if (b2 != null && EyeHelper.FindRealEyeWithinEmptySpace(b2, b.MoveGroup, EyeType.CoveredEye))
+                if (b2 != null && EyeHelper.FindCoveredEyeByCapture(b2, b.MoveGroup))
                     return false;
             }
 
@@ -504,7 +504,7 @@ namespace Go
             //check for covered eye group
             if (movePoints.Count == 1 || movePoints.Count == 2)
             {
-                if (KillerFormationHelper.CheckCoveredEyeAtSuicideGroup(captureBoard, tryBoard.MoveGroup)) return false;
+                if (EyeHelper.CheckCoveredEyeAtSuicideGroup(captureBoard, tryBoard.MoveGroup)) return false;
                 List<Point> diagonals = LinkHelper.GetGroupDiagonals(captureBoard, tryBoard.MoveGroup).Select(q => q.Move).Where(q => captureBoard[q] == Content.Empty).ToList();
                 if (diagonals.Count != 1) return true;
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(diagonals.First(), c, captureBoard);
@@ -836,12 +836,13 @@ namespace Go
         private static Boolean CheckNonTwoPointGroupInSuicideRealEye(GameTryMove tryMove)
         {
             Point move = tryMove.Move;
+            Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
             List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] != c.Opposite()).ToList();
             if (diagonals.Count == 0) return false;
             //check killer group
-            if (diagonals.Any(d => BothAliveHelper.GetKillerGroupFromCache(tryBoard, d, c.Opposite()) != null)) return true;
+            if (diagonals.Any(d => BothAliveHelper.GetKillerGroupFromCache(currentBoard, d, c.Opposite()) != null)) return true;
             //check eye for survival
             if (diagonals.Any(d => WallHelper.NoEyeForSurvival(tryBoard, d) && !WallHelper.IsNonKillableGroup(tryBoard, d)))
                 return true;
@@ -977,7 +978,7 @@ namespace Go
             //captured more than move group
             if (capturedBoard.CapturedList.Count > 1)
             {
-                Boolean coveredEye = capturedBoard.CapturedList.Any(group => group.Points.Count <= 2 && EyeHelper.FindRealEyeWithinEmptySpace(capturedBoard, group, EyeType.CoveredEye));
+                Boolean coveredEye = capturedBoard.CapturedList.Any(group => EyeHelper.FindCoveredEyeByCapture(capturedBoard, group));
                 if (!coveredEye)
                     return true;
             }
@@ -1814,18 +1815,18 @@ namespace Go
             if (eyePoints.Any(eyePoint => ImmovableHelper.IsConfirmTigerMouth(currentBoard, tryBoard, eyePoint) != null))
                 return true;
 
+            //check two point atari move
+            if (TwoPointAtariMove(tryBoard, capturedBoard)) return false;
+
+            //check corner three and possible corner three formation
+            if (KillerFormationHelper.CornerThreeFormation(tryBoard, tryBoard.MoveGroup) || KillerFormationHelper.PossibleCornerThreeFormation(currentBoard, move, c.Opposite())) return false;
+
             Group moveKillerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
             //check if eye point is killer group
             foreach (Point eyePoint in eyePoints)
             {
                 Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, eyePoint, c.Opposite());
                 if (killerGroup == null) continue;
-                //check two point atari move
-                if (TwoPointAtariMove(tryBoard, capturedBoard)) continue;
-                //check corner three formation
-                if (KillerFormationHelper.CornerThreeFormation(tryBoard, tryBoard.MoveGroup)) continue;
-                //check possible corner three formation
-                if (KillerFormationHelper.PossibleCornerThreeFormation(currentBoard, move, c.Opposite())) continue;
                 if (moveKillerGroup == null)
                 {
                     if (!isOpponent)
@@ -1850,9 +1851,43 @@ namespace Go
                     if (EyeHelper.FindRealEyeWithinEmptySpace(currentBoard, killerGroup) && EyeHelper.FindRealEyeWithinEmptySpace(capturedBoard, moveKillerGroup)) return true;
                 }
             }
+
+            if (TigerMouthWithoutDiagonalMouth(tryMove, capturedBoard))
+                return true;
             return false;
         }
 
+
+        /// <summary>
+        /// Redundant tiger mouth without diagonal mouth.
+        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A26" />
+        /// Check for covered eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q30225" />
+        /// Check for three groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q1970" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935" />
+        /// Check for strong neighbour groups <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario3dan22" />
+        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16605" />
+        /// </summary>
+        private static Boolean TigerMouthWithoutDiagonalMouth(GameTryMove tryMove, Board capturedBoard)
+        {
+            Point move = tryMove.Move;
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            Content c = tryMove.MoveContent;
+
+            //suicide within real eye at suicidal redundant move
+            if (tryBoard.MoveGroup.Points.Count == 1 && EyeHelper.FindSemiSolidEyes(tryBoard.MoveGroup.Points.First(), capturedBoard).Item1)
+                return false;
+            //check for covered eye
+            if (EyeHelper.FindCoveredEyeByCapture(capturedBoard, tryBoard.MoveGroup))
+                return false;
+            //check for three groups
+            HashSet<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(move, c);
+            if (neighbourGroups.Count >= 3 && (neighbourGroups.Count(g => g.Liberties.Count <= 2) >= 2 || LinkHelper.FindDiagonalCut(tryBoard, tryBoard.MoveGroup).Item1 != null)) return false;
+            //check for strong neighbour groups
+            if (WallHelper.StrongNeighbourGroups(currentBoard, currentBoard.GetGroupsFromStoneNeighbours(move, c)) && capturedBoard.MoveGroupLiberties > 2)
+                return true;
+            return false;
+        }
 
         /// <summary>
         /// Get eye points at the opposite diagonals of the tiger mouth.
