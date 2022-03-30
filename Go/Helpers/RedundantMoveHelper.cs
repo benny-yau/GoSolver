@@ -324,7 +324,7 @@ namespace Go
             if (SuicidalMove(tryMove))
                 return true;
 
-            //test if opponent move at same point is suicidal for single point move
+            //test if opponent move at same point is suicidal
             GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
             if (opponentMove == null) return false;
             Board opponentTryBoard = opponentMove.TryGame.Board;
@@ -333,6 +333,10 @@ namespace Go
                 if (SinglePointSuicidalMove(opponentMove, tryMove))
                     return true;
             }
+
+            if (TwoPointOpponentSuicidalMove(tryMove, opponentMove))
+                return true;
+
             return SuicidalWithinNonKillableGroup(opponentMove, tryMove);
         }
 
@@ -357,6 +361,43 @@ namespace Go
                     return true;
             }
             return SuicidalWithinNonKillableGroup(tryMove);
+        }
+
+        /// <summary>
+        /// Two point opponent suicidal move.
+        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A26" />
+        /// Check for corner point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A67" />
+        /// Check for unescapable group <see cref = "UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q17255" />
+        /// Check for suicide at big tiger mouth <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A55_2" />
+        /// Check for more than one captured group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14916_2" />
+        /// </summary>
+        private static Boolean TwoPointOpponentSuicidalMove(GameTryMove tryMove, GameTryMove opponentMove)
+        {
+            Board opponentTryBoard = opponentMove.TryGame.Board;
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            if (opponentTryBoard.MoveGroup.Points.Count != 2) return false;
+            //check for corner point
+            if (tryBoard.CapturedList.Count != 0 || opponentTryBoard.MoveGroup.Points.Any(p => opponentTryBoard.CornerPoint(p))) return false;
+
+            if (MultiPointSuicidalMove(opponentMove))
+            {
+                if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard)) return false;
+                //check for unescapable group
+                if (tryBoard.AtariTargets.Any(t => ImmovableHelper.UnescapableGroup(tryBoard, t).Item1)) return false;
+                //check for suicide at big tiger mouth
+                if (BothAliveHelper.EnableCheckForPassMove(tryBoard) || SuicideAtBigTigerMouth(opponentMove, c).Item1) return false;
+                //check for more than one captured group
+                foreach (Group atariTarget in tryBoard.AtariTargets)
+                {
+                    Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, atariTarget);
+                    if (b != null && b.CapturedList.Count > 1) return false;
+                }
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -1861,7 +1902,9 @@ namespace Go
         /// <summary>
         /// Redundant tiger mouth without diagonal mouth.
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A26" />
-        /// Check for covered eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q30225" />
+        /// Check for covered eye <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16738" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q30225" />
         /// Check for three groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q1970" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935" />
         /// Check for strong neighbour groups <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario3dan22" />

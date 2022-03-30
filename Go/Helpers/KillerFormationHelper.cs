@@ -187,6 +187,9 @@ namespace Go
 
                 if (SuicideMoveValidWithOneEmptySpaceLeft(tryBoard, capturedBoard))
                     return true;
+
+                if (KillerFormationHelper.CornerThreeFormation(tryBoard, tryBoard.MoveGroup))
+                    return true;
             }
             else if (moveCount == 4)
             {

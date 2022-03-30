@@ -909,6 +909,16 @@
             Separate suicidal moves into single point or multi point suicide. 
             </summary>
         </member>
+        <member name="M:Go.RedundantMoveHelper.TwoPointOpponentSuicidalMove(Go.GameTryMove,Go.GameTryMove)">
+            <summary>
+            Two point opponent suicidal move.
+            <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A26" />
+            Check for corner point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A67" />
+            Check for unescapable group <see cref = "!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q17255" />
+            Check for suicide at big tiger mouth <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A55_2" />
+            Check for more than one captured group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14916_2" />
+            </summary>
+        </member>
         <member name="M:Go.RedundantMoveHelper.SuicidalConnectAndDie(Go.GameTryMove)">
             <summary>
             Check for connect and die moves. <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738" />
@@ -1240,7 +1250,9 @@
             <summary>
             Redundant tiger mouth without diagonal mouth.
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A26" />
-            Check for covered eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q30225" />
+            Check for covered eye <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16738" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q30225" />
             Check for three groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q1970" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935" />
             Check for strong neighbour groups <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario3dan22" />
