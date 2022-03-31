@@ -175,7 +175,7 @@ namespace Go
         /// Add direct connected point recursively to form the group.
         /// If point is not of same content then add to neighbour.
         /// </summary>
-        private void RecursiveAddPoint(Group group, int x, int y)
+        public void RecursiveAddPoint(Group group, int x, int y)
         {
             if (this[x, y] == group.Content)
             {
@@ -575,20 +575,6 @@ namespace Go
                 }
             }
             return false;
-        }
-
-        /// <summary>
-        /// Get groups on new board based on first point of group in old board.
-        /// </summary>
-        public List<Group> GetNewGroups(IEnumerable<Group> oldGroups)
-        {
-            List<Group> groups = new List<Group>();
-            foreach (Group oldGroup in oldGroups)
-            {
-                Point p = oldGroup.Points.First();
-                groups.Add(this.GetGroupAt(p));
-            }
-            return groups;
         }
 
         /// <summary>

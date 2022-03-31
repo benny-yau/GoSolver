@@ -369,7 +369,7 @@ namespace Go
         /// Check for corner point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A67" />
         /// Check for unescapable group <see cref = "UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q17255" />
         /// Check for suicide at big tiger mouth <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A55_2" />
-        /// Check for more than one captured group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14916_2" />
+        /// Check move group liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14916_2" />
         /// </summary>
         private static Boolean TwoPointOpponentSuicidalMove(GameTryMove tryMove, GameTryMove opponentMove)
         {
@@ -384,17 +384,12 @@ namespace Go
 
             if (MultiPointSuicidalMove(opponentMove))
             {
-                if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard)) return false;
+                if (tryBoard.MoveGroupLiberties <= 2 && (tryBoard.MoveGroup.Points.Count <= 4 || KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard))) return false;
                 //check for unescapable group
                 if (tryBoard.AtariTargets.Any(t => ImmovableHelper.UnescapableGroup(tryBoard, t).Item1)) return false;
                 //check for suicide at big tiger mouth
                 if (BothAliveHelper.EnableCheckForPassMove(tryBoard) || SuicideAtBigTigerMouth(opponentMove, c).Item1) return false;
-                //check for more than one captured group
-                foreach (Group atariTarget in tryBoard.AtariTargets)
-                {
-                    Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, atariTarget);
-                    if (b != null && b.CapturedList.Count > 1) return false;
-                }
+                if (WallHelper.IsNonKillableGroup(tryBoard, tryBoard.MoveGroup)) tryMove.IsNeutralPoint = true;
                 return true;
             }
             return false;

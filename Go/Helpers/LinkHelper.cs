@@ -245,7 +245,7 @@ namespace Go
         {
             groups.Add(group);
             //find group diagonals of same content
-            List<LinkedPoint<Point>> diagonalPoints = GetGroupDiagonals(board, group).Where(d => board[d.Move] == group.Content).ToList();
+            List<LinkedPoint<Point>> diagonalPoints = GetGroupDiagonals(board, group).Where(d => board[d.Move] == group.Content).OrderBy(d => board.GetGroupAt(d.Move).Liberties.Count).ToList();
             foreach (LinkedPoint<Point> diagonalPoint in diagonalPoints)
             {
                 Group g = board.GetGroupAt(diagonalPoint.Move);
@@ -260,7 +260,7 @@ namespace Go
                     continue;
 
                 //check double atari for links
-                if (CheckDoubleAtariForLinks(board, groups, g, diagonalPoint))
+                if (CheckDoubleAtariForLinks(board, allConnectedGroups, g, diagonalPoint))
                     continue;
 
                 allConnectedGroups.Add(g);
