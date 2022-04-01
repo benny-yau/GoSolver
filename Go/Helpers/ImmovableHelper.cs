@@ -126,12 +126,8 @@ namespace Go
             List<Point> stoneNeighbours = board.GetStoneNeighbours(q.x, q.y);
             if (stoneNeighbours.Any(n => board[n] == c)) return false;
             List<Point> eyeNeighbour = stoneNeighbours.Where(n => board[n] == Content.Empty).ToList();
-            if (eyeNeighbour.Count == 1)
-            {
-                Board b = board.MakeMoveOnNewBoard(eyeNeighbour.First(), c.Opposite());
-                if (b != null && KoHelper.IsReverseKoFight(b))
-                    return true;
-            }
+            if (eyeNeighbour.Count == 1 && KoHelper.IsReverseKoFight(board, eyeNeighbour.First(), c.Opposite()))
+                return true;
             return false;
         }
 

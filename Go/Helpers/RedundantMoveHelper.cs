@@ -334,7 +334,7 @@ namespace Go
                     return true;
             }
 
-            if (TwoPointOpponentSuicidalMove(tryMove, opponentMove))
+            if (MultiPointOpponentSuicidalMove(tryMove, opponentMove))
                 return true;
 
             return SuicidalWithinNonKillableGroup(opponentMove, tryMove);
@@ -364,23 +364,26 @@ namespace Go
         }
 
         /// <summary>
-        /// Two point opponent suicidal move.
+        /// Multi point opponent suicidal move.
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A26" />
         /// Check for corner point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A67" />
         /// Check for unescapable group <see cref = "UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q17255" />
         /// Check for suicide at big tiger mouth <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A55_2" />
+        /// Check for bloated eye move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A85" />
         /// Check move group liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14916_2" />
+        /// Set diagonal eye move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29273" />
         /// </summary>
-        private static Boolean TwoPointOpponentSuicidalMove(GameTryMove tryMove, GameTryMove opponentMove)
+        private static Boolean MultiPointOpponentSuicidalMove(GameTryMove tryMove, GameTryMove opponentMove)
         {
             Board opponentTryBoard = opponentMove.TryGame.Board;
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            if (opponentTryBoard.MoveGroup.Points.Count != 2) return false;
+            if (opponentTryBoard.MoveGroup.Points.Count < 2) return false;
+            if (tryBoard.CapturedList.Count != 0) return false;
             //check for corner point
-            if (tryBoard.CapturedList.Count != 0 || opponentTryBoard.MoveGroup.Points.Any(p => opponentTryBoard.CornerPoint(p))) return false;
+            if (opponentTryBoard.MoveGroup.Points.Count == 2 && opponentTryBoard.MoveGroup.Points.Any(p => opponentTryBoard.CornerPoint(p))) return false;
 
             if (MultiPointSuicidalMove(opponentMove))
             {
@@ -389,7 +392,15 @@ namespace Go
                 if (tryBoard.AtariTargets.Any(t => ImmovableHelper.UnescapableGroup(tryBoard, t).Item1)) return false;
                 //check for suicide at big tiger mouth
                 if (BothAliveHelper.EnableCheckForPassMove(tryBoard) || SuicideAtBigTigerMouth(opponentMove, c).Item1) return false;
-                if (WallHelper.IsNonKillableGroup(tryBoard, tryBoard.MoveGroup)) tryMove.IsNeutralPoint = true;
+
+                //check for bloated eye move
+                if (tryBoard.GetDiagonalNeighbours().Any(d => tryBoard[d] == Content.Empty && tryBoard.GetStoneNeighbours(d.x, d.y).Any(n => tryBoard[n] == Content.Empty && tryBoard.CornerPoint(n) && KoHelper.IsReverseKoFight(currentBoard, n, c))))
+                    return false;
+
+                if (WallHelper.IsNonKillableGroup(tryBoard, tryBoard.MoveGroup)) //set neutral point move
+                    tryMove.IsNeutralPoint = true;
+                else if (tryBoard.GetDiagonalNeighbours().Any(n => EyeHelper.FindEye(tryBoard, n, c))) //set diagonal eye move
+                    tryMove.IsDiagonalEyeMove = true;
                 return true;
             }
             return false;
@@ -637,6 +648,7 @@ namespace Go
         /// Ensure more than two liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16925" />
         /// Suicide near non killable group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3kyu28_2" />
+        /// Set neutral point move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18410_2" />
         /// </summary>
         public static Boolean SuicidalWithinNonKillableGroup(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
@@ -658,7 +670,11 @@ namespace Go
             //suicide near non killable group
             Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(captureBoard, tryBoard.MoveGroup, c);
             if (b != null && !LinkHelper.IsAbsoluteLinkForGroups(captureBoard, b))
+            {
+                //set neutral point move
+                if (opponentMove != null && WallHelper.IsNonKillableGroup(opponentMove.TryGame.Board, opponentMove.TryGame.Board.MoveGroup)) opponentMove.IsNeutralPoint = true;
                 return true;
+            }
             return false;
         }
 
@@ -1715,6 +1731,8 @@ namespace Go
 
         /// <summary>
         /// Ensure target group of neutral move is not already targeted by other try moves not within killer group.
+        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A54" />
+        /// Ensure more than one liberty <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A54" />
         /// </summary>
         public static Boolean CheckIfGroupAlreadyTargeted(GameTryMove neutralMove, List<GameTryMove> tryMoves)
         {
@@ -1726,6 +1744,8 @@ namespace Go
 
             foreach (GameTryMove tryMove in tryMoves)
             {
+                //ensure more than one liberty
+                if (tryMove.TryGame.Board.MoveGroupLiberties == 1) continue;
                 //exclude try moves within killer group
                 if (BothAliveHelper.GetKillerGroupFromCache(tryBoard, tryMove.Move) != null)
                     continue;

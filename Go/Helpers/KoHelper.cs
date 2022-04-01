@@ -45,17 +45,17 @@ namespace Go
         /// <summary>
         /// Reverse ko fight.
         /// </summary>
-        public static Boolean IsReverseKoFight(Board board)
+        public static Boolean IsReverseKoFight(Board tryBoard, Point p, Content c)
         {
-            Content c = board.MoveGroup.Content;
+            Board board = tryBoard.MakeMoveOnNewBoard(p, c);
+            if (board == null) return false;
             List<Point> eyePoints = board.GetStoneNeighbours().Where(n => EyeHelper.FindEye(board, n, c)).ToList();
             foreach (Point eyePoint in eyePoints)
             {
                 List<Group> eyeGroups = board.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()).ToList();
-                if (board.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()).Any(n => n != board.MoveGroup && n.Points.Count == 1 && n.Liberties.Count == 1))
+                if (eyeGroups.Any(n => n.Points.Count == 1 && n.Liberties.Count == 1))
                 {
                     if (eyeGroups.Count(g => g.Liberties.Count == 1) != 1) continue;
-                    if (ImmovableHelper.CheckConnectAndDie(board)) continue;
                     return true;
                 }
             }

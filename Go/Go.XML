@@ -749,7 +749,7 @@
             Is Ko fight, including both pre-ko and ko.
             </summary>
         </member>
-        <member name="M:Go.KoHelper.IsReverseKoFight(Go.Board)">
+        <member name="M:Go.KoHelper.IsReverseKoFight(Go.Board,Go.Point,Go.Content)">
             <summary>
             Reverse ko fight.
             </summary>
@@ -909,14 +909,16 @@
             Separate suicidal moves into single point or multi point suicide. 
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.TwoPointOpponentSuicidalMove(Go.GameTryMove,Go.GameTryMove)">
+        <member name="M:Go.RedundantMoveHelper.MultiPointOpponentSuicidalMove(Go.GameTryMove,Go.GameTryMove)">
             <summary>
-            Two point opponent suicidal move.
+            Multi point opponent suicidal move.
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A26" />
             Check for corner point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A67" />
             Check for unescapable group <see cref = "!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q17255" />
             Check for suicide at big tiger mouth <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A55_2" />
+            Check for bloated eye move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A85" />
             Check move group liberties <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14916_2" />
+            Set diagonal eye move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29273" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SuicidalConnectAndDie(Go.GameTryMove)">
@@ -985,6 +987,7 @@
             Ensure more than two liberties <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16925" />
             Suicide near non killable group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3kyu28_2" />
+            Set neutral point move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18410_2" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckDiagonalForSuicidalConnectAndDie(Go.GameTryMove)">
@@ -1214,6 +1217,8 @@
         <member name="M:Go.RedundantMoveHelper.CheckIfGroupAlreadyTargeted(Go.GameTryMove,System.Collections.Generic.List{Go.GameTryMove})">
             <summary>
             Ensure target group of neutral move is not already targeted by other try moves not within killer group.
+            <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A54" />
+            Ensure more than one liberty <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A54" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.GetGenericNeutralMove(Go.Game,System.Collections.Generic.List{Go.GameTryMove},System.Collections.Generic.List{Go.GameTryMove})">
