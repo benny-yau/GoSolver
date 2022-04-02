@@ -368,8 +368,12 @@ namespace Go
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A26" />
         /// Check for corner point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A67" />
         /// Check for unescapable group <see cref = "UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q17255" />
+        /// Find eye at move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16850" />
+        /// Check for ko or capture move by atari target <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14992" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
         /// Check for suicide at big tiger mouth <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A55_2" />
         /// Check for bloated eye move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A85" />
+        /// Check for solid eye at liberty point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31646" />
         /// Check move group liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14916_2" />
         /// Set diagonal eye move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29273" />
         /// </summary>
@@ -390,12 +394,48 @@ namespace Go
                 if (tryBoard.MoveGroupLiberties <= 2 && (tryBoard.MoveGroup.Points.Count <= 4 || KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard))) return false;
                 //check for unescapable group
                 if (tryBoard.AtariTargets.Any(t => ImmovableHelper.UnescapableGroup(tryBoard, t).Item1)) return false;
+
+                //find eye at move
+                if (opponentTryBoard.GetStoneAndDiagonalNeighbours().Any(n => EyeHelper.FindEye(opponentTryBoard, n, c.Opposite())))
+                    return false;
+
+                //check for ko or capture move by atari target
+                foreach (Group atariTarget in tryBoard.AtariTargets)
+                {
+                    foreach (Group neighbourGroup in tryBoard.GetNeighbourGroups(atariTarget).Where(group => group.Liberties.Count == 1))
+                    {
+                        Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, neighbourGroup);
+                        if (b != null && (b.MoveGroupLiberties == 1 || ImmovableHelper.CheckConnectAndDie(b)))
+                            return false;
+                    }
+                }
+
                 //check for suicide at big tiger mouth
                 if (BothAliveHelper.EnableCheckForPassMove(tryBoard) || SuicideAtBigTigerMouth(opponentMove, c).Item1) return false;
 
                 //check for bloated eye move
                 if (tryBoard.GetDiagonalNeighbours().Any(d => tryBoard[d] == Content.Empty && tryBoard.GetStoneNeighbours(d.x, d.y).Any(n => tryBoard[n] == Content.Empty && tryBoard.CornerPoint(n) && KoHelper.IsReverseKoFight(currentBoard, n, c))))
                     return false;
+
+                //check for solid eye at liberty point
+                Point libertyPoint = opponentTryBoard.MoveGroup.Liberties.First();
+                Point? tigerMouthLiberty = ImmovableHelper.FindTigerMouth(currentBoard, libertyPoint, c.Opposite());
+                if (tigerMouthLiberty != null)
+                {
+                    Board b = currentBoard.MakeMoveOnNewBoard(tigerMouthLiberty.Value, c.Opposite());
+                    if (b != null && EyeHelper.FindSemiSolidEyes(libertyPoint, b, c.Opposite()).Item1)
+                        return false;
+                }
+
+                //check for suicidal at other end
+                (Boolean suicidal, Board b2) = ImmovableHelper.IsSuicidalMove(libertyPoint, c, currentBoard);
+                if (suicidal && b2 != null && b2.MoveGroup.Points.Count > 1)
+                {
+                    List<Group> previousGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
+                    Point q = b2.MoveGroup.Points.First(p => !p.Equals(libertyPoint));
+                    if (previousGroups.Any(group => group.Points.Contains(q)))
+                        return false;
+                }
 
                 if (WallHelper.IsNonKillableGroup(tryBoard, tryBoard.MoveGroup)) //set neutral point move
                     tryMove.IsNeutralPoint = true;
@@ -1487,6 +1527,7 @@ namespace Go
         /// Two pre-atari moves <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A55" />
         /// No try moves left <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Side_A20" />
         /// Remaining move at liberty point <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
+        /// Check connect and die for last try move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_5" />
         /// </summary>
         public static void RestoreNeutralMove(Game currentGame, List<GameTryMove> tryMoves, List<GameTryMove> neutralPointMoves)
         {
@@ -1530,7 +1571,8 @@ namespace Go
                 neutralPointMoves.Remove(tryMove);
             }
             //no try moves left
-            if (tryMoves.Count == 0 && neutralPointMoves.Count > 0)
+            if (neutralPointMoves.Count == 0) return;
+            if (tryMoves.Count == 0)
                 tryMoves.Add(neutralPointMoves.First());
             else if (tryMoves.Count == 1)
             {
@@ -1538,6 +1580,10 @@ namespace Go
                 GameTryMove neutralPointMove = neutralPointMoves.FirstOrDefault(move => move.MustHaveNeutralPoint && move.LinkPoint.Move.Equals(tryMoves.First().Move) && SuicideAtBigTigerMouth(move, move.MoveContent).Item1);
                 if (neutralPointMove != null)
                     tryMoves.Add(neutralPointMove);
+
+                //check connect and die for last try move
+                if (ImmovableHelper.CheckConnectAndDie(tryMoves.First().TryGame.Board))
+                    tryMoves.Add(neutralPointMoves.First());
             }
         }
 
@@ -1918,8 +1964,8 @@ namespace Go
         /// Redundant tiger mouth without diagonal mouth.
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A26" />
         /// Check for covered eye <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16738" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q30225" />
+        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16738" />
+        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q30225" />
         /// Check for three groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q1970" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935" />
         /// Check for strong neighbour groups <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario3dan22" />

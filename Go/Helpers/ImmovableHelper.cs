@@ -58,6 +58,7 @@ namespace Go
         /// Immovable point to check for links and diagonal points in semi solid eye. For empty point, return if point is immovable which can be a suicide point or tiger's mouth. If not empty point, then check if opponent can escape. Return if immovable and liberty point at tiger mouth.
         /// Empty point <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_GuanZiPu_A3" />
         /// Check connect and die <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A28" />
+        /// Check filled point connect and die <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_TianLongTu_Q16975" />
         /// Check for ko possibility <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q30986" />
         /// </summary>
         public static (Boolean, Point?) IsImmovablePoint(Point p, Content c, Board board)
@@ -83,6 +84,10 @@ namespace Go
                 Group targetGroup = board.GetGroupAt(p);
                 (Boolean unEscapable, Point? libertyPoint, _) = UnescapableGroup(board, targetGroup);
                 if (!unEscapable)
+                    return (false, null);
+                //check filled point connect and die
+                Board b = ImmovableHelper.CaptureSuicideGroup(board, targetGroup);
+                if (b != null && ImmovableHelper.CheckConnectAndDie(b))
                     return (false, null);
                 Point q = libertyPoint.Value;
                 //check for ko possibility

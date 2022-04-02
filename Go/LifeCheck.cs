@@ -297,16 +297,6 @@ namespace Go
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c, board, true);
                 if (suicidal) continue;
                 if (b.AtariTargets.Count == 0) continue;
-                /*
-                //ensure any target group is eye group or tiger mouth
-                List<Group> bTargetGroups = b.GetNewGroups(targetGroups);
-                if (!b.AtariTargets.Any(t => bTargetGroups.Contains(t))) continue;
-                //check for double atari or link beside atari
-                if (DoubleAtariCapture(b) || AtariMoveCheckLink(b, liberty))
-                {
-                    eyeGroups.Clear();
-                    return;
-                }*/
                 //ensure all atari targets are connected groups
                 if (b.AtariTargets.Any(a => targetGroups.Any(t => t.Points.Contains(a.Points.First()))))
                 {

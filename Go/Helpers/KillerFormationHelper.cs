@@ -97,6 +97,7 @@ namespace Go
         /// Check if real eye found in neighbour groups.
         /// Check for covered eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_3" />
         /// Allow two-point group without real eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18472" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17183" />
         /// Check for corner five and corner six <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_2" />
         /// </summary>
         public static Boolean CheckRealEyeInNeighbourGroups(Board tryBoard, Point move, Content c)
@@ -110,7 +111,7 @@ namespace Go
             if (tryBoard.MoveGroup.Points.Count <= 2)
             {
                 Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
-                if (killerGroup != null && !EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, killerGroup))
+                if (killerGroup == null || !EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, killerGroup))
                     return false;
             }
 
