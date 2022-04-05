@@ -41,7 +41,7 @@ namespace Go
                 Group group = targetGroups[i];
                 if (group.Points.Count != 1) continue;
                 Point p = group.Points.First();
-                Board b = ImmovableHelper.CaptureSuicideGroup(p, board);
+                Board b = ImmovableHelper.CaptureSuicideGroup(p, board, true);
                 if (b != null && KoHelper.IsKoFight(b))
                 {
                     if (excludeKo)
@@ -86,7 +86,7 @@ namespace Go
                 Point p = targetGroup.Points.First();
 
                 if (excludePoint != null && p.Equals(excludePoint)) continue;
-                Board b = ImmovableHelper.CaptureSuicideGroup(p, board);
+                Board b = ImmovableHelper.CaptureSuicideGroup(p, board, true);
                 if (b != null && KoHelper.IsKoFight(b))
                     return (true, b);
             }

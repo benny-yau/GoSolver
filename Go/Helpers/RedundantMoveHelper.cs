@@ -1445,7 +1445,7 @@ namespace Go
             {
                 Point p = tryBoard.AtariTargets.First().Points.First();
                 if (!tryBoard.GetStoneNeighbours(p.x, p.y).Any(q => EyeHelper.FindCoveredEye(currentBoard, q, c.Opposite()))) return false;
-                Board b = ImmovableHelper.CaptureSuicideGroup(p, tryBoard);
+                Board b = ImmovableHelper.CaptureSuicideGroup(p, tryBoard, true);
                 if (b != null && KoHelper.IsKoFight(b))
                 {
                     //check for ko fight
@@ -1544,7 +1544,8 @@ namespace Go
         /// Two pre-atari moves <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A55" />
         /// No try moves left <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Side_A20" />
         /// Remaining move at liberty point <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
-        /// Check connect and die for last try move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_5" />
+        /// Check connect and die for last try move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B35" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_5" />
         /// </summary>
         public static void RestoreNeutralMove(Game currentGame, List<GameTryMove> tryMoves, List<GameTryMove> neutralPointMoves)
         {
@@ -1587,8 +1588,8 @@ namespace Go
                 tryMoves.Add(tryMove);
                 neutralPointMoves.Remove(tryMove);
             }
-            //no try moves left
             if (neutralPointMoves.Count == 0) return;
+            //no try moves left
             if (tryMoves.Count == 0)
                 tryMoves.Add(neutralPointMoves.First());
             else if (tryMoves.Count == 1)
@@ -1597,9 +1598,11 @@ namespace Go
                 GameTryMove neutralPointMove = neutralPointMoves.FirstOrDefault(move => move.MustHaveNeutralPoint && move.LinkPoint.Move.Equals(tryMoves.First().Move) && SuicideAtBigTigerMouth(move, move.MoveContent).Item1);
                 if (neutralPointMove != null)
                     tryMoves.Add(neutralPointMove);
-
+            }
+            if (tryMoves.Count == 1 || tryMoves.Count == 2)
+            {
                 //check connect and die for last try move
-                if (ImmovableHelper.CheckConnectAndDie(tryMoves.First().TryGame.Board))
+                if (tryMoves.All(tryMove => ImmovableHelper.CheckConnectAndDie(tryMove.TryGame.Board)))
                     tryMoves.Add(neutralPointMoves.First());
             }
         }
@@ -2649,7 +2652,7 @@ namespace Go
                 {
                     if (group.Points.Count == 1 && !group.Points.Contains(tryBoard.singlePointCapture.Value))
                     {
-                        Board b = ImmovableHelper.CaptureSuicideGroup(currentBoard, group);
+                        Board b = ImmovableHelper.CaptureSuicideGroup(currentBoard, group, true);
                         if (b != null && KoHelper.IsKoFight(b))
                             return true;
                     }

@@ -559,7 +559,7 @@
             <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanQiJing_A36" />
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.CaptureSuicideGroup(Go.Point,Go.Board)">
+        <member name="M:Go.ImmovableHelper.CaptureSuicideGroup(Go.Point,Go.Board,System.Boolean)">
             <summary>
             Capture group that has liberty of one only and return the board.
             </summary>
@@ -617,7 +617,7 @@
             <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_WindAndTime_Q30370" />
             <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_A55" />
             Rare scenario <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_WindAndTime_Q30275" />
-            Rare scenario ko fight <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A85" />
+            Double ko fight <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A85" />
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.CheckPreAtariNeighbour(Go.Group,Go.Board)">
@@ -760,6 +760,15 @@
             <summary>
             Check if ko fight for try move.
             <see cref="!:UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario_TianLongTu_Q17160" />
+            </summary>
+        </member>
+        <member name="M:Go.KoHelper.DoubleKoFight(Go.Board,Go.Group)">
+            <summary>
+            Double ko fight.
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A85_2" />
+            <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A85" />
+            <see cref="!:UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_XuanXuanGo_A28_101Weiqi" />
+            Not double ko <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A82_101Weiqi_2" />
             </summary>
         </member>
         <member name="M:Go.LinkHelper.LinkForGroups(Go.Board,Go.Board)">
@@ -1171,7 +1180,8 @@
             Two pre-atari moves <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A55" />
             No try moves left <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Side_A20" />
             Remaining move at liberty point <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
-            Check connect and die for last try move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_5" />
+            Check connect and die for last try move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B35" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_5" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.GetMustHaveNeutralMove(Go.Game,System.Collections.Generic.List{Go.GameTryMove})">

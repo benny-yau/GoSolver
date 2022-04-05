@@ -328,13 +328,13 @@ namespace Go
         /// <summary>
         /// Capture group that has liberty of one only and return the board.
         /// </summary>
-        public static Board CaptureSuicideGroup(Point p, Board board)
+        public static Board CaptureSuicideGroup(Point p, Board board, Boolean excludeKo = false)
         {
             if (board[p] == Content.Empty) return null;
-            return CaptureSuicideGroup(board, board.GetGroupAt(p));
+            return CaptureSuicideGroup(board, board.GetGroupAt(p), excludeKo);
         }
 
-        public static Board CaptureSuicideGroup(Board board, Group group = null)
+        public static Board CaptureSuicideGroup(Board board, Group group = null, Boolean excludeKo = false)
         {
             if (group == null) group = board.MoveGroup;
             Content c = group.Content.Opposite();
@@ -342,7 +342,7 @@ namespace Go
             if (libertyPoint.Count != 1) return null;
             Point? p = GetLibertyPointOfSuicide(board, group);
             if (p == null) return null;
-            return board.MakeMoveOnNewBoard(p.Value, c, true);
+            return board.MakeMoveOnNewBoard(p.Value, c, excludeKo);
         }
 
         /// <summary>
@@ -477,6 +477,9 @@ namespace Go
                 //check if connect and die
                 if (UnescapableGroup(b, targetGroup).Item1)
                 {
+                    //double ko fight
+                    if (KoHelper.DoubleKoFight(b, targetGroup))
+                        continue;
                     //reverse connect and die
                     if (ConnectAndDie(b, b.MoveGroup).Item1)
                         continue;
@@ -515,7 +518,7 @@ namespace Go
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_WindAndTime_Q30370" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_A55" />
         /// Rare scenario <see cref="UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_WindAndTime_Q30275" />
-        /// Rare scenario ko fight <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A85" />
+        /// Double ko fight <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A85" />
         /// </summary>
         public static Boolean PreAtariMove(Board board)
         {
@@ -532,11 +535,11 @@ namespace Go
                 if (CheckConnectAndDie(board, targetGroup))
                     return true;
 
-                //rare scenario ko fight
-                if (KoHelper.KoContentEnabled(c, board.GameInfo))
+                //double ko fight
+                foreach (Point liberty in targetGroup.Liberties)
                 {
-                    (Boolean koAtari, Board koBoard) = AtariHelper.KoAtariByNeighbour(board, targetGroup);
-                    if (koAtari && koBoard.AtariTargets.Count >= 2)
+                    Board b = board.MakeMoveOnNewBoard(liberty, c.Opposite());
+                    if (b != null && KoHelper.DoubleKoFight(b, b.MoveGroup))
                         return true;
                 }
             }
