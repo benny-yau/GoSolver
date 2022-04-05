@@ -81,8 +81,7 @@ namespace Go
         /// </summary>
         public static Boolean IsNonKillableGroup(Board board, Point p)
         {
-            GameInfo gameInfo = board.GameInfo;
-            if (GameHelper.GetContentForSurviveOrKill(gameInfo, SurviveOrKill.Kill) != board[p])
+            if (GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Kill) != board[p])
                 return false;
             Group group = board.GetGroupAt(p);
             return IsNonKillableGroup(board, group);
@@ -92,8 +91,14 @@ namespace Go
         {
             if (group.IsNonKillable != null) return group.IsNonKillable.Value;
 
+            if (GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Kill) != group.Content)
+            {
+                group.IsNonKillable = false;
+                return false;
+            }
+
             //check if group is non killable
-            group.IsNonKillable = (IsNonKillableFromSetupMoves(board, group));
+            group.IsNonKillable = IsNonKillableFromSetupMoves(board, group);
             if (group.IsNonKillable.Value)
                 return true;
 

@@ -210,7 +210,12 @@ namespace Go
             {
                 Board captureBoard = EscapeByCapture(tryBoard, group);
                 if (captureBoard != null)
-                    return (false, captureBoard.Move.Value, captureBoard);
+                    return (false, null, captureBoard);
+
+                //double ko fight
+                (Boolean doubleKo, Board b) = KoHelper.DoubleKoFight(tryBoard, group);
+                if (doubleKo)
+                    return (false, null, b);
             }
 
             //move at liberty is suicidal or end crawling move
@@ -223,7 +228,7 @@ namespace Go
             if (CheckConnectAndDie(escapeBoard, escapeBoard.GetGroupAt(group.Points.First())))
                 return (true, libertyPoint, escapeBoard);
 
-            return (false, libertyPoint, escapeBoard);
+            return (false, null, escapeBoard);
         }
 
         /// <summary>
@@ -477,9 +482,6 @@ namespace Go
                 //check if connect and die
                 if (UnescapableGroup(b, targetGroup).Item1)
                 {
-                    //double ko fight
-                    if (KoHelper.DoubleKoFight(b, targetGroup))
-                        continue;
                     //reverse connect and die
                     if (ConnectAndDie(b, b.MoveGroup).Item1)
                         continue;
@@ -539,7 +541,7 @@ namespace Go
                 foreach (Point liberty in targetGroup.Liberties)
                 {
                     Board b = board.MakeMoveOnNewBoard(liberty, c.Opposite());
-                    if (b != null && KoHelper.DoubleKoFight(b, b.MoveGroup))
+                    if (b != null && KoHelper.DoubleKoFight(b, b.MoveGroup).Item1)
                         return true;
                 }
             }

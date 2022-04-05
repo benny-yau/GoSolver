@@ -86,10 +86,10 @@ namespace Go
         /// <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_XuanXuanGo_A28_101Weiqi" />
         /// Not double ko <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A82_101Weiqi_2" />
         /// </summary>
-        public static Boolean DoubleKoFight(Board board, Group targetGroup)
+        public static (Boolean, Board) DoubleKoFight(Board board, Group targetGroup)
         {
             List<Group> groups = board.GetNeighbourGroups(targetGroup).Where(group => group.Liberties.Count == 1).ToList();
-            if (groups.Count < 2) return false;
+            if (groups.Count < 2) return (false, null);
             foreach (Group atariTarget in groups)
             {
                 Board b = ImmovableHelper.CaptureSuicideGroup(board, atariTarget);
@@ -100,11 +100,11 @@ namespace Go
                         if (!ImmovableHelper.UnescapableGroup(b, target).Item1) continue;
                         Board b2 = ImmovableHelper.CaptureSuicideGroup(b, target);
                         if (b2 != null && b2.CapturedList.Any(captured => groups.Any(g => !g.Equals(atariTarget) && g.Points.Contains(captured.Points.First()))))
-                            return true;
+                            return (true, b);
                     }
                 }
             }
-            return false;
+            return (false, null);
         }
 
     }

@@ -302,6 +302,13 @@
             More than one content group in simple seki <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31646" />
             </summary>
         </member>
+        <member name="M:Go.BothAliveHelper.CheckComplexSeki(Go.Board,System.Collections.Generic.List{Go.Group},System.Collections.Generic.List{Go.Group})">
+            <summary>
+            Check complex seki.
+            With diagonal group <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan22" />
+            Without diagonal group <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A123" />
+            </summary>
+        </member>
         <member name="M:Go.BothAliveHelper.FillEyePointsBoard(Go.Board,Go.Group)">
             <summary>
             Fill eye points with stone of same content.

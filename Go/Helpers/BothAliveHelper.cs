@@ -220,19 +220,39 @@ namespace Go
                 //two liberties for content group
                 Boolean oneLiberty = board.GetGroupsFromPoints(contentPoints).Any(group => group.Liberties.Count == 1);
                 if (oneLiberty) return false;
-                //ensure at least one liberty shared with killer group
-                IEnumerable<Group> groups = neighbourGroups.Where(group => !WallHelper.IsNonKillableGroup(board, group));
-                IEnumerable<Point> killerLiberties = killerGroup.Points.Where(p => board[p] == Content.Empty);
-                Boolean sharedLiberty = groups.All(neighbourGroup => neighbourGroup.Liberties.Intersect(killerLiberties).Any());
-                if (!sharedLiberty) return false;
-
-                //ensure at least two liberties within killer group in survival neighbour group
-                if (groups.Any(n => n.Liberties.Count(p => GetKillerGroupFromCache(board, p) != null) < 2))
-                    return false;
-                //find uncovered eye
-                if (FindUncoveredEyeInComplexSeki(board, killerGroups))
-                    return true;
+                (_, List<Point> pointsBetweenDiagonals) = LinkHelper.FindDiagonalCut(board, killerGroup);
+                if (pointsBetweenDiagonals == null) return CheckComplexSeki(board, killerGroups, neighbourGroups);
+                HashSet<Group> diagonalGroups = board.GetGroupsFromPoints(pointsBetweenDiagonals);
+                foreach (Group diagonalGroup in diagonalGroups)
+                {
+                    Group diagonalKillerGroup = BothAliveHelper.GetKillerGroupFromCache(board, diagonalGroup.Points.First(), killerGroup.Content);
+                    if (diagonalKillerGroup == null) continue;
+                    if (CheckComplexSeki(board, killerGroups.Where(g => diagonalKillerGroup.Points.Contains(g.Points.First())).ToList(), neighbourGroups.Where(group => diagonalKillerGroup.Points.Contains(group.Points.First())).ToList()))
+                        return true;
+                }
             }
+            return false;
+        }
+
+        /// <summary>
+        /// Check complex seki.
+        /// With diagonal group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan22" />
+        /// Without diagonal group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A123" />
+        /// </summary>
+        private static Boolean CheckComplexSeki(Board board, List<Group> killerGroups, List<Group> groups)
+        {
+            if (killerGroups.Count == 0) return false;
+            IEnumerable<Point> killerLiberties = killerGroups.First().Points.Where(p => board[p] == Content.Empty);
+            //ensure at least one liberty shared with killer group
+            Boolean sharedLiberty = groups.All(group => group.Liberties.Intersect(killerLiberties).Any());
+            if (!sharedLiberty) return false;
+
+            //ensure at least two liberties within killer group in survival neighbour group
+            if (groups.Any(n => n.Liberties.Count(p => GetKillerGroupFromCache(board, p) != null) < 2))
+                return false;
+            //find uncovered eye
+            if (FindUncoveredEyeInComplexSeki(board, killerGroups))
+                return true;
             return false;
         }
 
