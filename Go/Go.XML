@@ -525,6 +525,13 @@
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario1dan21" />
             </summary>.
         </member>
+        <member name="M:Go.ImmovableHelper.ThreeLibertyConnectAndDie(Go.Board,Go.Group)">
+            <summary>
+            Three liberty connect and die.
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14992_2" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14992" />
+            </summary>
+        </member>
         <member name="M:Go.ImmovableHelper.SuicidalAfterMustHaveMove(Go.Board,Go.Board,Go.Point)">
             <summary>
             Suicide move for survival after must-have neutral move at side of the board.

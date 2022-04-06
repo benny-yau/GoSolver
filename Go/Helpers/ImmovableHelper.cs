@@ -87,7 +87,7 @@ namespace Go
                     return (false, null);
                 //check filled point connect and die
                 Board b = ImmovableHelper.CaptureSuicideGroup(board, targetGroup);
-                if (b != null && ImmovableHelper.CheckConnectAndDie(b))
+                if (b != null && (CheckConnectAndDie(b) || ThreeLibertyConnectAndDie(b)))
                     return (false, null);
                 Point q = libertyPoint.Value;
                 //check for ko possibility
@@ -147,7 +147,7 @@ namespace Go
         public static Board IsConfirmTigerMouth(Board currentBoard, Board tryBoard, Point? p = null)
         {
             if (p == null) p = tryBoard.Move;
-            Content c = tryBoard[tryBoard.Move.Value];
+            Content c = tryBoard.MoveGroup.Content;
 
             Point? libertyPoint = FindTigerMouth(currentBoard, p.Value, c.Opposite());
             if (libertyPoint == null) return null;
@@ -170,7 +170,34 @@ namespace Go
             if (AllConnectAndDie(capturedBoard, p.Value))
                 return null;
 
+            if (ThreeLibertyConnectAndDie(capturedBoard))
+                return null;
+
             return capturedBoard;
+        }
+
+
+        /// <summary>
+        /// Three liberty connect and die.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14992_2" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14992" />
+        /// </summary>
+        public static Boolean ThreeLibertyConnectAndDie(Board board, Group targetGroup = null)
+        {
+            targetGroup = (targetGroup) ?? board.MoveGroup;
+            Content c = targetGroup.Content;
+            List<Point> groupLiberties = board.GetGroupLibertyPoints(targetGroup);
+            if (groupLiberties.Count != 3) return false;
+
+            foreach (Point liberty in groupLiberties)
+            {
+                (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board);
+                if (b == null || b.AtariTargets.Count != 1) continue;
+                Board b2 = ImmovableHelper.CaptureSuicideGroup(b);
+                if (b2 != null && CheckConnectAndDie(b2, b2.GetGroupAt(targetGroup.Points.First())))
+                    return true;
+            }
+            return false;
         }
 
         /// <summary>

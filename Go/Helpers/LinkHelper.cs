@@ -160,6 +160,7 @@ namespace Go
                     if (suicidal || b.AtariTargets.Count < 2) continue;
                     (Boolean unEscapable, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(b, b.GetGroupAt(tigerMouthGroup.Points.First()));
                     if (escapeBoard == null) return true;
+                    if (escapeBoard.CapturedPoints.Contains(p)) continue;
                     foreach (Group targetGroup in AtariHelper.AtariByGroup(escapeBoard.GetGroupAt(p), escapeBoard))
                     {
                         if (groups.Any(g => g.Points.Contains(targetGroup.Points.First())))
