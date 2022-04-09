@@ -103,10 +103,16 @@ namespace Go
         {
             get
             {
-                int tryCount = BothAliveHelper.GetCorneredKillerGroup(TryGame.Board, false).Count;
-                int currentCount = BothAliveHelper.GetCorneredKillerGroup(CurrentGame.Board, false).Count;
-                return (tryCount > currentCount);
+                return IncreaseKillerGroups(TryGame.Board, CurrentGame.Board);
             }
+        }
+
+        public static Boolean IncreaseKillerGroups(Board tryBoard, Board currentBoard)
+        {
+
+            int tryCount = BothAliveHelper.GetCorneredKillerGroup(tryBoard, false).Count;
+            int currentCount = BothAliveHelper.GetCorneredKillerGroup(currentBoard, false).Count;
+            return (tryCount > currentCount);
         }
 
 

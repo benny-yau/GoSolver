@@ -199,8 +199,9 @@ namespace Go
         #region atari response move
 
         /// <summary>
-        /// Redundant atari move that allows target group to escape.
-        /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_XuanXuanGo_A46_101Weiqi_2" />
+        /// Redundant atari move.
+        /// Check for redundant atari within killer group <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A9_Ext" />
+        /// Ensure target group can escape <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_XuanXuanGo_A46_101Weiqi_2" />
         /// Check for snapback <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_TianLongTu_Q16919" />
         /// Check corner kill formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" />
         /// Check two-point covered eye <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_TianLongTu_Q16525" />
@@ -210,6 +211,7 @@ namespace Go
         {
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryMove.Move;
             Content c = tryBoard.MoveGroup.Content;
             if (GameHelper.GetContentForSurviveOrKill(tryBoard.GameInfo, SurviveOrKill.Kill) == c)
             {
@@ -219,7 +221,23 @@ namespace Go
             if (!tryBoard.IsAtariMove || tryBoard.AtariTargets.Count > 1 || tryBoard.AtariResolved || tryBoard.CapturedList.Count > 0) return false;
             Group atariTarget = tryBoard.AtariTargets.First();
             //ensure target group can escape
-            if (ImmovableHelper.UnescapableGroup(tryBoard, atariTarget).Item1) return false;
+            if (ImmovableHelper.UnescapableGroup(tryBoard, atariTarget).Item1)
+            {
+                //check for redundant atari within killer group
+                if (BothAliveHelper.GetKillerGroupFromCache(tryBoard, atariTarget.Points.First(), c) == null) return false;
+                if (tryMove.IncreasedKillerGroups) return false;
+                Point q = atariTarget.Liberties.First();
+                Board cb = currentBoard.MakeMoveOnNewBoard(q, c);
+                if (cb == null || cb.MoveGroupLiberties == 1) return false;
+                if (BothAliveHelper.GetKillerGroupFromCache(cb, atariTarget.Points.First(), c) == null) return false;
+                if (ImmovableHelper.UnescapableGroup(cb, cb.GetGroupAt(atariTarget.Points.First())).Item1)
+                {
+                    //return only one move if both moves valid
+                    Boolean increaseKillerGroups = (GameTryMove.IncreaseKillerGroups(cb, currentBoard));
+                    return (tryMove.IncreasedKillerGroups == increaseKillerGroups) ? (q.x + q.y) < (move.x + move.y) : true;
+                }
+                return false;
+            }
             //check if any move can capture target group
             (Boolean suicidal, Board board) = ImmovableHelper.ConnectAndDie(currentBoard, atariTarget);
             if (!suicidal) return false;
