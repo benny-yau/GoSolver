@@ -200,7 +200,6 @@ namespace Go
 
         /// <summary>
         /// Redundant atari move.
-        /// 
         /// Ensure target group can escape <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_XuanXuanGo_A46_101Weiqi_2" />
         /// Check for snapback <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_TianLongTu_Q16919" />
         /// Check corner kill formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" />
@@ -268,6 +267,9 @@ namespace Go
         /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A9_Ext" />
         /// Check for increased killer groups <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_TianLongTu_Q16487" />
         /// Ensure more than one liberty for move group <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A68" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16748" />
+        /// Check killer formation <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Side_A25" />
+        /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Side_A23" />
         /// </summary>
         private static Boolean RedundantAtariWithinKillerGroup(GameTryMove tryMove)
         {
@@ -290,9 +292,22 @@ namespace Go
             //ensure the other move can capture atari target as well
             if (ImmovableHelper.UnescapableGroup(board, board.GetGroupAt(atariTarget.Points.First())).Item1)
             {
+                if (GameTryMove.IncreaseKillerGroups(board, currentBoard)) return true;
+                //check killer formation
+                Board b = tryBoard.MakeMoveOnNewBoard(q, c.Opposite());
+                if (b != null)
+                {
+                    Boolean killerFormation = KillerFormationHelper.SuicidalKillerFormations(b, tryBoard);
+                    Board b2 = board.MakeMoveOnNewBoard(move, c.Opposite());
+                    if (b2 != null)
+                    {
+                        Boolean killerFormation2 = KillerFormationHelper.SuicidalKillerFormations(b2, board);
+                        if (killerFormation && !killerFormation2) return true;
+                        if (!killerFormation && killerFormation2) return false;
+                    }
+                }
                 //return only one move if both moves valid
-                Boolean increaseKillerGroups = GameTryMove.IncreaseKillerGroups(board, currentBoard);
-                return (tryMove.IncreasedKillerGroups == increaseKillerGroups) ? (q.x + q.y) < (move.x + move.y) : true;
+                return (q.x + q.y) < (move.x + move.y);
             }
             return false;
         }
