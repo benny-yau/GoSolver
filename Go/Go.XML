@@ -299,6 +299,7 @@
             One killer group with eye <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A27" />
             Two liberties for content group <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_B43" />
             Two liberties within killer group <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A87" />
+            Ensure at least two liberties in survival neighbour group <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan22_2" />
             More than one content group in simple seki <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31646" />
             </summary>
         </member>
@@ -647,7 +648,7 @@
             Ensure that liberties within killer group can be cleared.
             </summary>
         </member>
-        <member name="M:Go.KillerFormationHelper.DeadFormationInBothAlive(Go.Board,Go.Group,System.Collections.Generic.List{Go.Point},System.Collections.Generic.List{Go.Point})">
+        <member name="M:Go.KillerFormationHelper.DeadFormationInBothAlive(Go.Board,Go.Group)">
             <summary>
             Formations that are essentially dead and do not require a pass move to test for both alive.
             </summary>

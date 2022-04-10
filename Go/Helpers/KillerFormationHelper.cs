@@ -12,8 +12,10 @@ namespace Go
         /// <summary>
         /// Formations that are essentially dead and do not require a pass move to test for both alive.
         /// </summary>
-        public static Boolean DeadFormationInBothAlive(Board board, Group killerGroup, List<Point> contentPoints, List<Point> emptyPoints)
+        public static Boolean DeadFormationInBothAlive(Board board, Group killerGroup)
         {
+            List<Point> contentPoints = killerGroup.Points.Where(t => board[t] == killerGroup.Content).ToList();
+            List<Point> emptyPoints = killerGroup.Points.Where(t => board[t] == Content.Empty).ToList();
             if (emptyPoints.Count != 2) return false;
             return PreDeadFormation(board, killerGroup, contentPoints, emptyPoints);
         }
@@ -165,7 +167,7 @@ namespace Go
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.MoveGroupLiberties > 2 || tryBoard.MoveGroup.Points.Count <= 4 && tryBoard.MoveGroupLiberties > 1)
+            if (tryBoard.MoveGroupLiberties > 2)
                 return false;
 
             int moveCount = tryBoard.MoveGroup.Points.Count;
@@ -834,9 +836,7 @@ namespace Go
             foreach (LinkedPoint<Point> p in list)
             {
                 Board killBoard = ((dynamic)p.CheckMove).killBoard;
-                List<Point> contentPoints = killerGroup.Points.Where(t => killBoard[t] == killerGroup.Content).ToList();
-                List<Point> emptyPoints = killerGroup.Points.Where(t => killBoard[t] == Content.Empty).ToList();
-                if (DeadFormationInBothAlive(killBoard, killerGroup, contentPoints, emptyPoints))
+                if (DeadFormationInBothAlive(killBoard, killerGroup))
                     return p;
             }
             return list.First();
