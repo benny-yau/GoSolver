@@ -27,9 +27,8 @@ namespace Go
             if (EyeHelper.FindUncoveredPoint(currentBoard, move.x, move.y, c))
             {
                 if (tryBoard.MoveGroupLiberties != 1) return true;
-                Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
                 //check for killer formations
-                if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, capturedBoard))
+                if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard))
                     return false;
             }
             else
@@ -155,8 +154,7 @@ namespace Go
             //check for killer formation
             if (tryBoard.GetNeighbourGroups().All(group => !WallHelper.IsNonKillableGroup(tryBoard, group)))
             {
-                Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
-                if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, capturedBoard))
+                if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard))
                     return false;
             }
             return true;
@@ -220,9 +218,8 @@ namespace Go
             Group atariTarget = tryBoard.AtariTargets.First();
             //ensure target group can escape
             if (ImmovableHelper.UnescapableGroup(tryBoard, atariTarget).Item1)
-            {
                 return RedundantAtariWithinKillerGroup(tryMove);
-            }
+
             //check if any move can capture target group
             (Boolean suicidal, Board board) = ImmovableHelper.ConnectAndDie(currentBoard, atariTarget);
             if (!suicidal) return false;
@@ -304,6 +301,7 @@ namespace Go
                         Boolean killerFormation2 = KillerFormationHelper.SuicidalKillerFormations(b2, board);
                         if (killerFormation && !killerFormation2) return true;
                         if (!killerFormation && killerFormation2) return false;
+                        if (killerFormation && killerFormation2) return false;
                     }
                 }
                 //return only one move if both moves valid
