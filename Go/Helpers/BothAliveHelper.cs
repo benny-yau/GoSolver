@@ -1,10 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace Go
 {
@@ -147,8 +143,8 @@ namespace Go
             if (UniquePatternsHelper.CheckForTenThousandYearKo(board))
                 return true;
 
-            Content content = GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Kill);
             Group killerGroup = killerGroups[0];
+            Content content = killerGroup.Content;
             List<Point> emptyPoints = killerGroup.Points.Where(k => board[k] == Content.Empty).ToList();
             if (emptyPoints.Count < 2 || emptyPoints.Count > 4) return false;
             if (emptyPoints.Count > 2 && !emptyPoints.Any(p => board.GetStoneNeighbours(p.x, p.y).All(n => board[n] != Content.Empty)))
@@ -173,9 +169,6 @@ namespace Go
                     return false;
                 }
             }
-            //ensure at least two liberties in killer group
-            if (!IsLibertyGroup(killerGroup, board))
-                return false;
 
             //ensure at least two liberties in survival neighbour group
             List<Group> neighbourGroups = board.GetNeighbourGroups(killerGroup);
@@ -192,56 +185,9 @@ namespace Go
             if (contentGroups.Count > 2 || (contentGroups.Count == 2 && emptyPoints.Count != 2)) return false;
             if (contentGroups.Count == 2 && !LinkHelper.IsDiagonallyConnectedGroups(board, contentGroups[0], contentGroups[1])) return false;
 
-            if (killerGroups.Count == 1 && neighbourGroups.Count >= 1 && neighbourGroups.Count <= 2)  //simple seki
+            if (killerGroups.Count == 1)  //simple seki
             {
-                //at least three content points in killer group
-                if (contentPoints.Count < 3) return false;
-                //two liberties for content group
-                Boolean oneLiberty = board.GetGroupsFromPoints(contentPoints).Any(group => group.Liberties.Count == 1);
-                Boolean koEnabled = KoHelper.KoSurvivalEnabled(SurviveOrKill.Survive, board.GameInfo);
-                if (koEnabled && oneLiberty) return false;
-                else if (oneLiberty && (contentGroups.Count != 1 || contentGroups.Any(group => group.Liberties.Count != 2))) return false;
-
-                //ensure at least two liberties shared with killer group
-                IEnumerable<Point> killerLiberties = killerGroup.Points.Where(p => board[p] == Content.Empty);
-                Boolean sharedLiberty = neighbourGroups.All(neighbourGroup => neighbourGroup.Liberties.Intersect(killerLiberties).Count() >= 2);
-                if (!sharedLiberty) return false;
-
-                //ensure at least two liberties within killer group in survival neighbour group
-                if (neighbourGroups.Any(n => n.Liberties.Count(p => GetKillerGroupFromCache(board, p) != null) < 2))
-                    return false;
-
-                //dead formations
-                Board b = board;
-                List<Point> eyePoints = emptyPoints.Where(p => EyeHelper.FindEye(board, p, content)).ToList();
-                if (eyePoints.Count > 0)
-                {
-                    if (eyePoints.All(p => board.GetDiagonalNeighbours(p.x, p.y).Any(n => board[n] == Content.Empty)))
-                        return false;
-                    b = new Board(board);
-                    eyePoints.ForEach(p => b[p] = content);
-                }
-
-                int emptyPointCount = killerGroup.Points.Count(k => b[k] == Content.Empty);
-                if (emptyPointCount >= 3)
-                {
-                    if (!KillerFormationHelper.DeadFormationInBothAlive(b, killerGroup, emptyPointCount, 2))
-                        return false;
-                }
-                else if (KillerFormationHelper.DeadFormationInBothAlive(b, killerGroup, emptyPointCount))
-                    return false;
-
-
-                //ensure killer group does not have real eye
-                if (emptyPoints.Any(p => EyeHelper.FindRealSolidEyes(p, content, board)))
-                    return false;
-
-                foreach (Point emptyPoint in emptyPoints)
-                {
-                    Board b2 = board.MakeMoveOnNewBoard(emptyPoint, content.Opposite(), true);
-                    if (b2 != null && b2.MoveGroupLiberties > 1 && GameTryMove.IncreaseKillerGroups(b2, board)) return false;
-                }
-                return true;
+                return CheckSimpleSeki(board, filledBoard, neighbourGroups, killerGroup, emptyPoints, contentPoints, contentGroups);
             }
             else if (killerGroups.Count >= 2) //complex seki
             {
@@ -260,18 +206,84 @@ namespace Go
                     }
                 }
 
+                //find diagonal cut
                 (_, List<Point> pointsBetweenDiagonals) = LinkHelper.FindDiagonalCut(board, killerGroup);
+                //check complex seki without diagonal cut
                 if (pointsBetweenDiagonals == null) return CheckComplexSeki(board, killerGroups, neighbourGroups);
+
+                //check complex seki with diagonal cut
                 HashSet<Group> diagonalGroups = board.GetGroupsFromPoints(pointsBetweenDiagonals);
                 foreach (Group diagonalGroup in diagonalGroups)
                 {
                     Group diagonalKillerGroup = BothAliveHelper.GetKillerGroupFromCache(board, diagonalGroup.Points.First(), killerGroup.Content);
                     if (diagonalKillerGroup == null) continue;
-                    if (CheckComplexSeki(board, killerGroups.Where(g => diagonalKillerGroup.Points.Contains(g.Points.First())).ToList(), neighbourGroups.Where(group => diagonalKillerGroup.Points.Contains(group.Points.First())).ToList()))
+                    List<Group> cutKillerGroups = killerGroups.Where(g => diagonalKillerGroup.Points.Contains(g.Points.First())).ToList();
+                    List<Group> cutNeighbourGroups = neighbourGroups.Where(group => diagonalKillerGroup.Points.Contains(group.Points.First())).ToList();
+                    if (CheckComplexSeki(board, cutKillerGroups, cutNeighbourGroups))
                         return true;
                 }
             }
             return false;
+        }
+
+        /// <summary>
+        /// Check simple seki.
+        /// Cover eye point <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_B43" />
+        /// Check diagonal at eye point <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A75" />
+        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30275" />
+        /// Check killer formation for two liberties <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Side_A23_2" />
+        /// Check killer formation for three or more liberties <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31493_4" />
+        /// Ensure killer group does not have real eye <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_TianLongTu_Q16424_2" />
+        /// Check for increased killer groups <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31445_2" />
+        /// </summary>
+        private static Boolean CheckSimpleSeki(Board board, Board filledBoard, List<Group> neighbourGroups, Group killerGroup, List<Point> emptyPoints, List<Point> contentPoints, List<Group> contentGroups)
+        {
+            Content content = killerGroup.Content;
+            if (neighbourGroups.Count > 2) return false;
+            //at least three content points in killer group
+            if (contentPoints.Count < 3) return false;
+            //two liberties for content group
+            Boolean oneLiberty = contentGroups.Any(group => group.Liberties.Count == 1);
+            Boolean koEnabled = KoHelper.KoSurvivalEnabled(SurviveOrKill.Survive, board.GameInfo);
+            if (koEnabled && oneLiberty) return false;
+            else if (oneLiberty && (contentGroups.Count != 1 || contentGroups.Any(group => group.Liberties.Count != 2))) return false;
+
+            //ensure at least two liberties shared with killer group
+            Boolean sharedLiberty = neighbourGroups.All(neighbourGroup => neighbourGroup.Liberties.Intersect(emptyPoints).Count() >= 2);
+            if (!sharedLiberty) return false;
+
+            //ensure at least two liberties within killer group in survival neighbour group
+            if (neighbourGroups.Any(n => n.Liberties.Count(p => GetKillerGroupFromCache(board, p) != null) < 2))
+                return false;
+
+            //check diagonal at eye point
+            List<Point> eyePoints = emptyPoints.Where(p => EyeHelper.FindEye(board, p, content)).ToList();
+            if (eyePoints.Count > 0 && eyePoints.All(p => board.GetDiagonalNeighbours(p.x, p.y).Any(n => board[n] == Content.Empty && !ImmovableHelper.IsSuicidalMoveForBothPlayers(board, n))))
+                return false;
+
+            int emptyPointCount = killerGroup.Points.Count(k => filledBoard[k] == Content.Empty);
+            if (emptyPointCount >= 3)
+            {
+                //check killer formation for three or more liberties
+                if (!KillerFormationHelper.DeadFormationInBothAlive(filledBoard, killerGroup, emptyPointCount, 2))
+                    return false;
+            }
+            //check killer formation for two liberties
+            else if (KillerFormationHelper.DeadFormationInBothAlive(filledBoard, killerGroup, emptyPointCount))
+                return false;
+
+            //ensure killer group does not have real eye
+            if (emptyPoints.Any(p => EyeHelper.FindRealEyeWithinEmptySpace(board, p, content)))
+                return false;
+
+            //check for increased killer groups
+            foreach (Point emptyPoint in emptyPoints)
+            {
+                Board b = board.MakeMoveOnNewBoard(emptyPoint, content.Opposite(), true);
+                if (b != null && b.MoveGroupLiberties > 1 && GameTryMove.IncreaseKillerGroups(b, board))
+                    return false;
+            }
+            return true;
         }
 
         /// <summary>
