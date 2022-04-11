@@ -301,7 +301,6 @@ namespace Go
                         Boolean killerFormation2 = KillerFormationHelper.SuicidalKillerFormations(b2, board);
                         if (killerFormation && !killerFormation2) return true;
                         if (!killerFormation && killerFormation2) return false;
-                        if (killerFormation && killerFormation2) return false;
                     }
                 }
                 //return only one move if both moves valid
@@ -2009,7 +2008,7 @@ namespace Go
             {
                 Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, eyePoint, c.Opposite());
                 //opponent move at tiger mouth
-                if (opponentMove != null && ImmovableHelper.FindTigerMouth(currentBoard, c.Opposite(), eyePoint))
+                if (opponentMove != null && ImmovableHelper.IsImmovablePoint(eyePoint, c.Opposite(), currentBoard).Item1)
                 {
                     if (killerGroup != null && BothAliveHelper.EnableCheckForPassMove(opponentMove.TryGame.Board))
                         continue;
@@ -2018,21 +2017,18 @@ namespace Go
                 if (killerGroup == null) continue;
                 if (moveKillerGroup == null)
                 {
-                    if (opponentMove == null)
-                    {
-                        //check for non killable group
-                        HashSet<Group> neighbourGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c);
-                        if (neighbourGroups.Any(n => WallHelper.IsNonKillableGroup(currentBoard, n)))
-                            return true;
-                        //check for strong neighbour groups
-                        if (WallHelper.StrongNeighbourGroups(currentBoard, neighbourGroups) && capturedBoard.MoveGroupLiberties > 2)
-                            return true;
-                    }
+                    //check for non killable group
+                    HashSet<Group> neighbourGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c);
+                    if (neighbourGroups.Any(n => WallHelper.IsNonKillableGroup(currentBoard, n)))
+                        return true;
+                    //check for strong neighbour groups
+                    if (WallHelper.StrongNeighbourGroups(currentBoard, neighbourGroups) && capturedBoard.MoveGroupLiberties > 2)
+                        return true;
                     //ensure killer group is empty
                     List<Point> contentPoints = killerGroup.Points.Where(t => currentBoard[t] == killerGroup.Content).ToList();
                     if (contentPoints.Count == 0) return true;
-                    //find real eye at diagonal
-                    if (EyeHelper.FindRealEyeWithinEmptySpace(currentBoard, killerGroup)) return true;
+                    //find immovable point at diagonal
+                    if (ImmovableHelper.IsImmovablePoint(eyePoint, c.Opposite(), currentBoard).Item1) return true;
                 }
                 else
                 {

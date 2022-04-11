@@ -216,11 +216,22 @@ namespace Go
                 List<Point> eyePoints = emptyPoints.Where(p => EyeHelper.FindEye(board, p, content)).ToList();
                 if (eyePoints.Count > 0)
                 {
+                    if (eyePoints.All(p => board.GetDiagonalNeighbours(p.x, p.y).Any(n => board[n] == Content.Empty)))
+                        return false;
                     b = new Board(board);
                     eyePoints.ForEach(p => b[p] = content);
                 }
-                if (KillerFormationHelper.DeadFormationInBothAlive(b, killerGroup))
+
+                int emptyPointCount = killerGroup.Points.Count(k => b[k] == Content.Empty);
+                if (emptyPointCount >= 3)
+                {
+                    if (!KillerFormationHelper.DeadFormationInBothAlive(b, killerGroup, emptyPointCount, 2))
+                        return false;
+                }
+                else if (KillerFormationHelper.DeadFormationInBothAlive(b, killerGroup, emptyPointCount))
                     return false;
+
+
                 //ensure killer group does not have real eye
                 if (emptyPoints.Any(p => EyeHelper.FindRealSolidEyes(p, content, board)))
                     return false;
@@ -242,8 +253,7 @@ namespace Go
                 foreach (Point p in emptyPoints)
                 {
                     //ensure shared liberty
-                    Group contentKillerGroup = BothAliveHelper.GetKillerGroupFromCache(board, p, content);
-                    if (contentKillerGroup == null || board.GetGroupsFromStoneNeighbours(p, content).Any(group => group.Liberties.Count > 1))
+                    if (board.GetGroupsFromStoneNeighbours(p, content).Any(group => group.Liberties.Count > 1))
                     {
                         //ensure suicidal for both players
                         if (!ImmovableHelper.IsSuicidalMoveForBothPlayers(board, p)) return false;

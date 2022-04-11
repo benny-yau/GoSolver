@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Go
 {
@@ -30,8 +28,6 @@ namespace Go
                 List<Point> libertyPoint = stoneNeighbours.Where(n => board[n] != c).ToList();
                 if (libertyPoint.Count != 1) return null;
                 Point q = libertyPoint.First();
-                //return if liberty point is empty
-                if (board[q] == Content.Empty) return q;
                 //make move into tiger mouth
                 Board b = board.MakeMoveOnNewBoard(p, c.Opposite(), true);
                 if (b == null) return q;
@@ -295,7 +291,7 @@ namespace Go
             return IsSuicidalMove(p, c, tryBoard).Item1;
         }
 
-        public static (Boolean, Board) IsSuicidalMove(Point p, Content c, Board tryBoard, Boolean excludeKo = false)
+        public static (Boolean, Board) IsSuicidalMove(Point p, Content c, Board tryBoard, Boolean excludeKo = false, Boolean checkSnapBack = true)
         {
             if (tryBoard == null) return (false, null);
             Board board = tryBoard.MakeMoveOnNewBoard(p, c, excludeKo);
@@ -310,6 +306,11 @@ namespace Go
                     Boolean koEnabled = KoHelper.KoContentEnabled(board.MoveGroup.Content, board.GameInfo);
                     if (!koEnabled) return (true, null);
                     else return (false, board);
+                }
+                if (checkSnapBack)
+                {
+                    Board b = ImmovableHelper.CaptureSuicideGroup(board);
+                    if (b == null || (b.MoveGroup.Points.Count > 1 && b.MoveGroupLiberties == 1)) return (false, board);
                 }
                 return (true, board);
             }
@@ -492,7 +493,7 @@ namespace Go
 
             foreach (Point liberty in groupLiberties)
             {
-                (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board);
+                (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board, false, false);
                 if (b == null) continue;
                 //check if captured
                 if (b.CapturedPoints.Contains(targetGroup.Points.First()))

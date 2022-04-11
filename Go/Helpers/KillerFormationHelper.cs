@@ -12,36 +12,36 @@ namespace Go
         /// <summary>
         /// Formations that are essentially dead and do not require a pass move to test for both alive.
         /// </summary>
-        public static Boolean DeadFormationInBothAlive(Board board, Group killerGroup)
+        public static Boolean DeadFormationInBothAlive(Board board, Group killerGroup, int libertyCount = 2, int requiredCount = 1)
         {
             List<Point> contentPoints = killerGroup.Points.Where(t => board[t] == killerGroup.Content).ToList();
             List<Point> emptyPoints = killerGroup.Points.Where(t => board[t] == Content.Empty).ToList();
-            if (emptyPoints.Count != 2) return false;
-            return PreDeadFormation(board, killerGroup, contentPoints, emptyPoints);
+            if (emptyPoints.Count != libertyCount) return false;
+            return PreDeadFormation(board, killerGroup, contentPoints, emptyPoints, requiredCount);
         }
 
-        public static Boolean PreDeadFormation(Board board, Group killerGroup, List<Point> contentPoints, List<Point> emptyPoints)
+        public static Boolean PreDeadFormation(Board board, Group killerGroup, List<Point> contentPoints, List<Point> emptyPoints, int requiredCount = 1)
         {
             int contentCount = contentPoints.Count;
             Content c = killerGroup.Content;
             if (contentCount == 3)
             {
-                if (TryKillFormation(board, c, emptyPoints, new List<Func<Board, Group, Boolean>>() { OneByThreeFormation, BoxFormation, CrowbarEdgeFormation, TwoByTwoFormation, BentFourCornerFormation }))
+                if (TryKillFormation(board, c, emptyPoints, new List<Func<Board, Group, Boolean>>() { OneByThreeFormation, BoxFormation, CrowbarEdgeFormation, TwoByTwoFormation, BentFourCornerFormation }, requiredCount))
                     return true;
             }
             else if (contentCount == 4)
             {
-                if (TryKillFormation(board, c, emptyPoints, new List<Func<Board, Group, Boolean>>() { KnifeFiveFormation, OneByFourSideFormation, TSideFormation, ThreeByTwoSideFormation }))
+                if (TryKillFormation(board, c, emptyPoints, new List<Func<Board, Group, Boolean>>() { KnifeFiveFormation, OneByFourSideFormation, TSideFormation, ThreeByTwoSideFormation }, requiredCount))
                     return true;
             }
             else if (contentCount == 5)
             {
-                if (TryKillFormation(board, c, emptyPoints, new List<Func<Board, Group, Boolean>>() { FlowerSixFormation, TwoByFourSideFormation, CornerSixFormation }))
+                if (TryKillFormation(board, c, emptyPoints, new List<Func<Board, Group, Boolean>>() { FlowerSixFormation, TwoByFourSideFormation, CornerSixFormation }, requiredCount))
                     return true;
             }
             else if (contentCount == 6)
             {
-                if (TryKillFormation(board, c, emptyPoints, new List<Func<Board, Group, Boolean>>() { FlowerSevenSideFormation }))
+                if (TryKillFormation(board, c, emptyPoints, new List<Func<Board, Group, Boolean>>() { FlowerSevenSideFormation }, requiredCount))
                     return true;
             }
             return false;
@@ -50,15 +50,20 @@ namespace Go
         /// <summary>
         /// Make move at each of the empty points to test if formation created.
         /// </summary>
-        public static Boolean TryKillFormation(Board board, Content c, List<Point> emptyPoints, List<Func<Board, Group, Boolean>> functions)
+        public static Boolean TryKillFormation(Board board, Content c, List<Point> emptyPoints, List<Func<Board, Group, Boolean>> functions, int requiredCount = 1)
         {
+            int count = 0;
             foreach (Point emptyPoint in emptyPoints)
             {
                 Board b = board.MakeMoveOnNewBoard(emptyPoint, c);
                 if (b == null) return false;
                 Group group = b.GetGroupAt(emptyPoint);
                 if (functions.Any(func => func(b, group)))
-                    return true;
+                {
+                    count++;
+                    if (count >= requiredCount)
+                        return true;
+                }
             }
             return false;
         }
@@ -432,7 +437,7 @@ namespace Go
             if (contentPoints.Count() != 4) return false;
             if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 2) == 2)
             {
-                if (contentPoints.GroupBy(p => p.x).All(group => group.Count() == 2) || contentPoints.GroupBy(p => p.y).All(group => group.Count() == 2))
+                if (contentPoints.GroupBy(p => p.x).Count() == 2 || contentPoints.GroupBy(p => p.y).Count() == 2)
                     return true;
             }
             return false;
@@ -466,7 +471,7 @@ namespace Go
             if (contentPoints.Count() != 4) return false;
             if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 2) == 2)
             {
-                if (contentPoints.GroupBy(p => p.x).Any(group => group.Count() == 3) || contentPoints.GroupBy(p => p.y).Any(group => group.Count() == 3))
+                if (contentPoints.GroupBy(p => p.x).Count() == 3 || contentPoints.GroupBy(p => p.y).Count() == 3)
                     return true;
             }
             return false;
@@ -662,7 +667,7 @@ namespace Go
             if (contentPoints.Count() != 5) return false;
             if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 2) == 3)
             {
-                if (contentPoints.GroupBy(p => p.x).Any(group => group.Count() == 3) || contentPoints.GroupBy(p => p.y).Any(group => group.Count() == 3))
+                if ((contentPoints.GroupBy(p => p.x).Count() == 4 && contentPoints.GroupBy(p => p.y).Count() == 2) || (contentPoints.GroupBy(p => p.x).Count() == 2 && contentPoints.GroupBy(p => p.y).Count() == 4))
                 {
                     Boolean edge = (contentPoints.Count(p => p.x == 0) == 2 || contentPoints.Count(p => p.x == tryBoard.SizeX - 1) == 2 || contentPoints.Count(p => p.y == 0) == 2 || contentPoints.Count(p => p.y == tryBoard.SizeY - 1) == 2);
                     if (!edge) return false;
