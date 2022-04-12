@@ -175,19 +175,24 @@ namespace Go
             if (neighbourGroups.Any(g => g.Liberties.Count == 1 && BothAliveHelper.GetKillerGroupFromCache(board, g.Points.First(), g.Content.Opposite()) == null))
                 return false;
 
+            //fill eye points with content
             Board filledBoard = FillEyePointsBoard(board, killerGroup);
 
             //check for simple seki and complex seki
             List<Point> contentPoints = killerGroup.Points.Where(t => board[t] == killerGroup.Content).ToList();
             List<Group> contentGroups = filledBoard.GetGroupsFromPoints(contentPoints).ToList();
-
             //more than one content group
             if (contentGroups.Count > 2 || (contentGroups.Count == 2 && emptyPoints.Count != 2)) return false;
             if (contentGroups.Count == 2 && !LinkHelper.IsDiagonallyConnectedGroups(board, contentGroups[0], contentGroups[1])) return false;
 
             if (killerGroups.Count == 1)  //simple seki
             {
-                return CheckSimpleSeki(board, filledBoard, neighbourGroups, killerGroup, emptyPoints, contentPoints, contentGroups);
+                if (neighbourGroups.Count > 2) return false;
+                //at least three content points in killer group
+                if (contentPoints.Count < 3) return false;
+                //at least two liberties for content groups in filled board
+                if (contentGroups.Any(group => group.Liberties.Count == 1)) return false;
+                return CheckSimpleSeki(board, filledBoard, neighbourGroups, killerGroup, emptyPoints);
             }
             else if (killerGroups.Count >= 2) //complex seki
             {
@@ -236,17 +241,9 @@ namespace Go
         /// Ensure killer group does not have real eye <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_TianLongTu_Q16424_2" />
         /// Check for increased killer groups <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31445_2" />
         /// </summary>
-        private static Boolean CheckSimpleSeki(Board board, Board filledBoard, List<Group> neighbourGroups, Group killerGroup, List<Point> emptyPoints, List<Point> contentPoints, List<Group> contentGroups)
+        private static Boolean CheckSimpleSeki(Board board, Board filledBoard, List<Group> neighbourGroups, Group killerGroup, List<Point> emptyPoints)
         {
             Content content = killerGroup.Content;
-            if (neighbourGroups.Count > 2) return false;
-            //at least three content points in killer group
-            if (contentPoints.Count < 3) return false;
-            //two liberties for content group
-            Boolean oneLiberty = contentGroups.Any(group => group.Liberties.Count == 1);
-            Boolean koEnabled = KoHelper.KoSurvivalEnabled(SurviveOrKill.Survive, board.GameInfo);
-            if (koEnabled && oneLiberty) return false;
-            else if (oneLiberty && (contentGroups.Count != 1 || contentGroups.Any(group => group.Liberties.Count != 2))) return false;
 
             //ensure at least two liberties shared with killer group
             Boolean sharedLiberty = neighbourGroups.All(neighbourGroup => neighbourGroup.Liberties.Intersect(emptyPoints).Count() >= 2);
@@ -258,7 +255,7 @@ namespace Go
 
             //check diagonal at eye point
             List<Point> eyePoints = emptyPoints.Where(p => EyeHelper.FindEye(board, p, content)).ToList();
-            if (eyePoints.Count > 0 && eyePoints.All(p => board.GetDiagonalNeighbours(p.x, p.y).Any(n => board[n] == Content.Empty && !ImmovableHelper.IsSuicidalMoveForBothPlayers(board, n))))
+            if (eyePoints.Any(p => board.GetDiagonalNeighbours(p.x, p.y).Any(n => board[n] == Content.Empty && !ImmovableHelper.IsSuicidalMoveForBothPlayers(board, n))))
                 return false;
 
             int emptyPointCount = killerGroup.Points.Count(k => filledBoard[k] == Content.Empty);

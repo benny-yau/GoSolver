@@ -171,11 +171,13 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Board currentBoard = tryMove.CurrentGame.Board;
             List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).ToList();
-            List<Group> suicidalEyeGroups = eyeGroups.Where(e => e.Liberties.Count == 2 && tryBoard.GetNeighbourGroups(e).All(g => !WallHelper.IsNonKillableGroup(tryBoard, g))).ToList();
+            List<Group> suicidalEyeGroups = eyeGroups.Where(e => e.Liberties.Count == 2).ToList();
             foreach (Group eyeGroup in suicidalEyeGroups)
             {
                 List<Point> liberties = eyeGroup.Liberties.Except(new List<Point> { move }).ToList();
                 if (liberties.Count != 1) continue;
+                if (currentBoard.GetGroupsFromStoneNeighbours(liberties.First(), c).Any(g => WallHelper.IsNonKillableGroup(tryBoard, g))) continue;
+
                 (Boolean suicide, Board b) = ImmovableHelper.IsSuicidalMove(liberties.First(), eyeGroup.Content, currentBoard);
                 if (suicide)
                     return (true, liberties.First());
@@ -1967,13 +1969,14 @@ namespace Go
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_TianLongTu_Q16827" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_GuanZiPu_Q18860" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WuQingYuan_Q15126" />
-        /// Check two point atari move
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" />
+        /// Check two point atari move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" />
         /// Check corner three formation <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_Q18860" />
         /// Check possible corner three formation <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WuQingYuan_Q31503_2" />
         /// Opponent move at tiger mouth <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A151_101Weiqi_2" />
         /// Check for strong neighbour groups <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario3dan22" />
+        /// Check for suicide at big tiger mouth <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_Corner_A87" />
+        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_TianLongTu_Q16470" />
         /// Find real eyes at both spaces <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_Nie4" />
         /// </summary>
         private static Boolean RedundantTigerMouth(GameTryMove tryMove, GameTryMove opponentMove = null)
@@ -2023,7 +2026,13 @@ namespace Go
                         return true;
                     //check for strong neighbour groups
                     if (WallHelper.StrongNeighbourGroups(currentBoard, neighbourGroups) && capturedBoard.MoveGroupLiberties > 2)
+                    {
+                        //check for suicide at big tiger mouth
+                        if (opponentMove != null && SuicideAtBigTigerMouth(opponentMove, c.Opposite()).Item1)
+                            continue;
                         return true;
+                    }
+
                     //ensure killer group is empty
                     List<Point> contentPoints = killerGroup.Points.Where(t => currentBoard[t] == killerGroup.Content).ToList();
                     if (contentPoints.Count == 0) return true;
