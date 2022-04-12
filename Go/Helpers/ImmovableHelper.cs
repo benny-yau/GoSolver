@@ -223,23 +223,20 @@ namespace Go
         /// Recursive connect and die <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A44_101Weiqi" />
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q17255" />
         /// </summary>
-        public static (Boolean, Point?, Board) UnescapableGroup(Board tryBoard, Group group, Boolean checkAtari = true)
+        public static (Boolean, Point?, Board) UnescapableGroup(Board tryBoard, Group group)
         {
             Point? libertyPoint = ImmovableHelper.GetLibertyPointOfSuicide(tryBoard, group);
             if (libertyPoint == null) return (false, null, null);
 
             //check if atari any neighbour groups
-            if (checkAtari)
-            {
-                Board captureBoard = EscapeByCapture(tryBoard, group);
-                if (captureBoard != null)
-                    return (false, null, captureBoard);
+            Board captureBoard = EscapeByCapture(tryBoard, group);
+            if (captureBoard != null)
+                return (false, null, captureBoard);
 
-                //double ko fight
-                (Boolean doubleKo, Board b) = KoHelper.DoubleKoFight(tryBoard, group);
-                if (doubleKo)
-                    return (false, null, b);
-            }
+            //double ko fight
+            (Boolean doubleKo, Board b) = KoHelper.DoubleKoFight(tryBoard, group);
+            if (doubleKo)
+                return (false, null, b);
 
             //move at liberty is suicidal or end crawling move
             (Boolean isSuicidal, Board escapeBoard) = IsSuicidalMove(libertyPoint.Value, group.Content, tryBoard);

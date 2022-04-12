@@ -130,31 +130,26 @@ namespace Go
         /// For simple seki which is usually the case, find one killer group with at least two liberties, and one survival neighbour group with at least two liberties. Simple seki <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_SimpleSeki" />
         /// In most cases, there is only one killer group and one neighbour survival group, but there can also be two neighbour survival groups. Simple seki with two neighbour survival groups <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan16" />
-        /// One killer group with eye <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A27" />
+        /// Fill eye points with content <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A27" />
         /// Two liberties for content group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_B43" />
-        /// Two liberties within killer group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A87" />
-        /// Ensure at least two liberties in survival neighbour group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan22_2" />
         /// More than one content group in simple seki <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31646" />
         /// </summary>
         public static Boolean EnableCheckForPassMove(Board board, List<GameTryMove> tryMoves = null)
         {
             List<Group> killerGroups = GetCorneredKillerGroup(board);
             if (killerGroups.Count == 0) return false;
-            if (UniquePatternsHelper.CheckForTenThousandYearKo(board))
-                return true;
 
             Group killerGroup = killerGroups[0];
             Content content = killerGroup.Content;
             List<Point> emptyPoints = killerGroup.Points.Where(k => board[k] == Content.Empty).ToList();
+            //two to four liberties for both alive
             if (emptyPoints.Count < 2 || emptyPoints.Count > 4) return false;
+            //single empty point found for more than two empty points
             if (emptyPoints.Count > 2 && !emptyPoints.Any(p => board.GetStoneNeighbours(p.x, p.y).All(n => board[n] != Content.Empty)))
                 return false;
 
             if (tryMoves != null)
             {
-                if (tryMoves.Any(t => t.TryGame.Board.CapturedPoints.Count() > 0))
-                    return false;
-
                 //all game try moves should be within killer group to enable pass move
                 List<GameTryMove> externalMoves = tryMoves.Where(p => !emptyPoints.Contains(p.Move) && !ImmovableHelper.SinglePointOpponentImmovable(p)).ToList();
                 if (externalMoves.Count > 0)
@@ -233,6 +228,7 @@ namespace Go
 
         /// <summary>
         /// Check simple seki.
+        /// Ensure at least two liberties in survival neighbour group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A87" />
         /// Cover eye point <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_B43" />
         /// Check diagonal at eye point <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A75" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30275" />
@@ -244,10 +240,6 @@ namespace Go
         private static Boolean CheckSimpleSeki(Board board, Board filledBoard, List<Group> neighbourGroups, Group killerGroup, List<Point> emptyPoints)
         {
             Content content = killerGroup.Content;
-
-            //ensure at least two liberties shared with killer group
-            Boolean sharedLiberty = neighbourGroups.All(neighbourGroup => neighbourGroup.Liberties.Intersect(emptyPoints).Count() >= 2);
-            if (!sharedLiberty) return false;
 
             //ensure at least two liberties within killer group in survival neighbour group
             if (neighbourGroups.Any(n => n.Liberties.Count(p => GetKillerGroupFromCache(board, p) != null) < 2))

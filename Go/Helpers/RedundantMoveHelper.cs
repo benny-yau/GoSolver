@@ -342,7 +342,7 @@ namespace Go
                 return false;
 
             //group can escape at liberty
-            (Boolean result, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(currentBoard, atariTarget, false);
+            (Boolean result, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(currentBoard, atariTarget);
             if (result || tryMove.Move.Equals(escapeBoard.Move))
                 return false;
 
@@ -1729,14 +1729,11 @@ namespace Go
         {
             GameTryMove gameTryMove;
             List<Group> killerGroups = BothAliveHelper.GetCorneredKillerGroup(g.Board);
-
             if (IsImmovableKill(g, killerGroups))
                 gameTryMove = SpecificKillWithImmovablePoints(g.Board, neutralPointMoves, killerGroups[0]);
             else
                 gameTryMove = SpecificKillWithLibertyFight(g.Board, neutralPointMoves, killerGroups);
-
             return gameTryMove;
-
         }
 
         /// <summary>
@@ -1749,7 +1746,7 @@ namespace Go
             Group killerGroup = killerGroups[0];
             //more than one neighbour group
             if (g.Board.GetNeighbourGroups(killerGroup).Count == 1) return false;
-            List<Point> killerLiberties = killerGroups[0].Points.Where(p => g.Board[p] == Content.Empty).ToList();
+            List<Point> killerLiberties = killerGroup.Points.Where(p => g.Board[p] == Content.Empty).ToList();
             //ensure two killer liberties without covered eye
             if (killerLiberties.Count(liberty => !EyeHelper.FindCoveredEye(g.Board, liberty, killerGroup.Content)) != 2)
                 return false;
