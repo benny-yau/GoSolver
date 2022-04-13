@@ -878,10 +878,17 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A18" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.FindCoveredEyeMove(Go.GameTryMove)">
+        <member name="M:Go.RedundantMoveHelper.RedundantCoveredEyeMove(Go.GameTryMove)">
+            <summary>
+            Redundant covered eye move.
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.FindCoveredEyeMove(Go.GameTryMove,Go.GameTryMove)">
             <summary>
             Remove all covered eye moves for survival.
+            <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" /> 
             Ensure all groups have liberty more than two <see cref="!:UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_Corner_B41" /> 
+            Check diagonal eye killer group for opponent move <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario4dan10" /> 
             Check if link for groups <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" /> 
             Check if eye point is link for groups <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" /> 
             </summary>

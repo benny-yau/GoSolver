@@ -179,11 +179,14 @@ namespace Go
             move.IsEye = RedundantMoveHelper.FindPotentialEye(move);
             if (move.IsEye)
                 return;
-            move.IsCoveredEyeMove = RedundantMoveHelper.FindCoveredEyeMove(move);
+            move.IsCoveredEyeMove = RedundantMoveHelper.RedundantCoveredEyeMove(move);
             if (move.IsCoveredEyeMove)
                 return;
             move.IsFillKoEyeMove = RedundantMoveHelper.FillKoEyeMove(move);
             if (move.IsFillKoEyeMove)
+                return;
+            move.IsLeapMove = RedundantMoveHelper.SurvivalLeapMove(move);
+            if (move.IsLeapMove)
                 return;
             move.IsSuicidal = RedundantMoveHelper.SuicidalRedundantMove(move);
             if (move.IsSuicidal)
@@ -206,9 +209,6 @@ namespace Go
             move.IsRedundantEyeFiller = RedundantMoveHelper.SurvivalEyeFillerMove(move);
             if (move.IsRedundantEyeFiller)
                 return;
-            move.IsLeapMove = RedundantMoveHelper.SurvivalLeapMove(move);
-            if (move.IsLeapMove)
-                return;
             move.IsAtariRedundant = RedundantMoveHelper.AtariRedundantMove(move);
             if (move.IsAtariRedundant)
                 return;
@@ -223,8 +223,14 @@ namespace Go
             move.IsEye = RedundantMoveHelper.FindPotentialEye(move);
             if (move.IsEye)
                 return;
+            move.IsCoveredEyeMove = RedundantMoveHelper.RedundantCoveredEyeMove(move);
+            if (move.IsCoveredEyeMove)
+                return;
             move.IsFillKoEyeMove = RedundantMoveHelper.FillKoEyeMove(move);
             if (move.IsFillKoEyeMove)
+                return;
+            move.IsLeapMove = RedundantMoveHelper.KillLeapMove(move);
+            if (move.IsLeapMove)
                 return;
             move.IsSuicidal = RedundantMoveHelper.SuicidalRedundantMove(move);
             if (move.IsSuicidal)
@@ -246,9 +252,6 @@ namespace Go
                 return;
             move.IsRedundantEyeFiller = RedundantMoveHelper.KillEyeFillerMove(move);
             if (move.IsRedundantEyeFiller)
-                return;
-            move.IsLeapMove = RedundantMoveHelper.KillLeapMove(move);
-            if (move.IsLeapMove)
                 return;
             move.IsAtariRedundant = RedundantMoveHelper.AtariRedundantMove(move);
             if (move.IsAtariRedundant)

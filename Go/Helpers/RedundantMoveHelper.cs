@@ -41,14 +41,35 @@ namespace Go
         }
         #endregion
 
-        #region find covered eye move
+        #region redundant covered eye move
+
+        /// <summary>
+        /// Redundant covered eye move.
+        /// </summary>
+        public static Boolean RedundantCoveredEyeMove(GameTryMove tryMove)
+        {
+            if (FindCoveredEyeMove(tryMove))
+                return true;
+
+            //find tiger mouth for opponent
+            GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
+            if (opponentMove == null) return false;
+
+            if (FindCoveredEyeMove(opponentMove, tryMove))
+                return true;
+
+            return false;
+        }
+
         /// <summary>
         /// Remove all covered eye moves for survival.
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" /> 
         /// Ensure all groups have liberty more than two <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_Corner_B41" /> 
+        /// Check diagonal eye killer group for opponent move <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario4dan10" /> 
         /// Check if link for groups <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" /> 
         /// Check if eye point is link for groups <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" /> 
         /// </summary>
-        public static Boolean FindCoveredEyeMove(GameTryMove tryMove)
+        public static Boolean FindCoveredEyeMove(GameTryMove tryMove, GameTryMove opponentTryMove = null)
         {
             Board tryBoard = tryMove.TryGame.Board;
             Board currentBoard = tryMove.CurrentGame.Board;
@@ -68,6 +89,17 @@ namespace Go
             {
                 if (group.Liberties.Count <= 2 && group.Liberties.Any(x => ImmovableHelper.IsSuicidalMove(currentBoard, x, c)))
                     return false;
+            }
+
+            //check diagonal eye killer group for opponent move
+            if (opponentTryMove != null)
+            {
+                List<Point> emptyDiagonals = currentBoard.GetDiagonalNeighbours(q.x, q.y).Where(n => currentBoard[n] == Content.Empty).ToList();
+                foreach (Point diagonal in emptyDiagonals)
+                {
+                    Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, diagonal, c);
+                    if (killerGroup != null && killerGroup.Points.Count > 5) return false;
+                }
             }
 
             //check if link for groups
