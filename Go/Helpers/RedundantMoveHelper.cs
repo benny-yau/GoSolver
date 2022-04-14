@@ -45,13 +45,14 @@ namespace Go
 
         /// <summary>
         /// Redundant covered eye move.
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" /> 
         /// </summary>
         public static Boolean RedundantCoveredEyeMove(GameTryMove tryMove)
         {
             if (FindCoveredEyeMove(tryMove))
                 return true;
 
-            //find tiger mouth for opponent
+            //find covered eye for opponent
             GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
             if (opponentMove == null) return false;
 
@@ -62,8 +63,6 @@ namespace Go
         }
 
         /// <summary>
-        /// Remove all covered eye moves for survival.
-        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" /> 
         /// Ensure all groups have liberty more than two <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_Corner_B41" /> 
         /// Check diagonal eye killer group for opponent move <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario4dan10" /> 
         /// Check if link for groups <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" /> 
@@ -105,12 +104,6 @@ namespace Go
             //check if link for groups
             if (tryMove.LinkForGroups())
                 return false;
-            //check if eye point is link for groups
-            Board b = new Board(currentBoard);
-            b[q] = c;
-            b.Move = q;
-            if (LinkHelper.LinkForGroups(b, currentBoard))
-                return false;
             return true;
         }
 
@@ -126,8 +119,8 @@ namespace Go
             List<Point> emptyDiagonals = diagonals.Where(q => tryBoard[q] == Content.Empty).ToList();
             if (emptyDiagonals.Count > 0 && emptyDiagonals.All(q => EyeHelper.FindNonSemiSolidEye(currentBoard, q, c))) return false;
 
-            IEnumerable<Point> adjacentDiagonals = tryBoard.GetStoneNeighbours().Intersect(diagonals);
-            if (adjacentDiagonals.All(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
+            List<Point> adjacentDiagonals = tryBoard.GetStoneNeighbours().Where(n => tryBoard[n] == c.Opposite()).Intersect(diagonals).ToList();
+            if (adjacentDiagonals.Count > 0 && adjacentDiagonals.All(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
                 return true;
             return false;
         }

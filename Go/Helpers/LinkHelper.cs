@@ -20,7 +20,8 @@ namespace Go
             Point move = tryBoard.Move.Value;
             Content c = tryBoard[move];
 
-            List<Point> groupPoints = currentBoard.GetStoneAndDiagonalNeighbours(move.x, move.y).Where(n => tryBoard[n] == c).ToList();
+            List<Point> groupPoints = currentBoard.GetStoneAndDiagonalNeighbours(move.x, move.y).Where(n => currentBoard[n] == c).ToList();
+            tryBoard.CapturedList.ForEach(q => groupPoints.AddRange(q.Neighbours.Where(n => currentBoard[n] == c)));
             List<Group> groups = currentBoard.GetGroupsFromPoints(groupPoints).ToList();
             if (groups.Count <= 1) return false;
             for (int i = 0; i <= groups.Count - 2; i++)
