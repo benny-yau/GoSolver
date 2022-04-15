@@ -738,8 +738,7 @@ namespace Go
 
             //check killable group with two or less liberties
             IEnumerable<Group> neighbourGroups = tryBoard.GetNeighbourGroups();
-            if (!neighbourGroups.Any(group => WallHelper.IsStrongNeighbourGroup(tryBoard, group))) return false;
-            //if (!neighbourGroups.Any(group => group.Liberties.Count > 2)) return false;
+            if (!neighbourGroups.Any(group => group.Liberties.Count > 2)) return false;
             Group weakGroup = neighbourGroups.FirstOrDefault(group => (group.Points.Count >= 2 && group.Liberties.Count == 2 && !WallHelper.IsNonKillableGroup(tryBoard, group)));
             if (weakGroup == null) return false;
             if (tryBoard.GetNeighbourGroups(weakGroup).Any(g => WallHelper.IsNonKillableGroup(tryBoard, g))) return false;
