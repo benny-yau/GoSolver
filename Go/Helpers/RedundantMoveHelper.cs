@@ -66,7 +66,8 @@ namespace Go
         /// Ensure all groups have liberty more than two <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_Corner_B41" /> 
         /// Check diagonal eye killer group for opponent move <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario4dan10" /> 
         /// Check if link for groups <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" /> 
-        /// Check if eye point is link for groups <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" /> 
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" /> 
+        /// Check no eye for survival <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A52" /> 
         /// </summary>
         public static Boolean FindCoveredEyeMove(GameTryMove tryMove, GameTryMove opponentTryMove = null)
         {
@@ -78,13 +79,13 @@ namespace Go
             //find eye
             List<Point> eyePoints = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindEye(tryBoard, n.x, n.y, c)).ToList();
             if (eyePoints.Count != 1) return false;
-            Point q = eyePoints.First();
+            Point p = eyePoints.First();
 
             //find covered eye where covered point is non killable
-            if (!RedundantCoveredEye(currentBoard, tryBoard, q, c)) return false;
+            if (!RedundantCoveredEye(currentBoard, tryBoard, p, c)) return false;
 
             //if groups have liberty less or equals to two and moves at liberties are suicidal then not redundant
-            foreach (Group group in currentBoard.GetGroupsFromStoneNeighbours(q, c.Opposite()))
+            foreach (Group group in currentBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()))
             {
                 if (group.Liberties.Count <= 2 && group.Liberties.Any(x => ImmovableHelper.IsSuicidalMove(currentBoard, x, c)))
                     return false;
@@ -93,7 +94,7 @@ namespace Go
             //check diagonal eye killer group for opponent move
             if (opponentTryMove != null)
             {
-                List<Point> emptyDiagonals = currentBoard.GetDiagonalNeighbours(q.x, q.y).Where(n => currentBoard[n] == Content.Empty).ToList();
+                List<Point> emptyDiagonals = currentBoard.GetDiagonalNeighbours(p.x, p.y).Where(n => currentBoard[n] == Content.Empty).ToList();
                 foreach (Point diagonal in emptyDiagonals)
                 {
                     Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, diagonal, c);
@@ -103,6 +104,10 @@ namespace Go
 
             //check if link for groups
             if (tryMove.LinkForGroups())
+                return false;
+
+            //check no eye for survival
+            if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(tryBoard))
                 return false;
             return true;
         }
@@ -119,7 +124,7 @@ namespace Go
             List<Point> emptyDiagonals = diagonals.Where(q => tryBoard[q] == Content.Empty).ToList();
             if (emptyDiagonals.Count > 0 && emptyDiagonals.All(q => EyeHelper.FindNonSemiSolidEye(currentBoard, q, c))) return false;
 
-            List<Point> adjacentDiagonals = tryBoard.GetStoneNeighbours().Where(n => tryBoard[n] == c.Opposite()).Intersect(diagonals).ToList();
+            List<Point> adjacentDiagonals = diagonals.Where(n => tryBoard[n] == c.Opposite()).ToList();
             if (adjacentDiagonals.Count > 0 && adjacentDiagonals.All(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
                 return true;
             return false;
@@ -733,7 +738,8 @@ namespace Go
 
             //check killable group with two or less liberties
             IEnumerable<Group> neighbourGroups = tryBoard.GetNeighbourGroups();
-            if (!neighbourGroups.Any(group => group.Liberties.Count > 2)) return false;
+            if (!neighbourGroups.Any(group => WallHelper.IsStrongNeighbourGroup(tryBoard, group))) return false;
+            //if (!neighbourGroups.Any(group => group.Liberties.Count > 2)) return false;
             Group weakGroup = neighbourGroups.FirstOrDefault(group => (group.Points.Count >= 2 && group.Liberties.Count == 2 && !WallHelper.IsNonKillableGroup(tryBoard, group)));
             if (weakGroup == null) return false;
             if (tryBoard.GetNeighbourGroups(weakGroup).Any(g => WallHelper.IsNonKillableGroup(tryBoard, g))) return false;
@@ -1057,7 +1063,7 @@ namespace Go
             {
                 //check for liberty fight
                 Board b = capturedBoard.MakeMoveOnNewBoard(liberty, c, true);
-                if (b != null && b.GetNeighbourGroups(capturedBoard.MoveGroup).All(group => group.Liberties.Count > 2))
+                if (b != null && WallHelper.StrongNeighbourGroups(b, b.GetNeighbourGroups(capturedBoard.MoveGroup)))
                     return true;
             }
 
@@ -1606,10 +1612,8 @@ namespace Go
         public static Boolean ValidateNeutralPoint(GameTryMove tryMove)
         {
             Board tryBoard = tryMove.TryGame.Board;
-            Point move = tryMove.Move;
             //ensure eye cannot be created at any stone or diagonal neighbours
-            IEnumerable<Point> neighbourPts = tryBoard.GetStoneAndDiagonalNeighbours();
-            if (neighbourPts.Any(q => !WallHelper.NoEyeForSurvival(tryBoard, q)))
+            if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(tryBoard))
                 return false;
             //check link for groups
             if (tryMove.LinkForGroups())

@@ -889,7 +889,8 @@
             Ensure all groups have liberty more than two <see cref="!:UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_Corner_B41" /> 
             Check diagonal eye killer group for opponent move <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario4dan10" /> 
             Check if link for groups <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" /> 
-            Check if eye point is link for groups <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" /> 
+            <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" /> 
+            Check no eye for survival <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A52" /> 
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.RedundantCoveredEye(Go.Board,Go.Board,Go.Point,Go.Content)">
@@ -1588,6 +1589,11 @@
         <member name="M:Go.WallHelper.NoEyeForSurvival(Go.Board,Go.Point)">
             <summary>
             Check if move creates eye for survival. If all stone and diagonal neighbours is same content or is wall then move is redundant neutral point.
+            </summary>
+        </member>
+        <member name="M:Go.WallHelper.NoEyeForSurvivalAtNeighbourPoints(Go.Board)">
+            <summary>
+            Check no eye for survival.
             </summary>
         </member>
         <member name="M:Go.WallHelper.IsWall(Go.Board,Go.Point,System.Boolean)">

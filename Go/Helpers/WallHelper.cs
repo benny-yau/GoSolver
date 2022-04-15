@@ -35,6 +35,17 @@ namespace Go
         }
 
         /// <summary>
+        /// Check no eye for survival.
+        /// </summary>
+        public static Boolean NoEyeForSurvivalAtNeighbourPoints(Board tryBoard)
+        {
+            IEnumerable<Point> neighbourPts = tryBoard.GetStoneAndDiagonalNeighbours();
+            if (neighbourPts.Any(q => !NoEyeForSurvival(tryBoard, q)))
+                return false;
+            return true;
+        }
+
+        /// <summary>
         /// Wall is either opposite content which is non killable or empty point which is not movable.
         /// </summary>
         public static Boolean IsWall(Board board, Point p, Boolean outsideBoard = false)
@@ -127,15 +138,18 @@ namespace Go
         public static Boolean StrongNeighbourGroups(Board board, IEnumerable<Group> neighbourGroups)
         {
             if (!neighbourGroups.Any()) return false;
-            Content c = neighbourGroups.First().Content;
+            if (neighbourGroups.Any(group => !IsStrongNeighbourGroup(board, group)))
+                return false;
+            return true;
+        }
 
-            foreach (Group group in neighbourGroups)
-            {
-                //exclude covered eye
-                int liberties = group.Liberties.Count(liberty => !EyeHelper.FindCoveredEye(board, liberty, c));
-                if (liberties < 2 || (liberties == 2 && group.Liberties.Any(liberty => !ImmovableHelper.IsSuicidalMove(board, liberty, c.Opposite()))))
-                    return false;
-            }
+        public static Boolean IsStrongNeighbourGroup(Board board, Group group)
+        {
+            Content c = group.Content;
+            //exclude covered eye
+            int liberties = group.Liberties.Count(liberty => !EyeHelper.FindCoveredEye(board, liberty, c));
+            if (liberties < 2 || (liberties == 2 && group.Liberties.Any(liberty => !ImmovableHelper.IsSuicidalMove(board, liberty, c.Opposite()))))
+                return false;
             return true;
         }
     }
