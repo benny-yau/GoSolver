@@ -106,7 +106,7 @@ namespace Go
                 foreach (Point diagonal in emptyDiagonals)
                 {
                     Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, diagonal, c);
-                    if (killerGroup != null && killerGroup.Points.Count > 5) return false;
+                    if (killerGroup == null || killerGroup.Points.Count > 5) return false;
                 }
             }
 
@@ -2689,6 +2689,7 @@ namespace Go
         {
             Boolean koEnabled = KoHelper.KoSurvivalEnabled(SurviveOrKill.Survive, tryMove.CurrentGame.GameInfo);
             if (!koEnabled && !PossibilityOfDoubleKo(tryMove)) return true;
+            if (koEnabled && CheckKillerKoWithinKillerGroup(tryMove)) return true;
             if (!tryMove.IsNegligibleForKo)
                 return false;
             return CheckRedundantKo(tryMove);
@@ -2713,6 +2714,7 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Boolean koEnabled = KoHelper.KoSurvivalEnabled(SurviveOrKill.Kill, tryMove.CurrentGame.GameInfo);
             if (!koEnabled && !PossibilityOfDoubleKo(tryMove)) return true;
+            if (koEnabled && CheckKillerKoWithinKillerGroup(tryMove)) return true;
             if (!tryMove.IsNegligibleForKo)
                 return false;
             Content c = tryMove.MoveContent;
@@ -2809,6 +2811,31 @@ namespace Go
                 return false;
 
             return true;
+        }
+
+        /// <summary>
+        /// Check killer ko within killer group.
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B39" /> 
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" /> 
+        /// </summary>
+        public static Boolean CheckKillerKoWithinKillerGroup(GameTryMove tryMove)
+        {
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            if (tryBoard.singlePointCapture == null) return false;
+            Point capturedPoint = tryBoard.singlePointCapture.Value;
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
+            if (killerGroup == null) return false;
+            if (tryBoard.GetNeighbourGroups(killerGroup).All(n => BothAliveHelper.GetKillerGroupFromCache(tryBoard, n.Points.First(), c) != null && WallHelper.IsStrongNeighbourGroup(tryBoard, n)))
+            {
+                List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(capturedPoint, c.Opposite()).ToList();
+                ngroups.RemoveAll(ngroup => ngroup.Points.Contains(move));
+                if (ngroups.Count == 1 && currentBoard.GetGroupLiberties(ngroups.First().Points.First()) == 1)
+                    return true;
+            }
+            return false;
         }
 
         #endregion

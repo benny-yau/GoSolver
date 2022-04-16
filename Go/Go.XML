@@ -1514,6 +1514,13 @@
             Real eye at diagonal <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi" /> 
             </summary>
         </member>
+        <member name="M:Go.RedundantMoveHelper.CheckKillerKoWithinKillerGroup(Go.GameTryMove)">
+            <summary>
+            Check killer ko within killer group.
+            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B39" /> 
+            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" /> 
+            </summary>
+        </member>
         <member name="M:Go.ResultHelper.GameEndedMessage(Go.ConfirmAliveResult,Go.Game)">
             <summary>
             Display game ended message from flags in confirm alive result.
