@@ -109,9 +109,9 @@ namespace Go
 
         public static Boolean IncreaseKillerGroups(Board tryBoard, Board currentBoard)
         {
-
-            int tryCount = BothAliveHelper.GetCorneredKillerGroup(tryBoard, false).Count;
-            int currentCount = BothAliveHelper.GetCorneredKillerGroup(currentBoard, false).Count;
+            Content c = tryBoard.MoveGroup.Content;
+            int tryCount = BothAliveHelper.GetCorneredKillerGroup(tryBoard, false, c).Count;
+            int currentCount = BothAliveHelper.GetCorneredKillerGroup(currentBoard, false, c).Count;
             return (tryCount > currentCount);
         }
 

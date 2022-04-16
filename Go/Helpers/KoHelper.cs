@@ -45,14 +45,15 @@ namespace Go
         /// <summary>
         /// Reverse ko fight.
         /// </summary>
-        public static Boolean IsReverseKoFight(Board tryBoard, Point p, Content c)
+        public static Boolean IsReverseKoFight(Board tryBoard, Boolean checkKoEnabled = true)
         {
-            Board board = tryBoard.MakeMoveOnNewBoard(p, c);
-            if (board == null) return false;
-            List<Point> eyePoints = board.GetStoneNeighbours().Where(n => EyeHelper.FindEye(board, n, c)).ToList();
+            Point p = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            if (checkKoEnabled && !KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
+            List<Point> eyePoints = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindEye(tryBoard, n, c)).ToList();
             foreach (Point eyePoint in eyePoints)
             {
-                List<Group> eyeGroups = board.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()).ToList();
+                List<Group> eyeGroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()).ToList();
                 if (eyeGroups.Any(n => n.Points.Count == 1 && n.Liberties.Count == 1))
                 {
                     if (eyeGroups.Count(g => g.Liberties.Count == 1) != 1) continue;
@@ -60,6 +61,13 @@ namespace Go
                 }
             }
             return false;
+        }
+
+        public static Boolean IsReverseKoFight(Board tryBoard, Point p, Content c, Boolean checkKoEnabled = true)
+        {
+            Board board = tryBoard.MakeMoveOnNewBoard(p, c);
+            if (board == null) return false;
+            return IsReverseKoFight(board, checkKoEnabled);
         }
 
 

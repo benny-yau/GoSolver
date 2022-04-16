@@ -64,6 +64,8 @@ namespace Go
 
         /// <summary>
         /// Ensure all groups have liberty more than two <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_Corner_B41" /> 
+        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_A38" /> 
+        /// Ensure neighbour groups are escapable <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31398" /> 
         /// Check diagonal eye killer group for opponent move <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario4dan10" /> 
         /// Check if link for groups <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" /> 
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" /> 
@@ -84,16 +86,22 @@ namespace Go
             //find covered eye where covered point is non killable
             if (!RedundantCoveredEye(currentBoard, tryBoard, p, c)) return false;
 
-            //if groups have liberty less or equals to two and moves at liberties are suicidal then not redundant
+            //ensure all groups have liberty more than two
             foreach (Group group in currentBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()))
             {
                 if (group.Liberties.Count <= 2 && group.Liberties.Any(x => ImmovableHelper.IsSuicidalMove(currentBoard, x, c)))
                     return false;
             }
 
-            //check diagonal eye killer group for opponent move
             if (opponentTryMove != null)
             {
+                //ensure neighbour groups are escapable
+                Board opponentBoard = opponentTryMove.TryGame.Board;
+                Board b = opponentBoard.MakeMoveOnNewBoard(p, c.Opposite());
+                if (b != null && (b.AtariTargets.Count > 1 || b.GetGroupsFromStoneNeighbours(b.Move.Value, c.Opposite()).Any(n => ImmovableHelper.UnescapableGroup(b, n).Item1)))
+                    return false;
+
+                //check diagonal eye killer group for opponent move
                 List<Point> emptyDiagonals = currentBoard.GetDiagonalNeighbours(p.x, p.y).Where(n => currentBoard[n] == Content.Empty).ToList();
                 foreach (Point diagonal in emptyDiagonals)
                 {
@@ -295,6 +303,7 @@ namespace Go
         /// Redundant atari within killer group.
         /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A9_Ext" />
         /// Check for increased killer groups <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_TianLongTu_Q16487" />
+        /// Check for reverse ko fight <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WuQingYuan_Q30982" />
         /// Ensure more than one liberty for move group <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A68" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16748" />
         /// Check killer formation <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Side_A25" />
@@ -313,6 +322,8 @@ namespace Go
             if (tryBoard.MoveGroupLiberties == 1) return false;
             //check for increased killer groups
             if (tryMove.IncreasedKillerGroups) return false;
+            //check for reverse ko fight
+            if (KoHelper.IsReverseKoFight(tryBoard)) return false;
             //make move at the other liberty
             Point q = atariTarget.Liberties.First();
             Board board = currentBoard.MakeMoveOnNewBoard(q, c);
@@ -498,7 +509,7 @@ namespace Go
                 if (SuicideAtBigTigerMouth(opponentMove, c).Item1) return false;
 
                 //check for bloated eye move
-                if (tryBoard.GetDiagonalNeighbours().Any(d => tryBoard[d] == Content.Empty && tryBoard.GetStoneNeighbours(d.x, d.y).Any(n => tryBoard[n] == Content.Empty && tryBoard.CornerPoint(n) && KoHelper.IsReverseKoFight(currentBoard, n, c))))
+                if (tryBoard.GetDiagonalNeighbours().Any(d => tryBoard[d] == Content.Empty && tryBoard.GetStoneNeighbours(d.x, d.y).Any(n => tryBoard[n] == Content.Empty && tryBoard.CornerPoint(n) && KoHelper.IsReverseKoFight(currentBoard, n, c, false))))
                     return false;
 
                 //check for eye at liberty point

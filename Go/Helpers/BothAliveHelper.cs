@@ -39,9 +39,10 @@ namespace Go
             return killerGroups;
         }
 
-        public static List<Group> GetCorneredKillerGroup(Board m, Boolean checkLiberties = true)
+        public static List<Group> GetCorneredKillerGroup(Board m, Boolean checkLiberties = true, Content c = Content.Unknown)
         {
-            Content c = GameHelper.GetContentForSurviveOrKill(m.GameInfo, SurviveOrKill.Survive);
+            if (c == Content.Unknown)
+                c = GameHelper.GetContentForSurviveOrKill(m.GameInfo, SurviveOrKill.Survive);
             return GetCorneredKillerGroup(m, c, checkLiberties);
         }
 
