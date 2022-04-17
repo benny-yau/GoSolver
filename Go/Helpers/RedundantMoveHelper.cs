@@ -102,14 +102,6 @@ namespace Go
                     return false;
 
                 //check diagonal eye killer group for opponent move
-                List<Point> emptyDiagonals = currentBoard.GetDiagonalNeighbours(p.x, p.y).Where(n => currentBoard[n] == Content.Empty).ToList();
-                foreach (Point diagonal in emptyDiagonals)
-                {
-                    Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, diagonal, c);
-                    if (killerGroup == null || killerGroup.Points.Count > 5) return false;
-                }
-
-                //check diagonal eye killer group for opponent move
                 if (currentBoard.GetDiagonalNeighbours(p.x, p.y).Any(n => currentBoard[n] == Content.Empty))
                     return false;
             }
