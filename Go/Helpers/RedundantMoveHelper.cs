@@ -108,6 +108,10 @@ namespace Go
                     Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, diagonal, c);
                     if (killerGroup == null || killerGroup.Points.Count > 5) return false;
                 }
+
+                //check diagonal eye killer group for opponent move
+                if (currentBoard.GetDiagonalNeighbours(p.x, p.y).Any(n => currentBoard[n] == Content.Empty))
+                    return false;
             }
 
             //check if link for groups
@@ -782,6 +786,8 @@ namespace Go
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
             if (tryBoard.MoveGroup.Points.Count != 1) return false;
+
+            if (BothAliveHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite()) != null) return false;
 
             //check for two or less liberties in neighbour groups
             if (tryBoard.GetNeighbourGroups().Any(group => group.Liberties.Count <= 2 && group.Liberties.Any(liberty => !ImmovableHelper.IsSuicidalMove(captureBoard, liberty, c)) && !AtariHelper.AtariByGroup(tryBoard, group)))
@@ -2784,23 +2790,23 @@ namespace Go
         {
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
-            Point capturedPoint;
+            Point eyePoint;
             Content c = tryMove.MoveContent;
-            if (tryBoard.singlePointCapture != null)
-                capturedPoint = tryBoard.singlePointCapture.Value;
+            if (tryBoard.singlePointCapture != null) //ko moves
+                eyePoint = tryBoard.singlePointCapture.Value;
             else
             {
-                //pre ko moves and neutral moves
-                capturedPoint = tryBoard.GetStoneNeighbours().FirstOrDefault(n => EyeHelper.FindEye(tryBoard, n.x, n.y, c) || ImmovableHelper.FindTigerMouth(tryBoard, c, n));
-                if (!Convert.ToBoolean(capturedPoint.NotEmpty)) return true;
+                //pre ko moves
+                eyePoint = tryBoard.GetStoneNeighbours().FirstOrDefault(n => EyeHelper.FindEye(tryBoard, n.x, n.y, c));
+                if (!Convert.ToBoolean(eyePoint.NotEmpty)) return true;
             }
 
             //check diagonals opposite of ko move direction are filled with same content
-            List<Point> diagonals = RedundantMoveHelper.TigerMouthEyePoints(tryBoard, capturedPoint, move).Where(q => tryBoard[q] != c).ToList();
+            List<Point> diagonals = RedundantMoveHelper.TigerMouthEyePoints(tryBoard, eyePoint, move).Where(q => tryBoard[q] != c).ToList();
             if (diagonals.Count == 0)
             {
                 //check that ko fight is necessary
-                List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(capturedPoint, c.Opposite()).ToList();
+                List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()).ToList();
                 ngroups.RemoveAll(ngroup => ngroup.Points.Contains(move));
                 if (ngroups.Count == 1 && tryBoard.GetNeighbourGroups(ngroups.First()).Any(group => group.Liberties.Count <= 2 && !WallHelper.IsNonKillableGroup(tryBoard, group)))
                     return false;
