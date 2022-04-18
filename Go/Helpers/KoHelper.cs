@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using dh = Go.DirectionHelper;
 
 namespace Go
 {
@@ -115,5 +116,38 @@ namespace Go
             return (false, null);
         }
 
+        /// <summary>
+        /// Ensure neutral point move is not required for ko.
+        /// Rare scenario where neutral point required for ko <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A80" />
+        /// </summary>
+        public static Boolean CheckKoForNeutralPoint(Board tryBoard)
+        {
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            if (!tryBoard.IsSinglePoint()) return false;
+            if (!KoHelper.KoSurvivalEnabled(SurviveOrKill.Survive, tryBoard.GameInfo))
+                return false;
+            if (tryBoard.GetClosestNeighbour(move, 1).Count == 0)
+                return false;
+            Direction wallDirection = WallHelper.IsWallNeighbour(tryBoard, move).Item2;
+            if (wallDirection == Direction.None) return false;
+            Point p1 = dh.GetPointInDirection(tryBoard, move, wallDirection.Opposite());
+            Point p2 = dh.GetPointInDirection(tryBoard, p1, wallDirection.Opposite());
+            if (p1.Equals(Game.PassMove) || p2.Equals(Game.PassMove))
+                return false;
+
+            if (tryBoard[p1] == Content.Empty && tryBoard[p2] == Content.Empty)
+            {
+                Board b = tryBoard.MakeMoveOnNewBoard(p2, c, true);
+                if (b.GetGroupsFromStoneNeighbours(p1, c.Opposite()).All(group => group.Points.Count == 1))
+                {
+                    List<Point> diagonals = b.GetDiagonalNeighbours(p1.x, p1.y);
+                    diagonals = diagonals.Where(diagonal => BothAliveHelper.GetKillerGroupFromCache(tryBoard, diagonal) != null).ToList();
+                    if (diagonals.Any(diagonal => b[diagonal] == Content.Empty && ImmovableHelper.FindTigerMouth(b, c, diagonal)))
+                        return true;
+                }
+            }
+            return false;
+        }
     }
 }

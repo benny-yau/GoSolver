@@ -764,6 +764,7 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_2398" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
         /// <see cref="UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18473" />
+        /// Check tiger mouth at corner point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie1" />
         /// One point move near non killable group
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B7" />
         /// <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_TianLongTu_Q16571" />
@@ -786,7 +787,12 @@ namespace Go
                 return true;
 
             //check reverse ko fight
-            if (tryBoard.GetStoneNeighbours().Any(n => ImmovableHelper.FindTigerMouth(tryBoard, c, n))) return true;
+            if (KoHelper.CheckKoForNeutralPoint(tryBoard))
+                return true;
+
+            //check tiger mouth at corner point
+            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard.CornerPoint(n) && ImmovableHelper.FindTigerMouth(tryBoard, c, n)))
+                return true;
             return false;
         }
 
@@ -1449,45 +1455,7 @@ namespace Go
             }
             //validate neutral point
             Boolean isNeutralPoint = ValidateNeutralPoint(tryMove);
-            if (isNeutralPoint)
-                return CheckKoForNeutralPoint(tryMove);
-
             return isNeutralPoint;
-        }
-
-        /// <summary>
-        /// Ensure neutral point move is not required for ko.
-        /// Rare scenario where neutral point required for ko <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A80" />
-        /// </summary>
-        public static Boolean CheckKoForNeutralPoint(GameTryMove tryMove)
-        {
-            Board tryBoard = tryMove.TryGame.Board;
-            Point move = tryMove.Move;
-            Content c = tryMove.MoveContent;
-            if (!tryBoard.IsSinglePoint()) return true;
-            if (!KoHelper.KoSurvivalEnabled(SurviveOrKill.Survive, tryBoard.GameInfo))
-                return true;
-            if (tryBoard.GetClosestNeighbour(move, 1).Count == 0)
-                return true;
-            Direction wallDirection = WallHelper.IsWallNeighbour(tryBoard, move).Item2;
-            if (wallDirection == Direction.None) return true;
-            Point p1 = dh.GetPointInDirection(tryBoard, tryMove.Move, wallDirection.Opposite());
-            Point p2 = dh.GetPointInDirection(tryBoard, p1, wallDirection.Opposite());
-            if (p1.Equals(Game.PassMove) || p2.Equals(Game.PassMove))
-                return true;
-
-            if (tryBoard[p1] == Content.Empty && tryBoard[p2] == Content.Empty)
-            {
-                Board b = tryBoard.MakeMoveOnNewBoard(p2, c, true);
-                if (b.GetGroupsFromStoneNeighbours(p1, c.Opposite()).All(group => group.Points.Count == 1))
-                {
-                    List<Point> diagonals = b.GetDiagonalNeighbours(p1.x, p1.y);
-                    diagonals = diagonals.Where(diagonal => BothAliveHelper.GetKillerGroupFromCache(tryBoard, diagonal) != null).ToList();
-                    if (diagonals.Any(diagonal => b[diagonal] == Content.Empty && ImmovableHelper.FindTigerMouth(b, c, diagonal)))
-                        return false;
-                }
-            }
-            return true;
         }
 
         /// <summary>
@@ -1625,6 +1593,9 @@ namespace Go
                 return false;
             //check link for groups
             if (tryMove.LinkForGroups())
+                return false;
+            //check ko for neutral point
+            if (KoHelper.CheckKoForNeutralPoint(tryMove.TryGame.Board))
                 return false;
             return true;
         }
@@ -2814,7 +2785,7 @@ namespace Go
         /// <summary>
         /// Check killer ko within killer group.
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B39" /> 
-        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" /> 
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A85" /> 
         /// </summary>
         public static Boolean CheckKillerKoWithinKillerGroup(GameTryMove tryMove)
         {
@@ -2826,8 +2797,14 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
             if (killerGroup == null) return false;
-            if (tryBoard.GetNeighbourGroups(killerGroup).All(n => BothAliveHelper.GetKillerGroupFromCache(tryBoard, n.Points.First(), c) != null && WallHelper.IsStrongNeighbourGroup(tryBoard, n)))
+            List<Group> neighbourGroups = tryBoard.GetNeighbourGroups(killerGroup);
+            //ensure all neighbour groups within killer group and all strong groups
+            if (neighbourGroups.All(n => BothAliveHelper.GetKillerGroupFromCache(tryBoard, n.Points.First(), c) != null && WallHelper.IsStrongNeighbourGroup(tryBoard, n)))
             {
+                //ensure real eye within neighbour groups                
+                if (!tryBoard.GetLibertiesOfGroups(neighbourGroups).Any(liberty => EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, liberty, c.Opposite())))
+                    return false;
+
                 List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(capturedPoint, c.Opposite()).ToList();
                 ngroups.RemoveAll(ngroup => ngroup.Points.Contains(move));
                 if (ngroups.Count == 1 && currentBoard.GetGroupLiberties(ngroups.First().Points.First()) == 1)
