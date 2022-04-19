@@ -299,7 +299,9 @@ namespace Go
         /// Redundant atari within killer group.
         /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A9_Ext" />
         /// Check for increased killer groups <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_TianLongTu_Q16487" />
+        /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WuQingYuan_Q31493" />
         /// Check for reverse ko fight <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WuQingYuan_Q30982" />
+        /// Ensure more than two liberties for neighbour groups <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WindAndTime_Q30225" />
         /// Ensure more than one liberty for move group <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A68" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16748" />
         /// Check killer formation <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Side_A25" />
@@ -313,22 +315,28 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             Group atariTarget = tryBoard.AtariTargets.First();
             //check for redundant atari within killer group
-            if (BothAliveHelper.GetKillerGroupFromCache(tryBoard, atariTarget.Points.First(), c) == null) return false;
+            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, atariTarget.Points.First(), c);
+            if (killerGroup == null) return false;
             //ensure more than one liberty for move group
             if (tryBoard.MoveGroupLiberties == 1) return false;
             //check for increased killer groups
-            if (tryMove.IncreasedKillerGroups) return false;
+            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] != c && BothAliveHelper.GetKillerGroupFromCache(tryBoard, n, c) != killerGroup)) return false;
             //check for reverse ko fight
             if (KoHelper.IsReverseKoFight(tryBoard)) return false;
+            //ensure more than two liberties for neighbour groups
+            if (currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).Any(g => !WallHelper.IsStrongNeighbourGroup(currentBoard, g))) return false;
+
             //make move at the other liberty
             Point q = atariTarget.Liberties.First();
-            Board board = currentBoard.MakeMoveOnNewBoard(q, c);
-            if (board == null || board.MoveGroupLiberties == 1) return false;
-            if (BothAliveHelper.GetKillerGroupFromCache(board, atariTarget.Points.First(), c) == null) return false;
+            (Boolean suicidal, Board board) = ImmovableHelper.IsSuicidalMove(q, c, currentBoard);
+            if (suicidal) return false;
+            Group killerGroup2 = BothAliveHelper.GetKillerGroupFromCache(board, atariTarget.Points.First(), c);
+            if (killerGroup2 == null) return false;
             //ensure the other move can capture atari target as well
             if (ImmovableHelper.UnescapableGroup(board, board.GetGroupAt(atariTarget.Points.First())).Item1)
             {
-                if (GameTryMove.IncreaseKillerGroups(board, currentBoard)) return true;
+                //check for increased killer groups
+                if (board.GetStoneNeighbours().Any(n => board[n] != c && BothAliveHelper.GetKillerGroupFromCache(board, n, c) != killerGroup2)) return false;
                 //check killer formation
                 Board b = tryBoard.MakeMoveOnNewBoard(q, c.Opposite());
                 if (b != null)
@@ -562,7 +570,7 @@ namespace Go
         /// Check killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_2" />
         /// Check killer move non killable group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31563" />
-        /// Find real eye at diagonals for single point move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_4" />
+        /// Find box formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_4" />
         /// Check redundant corner point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
         /// Check for one-by-three kill <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18796_2" />
         /// </summary>
@@ -604,27 +612,9 @@ namespace Go
             if (CheckWeakGroupInConnectAndDie(tryMove, captureBoard))
                 return false;
 
-            foreach (Point p in tryBoard.MoveGroup.Liberties)
-            {
-                //find bloated eye suicide
-                if (FindBloatedEyeSuicide(tryBoard, p, c)) return true;
-                Board b = tryBoard.MakeMoveOnNewBoard(p, c.Opposite());
-                if (b == null) continue;
-                //check killer move non killable group
-                if (WallHelper.IsNonKillableGroup(b, b.MoveGroup) && b.MoveGroupLiberties > 2)
-                    return true;
-                if (movePoints.Count == 1 && tryMove.IsNegligible)
-                {
-                    //find real eye at diagonals for single point move
-                    foreach (Point d in tryBoard.GetDiagonalNeighbours())
-                    {
-                        if (ImmovableHelper.FindTigerMouth(currentBoard, c.Opposite(), d)) continue;
-                        Group killerGroupDiagonal = BothAliveHelper.GetKillerGroupFromCache(b, d, c.Opposite());
-                        if (killerGroupDiagonal != null && EyeHelper.FindRealEyeWithinEmptySpace(b, killerGroupDiagonal))
-                            return true;
-                    }
-                }
-            }
+            //find bloated eye suicide
+            if (tryBoard.MoveGroup.Liberties.Any(p => FindBloatedEyeSuicide(tryBoard, p, c))) return true;
+
             //check redundant corner point
             if (CheckRedundantCornerPoint(tryMove))
                 return true;
@@ -639,6 +629,10 @@ namespace Go
 
             if (movePoints.Count <= 4)
             {
+                //find box formation
+                Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
+                if (killerGroup != null && KillerFormationHelper.BoxFormation(tryBoard, killerGroup)) return true;
+
                 //check for real eye in neighbour groups
                 return CheckAnyRealEyeInSuicidalConnectAndDie(tryBoard, captureBoard);
             }
@@ -2025,9 +2019,9 @@ namespace Go
                 if (killerGroup == null) continue;
                 if (moveKillerGroup == null)
                 {
-                    //check for non killable group
                     HashSet<Group> neighbourGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c);
-                    if (neighbourGroups.Any(n => WallHelper.IsNonKillableGroup(currentBoard, n)))
+                    //check for non killable group
+                    if (opponentMove == null && neighbourGroups.Any(n => WallHelper.IsNonKillableGroup(currentBoard, n)))
                         return true;
                     //check for strong neighbour groups
                     if (WallHelper.StrongNeighbourGroups(currentBoard, neighbourGroups) && capturedBoard.MoveGroupLiberties > 2)
