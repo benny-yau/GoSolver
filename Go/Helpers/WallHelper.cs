@@ -133,22 +133,22 @@ namespace Go
 
         /// <summary>
         /// Strong neighbour groups with more than two liberties or two liberties that are suicidal to opponent.
-        /// Exclude covered eye <see cref="UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_GuanZiPu_A35" />
+        /// Check covered eye <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
         /// </summary>
-        public static Boolean StrongNeighbourGroups(Board board, IEnumerable<Group> neighbourGroups)
+        public static Boolean StrongNeighbourGroups(Board board, IEnumerable<Group> neighbourGroups, Boolean checkCoveredEye = false)
         {
             if (!neighbourGroups.Any()) return false;
-            if (neighbourGroups.Any(group => !IsStrongNeighbourGroup(board, group)))
+            if (neighbourGroups.Any(group => !IsStrongNeighbourGroup(board, group, checkCoveredEye)))
                 return false;
             return true;
         }
 
-        public static Boolean IsStrongNeighbourGroup(Board board, Group group)
+        public static Boolean IsStrongNeighbourGroup(Board board, Group group, Boolean checkCoveredEye = false)
         {
             Content c = group.Content;
             //exclude covered eye
-            int liberties = group.Liberties.Count(liberty => !EyeHelper.FindCoveredEye(board, liberty, c));
-            if (liberties < 2 || (liberties == 2 && group.Liberties.Any(liberty => !ImmovableHelper.IsSuicidalMove(board, liberty, c.Opposite()))))
+            int liberties = (checkCoveredEye) ? group.Liberties.Count(liberty => !EyeHelper.FindCoveredEye(board, liberty, c)) : group.Liberties.Count;
+            if (liberties < 2 || (group.Liberties.Count == 2 && group.Liberties.Any(liberty => !ImmovableHelper.IsSuicidalMove(board, liberty, c.Opposite()))))
                 return false;
             return true;
         }

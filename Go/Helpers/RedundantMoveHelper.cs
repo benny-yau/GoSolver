@@ -89,7 +89,7 @@ namespace Go
             //ensure all groups have liberty more than two
             foreach (Group group in currentBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()))
             {
-                if (group.Liberties.Count <= 2 && group.Liberties.Any(x => ImmovableHelper.IsSuicidalMove(currentBoard, x, c)))
+                if (!WallHelper.IsStrongNeighbourGroup(currentBoard, group, true) || (group.Liberties.Count <= 2 && group.Liberties.Any(x => ImmovableHelper.IsSuicidalMove(currentBoard, x, c))))
                     return false;
             }
 
@@ -708,6 +708,7 @@ namespace Go
         /// <summary>
         /// Check for any weak capture group with two or less liberties in connect and die.
         /// Check for double atari for one-point move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29481" />
+        /// Check connect and die in neighbour groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_3" />
         /// Check killable group with two or less liberties <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31435" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B6" />
         /// Check for weak group capturing atari group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B17" />
@@ -726,6 +727,11 @@ namespace Go
                     Board b = captureBoard.MakeMoveOnNewBoard(liberty, c);
                     if (b != null && b.AtariTargets.Count >= 2) return true;
                 }
+
+                //check connect and die in neighbour groups
+                if (tryBoard.GetNeighbourGroups().Any(group => ImmovableHelper.CheckConnectAndDie(tryBoard, group)))
+                    return true;
+
                 return false;
             }
             //check for weak group capturing atari group
@@ -1091,7 +1097,7 @@ namespace Go
             if (opponentTryMove != null)
             {
                 //exclude weak neighbour groups
-                if (!WallHelper.StrongNeighbourGroups(capturedBoard, capturedBoard.GetGroupsFromStoneNeighbours(p, c)))
+                if (!WallHelper.StrongNeighbourGroups(capturedBoard, capturedBoard.GetGroupsFromStoneNeighbours(p, c), true))
                     return false;
             }
 

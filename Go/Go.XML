@@ -1032,6 +1032,7 @@
             <summary>
             Check for any weak capture group with two or less liberties in connect and die.
             Check for double atari for one-point move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29481" />
+            Check connect and die in neighbour groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_3" />
             Check killable group with two or less liberties <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31435" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B6" />
             Check for weak group capturing atari group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B17" />
@@ -1635,10 +1636,10 @@
             Check if non-killable at neighbour points that are empty.
             </summary>
         </member>
-        <member name="M:Go.WallHelper.StrongNeighbourGroups(Go.Board,System.Collections.Generic.IEnumerable{Go.Group})">
+        <member name="M:Go.WallHelper.StrongNeighbourGroups(Go.Board,System.Collections.Generic.IEnumerable{Go.Group},System.Boolean)">
             <summary>
             Strong neighbour groups with more than two liberties or two liberties that are suicidal to opponent.
-            Exclude covered eye <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_GuanZiPu_A35" />
+            Check covered eye <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
             </summary>
         </member>
         <member name="M:Go.GameMapping.GetMappedJson(Go.Game)">
