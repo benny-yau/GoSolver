@@ -784,7 +784,7 @@ namespace Go
         /// <summary>
         /// Suicide within non killable group.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_2" />
-        /// Ensure strong group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
+        /// Ensure more than two liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16925" />
         /// Suicide near non killable group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3kyu28_2" />
         /// Set neutral point move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18410_2" />
@@ -804,8 +804,8 @@ namespace Go
             Boolean nonKillable = groups.Any(group => WallHelper.IsNonKillableGroup(captureBoard, group));
             if (!nonKillable) return false;
 
-            //ensure strong group
-            if (!groups.All(group => WallHelper.IsStrongNeighbourGroup(captureBoard, group))) return false;
+            //ensure more than two liberties
+            if (!groups.All(group => group.Liberties.Count > 2)) return false;
             //suicide near non killable group
             Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(captureBoard, tryBoard.MoveGroup, c);
             if (b != null && !LinkHelper.IsAbsoluteLinkForGroups(captureBoard, b))
