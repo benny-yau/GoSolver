@@ -135,21 +135,27 @@ namespace Go
         /// Strong neighbour groups with more than two liberties or two liberties that are suicidal to opponent.
         /// Check covered eye <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
         /// </summary>
-        public static Boolean StrongNeighbourGroups(Board board, IEnumerable<Group> neighbourGroups, Boolean checkCoveredEye = false)
+        public static Boolean StrongNeighbourGroups(Board board, IEnumerable<Group> neighbourGroups, Boolean checkSuicidal = true)
         {
             if (!neighbourGroups.Any()) return false;
-            if (neighbourGroups.Any(group => !IsStrongNeighbourGroup(board, group, checkCoveredEye)))
+            if (neighbourGroups.Any(group => !IsStrongNeighbourGroup(board, group, checkSuicidal)))
                 return false;
             return true;
         }
 
-        public static Boolean IsStrongNeighbourGroup(Board board, Group group, Boolean checkCoveredEye = false)
+        public static Boolean IsStrongNeighbourGroup(Board board, Group group, Boolean checkSuicidal = true)
         {
             Content c = group.Content;
             //exclude covered eye
-            int liberties = (checkCoveredEye) ? group.Liberties.Count(liberty => !EyeHelper.FindCoveredEye(board, liberty, c)) : group.Liberties.Count;
-            if (liberties < 2 || (group.Liberties.Count == 2 && group.Liberties.Any(liberty => !ImmovableHelper.IsSuicidalMove(board, liberty, c.Opposite()))))
-                return false;
+            int liberties = group.Liberties.Count(liberty => !EyeHelper.FindCoveredEye(board, liberty, c));
+            if (liberties < 2) return false;
+            if (group.Liberties.Count == 2)
+            {
+                Boolean opponentMovable = group.Liberties.Any(liberty => !ImmovableHelper.IsSuicidalMove(board, liberty, c.Opposite()));
+                if (!opponentMovable) return true;
+                if (!checkSuicidal || group.Liberties.Any(liberty => ImmovableHelper.IsSuicidalMove(board, liberty, c)))
+                    return false;
+            }
             return true;
         }
     }

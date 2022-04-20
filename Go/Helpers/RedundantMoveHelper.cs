@@ -75,6 +75,7 @@ namespace Go
         {
             Board tryBoard = tryMove.TryGame.Board;
             Board currentBoard = tryMove.CurrentGame.Board;
+            Point move = tryBoard.Move.Value;
             Content c = tryMove.MoveContent;
 
             if (tryBoard.AtariResolved || tryBoard.IsAtariMove) return false;
@@ -89,7 +90,7 @@ namespace Go
             //ensure all groups have liberty more than two
             foreach (Group group in currentBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()))
             {
-                if (!WallHelper.IsStrongNeighbourGroup(currentBoard, group, true) || (group.Liberties.Count <= 2 && group.Liberties.Any(x => ImmovableHelper.IsSuicidalMove(currentBoard, x, c))))
+                if (!WallHelper.IsStrongNeighbourGroup(currentBoard, group) || (group.Liberties.Count <= 2 && group.Liberties.Any(x => ImmovableHelper.IsSuicidalMove(currentBoard, x, c))))
                     return false;
             }
 
@@ -111,7 +112,7 @@ namespace Go
                 return false;
 
             //check no eye for survival
-            if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(tryBoard))
+            if (!ImmovableHelper.IsSuicidalMove(currentBoard, move, c.Opposite()) && !WallHelper.NoEyeForSurvivalAtNeighbourPoints(tryBoard))
                 return false;
             return true;
         }
@@ -325,7 +326,7 @@ namespace Go
             if (KoHelper.IsReverseKoFight(tryBoard)) return false;
             //ensure move groups are strong groups
             List<Group> moveGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
-            if (moveGroups.Any(g => !WallHelper.IsStrongNeighbourGroup(currentBoard, g))) return false;
+            if (moveGroups.Any(g => ImmovableHelper.CheckConnectAndDie(currentBoard, g))) return false;
 
             //make move at the other liberty
             Point q = atariTarget.Liberties.First();
@@ -375,7 +376,7 @@ namespace Go
             Content c = currentBoard[lastMove.Value];
 
             //move on current board is atari move
-            if (!currentBoard.IsAtariMove || currentBoard.AtariTargets.Count > 1) return false;
+            if (!currentBoard.IsAtariMove || currentBoard.AtariTargets.Count > 1 || tryBoard.CapturedList.Count > 0) return false;
             //ensure not first move
             if (currentBoard.LastMoves.Count == 1) return false;
             Group atariTarget = currentBoard.AtariTargets.First();
@@ -1097,7 +1098,7 @@ namespace Go
             if (opponentTryMove != null)
             {
                 //exclude weak neighbour groups
-                if (!WallHelper.StrongNeighbourGroups(capturedBoard, capturedBoard.GetGroupsFromStoneNeighbours(p, c), true))
+                if (!WallHelper.StrongNeighbourGroups(capturedBoard, capturedBoard.GetGroupsFromStoneNeighbours(p, c)))
                     return false;
             }
 
@@ -2076,7 +2077,7 @@ namespace Go
             HashSet<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(move, c);
             if (neighbourGroups.Count >= 3 && (neighbourGroups.Count(g => g.Liberties.Count <= 2) >= 2 || LinkHelper.FindDiagonalCut(tryBoard, tryBoard.MoveGroup).Item1 != null)) return false;
             //check for strong neighbour groups
-            if (WallHelper.StrongNeighbourGroups(currentBoard, currentBoard.GetGroupsFromStoneNeighbours(move, c)) && capturedBoard.MoveGroupLiberties > 2)
+            if (WallHelper.StrongNeighbourGroups(currentBoard, currentBoard.GetGroupsFromStoneNeighbours(move, c), false) && capturedBoard.MoveGroupLiberties > 2)
                 return true;
             return false;
         }
