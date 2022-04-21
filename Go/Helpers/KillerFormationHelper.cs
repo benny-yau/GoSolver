@@ -736,6 +736,7 @@ namespace Go
             if (contentPoints.Count() != 6) return false;
             if (!contentPoints.Any(p => tryBoard.CornerPoint(p))) return false;
             if (contentPoints.Where(p => tryBoard.PointWithinMiddleArea(p.x, p.y)).Count() != 1) return false;
+            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 3) != 2) return false;
             return (MaxLengthOfGrid(moveGroup.Points) == 2);
         }
 

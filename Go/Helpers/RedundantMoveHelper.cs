@@ -818,7 +818,12 @@ namespace Go
             if (b != null && !LinkHelper.IsAbsoluteLinkForGroups(captureBoard, b))
             {
                 //set neutral point move
-                if (opponentMove != null && WallHelper.IsNonKillableGroup(opponentMove.TryGame.Board, opponentMove.TryGame.Board.MoveGroup)) opponentMove.IsNeutralPoint = true;
+                if (opponentMove != null)
+                {
+                    Board opponentBoard = opponentMove.TryGame.Board;
+                    if (opponentBoard.CapturedList.Count > 0) return false;
+                    if (WallHelper.IsNonKillableGroup(opponentBoard, opponentBoard.MoveGroup)) opponentMove.IsNeutralPoint = true;
+                }
                 return true;
             }
             return false;
@@ -1069,7 +1074,7 @@ namespace Go
             {
                 //check for liberty fight
                 Board b = capturedBoard.MakeMoveOnNewBoard(liberty, c, true);
-                if (b != null && WallHelper.StrongNeighbourGroups(b, b.GetNeighbourGroups(capturedBoard.MoveGroup)))
+                if (b != null && WallHelper.StrongNeighbourGroups(b, b.GetNeighbourGroups(capturedBoard.MoveGroup), false))
                     return true;
             }
 

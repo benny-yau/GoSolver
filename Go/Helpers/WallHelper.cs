@@ -153,7 +153,7 @@ namespace Go
             {
                 Boolean opponentMovable = group.Liberties.Any(liberty => !ImmovableHelper.IsSuicidalMove(board, liberty, c.Opposite()));
                 if (!opponentMovable) return true;
-                if (!checkSuicidal || group.Liberties.Any(liberty => ImmovableHelper.IsSuicidalMove(board, liberty, c)))
+                if (!checkSuicidal || group.Liberties.Any(liberty => ImmovableHelper.IsSuicidalMove(board, liberty, c) && !EyeHelper.FindSemiSolidEyes(liberty, board, c).Item1))
                     return false;
             }
             return true;
