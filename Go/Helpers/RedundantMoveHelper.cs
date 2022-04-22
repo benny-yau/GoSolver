@@ -70,7 +70,8 @@ namespace Go
         /// Check diagonal eye killer group for opponent move <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario4dan10" /> 
         /// Check if link for groups <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" /> 
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" /> 
-        /// Check no diagonal eye <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A52" /> 
+        /// Check no eye for survival <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A52" />
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q16594" />
         /// </summary>
         public static Boolean FindCoveredEyeMove(GameTryMove tryMove, GameTryMove opponentTryMove = null)
         {
@@ -112,8 +113,8 @@ namespace Go
             if (tryMove.LinkForGroups())
                 return false;
 
-            //check no diagonal eye
-            if (tryBoard.GetDiagonalNeighbours().Any(n => EyeHelper.FindNonSemiSolidEye(tryBoard, n, c)) && !ImmovableHelper.IsSuicidalMove(currentBoard, move, c.Opposite()))
+            //check no eye for survival
+            if (!ImmovableHelper.IsSuicidalMove(currentBoard, move, c.Opposite()) && !WallHelper.NoEyeForSurvivalAtNeighbourPoints(tryBoard))
                 return false;
             return true;
         }
