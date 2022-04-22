@@ -56,7 +56,7 @@ namespace Go
             //ensure formation at corner point
             if (!contentPoints.Any(p => tryBoard.CornerPoint(p)) || contentPoints.Any(p => tryBoard.PointWithinMiddleArea(p.x, p.y))) return false;
             //bent three or straight three formation
-            if (KillerFormationHelper.BentThreeFormation(tryBoard, killerGroup) || KillerFormationHelper.StraightThreeFormation(tryBoard, killerGroup))
+            if (KillerFormationHelper.BentThreeFormation(tryBoard, contentPoints) || KillerFormationHelper.StraightThreeFormation(tryBoard, contentPoints))
             {
                 //ensure two liberties in killer group
                 List<Point> emptyPoints = killerGroup.Points.Where(t => tryBoard[t] == Content.Empty).ToList();

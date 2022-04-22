@@ -747,7 +747,7 @@ namespace Go
             //check killable group with two or less liberties
             IEnumerable<Group> neighbourGroups = tryBoard.GetNeighbourGroups();
             if (!neighbourGroups.Any(group => group.Liberties.Count > 2)) return false;
-            Group weakGroup = neighbourGroups.FirstOrDefault(group => (group.Points.Count >= 2 && group.Liberties.Count == 2 && !WallHelper.IsNonKillableGroup(tryBoard, group)));
+            Group weakGroup = neighbourGroups.FirstOrDefault(group => (group.Points.Count >= 2 && group.Liberties.Count == 2 && !WallHelper.IsStrongNeighbourGroup(tryBoard, group) && !WallHelper.IsNonKillableGroup(tryBoard, group)));
             if (weakGroup == null) return false;
             if (tryBoard.GetNeighbourGroups(weakGroup).Any(g => WallHelper.IsNonKillableGroup(tryBoard, g))) return false;
 
@@ -835,9 +835,9 @@ namespace Go
         /// Ensure no diagonal at move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
         /// Check for three neighbour groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30198" />
         /// Check liberties are connected <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
-        /// Check atari resolved <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi_2" />
-        /// Check for corner point <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q15082" />
-        /// Check for box formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16748" />
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi_2" />
+        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q15082" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16748" />
         /// Stone neighbours at diagonal of each other <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q2757" />
         /// Check diagonal at opposite corner of stone neighbours <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31493" />
         /// Both groups have limited liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17081_2" />
@@ -867,17 +867,11 @@ namespace Go
             {
                 if (tryBoard.MoveGroup.Points.Count > 1)
                 {
-                    //check atari resolved
-                    if (tryBoard.AtariResolved) return false;
                     Point p = tryBoard.MoveGroup.Liberties.First();
                     //check liberties are connected
                     if (tryBoard.GetStoneNeighbours(p.x, p.y).Any(q => tryBoard.MoveGroup.Liberties.Contains(q)))
                     {
-                        //check for corner point
-                        if (tryBoard.MoveGroup.Liberties.Any(q => tryBoard.CornerPoint(q)))
-                            return false;
-                        //check for box formation
-                        if (KillerFormationHelper.BoxFormation(tryBoard, tryBoard.MoveGroup))
+                        if (tryBoard.MoveGroup.Points.Count >= 3 && KillerFormationHelper.SuicidalKillerFormations(tryBoard))
                             return false;
                         return true;
                     }

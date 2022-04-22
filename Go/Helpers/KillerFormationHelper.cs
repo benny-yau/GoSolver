@@ -367,9 +367,8 @@ namespace Go
  17 . . . . . X X X . . . . . . . . . . . 
  18 . . . . . . . . . . . . . . . . . . . 
          */
-        public static Boolean StraightThreeFormation(Board tryBoard, Group killerGroup)
+        public static Boolean StraightThreeFormation(Board tryBoard, List<Point> contentPoints)
         {
-            List<Point> contentPoints = killerGroup.Points.Where(t => tryBoard[t] == killerGroup.Content).ToList();
             if (contentPoints.Count() != 3) return false;
             (int xLength, int yLength) = WithinGrid(contentPoints);
             return (xLength == 0 || yLength == 0);
@@ -381,9 +380,8 @@ namespace Go
  17 . . . . . . X X . . . . . . . . . . . 
  18 . . . . . . . . . . . . . . . . . . . 
          */
-        public static Boolean BentThreeFormation(Board tryBoard, Group killerGroup)
+        public static Boolean BentThreeFormation(Board tryBoard, List<Point> contentPoints)
         {
-            List<Point> contentPoints = killerGroup.Points.Where(t => tryBoard[t] == killerGroup.Content).ToList();
             if (contentPoints.Count() != 3) return false;
             (int xLength, int yLength) = WithinGrid(contentPoints);
             return (xLength == 1 && yLength == 1);
