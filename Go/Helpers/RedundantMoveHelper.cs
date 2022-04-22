@@ -65,11 +65,12 @@ namespace Go
         /// <summary>
         /// Ensure all groups have liberty more than two <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_Corner_B41" /> 
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_A38" /> 
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
         /// Ensure neighbour groups are escapable <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31398" /> 
         /// Check diagonal eye killer group for opponent move <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario4dan10" /> 
         /// Check if link for groups <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" /> 
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" /> 
-        /// Check no eye for survival <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A52" /> 
+        /// Check no diagonal eye <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A52" /> 
         /// </summary>
         public static Boolean FindCoveredEyeMove(GameTryMove tryMove, GameTryMove opponentTryMove = null)
         {
@@ -111,8 +112,8 @@ namespace Go
             if (tryMove.LinkForGroups())
                 return false;
 
-            //check no eye for survival
-            if (!ImmovableHelper.IsSuicidalMove(currentBoard, move, c.Opposite()) && !WallHelper.NoEyeForSurvivalAtNeighbourPoints(tryBoard))
+            //check no diagonal eye
+            if (tryBoard.GetDiagonalNeighbours().Any(n => EyeHelper.FindNonSemiSolidEye(tryBoard, n, c)) && !ImmovableHelper.IsSuicidalMove(currentBoard, move, c.Opposite()))
                 return false;
             return true;
         }
@@ -302,7 +303,7 @@ namespace Go
         /// Check for increased killer groups <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_TianLongTu_Q16487" />
         /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WuQingYuan_Q31493" />
         /// Check for reverse ko fight <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WuQingYuan_Q30982" />
-        /// Ensure move groups are strong groups <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WindAndTime_Q30225" />
+        /// Check for diagonal killer group <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WindAndTime_Q30225" />
         /// Ensure more than one liberty for move group <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A68" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16748" />
         /// Check killer formation <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Side_A25" />
@@ -324,9 +325,8 @@ namespace Go
             if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] != c && BothAliveHelper.GetKillerGroupFromCache(tryBoard, n, c) != killerGroup)) return false;
             //check for reverse ko fight
             if (KoHelper.IsReverseKoFight(tryBoard)) return false;
-            //ensure move groups are strong groups
-            List<Group> moveGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
-            if (moveGroups.Any(g => ImmovableHelper.CheckConnectAndDie(currentBoard, g))) return false;
+            //check for diagonal killer group
+            if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] != c && BothAliveHelper.GetKillerGroupFromCache(tryBoard, n, c) != killerGroup)) return false;
 
             //make move at the other liberty
             Point q = atariTarget.Liberties.First();

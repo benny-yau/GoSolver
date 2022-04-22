@@ -816,6 +816,7 @@ namespace Go
         /// Ordering <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36_2" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q30919_2" />
         /// Check for dead formation <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q16902" />
+        /// Check for suicidal move by survival <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q17154" />
         /// </summary>
         public static LinkedPoint<Point> GetMaxBindingPoint(Board currentBoard, IEnumerable<Board> killBoards)
         {
@@ -840,7 +841,11 @@ namespace Go
             {
                 Board killBoard = ((dynamic)p.CheckMove).killBoard;
                 if (DeadFormationInBothAlive(killBoard, killerGroup))
+                {
+                    //check for suicidal move by survival
+                    if (ImmovableHelper.IsSuicidalMove(currentBoard, p.Move, killerGroup.Content.Opposite())) continue;
                     return p;
+                }
             }
             return list.First();
         }
