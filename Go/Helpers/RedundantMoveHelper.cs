@@ -1943,10 +1943,7 @@ namespace Go
                 return false;
 
             if (RedundantTigerMouth(opponentMove, tryMove))
-            {
-                DebugHelper.PrintGameTryMovesToText(tryMove.TryGame.Board, "RedundantTigerMouthMove2.txt");
                 return true;
-            }
             return false;
         }
 
