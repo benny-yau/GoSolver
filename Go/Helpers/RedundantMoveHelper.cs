@@ -331,7 +331,7 @@ namespace Go
 
             //make move at the other liberty
             Point q = atariTarget.Liberties.First();
-            (Boolean suicidal, Board board) = ImmovableHelper.IsSuicidalMove(q, c, currentBoard);
+            (Boolean suicidal, Board board) = ImmovableHelper.IsSuicidalMove(q, c, currentBoard, false, false);
             if (suicidal) return false;
             Group killerGroup2 = BothAliveHelper.GetKillerGroupFromCache(board, atariTarget.Points.First(), c);
             if (killerGroup2 == null) return false;
@@ -541,16 +541,6 @@ namespace Go
                     return false;
             }
 
-            //check for suicidal at other end
-            (Boolean suicidal, Board b2) = ImmovableHelper.IsSuicidalMove(libertyPoint, c, currentBoard);
-            if (suicidal && b2 != null && b2.MoveGroup.Points.Count > 1)
-            {
-                List<Group> previousGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
-                Point q = b2.MoveGroup.Points.First(p => !p.Equals(libertyPoint));
-                if (previousGroups.Any(group => group.Points.Contains(q)))
-                    return false;
-            }
-
             //check for both alive
             if (BothAliveHelper.EnableCheckForPassMove(tryBoard)) return false;
 
@@ -587,6 +577,8 @@ namespace Go
             (Boolean suicidal, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
             if (!suicidal) return false;
 
+            if (tryBoard.GameInfo.targetPoints.All(t => tryBoard.MoveGroup.Points.Contains(t))) return true;
+
             //check capture moves
             if (tryBoard.CapturedList.Count > 0)
             {
@@ -609,7 +601,7 @@ namespace Go
             if (CheckOnePointMoveInConnectAndDie(tryMove, captureBoard))
                 return false;
 
-            //ensure no killable group with two or less liberties
+            //check weak capture group
             if (CheckWeakGroupInConnectAndDie(tryMove, captureBoard))
                 return false;
 
@@ -710,7 +702,6 @@ namespace Go
         /// <summary>
         /// Check for any weak capture group with two or less liberties in connect and die.
         /// Check for double atari for one-point move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29481" />
-        /// Check connect and die in neighbour groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_3" />
         /// Check killable group with two or less liberties <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31435" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B6" />
         /// Check for weak group capturing atari group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B17" />
@@ -729,11 +720,6 @@ namespace Go
                     Board b = captureBoard.MakeMoveOnNewBoard(liberty, c);
                     if (b != null && b.AtariTargets.Count >= 2) return true;
                 }
-
-                //check connect and die in neighbour groups
-                if (tryBoard.GetNeighbourGroups().Any(group => ImmovableHelper.CheckConnectAndDie(tryBoard, group)))
-                    return true;
-
                 return false;
             }
             //check for weak group capturing atari group
@@ -840,7 +826,8 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16748" />
         /// Stone neighbours at diagonal of each other <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q2757" />
         /// Check diagonal at opposite corner of stone neighbours <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31493" />
-        /// Both groups have limited liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17081_2" />
+        /// Cut diagonal and kill <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_3" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17081_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A61" />
         /// Ensure no shared liberty with neighbour group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A55" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
@@ -889,13 +876,13 @@ namespace Go
                         if (diagonals.Any(d => !tryBoard.GetStoneNeighbours(d.x, d.y).Intersect(stoneNeighbours).Any()))
                             return false;
 
-                        //both groups have limited liberties
+                        //cut diagonal and kill
                         if (stoneNeighbours.Count == 2)
                         {
                             List<Point> cutDiagonal = LinkHelper.PointsBetweenDiagonals(stoneNeighbours[0], stoneNeighbours[1]);
                             cutDiagonal.Remove(move);
                             Board b = tryBoard.MakeMoveOnNewBoard(cutDiagonal.First(), c, true);
-                            if (b != null && stoneNeighbours.All(n => b.GetGroupLiberties(n) <= 2))
+                            if (b != null && stoneNeighbours.Any(n => ImmovableHelper.CheckConnectAndDie(b, b.GetGroupAt(n))))
                                 return false;
                         }
                         return true;
