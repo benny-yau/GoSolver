@@ -1070,7 +1070,8 @@ namespace Go
         /// Connect and die <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
         /// Liberty more than two required to prevent snapback <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680" />
         /// Diagonal neighbours that are non killable groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17160" />
-        /// Opponent suicide <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3kyu28_2" />
+        /// Opponent suicide <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_A25" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A55" />
         /// Check corner point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30370" />
         /// </summary>
         private static Boolean RedundantSuicideNearNonKillableGroup(GameTryMove tryMove, Board capturedBoard, GameTryMove opponentTryMove = null)
@@ -1084,8 +1085,7 @@ namespace Go
             //opponent suicide
             if (opponentTryMove != null)
             {
-                //exclude weak neighbour groups
-                if (!WallHelper.StrongNeighbourGroups(capturedBoard, capturedBoard.GetGroupsFromStoneNeighbours(p, c)))
+                if (SuicideAtBigTigerMouth(opponentTryMove, c.Opposite()).Item1 || BothAliveHelper.EnableCheckForPassMove(opponentTryMove.TryGame.Board))
                     return false;
             }
 
@@ -1943,8 +1943,10 @@ namespace Go
                 return false;
 
             if (RedundantTigerMouth(opponentMove, tryMove))
+            {
+                DebugHelper.PrintGameTryMovesToText(tryMove.TryGame.Board, "RedundantTigerMouthMove2.txt");
                 return true;
-
+            }
             return false;
         }
 
