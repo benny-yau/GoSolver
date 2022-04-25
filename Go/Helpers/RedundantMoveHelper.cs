@@ -2483,13 +2483,10 @@ namespace Go
             Boolean coveredEye = (opponentBoard != null && (EyeHelper.CheckCoveredEyeAtSuicideGroup(opponentBoard) || EyeHelper.FindCoveredEyeByCapture(opponentBoard)));
             if (coveredEye) return true;
 
-            //all empty group
-            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, tryMove.Move);
-            Boolean allEmptyGroup = (killerGroup != null && killerGroup.Points.All(p => currentBoard[p] == Content.Empty));
-            if (!allEmptyGroup) return true;
-
             //connect and die for specific eye filler move
-            Boolean connectAndDie = (killerGroup != null && killerGroup.Points.Count <= 5 && currentBoard.GetNeighbourGroups(killerGroup).Any(n => ImmovableHelper.CheckConnectAndDie(currentBoard, n) || ImmovableHelper.ThreeLibertyConnectAndDie(currentBoard, n)));
+            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, move);
+            if (killerGroup != null && killerGroup.Points.Count > 5) return true;
+            Boolean connectAndDie = (currentBoard.GetNeighbourGroups(killerGroup).Any(n => ImmovableHelper.CheckConnectAndDie(currentBoard, n) || ImmovableHelper.ThreeLibertyConnectAndDie(currentBoard, n)));
             if (connectAndDie) return true;
 
             return false;
