@@ -177,6 +177,7 @@ namespace Go
         /// Three liberty connect and die.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14992_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14992" />
+        /// Two liberties move group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q29487" />
         /// </summary>
         public static Boolean ThreeLibertyConnectAndDie(Board board, Group targetGroup = null)
         {
@@ -187,11 +188,22 @@ namespace Go
 
             foreach (Point liberty in groupLiberties)
             {
-                (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board);
-                if (b == null || b.AtariTargets.Count != 1) continue;
-                Board b2 = ImmovableHelper.CaptureSuicideGroup(b);
-                if (b2 != null && CheckConnectAndDie(b2, b2.GetGroupAt(targetGroup.Points.First())))
-                    return true;
+                Board b = board.MakeMoveOnNewBoard(liberty, c.Opposite());
+                if (b == null) continue;
+                if (b.MoveGroupLiberties == 1)
+                {
+                    if (b.AtariTargets.Count != 1) continue;
+                    Board b2 = ImmovableHelper.CaptureSuicideGroup(b);
+                    if (b2 != null && CheckConnectAndDie(b2, b2.GetGroupAt(targetGroup.Points.First())))
+                        return true;
+                }
+                else if (b.MoveGroupLiberties == 2)
+                {
+                    //two liberties move group
+                    (_, Board b2) = ImmovableHelper.ConnectAndDie(b);
+                    if (b2 != null && b2.GetNeighbourGroups(b.MoveGroup).Any(group => ImmovableHelper.CheckConnectAndDie(b2, group)))
+                        return true;
+                }
             }
             return false;
         }
@@ -442,9 +454,9 @@ namespace Go
 
         /// <summary>
         /// Snapback.
-        /// Ensure move group contains previous group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16827" />
         /// Check if target group is escapable <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B31" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_GuanZiPu_A3" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31640" />
         /// Check kill eye snapback <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B32" />
         /// Check not more than two stones captured <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WuQingYuan_Q31471" />
         /// Check if kill move can escape <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_B28" />
@@ -455,9 +467,6 @@ namespace Go
             (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalOnCapture(tryBoard);
             if (suicidal && b != null && b.MoveGroup.Points.Count > 1)
             {
-                //ensure move group contains previous group
-                if (!b.MoveGroup.Points.Contains(group.Points.First()))
-                    return false;
 
                 //check if target group is escapable
                 (Boolean unEscapable, _, Board escapeBoard) = UnescapableGroup(tryBoard, group);

@@ -1994,11 +1994,14 @@ namespace Go
             {
                 Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, eyePoint, c.Opposite());
                 //opponent move at tiger mouth
-                if (opponentMove != null && ImmovableHelper.IsImmovablePoint(eyePoint, c.Opposite(), currentBoard).Item1)
+                if (opponentMove != null)
                 {
-                    if (killerGroup != null && BothAliveHelper.EnableCheckForPassMove(opponentMove.TryGame.Board))
-                        continue;
-                    return true;
+                    if (killerGroup != null || ImmovableHelper.IsImmovablePoint(eyePoint, c.Opposite(), currentBoard).Item1)
+                    {
+                        if (SuicideAtBigTigerMouth(opponentMove, c.Opposite()).Item1 || BothAliveHelper.EnableCheckForPassMove(opponentMove.TryGame.Board))
+                            continue;
+                        return true;
+                    }
                 }
                 if (killerGroup == null) continue;
                 if (moveKillerGroup == null)
@@ -2348,7 +2351,6 @@ namespace Go
             //ensure not link for groups
             if (EyeFillerLinkForGroups(tryMove))
                 return false;
-
             //check for opponent ko fight
             if (EyeFillerKo(tryMove))
                 return false;
@@ -2436,11 +2438,11 @@ namespace Go
 
         /// <summary>
         /// Link for groups where diagonal is non killable.
-        /// Opponent stones at diagonal <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q17077" />
+        /// Opponent stones at diagonal points <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q17077" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_A82_101Weiqi" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A132" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q30919" />
-        /// Opponent stones at neighbour points <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_B10_3" />
+        /// Opponent stones at stone points <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_B10_3" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanQiJing_Weiqi101_2282" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q17239" />
@@ -2451,19 +2453,44 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Board currentBoard = tryMove.CurrentGame.Board;
             Content c = tryMove.MoveContent;
+
             //ensure link for groups
             if (!LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryBoard)) return false;
+            if (CheckEyeFillerLinks(tryMove))
+            {
+                //check for opponent stones at stone and diagonal points
+                Point move = tryBoard.Move.Value;
+                if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite()))
+                    return true;
+            }
+            return false;
+        }
 
-            //check for opponent stones at neighbour points
+        /// <summary>
+        /// Covered eye <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A132_2" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
+        /// Connect and die for specific eye filler move <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q29487" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q30919" />
+        /// </summary>
+        private static Boolean CheckEyeFillerLinks(GameTryMove tryMove)
+        {
+            Board tryBoard = tryMove.TryGame.Board;
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Content c = tryMove.MoveContent;
             Point move = tryBoard.Move.Value;
-            if (tryBoard.GetStoneNeighbours().Where(n => tryBoard[n] == c.Opposite()).Any())
-                return true;
+            //covered eye
+            Board opponentBoard = currentBoard.MakeMoveOnNewBoard(move, c.Opposite(), true);
+            Boolean coveredEye = (opponentBoard != null && (EyeHelper.CheckCoveredEyeAtSuicideGroup(opponentBoard) || EyeHelper.FindCoveredEyeByCapture(opponentBoard)));
+            if (coveredEye) return true;
 
-            //check for opponent stones at diagonal
-            List<Point> diagonals = tryBoard.GetDiagonalNeighbours();
-            List<Point> filledDiagonals = diagonals.Where(d => currentBoard[d] == c.Opposite()).ToList();
-            if (filledDiagonals.Count > 0)
-                return true;
+            //all empty group
+            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, tryMove.Move);
+            Boolean allEmptyGroup = (killerGroup != null && killerGroup.Points.All(p => currentBoard[p] == Content.Empty));
+            if (!allEmptyGroup) return true;
+
+            //connect and die for specific eye filler move
+            Boolean connectAndDie = (killerGroup != null && killerGroup.Points.Count <= 5 && currentBoard.GetNeighbourGroups(killerGroup).Any(n => ImmovableHelper.CheckConnectAndDie(currentBoard, n) || ImmovableHelper.ThreeLibertyConnectAndDie(currentBoard, n)));
+            if (connectAndDie) return true;
 
             return false;
         }
@@ -2534,7 +2561,9 @@ namespace Go
 
             //ensure not link for groups
             if (EyeFillerLinkForGroups(tryMove))
+            {
                 return false;
+            }
 
             //select max count only
             if (bestMoves.Count == 1)

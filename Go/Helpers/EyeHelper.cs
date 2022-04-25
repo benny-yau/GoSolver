@@ -101,6 +101,13 @@ namespace Go
             return (capturedCount == 1 || capturedCount == 2) && EyeHelper.FindRealEyeWithinEmptySpace(capturedBoard, capturedGroup, EyeType.CoveredEye);
         }
 
+        public static Boolean FindCoveredEyeByCapture(Board board)
+        {
+            Board b = ImmovableHelper.CaptureSuicideGroup(board);
+            if (b != null && FindCoveredEyeByCapture(b, board.MoveGroup))
+                return true;
+            return false;
+        }
 
         /// <summary>
         /// Check for covered eye with one or more liberties for suicide group.
@@ -285,7 +292,7 @@ namespace Go
             //find real eye
             if (MakeMoveWithinEmptySpace(b, killerGroup, eyeType))
             {
-                if (neighbourGroups.Count == 1)
+                if (neighbourGroups.Count == 1 || eyeType == EyeType.CoveredEye)
                     return true;
 
                 //check connect and die
