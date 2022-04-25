@@ -2485,7 +2485,8 @@ namespace Go
 
             //connect and die for specific eye filler move
             Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, move);
-            if (killerGroup != null && killerGroup.Points.Count > 5) return true;
+            if (killerGroup == null) return false;
+            if（killerGroup.Points.Count > 5) return true;
             Boolean connectAndDie = (currentBoard.GetNeighbourGroups(killerGroup).Any(n => ImmovableHelper.CheckConnectAndDie(currentBoard, n) || ImmovableHelper.ThreeLibertyConnectAndDie(currentBoard, n)));
             if (connectAndDie) return true;
 
