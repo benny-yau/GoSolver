@@ -2211,7 +2211,7 @@ namespace Go
         /// </summary>
         public static Boolean SurvivalEyeFillerMove(GameTryMove tryMove)
         {
-            if (!tryMove.IsNegligible)
+            if (!tryMove.IsNegligible || tryMove.TryGame.Board.IsAtariMove)
                 return false;
             Board currentBoard = tryMove.CurrentGame.Board;
             Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, tryMove.Move);
@@ -2229,7 +2229,7 @@ namespace Go
         /// </summary>
         public static Boolean KillEyeFillerMove(GameTryMove tryMove)
         {
-            if (!tryMove.IsNegligible)
+            if (!tryMove.IsNegligible || tryMove.TryGame.Board.IsAtariMove)
                 return false;
             Board currentBoard = tryMove.CurrentGame.Board;
             Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, tryMove.Move);
@@ -2313,7 +2313,7 @@ namespace Go
             else
             {
                 //ensure no opposite content at stone neighbour points for killer group or any closest neighbour within killer group
-                if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == c.Opposite() && tryBoard.GetGroupLiberties(n) <= 2) || tryBoard.GetClosestNeighbour(tryMove.Move, 2).Any(n => BothAliveHelper.GetKillerGroupFromCache(tryBoard, n, c.Opposite()) != null))
+                if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == c.Opposite() && tryBoard.GetGroupLiberties(n) <= 2) || tryBoard.GetStoneAndDiagonalNeighbours().Any(n => EyeHelper.FindEye(tryBoard, n, c) || ImmovableHelper.FindTigerMouth(tryBoard, c, n)))
                     return true;
             }
             return false;
@@ -2454,13 +2454,13 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Content c = tryMove.MoveContent;
 
-            //ensure link for groups
-            if (!LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryBoard)) return false;
-            if (CheckEyeFillerLinks(tryMove))
+            //check for opponent stones at stone and diagonal points
+            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite()))
             {
-                //check for opponent stones at stone and diagonal points
-                Point move = tryBoard.Move.Value;
-                if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite()))
+                //ensure link for groups
+                if (!LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryBoard)) return false;
+
+                if (CheckEyeFillerLinks(tryMove))
                     return true;
             }
             return false;
@@ -2486,7 +2486,7 @@ namespace Go
             //connect and die for specific eye filler move
             Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, move);
             if (killerGroup == null) return false;
-            if（killerGroup.Points.Count > 5) return true;
+            if (killerGroup.Points.Count > 5) return true;
             Boolean connectAndDie = (currentBoard.GetNeighbourGroups(killerGroup).Any(n => ImmovableHelper.CheckConnectAndDie(currentBoard, n) || ImmovableHelper.ThreeLibertyConnectAndDie(currentBoard, n)));
             if (connectAndDie) return true;
 
