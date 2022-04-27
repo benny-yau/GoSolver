@@ -380,8 +380,6 @@ namespace Go
         {
             if (group == null) group = board.MoveGroup;
             Content c = group.Content.Opposite();
-            List<Point> libertyPoint = board.GetGroupLibertyPoints(group);
-            if (libertyPoint.Count != 1) return null;
             Point? p = GetLibertyPointOfSuicide(board, group);
             if (p == null) return null;
             return board.MakeMoveOnNewBoard(p.Value, c, excludeKo);

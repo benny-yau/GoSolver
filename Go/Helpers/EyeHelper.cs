@@ -117,6 +117,10 @@ namespace Go
             if (group == null) group = tryBoard.MoveGroup;
             Point move = tryBoard.Move.Value;
             Content c = group.Content;
+
+            if (FindCoveredEyeByCapture(tryBoard))
+                return true;
+
             if (group.Points.Count != 2) return false;
             if (group.Points.Any(p => tryBoard.GetDiagonalNeighbours(p.x, p.y).Count(q => tryBoard[q] == c && LinkHelper.PointsBetweenDiagonals(p, q).All(r => tryBoard[r] == c.Opposite())) == (tryBoard.PointWithinMiddleArea(p.x, p.y) ? 2 : 1)))
                 return true;

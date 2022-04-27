@@ -286,8 +286,7 @@ namespace Go
             //check two-point covered eye
             if (b != null && b.MoveGroup.Points.Count == 2)
             {
-                Board b2 = ImmovableHelper.CaptureSuicideGroup(b);
-                if (b2 != null && EyeHelper.FindCoveredEyeByCapture(b2, b.MoveGroup))
+                if (EyeHelper.FindCoveredEyeByCapture(b))
                     return false;
             }
 
@@ -668,34 +667,8 @@ namespace Go
             Point move = tryBoard.Move.Value;
             HashSet<Point> movePoints = tryBoard.MoveGroup.Points;
             Content c = tryBoard.MoveGroup.Content;
-            if (!KillerFormationHelper.CheckRealEyeInNeighbourGroups(tryBoard, move, c)) return false;
-            //check for one-point eye
-            Boolean onePointEye = (movePoints.Count == 1 && tryBoard.MoveGroup.Liberties.Any(liberty => EyeHelper.FindEye(tryBoard, liberty, c)));
-            if (onePointEye) return false;
-            //check for two-point snapback
-            Boolean twoPointSnapback = (movePoints.Count == 2 && tryBoard.MoveGroup.Liberties.Any(liberty => ImmovableHelper.IsSuicidalMove(tryBoard, liberty, c.Opposite())));
-            if (twoPointSnapback) return false;
-            //check snapback in neighbour groups
-            if (ImmovableHelper.CheckSnapbackInNeighbourGroups(captureBoard, tryBoard.MoveGroup))
-                return false;
-            //check for one-by-three kill
-            if (movePoints.Count == 4 && KillerFormationHelper.OneByThreeFormation(tryBoard, tryBoard.MoveGroup) && tryBoard.GetGroupsFromStoneNeighbours(move, c).Count > 1)
-                return false;
-            //check for covered eye group
-            if (movePoints.Count == 1 || movePoints.Count == 2)
-            {
-                if (EyeHelper.CheckCoveredEyeAtSuicideGroup(captureBoard, tryBoard.MoveGroup)) return false;
-                List<Point> diagonals = LinkHelper.GetGroupDiagonals(captureBoard, tryBoard.MoveGroup).Select(q => q.Move).Where(q => captureBoard[q] == Content.Empty).ToList();
-                if (diagonals.Count != 1) return true;
-                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(diagonals.First(), c, captureBoard);
-                if (!suicidal)
-                {
-                    Group capturedGroup = b.GetGroupAt(tryBoard.Move.Value);
-                    Board b2 = ImmovableHelper.CaptureSuicideGroup(b, capturedGroup);
-                    if (b2 != null && !EyeHelper.FindRealEyeWithinEmptySpace(b2, capturedGroup))
-                        return false;
-                }
-            }
+            if (tryBoard.MoveGroup.Points.Count <= 2) return false;
+            if (!KillerFormationHelper.CheckRealEyeInNeighbourGroups(captureBoard ?? tryBoard, move, c)) return false;
             return true;
         }
 
@@ -780,7 +753,10 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_2" />
         /// Ensure more than two liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16925" />
-        /// Suicide near non killable group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3kyu28_2" />
+        /// Not opponent <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_2" />
+        /// Suicide near non killable group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario3dan22_2" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3kyu28_2" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B17" />
         /// Set neutral point move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18410_2" />
         /// </summary>
         public static Boolean SuicidalWithinNonKillableGroup(GameTryMove tryMove, GameTryMove opponentMove = null)
@@ -800,10 +776,13 @@ namespace Go
 
             //ensure more than two liberties
             if (!groups.All(group => group.Liberties.Count > 2)) return false;
+            //not opponent
+            if (killerGroup != null && opponentMove == null) return true;
             //suicide near non killable group
             Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(captureBoard, tryBoard.MoveGroup, c);
-            if (b != null && !LinkHelper.IsAbsoluteLinkForGroups(captureBoard, b))
+            if (b != null)
             {
+                if (tryBoard.CapturedList.Count > 0) return false;
                 //set neutral point move
                 if (opponentMove != null)
                 {
@@ -2480,7 +2459,7 @@ namespace Go
             Point move = tryBoard.Move.Value;
             //covered eye
             Board opponentBoard = currentBoard.MakeMoveOnNewBoard(move, c.Opposite(), true);
-            Boolean coveredEye = (opponentBoard != null && (EyeHelper.CheckCoveredEyeAtSuicideGroup(opponentBoard) || EyeHelper.FindCoveredEyeByCapture(opponentBoard)));
+            Boolean coveredEye = (opponentBoard != null && (EyeHelper.CheckCoveredEyeAtSuicideGroup(opponentBoard)));
             if (coveredEye) return true;
 
             //connect and die for specific eye filler move
