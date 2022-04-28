@@ -134,6 +134,8 @@ namespace Go
         /// Fill eye points with content <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A27" />
         /// Two liberties for content group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_B43" />
         /// More than one content group in simple seki <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31646" />
+        /// Ensure shared liberty suicidal for killer <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
+        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31445" />
         /// </summary>
         public static Boolean EnableCheckForPassMove(Board board, List<GameTryMove> tryMoves = null)
         {
@@ -197,15 +199,9 @@ namespace Go
                 Boolean oneLiberty = board.GetGroupsFromPoints(contentPoints).Any(group => group.Liberties.Count == 1);
                 if (oneLiberty) return false;
 
-                foreach (Point p in emptyPoints)
-                {
-                    //ensure shared liberty
-                    if (board.GetGroupsFromStoneNeighbours(p, content).Any(group => group.Liberties.Count > 1))
-                    {
-                        //ensure suicidal for both players
-                        if (!ImmovableHelper.IsSuicidalMoveForBothPlayers(board, p)) return false;
-                    }
-                }
+                //ensure shared liberty suicidal for killer
+                if (!emptyPoints.Any(p => board.GetGroupsFromStoneNeighbours(p, content.Opposite()).Any(group => group.Liberties.Count > 1) && ImmovableHelper.IsSuicidalMove(board, p, content)))
+                    return false;
 
                 //find diagonal cut
                 (_, List<Point> pointsBetweenDiagonals) = LinkHelper.FindDiagonalCut(board, killerGroup);
