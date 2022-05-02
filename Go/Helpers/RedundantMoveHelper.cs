@@ -740,7 +740,7 @@ namespace Go
             if (tryBoard.MoveGroup.Points.Count != 1) return false;
 
             //check reverse ko fight
-            if (KoHelper.CheckKoForNeutralPoint(tryBoard))
+            if (KoHelper.CheckReverseKoForNeutralPoint(tryBoard))
                 return true;
 
             //check tiger mouth at corner point
@@ -758,6 +758,7 @@ namespace Go
         /// Suicide near non killable group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario3dan22_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3kyu28_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B17" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17160_2" />
         /// Set neutral point move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18410_2" />
         /// </summary>
         public static Boolean SuicidalWithinNonKillableGroup(GameTryMove tryMove, GameTryMove opponentMove = null)
@@ -784,11 +785,12 @@ namespace Go
             if (b != null)
             {
                 if (tryBoard.CapturedList.Count > 0) return false;
-                //set neutral point move
                 if (opponentMove != null)
                 {
+                    if (b.MoveGroupLiberties == 1 && EyeHelper.FindEye(captureBoard, b.Move.Value, b.MoveGroup.Content)) return false;
                     Board opponentBoard = opponentMove.TryGame.Board;
                     if (opponentBoard.CapturedList.Count > 0) return false;
+                    //set neutral point move
                     if (WallHelper.IsNonKillableGroup(opponentBoard, opponentBoard.MoveGroup)) opponentMove.IsNeutralPoint = true;
                 }
                 return true;
@@ -1553,10 +1555,40 @@ namespace Go
             //check link for groups
             if (tryMove.LinkForGroups())
                 return false;
-            //check ko for neutral point
-            if (KoHelper.CheckKoForNeutralPoint(tryMove.TryGame.Board))
+
+            //check for double ko
+            if (NeutralPointDoubleKo(tryBoard))
+                return false;
+
+            //check reverse ko for neutral point
+            if (KoHelper.CheckReverseKoForNeutralPoint(tryBoard))
                 return false;
             return true;
+        }
+
+        /// <summary>
+        /// Double ko for neutral point. Similar to CheckKillerKoWithinKillerGroup.
+        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
+        /// </summary>
+        private static Boolean NeutralPointDoubleKo(Board tryBoard)
+        {
+            Content c = tryBoard.MoveGroup.Content;
+            Boolean koEnabled = KoHelper.KoContentEnabled(c, tryBoard.GameInfo);
+            if (koEnabled) return false;
+            List<Point> stoneNeighbours = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindCoveredEye(tryBoard, n, c)).ToList();
+            if (stoneNeighbours.Count != 1) return false;
+            Point eyePoint = stoneNeighbours.First();
+            List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
+            if (ngroups.Count == 1 && tryBoard.GetGroupLiberties(ngroups.First()) == 2)
+            {
+                List<Group> atariTargets = tryBoard.GetNeighbourGroups(ngroups.First()).Where(group => group.Liberties.Count == 1).ToList();
+                if (atariTargets.Count != 1) return false;
+                Group atariTarget = atariTargets.First();
+                if (!KoHelper.IsKoFight(tryBoard, atariTarget)) return false;
+                if (BothAliveHelper.GetKillerGroupFromCache(tryBoard, atariTarget.Points.First(), c) == null) return false;
+                return true;
+            }
+            return false;
         }
         #endregion
 
@@ -2216,9 +2248,10 @@ namespace Go
 
             GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
             if (opponentMove == null) return false;
-            if (killerGroup == null) return FillerMoveWithoutKillerGroup(tryMove, false, opponentMove);
-            if (killerGroup.Points.Count > 5) return (FillerMoveWithoutKillerGroup(tryMove, true, opponentMove));
-            return SpecificEyeFillerMove(opponentMove, true);
+            if (killerGroup != null && killerGroup.Points.Count <= 5)
+                return SpecificEyeFillerMove(opponentMove, true);
+            else
+                return FillerMoveWithoutKillerGroup(tryMove, opponentMove);
         }
 
         /// <summary>
@@ -2229,7 +2262,7 @@ namespace Go
         /// Check two-point group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Side_B35" />
         /// Check if killer group created with opposite content within the group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_A171_101Weiqi" />
         /// </summary>
-        private static Boolean FillerMoveWithoutKillerGroup(GameTryMove tryMove, Boolean isKillerGroup = false, GameTryMove opponentMove = null)
+        private static Boolean FillerMoveWithoutKillerGroup(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryBoard.Move.Value;
@@ -2258,7 +2291,7 @@ namespace Go
             }
 
             //check for opposite content
-            if (CheckOppositeContentForFillerMove(tryMove, isKillerGroup))
+            if (CheckOppositeContentForFillerMove(tryMove))
                 return false;
 
             //check if killer group created with opposite content within the group
@@ -2269,7 +2302,7 @@ namespace Go
                     return false;
             }
 
-            return GenericEyeFillerMove(opponentMove ?? tryMove, isKillerGroup);
+            return GenericEyeFillerMove(tryMove, opponentMove);
         }
 
         /// <summary>
@@ -2279,23 +2312,14 @@ namespace Go
         /// Closest neighbour within killer group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31537_2" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31445" />
         /// </summary>
-        private static Boolean CheckOppositeContentForFillerMove(GameTryMove tryMove, Boolean isKillerGroup = false)
+        private static Boolean CheckOppositeContentForFillerMove(GameTryMove tryMove)
         {
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryBoard.Move.Value;
             Content c = tryMove.MoveContent;
-            if (!isKillerGroup)
-            {
-                //ensure no opposite content at stone and diagonal
-                if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite()))
-                    return true;
-            }
-            else
-            {
-                //ensure no opposite content at stone neighbour points for killer group or any closest neighbour within killer group
-                if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == c.Opposite() && tryBoard.GetGroupLiberties(n) <= 2) || tryBoard.GetStoneAndDiagonalNeighbours().Any(n => EyeHelper.FindEye(tryBoard, n, c) || ImmovableHelper.FindTigerMouth(tryBoard, c, n)))
-                    return true;
-            }
+            //ensure no opposite content at stone and diagonal
+            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite()))
+                return true;
             return false;
         }
 
@@ -2321,7 +2345,7 @@ namespace Go
         /// Check any opponent stone at neighbour points <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q16827" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q16827_2" />
         /// </summary>
-        public static Boolean GenericEyeFillerMove(GameTryMove tryMove, Boolean isKillerGroup = false)
+        public static Boolean GenericEyeFillerMove(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
             Board tryBoard = tryMove.TryGame.Board;
             Board currentBoard = tryMove.CurrentGame.Board;
@@ -2341,11 +2365,12 @@ namespace Go
             List<Point> emptyNeighbours = stoneNeighbours.Where(p => tryBoard[p] == Content.Empty).ToList();
 
             //eye created by try move
-            if (!isKillerGroup && emptyNeighbours.Any(n => EyeHelper.FindSemiSolidEyes(n, tryBoard, c).Item1))
+            if (emptyNeighbours.Any(n => EyeHelper.FindSemiSolidEyes(n, tryBoard, c).Item1))
                 return false;
             //check any opponent stone at stone points
             if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == c.Opposite()))
                 return false;
+
             //count eyes created at move
             int possibleEyes = PossibleEyesCreated(currentBoard, move, c);
 
@@ -2357,7 +2382,7 @@ namespace Go
                 if (possibleEyesAtNeighbourPt <= possibleEyes) continue;
                 if (tryBoard.CornerPoint(p)) continue;
                 //check any opponent stone at neighbour points
-                if (!isKillerGroup && CheckOpponentStoneAtFillerMove(tryMove, p))
+                if (CheckOpponentStoneAtFillerMove(tryMove, p))
                     continue;
                 return true;
             }
@@ -2641,7 +2666,7 @@ namespace Go
         {
             Boolean koEnabled = KoHelper.KoSurvivalEnabled(SurviveOrKill.Survive, tryMove.CurrentGame.GameInfo);
             if (!koEnabled && !PossibilityOfDoubleKo(tryMove)) return true;
-            if (koEnabled && CheckKillerKoWithinKillerGroup(tryMove)) return true;
+            if (koEnabled && KoHelper.CheckKillerKoWithinKillerGroup(tryMove)) return true;
             if (!tryMove.IsNegligibleForKo)
                 return false;
             return CheckRedundantKo(tryMove);
@@ -2666,7 +2691,7 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Boolean koEnabled = KoHelper.KoSurvivalEnabled(SurviveOrKill.Kill, tryMove.CurrentGame.GameInfo);
             if (!koEnabled && !PossibilityOfDoubleKo(tryMove)) return true;
-            if (koEnabled && CheckKillerKoWithinKillerGroup(tryMove)) return true;
+            if (koEnabled && KoHelper.CheckKillerKoWithinKillerGroup(tryMove)) return true;
             if (!tryMove.IsNegligibleForKo)
                 return false;
             Content c = tryMove.MoveContent;
@@ -2685,40 +2710,39 @@ namespace Go
         /// <summary>
         /// Check for possibility of double ko, for both survival and kill. Check for end ko moves as well.
         /// Survival double ko <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_TianLongTu_Q16446" />
+        /// <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_TianLongTu_Q16975" />
         /// Kill double ko <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A23" />
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q16446" />
         /// </summary>
         public static Boolean PossibilityOfDoubleKo(GameTryMove tryMove)
         {
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
+            Content c = tryBoard.MoveGroup.Content;
             //allow pre-ko moves without capture
             if (tryBoard.singlePointCapture == null) return true;
-            //get all target connected groups
-            HashSet<Group> groups = LifeCheck.GetTargetConnectedGroups(currentBoard);
-            Boolean isSurvive = (GameHelper.GetContentForSurviveOrKill(currentBoard.GameInfo, SurviveOrKill.Survive) == tryMove.MoveContent);
-            HashSet<Group> targetGroups = new HashSet<Group>(groups);
-            if (!isSurvive)
+            Point capturePoint = tryBoard.singlePointCapture.Value;
+            List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(capturePoint, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
+            List<Group> targetGroups = new List<Group>();
+            ngroups.ForEach(atariGroup => targetGroups.AddRange(currentBoard.GetNeighbourGroups(atariGroup.Points.First()).Where(gr => gr.Points.Count == 1 && KoHelper.IsKoFight(currentBoard, gr))));
+            targetGroups = targetGroups.Distinct().ToList();
+            //survival double ko
+            if (targetGroups.Count >= 2 && AtariHelper.KoAtariByNeighbour(currentBoard, targetGroups, capturePoint).Item1)
+                return true;
+
+            //kill double ko
+            HashSet<Group> connectedGroups = LinkHelper.GetAllDiagonalConnectedGroups(currentBoard, currentBoard.GetGroupAt(capturePoint));
+            List<Group> koGroups = connectedGroups.Where(group => group.Points.Count == 1 && KoHelper.IsKoFight(currentBoard, group)).ToList();
+            if (koGroups.Count < 2) return false;
+            Group koGroup = koGroups.First(group => !group.Points.Contains(capturePoint));
+            Board b = ImmovableHelper.CaptureSuicideGroup(currentBoard, koGroup, true);
+            if (b == null) return false;
+            foreach (Group target in b.AtariTargets)
             {
-                //include all stones at eye point
-                targetGroups = LinkHelper.GetAllDiagonalConnectedGroupsIncludingEyes(currentBoard, targetGroups);
-            }
-            //check for another ko other than current ko move
-            foreach (Group group in targetGroups)
-            {
-                if (isSurvive)
-                {
-                    if (AtariHelper.KoAtariByNeighbour(currentBoard, group, tryBoard.singlePointCapture.Value).Item1)
-                        return true;
-                }
-                else
-                {
-                    if (group.Points.Count == 1 && !group.Points.Contains(tryBoard.singlePointCapture.Value))
-                    {
-                        Board b = ImmovableHelper.CaptureSuicideGroup(currentBoard, group, true);
-                        if (b != null && KoHelper.IsKoFight(b))
-                            return true;
-                    }
-                }
+                if (b.GetNeighbourGroups(target).Any(group => group != b.MoveGroup && group.Liberties.Count == 1)) continue;
+                Board b2 = ImmovableHelper.CaptureSuicideGroup(b, target, true);
+                if (b2 != null && b2.CapturedPoints.Contains(capturePoint))
+                    return true;
             }
             return false;
         }
@@ -2752,8 +2776,7 @@ namespace Go
             if (diagonals.Count == 0)
             {
                 //check that ko fight is necessary
-                List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()).ToList();
-                ngroups.RemoveAll(ngroup => ngroup.Points.Contains(move));
+                List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
                 if (ngroups.Count == 1 && tryBoard.GetNeighbourGroups(ngroups.First()).Any(group => group.Liberties.Count <= 2 && !WallHelper.IsNonKillableGroup(tryBoard, group)))
                     return false;
             }
@@ -2765,36 +2788,6 @@ namespace Go
             return true;
         }
 
-        /// <summary>
-        /// Check killer ko within killer group.
-        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B39" /> 
-        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A85" /> 
-        /// </summary>
-        public static Boolean CheckKillerKoWithinKillerGroup(GameTryMove tryMove)
-        {
-            Board currentBoard = tryMove.CurrentGame.Board;
-            Board tryBoard = tryMove.TryGame.Board;
-            if (tryBoard.singlePointCapture == null) return false;
-            Point capturedPoint = tryBoard.singlePointCapture.Value;
-            Point move = tryBoard.Move.Value;
-            Content c = tryBoard.MoveGroup.Content;
-            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
-            if (killerGroup == null) return false;
-            List<Group> neighbourGroups = tryBoard.GetNeighbourGroups(killerGroup);
-            //ensure all neighbour groups within killer group and all strong groups
-            if (neighbourGroups.All(n => BothAliveHelper.GetKillerGroupFromCache(tryBoard, n.Points.First(), c) != null && WallHelper.IsStrongNeighbourGroup(tryBoard, n)))
-            {
-                //ensure real eye within neighbour groups                
-                if (!tryBoard.GetLibertiesOfGroups(neighbourGroups).Any(liberty => EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, liberty, c.Opposite())))
-                    return false;
-
-                List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(capturedPoint, c.Opposite()).ToList();
-                ngroups.RemoveAll(ngroup => ngroup.Points.Contains(move));
-                if (ngroups.Count == 1 && currentBoard.GetGroupLiberties(ngroups.First().Points.First()) == 1)
-                    return true;
-            }
-            return false;
-        }
 
         #endregion
     }

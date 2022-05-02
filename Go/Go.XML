@@ -257,7 +257,7 @@
             Check if any stones within move group atari on current board. 
             </summary>
         </member>
-        <member name="M:Go.AtariHelper.KoAtariByNeighbour(Go.Board,Go.Group,System.Nullable{Go.Point})">
+        <member name="M:Go.AtariHelper.KoAtariByNeighbour(Go.Board,System.Collections.Generic.List{Go.Group},System.Nullable{Go.Point})">
             <summary>
             Check if any ko atari by neighbour groups. Exclude point for double ko check to find other ko.
             </summary>
@@ -802,10 +802,17 @@
             Not double ko <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A82_101Weiqi_2" />
             </summary>
         </member>
-        <member name="M:Go.KoHelper.CheckKoForNeutralPoint(Go.Board)">
+        <member name="M:Go.KoHelper.CheckReverseKoForNeutralPoint(Go.Board)">
             <summary>
-            Ensure neutral point move is not required for ko.
+            Reverse ko for neutral point move.
             Rare scenario where neutral point required for ko <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A80" />
+            </summary>
+        </member>
+        <member name="M:Go.KoHelper.CheckKillerKoWithinKillerGroup(Go.GameTryMove)">
+            <summary>
+            Check killer ko within killer group.
+            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B39" /> 
+            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A85" /> 
             </summary>
         </member>
         <member name="M:Go.LinkHelper.LinkForGroups(Go.Board,Go.Board)">
@@ -1072,6 +1079,7 @@
             Suicide near non killable group <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario3dan22_2" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3kyu28_2" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B17" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17160_2" />
             Set neutral point move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18410_2" />
             </summary>
         </member>
@@ -1238,6 +1246,12 @@
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
             </summary>
         </member>
+        <member name="M:Go.RedundantMoveHelper.NeutralPointDoubleKo(Go.Board)">
+            <summary>
+            Double ko for neutral point. Similar to CheckKillerKoWithinKillerGroup.
+            <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
+            </summary>
+        </member>
         <member name="M:Go.RedundantMoveHelper.RestoreNeutralMove(Go.Game,System.Collections.Generic.List{Go.GameTryMove},System.Collections.Generic.List{Go.GameTryMove})">
             <summary>
             Neutral points for kill moves have to be restored on end game one at a time to surround external liberties of target group in order to kill it
@@ -1387,7 +1401,7 @@
             Kill eye filler moves valid within only small space about five points. 
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.FillerMoveWithoutKillerGroup(Go.GameTryMove,System.Boolean,Go.GameTryMove)">
+        <member name="M:Go.RedundantMoveHelper.FillerMoveWithoutKillerGroup(Go.GameTryMove,Go.GameTryMove)">
             <summary>
             Filler moves without killer group. <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q6150" />
             Filler moves with killer group <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_B3_2" />
@@ -1397,7 +1411,7 @@
             Check if killer group created with opposite content within the group <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_A171_101Weiqi" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.CheckOppositeContentForFillerMove(Go.GameTryMove,System.Boolean)">
+        <member name="M:Go.RedundantMoveHelper.CheckOppositeContentForFillerMove(Go.GameTryMove)">
             <summary>
             Check opposite content for filler move.
             Ensure no opposite content at stone and diagonal <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q29998_2" />
@@ -1412,7 +1426,7 @@
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30278" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.GenericEyeFillerMove(Go.GameTryMove,System.Boolean)">
+        <member name="M:Go.RedundantMoveHelper.GenericEyeFillerMove(Go.GameTryMove,Go.GameTryMove)">
             <summary>
             Remove redundant moves that fill eyes instead of creating eyes within eye space for survival.
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_B3" />
@@ -1525,7 +1539,9 @@
             <summary>
             Check for possibility of double ko, for both survival and kill. Check for end ko moves as well.
             Survival double ko <see cref="!:UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_TianLongTu_Q16446" />
+            <see cref="!:UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_TianLongTu_Q16975" />
             Kill double ko <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A23" />
+            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q16446" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckRedundantKo(Go.GameTryMove)">
@@ -1537,13 +1553,6 @@
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Nie20" /> 
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q2413" /> 
             Real eye at diagonal <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi" /> 
-            </summary>
-        </member>
-        <member name="M:Go.RedundantMoveHelper.CheckKillerKoWithinKillerGroup(Go.GameTryMove)">
-            <summary>
-            Check killer ko within killer group.
-            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B39" /> 
-            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A85" /> 
             </summary>
         </member>
         <member name="M:Go.ResultHelper.GameEndedMessage(Go.ConfirmAliveResult,Go.Game)">

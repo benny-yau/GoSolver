@@ -76,9 +76,8 @@ namespace Go
         /// <summary>
         /// Check if any ko atari by neighbour groups. Exclude point for double ko check to find other ko.
         /// </summary>
-        public static (Boolean, Board) KoAtariByNeighbour(Board board, Group atariGroup, Point? excludePoint = null)
+        public static (Boolean, Board) KoAtariByNeighbour(Board board, List<Group> targetGroups, Point? excludePoint = null)
         {
-            List<Group> targetGroups = board.GetNeighbourGroups(atariGroup).Where(gr => gr.Liberties.Count == 1).ToList();
             foreach (Group targetGroup in targetGroups)
             {
                 //check for ko
@@ -88,7 +87,11 @@ namespace Go
                 if (excludePoint != null && p.Equals(excludePoint)) continue;
                 Board b = ImmovableHelper.CaptureSuicideGroup(p, board, true);
                 if (b != null && KoHelper.IsKoFight(b))
+                {
+                    Board.ResolveAtari(board, b);
+                    if (!b.AtariResolved) continue;
                     return (true, b);
+                }
             }
             return (false, null);
         }
