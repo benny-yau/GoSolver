@@ -1619,7 +1619,7 @@ namespace Go
             {
                 //check pre-atari moves
                 Boolean preAtariAdded = false;
-                List<GameTryMove> preAtariMoves = neutralPointMoves.Where(move => ImmovableHelper.PreAtariMove(move.TryGame.Board)).ToList();
+                List<GameTryMove> preAtariMoves = neutralPointMoves.Where(move => ImmovableHelper.PreAtariMove(move)).ToList();
                 for (int i = preAtariMoves.Count - 1; i >= 0; i--)
                 {
                     GameTryMove tryMove = preAtariMoves[i];
@@ -2697,14 +2697,14 @@ namespace Go
             Content c = tryMove.MoveContent;
 
             //make move as survival ko
-            Point eyePoint = tryBoard.GetStoneNeighbours().FirstOrDefault(n => EyeHelper.FindEye(tryBoard, n, c));
-            if (!Convert.ToBoolean(eyePoint.NotEmpty)) return false;
+            Point? eyePoint = GetKoEyePoint(tryBoard);
+            if (eyePoint == null) return false;
 
-            GameTryMove move = new GameTryMove(tryMove.TryGame);
-            move.TryGame.Board.InternalMakeMove(eyePoint, c.Opposite(), true);
-            if (!move.IsNegligibleForKo)
+            GameTryMove opponentMove = new GameTryMove(tryMove.TryGame);
+            opponentMove.TryGame.Board.InternalMakeMove(eyePoint.Value, c.Opposite(), true);
+            if (!opponentMove.IsNegligibleForKo)
                 return false;
-            return CheckRedundantKo(move);
+            return CheckRedundantKo(opponentMove);
         }
 
         /// <summary>
@@ -2760,23 +2760,16 @@ namespace Go
         {
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
-            Point eyePoint;
             Content c = tryMove.MoveContent;
-            if (tryBoard.singlePointCapture != null) //ko moves
-                eyePoint = tryBoard.singlePointCapture.Value;
-            else
-            {
-                //pre ko moves
-                eyePoint = tryBoard.GetStoneNeighbours().FirstOrDefault(n => EyeHelper.FindEye(tryBoard, n.x, n.y, c));
-                if (!Convert.ToBoolean(eyePoint.NotEmpty)) return true;
-            }
+            Point? eyePoint = GetKoEyePoint(tryBoard);
+            if (eyePoint == null) return false;
 
             //check diagonals opposite of ko move direction are filled with same content
-            List<Point> diagonals = RedundantMoveHelper.TigerMouthEyePoints(tryBoard, eyePoint, move).Where(q => tryBoard[q] != c).ToList();
+            List<Point> diagonals = RedundantMoveHelper.TigerMouthEyePoints(tryBoard, eyePoint.Value, move).Where(q => tryBoard[q] != c).ToList();
             if (diagonals.Count == 0)
             {
                 //check that ko fight is necessary
-                List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
+                List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
                 if (ngroups.Count == 1 && tryBoard.GetNeighbourGroups(ngroups.First()).Any(group => group.Liberties.Count <= 2 && !WallHelper.IsNonKillableGroup(tryBoard, group)))
                     return false;
             }
@@ -2787,7 +2780,19 @@ namespace Go
 
             return true;
         }
-
+        private static Point? GetKoEyePoint(Board tryBoard)
+        {
+            Content c = tryBoard.MoveGroup.Content;
+            if (tryBoard.singlePointCapture != null) //ko moves
+                return tryBoard.singlePointCapture.Value;
+            else
+            {
+                //pre ko moves
+                List<Point> eyePoints = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindEye(tryBoard, n.x, n.y, c)).ToList();
+                if (eyePoints.Count != 1) return null;
+                return eyePoints.First();
+            }
+        }
 
         #endregion
     }

@@ -495,15 +495,24 @@ namespace Go
             List<Point> groupLiberties = board.GetGroupLibertyPoints(targetGroup);
             if (groupLiberties.Count > 2) return (false, null);
 
+            Dictionary<LinkedPoint<Point>, Board> killBoards = new Dictionary<LinkedPoint<Point>, Board>();
             foreach (Point liberty in groupLiberties)
             {
                 (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board, false, false);
                 if (b == null) continue;
+                int neighbourCount = b.GetStoneNeighbours().Count(n => b[n] != c);
+                killBoards.Add(new LinkedPoint<Point>(liberty, new { isSuicidal, neighbourCount }), b);
+            }
+
+            foreach (KeyValuePair<LinkedPoint<Point>, Board> kvp in killBoards.OrderByDescending(b => ((dynamic)b.Key.CheckMove).neighbourCount))
+            {
+                Board b = kvp.Value;
+                LinkedPoint<Point> key = kvp.Key;
                 //check if captured
                 if (b.CapturedPoints.Contains(targetGroup.Points.First()))
                     return (true, b);
 
-                if (isSuicidal)
+                if (((dynamic)key.CheckMove).isSuicidal)
                 {
                     //check snapback
                     if (IsSnapback(b, targetGroup, false))
@@ -552,29 +561,35 @@ namespace Go
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_WindAndTime_Q30370" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_A55" />
         /// Rare scenario <see cref="UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_WindAndTime_Q30275" />
-        /// Double ko fight <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A85" />
+        /// Check unescapable group <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A85" />
         /// </summary>
-        public static Boolean PreAtariMove(Board board)
+        public static Boolean PreAtariMove(GameTryMove tryMove)
         {
-            Point move = board.Move.Value;
-            Content c = board[move];
-            IEnumerable<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(move);
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard[move];
+            IEnumerable<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(move);
             foreach (Group targetGroup in neighbourGroups)
             {
                 //check conditions for pre-atari
-                if (!CheckPreAtariNeighbour(targetGroup, board))
+                if (!CheckPreAtariNeighbour(targetGroup, tryBoard))
                     continue;
 
                 //check connect and die
-                if (CheckConnectAndDie(board, targetGroup))
+                if (CheckConnectAndDie(tryBoard, targetGroup))
                     return true;
 
-                //double ko fight
-                foreach (Point liberty in targetGroup.Liberties)
+                //check unescapable group
+                foreach (Point liberty in currentBoard.GetGroupLibertyPoints(targetGroup))
                 {
-                    Board b = board.MakeMoveOnNewBoard(liberty, c.Opposite());
-                    if (b != null && KoHelper.DoubleKoFight(b, b.MoveGroup).Item1)
-                        return true;
+                    Board b = currentBoard.MakeMoveOnNewBoard(liberty, c.Opposite());
+                    if (b == null || b.AtariTargets.Count == 0) continue;
+                    if (b.AtariTargets.Any(t => ImmovableHelper.UnescapableGroup(b, t).Item1 && BothAliveHelper.GetKillerGroupFromCache(b, t.Points.First(), c.Opposite()) == null))
+                    {
+                        if (ImmovableHelper.IsSuicidalMove(tryBoard, liberty, c.Opposite()))
+                            return true;
+                    }
                 }
             }
             return false;

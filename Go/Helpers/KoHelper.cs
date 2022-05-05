@@ -97,20 +97,19 @@ namespace Go
         /// </summary>
         public static (Boolean, Board) DoubleKoFight(Board board, Group targetGroup)
         {
-            List<Group> groups = board.GetNeighbourGroups(targetGroup).Where(group => group.Liberties.Count == 1).ToList();
-            if (groups.Count < 2) return (false, null);
-            foreach (Group atariTarget in groups)
+            List<Group> koGroups = board.GetNeighbourGroups(targetGroup).Where(group => KoHelper.IsKoFight(board, group)).ToList();
+            if (koGroups.Count < 2) return (false, null);
+            foreach (Group koGroup in koGroups)
             {
-                Board b = ImmovableHelper.CaptureSuicideGroup(board, atariTarget);
-                if (b != null && b.AtariTargets.Count > 0 && IsKoFight(b))
+                Board b = ImmovableHelper.CaptureSuicideGroup(board, koGroup);
+                if (b == null) continue;
+                foreach (Group target in b.AtariTargets)
                 {
-                    foreach (Group target in b.AtariTargets)
-                    {
-                        if (!ImmovableHelper.UnescapableGroup(b, target).Item1) continue;
-                        Board b2 = ImmovableHelper.CaptureSuicideGroup(b, target);
-                        if (b2 != null && b2.CapturedList.Any(captured => groups.Any(g => !g.Equals(atariTarget) && g.Points.Contains(captured.Points.First()))))
-                            return (true, b);
-                    }
+                    if (!ImmovableHelper.UnescapableGroup(b, target).Item1) continue;
+                    Board b2 = ImmovableHelper.CaptureSuicideGroup(b, target);
+                    if (b2 == null) continue;
+                    if (b2.CapturedList.Any(captured => koGroups.Any(g => !g.Equals(koGroup) && g.Points.Contains(captured.Points.First()))))
+                        return (true, b);
                 }
             }
             return (false, null);
