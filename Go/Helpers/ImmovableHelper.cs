@@ -500,7 +500,7 @@ namespace Go
             {
                 (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board, false, false);
                 if (b == null) continue;
-                int neighbourCount = b.GetStoneNeighbours().Count(n => b[n] != c);
+                int neighbourCount = b.GetStoneNeighbours().Count(n => b[n] != c.Opposite());
                 killBoards.Add(new LinkedPoint<Point>(liberty, new { isSuicidal, neighbourCount }), b);
             }
 
