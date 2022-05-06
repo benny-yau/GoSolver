@@ -87,7 +87,7 @@ namespace Go
             if (!FindSuicidalKillerFormation(tryBoard, currentBoard, capturedBoard)) return false;
 
             //check if real eye found in neighbour groups
-            if (CheckRealEyeInNeighbourGroups(capturedBoard ?? tryBoard, move, c))
+            if (CheckRealEyeInNeighbourGroups(tryBoard, move, c, capturedBoard))
                 return false;
 
             //check link to external group
@@ -107,41 +107,43 @@ namespace Go
         /// Allow two-point group without real eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18472" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17183" />
-        /// Check for corner five and corner six <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_2" />
+        /// Check for corner six <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
         /// </summary>
-        public static Boolean CheckRealEyeInNeighbourGroups(Board tryBoard, Point move, Content c)
+        public static Boolean CheckRealEyeInNeighbourGroups(Board tryBoard, Point move, Content c, Board captureBoard = null)
         {
+            Board b = captureBoard ?? tryBoard;
             //check for covered eye
-            if (EyeHelper.CheckCoveredEyeAtSuicideGroup(tryBoard))
+            if (EyeHelper.CheckCoveredEyeAtSuicideGroup(b, tryBoard.MoveGroup))
                 return false;
 
             //allow two-point group without real eye
             if (tryBoard.MoveGroup.Points.Count <= 2)
             {
-                Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
-                if (killerGroup != null && !EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, killerGroup))
+                Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(b, move, c.Opposite());
+                if (killerGroup != null && killerGroup.Points.Count <= 2 && !EyeHelper.FindRealEyeWithinEmptySpace(b, killerGroup))
                     return false;
             }
 
-            //check for corner five and corner six
-            if ((tryBoard.MoveGroup.Points.Count == 5 && KillerFormationHelper.CornerFiveFormation(tryBoard, tryBoard.MoveGroup)) || (tryBoard.MoveGroup.Points.Count == 6 && KillerFormationHelper.CornerSixFormation(tryBoard, tryBoard.MoveGroup))) return false;
+            //check for corner six
+            if (KillerFormationHelper.CornerSixFormation(tryBoard, tryBoard.MoveGroup))
+                return false;
 
-            Group moveKillerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
+            Group moveKillerGroup = BothAliveHelper.GetKillerGroupFromCache(b, move, c.Opposite());
             if (moveKillerGroup == null) moveKillerGroup = tryBoard.MoveGroup;
 
             //get all killer groups except move killer group
-            List<Group> killerGroups = BothAliveHelper.GetCorneredKillerGroup(tryBoard, c.Opposite(), false);
+            List<Group> killerGroups = BothAliveHelper.GetCorneredKillerGroup(b, c.Opposite(), false);
             killerGroups = killerGroups.Except(new List<Group> { moveKillerGroup }).ToList();
-            List<Group> neighbourGroups = tryBoard.GetNeighbourGroups(moveKillerGroup);
+            List<Group> neighbourGroups = b.GetNeighbourGroups(moveKillerGroup);
             foreach (Group killerGroup in killerGroups)
             {
-                List<Group> neighbourKillerGroups = tryBoard.GetNeighbourGroups(killerGroup);
+                List<Group> neighbourKillerGroups = b.GetNeighbourGroups(killerGroup);
                 if (!neighbourKillerGroups.Intersect(neighbourGroups).Any()) continue;
                 //real eye with one neighbour group only
                 if (neighbourKillerGroups.Count == 1)
                     return true;
                 //find real eye
-                if (EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, killerGroup, EyeType.SemiSolidEye))
+                if (killerGroup.Points.Count > 3 || EyeHelper.FindRealEyeWithinEmptySpace(b, killerGroup, EyeType.SemiSolidEye))
                     return true;
             }
             return false;
@@ -752,6 +754,7 @@ namespace Go
             if (contentPoints.Count() != 5) return false;
             if (!contentPoints.Any(p => tryBoard.CornerPoint(p))) return false;
             if (contentPoints.Where(p => tryBoard.PointWithinMiddleArea(p.x, p.y)).Count() != 1) return false;
+            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 3) != 1) return false;
             return (MaxLengthOfGrid(moveGroup.Points) == 2);
         }
 

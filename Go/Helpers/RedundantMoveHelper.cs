@@ -212,22 +212,23 @@ namespace Go
             List<Group> suicidalEyeGroups = eyeGroups.Where(e => e.Liberties.Count == 2).ToList();
             foreach (Group eyeGroup in suicidalEyeGroups)
             {
-                List<Point> liberties = eyeGroup.Liberties.Except(new List<Point> { move }).ToList();
+                List<Point> liberties = eyeGroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
                 if (liberties.Count != 1) continue;
-                if (currentBoard.GetGroupsFromStoneNeighbours(liberties.First(), c).Any(g => WallHelper.IsNonKillableGroup(tryBoard, g))) continue;
+                Point liberty = liberties.First();
+                if (currentBoard.GetGroupsFromStoneNeighbours(liberty, c).Any(g => WallHelper.IsNonKillableGroup(tryBoard, g))) continue;
 
-                (Boolean suicide, Board b) = ImmovableHelper.IsSuicidalMove(liberties.First(), eyeGroup.Content, currentBoard);
+                (Boolean suicide, Board b) = ImmovableHelper.IsSuicidalMove(liberty, eyeGroup.Content, currentBoard);
                 if (suicide)
-                    return (true, liberties.First());
-                if (ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup))
-                    return (true, liberties.First());
+                    return (true, liberty);
+                if (ImmovableHelper.CheckConnectAndDie(b))
+                    return (true, liberty);
                 //check for opponent capture move
                 if (b != null && b.MoveGroup.Liberties.Count == 2)
                 {
-                    List<Point> moveGroupLiberties = b.MoveGroup.Liberties.Except(new List<Point>() { move }).ToList();
+                    List<Point> moveGroupLiberties = b.MoveGroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
                     Board b2 = b.MakeMoveOnNewBoard(moveGroupLiberties.First(), eyeGroup.Content.Opposite());
                     if (b2 != null && b2.CapturedList.Count > 0)
-                        return (true, liberties.First());
+                        return (true, liberty);
                 }
             }
             return (false, null);
@@ -654,6 +655,8 @@ namespace Go
 
         /// <summary>
         /// Check for real eye in neighbour groups.
+        /// Check for split killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3" />
+        /// Check for corner six formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" /> 
         /// Check for one-point eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A30" />
         /// Check for two-point snapback <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A55" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_2" />
@@ -666,10 +669,23 @@ namespace Go
         private static Boolean CheckAnyRealEyeInSuicidalConnectAndDie(Board tryBoard, Board captureBoard)
         {
             Point move = tryBoard.Move.Value;
-            HashSet<Point> movePoints = tryBoard.MoveGroup.Points;
             Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.MoveGroup.Points.Count <= 2) return false;
-            if (!KillerFormationHelper.CheckRealEyeInNeighbourGroups(captureBoard ?? tryBoard, move, c)) return false;
+            if (tryBoard.MoveGroup.Points.Count == 1)
+            {
+                //check for split killer group
+                Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite());
+                if (killerGroup == null) return false;
+                Boolean splitKillerGroup = captureBoard.GetStoneNeighbours().Any(n => tryBoard[n] != c && BothAliveHelper.GetKillerGroupFromCache(captureBoard, n, c.Opposite()) != null && BothAliveHelper.GetKillerGroupFromCache(captureBoard, n, c.Opposite()) != killerGroup);
+                if (!splitKillerGroup) return false;
+
+                //check for corner six formation
+                Group tryKillerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
+                if (tryKillerGroup != null && KillerFormationHelper.CornerSixFormation(tryBoard, tryKillerGroup))
+                    return false;
+            }
+            else if (tryBoard.MoveGroup.Points.Count == 2)
+                return false;
+            if (!KillerFormationHelper.CheckRealEyeInNeighbourGroups(tryBoard, move, c, captureBoard)) return false;
             return true;
         }
 
