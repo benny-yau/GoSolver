@@ -486,6 +486,8 @@ namespace Go
         /// <summary>
         /// Check for connect and die on board with captured suicide stone.
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
+        /// Suicidal capture <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B25" />
+        /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A55" />
         /// Reverse connect and die <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WindAndTime_Q29277" />
         /// </summary>
         public static (Boolean, Board) ConnectAndDie(Board board, Group targetGroup = null)
@@ -495,13 +497,13 @@ namespace Go
             List<Point> groupLiberties = board.GetGroupLibertyPoints(targetGroup);
             if (groupLiberties.Count > 2) return (false, null);
 
-            Dictionary<LinkedPoint<Point>, Board> killBoards = new Dictionary<LinkedPoint<Point>, Board>();
+            List<KeyValuePair<LinkedPoint<Point>, Board>> killBoards = new List<KeyValuePair<LinkedPoint<Point>, Board>>();
             foreach (Point liberty in groupLiberties)
             {
                 (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board, false, false);
                 if (b == null) continue;
                 int neighbourCount = b.GetStoneNeighbours().Count(n => b[n] != c.Opposite());
-                killBoards.Add(new LinkedPoint<Point>(liberty, new { isSuicidal, neighbourCount }), b);
+                killBoards.Add(new KeyValuePair<LinkedPoint<Point>, Board>(new LinkedPoint<Point>(liberty, new { isSuicidal, neighbourCount }), b));
             }
 
             foreach (KeyValuePair<LinkedPoint<Point>, Board> kvp in killBoards.OrderByDescending(b => ((dynamic)b.Key.CheckMove).neighbourCount))
@@ -512,17 +514,19 @@ namespace Go
                 if (b.CapturedPoints.Contains(targetGroup.Points.First()))
                     return (true, b);
 
-                if (((dynamic)key.CheckMove).isSuicidal)
-                {
-                    //check snapback
-                    if (IsSnapback(b, targetGroup, false))
-                        return (true, b);
-                    continue;
-                }
-
                 //check if connect and die
                 if (UnescapableGroup(b, targetGroup).Item1)
                 {
+                    Boolean suicidal = ((dynamic)key.CheckMove).isSuicidal;
+                    if (suicidal)
+                    {
+                        //suicidal capture
+                        Board b2 = ImmovableHelper.CaptureSuicideGroup(b);
+                        if (b2 != null && ConnectAndDie(b2, targetGroup).Item1)
+                            return (true, b);
+                        continue;
+                    }
+
                     //reverse connect and die
                     if (ConnectAndDie(b, b.MoveGroup).Item1)
                         continue;

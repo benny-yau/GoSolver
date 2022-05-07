@@ -133,9 +133,8 @@ namespace Go
 
             //get all killer groups except move killer group
             List<Group> killerGroups = BothAliveHelper.GetCorneredKillerGroup(b, c.Opposite(), false);
-            killerGroups = killerGroups.Except(new List<Group> { moveKillerGroup }).ToList();
             List<Group> neighbourGroups = b.GetNeighbourGroups(moveKillerGroup);
-            foreach (Group killerGroup in killerGroups)
+            foreach (Group killerGroup in killerGroups.Where(group => group != moveKillerGroup))
             {
                 List<Group> neighbourKillerGroups = b.GetNeighbourGroups(killerGroup);
                 if (!neighbourKillerGroups.Intersect(neighbourGroups).Any()) continue;
@@ -143,7 +142,9 @@ namespace Go
                 if (neighbourKillerGroups.Count == 1)
                     return true;
                 //find real eye
-                if (killerGroup.Points.Count > 3 || EyeHelper.FindRealEyeWithinEmptySpace(b, killerGroup, EyeType.SemiSolidEye))
+                if (EyeHelper.FindRealEyeWithinEmptySpace(b, killerGroup, EyeType.SemiSolidEye))
+                    return true;
+                if (killerGroup.Points.Count > 3 && b.GetNeighbourGroups(killerGroup).All(group => group.Liberties.Count > 1))
                     return true;
             }
             return false;

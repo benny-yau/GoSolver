@@ -557,6 +557,7 @@ namespace Go
         /// Check capture moves <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A75_101Weiqi" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.CheckForRecursionTest_Scenario_Corner_B41" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113_3" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B36" />
         /// Check atari moves <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30986" />
         /// Check for sieged scenario <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
         /// Check killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
@@ -584,7 +585,7 @@ namespace Go
             if (tryBoard.CapturedList.Count > 0)
             {
                 if (tryBoard.CapturedList.Any(g => AtariHelper.AtariByGroup(currentBoard, g))) return false;
-                if (tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindCoveredEye(tryBoard, n, c))) return false;
+                if (tryBoard.CapturedList.Any(n => EyeHelper.FindCoveredEyeByCapture(tryBoard, n))) return false;
                 if (KillerFormationHelper.TryKillFormation(captureBoard, c, new List<Point> { tryBoard.CapturedList.First().Points.First() }, new List<Func<Board, Group, Boolean>>() { KillerFormationHelper.OneByThreeFormation, KillerFormationHelper.KnifeFiveFormation }))
                     return false;
                 return true;
@@ -655,7 +656,7 @@ namespace Go
 
         /// <summary>
         /// Check for real eye in neighbour groups.
-        /// Check for split killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3" />
+        /// Check for split killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3_3" />
         /// Check for corner six formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" /> 
         /// Check for one-point eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A30" />
         /// Check for two-point snapback <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A55" />
@@ -675,7 +676,7 @@ namespace Go
                 //check for split killer group
                 Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite());
                 if (killerGroup == null) return false;
-                Boolean splitKillerGroup = captureBoard.GetStoneNeighbours().Any(n => tryBoard[n] != c && BothAliveHelper.GetKillerGroupFromCache(captureBoard, n, c.Opposite()) != null && BothAliveHelper.GetKillerGroupFromCache(captureBoard, n, c.Opposite()) != killerGroup);
+                Boolean splitKillerGroup = captureBoard.GetStoneNeighbours().Where(n => tryBoard[n] != c && !n.Equals(move)).Select(n => new { kGroup = BothAliveHelper.GetKillerGroupFromCache(captureBoard, n, c.Opposite()) }).Any(n => n.kGroup != null && n.kGroup != killerGroup);
                 if (!splitKillerGroup) return false;
 
                 //check for corner six formation
@@ -1674,7 +1675,7 @@ namespace Go
                 if (neutralPointMove != null)
                     tryMoves.Add(neutralPointMove);
             }
-            if (tryMoves.Count == 1 || tryMoves.Count == 2)
+            if (tryMoves.Count <= 2)
             {
                 //check connect and die for last try move
                 if (tryMoves.All(tryMove => ImmovableHelper.CheckConnectAndDie(tryMove.TryGame.Board)))
