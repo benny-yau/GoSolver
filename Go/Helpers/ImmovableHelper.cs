@@ -518,14 +518,7 @@ namespace Go
                 if (UnescapableGroup(b, targetGroup).Item1)
                 {
                     Boolean suicidal = ((dynamic)key.CheckMove).isSuicidal;
-                    if (suicidal)
-                    {
-                        //suicidal capture
-                        Board b2 = ImmovableHelper.CaptureSuicideGroup(b);
-                        if (b2 != null && ConnectAndDie(b2, targetGroup).Item1)
-                            return (true, b);
-                        continue;
-                    }
+                    if (suicidal) return (true, b);
 
                     //reverse connect and die
                     if (ConnectAndDie(b, b.MoveGroup).Item1)

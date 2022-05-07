@@ -963,7 +963,8 @@ namespace Go
             if (tryBoard.IsAtariMove)
             {
                 //check for non two-point group
-                Boolean twoPointGroup = (eyeGroup != null && eyeGroup.Points.Count == 2);
+                Point liberty = tryBoard.MoveGroup.Liberties.First();
+                Boolean twoPointGroup = tryBoard.GetStoneNeighbours(liberty.x, liberty.y).Where(n => !n.Equals(move)).All(n => tryBoard[n] == c.Opposite());
                 if (!twoPointGroup && CheckNonTwoPointGroupInSuicideRealEye(tryMove))
                     return true;
 
