@@ -761,7 +761,16 @@ namespace Go
                 return true;
 
             //check tiger mouth at corner point
-            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard.CornerPoint(n) && ImmovableHelper.FindTigerMouth(tryBoard, c, n)))
+            List<Point> corner = tryBoard.GetStoneNeighbours().Where(n => tryBoard.CornerPoint(n)).ToList();
+            if (corner.Count != 1) return false;
+            Point? tigerMouth = ImmovableHelper.FindTigerMouth(tryBoard, corner.First(), c);
+            if (tigerMouth == null) return false;
+            (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(tigerMouth.Value, c, captureBoard);
+            if (suicidal) return false;
+            Board b2 = ImmovableHelper.CaptureSuicideGroup(b, tryBoard.MoveGroup);
+            if (b2 == null) return false;
+            Group escapeGroup = b2.GetGroupAt(b.Move.Value);
+            if (escapeGroup.Liberties.Count > 1 || !ImmovableHelper.UnescapableGroup(b2, escapeGroup).Item1)
                 return true;
             return false;
         }
