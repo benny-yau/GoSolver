@@ -972,22 +972,6 @@
             <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Side_A23" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.AtariResponseMove(Go.GameTryMove)">
-            <summary>
-            Response to atari move in current board.
-            <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
-            Capture neighbour group <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WindAndTime_Q30370" />
-            Check for snapback <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario4dan17" />
-            Check for ko <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario1dan10" />
-            Ensure survival move is neutral point <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A128" />
-            Check connect and die <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_TianLongTu_Q16490" />
-            </summary>
-        </member>
-        <member name="M:Go.RedundantMoveHelper.ConnectedNonKillable(Go.Board)">
-            <summary>
-            Group becomes non killable after making move.
-            </summary>
-        </member>
         <member name="M:Go.RedundantMoveHelper.SuicidalRedundantMove(Go.GameTryMove)">
             <summary>
             Suicidal moves are moves that have liberty of one only.

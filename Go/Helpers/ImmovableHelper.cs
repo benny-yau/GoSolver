@@ -423,17 +423,30 @@ namespace Go
         /// </summary>
         public static Boolean CheckSnapbackInNeighbourGroups(Board board, Group moveGroup)
         {
-            Content c = board.MoveGroup.Content;
             IEnumerable<Group> neighbourGroups = board.GetNeighbourGroups(moveGroup);
             return neighbourGroups.Any(group => CheckSnapback(board, group));
         }
 
         public static Boolean CheckSnapback(Board board, Group targetGroup)
         {
-            if (targetGroup.Points.Count == 1) return false;
             Content c = targetGroup.Content;
+            if (targetGroup.Points.Count == 1) return false;
             List<Point> libertyPoints = board.GetGroupLibertyPoints(targetGroup);
             if (libertyPoints.Count != 2) return false;
+
+            List<Group> groups = board.GetNeighbourGroups(targetGroup).Where(gr => gr.Liberties.Count == 1).ToList();
+            if (groups.Count != 1) return false;
+            Group moveGroup = groups.First();
+            if (moveGroup.Points.Count > 2) return false;
+            //one point move within two point group
+            if (moveGroup.Points.Count == 1)
+            {
+                if (moveGroup.Liberties.Count > 1) return false;
+                Point move = moveGroup.Points.First();
+                Point liberty = moveGroup.Liberties.First();
+                Boolean twoPointGroup = board.GetStoneNeighbours(liberty.x, liberty.y).Where(n => !n.Equals(move)).All(n => board[n] == c);
+                if (!twoPointGroup) return false;
+            }
 
             foreach (Point libertyPoint in libertyPoints)
             {

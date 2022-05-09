@@ -76,8 +76,13 @@ namespace Go
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
 
-            if (capturedBoard == null && tryBoard.MoveGroupLiberties == 1)
-                capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
+            if (capturedBoard == null)
+            {
+                if (tryBoard.MoveGroupLiberties == 1)
+                    capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
+                else if (tryBoard.MoveGroupLiberties == 2)
+                    (_, capturedBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
+            }
 
             //check if neighbour group is non-killable
             if (!EyeHelper.CheckCoveredEyeAtSuicideGroup(tryBoard) && tryBoard.GetNeighbourGroups().Any(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
@@ -91,7 +96,7 @@ namespace Go
                 return false;
 
             //check link to external group
-            if (capturedBoard != null)
+            if (tryBoard.MoveGroupLiberties == 1 && capturedBoard != null)
             {
                 Point? liberty = capturedBoard.Move;
                 Board tryLinkBoard = currentBoard.MakeMoveOnNewBoard(liberty.Value, c);

@@ -250,11 +250,6 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryBoard.MoveGroup.Content;
-            if (GameHelper.GetContentForSurviveOrKill(tryBoard.GameInfo, SurviveOrKill.Kill) == c)
-            {
-                if (AtariResponseMove(tryMove))
-                    return true;
-            }
             if (!tryBoard.IsAtariMove || tryBoard.AtariTargets.Count > 1 || tryBoard.AtariResolved || tryBoard.CapturedList.Count > 0) return false;
             Group atariTarget = tryBoard.AtariTargets.First();
             //ensure target group can escape
@@ -358,61 +353,6 @@ namespace Go
                 return (q.x + q.y) < (move.x + move.y);
             }
             return false;
-        }
-
-        /// <summary>
-        /// Response to atari move in current board.
-        /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
-        /// Capture neighbour group <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WindAndTime_Q30370" />
-        /// Check for snapback <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario4dan17" />
-        /// Check for ko <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario1dan10" />
-        /// Ensure survival move is neutral point <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A128" />
-        /// Check connect and die <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_TianLongTu_Q16490" />
-        /// </summary>
-        public static Boolean AtariResponseMove(GameTryMove tryMove)
-        {
-            Board currentBoard = tryMove.CurrentGame.Board;
-            Board tryBoard = tryMove.TryGame.Board;
-            Point? lastMove = currentBoard.LastMove;
-            if (lastMove == null || lastMove.Equals(Game.PassMove)) return false;
-            Content c = currentBoard[lastMove.Value];
-
-            //move on current board is atari move
-            if (!currentBoard.IsAtariMove || currentBoard.AtariTargets.Count > 1 || tryBoard.CapturedList.Count > 0) return false;
-            //ensure not first move
-            if (currentBoard.LastMoves.Count == 1) return false;
-            Group atariTarget = currentBoard.AtariTargets.First();
-            //target group three or more points
-            if (atariTarget.Points.Count < 3) return false;
-
-            //capture neighbour group
-            Board captureBoard = ImmovableHelper.EscapeByCapture(currentBoard, atariTarget);
-            if (captureBoard != null && tryMove.Move.Equals(captureBoard.Move))
-                return false;
-
-            //group can escape at liberty
-            (Boolean result, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(currentBoard, atariTarget);
-            if (result || tryMove.Move.Equals(escapeBoard.Move))
-                return false;
-
-            //ensure survival move is neutral point
-            IEnumerable<Point> neighbourPts = currentBoard.GetStoneAndDiagonalNeighbours(lastMove.Value.x, lastMove.Value.y).Except(atariTarget.Points);
-            if (neighbourPts.Any(q => !WallHelper.NoEyeForSurvival(currentBoard, q)))
-                return false;
-
-            //check redundant moves
-            if (ConnectedNonKillable(captureBoard) || ConnectedNonKillable(escapeBoard))
-                return true;
-            return false;
-        }
-
-        /// <summary>
-        /// Group becomes non killable after making move.
-        /// </summary>
-        private static Boolean ConnectedNonKillable(Board escapeBoard)
-        {
-            if (escapeBoard == null) return false;
-            return WallHelper.IsNonKillableGroup(escapeBoard, escapeBoard.Move.Value);
         }
         #endregion
 
