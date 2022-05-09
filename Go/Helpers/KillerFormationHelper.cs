@@ -129,7 +129,7 @@ namespace Go
                 return false;
 
             //corner ko move
-            if (CheckCornerKoMoveForRealEye(tryBoard, captureBoard))
+            if (CheckCornerKoMoveForRealEye(tryBoard))
                 return false;
 
             Group moveKillerGroup = BothAliveHelper.GetKillerGroupFromCache(b, move, c.Opposite());
@@ -158,17 +158,20 @@ namespace Go
         /// Check corner ko move for real eye. Similar to CheckOnePointMoveInConnectAndDie.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16446" /> 
         /// </summary>
-        private static Boolean CheckCornerKoMoveForRealEye(Board tryBoard, Board captureBoard)
+        private static Boolean CheckCornerKoMoveForRealEye(Board tryBoard)
         {
             Content c = tryBoard.MoveGroup.Content;
             List<Point> corner = tryBoard.GetStoneNeighbours().Where(n => tryBoard.CornerPoint(n)).ToList();
             if (corner.Count != 1) return false;
-            if (tryBoard.MoveGroup.Points.Count > 3) return false;
+            if (tryBoard.MoveGroup.Liberties.Count != 2 || tryBoard.MoveGroup.Points.Count > 3) return false;
             if (tryBoard.GetNeighbourGroups().Count <= 1) return false;
             Boolean koEnabled = KoHelper.KoContentEnabled(c, tryBoard.GameInfo);
             if (!koEnabled) return false;
             Point? tigerMouth = ImmovableHelper.FindTigerMouth(tryBoard, corner.First(), c);
             if (tigerMouth == null) return false;
+
+            (_, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
+            if (captureBoard == null) return false;
             (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(tigerMouth.Value, c, captureBoard);
             if (!suicidal && !ImmovableHelper.CheckConnectAndDie(b))
                 return true;
