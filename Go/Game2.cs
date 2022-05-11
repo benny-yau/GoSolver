@@ -468,6 +468,7 @@ namespace Go
         /// <summary>
         /// Restore redundant ko that are atari moves but not ko enabled.
         /// Double ko <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B41" />
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A79" />
         /// End ko <see cref="UnitTestProject.KoTest.KoTest_Scenario_TianLongTu_Q17077" />
         /// </summary>
         private void RestoreRedundantKo(List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves)
@@ -488,14 +489,9 @@ namespace Go
             if (groups.Count == 1)
             {
                 //double ko
-                Group group = groups.First();
-                if (group.Liberties.Count == 2 && group.Liberties.Any(liberty => EyeHelper.FindCoveredEye(currentBoard, liberty, c)))
-                {
-                    if (currentBoard[eyePoint.Value] != c.Opposite()) return;
-                    Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(currentBoard, currentBoard.GetGroupAt(eyePoint.Value), c.Opposite());
-                    if (b != null && BothAliveHelper.GetKillerGroupFromCache(b, b.Move.Value, c) != null && !KillerFormationHelper.SuicidalKillerFormations(b, currentBoard))
-                        tryMoves.Add(koMove);
-                }
+                if (groups.First().Liberties.Count != 2) return;
+                if (currentBoard[eyePoint.Value] == c.Opposite() && BothAliveHelper.GetKillerGroupFromCache(currentBoard, eyePoint.Value, c) != null)
+                    tryMoves.Add(koMove);
                 return;
             }
             //end ko

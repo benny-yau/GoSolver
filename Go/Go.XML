@@ -169,6 +169,7 @@
             <summary>
             Restore redundant ko that are atari moves but not ko enabled.
             Double ko <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B41" />
+            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A79" />
             End ko <see cref="!:UnitTestProject.KoTest.KoTest_Scenario_TianLongTu_Q17077" />
             </summary>
         </member>
