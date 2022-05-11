@@ -313,8 +313,9 @@ namespace Go
             Point move = tryMove.Move;
             Content c = tryBoard.MoveGroup.Content;
             Group atariTarget = tryBoard.AtariTargets.First();
+            Point atariPoint = atariTarget.Points.First();
             //check for redundant atari within killer group
-            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, atariTarget.Points.First(), c);
+            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, atariPoint, c);
             if (killerGroup == null) return false;
             //ensure more than one liberty for move group
             if (tryBoard.MoveGroupLiberties == 1) return false;
@@ -329,10 +330,10 @@ namespace Go
             Point q = atariTarget.Liberties.First();
             (Boolean suicidal, Board board) = ImmovableHelper.IsSuicidalMove(q, c, currentBoard, false, false);
             if (suicidal) return false;
-            Group killerGroup2 = BothAliveHelper.GetKillerGroupFromCache(board, atariTarget.Points.First(), c);
+            Group killerGroup2 = BothAliveHelper.GetKillerGroupFromCache(board, atariPoint, c);
             if (killerGroup2 == null) return false;
             //ensure the other move can capture atari target as well
-            if (ImmovableHelper.UnescapableGroup(board, board.GetGroupAt(atariTarget.Points.First())).Item1)
+            if (ImmovableHelper.UnescapableGroup(board, board.GetGroupAt(atariPoint)).Item1)
             {
                 //check for increased killer groups
                 if (board.GetStoneNeighbours().Any(n => board[n] != c && BothAliveHelper.GetKillerGroupFromCache(board, n, c) != killerGroup2)) return false;
@@ -350,7 +351,7 @@ namespace Go
                     }
                 }
                 //return only one move if both moves valid
-                return (q.x + q.y) < (move.x + move.y);
+                return (q.x + q.y * board.SizeX) < (move.x + move.y * board.SizeX);
             }
             return false;
         }
@@ -572,7 +573,7 @@ namespace Go
                 return CheckAnyRealEyeInSuicidalConnectAndDie(tryBoard, captureBoard);
             }
             //check killer formation
-            else if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard))
+            else if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, captureBoard))
                 return false;
             return true;
         }
@@ -2664,7 +2665,7 @@ namespace Go
             Content c = tryMove.MoveContent;
 
             //make move as survival ko
-            Point? eyePoint = GetKoEyePoint(tryBoard);
+            Point? eyePoint = KoHelper.GetKoEyePoint(tryBoard);
             if (eyePoint == null) return false;
 
             GameTryMove opponentMove = new GameTryMove(tryMove.TryGame);
@@ -2728,7 +2729,7 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
-            Point? eyePoint = GetKoEyePoint(tryBoard);
+            Point? eyePoint = KoHelper.GetKoEyePoint(tryBoard);
             if (eyePoint == null) return false;
 
             //check diagonals opposite of ko move direction are filled with same content
@@ -2746,19 +2747,6 @@ namespace Go
                 return false;
 
             return true;
-        }
-        private static Point? GetKoEyePoint(Board tryBoard)
-        {
-            Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.singlePointCapture != null) //ko moves
-                return tryBoard.singlePointCapture.Value;
-            else
-            {
-                //pre ko moves
-                List<Point> eyePoints = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindEye(tryBoard, n.x, n.y, c)).ToList();
-                if (eyePoints.Count != 1) return null;
-                return eyePoints.First();
-            }
         }
 
         #endregion

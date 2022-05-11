@@ -159,7 +159,7 @@ namespace Go
                 tryMoves.Add(redundantTryMoves.First(move => move.IsDiagonalEyeMove));
 
             //restore redundant ko
-            RestoreRedundantKo(tryMoves, redundantTryMoves, koBlockedMove);
+            RestoreRedundantKo(tryMoves, redundantTryMoves);
             if (!mappingRange && koBlockedMove != null && koBlockedMove.IsRedundantKo)
                 koBlockedMove = null;
 
@@ -452,7 +452,7 @@ namespace Go
             tryMoves = (from entry in tryMoves orderby entry.TryGame.Board.AtariResolved descending, entry.TryGame.Board.MoveGroupLiberties descending select entry).ToList();
 
             //restore redundant ko
-            RestoreRedundantKo(tryMoves, redundantTryMoves, koBlockedMove);
+            RestoreRedundantKo(tryMoves, redundantTryMoves);
 
             //check for ten thousand year ko scenario
             if (UniquePatternsHelper.CheckForTenThousandYearKo(currentGame))
@@ -467,21 +467,44 @@ namespace Go
 
         /// <summary>
         /// Restore redundant ko that are atari moves but not ko enabled.
-        /// Double ko <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_XuanXuanGo_A28_101Weiqi" />
+        /// Double ko <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B41" />
         /// End ko <see cref="UnitTestProject.KoTest.KoTest_Scenario_TianLongTu_Q17077" />
         /// </summary>
-        private void RestoreRedundantKo(List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves, GameTryMove koBlockedMove)
+        private void RestoreRedundantKo(List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves)
         {
-            if ((redundantTryMoves != null && redundantTryMoves.Any(t => t.IsRedundantKo)))
+            if (redundantTryMoves == null || !redundantTryMoves.Any(t => t.IsRedundantKo)) return;
+
+            //all try moves are suicidal
+            if (!AllTryMovesSuicidal(tryMoves)) return;
+
+            GameTryMove koMove = redundantTryMoves.FirstOrDefault(t => t.IsRedundantKo && t.TryGame.Board.IsAtariMove);
+            if (koMove == null) return;
+            Board currentBoard = koMove.CurrentGame.Board;
+            Board tryBoard = koMove.TryGame.Board;
+            Content c = tryBoard.MoveGroup.Content;
+            Point? eyePoint = KoHelper.GetKoEyePoint(tryBoard);
+            if (eyePoint == null) return;
+            HashSet<Group> groups = currentBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite());
+            if (groups.Count == 1)
             {
-                //all try moves are suicidal
-                if (AllTryMovesSuicidal(tryMoves))
+                //double ko
+                Group group = groups.First();
+                if (group.Liberties.Count == 2 && group.Liberties.Any(liberty => EyeHelper.FindCoveredEye(currentBoard, liberty, c)))
                 {
-                    GameTryMove koMove = redundantTryMoves.FirstOrDefault(t => t.IsRedundantKo && t.TryGame.Board.IsAtariMove);
-                    if (koMove != null)
+                    if (currentBoard[eyePoint.Value] != c.Opposite()) return;
+                    Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(currentBoard, currentBoard.GetGroupAt(eyePoint.Value), c.Opposite());
+                    if (b != null && BothAliveHelper.GetKillerGroupFromCache(b, b.Move.Value, c) != null && !KillerFormationHelper.SuicidalKillerFormations(b, currentBoard))
                         tryMoves.Add(koMove);
                 }
+                return;
             }
+            //end ko
+            //find trapped group within killer group
+            Group trappedGroup = groups.FirstOrDefault(gr => BothAliveHelper.GetKillerGroupFromCache(currentBoard, gr.Points.First(), c.Opposite()) != null);
+            if (trappedGroup == null) return;
+            Boolean separateGroup = groups.Any(gr => gr != trappedGroup && BothAliveHelper.GetKillerGroupFromCache(currentBoard, gr.Points.First(), c.Opposite()) != BothAliveHelper.GetKillerGroupFromCache(currentBoard, trappedGroup.Points.First(), c.Opposite()));
+            if (!separateGroup) return;
+            tryMoves.Add(koMove);
         }
 
         /// <summary>

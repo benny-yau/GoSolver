@@ -184,5 +184,19 @@ namespace Go
             }
             return false;
         }
+
+        public static Point? GetKoEyePoint(Board tryBoard)
+        {
+            Content c = tryBoard.MoveGroup.Content;
+            if (tryBoard.singlePointCapture != null) //ko moves
+                return tryBoard.singlePointCapture.Value;
+            else
+            {
+                //pre ko moves
+                List<Point> eyePoints = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindEye(tryBoard, n.x, n.y, c)).ToList();
+                if (eyePoints.Count != 1) return null;
+                return eyePoints.First();
+            }
+        }
     }
 }
