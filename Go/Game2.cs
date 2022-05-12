@@ -468,16 +468,13 @@ namespace Go
         /// <summary>
         /// Restore redundant ko that are atari moves but not ko enabled.
         /// Double ko <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B41" />
-        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A79" />
+        /// Killer ko within killer group <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A79" />
         /// End ko <see cref="UnitTestProject.KoTest.KoTest_Scenario_TianLongTu_Q17077" />
         /// </summary>
         private void RestoreRedundantKo(List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves)
         {
-            if (redundantTryMoves == null || !redundantTryMoves.Any(t => t.IsRedundantKo)) return;
-
-            //all try moves are suicidal
-            if (!AllTryMovesSuicidal(tryMoves)) return;
-
+            //no more try moves
+            if (tryMoves.Count > 0) return;
             GameTryMove koMove = redundantTryMoves.FirstOrDefault(t => t.IsRedundantKo && t.TryGame.Board.IsAtariMove);
             if (koMove == null) return;
             Board currentBoard = koMove.CurrentGame.Board;
@@ -488,7 +485,7 @@ namespace Go
             HashSet<Group> groups = currentBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite());
             if (groups.Count == 1)
             {
-                //double ko
+                //double ko / killer ko within killer group
                 if (groups.First().Liberties.Count != 2) return;
                 if (currentBoard[eyePoint.Value] == c.Opposite() && BothAliveHelper.GetKillerGroupFromCache(currentBoard, eyePoint.Value, c) != null)
                     tryMoves.Add(koMove);
@@ -503,14 +500,6 @@ namespace Go
             tryMoves.Add(koMove);
         }
 
-        /// <summary>
-        /// All remaining try moves are suicidal or opponent immovable.
-        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Nie20_2" />
-        /// </summary>
-        private Boolean AllTryMovesSuicidal(List<GameTryMove> tryMoves)
-        {
-            return tryMoves.All(tryMove => ((tryMove.TryGame.Board.MoveGroupLiberties == 1 && tryMove.TryGame.Board.CapturedList.Count == 0) || ImmovableHelper.SinglePointOpponentImmovable(tryMove)));
-        }
 
         /// <summary>
         /// Make random move to wait a turn where no other move is available or on ko move from opponent.
@@ -562,13 +551,7 @@ namespace Go
         /// </summary>
         private Boolean AddPointToFightKo(List<GameTryMove> tryMoves, Game currentGame, KoCheck surviveOrKill)
         {
-            if (currentGame.KoGameCheck == surviveOrKill && currentGame.Board.singlePointCapture != null)
-            {
-                //all try moves are suicidal
-                if (AllTryMovesSuicidal(tryMoves))
-                    return true;
-            }
-            return false;
+            return (tryMoves.Count == 0 && currentGame.KoGameCheck == surviveOrKill && currentGame.Board.singlePointCapture != null);
         }
 
         /// <summary>

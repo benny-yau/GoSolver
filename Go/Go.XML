@@ -169,14 +169,8 @@
             <summary>
             Restore redundant ko that are atari moves but not ko enabled.
             Double ko <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B41" />
-            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A79" />
+            Killer ko within killer group <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A79" />
             End ko <see cref="!:UnitTestProject.KoTest.KoTest_Scenario_TianLongTu_Q17077" />
-            </summary>
-        </member>
-        <member name="M:Go.Game.AllTryMovesSuicidal(System.Collections.Generic.List{Go.GameTryMove})">
-            <summary>
-            All remaining try moves are suicidal or opponent immovable.
-            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Nie20_2" />
             </summary>
         </member>
         <member name="M:Go.Game.CreateRandomMove(System.Collections.Generic.List{Go.GameTryMove},Go.Game,Go.SurviveOrKill)">
