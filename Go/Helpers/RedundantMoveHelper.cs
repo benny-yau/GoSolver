@@ -203,7 +203,7 @@ namespace Go
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_B3" /> 
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A85" /> 
         /// </summary>
-        private static (Boolean, Point?) SuicideAtBigTigerMouth(GameTryMove tryMove, Content c)
+        private static (Boolean, Group, Point?) SuicideAtBigTigerMouth(GameTryMove tryMove, Content c)
         {
             Point move = tryMove.Move;
             Board tryBoard = tryMove.TryGame.Board;
@@ -219,19 +219,19 @@ namespace Go
 
                 (Boolean suicide, Board b) = ImmovableHelper.IsSuicidalMove(liberty, eyeGroup.Content, currentBoard);
                 if (suicide)
-                    return (true, liberty);
+                    return (true, eyeGroup, liberty);
                 if (ImmovableHelper.CheckConnectAndDie(b))
-                    return (true, liberty);
+                    return (true, eyeGroup, liberty);
                 //check for opponent capture move
                 if (b != null && b.MoveGroup.Liberties.Count == 2)
                 {
                     List<Point> moveGroupLiberties = b.MoveGroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
                     Board b2 = b.MakeMoveOnNewBoard(moveGroupLiberties.First(), eyeGroup.Content.Opposite());
                     if (b2 != null && b2.CapturedList.Count > 0)
-                        return (true, liberty);
+                        return (true, eyeGroup, liberty);
                 }
             }
-            return (false, null);
+            return (false, null, null);
         }
         #endregion
 
@@ -1401,15 +1401,15 @@ namespace Go
                     return false;
             }
             //make move from perspective of survival
-            GameTryMove move = tryMove.MakeMoveWithOpponentAtSamePoint();
-            if (move == null) return false;
+            GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
+            if (opponentMove == null) return false;
 
-            Boolean isNeutralPoint = NeutralPointSurvivalMove(move, false);
+            Boolean isNeutralPoint = NeutralPointSurvivalMove(opponentMove, false);
             if (isNeutralPoint)
             {
                 if (ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.MoveGroup)) return isNeutralPoint;
                 //must have neutral point
-                (Boolean mustHave, Point? linkPoint) = MustHaveNeutralPoint(move);
+                (Boolean mustHave, Point? linkPoint) = MustHaveNeutralPoint(tryMove, opponentMove);
                 if (mustHave)
                 {
                     tryMove.MustHaveNeutralPoint = true;
@@ -1463,29 +1463,35 @@ namespace Go
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23" />
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_GuanZiPu_Weiqi101_19138" />
         /// </summary>
-        private static (Boolean, Point?) MustHaveNeutralPoint(GameTryMove tryMove)
+        private static (Boolean, Point?) MustHaveNeutralPoint(GameTryMove tryMove, GameTryMove opponentMove)
         {
             Point move = tryMove.Move;
             Board tryBoard = tryMove.TryGame.Board;
             Board currentBoard = tryMove.CurrentGame.Board;
-            Content c = GameHelper.GetContentForSurviveOrKill(tryBoard.GameInfo, SurviveOrKill.Kill);
+            Board opponentBoard = opponentMove.TryGame.Board;
+            Content c = tryBoard.MoveGroup.Content;
             Point p = tryBoard.Move.Value;
 
             //neutral point at small tiger mouth
-            Point tigerMouth = tryBoard.GetStoneNeighbours().FirstOrDefault(n => EyeHelper.FindEye(tryBoard, n));
+            Point tigerMouth = opponentBoard.GetStoneNeighbours().FirstOrDefault(n => EyeHelper.FindEye(opponentBoard, n));
             if (Convert.ToBoolean(tigerMouth.NotEmpty))
             {
                 //redundant suicidal at tiger mouth
-                if (RedundantSuicidalForMustHaveNeutralPoint(currentBoard, c, tigerMouth))
+                if (RedundantSuicidalForMustHaveNeutralPoint(tryBoard, tigerMouth))
                     return (false, null);
                 return (true, tigerMouth);
             }
             //neutral point at big tiger mouth
-            (Boolean suicide, Point? liberty) = SuicideAtBigTigerMouth(tryMove, c);
+            (Boolean suicide, Group eyeGroup, Point? liberty) = SuicideAtBigTigerMouth(tryMove, c);
             if (suicide)
             {
+                if (eyeGroup.Liberties.Count == 2 && eyeGroup.Points.Count > 2)
+                {
+                    Board b = currentBoard.MakeMoveOnNewBoard(liberty.Value, c.Opposite(), true);
+                    if (b != null && b.CapturedList.Count > 0) return (true, liberty.Value);
+                }
                 //redundant suicidal at tiger mouth
-                if (RedundantSuicidalForMustHaveNeutralPoint(currentBoard, c, liberty.Value))
+                if (eyeGroup.Liberties.Count == 1 && RedundantSuicidalForMustHaveNeutralPoint(tryBoard, liberty.Value))
                     return (false, null);
                 return (true, liberty.Value);
             }
@@ -1497,15 +1503,14 @@ namespace Go
         /// Redundant suicidal at tiger mouth.
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario5dan27_3" />
         /// </summary>
-        private static Boolean RedundantSuicidalForMustHaveNeutralPoint(Board currentBoard, Content c, Point tigerMouth)
+        private static Boolean RedundantSuicidalForMustHaveNeutralPoint(Board tryBoard, Point tigerMouth)
         {
-            Board board = currentBoard.MakeMoveOnNewBoard(tigerMouth, c);
-            if (board != null && board.MoveGroupLiberties == 1)
-            {
-                HashSet<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(tigerMouth, c);
-                if (WallHelper.StrongNeighbourGroups(board, neighbourGroups))
-                    return true;
-            }
+            Content c = tryBoard.MoveGroup.Content;
+            Board board = tryBoard.MakeMoveOnNewBoard(tigerMouth, c);
+            if (board == null) return false;
+            HashSet<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(tigerMouth, c);
+            if (WallHelper.StrongNeighbourGroups(board, neighbourGroups))
+                return true;
             return false;
         }
 

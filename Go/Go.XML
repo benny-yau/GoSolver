@@ -544,6 +544,11 @@
             Two liberties move group <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q29487" />
             </summary>
         </member>
+        <member name="M:Go.ImmovableHelper.EscapePreAtariLink(Go.Board,Go.Group)">
+            <summary>
+            Check link at liberty to escape pre-atari.
+            </summary>
+        </member>
         <member name="M:Go.ImmovableHelper.SuicidalAfterMustHaveMove(Go.Board,Go.Board,Go.Point)">
             <summary>
             Suicide move for survival after must-have neutral move at side of the board.
@@ -1215,7 +1220,7 @@
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_3" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.MustHaveNeutralPoint(Go.GameTryMove)">
+        <member name="M:Go.RedundantMoveHelper.MustHaveNeutralPoint(Go.GameTryMove,Go.GameTryMove)">
             <summary>
             Must have neutral point allows move to be made to prevent suicidal move at generic neutral points.
             Neutral point at tiger mouth <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario5dan27_3" />
@@ -1225,7 +1230,7 @@
             <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_GuanZiPu_Weiqi101_19138" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.RedundantSuicidalForMustHaveNeutralPoint(Go.Board,Go.Content,Go.Point)">
+        <member name="M:Go.RedundantMoveHelper.RedundantSuicidalForMustHaveNeutralPoint(Go.Board,Go.Point)">
             <summary>
             Redundant suicidal at tiger mouth.
             <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario5dan27_3" />

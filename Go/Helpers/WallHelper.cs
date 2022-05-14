@@ -146,16 +146,19 @@ namespace Go
         public static Boolean IsStrongNeighbourGroup(Board board, Group group, Boolean checkSuicidal = true)
         {
             Content c = group.Content;
-            //exclude covered eye
+            if (group.Liberties.Count == 1) return false;
             int liberties = group.Liberties.Count(liberty => !EyeHelper.FindCoveredEye(board, liberty, c));
             if (liberties < 2) return false;
-            if (group.Liberties.Count == 2)
+
+            if (!checkSuicidal && group.Liberties.Count == 2)
             {
-                Boolean opponentMovable = group.Liberties.Any(liberty => !ImmovableHelper.IsSuicidalMove(board, liberty, c.Opposite()));
-                if (!opponentMovable) return true;
-                if (!checkSuicidal || group.Liberties.Any(liberty => ImmovableHelper.IsSuicidalMove(board, liberty, c) && !EyeHelper.FindSemiSolidEyes(liberty, board, c).Item1))
-                    return false;
+                Boolean opponentMovable = group.Liberties.All(liberty => ImmovableHelper.IsSuicidalMove(board, liberty, c.Opposite()));
+                if (opponentMovable) return true;
+                return false;
             }
+
+            Boolean connectAndDie = ImmovableHelper.CheckConnectAndDie(board, group) || ImmovableHelper.ThreeLibertyConnectAndDie(board, group);
+            if (connectAndDie) return false;
             return true;
         }
     }

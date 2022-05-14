@@ -199,11 +199,27 @@ namespace Go
                 }
                 else if (b.MoveGroupLiberties == 2)
                 {
+                    if (EscapePreAtariLink(b, b.GetGroupAt(targetGroup.Points.First()))) continue;
                     //two liberties move group
                     (_, Board b2) = ImmovableHelper.ConnectAndDie(b);
-                    if (b2 != null && b2.GetNeighbourGroups(b.MoveGroup).Any(group => ImmovableHelper.CheckConnectAndDie(b2, group)))
+                    if (b2 == null) continue;
+                    if (ImmovableHelper.CheckConnectAndDie(b2, b2.GetGroupAt(targetGroup.Points.First())))
                         return true;
                 }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Check link at liberty to escape pre-atari.
+        /// </summary>
+        private static Boolean EscapePreAtariLink(Board board, Group targetGroup)
+        {
+            foreach (Point liberty in targetGroup.Liberties)
+            {
+                Board b = board.MakeMoveOnNewBoard(liberty, targetGroup.Content, true);
+                if (b != null && LinkHelper.LinkForGroups(b, board) && b.GetGroupLiberties(targetGroup.Points.First()) > 2)
+                    return true;
             }
             return false;
         }
@@ -623,14 +639,12 @@ namespace Go
             if (AtariHelper.AtariByGroup(board, targetGroup))
                 return false;
 
+            if (EscapePreAtariLink(board, targetGroup))
+                return true;
+
+            //check if immovable at liberties
             foreach (Point liberty in targetLiberties)
             {
-                //check link at liberty to escape atari
-                Board b = board.MakeMoveOnNewBoard(liberty, targetGroup.Content, true);
-                if (b != null && LinkHelper.LinkForGroups(b, board) && b.GetGroupLiberties(targetGroup.Points.First()) > 2)
-                    return true;
-
-                //check if immovable at liberties
                 List<Group> neighbourGroups = board.GetNeighbourGroups(targetGroup);
                 if (neighbourGroups.Any(group => group.Liberties.Count == 2 && !AtariHelper.AtariByGroup(board, group) && group.Liberties.Any(p => ImmovableHelper.IsSuicidalMoveForBothPlayers(board, p))))
                     return true;
