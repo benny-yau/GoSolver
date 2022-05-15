@@ -924,6 +924,7 @@
             Check no eye for survival <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A52" />
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q16594" />
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A41" /> 
+            Check liberty count without coveered eye <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.RedundantCoveredEye(Go.Board,Go.Board,Go.Point,Go.Content)">
@@ -1228,6 +1229,8 @@
             Negative example <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A27" />
             <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23" />
             <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_GuanZiPu_Weiqi101_19138" />
+            Check opponent capture <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
+            <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.RedundantSuicidalForMustHaveNeutralPoint(Go.Board,Go.Point)">
@@ -1666,7 +1669,6 @@
         <member name="M:Go.WallHelper.StrongNeighbourGroups(Go.Board,System.Collections.Generic.IEnumerable{Go.Group},System.Boolean)">
             <summary>
             Strong neighbour groups with more than two liberties or two liberties that are suicidal to opponent.
-            Check covered eye <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
             </summary>
         </member>
         <member name="M:Go.GameMapping.GetMappedJson(Go.Game)">

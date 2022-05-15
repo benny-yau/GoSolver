@@ -133,7 +133,6 @@ namespace Go
 
         /// <summary>
         /// Strong neighbour groups with more than two liberties or two liberties that are suicidal to opponent.
-        /// Check covered eye <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
         /// </summary>
         public static Boolean StrongNeighbourGroups(Board board, IEnumerable<Group> neighbourGroups, Boolean checkSuicidal = true)
         {
@@ -146,8 +145,7 @@ namespace Go
         public static Boolean IsStrongNeighbourGroup(Board board, Group group, Boolean checkSuicidal = true)
         {
             Content c = group.Content;
-            if (group.Liberties.Count == 1) return false;
-            int liberties = group.Liberties.Count(liberty => !EyeHelper.FindCoveredEye(board, liberty, c));
+            int liberties = group.Liberties.Count;
             if (liberties < 2) return false;
 
             if (!checkSuicidal && group.Liberties.Count == 2)

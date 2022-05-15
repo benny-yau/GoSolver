@@ -73,6 +73,7 @@ namespace Go
         /// Check no eye for survival <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A52" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q16594" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A41" /> 
+        /// Check liberty count without coveered eye <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
         /// </summary>
         public static Boolean FindCoveredEyeMove(GameTryMove tryMove, GameTryMove opponentTryMove = null)
         {
@@ -95,6 +96,9 @@ namespace Go
             {
                 if (!WallHelper.IsStrongNeighbourGroup(currentBoard, group) || (group.Liberties.Count <= 2 && group.Liberties.Any(x => ImmovableHelper.IsSuicidalMove(currentBoard, x, c))))
                     return false;
+                //check liberty count without coveered eye
+                int liberties = group.Liberties.Count(liberty => !EyeHelper.FindCoveredEye(currentBoard, liberty, c));
+                if (liberties < 2) return false;
             }
 
             if (opponentTryMove != null)
@@ -203,7 +207,7 @@ namespace Go
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_B3" /> 
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A85" /> 
         /// </summary>
-        private static (Boolean, Group, Point?) SuicideAtBigTigerMouth(GameTryMove tryMove, Content c)
+        private static (Boolean, Board, Point?) SuicideAtBigTigerMouth(GameTryMove tryMove, Content c)
         {
             Point move = tryMove.Move;
             Board tryBoard = tryMove.TryGame.Board;
@@ -219,16 +223,16 @@ namespace Go
 
                 (Boolean suicide, Board b) = ImmovableHelper.IsSuicidalMove(liberty, eyeGroup.Content, currentBoard);
                 if (suicide)
-                    return (true, eyeGroup, liberty);
+                    return (true, b, liberty);
                 if (ImmovableHelper.CheckConnectAndDie(b))
-                    return (true, eyeGroup, liberty);
+                    return (true, b, liberty);
                 //check for opponent capture move
                 if (b != null && b.MoveGroup.Liberties.Count == 2)
                 {
                     List<Point> moveGroupLiberties = b.MoveGroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
                     Board b2 = b.MakeMoveOnNewBoard(moveGroupLiberties.First(), eyeGroup.Content.Opposite());
                     if (b2 != null && b2.CapturedList.Count > 0)
-                        return (true, eyeGroup, liberty);
+                        return (true, b, liberty);
                 }
             }
             return (false, null, null);
@@ -1462,6 +1466,8 @@ namespace Go
         /// Negative example <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A27" />
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23" />
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_GuanZiPu_Weiqi101_19138" />
+        /// Check opponent capture <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
+        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23" />
         /// </summary>
         private static (Boolean, Point?) MustHaveNeutralPoint(GameTryMove tryMove, GameTryMove opponentMove)
         {
@@ -1482,16 +1488,14 @@ namespace Go
                 return (true, tigerMouth);
             }
             //neutral point at big tiger mouth
-            (Boolean suicide, Group eyeGroup, Point? liberty) = SuicideAtBigTigerMouth(tryMove, c);
+            (Boolean suicide, Board suicideBoard, Point? liberty) = SuicideAtBigTigerMouth(tryMove, c);
             if (suicide)
             {
-                if (eyeGroup.Liberties.Count == 2 && eyeGroup.Points.Count > 2)
-                {
-                    Board b = currentBoard.MakeMoveOnNewBoard(liberty.Value, c.Opposite(), true);
-                    if (b != null && b.CapturedList.Count > 0) return (true, liberty.Value);
-                }
+                //check opponent capture
+                if (suicideBoard.MoveGroup.Liberties.Count == 2 && suicideBoard.MoveGroup.Points.Count > 2)
+                    return (true, liberty.Value);
                 //redundant suicidal at tiger mouth
-                if (eyeGroup.Liberties.Count == 1 && RedundantSuicidalForMustHaveNeutralPoint(tryBoard, liberty.Value))
+                if (RedundantSuicidalForMustHaveNeutralPoint(tryBoard, liberty.Value))
                     return (false, null);
                 return (true, liberty.Value);
             }
