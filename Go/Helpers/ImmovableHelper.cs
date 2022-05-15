@@ -177,7 +177,8 @@ namespace Go
         /// Three liberty connect and die.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14992_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14992" />
-        /// Two liberties move group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q29487" />
+        /// Two liberties target group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q29487" />
+        /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_WuQingYuan_Q31154" />
         /// </summary>
         public static Boolean ThreeLibertyConnectAndDie(Board board, Group targetGroup = null)
         {
@@ -197,14 +198,19 @@ namespace Go
                     if (b2 != null && CheckConnectAndDie(b2, b2.GetGroupAt(targetGroup.Points.First())))
                         return true;
                 }
-                else if (b.MoveGroupLiberties == 2)
+                else
                 {
-                    if (EscapePreAtariLink(b, b.GetGroupAt(targetGroup.Points.First()))) continue;
-                    //two liberties move group
-                    (_, Board b2) = ImmovableHelper.ConnectAndDie(b);
-                    if (b2 == null) continue;
-                    if (ImmovableHelper.CheckConnectAndDie(b2, b2.GetGroupAt(targetGroup.Points.First())))
-                        return true;
+                    //two liberties target group
+                    foreach (Group group in b.GetNeighbourGroups(targetGroup.Points.First()).Where(gr => gr.Liberties.Count <= 2 && b.GetNeighbourGroups(gr).Count > 1))
+                    {
+                        (_, Board b2) = ImmovableHelper.ConnectAndDie(b, group);
+                        if (b2 == null) continue;
+                        if (ImmovableHelper.CheckConnectAndDie(b2, b2.GetGroupAt(targetGroup.Points.First())))
+                        {
+                            if (EscapePreAtariLink(b, b.GetGroupAt(targetGroup.Points.First()))) continue;
+                            return true;
+                        }
+                    }
                 }
             }
             return false;
@@ -218,7 +224,7 @@ namespace Go
             foreach (Point liberty in targetGroup.Liberties)
             {
                 Board b = board.MakeMoveOnNewBoard(liberty, targetGroup.Content, true);
-                if (b != null && LinkHelper.LinkForGroups(b, board) && b.GetGroupLiberties(targetGroup.Points.First()) > 2)
+                if (b != null && LinkHelper.IsAbsoluteLinkForGroups(board, b) && b.GetGroupLiberties(targetGroup.Points.First()) > 2)
                     return true;
             }
             return false;
@@ -635,10 +641,8 @@ namespace Go
             //check if any liberty is suicidal
             if (targetLiberties.Any(t => ImmovableHelper.IsSuicidalMove(t, targetGroup.Content.Opposite(), board).Item2 == null))
                 return false;
-
             if (AtariHelper.AtariByGroup(board, targetGroup))
                 return false;
-
             if (EscapePreAtariLink(board, targetGroup))
                 return true;
 
