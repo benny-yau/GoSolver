@@ -1846,13 +1846,6 @@
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60" />
             </summary>
         </member>
-        <member name="M:Go.LifeCheck.AtariMoveCheckLink(Go.Board,Go.Point)">
-            <summary>
-            Check if atari move affects link.
-            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_5" />
-            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_7" />
-            </summary>
-        </member>
         <member name="M:Go.LifeCheck.GetTargets(Go.Board,System.Collections.Generic.List{Go.Point})">
             <summary>
             Get targets of survival group. Can specify other targets than specified in game info.

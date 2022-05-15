@@ -239,7 +239,7 @@ namespace Go
 
                 //ensure link for groups
                 Board b2 = b1.MakeMoveOnNewBoard(diagonal, c);
-                if (b2 != null && LinkHelper.LinkForGroups(b2, b1))
+                if (b2 != null && LinkHelper.IsAbsoluteLinkForGroups(b1, b2))
                 {
                     //check for three groups
                     if (threeGroups != null && board.GetGroupsFromStoneNeighbours(diagonal, c.Opposite()).Intersect(threeGroups).Count() != 2)
@@ -262,7 +262,7 @@ namespace Go
             foreach (Point p in group.Points)
             {
                 Board b = board.MakeMoveOnNewBoard(p, c.Opposite());
-                if (b == null) return;
+                if (b == null) continue;
                 Point q = group.Points.First(point => !point.Equals(p));
                 (Boolean found, _, List<LinkedPoint<Point>> tigerMouths) = EyeHelper.FindSemiSolidEyes(q, b, c.Opposite());
                 if (found && !EyeHelper.FindRealSolidEyes(q, c.Opposite(), b))
@@ -300,8 +300,8 @@ namespace Go
                 //ensure all atari targets are connected groups
                 if (b.AtariTargets.Any(a => targetGroups.Any(t => t.Points.Contains(a.Points.First()))))
                 {
-                    //check for double atari or link beside atari
-                    if (DoubleAtariCapture(b) || AtariMoveCheckLink(b, liberty))
+                    //check for double atari
+                    if (DoubleAtariCapture(b))
                     {
                         eyeGroups.Clear();
                         return;
@@ -328,34 +328,6 @@ namespace Go
                     return false;
             }
             return true;
-        }
-
-        /// <summary>
-        /// Check if atari move affects link.
-        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_5" />
-        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_7" />
-        /// </summary>
-        private static Boolean AtariMoveCheckLink(Board board, Point liberty)
-        {
-            if (board.AtariTargets.Count != 1) return false;
-            Group targetGroup = board.AtariTargets.First();
-            Content c = targetGroup.Content;
-            //make move to resolve atari
-            Point? libertyPoint = ImmovableHelper.GetLibertyPointOfSuicide(board, targetGroup);
-            if (libertyPoint == null) return false;
-            Board b = board.MakeMoveOnNewBoard(libertyPoint.Value, c, true);
-            b = b ?? board;
-            //find link for groups at empty neighbour points
-            List<Point> neighbourPoints = b.GetStoneAndDiagonalNeighbours(liberty.x, liberty.y).Where(p => b[p] == Content.Empty).ToList();
-            foreach (Point p in neighbourPoints)
-            {
-                if (b.GetGroupsFromStoneNeighbours(p, c.Opposite()).Count < 2) continue;
-                //make move to link groups
-                Board b2 = b.MakeMoveOnNewBoard(p, c, true);
-                if (b2 != null && LinkHelper.LinkForGroups(b2, b))
-                    return true;
-            }
-            return false;
         }
 
         /// <summary>
