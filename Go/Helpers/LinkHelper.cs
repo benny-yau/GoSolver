@@ -143,6 +143,7 @@ namespace Go
         /// <summary>
         /// Check double atari for links.
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_7" />
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_5" />
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_Nie60" />
         /// </summary>
         private static Boolean CheckDoubleAtariForLinks(Board board, HashSet<Group> groups, Group group, LinkedPoint<Point> diagonalPoint)
