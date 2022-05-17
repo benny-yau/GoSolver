@@ -236,10 +236,8 @@ namespace Go
                 if (KillerFormationHelper.CornerThreeFormation(tryBoard, tryBoard.MoveGroup))
                     return true;
             }
-
-
             //check kill group extension
-            if (CheckRedundantKillGroupExtension(tryBoard, currentBoard, capturedBoard))
+            else if (CheckRedundantKillGroupExtension(tryBoard, currentBoard, capturedBoard))
             {
                 if (moveCount == 4) return false;
                 if (KillerFormationHelper.GridDimensionChanged(LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).First().Points, tryBoard.MoveGroup.Points))
@@ -259,47 +257,44 @@ namespace Go
                 //bent four corner formation
                 if (KillerFormationHelper.BentFourCornerFormation(tryBoard, tryBoard.MoveGroup)) return true;
             }
-            else
+
+            else if (moveCount == 5)
             {
+                //knife five formation
+                if (KillerFormationHelper.KnifeFiveFormation(tryBoard, tryBoard.MoveGroup))
+                    return true;
 
-                if (moveCount == 5)
-                {
-                    //knife five formation
-                    if (KillerFormationHelper.KnifeFiveFormation(tryBoard, tryBoard.MoveGroup))
-                        return true;
+                //one-by-four side formation
+                if (KillerFormationHelper.OneByFourSideFormation(tryBoard, tryBoard.MoveGroup))
+                    return true;
 
-                    //one-by-four side formation
-                    if (KillerFormationHelper.OneByFourSideFormation(tryBoard, tryBoard.MoveGroup))
-                        return true;
+                //T side formation
+                if (KillerFormationHelper.TSideFormation(tryBoard, tryBoard.MoveGroup))
+                    return true;
 
-                    //T side formation
-                    if (KillerFormationHelper.TSideFormation(tryBoard, tryBoard.MoveGroup))
-                        return true;
+                //three-by-two side formation
+                if (KillerFormationHelper.ThreeByTwoSideFormation(tryBoard, tryBoard.MoveGroup))
+                    return true;
+            }
+            else if (moveCount == 6)
+            {
+                //flower six formation
+                if (KillerFormationHelper.FlowerSixFormation(tryBoard, tryBoard.MoveGroup))
+                    return true;
 
-                    //three-by-two side formation
-                    if (KillerFormationHelper.ThreeByTwoSideFormation(tryBoard, tryBoard.MoveGroup))
-                        return true;
-                }
-                else if (moveCount == 6)
-                {
-                    //flower six formation
-                    if (KillerFormationHelper.FlowerSixFormation(tryBoard, tryBoard.MoveGroup))
-                        return true;
+                //two-by-four side formation
+                if (KillerFormationHelper.TwoByFourSideFormation(tryBoard, tryBoard.MoveGroup))
+                    return true;
 
-                    //two-by-four side formation
-                    if (KillerFormationHelper.TwoByFourSideFormation(tryBoard, tryBoard.MoveGroup))
-                        return true;
-
-                    //check for corner six formation
-                    if (KillerFormationHelper.CornerSixFormation(tryBoard, tryBoard.MoveGroup))
-                        return true;
-                }
-                else if (moveCount == 7)
-                {
-                    //flower seven side formation
-                    if (KillerFormationHelper.FlowerSevenSideFormation(tryBoard, tryBoard.MoveGroup))
-                        return true;
-                }
+                //check for corner six formation
+                if (KillerFormationHelper.CornerSixFormation(tryBoard, tryBoard.MoveGroup))
+                    return true;
+            }
+            else if (moveCount == 7)
+            {
+                //flower seven side formation
+                if (KillerFormationHelper.FlowerSevenSideFormation(tryBoard, tryBoard.MoveGroup))
+                    return true;
             }
             return false;
         }
