@@ -814,7 +814,7 @@ namespace Go
                     //check liberties are connected
                     if (tryBoard.GetStoneNeighbours(p.x, p.y).Any(q => tryBoard.MoveGroup.Liberties.Contains(q)))
                     {
-                        if (tryBoard.MoveGroup.Points.Count >= 3 && KillerFormationHelper.SuicidalKillerFormations(tryBoard))
+                        if (tryBoard.MoveGroup.Points.Count >= 3 && KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard))
                             return false;
                         return true;
                     }

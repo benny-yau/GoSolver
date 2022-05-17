@@ -29,16 +29,18 @@ namespace Go
                 for (int j = (i + 1); j <= groups.Count - 1; j++)
                 {
                     if (groups[i] == groups[j]) continue;
-                    //check if previously linked
-                    Boolean previousLinked = IsDiagonallyConnectedGroups(currentBoard, groups[i], groups[j]);
-                    if (previousLinked) continue;
                     Group groupI = tryBoard.GetGroupAt(groups[i].Points.First());
                     Group groupJ = tryBoard.GetGroupAt(groups[j].Points.First());
-                    if (groupI == groupJ) return true;
-
+                    if (groupI == groupJ && ImmovableHelper.IsSuicidalMove(currentBoard, move, c.Opposite())) return false;
                     //check if currently linked
-                    Boolean isLinked = IsDiagonallyConnectedGroups(tryBoard, groupI, groupJ);
-                    if (isLinked) return true;
+                    Boolean isLinked = (groupI == groupJ) || IsDiagonallyConnectedGroups(tryBoard, groupI, groupJ);
+                    if (isLinked)
+                    {
+                        //check if previously linked
+                        Boolean previousLinked = IsDiagonallyConnectedGroups(currentBoard, groups[i], groups[j]);
+                        if (previousLinked) continue;
+                        return true;
+                    }
                 }
             }
             return false;
@@ -242,13 +244,23 @@ namespace Go
         }
 
         /// <summary>
-        /// Find if two groups are connected diagonally.
+        /// Find if two groups are connected diagonally. If find group parameter is null then look for all connected groups.
         /// </summary>
         public static Boolean IsDiagonallyConnectedGroups(HashSet<Group> allConnectedGroups, HashSet<Group> groups, Board board, Group group, Group findGroup = null)
         {
             groups.Add(group);
             //find group diagonals of same content
             List<LinkedPoint<Point>> diagonalPoints = GetGroupDiagonals(board, group).Where(d => board[d.Move] == group.Content).OrderBy(d => board.GetGroupAt(d.Move).Liberties.Count).ToList();
+            if (findGroup != null)
+            {
+                //diagonal with find group
+                LinkedPoint<Point> diagonalWithFindGroup = diagonalPoints.FirstOrDefault(d => board.GetGroupAt(d.Move) == findGroup);
+                if (diagonalWithFindGroup != null)
+                {
+                    diagonalPoints.Clear();
+                    diagonalPoints.Add(diagonalWithFindGroup);
+                }
+            }
             foreach (LinkedPoint<Point> diagonalPoint in diagonalPoints)
             {
                 Group g = board.GetGroupAt(diagonalPoint.Move);

@@ -71,7 +71,7 @@ namespace Go
         /// Check if real eye found in neighbour groups <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario5dan27" />
         /// Check covered eye at non-killable group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
         /// </summary>
-        public static Boolean SuicidalKillerFormations(Board tryBoard, Board currentBoard = null, Board capturedBoard = null)
+        public static Boolean SuicidalKillerFormations(Board tryBoard, Board currentBoard, Board capturedBoard = null)
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
@@ -202,7 +202,7 @@ namespace Go
         /// Flower six formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16859" />
         /// Flower seven side formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B3" />
         /// </summary>
-        private static Boolean FindSuicidalKillerFormation(Board tryBoard, Board currentBoard = null, Board capturedBoard = null)
+        private static Boolean FindSuicidalKillerFormation(Board tryBoard, Board currentBoard, Board capturedBoard = null)
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
@@ -236,11 +236,18 @@ namespace Go
                 if (KillerFormationHelper.CornerThreeFormation(tryBoard, tryBoard.MoveGroup))
                     return true;
             }
-            else if (moveCount == 4)
+
+
+            //check kill group extension
+            if (CheckRedundantKillGroupExtension(tryBoard, currentBoard, capturedBoard))
             {
-                //check kill group extension
-                if (CheckRedundantKillGroupExtension(tryBoard, currentBoard, capturedBoard))
+                if (moveCount == 4) return false;
+                if (KillerFormationHelper.GridDimensionChanged(LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).First().Points, tryBoard.MoveGroup.Points))
                     return false;
+            }
+
+            if (moveCount == 4)
+            {
                 //one-by-three formation
                 if (KillerFormationHelper.OneByThreeFormation(tryBoard, tryBoard.MoveGroup)) return true;
                 //box formation
@@ -254,13 +261,6 @@ namespace Go
             }
             else
             {
-                //check kill group extension
-                if (CheckRedundantKillGroupExtension(tryBoard, currentBoard, capturedBoard))
-                {
-                    List<Group> groups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
-                    if (KillerFormationHelper.GridDimensionChanged(groups.First().Points, tryBoard.MoveGroup.Points))
-                        return false;
-                }
 
                 if (moveCount == 5)
                 {
@@ -308,13 +308,12 @@ namespace Go
         /// Redundant extension of kill group.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A8" />
         /// </summary>
-        private static Boolean CheckRedundantKillGroupExtension(Board tryBoard, Board currentBoard = null, Board capturedBoard = null)
+        private static Boolean CheckRedundantKillGroupExtension(Board tryBoard, Board currentBoard, Board capturedBoard = null)
         {
-            if (tryBoard.AtariTargets.Count == 0 && LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Count == 1)
-            {
-                if (!SuicideMoveValidWithOneEmptySpaceLeft(tryBoard, capturedBoard))
-                    return true;
-            }
+            if (tryBoard.MoveGroupLiberties != 1 || tryBoard.AtariTargets.Count > 0) return false;
+            if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Count > 1) return false;
+            if (!SuicideMoveValidWithOneEmptySpaceLeft(tryBoard, capturedBoard))
+                return true;
             return false;
         }
 
@@ -326,7 +325,6 @@ namespace Go
         /// </summary>
         public static Boolean SuicideMoveValidWithOneEmptySpaceLeft(Board tryBoard, Board capturedBoard)
         {
-            if (capturedBoard == null) return false;
             int moveCount = tryBoard.MoveGroup.Points.Count;
             Point move = tryBoard.Move.Value;
             Content c = tryBoard[move];
@@ -747,11 +745,18 @@ namespace Go
 
         public static Boolean PossibleCornerThreeFormation(Board currentBoard, Point p, Content c)
         {
+            if (!KoHelper.KoContentEnabled(c.Opposite(), currentBoard.GameInfo)) return false;
             Point corner = currentBoard.GetStoneNeighbours(p.x, p.y).FirstOrDefault(n => currentBoard.CornerPoint(n));
             if (!Convert.ToBoolean(corner.NotEmpty)) return false;
             if (currentBoard.GetStoneNeighbours(corner.x, corner.y).Any(n => currentBoard[n] != Content.Empty)) return false;
             if (currentBoard.GetDiagonalNeighbours(p.x, p.y).Any(n => currentBoard.PointWithinMiddleArea(n.x, n.y) && EyeHelper.FindSemiSolidEyes(n, currentBoard, c).Item1))
-                return true;
+            {
+                foreach (Point q in currentBoard.GetStoneNeighbours(corner.x, corner.y))
+                {
+                    Board b = currentBoard.MakeMoveOnNewBoard(q, c.Opposite());
+                    if (b != null && !ImmovableHelper.CheckConnectAndDie(b)) return true;
+                }
+            }
             return false;
         }
 

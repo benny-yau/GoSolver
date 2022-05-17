@@ -881,7 +881,7 @@
         </member>
         <member name="M:Go.LinkHelper.IsDiagonallyConnectedGroups(System.Collections.Generic.HashSet{Go.Group},System.Collections.Generic.HashSet{Go.Group},Go.Board,Go.Group,Go.Group)">
             <summary>
-            Find if two groups are connected diagonally.
+            Find if two groups are connected diagonally. If find group parameter is null then look for all connected groups.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.PointsBetweenDiagonals(Go.Point,Go.Point)">
