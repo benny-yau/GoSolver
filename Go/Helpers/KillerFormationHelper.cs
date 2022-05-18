@@ -153,7 +153,8 @@ namespace Go
                 //find real eye
                 if (EyeHelper.FindRealEyeWithinEmptySpace(b, killerGroup, EyeType.SemiSolidEye))
                     return true;
-                if (killerGroup.Points.Count > 4 && neighbourKillerGroups.All(group => WallHelper.IsStrongNeighbourGroup(b, group)))
+                //find real eye for more than three points
+                if (killerGroup.Points.Count > 3 && neighbourKillerGroups.All(group => WallHelper.IsStrongNeighbourGroup(b, group)) && !KillerFormationHelper.StraightFourFormation(b, killerGroup))
                     return true;
             }
             return false;
@@ -540,6 +541,19 @@ namespace Go
             return false;
         }
 
+        /*
+ 15 . . . . . . . . . . . . . . . . . . .
+ 16 . . . . . . . . . . . . . . . . . . . 
+ 17 . . . . X X X X . . . . . . . . . . . 
+ 18 . . . . . . . . . . . . . . . . . . . 
+         */
+        public static Boolean StraightFourFormation(Board tryBoard, Group moveGroup)
+        {
+            HashSet<Point> contentPoints = moveGroup.Points;
+            if (contentPoints.Count() != 4) return false;
+            (int xLength, int yLength) = WithinGrid(contentPoints);
+            return (xLength == 0 || yLength == 0);
+        }
 
         /*
  15 . . . . . . . . . . . . . . . X . . .

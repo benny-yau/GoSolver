@@ -45,8 +45,8 @@ namespace Go
             //get at least two possible eyes
             if (killerGroups.Count < 2) return ConfirmAliveResult.Unknown;
 
-            //get eye groups not more than three points
-            List<Group> possibleEyes = killerGroups.Where(s => s.Points.Count <= 3).ToList();
+            //get eye groups not more than four points
+            List<Group> possibleEyes = killerGroups.Where(s => s.Points.Count <= 4).ToList();
             if (possibleEyes.Count < 2) return ConfirmAliveResult.Unknown;
 
             //ensure at least two liberties
@@ -90,6 +90,8 @@ namespace Go
                             tigerMouthList.AddRange(tigerMouths);
                     }
                 }
+                if (eyeGroups.Count + possibleEyes.Count - 1 - i < 2)
+                    break;
             }
             //check for exception case scenario
             CheckTigerMouthForException(board, tigerMouthList, eyeGroups, c);

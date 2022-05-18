@@ -2113,7 +2113,7 @@ namespace Go
             if (diagonals.Count == 0)
                 return false;
 
-            diagonals.RemoveAll(d => BothAliveHelper.GetKillerGroupFromCache(currentBoard, d) == null || BothAliveHelper.GetKillerGroupFromCache(currentBoard, d).Points.Count > 3);
+            diagonals.RemoveAll(d => BothAliveHelper.GetKillerGroupFromCache(currentBoard, d) == null);
             if (diagonals.Count == 0) return false;
             //if all diagonals are real eyes then redundant
             if (diagonals.All(eye => RealEyeAtDiagonal(tryMove, eye)))
