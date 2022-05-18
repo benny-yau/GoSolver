@@ -282,7 +282,7 @@ namespace Go
         /// </summary>
         public static Boolean FindRealEyeWithinEmptySpace(Board board, Group killerGroup, EyeType eyeType = EyeType.SemiSolidEye)
         {
-            if (killerGroup.Points.Count > 3)
+            if (killerGroup.Points.Count > 4)
                 return false;
 
             Board b = new Board(board);

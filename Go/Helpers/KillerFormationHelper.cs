@@ -153,7 +153,7 @@ namespace Go
                 //find real eye
                 if (EyeHelper.FindRealEyeWithinEmptySpace(b, killerGroup, EyeType.SemiSolidEye))
                     return true;
-                if (killerGroup.Points.Count > 3 && neighbourKillerGroups.All(group => WallHelper.IsStrongNeighbourGroup(b, group)))
+                if (killerGroup.Points.Count > 4 && neighbourKillerGroups.All(group => WallHelper.IsStrongNeighbourGroup(b, group)))
                     return true;
             }
             return false;

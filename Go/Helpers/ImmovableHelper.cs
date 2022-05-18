@@ -83,7 +83,7 @@ namespace Go
                     return (false, null);
                 //check filled point connect and die
                 Board b = ImmovableHelper.CaptureSuicideGroup(board, targetGroup);
-                if (b != null && (CheckConnectAndDie(b) || ThreeLibertyConnectAndDie(b)))
+                if (b != null && (CheckConnectAndDie(b) || ThreeLibertyConnectAndDie(b, null, true)))
                     return (false, null);
                 Point q = libertyPoint.Value;
                 //check for ko possibility
@@ -166,7 +166,7 @@ namespace Go
             if (AllConnectAndDie(capturedBoard, p.Value))
                 return null;
 
-            if (ThreeLibertyConnectAndDie(capturedBoard))
+            if (ThreeLibertyConnectAndDie(capturedBoard, null, true))
                 return null;
 
             return capturedBoard;
@@ -180,7 +180,7 @@ namespace Go
         /// Two liberties target group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q29487" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_WuQingYuan_Q31154" />
         /// </summary>
-        public static Boolean ThreeLibertyConnectAndDie(Board board, Group targetGroup = null)
+        public static Boolean ThreeLibertyConnectAndDie(Board board, Group targetGroup = null, Boolean tigerMouthOnly = false)
         {
             targetGroup = (targetGroup) ?? board.MoveGroup;
             Content c = targetGroup.Content;
@@ -200,6 +200,7 @@ namespace Go
                 }
                 else
                 {
+                    if (tigerMouthOnly) continue;
                     //two liberties target group
                     foreach (Group group in b.GetNeighbourGroups(targetGroup.Points.First()).Where(gr => gr.Liberties.Count <= 2 && b.GetNeighbourGroups(gr).Count > 1))
                     {

@@ -536,7 +536,7 @@
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario1dan21" />
             </summary>.
         </member>
-        <member name="M:Go.ImmovableHelper.ThreeLibertyConnectAndDie(Go.Board,Go.Group)">
+        <member name="M:Go.ImmovableHelper.ThreeLibertyConnectAndDie(Go.Board,Go.Group,System.Boolean)">
             <summary>
             Three liberty connect and die.
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14992_2" />
