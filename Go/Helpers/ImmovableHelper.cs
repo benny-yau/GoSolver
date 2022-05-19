@@ -83,7 +83,7 @@ namespace Go
                     return (false, null);
                 //check filled point connect and die
                 Board b = ImmovableHelper.CaptureSuicideGroup(board, targetGroup);
-                if (b != null && (CheckConnectAndDie(b) || ThreeLibertyConnectAndDie(b, null, true)))
+                if (b != null && (CheckConnectAndDie(b) || ThreeLibertyConnectAndDie(b, p)))
                     return (false, null);
                 Point q = libertyPoint.Value;
                 //check for ko possibility
@@ -166,7 +166,7 @@ namespace Go
             if (AllConnectAndDie(capturedBoard, p.Value))
                 return null;
 
-            if (ThreeLibertyConnectAndDie(capturedBoard, null, true))
+            if (ThreeLibertyConnectAndDie(capturedBoard, p.Value))
                 return null;
 
             return capturedBoard;
@@ -174,45 +174,22 @@ namespace Go
 
 
         /// <summary>
-        /// Three liberty connect and die.
+        /// Three liberty connect and die, not all inclusive. Connect and die group may not be target group for two liberties target group.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14992_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14992" />
-        /// Two liberties target group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q29487" />
-        /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_WuQingYuan_Q31154" />
         /// </summary>
-        public static Boolean ThreeLibertyConnectAndDie(Board board, Group targetGroup = null, Boolean tigerMouthOnly = false)
+        public static Boolean ThreeLibertyConnectAndDie(Board board, Point p)
         {
-            targetGroup = (targetGroup) ?? board.MoveGroup;
+            Group targetGroup = board.MoveGroup;
             Content c = targetGroup.Content;
-            List<Point> groupLiberties = board.GetGroupLibertyPoints(targetGroup);
-            if (groupLiberties.Count != 3) return false;
-
-            foreach (Point liberty in groupLiberties)
+            Board b = board.MakeMoveOnNewBoard(p, c.Opposite());
+            if (b == null) return false;
+            if (b.MoveGroupLiberties == 1)
             {
-                Board b = board.MakeMoveOnNewBoard(liberty, c.Opposite());
-                if (b == null) continue;
-                if (b.MoveGroupLiberties == 1)
-                {
-                    if (b.AtariTargets.Count != 1) continue;
-                    Board b2 = ImmovableHelper.CaptureSuicideGroup(b);
-                    if (b2 != null && CheckConnectAndDie(b2, b2.GetGroupAt(targetGroup.Points.First())))
-                        return true;
-                }
-                else
-                {
-                    if (tigerMouthOnly) continue;
-                    //two liberties target group
-                    foreach (Group group in b.GetNeighbourGroups(targetGroup.Points.First()).Where(gr => gr.Liberties.Count <= 2 && b.GetNeighbourGroups(gr).Count > 1))
-                    {
-                        (_, Board b2) = ImmovableHelper.ConnectAndDie(b, group);
-                        if (b2 == null) continue;
-                        if (ImmovableHelper.CheckConnectAndDie(b2, b2.GetGroupAt(targetGroup.Points.First())))
-                        {
-                            if (EscapePreAtariLink(b, b.GetGroupAt(targetGroup.Points.First()))) continue;
-                            return true;
-                        }
-                    }
-                }
+                if (b.AtariTargets.Count != 1) return false;
+                Board b2 = ImmovableHelper.CaptureSuicideGroup(b);
+                if (b2 != null && CheckConnectAndDie(b2, b2.GetGroupAt(targetGroup.Points.First())))
+                    return true;
             }
             return false;
         }

@@ -310,6 +310,7 @@ namespace Go
         /// Check for weak groups <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WuQingYuan_Q31503" />
         /// Check killer formation <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Side_A25" />
         /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Side_A23" />
+        /// Count possible eyes at stone neighbours <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Side_A23" />
         /// </summary>
         private static Boolean RedundantAtariWithinKillerGroup(GameTryMove tryMove)
         {
@@ -357,8 +358,13 @@ namespace Go
                         if (!killerFormation && killerFormation2) return false;
                     }
                 }
+                //count possible eyes at stone neighbours
+                int qEyeCount = PossibleEyesCreated(currentBoard, q, c);
+                int moveEyeCount = PossibleEyesCreated(currentBoard, move, c);
+                if (qEyeCount > moveEyeCount) return true;
+                else if (qEyeCount < moveEyeCount) return false;
                 //return only one move if both moves valid
-                return (q.x + q.y * board.SizeX) < (move.x + move.y * board.SizeX);
+                else return (q.x + q.y * board.SizeX) < (move.x + move.y * board.SizeX);
             }
             return false;
         }
@@ -2436,42 +2442,19 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Board currentBoard = tryMove.CurrentGame.Board;
             Content c = tryMove.MoveContent;
+            //ensure link for groups
+            if (!LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryBoard)) return false;
 
-            //check for opponent stones at stone and diagonal points
-            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite()))
-            {
-                //ensure link for groups
-                if (!LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryBoard)) return false;
-
-                if (CheckEyeFillerLinks(tryMove))
-                    return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Covered eye <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A132_2" />
-        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
-        /// Connect and die for specific eye filler move <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q29487" />
-        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q30919" />
-        /// </summary>
-        private static Boolean CheckEyeFillerLinks(GameTryMove tryMove)
-        {
-            Board tryBoard = tryMove.TryGame.Board;
-            Board currentBoard = tryMove.CurrentGame.Board;
-            Content c = tryMove.MoveContent;
+            //check for opponent stones at neighbour points
             Point move = tryBoard.Move.Value;
-            //covered eye
-            Board opponentBoard = currentBoard.MakeMoveOnNewBoard(move, c.Opposite(), true);
-            Boolean coveredEye = (opponentBoard != null && (EyeHelper.CheckCoveredEyeAtSuicideGroup(opponentBoard)));
-            if (coveredEye) return true;
+            if (tryBoard.GetStoneNeighbours().Where(n => tryBoard[n] == c.Opposite()).Any())
+                return true;
 
-            //connect and die for specific eye filler move
-            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, move);
-            if (killerGroup == null) return false;
-            if (killerGroup.Points.Count > 5) return true;
-            Boolean connectAndDie = (currentBoard.GetNeighbourGroups(killerGroup).Any(n => ImmovableHelper.CheckConnectAndDie(currentBoard, n) || ImmovableHelper.ThreeLibertyConnectAndDie(currentBoard, n)));
-            if (connectAndDie) return true;
+            //check for opponent stones at diagonal
+            List<Point> diagonals = tryBoard.GetDiagonalNeighbours();
+            List<Point> filledDiagonals = diagonals.Where(d => currentBoard[d] == c.Opposite()).ToList();
+            if (filledDiagonals.Count > 0)
+                return true;
 
             return false;
         }

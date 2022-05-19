@@ -155,8 +155,7 @@ namespace Go
                 return false;
             }
 
-            Boolean connectAndDie = ImmovableHelper.CheckConnectAndDie(board, group) || ImmovableHelper.ThreeLibertyConnectAndDie(board, group);
-            if (connectAndDie) return false;
+            if (ImmovableHelper.CheckConnectAndDie(board, group)) return false;
             return true;
         }
     }

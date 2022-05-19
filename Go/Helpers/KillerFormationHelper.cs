@@ -153,9 +153,6 @@ namespace Go
                 //find real eye
                 if (EyeHelper.FindRealEyeWithinEmptySpace(b, killerGroup, EyeType.SemiSolidEye))
                     return true;
-                //find real eye for more than three points
-                if (killerGroup.Points.Count > 3 && neighbourKillerGroups.All(group => WallHelper.IsStrongNeighbourGroup(b, group)) && !KillerFormationHelper.StraightFourFormation(b, killerGroup))
-                    return true;
             }
             return false;
         }
