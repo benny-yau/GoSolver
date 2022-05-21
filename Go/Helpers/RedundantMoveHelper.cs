@@ -100,16 +100,16 @@ namespace Go
 
             if (opponentTryMove != null)
             {
+                //check diagonal eye killer group for opponent move
+                if (currentBoard.GetDiagonalNeighbours(p.x, p.y).Any(n => currentBoard[n] == Content.Empty))
+                    return false;
+
                 //check liberty count without covered eye
                 foreach (Group group in currentBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()))
                 {
                     int liberties = group.Liberties.Count(liberty => !EyeHelper.FindCoveredEye(currentBoard, liberty, c));
                     if (liberties < 2) return false;
                 }
-
-                //check diagonal eye killer group for opponent move
-                if (currentBoard.GetDiagonalNeighbours(p.x, p.y).Any(n => currentBoard[n] == Content.Empty))
-                    return false;
             }
 
             //check if link for groups
@@ -306,6 +306,7 @@ namespace Go
         /// Ensure more than one liberty for move group <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A68" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16748" />
         /// Check for weak groups <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WuQingYuan_Q31503" />
+        /// Check escape board for two or more liberties <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
         /// Check killer formation <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Side_A25" />
         /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Side_A23" />
         /// Count possible eyes at stone neighbours <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Side_A23" />
@@ -342,7 +343,13 @@ namespace Go
             if (ImmovableHelper.UnescapableGroup(board, board.GetGroupAt(atariPoint)).Item1)
             {
                 //check for increased killer groups
-                if (board.GetStoneNeighbours().Any(n => board[n] != c && BothAliveHelper.GetKillerGroupFromCache(board, n, c) != killerGroup2)) return false;
+                if (board.GetStoneNeighbours().Any(n => board[n] != c && BothAliveHelper.GetKillerGroupFromCache(board, n, c) != killerGroup2)) return true;
+
+                //check escape board for two or more liberties
+                Board escapeBoard = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(tryBoard, atariTarget, c.Opposite());
+                if (escapeBoard != null && escapeBoard.MoveGroupLiberties > 1 && escapeBoard.CapturedList.Count == 0 && !LinkHelper.IsAbsoluteLinkForGroups(tryBoard, escapeBoard))
+                    return false;
+
                 //check killer formation
                 Board b = tryBoard.MakeMoveOnNewBoard(q, c.Opposite());
                 if (b != null)
