@@ -427,6 +427,10 @@ namespace Go
             return neighbourGroups.Any(group => CheckSnapback(board, group));
         }
 
+        /// <summary>
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B31_4" />
+        /// Two point move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234" />
+        /// </summary>
         public static Boolean CheckSnapback(Board board, Group targetGroup)
         {
             Content c = targetGroup.Content;
@@ -437,16 +441,7 @@ namespace Go
             List<Group> groups = board.GetNeighbourGroups(targetGroup).Where(gr => gr.Liberties.Count == 1).ToList();
             if (groups.Count != 1) return false;
             Group moveGroup = groups.First();
-            if (moveGroup.Points.Count > 2) return false;
-            //one point move within two point group
-            if (moveGroup.Points.Count == 1)
-            {
-                if (moveGroup.Liberties.Count > 1) return false;
-                Point move = moveGroup.Points.First();
-                Point liberty = moveGroup.Liberties.First();
-                Boolean twoPointGroup = board.GetStoneNeighbours(liberty.x, liberty.y).Where(n => !n.Equals(move)).All(n => board[n] == c);
-                if (!twoPointGroup) return false;
-            }
+            if (moveGroup.Points.Count > 2 || moveGroup.Liberties.Count > 1) return false;
 
             foreach (Point libertyPoint in libertyPoints)
             {
@@ -456,9 +451,21 @@ namespace Go
                 //make move at suicide point
                 Board b = board.MakeMoveOnNewBoard(libertyPoint, c.Opposite(), true);
                 if (b == null) continue;
+
+                List<Group> suicideGroups = b.GetNeighbourGroups(targetGroup).Where(gr => gr.Points.Count <= 2 && gr.Liberties.Count == 1).ToList();
+                if (suicideGroups.Count != 2) continue;
+                //one point move within two point group or two point move
+                List<Group> suicideWithinTwoPointGroup = suicideGroups.Select(gr => new { group = gr, liberty = gr.Liberties.First() }).Where(gr => gr.group.Points.Count == 2 || board.GetStoneNeighbours(gr.liberty.x, gr.liberty.y).Where(n => !n.Equals(gr.group.Points.First())).All(n => board[n] == c)).Select(gr => gr.group).ToList();
+                if (suicideWithinTwoPointGroup.Count != 1) continue;
+
+                Group suicideGroupAtTigerMouth = suicideGroups.Where(gr => gr != suicideWithinTwoPointGroup.First() && gr.Points.Count == 1).FirstOrDefault();
+                if (suicideGroupAtTigerMouth == null) continue;
+                Point r = suicideGroupAtTigerMouth.Points.First();
+                if (!b.GetDiagonalNeighbours(r.x, r.y).Any(n => suicideWithinTwoPointGroup.First().Points.Contains(n))) continue;
                 //capture move
-                if (IsSnapback(b, targetGroup))
+                if (IsSnapback(b, targetGroup, suicideGroupAtTigerMouth))
                     return true;
+
             }
             return false;
         }
@@ -472,24 +479,21 @@ namespace Go
         /// Check not more than two stones captured <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WuQingYuan_Q31471" />
         /// Check if kill move can escape <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_B28" />
         /// </summary>
-        public static Boolean IsSnapback(Board tryBoard, Group group, Boolean checkkillEye = true)
+        public static Boolean IsSnapback(Board tryBoard, Group targetGroup, Group suicideGroup)
         {
             if (!tryBoard.IsAtariMove || tryBoard.MoveGroupLiberties != 1) return false;
-            (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalOnCapture(tryBoard);
+            (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalOnCapture(tryBoard, suicideGroup);
             if (suicidal && b != null && b.MoveGroup.Points.Count > 1)
             {
-
                 //check if target group is escapable
-                (Boolean unEscapable, _, Board escapeBoard) = UnescapableGroup(tryBoard, group);
+                (Boolean unEscapable, _, Board escapeBoard) = UnescapableGroup(tryBoard, targetGroup);
                 if (unEscapable) return true;
-                //check kill eye snapback
-                if (!checkkillEye) return false;
                 //check not more than two stones captured
                 int capturedPoints = escapeBoard.CapturedPoints.Count();
                 Boolean capture = (escapeBoard.CapturedList.Count == 1 && capturedPoints >= 1 && capturedPoints <= 2 && !EyeHelper.FindRealEyeWithinEmptySpace(escapeBoard, escapeBoard.CapturedList.First(), EyeType.UnCoveredEye));
                 if (!capture) return false;
                 //check if kill move can escape
-                if (UnescapableGroup(escapeBoard, tryBoard.MoveGroup).Item1)
+                if (UnescapableGroup(escapeBoard, suicideGroup).Item1)
                     return false;
                 return true;
             }
