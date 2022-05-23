@@ -91,7 +91,9 @@ namespace Go
             if (tryBoard.CapturedList.Count == 1 && tryBoard.CapturedPoints.Count() == 2 && EyeHelper.FindCoveredEyeByCapture(tryBoard, tryBoard.CapturedList.First()))
             {
                 //two-point covered eye
-                eyeGroup = tryBoard.CapturedList.First();
+                Boolean unEscapable = EyeHelper.CoveredMove(tryBoard, tryBoard.GetStoneNeighbours(), c) && tryBoard.MoveGroup.Liberties.Any(lib => tryBoard.GameInfo.IsMovablePoint[lib.x, lib.y] == false);
+                if (unEscapable)
+                    eyeGroup = tryBoard.CapturedList.First();
             }
             else
             {
@@ -1257,18 +1259,31 @@ namespace Go
 
         #region base line
         /// <summary>
-        /// Base line moves are moves that occur on the edge of the board.        
+        /// Base line moves are redundant moves on the edge of the board.        
         /// Base line survival move, directly below or diagonal to non killable group <see cref="UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest__Scenario_XuanXuanGo_A23" />
         /// If next to opponent stone then not redundant <see cref="UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18473" />
         /// </summary>
+        /// Boundary base line move <see cref="UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_Corner_A84" />
         public static Boolean BaseLineSurvivalMove(GameTryMove tryMove)
         {
+            Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
 
-            if (!tryMove.IsNegligible)
+            if (tryBoard.PointWithinMiddleArea(move))
                 return false;
+
+            //boundary base line move
+            if (tryBoard.GameInfo.IsMovablePoint[move.x, move.y] == false)
+            {
+                Group atariTarget = tryBoard.AtariTargets.FirstOrDefault(t => t.Points.Count == 1);
+                if (atariTarget != null && !EyeHelper.FindEye(tryBoard, atariTarget.Liberties.First(), c.Opposite()))
+                {
+                    Board b = tryBoard.MakeMoveOnNewBoard(atariTarget.Liberties.First(), c, true);
+                    if (b != null && b.AtariTargets.Count == 0) return true;
+                }
+            }
 
             //check for non killable group near base line survival move
             for (int i = 0; i <= dh.DirectionLinkedList.Count - 1; i++)
@@ -1281,12 +1296,7 @@ namespace Go
                 if (!tryBoard.PointWithinMiddleArea(pointUp)) return false;
                 Point pointUpLeft = dh.GetPointInDirection(tryBoard, pointUp, dh.GetNewDirection(Direction.Left, i));
                 Point pointUpRight = dh.GetPointInDirection(tryBoard, pointUp, dh.GetNewDirection(Direction.Right, i));
-                //if point up is non killable group and current move not connected then redundant
-                if (tryBoard[pointUp] == c.Opposite() && WallHelper.IsNonKillableGroup(tryBoard, pointUp))
-                {
-                    if ((tryBoard[pointUpLeft] != c && tryBoard[pointUpRight] != c))
-                        return true;
-                }
+
                 //if diagonal point is non killable group and point up is empty and not next to opponent stone then redundant
                 Boolean found = false;
                 if (tryBoard[pointUp] == Content.Empty && tryBoard[pointUpLeft] == c.Opposite() && CheckBaseLineDiagonalPoint(tryBoard, pointUpLeft))

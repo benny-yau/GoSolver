@@ -59,12 +59,16 @@ namespace Go
         public static Boolean FindUncoveredPoint(Board currentBoard, int x, int y, Content c)
         {
             List<Point> diagonalNeighbours = currentBoard.GetDiagonalNeighbours(x, y);
-            List<Point> oppositeContent = diagonalNeighbours.Where(q => currentBoard[q] == c.Opposite()).ToList();
+            return !CoveredMove(currentBoard, diagonalNeighbours, c);
+        }
 
-            if (diagonalNeighbours.Count == 4) // middle area
-                return (oppositeContent.Count <= 1);
+        public static Boolean CoveredMove(Board board, List<Point> points, Content c)
+        {
+            List<Point> oppositeContent = points.Where(q => board[q] == c.Opposite()).ToList();
+            if (points.Count == 4) // middle area
+                return (oppositeContent.Count >= 2);
             else //side or corner
-                return (oppositeContent.Count == 0);
+                return (oppositeContent.Count >= 1);
         }
 
         /// <summary>

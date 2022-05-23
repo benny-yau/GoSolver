@@ -1199,10 +1199,11 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.BaseLineSurvivalMove(Go.GameTryMove)">
             <summary>
-            Base line moves are moves that occur on the edge of the board.        
+            Base line moves are redundant moves on the edge of the board.        
             Base line survival move, directly below or diagonal to non killable group <see cref="!:UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest__Scenario_XuanXuanGo_A23" />
             If next to opponent stone then not redundant <see cref="!:UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18473" />
             </summary>
+            Boundary base line move <see cref="!:UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_Corner_A84" />
         </member>
         <member name="M:Go.RedundantMoveHelper.SurvivalLeapMove(Go.GameTryMove)">
             <summary>
