@@ -46,6 +46,8 @@ namespace Go
         /// <summary>
         /// Redundant covered eye move.
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" /> 
+        /// Two-point covered eye <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_A84_2" /> 
+        /// Find covered eye for opponent <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18410" /> 
         /// </summary>
         public static Boolean RedundantCoveredEyeMove(GameTryMove tryMove)
         {
@@ -73,6 +75,8 @@ namespace Go
         /// Check no eye for survival <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A52" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q16594" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A41" /> 
+        /// Check eye for survival <see cref="UnitTestProject.RedundantKoMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A34" />
+        /// Check for non semi solid eye at diagonal <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q29998" />
         /// Check liberty count without covered eye <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
         /// </summary>
         public static Boolean FindCoveredEyeMove(GameTryMove tryMove, GameTryMove opponentTryMove = null)
@@ -83,34 +87,45 @@ namespace Go
             Content c = tryMove.MoveContent;
 
             if (tryBoard.AtariResolved || tryBoard.IsAtariMove) return false;
-            //find eye
-            List<Point> eyePoints = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindEye(tryBoard, n.x, n.y, c)).ToList();
-            if (eyePoints.Count != 1) return false;
-            Point p = eyePoints.First();
+            Group eyeGroup = null;
+            if (tryBoard.CapturedList.Count == 1 && tryBoard.CapturedPoints.Count() == 2 && EyeHelper.FindCoveredEyeByCapture(tryBoard, tryBoard.CapturedList.First()))
+            {
+                //two-point covered eye
+                eyeGroup = tryBoard.CapturedList.First();
+            }
+            else
+            {
+                //one-point covered eye
+                List<Point> eyePoints = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindCoveredEye(tryBoard, n, c)).ToList();
+                if (eyePoints.Count != 1) return false;
+                Point p = eyePoints.First();
+                Board b = new Board(tryBoard);
+                b[p] = c.Opposite();
+                eyeGroup = b.GetGroupAt(p);
+            }
+            if (eyeGroup == null) return false;
 
-            //find covered eye where covered point is non killable
-            if (!RedundantCoveredEye(currentBoard, tryBoard, p, c)) return false;
+            //check eye for survival
+            if (tryBoard.GetStoneNeighbours().Any(n => !eyeGroup.Points.Contains(n) && !WallHelper.NoEyeForSurvival(currentBoard, n)))
+                return false;
+
+            //check for non semi solid eye at diagonal
+            if (KoHelper.IsKoFight(tryBoard) && tryBoard.GetDiagonalNeighbours().Any(n => EyeHelper.FindNonSemiSolidEye(tryBoard, n, c.Opposite())))
+                return false;
+
+            if (DiagonalNonSemiSolidEye(currentBoard, tryBoard, eyeGroup, c))
+                return false;
 
             //ensure all groups have liberty more than two
-            foreach (Group group in currentBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()))
+            foreach (Group group in currentBoard.GetNeighbourGroups(eyeGroup))
             {
                 if (!WallHelper.IsStrongNeighbourGroup(currentBoard, group) || (group.Liberties.Count <= 2 && group.Liberties.Any(x => ImmovableHelper.IsSuicidalMove(currentBoard, x, c))))
                     return false;
             }
 
-            if (opponentTryMove != null)
-            {
-                //check diagonal eye killer group for opponent move
-                if (currentBoard.GetDiagonalNeighbours(p.x, p.y).Any(n => currentBoard[n] == Content.Empty))
-                    return false;
-
-                //check liberty count without covered eye
-                foreach (Group group in currentBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()))
-                {
-                    int liberties = group.Liberties.Count(liberty => !EyeHelper.FindCoveredEye(currentBoard, liberty, c));
-                    if (liberties < 2) return false;
-                }
-            }
+            //check diagonal eye killer group for opponent move
+            if (opponentTryMove != null && eyeGroup.Points.Any(p => currentBoard.GetDiagonalNeighbours(p.x, p.y).Any(n => currentBoard[n] == Content.Empty)))
+                return false;
 
             //check if link for groups
             if (tryMove.LinkForGroups())
@@ -119,24 +134,20 @@ namespace Go
             //check no eye for survival
             if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(tryBoard))
                 return false;
+
             return true;
         }
 
         /// <summary>
-        /// Covered eye where covered point is non killable.
-        /// Check for eye at diagonal <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q29277" /> 
+        /// Check for non semi solid eye at diagonal.
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q29277" /> 
         /// </summary>
-        public static Boolean RedundantCoveredEye(Board currentBoard, Board tryBoard, Point p, Content c)
+        public static Boolean DiagonalNonSemiSolidEye(Board currentBoard, Board tryBoard, Group eyeGroup, Content c)
         {
-            if (!EyeHelper.FindCoveredEye(tryBoard, p, c)) return false;
-            List<Point> diagonals = tryBoard.GetDiagonalNeighbours(p.x, p.y);
             //check for eye at diagonal
-            List<Point> emptyDiagonals = diagonals.Where(q => tryBoard[q] == Content.Empty).ToList();
-            if (emptyDiagonals.Count > 0 && emptyDiagonals.All(q => EyeHelper.FindNonSemiSolidEye(currentBoard, q, c))) return false;
-
-            List<Point> adjacentDiagonals = diagonals.Where(n => tryBoard[n] == c.Opposite()).ToList();
-            if (adjacentDiagonals.Count > 0 && adjacentDiagonals.All(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
-                return true;
+            List<Point> emptyDiagonals = new List<Point>();
+            eyeGroup.Points.ToList().ForEach(p => emptyDiagonals.AddRange(tryBoard.GetDiagonalNeighbours(p.x, p.y).Where(q => tryBoard[q] == Content.Empty)));
+            if (emptyDiagonals.Count > 0 && emptyDiagonals.Any(q => EyeHelper.FindNonSemiSolidEye(currentBoard, q, c))) return true;
             return false;
         }
         #endregion

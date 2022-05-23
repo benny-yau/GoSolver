@@ -916,6 +916,8 @@
             <summary>
             Redundant covered eye move.
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" /> 
+            Two-point covered eye <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_A84_2" /> 
+            Find covered eye for opponent <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18410" /> 
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.FindCoveredEyeMove(Go.GameTryMove,Go.GameTryMove)">
@@ -930,13 +932,15 @@
             Check no eye for survival <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A52" />
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q16594" />
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A41" /> 
+            Check eye for survival <see cref="!:UnitTestProject.RedundantKoMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A34" />
+            Check for non semi solid eye at diagonal <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q29998" />
             Check liberty count without covered eye <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.RedundantCoveredEye(Go.Board,Go.Board,Go.Point,Go.Content)">
+        <member name="M:Go.RedundantMoveHelper.DiagonalNonSemiSolidEye(Go.Board,Go.Board,Go.Group,Go.Content)">
             <summary>
-            Covered eye where covered point is non killable.
-            Check for eye at diagonal <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q29277" /> 
+            Check for non semi solid eye at diagonal.
+            <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q29277" /> 
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.FillKoEyeMove(Go.GameTryMove)">
