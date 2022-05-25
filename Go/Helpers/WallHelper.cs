@@ -86,7 +86,7 @@ namespace Go
         {
             return board.PointWithinBoard(p) && (board.GameInfo.IsMovablePoint[p.x, p.y] == true || board[p] == c);
         }
-
+        
         /// <summary>
         /// Non killable group cannot be surrounded and killed as neighbour points are not movable.
         /// </summary>
@@ -107,7 +107,7 @@ namespace Go
                 group.IsNonKillable = false;
                 return false;
             }
-
+            
             //check if group is non killable
             group.IsNonKillable = IsNonKillableFromSetupMoves(board, group);
             if (group.IsNonKillable.Value)

@@ -212,7 +212,7 @@ namespace Go
                 HashSet<Group> diagonalGroups = board.GetGroupsFromPoints(pointsBetweenDiagonals);
                 if (diagonalGroups.Count != 2) return false;
 
-                List<Group> complexSekiGroups = new List<Group>();
+                List<Group> complexSekiGroups = new List<Group>(); 
                 foreach (Group diagonalGroup in diagonalGroups)
                 {
                     Group diagonalKillerGroup = BothAliveHelper.GetKillerGroupFromCache(board, diagonalGroup.Points.First(), killerGroup.Content);
@@ -348,7 +348,7 @@ namespace Go
             {
                 if (group.Points.Count != 1) continue;
                 Point p = group.Points.First();
-                if (EyeHelper.FindUncoveredEye(clearedBoard, p.x, p.y, group.Content.Opposite()))
+                if (EyeHelper.FindUncoveredEye(clearedBoard, p, group.Content.Opposite()))
                     return true;
             }
             return false;

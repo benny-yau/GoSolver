@@ -47,25 +47,25 @@ namespace Go
         /// <summary>
         /// An uncovered eye is a point where none or only one diagonal point covered by opposite content if point is in the middle area, and no diagonal point covered by opposite content if point is at the side or at the corner.
         /// </summary>
-        public static Boolean FindUncoveredEye(Board currentBoard, int x, int y, Content c)
+        public static Boolean FindUncoveredEye(Board currentBoard, Point n, Content c)
         {
-            if (FindEye(currentBoard, x, y, c))
+            if (FindEye(currentBoard, n, c))
             {
-                return FindUncoveredPoint(currentBoard, x, y, c);
+                return FindUncoveredPoint(currentBoard, n, c);
             }
             return false;
         }
 
-        public static Boolean FindUncoveredPoint(Board currentBoard, int x, int y, Content c)
+        public static Boolean FindUncoveredPoint(Board currentBoard, Point n, Content c)
         {
-            List<Point> diagonalNeighbours = currentBoard.GetDiagonalNeighbours(x, y);
-            return !CoveredMove(currentBoard, diagonalNeighbours, c);
+            return !CoveredMove(currentBoard, n, c);
         }
 
-        public static Boolean CoveredMove(Board board, List<Point> points, Content c)
+        public static Boolean CoveredMove(Board board, Point n, Content c)
         {
-            List<Point> oppositeContent = points.Where(q => board[q] == c.Opposite()).ToList();
-            if (points.Count == 4) // middle area
+            List<Point> diagonalPoints = board.GetDiagonalNeighbours(n.x, n.y);
+            List<Point> oppositeContent = diagonalPoints.Where(q => board[q] == c.Opposite()).ToList();
+            if (diagonalPoints.Count == 4) // middle area
                 return (oppositeContent.Count >= 2);
             else //side or corner
                 return (oppositeContent.Count >= 1);
@@ -234,7 +234,7 @@ namespace Go
         /// </summary>
         public static Boolean FindRealSolidEyes(Point p, Content c, Board board)
         {
-            if (!FindUncoveredEye(board, p.x, p.y, c))
+            if (!FindUncoveredEye(board, p, c))
                 return false;
 
             List<Point> diagonals = board.GetDiagonalNeighbours(p.x, p.y);
@@ -374,7 +374,7 @@ namespace Go
                 if (eyeType == EyeType.SemiSolidEye)
                     return killerGroup.Points.Any(k => board[k] == Content.Empty && FindSemiSolidEyes(k, board, c.Opposite()).Item1);
                 else if (eyeType == EyeType.UnCoveredEye)
-                    return killerGroup.Points.Any(k => board[k] == Content.Empty && FindUncoveredEye(board, k.x, k.y, c.Opposite()));
+                    return killerGroup.Points.Any(k => board[k] == Content.Empty && FindUncoveredEye(board, k, c.Opposite()));
                 else if (eyeType == EyeType.CoveredEye)
                     return killerGroup.Points.Any(k => board[k] == Content.Empty && FindCoveredEye(board, k, c.Opposite()));
                 else if (eyeType == EyeType.RealSolidEye)

@@ -24,7 +24,7 @@ namespace Go
 
             if (!EyeHelper.FindEye(currentBoard, move.x, move.y, c)) return false;
             //find uncovered eye
-            if (EyeHelper.FindUncoveredPoint(currentBoard, move.x, move.y, c))
+            if (EyeHelper.FindUncoveredPoint(currentBoard, move, c))
             {
                 if (tryBoard.MoveGroupLiberties != 1) return true;
                 //check for killer formations
@@ -89,10 +89,12 @@ namespace Go
 
             if (tryBoard.AtariResolved || tryBoard.IsAtariMove) return false;
             Group eyeGroup = null;
+            Point eyePoint;
             if (tryBoard.CapturedList.Count == 1 && tryBoard.CapturedPoints.Count() == 2 && EyeHelper.FindCoveredEyeByCapture(tryBoard, tryBoard.CapturedList.First()))
             {
                 //two-point covered eye
-                Boolean unEscapable = EyeHelper.CoveredMove(tryBoard, tryBoard.GetStoneNeighbours(), c) && tryBoard.MoveGroup.Liberties.Any(lib => tryBoard.GameInfo.IsMovablePoint[lib.x, lib.y] == false);
+                eyePoint = tryBoard.CapturedPoints.First(q => tryBoard.GetStoneNeighbours().Contains(q));
+                Boolean unEscapable = EyeHelper.CoveredMove(tryBoard, eyePoint, c) && tryBoard.MoveGroup.Liberties.Any(lib => tryBoard.GameInfo.IsMovablePoint[lib.x, lib.y] == false);
                 if (unEscapable)
                     eyeGroup = tryBoard.CapturedList.First();
             }
@@ -101,10 +103,10 @@ namespace Go
                 //one-point covered eye
                 List<Point> eyePoints = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindCoveredEye(tryBoard, n, c)).ToList();
                 if (eyePoints.Count != 1) return false;
-                Point p = eyePoints.First();
+                eyePoint = eyePoints.First();
                 Board b = new Board(tryBoard);
-                b[p] = c.Opposite();
-                eyeGroup = b.GetGroupAt(p);
+                b[eyePoint] = c.Opposite();
+                eyeGroup = b.GetGroupAt(eyePoint);
             }
             if (eyeGroup == null) return false;
 
@@ -127,7 +129,7 @@ namespace Go
                 return false;
 
             //check eye for survival
-            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty && !eyeGroup.Points.Contains(n) && EyeHelper.CoveredMove(tryBoard, tryBoard.GetStoneNeighbours(), c) && !WallHelper.NoEyeForSurvival(currentBoard, n, c.Opposite())))
+            if (EyeHelper.CoveredMove(tryBoard, eyePoint, c) && tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty && !eyeGroup.Points.Contains(n) && !WallHelper.NoEyeForSurvival(currentBoard, n, c.Opposite())))
                 return false;
 
             if (opponentTryMove != null)
@@ -442,7 +444,43 @@ namespace Go
                 if (SuicidalConnectAndDie(tryMove))
                     return true;
             }
+            if (ThreeLibertySuicidal(tryMove))
+                return true;
             return SuicidalWithinNonKillableGroup(tryMove);
+        }
+
+        /// <summary>
+        /// Three liberty suicidal.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario5dan18" />
+        /// </summary>
+        private static Boolean ThreeLibertySuicidal(GameTryMove tryMove)
+        {
+            Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            if (!tryMove.IsNegligible) return false;
+            if (tryBoard.MoveGroupLiberties != 2 && tryBoard.MoveGroupLiberties != 3) return false;
+            if (BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite()) != null) return false;
+            if (tryBoard.MoveGroupLiberties == 2)
+            {
+                List<Point> tigerMouth = tryBoard.GetStoneNeighbours().Where(n => tryBoard[n] == Content.Empty && ImmovableHelper.FindTigerMouth(tryBoard, c, n)).ToList();
+                if (tigerMouth.Count != 1) return false;
+                Point t = tigerMouth.First();
+                //ensure not covered move
+                if (EyeHelper.CoveredMove(tryBoard, t, c)) return false;
+                //two-point empty group
+                List<Point> emptyNeighbour = tryBoard.GetStoneNeighbours(t.x, t.y).Where(n => tryBoard[n] == Content.Empty).ToList();
+                if (emptyNeighbour.Count != 1) return false;
+                Point e = emptyNeighbour.First();
+                Boolean twoPointGroup = (tryBoard.GetStoneNeighbours(e.x, e.y).Where(n => !n.Equals(t)).All(n => tryBoard[n] == c));
+                if (!twoPointGroup) return false; 
+            }
+            foreach (Point liberty in tryBoard.MoveGroup.Liberties)
+            {
+                if (ImmovableHelper.FindTigerMouth(tryBoard, c, liberty) && ImmovableHelper.ThreeLibertyConnectAndDie(tryBoard, liberty))
+                    return true;
+            }
+            return false;
         }
 
         /// <summary>
