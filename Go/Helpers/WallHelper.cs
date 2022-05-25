@@ -12,10 +12,10 @@ namespace Go
         /// <summary>
         /// Check if move creates eye for survival. If all stone and diagonal neighbours is same content or is wall then move is redundant neutral point.
         /// </summary>
-        public static Boolean NoEyeForSurvival(Board board, Point eyePoint)
+        public static Boolean NoEyeForSurvival(Board board, Point eyePoint, Content c = Content.Unknown)
         {
             if (!board.PointWithinBoard(eyePoint)) return false;
-            Content c = GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive);
+            c = (c == Content.Unknown) ? GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive) : c;
             if (board[eyePoint] == c || IsWall(board, eyePoint))
                 return true;
 
@@ -37,10 +37,10 @@ namespace Go
         /// <summary>
         /// Check no eye for survival.
         /// </summary>
-        public static Boolean NoEyeForSurvivalAtNeighbourPoints(Board tryBoard)
+        public static Boolean NoEyeForSurvivalAtNeighbourPoints(Board tryBoard, Content c = Content.Unknown)
         {
             IEnumerable<Point> neighbourPts = tryBoard.GetStoneAndDiagonalNeighbours();
-            if (neighbourPts.Any(q => !NoEyeForSurvival(tryBoard, q)))
+            if (neighbourPts.Any(q => !NoEyeForSurvival(tryBoard, q, c)))
                 return false;
             return true;
         }
