@@ -175,8 +175,8 @@ namespace Go
 
         /// <summary>
         /// Three liberty connect and die, not all inclusive. Connect and die group may not be target group for two liberties target group.
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14992_2" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14992" />
+        /// <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_TianLongTu_Q14992_2" />
+        /// <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_TianLongTu_Q14992" />
         /// </summary>
         public static Boolean ThreeLibertyConnectAndDie(Board board, Point p)
         {

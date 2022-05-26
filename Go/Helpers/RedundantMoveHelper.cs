@@ -359,8 +359,8 @@ namespace Go
 
             //make move at the other liberty
             Point q = atariTarget.Liberties.First();
-            (Boolean suicidal, Board board) = ImmovableHelper.IsSuicidalMove(q, c, currentBoard, false, false);
-            if (suicidal) return false;
+            Board board = currentBoard.MakeMoveOnNewBoard(q, c);
+            if (board == null || board.MoveGroupLiberties == 1) return false;
             Group killerGroup2 = BothAliveHelper.GetKillerGroupFromCache(board, atariPoint, c);
             if (killerGroup2 == null) return false;
             //ensure the other move can capture atari target as well
@@ -451,7 +451,8 @@ namespace Go
 
         /// <summary>
         /// Three liberty suicidal.
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario5dan18" />
+        /// <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario5dan18" />
+        /// Stone neighbours at diagonal of each other <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_Side_B19" />
         /// </summary>
         private static Boolean ThreeLibertySuicidal(GameTryMove tryMove)
         {
@@ -475,9 +476,17 @@ namespace Go
                 Boolean twoPointGroup = (tryBoard.GetStoneNeighbours(e.x, e.y).Where(n => !n.Equals(t)).All(n => tryBoard[n] == c));
                 if (!twoPointGroup) return false; 
             }
-            foreach (Point liberty in tryBoard.MoveGroup.Liberties)
+            foreach (Point lib in tryBoard.MoveGroup.Liberties)
             {
-                if (ImmovableHelper.FindTigerMouth(tryBoard, c, liberty) && ImmovableHelper.ThreeLibertyConnectAndDie(tryBoard, liberty))
+                //find tiger mouth
+                if (!ImmovableHelper.FindTigerMouth(tryBoard, c, lib)) continue;
+                //stone neighbours at diagonal of each other
+                List<Point> stoneNeighbours = tryBoard.GetStoneNeighbours(lib.x, lib.y).Where(n => tryBoard[n] == c).ToList();
+                if (stoneNeighbours.Count == 0) continue;
+                Point p = stoneNeighbours.First();
+                Boolean diagonals = stoneNeighbours.Any(n => tryBoard.GetDiagonalNeighbours(p.x, p.y).Intersect(stoneNeighbours).Any());
+                if (!diagonals) continue;
+                if (ImmovableHelper.ThreeLibertyConnectAndDie(tryBoard, lib))
                     return true;
             }
             return false;
