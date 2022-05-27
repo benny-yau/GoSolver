@@ -505,7 +505,6 @@ namespace Go
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
         /// Suicidal capture <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B25" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A55" />
-        /// Reverse connect and die <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WindAndTime_Q29277" />
         /// </summary>
         public static (Boolean, Board) ConnectAndDie(Board board, Group targetGroup = null)
         {
@@ -535,15 +534,7 @@ namespace Go
 
                 //check if connect and die
                 if (UnescapableGroup(b, targetGroup).Item1)
-                {
-                    Boolean suicidal = ((dynamic)key.CheckMove).isSuicidal;
-                    if (suicidal) return (true, b);
-
-                    //reverse connect and die
-                    if (targetGroup.Points.Count == 1 && b.MoveGroup.Points.Count == 1 && !board.GetNeighbourGroups(targetGroup).Any(gr => gr.Liberties.Count == 1) && ConnectAndDie(b, b.MoveGroup).Item1)//
-                        continue;
                     return (true, b);
-                }
             }
             return (false, null);
         }

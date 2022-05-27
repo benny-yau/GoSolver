@@ -276,7 +276,7 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryBoard.MoveGroup.Content;
-            if (!tryBoard.IsAtariMove || tryBoard.AtariTargets.Count > 1 || tryBoard.AtariResolved || tryBoard.CapturedList.Count > 0) return false;
+            if (!tryBoard.IsAtariMove || tryBoard.AtariTargets.Count > 1 || tryBoard.AtariResolved || tryBoard.MoveGroupLiberties == 1 || tryBoard.CapturedList.Count > 0) return false;
             Group atariTarget = tryBoard.AtariTargets.First();
             //ensure target group can escape
             if (ImmovableHelper.UnescapableGroup(tryBoard, atariTarget).Item1)
@@ -579,7 +579,7 @@ namespace Go
                 Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, atariTarget);
                 if (b == null || b.MoveGroupLiberties == 1) continue;
                 Point bMove = b.Move.Value;
-                if (b != null && b.GetStoneAndDiagonalNeighbours(bMove.x, bMove.y).Any(n => b[n] == c && b.GetGroupAt(n).Liberties.Count > 1 && !b.GetNeighbourGroups(atariTarget).Contains(b.GetGroupAt(n))))
+                if (b.GetStoneAndDiagonalNeighbours(bMove.x, bMove.y).Any(n => b[n] == c && b.GetGroupAt(n).Liberties.Count > 1 && !b.GetNeighbourGroups(atariTarget).Contains(b.GetGroupAt(n))))
                     return false;
             }
 
@@ -595,6 +595,7 @@ namespace Go
 
         /// <summary>
         /// Check for connect and die moves. <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738" />
+        /// Reverse connect and die <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WindAndTime_Q29277" />
         /// Check capture moves <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A75_101Weiqi" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.CheckForRecursionTest_Scenario_Corner_B41" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113_3" />
@@ -622,6 +623,10 @@ namespace Go
             if (!suicidal) return false;
 
             if (tryBoard.GameInfo.targetPoints.All(t => tryBoard.MoveGroup.Points.Contains(t))) return true;
+
+            //reverse connect and die
+            if (tryBoard.MoveGroup.Points.Count == 1 && captureBoard.MoveGroup.Points.Count == 1 && !tryBoard.GetNeighbourGroups().Any(gr => gr.Liberties.Count == 1) && ImmovableHelper.CheckConnectAndDie(captureBoard))
+                return false;
 
             //check capture moves
             if (tryBoard.CapturedList.Count > 0)
