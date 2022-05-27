@@ -514,9 +514,11 @@ namespace Go
             List<Point> groupLiberties = board.GetGroupLibertyPoints(targetGroup);
             if (groupLiberties.Count > 2) return (false, null);
 
+            SurviveOrKill surviveOrKill = GameHelper.KillOrSurvivalForNextMove(board);
             List<KeyValuePair<LinkedPoint<Point>, Board>> killBoards = new List<KeyValuePair<LinkedPoint<Point>, Board>>();
             foreach (Point liberty in groupLiberties)
             {
+                if (!GameHelper.SetupMoveAvailable(board.GameInfo, liberty, surviveOrKill)) continue;
                 (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board, false, false);
                 if (b == null) continue;
                 int neighbourCount = b.GetStoneNeighbours().Count(n => b[n] != c.Opposite());
@@ -538,7 +540,7 @@ namespace Go
                     if (suicidal) return (true, b);
 
                     //reverse connect and die
-                    if (ConnectAndDie(b, b.MoveGroup).Item1)
+                    if (targetGroup.Points.Count == 1 && b.MoveGroup.Points.Count == 1 && !board.GetNeighbourGroups(targetGroup).Any(gr => gr.Liberties.Count == 1) && ConnectAndDie(b, b.MoveGroup).Item1)//
                         continue;
                     return (true, b);
                 }

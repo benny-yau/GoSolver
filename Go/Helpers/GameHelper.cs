@@ -86,6 +86,18 @@ namespace Go
         }
 
         /// <summary>
+        /// Determine if setup move is available for kill or survival.
+        /// </summary>
+        public static Boolean SetupMoveAvailable(GameInfo gameInfo, Point p, SurviveOrKill surviveOrKill)
+        {
+            if (surviveOrKill == SurviveOrKill.Survive)
+                return gameInfo.IsMovablePoint[p.x, p.y];
+            else if (surviveOrKill == SurviveOrKill.Kill)
+                return gameInfo.IsKillMovablePoint[p.x, p.y];
+            return false;
+        }
+
+        /// <summary>
         /// Determine if next move is computer or player, based on count of last moves and initial player.
         /// </summary>
         public static PlayerOrComputer GetComputerOrPlayerForNextMove(Board board)

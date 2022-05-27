@@ -657,7 +657,7 @@ namespace Go
             if (tryBoard.MoveGroup.Liberties.Any(p => FindBloatedEyeSuicide(tryBoard, p, c))) return true;
 
             //check redundant corner point
-            if (CheckRedundantCornerPoint(tryMove))
+            if (CheckRedundantCornerPoint(tryMove, captureBoard))
                 return true;
 
             //check diagonals
@@ -1340,7 +1340,7 @@ namespace Go
                     if (b != null && b.AtariTargets.Count == 0) return true;
                 }
             }
-
+            if (!tryMove.IsNegligible) return false;
             //check for non killable group near base line survival move
             for (int i = 0; i <= dh.DirectionLinkedList.Count - 1; i++)
             {
@@ -2507,8 +2507,9 @@ namespace Go
         /// Two point kill <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q16508" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A6" />
         /// Check for kill formation <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
+        /// Multipoint snapback <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_B43" />
         /// </summary>
-        private static Boolean CheckRedundantCornerPoint(GameTryMove tryMove)
+        private static Boolean CheckRedundantCornerPoint(GameTryMove tryMove, Board captureBoard)
         {
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryBoard.Move.Value;
@@ -2523,6 +2524,11 @@ namespace Go
             {
                 Boolean killFormation = (tryBoard.GetClosestNeighbour(move, 2, c.Opposite()).Count >= 3 && !tryBoard.GetClosestNeighbour(move, 2, c).Any());
                 if (killFormation) return false;
+
+                //multipoint snapback
+                if (captureBoard.GetNeighbourGroups(tryBoard.MoveGroup).Any(gr => gr.Points.Count > 1 && ImmovableHelper.CheckConnectAndDie(captureBoard, gr)))
+                    return false;
+
                 return true;
             }
             return false;
