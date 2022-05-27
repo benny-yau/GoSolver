@@ -300,12 +300,10 @@ namespace Go
             (Boolean suicide, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board);
             if (!suicide) return false;
 
-            //check corner kill formation
-            if (tryBoard.MoveGroup.Points.Count == 1 && tryBoard.MoveGroupLiberties == 1 && tryBoard.CornerPoint(tryBoard.MoveGroup.Liberties.First()))
-            {
-                if (KillerFormationHelper.PreDeadFormation(currentBoard, atariTarget, atariTarget.Points.ToList(), new List<Point>() { tryBoard.MoveGroup.Points.First() }))
-                    return false;
-            }
+            //check if atari on other groups
+            if (b != null && b.GetNeighbourGroups().Any(group => group.Liberties.Count == 1))
+                return false;
+
             //check two-point covered eye
             if (b != null && b.MoveGroup.Points.Count == 2)
             {
@@ -313,8 +311,15 @@ namespace Go
                     return false;
             }
 
-            //check if atari on other groups
-            if (b != null && b.GetNeighbourGroups().Any(group => group.Liberties.Count == 1))
+            //check corner kill formation
+            if (tryBoard.MoveGroup.Points.Count == 1 && tryBoard.MoveGroupLiberties == 1 && tryBoard.CornerPoint(tryBoard.MoveGroup.Liberties.First()))
+            {
+                if (KillerFormationHelper.PreDeadFormation(currentBoard, atariTarget, atariTarget.Points.ToList(), new List<Point>() { tryBoard.MoveGroup.Points.First() }))
+                    return false;
+            }
+
+            //check killer formation
+            if (LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryBoard) && KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard))
                 return false;
 
             return true;
@@ -1135,7 +1140,7 @@ namespace Go
         /// Diagonal neighbours that are non killable groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17160" />
         /// Opponent suicide <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_A25" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A55" />
-        /// Check corner point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30370" />
+        /// Check corner point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A26_2" />
         /// </summary>
         private static Boolean RedundantSuicideNearNonKillableGroup(GameTryMove tryMove, Board capturedBoard, GameTryMove opponentTryMove = null)
         {
@@ -1144,6 +1149,10 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
             if (capturedBoard.MoveGroupLiberties == 1) return false;
+
+            //check corner point
+            if (tryBoard.CornerPoint(p) && !tryBoard.AtariTargets.Any(t => t.Points.Count == 1))
+                return true;
 
             //opponent suicide
             if (opponentTryMove != null)
@@ -1154,8 +1163,6 @@ namespace Go
 
             if (GameHelper.GetContentForSurviveOrKill(tryBoard.GameInfo, SurviveOrKill.Survive) == c)
             {
-                //check corner point
-                if (capturedBoard.CornerPoint(capturedBoard.Move.Value)) return false;
                 //for survive, any suicidal move next to non killable group is redundant
                 List<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(p);
                 if (neighbourGroups.Any(group => WallHelper.IsNonKillableGroup(tryBoard, group)))

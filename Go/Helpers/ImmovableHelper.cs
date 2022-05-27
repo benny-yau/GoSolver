@@ -513,11 +513,10 @@ namespace Go
             List<Point> groupLiberties = board.GetGroupLibertyPoints(targetGroup);
             if (groupLiberties.Count > 2) return (false, null);
 
-            SurviveOrKill surviveOrKill = GameHelper.KillOrSurvivalForNextMove(board);
             List<KeyValuePair<LinkedPoint<Point>, Board>> killBoards = new List<KeyValuePair<LinkedPoint<Point>, Board>>();
             foreach (Point liberty in groupLiberties)
             {
-                if (!GameHelper.SetupMoveAvailable(board.GameInfo, liberty, surviveOrKill)) continue;
+                if (!GameHelper.SetupMoveAvailable(board, liberty)) continue;
                 (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board, false, false);
                 if (b == null) continue;
                 int neighbourCount = b.GetStoneNeighbours().Count(n => b[n] != c.Opposite());

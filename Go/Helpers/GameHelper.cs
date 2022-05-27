@@ -88,8 +88,10 @@ namespace Go
         /// <summary>
         /// Determine if setup move is available for kill or survival.
         /// </summary>
-        public static Boolean SetupMoveAvailable(GameInfo gameInfo, Point p, SurviveOrKill surviveOrKill)
+        public static Boolean SetupMoveAvailable(Board board, Point p)
         {
+            GameInfo gameInfo = board.GameInfo;
+            SurviveOrKill surviveOrKill = GameHelper.KillOrSurvivalForNextMove(board);
             if (surviveOrKill == SurviveOrKill.Survive)
                 return gameInfo.IsMovablePoint[p.x, p.y];
             else if (surviveOrKill == SurviveOrKill.Kill)
