@@ -120,7 +120,7 @@ namespace Go
             //check for covered eye
             if (EyeHelper.CheckCoveredEyeAtSuicideGroup(b, tryBoard.MoveGroup))
                 return false;
-
+            
             //allow two-point group without real eye
             if (tryBoard.MoveGroup.Points.Count <= 2)
             {
@@ -130,7 +130,7 @@ namespace Go
             }
 
             //check for corner six
-            if (KillerFormationHelper.CornerSixFormation(tryBoard, tryBoard.MoveGroup))
+            if (KillerFormationHelper.CornerSixFormation(tryBoard, tryBoard.MoveGroup)) 
                 return false;
 
             //corner ko move
@@ -143,6 +143,10 @@ namespace Go
             //get all killer groups except move killer group
             List<Group> killerGroups = BothAliveHelper.GetCorneredKillerGroup(b, c.Opposite(), false);
             List<Group> neighbourGroups = b.GetNeighbourGroups(moveKillerGroup);
+
+            if (neighbourGroups.Any(group => WallHelper.IsNonKillableGroup(b, group)))
+                return true;
+
             foreach (Group killerGroup in killerGroups.Where(group => group != moveKillerGroup))
             {
                 List<Group> neighbourKillerGroups = b.GetNeighbourGroups(killerGroup);
