@@ -136,7 +136,7 @@ namespace Go
         /// </summary>
         public static Boolean StrongNeighbourGroups(Board board, IEnumerable<Group> neighbourGroups, Boolean checkSuicidal = true)
         {
-            if (!neighbourGroups.Any()) return false;
+            if (!neighbourGroups.Any()) return true;
             if (neighbourGroups.Any(group => !IsStrongNeighbourGroup(board, group, checkSuicidal)))
                 return false;
             return true;

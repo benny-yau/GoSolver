@@ -168,14 +168,18 @@ namespace Go
         #region fill ko eye move
         /// <summary>
         /// Fill ko eye move. <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
+        /// Double atari <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30358" /> 
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" /> 
         /// Check for weak eye group <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_B28" />
-        /// Ignore if connect more than two groups <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q17132" /> 
         /// Check both alive <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_SimpleSeki" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_2" /> 
         /// Ensure group more than one point have more than one liberty <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Nie20" /> 
         /// Check for killer formation <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A67" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie20" />
         /// Check suicide at tiger mouth <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_B3" /> 
+        /// Check survival eye <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A36" /> 
+        /// <see cref="UnitTestProject.KoTest.KoTest_Scenario_Corner_A80" /> 
+        /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WuQingYuan_Q30982" /> 
         /// </summary>
         public static Boolean FillKoEyeMove(GameTryMove tryMove)
         {
@@ -186,7 +190,6 @@ namespace Go
             //ensure is fill eye
             if (!EyeHelper.FindEye(currentBoard, move, c)) return false;
 
-            if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
             List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).ToList();
 
             //check for killer formation
@@ -198,7 +201,9 @@ namespace Go
             if (ImmovableHelper.CheckConnectAndDie(tryBoard))
                 return true;
 
-            //ignore if connect more than two groups
+            //ensure group more than one point have more than one liberty
+            if (eyeGroups.Any(e => e.Points.Count > 1 && e.Liberties.Count == 1)) return false;
+
             if (eyeGroups.Count > 2)
             {
                 //double atari
@@ -216,12 +221,21 @@ namespace Go
             }
 
             //check suicide at tiger mouth
-            if (eyeGroups.Any(group => group.Liberties.Count <= 2 && group.Liberties.Any(x => ImmovableHelper.IsSuicidalMove(currentBoard, x, c) && currentBoard.GetGroupsFromStoneNeighbours(x, c).Any(gr => !WallHelper.IsNonKillableGroup(currentBoard, gr)))))
-                return false;
+            (Boolean suicide, Board suicideBoard, Point? liberty) = SuicideAtBigTigerMouth(tryMove, c);
+            if (suicide) return false;
 
-            //ensure group more than one point have more than one liberty
-            if (eyeGroups.Any(e => e.Points.Count > 1 && e.Liberties.Count == 1)) return false;
 
+            if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo))
+            {
+                //check survival eye
+                if (currentBoard.GetDiagonalNeighbours(move.x, move.y).Any(n => EyeHelper.FindNonSemiSolidEye(currentBoard, n, c))) return false;
+                foreach (Group eyeGroup in eyeGroups.Where(e => e.Points.Count == 1 && e.Liberties.Count == 1))
+                {
+                    Point p = eyeGroup.Points.First();
+                    if (currentBoard.GetDiagonalNeighbours(p.x, p.y).Any(n => EyeHelper.FindNonSemiSolidEye(currentBoard, n, c.Opposite()) || BothAliveHelper.GetKillerGroupFromCache(currentBoard, n, c.Opposite()) != null))
+                        return false;
+                }
+            }
             return true;
         }
 
@@ -229,6 +243,9 @@ namespace Go
         /// Suicide at big tiger mouth.
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_B3" /> 
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A85" /> 
+        /// Check for opponent survival move <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q29475" /> 
+        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_TianLongTu_Q16827_2" />
+        /// Unstoppable group <see cref="UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_XuanXuanQiJing_A53" /> 
         /// </summary>
         private static (Boolean, Board, Point?) SuicideAtBigTigerMouth(GameTryMove tryMove, Content c)
         {
@@ -249,13 +266,24 @@ namespace Go
                     return (true, b, liberty);
                 if (ImmovableHelper.CheckConnectAndDie(b))
                     return (true, b, liberty);
-                //check for opponent capture move
                 if (b != null && b.MoveGroup.Liberties.Count == 2)
                 {
                     List<Point> moveGroupLiberties = b.MoveGroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
                     Board b2 = b.MakeMoveOnNewBoard(moveGroupLiberties.First(), eyeGroup.Content.Opposite());
-                    if (b2 != null && b2.CapturedList.Count > 0)
+                    if (b2 == null || b2.MoveGroupLiberties == 1) continue;
+
+                    //check for opponent survival move
+                    if (tryBoard.MoveGroup.Points.Count >= 2 && b2.GetStoneNeighbours().Where(n => b2[n] != c.Opposite()).Select(n => new { kgroup = BothAliveHelper.GetKillerGroupFromCache(b2, n, c.Opposite()) }).Any(n => n.kgroup != null && n.kgroup.Points.Count >= 3))
                         return (true, b, liberty);
+
+                    b[move] = b2[move] = c;
+                    //unstoppable group
+                    if (ImmovableHelper.CheckConnectAndDie(b2))
+                    {
+                        HashSet<Group> neighbourGroups = b.GetGroupsFromStoneNeighbours(liberty, c);
+                        if (WallHelper.StrongNeighbourGroups(b, neighbourGroups)) continue;
+                        return (true, b, liberty);
+                    }
                 }
             }
             return (false, null, null);
@@ -1617,7 +1645,7 @@ namespace Go
             if (suicide)
             {
                 //check opponent capture
-                if (suicideBoard.MoveGroup.Liberties.Count == 2 && suicideBoard.MoveGroup.Points.Count > 2)
+                if (suicideBoard.MoveGroup.Liberties.Count == 2 && suicideBoard.MoveGroup.Points.Count >= 2)
                     return (true, liberty.Value);
                 //redundant suicidal at tiger mouth
                 if (RedundantSuicidalForMustHaveNeutralPoint(tryBoard, liberty.Value))
@@ -1743,7 +1771,7 @@ namespace Go
                 }
             }
             //must have neutral point
-            List<GameTryMove> mustHaveNeutralMoves = GetMustHaveNeutralMove(currentGame, neutralPointMoves);
+            List<GameTryMove> mustHaveNeutralMoves = neutralPointMoves.Where(n => n.MustHaveNeutralPoint).ToList();
             foreach (GameTryMove tryMove in mustHaveNeutralMoves)
             {
                 tryMoves.Add(tryMove);
@@ -1753,13 +1781,7 @@ namespace Go
             //no try moves left
             if (tryMoves.Count == 0)
                 tryMoves.Add(neutralPointMoves.First());
-            else if (tryMoves.Count == 1)
-            {
-                //remaining move at liberty point
-                GameTryMove neutralPointMove = neutralPointMoves.FirstOrDefault(move => move.MustHaveNeutralPoint && move.LinkPoint.Move.Equals(tryMoves.First().Move) && SuicideAtBigTigerMouth(move, move.MoveContent).Item1);
-                if (neutralPointMove != null)
-                    tryMoves.Add(neutralPointMove);
-            }
+
             if (tryMoves.Count <= 2)
             {
                 //check connect and die for last try move
