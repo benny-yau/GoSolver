@@ -176,6 +176,7 @@ namespace Go
         /// Ensure group more than one point have more than one liberty <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Nie20" /> 
         /// Check for killer formation <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A67" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie20" />
+        /// Check weak group in connect and die <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_XuanXuanGo_B6" /> 
         /// Check suicide at tiger mouth <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_B3" /> 
         /// Check survival eye <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A36" /> 
         /// <see cref="UnitTestProject.KoTest.KoTest_Scenario_Corner_A80" /> 
@@ -196,8 +197,12 @@ namespace Go
             if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard))
                 return false;
 
-            if (ImmovableHelper.CheckConnectAndDie(tryBoard))
-                return true;
+            (Boolean connectAndDie, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
+            if (connectAndDie) {
+                //check weak group in connect and die
+                if (!CheckWeakGroupInConnectAndDie(tryMove, captureBoard))
+                    return true;
+            }
 
             if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
 
