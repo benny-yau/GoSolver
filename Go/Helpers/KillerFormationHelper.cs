@@ -76,6 +76,7 @@ namespace Go
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
 
+            if (tryBoard.MoveGroupLiberties > 2) return false;
             if (capturedBoard == null)
             {
                 if (tryBoard.MoveGroupLiberties == 1)
@@ -92,7 +93,7 @@ namespace Go
             if (!FindSuicidalKillerFormation(tryBoard, currentBoard, capturedBoard)) return false;
 
             //check if real eye found in neighbour groups
-            if (CheckRealEyeInNeighbourGroups(tryBoard, move, c, capturedBoard))
+            if (CheckRealEyeInNeighbourGroups(tryBoard, capturedBoard))
                 return false;
 
             //check link to external group
@@ -114,9 +115,11 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17183" />
         /// Check for corner six <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
         /// </summary>
-        public static Boolean CheckRealEyeInNeighbourGroups(Board tryBoard, Point move, Content c, Board captureBoard = null)
+        public static Boolean CheckRealEyeInNeighbourGroups(Board tryBoard, Board captureBoard = null)
         {
             Board b = captureBoard ?? tryBoard;
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
             //check for covered eye
             if (EyeHelper.CheckCoveredEyeAtSuicideGroup(b, tryBoard.MoveGroup))
                 return false;
