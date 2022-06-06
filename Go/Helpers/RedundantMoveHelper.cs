@@ -1179,6 +1179,11 @@ namespace Go
             //check corner point
             if (CornerPointSuicide(tryMove, capturedBoard))
                 return true;
+
+            if (tryBoard.CornerPoint(move))
+            {
+                DebugHelper.PrintGameTryMovesToText(tryBoard, "CheckDiagonalForSuicidalConnectAndDie_corner3.txt");
+            }
             
             //opponent suicide
             if (opponentTryMove != null)
@@ -1211,9 +1216,11 @@ namespace Go
 
 
         /// Check corner point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A26_2" />
-        /// Ko suicide <see cref="UnitTestProject.KoTest.KoTest_Scenario_WuQingYuan_Q31680" />
-        /// Unlinked suicide <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A95" />
+        /// Check connect and die <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_5" />
         /// Specific filler move <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A17_2" />
+        /// One point target <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A84_2" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A95" />
+        /// <see cref="UnitTestProject.KoTest.KoTest_Scenario_WuQingYuan_Q31680" />
         private static Boolean CornerPointSuicide(GameTryMove tryMove, Board captureBoard)
         {
             Point move = tryMove.Move;
@@ -1222,12 +1229,6 @@ namespace Go
             Content c = tryMove.MoveContent;
 
             if (!tryBoard.CornerPoint(move)) return false;
-            //unlinked suicide
-            if (tryBoard.IsAtariMove && !tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c))
-            {
-                if (!tryBoard.AtariTargets.Any(t => tryBoard.GetNeighbourGroups(t).Any(gr => gr != tryBoard.MoveGroup && gr.Liberties.Count == 1)))
-                    return false;
-            }
 
             //specific filler move
             Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, move, c);
@@ -1235,21 +1236,14 @@ namespace Go
             if (specificFillerMove)
                 return false;
 
-            //ko suicide
-            Boolean koEnabled = KoHelper.KoContentEnabled(c, tryBoard.GameInfo);
-            if (!koEnabled && !(tryBoard.IsAtariMove && tryBoard.MoveGroupLiberties > 1)) return true;
-            if (koEnabled)
-            {
-                List<Group> atariTargets = tryBoard.AtariTargets;
-                if (atariTargets.Count != 1 || atariTargets.First().Points.Count != 1) return true;
-                Point t = atariTargets.First().Points.First();
-                if (!tryBoard.GetStoneAndDiagonalNeighbours(t.x, t.y).Any(n => tryBoard[n] == c.Opposite())) return true;
-                Board b = ImmovableHelper.ConnectAndDie(captureBoard).Item2;
-                if (b == null) return true;
-                if (ImmovableHelper.CheckConnectAndDie(b, b.GetGroupAt(t)))
-                    return false;
+
+            //one point target
+            if (!tryBoard.AtariTargets.Any(t => t.Points.Count == 1))
                 return true;
-            }
+            //check connect and die
+            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c && ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.GetGroupAt(n))))
+                return true;
+
             return false;
         }
 
