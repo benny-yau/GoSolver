@@ -1180,11 +1180,6 @@ namespace Go
             if (CornerPointSuicide(tryMove, capturedBoard))
                 return true;
 
-            if (tryBoard.CornerPoint(move))
-            {
-                DebugHelper.PrintGameTryMovesToText(tryBoard, "CheckDiagonalForSuicidalConnectAndDie_corner3.txt");
-            }
-            
             //opponent suicide
             if (opponentTryMove != null)
             {
