@@ -145,7 +145,7 @@ namespace Go
             }
 
             //check if link for groups
-            if (tryMove.LinkForGroups())
+            if (EyeHelper.CoveredMove(tryBoard, eyePoint, c) && LinkHelper.LinkToNonEyeGroups(tryBoard, currentBoard, eyeGroup.Points.First()))
                 return false;
 
             return true;
@@ -191,14 +191,13 @@ namespace Go
             //ensure is fill eye
             if (!EyeHelper.FindEye(currentBoard, move, c)) return false;
 
-            List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).ToList();
-
-            //check for killer formation
-            if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard))
-                return false;
-
             (Boolean connectAndDie, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
-            if (connectAndDie) {
+            if (connectAndDie)
+            {
+                //check for killer formation
+                if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard))
+                    return false;
+
                 //check weak group in connect and die
                 if (!CheckWeakGroupInConnectAndDie(tryMove, captureBoard))
                     return true;
@@ -207,6 +206,7 @@ namespace Go
             if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
 
             //ensure group more than one point have more than one liberty
+            List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).ToList();
             if (eyeGroups.Any(e => e.Points.Count > 1 && e.Liberties.Count == 1)) return false;
 
             if (eyeGroups.Count > 2)
@@ -1167,25 +1167,19 @@ namespace Go
         /// Diagonal neighbours that are non killable groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17160" />
         /// Opponent suicide <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_A25" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A55" />
-        /// Check corner point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A26_2" />
-        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A17_2" />
         /// </summary>
         private static Boolean RedundantSuicideNearNonKillableGroup(GameTryMove tryMove, Board capturedBoard, GameTryMove opponentTryMove = null)
         {
-            Point p = tryMove.Move;
+            Point move = tryMove.Move;
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
             if (capturedBoard.MoveGroupLiberties == 1) return false;
 
             //check corner point
-            if (tryBoard.CornerPoint(p) && !tryBoard.AtariTargets.Any(t => t.Points.Count == 1))
-            {
-                Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, p, c);
-                Boolean specificKillerMove = (killerGroup != null && killerGroup.Points.Count <= 5);
-                if (!specificKillerMove) return true;
-            }
-
+            if (CornerPointSuicide(tryMove, capturedBoard))
+                return true;
+            
             //opponent suicide
             if (opponentTryMove != null)
             {
@@ -1196,11 +1190,11 @@ namespace Go
             if (GameHelper.GetContentForSurviveOrKill(tryBoard.GameInfo, SurviveOrKill.Survive) == c)
             {
                 //for survive, any suicidal move next to non killable group is redundant
-                List<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(p);
+                List<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(move);
                 if (neighbourGroups.Any(group => WallHelper.IsNonKillableGroup(tryBoard, group)))
                 {
                     //check connect and die
-                    Boolean connectAndDie = ImmovableHelper.AllConnectAndDie(capturedBoard, p);
+                    Boolean connectAndDie = ImmovableHelper.AllConnectAndDie(capturedBoard, move);
                     return !connectAndDie;
                 }
                 return false;
@@ -1209,8 +1203,52 @@ namespace Go
             {
                 //make move at empty point to connect to non killable group
                 (Boolean isSuicide, IEnumerable<Point> diagonalNeighbours) = SuicideNearNonKillableGroup(tryBoard);
-                if (isSuicide && diagonalNeighbours.Any(n => LinkHelper.PointsBetweenDiagonals(p, n).Any(d => tryBoard[d] == Content.Empty)))
+                if (isSuicide && diagonalNeighbours.Any(n => LinkHelper.PointsBetweenDiagonals(move, n).Any(d => tryBoard[d] == Content.Empty)))
                     return true;
+            }
+            return false;
+        }
+
+
+        /// Check corner point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A26_2" />
+        /// Ko suicide <see cref="UnitTestProject.KoTest.KoTest_Scenario_WuQingYuan_Q31680" />
+        /// Unlinked suicide <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A95" />
+        /// Specific filler move <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A17_2" />
+        private static Boolean CornerPointSuicide(GameTryMove tryMove, Board captureBoard)
+        {
+            Point move = tryMove.Move;
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            Content c = tryMove.MoveContent;
+
+            if (!tryBoard.CornerPoint(move)) return false;
+            //unlinked suicide
+            if (tryBoard.IsAtariMove && !tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c))
+            {
+                if (!tryBoard.AtariTargets.Any(t => tryBoard.GetNeighbourGroups(t).Any(gr => gr != tryBoard.MoveGroup && gr.Liberties.Count == 1)))
+                    return false;
+            }
+
+            //specific filler move
+            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, move, c);
+            Boolean specificFillerMove = (killerGroup != null && killerGroup.Points.Count <= 5);
+            if (specificFillerMove)
+                return false;
+
+            //ko suicide
+            Boolean koEnabled = KoHelper.KoContentEnabled(c, tryBoard.GameInfo);
+            if (!koEnabled && !(tryBoard.IsAtariMove && tryBoard.MoveGroupLiberties > 1)) return true;
+            if (koEnabled)
+            {
+                List<Group> atariTargets = tryBoard.AtariTargets;
+                if (atariTargets.Count != 1 || atariTargets.First().Points.Count != 1) return true;
+                Point t = atariTargets.First().Points.First();
+                if (!tryBoard.GetStoneAndDiagonalNeighbours(t.x, t.y).Any(n => tryBoard[n] == c.Opposite())) return true;
+                Board b = ImmovableHelper.ConnectAndDie(captureBoard).Item2;
+                if (b == null) return true;
+                if (ImmovableHelper.CheckConnectAndDie(b, b.GetGroupAt(t)))
+                    return false;
+                return true;
             }
             return false;
         }
@@ -2271,11 +2309,7 @@ namespace Go
                     return false;
 
                 //check link to groups other than eye groups
-                List<Group> linkedGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
-                List<Group> eyeNeighbourGroups = new List<Group>();
-                diagonals.ForEach(d => eyeNeighbourGroups.AddRange(currentBoard.GetGroupsFromStoneNeighbours(d, c.Opposite())));
-                eyeNeighbourGroups = eyeNeighbourGroups.Distinct().ToList();
-                if (linkedGroups.Any(group => !eyeNeighbourGroups.Contains(group)))
+                if (diagonals.Any(d => LinkHelper.LinkToNonEyeGroups(tryBoard, currentBoard, d)))
                     return false;
                 return true;
             }

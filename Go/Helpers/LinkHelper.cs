@@ -340,5 +340,25 @@ namespace Go
             return currentBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).ToList();
         }
 
+
+        /// <summary>
+        /// Link to groups that are not eye groups.
+        /// </summary>
+        public static Boolean LinkToNonEyeGroups(Board tryBoard, Board currentBoard, Point eyePoint)
+        {
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            HashSet<Group> eyeNeighbourGroups = currentBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite());
+            List<Point> groupPoints = currentBoard.GetStoneAndDiagonalNeighbours(move.x, move.y).Where(n => currentBoard[n] == c).ToList();
+            List<Group> groups = currentBoard.GetGroupsFromPoints(groupPoints).ToList();
+            groups = groups.Except(eyeNeighbourGroups).Where(gr => gr.Liberties.Count > 1).ToList();
+
+            //captured eye point
+            if (tryBoard.CapturedPoints.Contains(eyePoint) && (groups.Count > 0 || !currentBoard.GetNeighbourGroups(currentBoard.GetGroupAt(eyePoint)).Any(gr => WallHelper.IsNonKillableGroup(currentBoard, gr))))
+                return LinkHelper.LinkForGroups(tryBoard, currentBoard);
+
+            return groups.Any(group => tryBoard.MoveGroup.Points.Contains(group.Points.First()) || LinkHelper.IsDiagonallyConnectedGroups(tryBoard, tryBoard.GetGroupAt(group.Points.First()), tryBoard.MoveGroup));
+        }
+
     }
 }
