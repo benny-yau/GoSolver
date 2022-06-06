@@ -56,20 +56,17 @@ namespace Go
             return false;
         }
 
-        public static Boolean FindUncoveredPoint(Board currentBoard, Point n, Content c)
+        public static Boolean FindUncoveredPoint(Board currentBoard, Point eyePoint, Content c)
         {
-            List<Point> diagonalPoints = currentBoard.GetDiagonalNeighbours(n.x, n.y);
+            List<Point> diagonalPoints = currentBoard.GetDiagonalNeighbours(eyePoint.x, eyePoint.y);
             return !IsCovered(currentBoard, diagonalPoints, c);
         }
 
-        public static Boolean CoveredMove(Board board, Point n, Content c)
+        public static Boolean CoveredMove(Board board, Point eyePoint, Content c)
         {
-            List<Point> diagonalPoints = board.GetDiagonalNeighbours(n.x, n.y);
-            if (!IsCovered(board, diagonalPoints, c)) return false;
-
+            List<Point> diagonalPoints = board.GetDiagonalNeighbours(eyePoint.x, eyePoint.y);
             List<Point> stonePoints = board.GetStoneNeighbours();
-            if (!IsCovered(board, stonePoints, c)) return false;
-
+            if (!IsCovered(board, diagonalPoints.Intersect(stonePoints).ToList(), c)) return false;
             return true;
         }
 
@@ -220,15 +217,15 @@ namespace Go
         /// <summary>
         /// Get all immovable points at eye point diagonals.
         /// </summary>
-        private static (List<Point>, List<LinkedPoint<Point>>) GetImmovablePoints(Point eyePoint, Board m, Content c)
+        private static (List<Point>, List<LinkedPoint<Point>>) GetImmovablePoints(Point eyePoint, Board board, Content c)
         {
             List<Point> immovablePoints = new List<Point>();
             List<LinkedPoint<Point>> tigerMouthPoints = new List<LinkedPoint<Point>>();
 
-            foreach (Point p in m.GetDiagonalNeighbours(eyePoint.x, eyePoint.y))
+            foreach (Point p in board.GetDiagonalNeighbours(eyePoint.x, eyePoint.y))
             {
-                if (m[p] == c) continue;
-                (Boolean isImmovable, Point? isTigerMouth) = ImmovableHelper.IsImmovablePoint(p, c, m);
+                if (board[p] == c) continue;
+                (Boolean isImmovable, Point? isTigerMouth) = ImmovableHelper.IsImmovablePoint(p, c, board);
                 if (isImmovable)
                 {
                     immovablePoints.Add(p);
