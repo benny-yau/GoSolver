@@ -79,14 +79,6 @@ namespace Go
             //check liberties of move group
             if (tryBoard.MoveGroupLiberties > 2) return false;
 
-            //check liberties of eye move
-            if (!tryBoard.AtariResolved && tryBoard.GetStoneNeighbours().All(n => tryBoard[n] == c))
-            {
-                List<Group> previousGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
-                if (currentBoard.GetLibertiesOfGroups(previousGroups).Count > 2)
-                    return false;
-            }
-
             //check if neighbour group is non-killable
             if (!EyeHelper.CheckCoveredEyeAtSuicideGroup(tryBoard) && tryBoard.GetNeighbourGroups().Any(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
                 return false;
