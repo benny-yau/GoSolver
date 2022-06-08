@@ -218,6 +218,7 @@ namespace Go
                 {
                     if (board[q] != c) continue;
                     if (PointsBetweenDiagonals(p, q).Any(r => board[r] == c)) continue;
+                    if (board.GetGroupAt(p) == board.GetGroupAt(q)) continue;
 
                     //ensure diagonal is linked
                     if (!checkLinked || CheckIsDiagonalLinked(p, q, board))
