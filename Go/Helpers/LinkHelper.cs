@@ -218,7 +218,6 @@ namespace Go
                 {
                     if (board[q] != c) continue;
                     if (PointsBetweenDiagonals(p, q).Any(r => board[r] == c)) continue;
-                    if (board.GetGroupAt(p) == board.GetGroupAt(q)) continue;
 
                     //ensure diagonal is linked
                     if (!checkLinked || CheckIsDiagonalLinked(p, q, board))
@@ -228,6 +227,9 @@ namespace Go
             return rc;
         }
 
+        /// <summary>
+        /// Get all diagonals of group regardless of content.
+        /// </summary>
         public static List<LinkedPoint<Point>> GetGroupDiagonals(Board board, Group group)
         {
             List<LinkedPoint<Point>> rc = new List<LinkedPoint<Point>>();
@@ -241,6 +243,15 @@ namespace Go
                 }
             }
             return rc;
+        }
+
+        /// <summary>
+        /// Get diagonals of move of same content that are not part of the move group.
+        /// </summary>
+        public static List<Point> GetMoveDiagonals(Board tryBoard)
+        {
+            Content c = tryBoard.MoveGroup.Content;
+            return tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] == c && !tryBoard.MoveGroup.Points.Contains(n)).ToList();
         }
 
         /// <summary>

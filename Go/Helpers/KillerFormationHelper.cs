@@ -76,7 +76,22 @@ namespace Go
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
 
+            //check liberties of move group
             if (tryBoard.MoveGroupLiberties > 2) return false;
+
+            //check liberties of eye move
+            if (!tryBoard.AtariResolved && tryBoard.GetStoneNeighbours().All(n => tryBoard[n] == c))
+            {
+                List<Group> previousGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
+                if (currentBoard.GetLibertiesOfGroups(previousGroups).Count > 2)
+                    return false;
+            }
+
+            //check if neighbour group is non-killable
+            if (!EyeHelper.CheckCoveredEyeAtSuicideGroup(tryBoard) && tryBoard.GetNeighbourGroups().Any(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
+                return false;
+
+            //create captured board
             if (capturedBoard == null)
             {
                 if (tryBoard.MoveGroupLiberties == 1)
@@ -84,10 +99,6 @@ namespace Go
                 else if (tryBoard.MoveGroupLiberties == 2)
                     (_, capturedBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
             }
-
-            //check if neighbour group is non-killable
-            if (!EyeHelper.CheckCoveredEyeAtSuicideGroup(tryBoard) && tryBoard.GetNeighbourGroups().Any(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
-                return false;
 
             //find killer formation
             if (!FindSuicidalKillerFormation(tryBoard, currentBoard, capturedBoard)) return false;

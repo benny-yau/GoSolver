@@ -265,7 +265,7 @@ namespace Go
                     if (tryBoard.MoveGroup.Points.Count >= 2)
                     {
                         if (b2.CapturedPoints.Count() >= 3) return (true, b, liberty);
-                        if (b2.GetStoneNeighbours().Where(n => b2[n] != c.Opposite()).Select(n => new { kgroup = BothAliveHelper.GetKillerGroupFromCache(b2, n, c.Opposite()) }).Any(n => n.kgroup != null && n.kgroup.Points.Count == 4))
+                        if (b2.GetStoneNeighbours().Where(n => b2[n] != c.Opposite()).Select(n => new { kgroup = BothAliveHelper.GetKillerGroupFromCache(b2, n, c.Opposite()) }).Any(n => n.kgroup != null && KillerFormationHelper.CrowbarFormation(b2, n.kgroup)))
                         return (true, b, liberty);
                     }
 
@@ -273,8 +273,8 @@ namespace Go
                     //unstoppable group
                     if (ImmovableHelper.CheckConnectAndDie(b2))
                     {
-                        HashSet<Group> neighbourGroups = b.GetGroupsFromStoneNeighbours(liberty, c);
-                        if (WallHelper.StrongNeighbourGroups(b, neighbourGroups)) continue;
+                        HashSet<Group> neighbourGroups = b2.GetGroupsFromStoneNeighbours(liberty, c);
+                        if (neighbourGroups.Count == 1 || neighbourGroups.Any(n => n.Liberties.Count == 1) || WallHelper.StrongNeighbourGroups(b2, neighbourGroups)) continue;
                         return (true, b, liberty);
                     }
                 }
@@ -658,7 +658,7 @@ namespace Go
             if (!suicidal) return false;
 
             if (tryBoard.GameInfo.targetPoints.All(t => tryBoard.MoveGroup.Points.Contains(t))) return true;
-
+            
             //reverse connect and die
             if (tryBoard.MoveGroup.Points.Count == 1 && captureBoard.MoveGroup.Points.Count == 1 && !tryBoard.GetNeighbourGroups().Any(gr => gr.Liberties.Count == 1) && ImmovableHelper.CheckConnectAndDie(captureBoard))
                 return false;
@@ -768,8 +768,8 @@ namespace Go
             }
             else if (tryBoard.MoveGroup.Points.Count == 2)
                 return false;
-            if (!KillerFormationHelper.CheckRealEyeInNeighbourGroups(tryBoard, captureBoard)) return false;
-            return true;
+
+            return KillerFormationHelper.CheckRealEyeInNeighbourGroups(tryBoard, captureBoard);
         }
 
         /// <summary>
@@ -799,9 +799,12 @@ namespace Go
             //check for weak group capturing atari group
             if (tryBoard.IsAtariMove && captureBoard.MoveGroup.Points.Count == 1)
             {
-                Board b = ImmovableHelper.CaptureSuicideGroup(captureBoard, tryBoard.AtariTargets.First());
-                if (b != null && ImmovableHelper.CheckConnectAndDie(b, captureBoard.MoveGroup))
-                    return true;
+                foreach (Point liberty in captureBoard.MoveGroup.Liberties)
+                {
+                    Board b = captureBoard.MakeMoveOnNewBoard(liberty, c);
+                    if (b != null && b.MoveGroupLiberties > 1 && b.AtariTargets.Count >= 2)
+                        return true;
+                }
             }
 
             //check killable group with two or less liberties
@@ -912,8 +915,6 @@ namespace Go
 
         /// <summary>
         /// Check for suicidal moves depending on diagonal groups.
-        /// Ensure no diagonal at move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
-        /// Check for three neighbour groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30198" />
         /// Check liberties are connected <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi_2" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q15082" />
@@ -934,15 +935,10 @@ namespace Go
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
 
-            //check for no empty points and no diagonals for move
-            if (tryBoard.MoveGroup.Points.Count > 1 && !tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty) && !tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c) && !LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryBoard))
-            {
-                //check for three neighbour groups
-                Boolean threeGroups = (tryBoard.MoveGroup.Points.Count == 2 && tryBoard.GetGroupsFromStoneNeighbours(move, c).Count > 2);
-                if (!threeGroups)
-                    return true;
-            }
-            //ensure diagonal groups found
+            if (CheckNoDiagonalAndNoLibertyAtMove(tryMove))
+                return true;
+
+            //ensure no diagonal groups found
             Boolean diagonalGroups = LinkHelper.GetGroupLinkedDiagonals(tryBoard, tryBoard.MoveGroup, false).Any();
             if (!diagonalGroups)
             {
@@ -985,13 +981,37 @@ namespace Go
                 return false;
             }
             //ensure no diagonal at move
-            Boolean diagonalAtMove = tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c && !tryBoard.MoveGroup.Points.Contains(n));
+            Boolean diagonalAtMove = LinkHelper.GetMoveDiagonals(tryBoard).Any();
             if (diagonalAtMove) return false;
 
             //ensure no shared liberty with neighbour group
             List<Group> neighbourGroups = tryBoard.GetNeighbourGroups();
             Boolean sharedLiberty = tryBoard.MoveGroup.Liberties.Any(n => tryBoard.GetGroupsFromStoneNeighbours(n, c).Any(g => neighbourGroups.Contains(g)));
             if (sharedLiberty) return false;
+            return true;
+        }
+
+        /// <summary>
+        /// Check for no diagonals and no liberties at move.
+        /// Ensure no diagonals <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
+        /// Check for three neighbour groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30198" />
+        /// </summary>
+        private static Boolean CheckNoDiagonalAndNoLibertyAtMove(GameTryMove tryMove)
+        {
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryMove.Move;
+            Content c = tryMove.MoveContent;
+
+            if (tryBoard.MoveGroup.Points.Count == 1) return false;
+            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty) || LinkHelper.GetMoveDiagonals(tryBoard).Any())
+                return false;
+            
+            //check for three neighbour groups
+            Boolean threeGroups = (tryBoard.MoveGroup.Points.Count == 2 && tryBoard.GetGroupsFromStoneNeighbours(move, c).Count > 2);
+            if (threeGroups) return false;
+
+            if (tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c) >= 2) return false;
             return true;
         }
 
