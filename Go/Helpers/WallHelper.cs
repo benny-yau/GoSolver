@@ -56,38 +56,6 @@ namespace Go
         }
 
         /// <summary>
-        /// Check for presence of any wall neighbours in all four directions. For a point in the middle area, there should be three points to form the wall.        
-        /// For example for a wall on the right, there should be one adjacent right point, one on top of the adjacent point, and one below the adjacent point.
-        /// </summary>
-        public static (Point, Direction) IsWallNeighbour(Board board, Point p)
-        {
-            Content c = board[p];
-            for (int i = 0; i <= dh.DirectionLinkedList.Count - 1; i++)
-            {
-                //start with top wall
-                Point wallPoint = dh.GetPointInDirection(board, p, dh.GetNewDirection(Direction.Up, i), false);
-                if (!board.PointWithinBoard(wallPoint)) continue;
-                Point wallOppositePoint = dh.GetPointInDirection(board, p, dh.GetNewDirection(Direction.Down, i), false);
-                if (IsSurvivalTerritory(board, wallOppositePoint, c))
-                {
-                    Point wallAdjPoint1 = dh.GetPointInDirection(board, wallPoint, dh.GetNewDirection(Direction.Left, i), false);
-                    Point wallAdjPoint2 = dh.GetPointInDirection(board, wallPoint, dh.GetNewDirection(Direction.Right, i), false);
-                    if ((!board.PointWithinMiddleArea(p) || IsWall(board, wallPoint)) && IsWall(board, wallAdjPoint1, true) && IsWall(board, wallAdjPoint2, true))
-                        return (wallPoint, dh.DirectionLinkedList[i].Move);
-                }
-            }
-            return (Game.PassMove, Direction.None);
-        }
-
-        /// <summary>
-        /// Check territory behind point belongs to survival so as to ensure point is facing correct wall.
-        /// </summary>
-        public static Boolean IsSurvivalTerritory(Board board, Point p, Content c)
-        {
-            return board.PointWithinBoard(p) && (board.GameInfo.IsMovablePoint[p.x, p.y] == true || board[p] == c);
-        }
-        
-        /// <summary>
         /// Non killable group cannot be surrounded and killed as neighbour points are not movable.
         /// </summary>
         public static Boolean IsNonKillableGroup(Board board, Point p)

@@ -123,30 +123,33 @@ namespace Go
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            if (!tryBoard.IsSinglePoint()) return false;
-            if (!KoHelper.KoSurvivalEnabled(SurviveOrKill.Survive, tryBoard.GameInfo))
-                return false;
-            if (tryBoard.GetClosestNeighbour(move, 1).Count == 0)
-                return false;
-            Direction wallDirection = WallHelper.IsWallNeighbour(tryBoard, move).Item2;
-            if (wallDirection == Direction.None) return false;
-            Point p1 = dh.GetPointInDirection(tryBoard, move, wallDirection.Opposite());
-            Point p2 = dh.GetPointInDirection(tryBoard, p1, wallDirection.Opposite());
-            if (p1.Equals(Game.PassMove) || p2.Equals(Game.PassMove))
-                return false;
+            if (tryBoard.PointWithinMiddleArea(move)) return false;
+            if (tryBoard.MoveGroup.Points.Count != 1 || tryBoard.MoveGroupLiberties != 2) return false;
+            List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] == c).ToList();
+            if (diagonals.Count != 1) return false;
+            Point diagonal = diagonals.First();
+            if (tryBoard.GetGroupAt(diagonal).Points.Count != 1) return false;
+            List<Point> pointsBetweenDiagonals = LinkHelper.PointsBetweenDiagonals(move, diagonal);
+            if (!pointsBetweenDiagonals.Any(p => tryBoard[p] == c.Opposite())) return false;
+            List<Point> liberties = pointsBetweenDiagonals.Where(p => tryBoard[p] == Content.Empty && !tryBoard.PointWithinMiddleArea(p)).ToList();
+            if (liberties.Count != 1) return false;
+            Point lib = liberties.First();
+            List<Point> liberties2 = tryBoard.GetStoneNeighbours(lib.x, lib.y).Where(p => tryBoard[p] == Content.Empty).ToList();
+            if (liberties2.Count != 1) return false;
+            Point lib2 = liberties2.First();
+            Point e = tryBoard.GetDiagonalNeighbours(lib.x, lib.y).Intersect(tryBoard.GetStoneNeighbours(lib2.x, lib2.y)).First();
+            if (BothAliveHelper.GetKillerGroupFromCache(tryBoard, e, c) == null) return false;
 
-            if (tryBoard[p1] == Content.Empty && tryBoard[p2] == Content.Empty)
-            {
-                Board b = tryBoard.MakeMoveOnNewBoard(p2, c, true);
-                if (b.GetGroupsFromStoneNeighbours(p1, c.Opposite()).All(group => group.Points.Count == 1))
-                {
-                    List<Point> diagonals = b.GetDiagonalNeighbours(p1.x, p1.y);
-                    diagonals = diagonals.Where(diagonal => BothAliveHelper.GetKillerGroupFromCache(tryBoard, diagonal) != null).ToList();
-                    if (diagonals.Any(diagonal => b[diagonal] == Content.Empty && ImmovableHelper.FindTigerMouth(b, c, diagonal)))
-                        return true;
-                }
-            }
-            return false;
+            //make opponent move to capture
+            Board b = tryBoard.MakeMoveOnNewBoard(e, c.Opposite());
+            if (b == null || b.MoveGroupLiberties == 1) return false;
+            //make survival move to create ko
+            Board b2 = b.MakeMoveOnNewBoard(lib2, c);
+            if (b2 == null || b2.MoveGroupLiberties == 1) return false;
+
+            if (!b2.GetGroupsFromStoneNeighbours(lib, c.Opposite()).All(group => group.Points.Count == 1)) return false;
+            if (b2.GetGroupAt(e).Liberties.Count != 1) return false;
+            return true;
         }
 
 
@@ -161,7 +164,7 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             if (tryBoard.singlePointCapture == null) return false;
             Point move = tryBoard.Move.Value;
-            Content c = tryBoard.MoveGroup.Content;
+            Content c = tryBoard.MoveGroup.Content; 
             Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
             if (killerGroup == null) return false;
             List<Group> neighbourGroups = tryBoard.GetNeighbourGroups(killerGroup);
