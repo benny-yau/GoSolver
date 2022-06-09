@@ -24,6 +24,7 @@ namespace Go
             tryBoard.CapturedList.ForEach(q => groupPoints.AddRange(q.Neighbours.Where(n => currentBoard[n] == c)));
             List<Group> groups = currentBoard.GetGroupsFromPoints(groupPoints).ToList();
             if (groups.Count <= 1) return false;
+            if (groups.All(group => WallHelper.IsNonKillableGroup(currentBoard, group))) return false;
             for (int i = 0; i <= groups.Count - 2; i++)
             {
                 for (int j = (i + 1); j <= groups.Count - 1; j++)
@@ -364,11 +365,11 @@ namespace Go
             List<Point> groupPoints = currentBoard.GetStoneAndDiagonalNeighbours(move.x, move.y).Where(n => currentBoard[n] == c).ToList();
             List<Group> groups = currentBoard.GetGroupsFromPoints(groupPoints).ToList();
             groups = groups.Except(eyeNeighbourGroups).Where(gr => gr.Liberties.Count > 1).ToList();
-
             //captured eye point
             if (tryBoard.CapturedPoints.Contains(eyePoint) && (groups.Count > 0 || !currentBoard.GetNeighbourGroups(currentBoard.GetGroupAt(eyePoint)).Any(gr => WallHelper.IsNonKillableGroup(currentBoard, gr))))
                 return LinkHelper.LinkForGroups(tryBoard, currentBoard);
 
+            if (groups.All(group => WallHelper.IsNonKillableGroup(currentBoard, group))) return false;
             return groups.Any(group => tryBoard.MoveGroup.Points.Contains(group.Points.First()) || LinkHelper.IsDiagonallyConnectedGroups(tryBoard, tryBoard.GetGroupAt(group.Points.First()), tryBoard.MoveGroup));
         }
 

@@ -66,7 +66,9 @@ namespace Go
         {
             List<Point> diagonalPoints = board.GetDiagonalNeighbours(eyePoint.x, eyePoint.y);
             List<Point> stonePoints = board.GetStoneNeighbours();
-            if (!IsCovered(board, diagonalPoints.Intersect(stonePoints).ToList(), c)) return false;
+            diagonalPoints = diagonalPoints.Intersect(stonePoints).ToList();
+            if (!diagonalPoints.All(p => board[p] == c.Opposite())) return false;
+            if (!IsCovered(board, diagonalPoints, c)) return false;
             return true;
         }
 

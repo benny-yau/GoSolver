@@ -72,11 +72,13 @@ namespace Go
         /// Check diagonal eye killer group for opponent move <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario4dan10" /> 
         /// Check if link for groups <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" /> 
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" /> 
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q16902" /> 
         /// Check no eye for survival <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A52" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q16594" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A41" /> 
         /// Check no eye for survival for opponent <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_B2" /> 
         /// Check eye for survival <see cref="UnitTestProject.RedundantKoMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A34" />
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q30198" />
         /// Check for non semi solid eye at diagonal <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q29998" />
         /// Check liberty count without covered eye <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
         /// </summary>
@@ -129,7 +131,7 @@ namespace Go
                 return false;
 
             //check eye for survival
-            if (EyeHelper.CoveredMove(tryBoard, eyePoint, c) && tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty && !eyeGroup.Points.Contains(n) && !WallHelper.NoEyeForSurvival(currentBoard, n, c.Opposite())))
+            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty && !eyeGroup.Points.Contains(n) && !WallHelper.NoEyeForSurvival(currentBoard, n, c.Opposite())))
                 return false;
 
             if (opponentTryMove != null)
@@ -145,7 +147,12 @@ namespace Go
             }
 
             //check if link for groups
-            if (EyeHelper.CoveredMove(tryBoard, eyePoint, c) && LinkHelper.LinkToNonEyeGroups(tryBoard, currentBoard, eyeGroup.Points.First()))
+            if (EyeHelper.CoveredMove(tryBoard, eyePoint, c))
+            {
+                if (LinkHelper.LinkToNonEyeGroups(tryBoard, currentBoard, eyePoint))
+                    return false;
+            }
+            else if (LinkHelper.LinkForGroups(tryBoard, currentBoard))
                 return false;
 
             return true;
@@ -995,6 +1002,7 @@ namespace Go
         /// Check for no diagonals and no liberties at move.
         /// Ensure no diagonals <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
         /// Check for three neighbour groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30198" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16605" />
         /// </summary>
         private static Boolean CheckNoDiagonalAndNoLibertyAtMove(GameTryMove tryMove)
         {
@@ -1006,12 +1014,12 @@ namespace Go
             if (tryBoard.MoveGroup.Points.Count == 1) return false;
             if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty) || LinkHelper.GetMoveDiagonals(tryBoard).Any())
                 return false;
-            
-            //check for three neighbour groups
-            Boolean threeGroups = (tryBoard.MoveGroup.Points.Count == 2 && tryBoard.GetGroupsFromStoneNeighbours(move, c).Count > 2);
-            if (threeGroups) return false;
 
             if (tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c) >= 2) return false;
+
+            //check for three neighbour groups
+            Boolean threeGroups = (tryBoard.GetGroupsFromStoneNeighbours(move, c).Count > 2);
+            if (threeGroups) return false;
             return true;
         }
 
