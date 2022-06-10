@@ -29,7 +29,7 @@ namespace Go
                 for (int j = (i + 1); j <= groups.Count - 1; j++)
                 {
                     if (groups[i] == groups[j]) continue;
-                    if (WallHelper.IsNonKillableGroup(currentBoard, groups[i]) && WallHelper.IsNonKillableGroup(currentBoard, groups[j])) return false;
+                    if (WallHelper.IsNonKillableGroup(currentBoard, groups[i]) && WallHelper.IsNonKillableGroup(currentBoard, groups[j])) continue;
                     Group groupI = tryBoard.GetGroupAt(groups[i].Points.First());
                     Group groupJ = tryBoard.GetGroupAt(groups[j].Points.First());                    
                     if (groupI == groupJ && ImmovableHelper.CheckConnectAndDie(tryBoard)) return false;
