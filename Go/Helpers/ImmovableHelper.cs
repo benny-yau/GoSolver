@@ -315,9 +315,6 @@ namespace Go
                     if (!koEnabled) return (true, null);
                     else return (false, board);
                 }
-                //check snapback
-                Board b = ImmovableHelper.CaptureSuicideGroup(board);
-                if (b == null || (b.MoveGroup.Points.Count > 1 && b.MoveGroupLiberties == 1)) return (false, board);
                 return (true, board);
             }
             return (false, board);
