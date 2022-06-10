@@ -24,15 +24,15 @@ namespace Go
             tryBoard.CapturedList.ForEach(q => groupPoints.AddRange(q.Neighbours.Where(n => currentBoard[n] == c)));
             List<Group> groups = currentBoard.GetGroupsFromPoints(groupPoints).ToList();
             if (groups.Count <= 1) return false;
-            if (groups.All(group => WallHelper.IsNonKillableGroup(currentBoard, group))) return false;
             for (int i = 0; i <= groups.Count - 2; i++)
             {
                 for (int j = (i + 1); j <= groups.Count - 1; j++)
                 {
                     if (groups[i] == groups[j]) continue;
+                    if (WallHelper.IsNonKillableGroup(currentBoard, groups[i]) && WallHelper.IsNonKillableGroup(currentBoard, groups[j])) return false;
                     Group groupI = tryBoard.GetGroupAt(groups[i].Points.First());
-                    Group groupJ = tryBoard.GetGroupAt(groups[j].Points.First());
-                    if (groupI == groupJ && ImmovableHelper.IsSuicidalMove(currentBoard, move, c.Opposite())) return false;
+                    Group groupJ = tryBoard.GetGroupAt(groups[j].Points.First());                    
+                    if (groupI == groupJ && ImmovableHelper.CheckConnectAndDie(tryBoard)) return false;
                     //check if currently linked
                     Boolean isLinked = (groupI == groupJ) || IsDiagonallyConnectedGroups(tryBoard, groupI, groupJ);
                     if (isLinked)
@@ -364,12 +364,12 @@ namespace Go
             HashSet<Group> eyeNeighbourGroups = currentBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite());
             List<Point> groupPoints = currentBoard.GetStoneAndDiagonalNeighbours(move.x, move.y).Where(n => currentBoard[n] == c).ToList();
             List<Group> groups = currentBoard.GetGroupsFromPoints(groupPoints).ToList();
+            if (groups.All(group => WallHelper.IsNonKillableGroup(currentBoard, group))) return false;
             groups = groups.Except(eyeNeighbourGroups).Where(gr => gr.Liberties.Count > 1).ToList();
             //captured eye point
             if (tryBoard.CapturedPoints.Contains(eyePoint) && (groups.Count > 0 || !currentBoard.GetNeighbourGroups(currentBoard.GetGroupAt(eyePoint)).Any(gr => WallHelper.IsNonKillableGroup(currentBoard, gr))))
                 return LinkHelper.LinkForGroups(tryBoard, currentBoard);
 
-            if (groups.All(group => WallHelper.IsNonKillableGroup(currentBoard, group))) return false;
             return groups.Any(group => tryBoard.MoveGroup.Points.Contains(group.Points.First()) || LinkHelper.IsDiagonallyConnectedGroups(tryBoard, tryBoard.GetGroupAt(group.Points.First()), tryBoard.MoveGroup));
         }
 

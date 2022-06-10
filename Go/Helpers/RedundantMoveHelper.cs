@@ -180,6 +180,7 @@ namespace Go
         /// Check for weak eye group <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_B28" />
         /// Check both alive <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_SimpleSeki" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_2" /> 
+        /// Check non-diagonal link <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WuQingYuan_Q31657" /> 
         /// Ensure group more than one point have more than one liberty <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Nie20" /> 
         /// Check for killer formation <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A67" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie20" />
@@ -225,6 +226,16 @@ namespace Go
                 //check both alive
                 if (BothAliveHelper.EnableCheckForPassMove(tryBoard))
                     return false;
+
+                //check non-diagonal link 
+                List<Point> stoneNeighbours = currentBoard.GetStoneNeighbours(move.x, move.y).Where(n => currentBoard[n] == c).ToList();
+                stoneNeighbours = stoneNeighbours.Where(n => currentBoard.GetGroupAt(n).Liberties.Count > 1).ToList();
+                if (stoneNeighbours.Count == 2)
+                {
+                    Point firstStone = stoneNeighbours[0];
+                    if (!currentBoard.GetDiagonalNeighbours(firstStone.x, firstStone.y).Any(n => n.Equals(stoneNeighbours[1])))
+                        return false;
+                }
             }
 
             //check suicide at tiger mouth
