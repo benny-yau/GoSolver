@@ -185,7 +185,7 @@ namespace Go
             if (board.GetGroupsFromStoneNeighbours(tigerMouth.Move, c.Opposite()).All(n => n.Liberties.Count <= 2) && ImmovableHelper.IsSuicidalMove(board, tigerMouth.Move, c))
                 return true;
 
-            (Boolean suicidal, Board b1) = ImmovableHelper.IsSuicidalMove(libertyPoint, c.Opposite(), board, true);
+            (Boolean suicidal, Board b1) = ImmovableHelper.IsSuicidalMove(libertyPoint, c.Opposite(), board);
             if (suicidal) return false;
             //check for atari that is not tiger mouth  
             if (b1.AtariTargets.Count() > 0 || b1.CapturedList.Count > 0)
@@ -244,7 +244,7 @@ namespace Go
                 if (b2 != null && LinkHelper.IsAbsoluteLinkForGroups(b1, b2))
                 {
                     //check for three groups
-                    if (threeGroups != null && board.GetGroupsFromStoneNeighbours(diagonal, c.Opposite()).Intersect(threeGroups).Count() != 2)
+                    if (threeGroups != null && board.GetGroupsFromStoneNeighbours(diagonal, c.Opposite()).Intersect(threeGroups).Count() != 2) 
                         continue;
                     return true;
                 }
@@ -272,7 +272,7 @@ namespace Go
             }
         }
 
-
+        
         /// <summary>
         /// Check opponent atari moves.
         /// </summary>
@@ -296,7 +296,7 @@ namespace Go
                 Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(board, liberty, c.Opposite());
                 if (killerGroup != null) continue;
                 //make atari move
-                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c, board, true);
+                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c, board);
                 if (suicidal) continue;
                 if (b.AtariTargets.Count == 0) continue;
                 //ensure all atari targets are connected groups
