@@ -61,7 +61,7 @@ namespace Go
         {
             if (board[p] == Content.Empty) //empty point
             {
-                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board, true);
+                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board);
                 if (!suicidal) return (false, null);
                 if (b == null)
                 {
@@ -300,12 +300,11 @@ namespace Go
             return IsSuicidalMove(p, c, tryBoard).Item1;
         }
 
-        public static (Boolean, Board) IsSuicidalMove(Point p, Content c, Board tryBoard, Boolean excludeKo = false, Boolean checkSnapBack = true)
+        public static (Boolean, Board) IsSuicidalMove(Point p, Content c, Board tryBoard)
         {
             if (tryBoard == null) return (false, null);
-            Board board = tryBoard.MakeMoveOnNewBoard(p, c, excludeKo);
-            if (board == null)
-                return (true, null);
+            Board board = tryBoard.MakeMoveOnNewBoard(p, c);
+            if (board == null) return (true, null);
 
             if (board.MoveGroupLiberties == 1)
             {
@@ -316,11 +315,9 @@ namespace Go
                     if (!koEnabled) return (true, null);
                     else return (false, board);
                 }
-                if (checkSnapBack)
-                {
-                    Board b = ImmovableHelper.CaptureSuicideGroup(board);
-                    if (b == null || (b.MoveGroup.Points.Count > 1 && b.MoveGroupLiberties == 1)) return (false, board);
-                }
+                //check snapback
+                Board b = ImmovableHelper.CaptureSuicideGroup(board);
+                if (b == null || (b.MoveGroup.Points.Count > 1 && b.MoveGroupLiberties == 1)) return (false, board);
                 return (true, board);
             }
             return (false, board);
@@ -517,7 +514,7 @@ namespace Go
             foreach (Point liberty in groupLiberties)
             {
                 if (!GameHelper.SetupMoveAvailable(board, liberty)) continue;
-                (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board, false, false);
+                (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board);
                 if (b == null) continue;
                 int neighbourCount = b.GetStoneNeighbours().Count(n => b[n] != c.Opposite());
                 killBoards.Add(new KeyValuePair<LinkedPoint<Point>, Board>(new LinkedPoint<Point>(liberty, new { isSuicidal, neighbourCount }), b));

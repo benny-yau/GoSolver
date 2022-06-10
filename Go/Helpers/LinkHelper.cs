@@ -80,7 +80,7 @@ namespace Go
                 foreach (Point p in diagonals)
                 {
                     //make opponent move at diagonal
-                    (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board, true);
+                    (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board);
                     if (suicidal) return true;
                     Point q = diagonals.First(d => !d.Equals(p));
                     //make connection at other diagonal
@@ -132,7 +132,7 @@ namespace Go
                 if (neighbourGroups.Count != 3 || neighbourGroups.Any(group => !threeGroups.Contains(group))) continue;
 
                 //make opponent move at diagonal
-                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board, true);
+                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board);
                 if (suicidal) continue;
 
                 //check if any of the other two diagonals are immovable

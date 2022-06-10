@@ -899,7 +899,7 @@ namespace Go
                 if (DeadFormationInBothAlive(killBoard, killerGroup))
                 {
                     //check for suicidal move by survival
-                    if (ImmovableHelper.IsSuicidalMove(p.Move, killerGroup.Content.Opposite(), currentBoard, false, false).Item1) continue;
+                    if (ImmovableHelper.IsSuicidalMove(p.Move, killerGroup.Content.Opposite(), currentBoard).Item1) continue;
                     return p;
                 }
             }
