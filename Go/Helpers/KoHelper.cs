@@ -123,6 +123,7 @@ namespace Go
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
+            if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
             if (tryBoard.PointWithinMiddleArea(move)) return false;
             if (tryBoard.MoveGroup.Points.Count != 1 || tryBoard.MoveGroupLiberties != 2) return false;
             List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] == c).ToList();

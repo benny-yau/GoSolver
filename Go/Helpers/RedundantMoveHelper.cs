@@ -48,6 +48,7 @@ namespace Go
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" /> 
         /// Two-point covered eye <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_A84_2" /> 
         /// Find covered eye for opponent <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18410" /> 
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31673" /> 
         /// </summary>
         public static Boolean RedundantCoveredEyeMove(GameTryMove tryMove)
         {
@@ -77,6 +78,7 @@ namespace Go
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q16594" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A41" /> 
         /// Check no eye for survival for opponent <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_B2" /> 
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26" /> 
         /// Check eye for survival <see cref="UnitTestProject.RedundantKoMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A34" />
         /// <see cref="UnitTestProject.RedundantKoMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q30198" />
         /// Check for non semi solid eye at diagonal <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q29998" />
@@ -126,15 +128,17 @@ namespace Go
                     return false;
             }
 
-            //check no eye for survival
-            if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(tryBoard, c.Opposite()))
-                return false;
-
             //check eye for survival
             if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty && !eyeGroup.Points.Contains(n) && !WallHelper.NoEyeForSurvival(currentBoard, n, c.Opposite())))
                 return false;
 
-            if (opponentTryMove != null)
+            if (opponentTryMove == null)
+            {
+                //check no eye for survival
+                if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(tryBoard))
+                    return false;
+            }
+            else
             {
                 //check diagonal eye killer group for opponent move
                 if (eyeGroup.Points.Any(p => currentBoard.GetDiagonalNeighbours(p.x, p.y).Any(n => currentBoard[n] == Content.Empty)))
@@ -142,7 +146,10 @@ namespace Go
 
                 //check no eye for survival for opponent
                 Board opponentBoard = opponentTryMove.TryGame.Board;
-                if (!WallHelper.IsNonKillableGroup(opponentBoard, opponentBoard.MoveGroup) && !WallHelper.NoEyeForSurvivalAtNeighbourPoints(opponentBoard, opponentBoard.MoveGroup.Content))
+                if (!WallHelper.IsNonKillableGroup(opponentBoard, opponentBoard.MoveGroup) && !WallHelper.NoEyeForSurvivalAtNeighbourPoints(opponentBoard))
+                    return false;
+
+                if (!WallHelper.NoEyeForSurvival(tryBoard, eyePoint, c.Opposite()))
                     return false;
             }
 
@@ -675,7 +682,7 @@ namespace Go
             (Boolean suicidal, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
             if (!suicidal) return false;
 
-            if (tryBoard.GameInfo.targetPoints.All(t => tryBoard.MoveGroup.Points.Contains(t))) return true;
+            if (tryBoard.GameInfo.targetPoints.All(t => tryBoard.MoveGroup.Points.Contains(t) || tryBoard[t] == Content.Empty)) return true;
             
             //reverse connect and die
             if (tryBoard.MoveGroup.Points.Count == 1 && captureBoard.MoveGroup.Points.Count == 1 && !tryBoard.GetNeighbourGroups().Any(gr => gr.Liberties.Count == 1) && ImmovableHelper.CheckConnectAndDie(captureBoard))
@@ -717,10 +724,6 @@ namespace Go
             //check diagonals
             if (CheckDiagonalForSuicidalConnectAndDie(tryMove))
                 return true;
-
-            //check for sieged scenario
-            List<Point> opponentStones = tryBoard.GetClosestNeighbour(move, 3, c.Opposite());
-            if (!SiegedScenario(tryBoard, opponentStones, 1)) return true;
 
             if (movePoints.Count <= 4)
             {

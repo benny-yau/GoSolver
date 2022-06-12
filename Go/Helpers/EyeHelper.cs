@@ -89,19 +89,8 @@ namespace Go
             if (FindNonSemiSolidEye(tryBoard, p, c))
             {
                 List<Point> diagonalNeighbours = tryBoard.GetDiagonalNeighbours(p.x, p.y);
-                List<Point> oppositeContent = diagonalNeighbours.Where(q => tryBoard[q] == c.Opposite()).ToList();
-
-                //ensure covered point has more than one liberty
-                if (diagonalNeighbours.Count == 4)
-                {
-                    if (oppositeContent.Count > 1 && oppositeContent.Count(q => tryBoard.GetGroupLiberties(q) > 1) > 1)
-                        return true;
-                }
-                else
-                {
-                    if (oppositeContent.Count > 0 && oppositeContent.Any(q => tryBoard.GetGroupLiberties(q) > 1))
-                        return true;
-                }
+                if (IsCovered(tryBoard, diagonalNeighbours, c))
+                    return true;
             }
             return false;
         }

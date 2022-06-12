@@ -37,9 +37,10 @@ namespace Go
         /// <summary>
         /// Check no eye for survival.
         /// </summary>
-        public static Boolean NoEyeForSurvivalAtNeighbourPoints(Board tryBoard, Content c = Content.Unknown)
+        public static Boolean NoEyeForSurvivalAtNeighbourPoints(Board tryBoard)
         {
             IEnumerable<Point> neighbourPts = tryBoard.GetStoneAndDiagonalNeighbours();
+            Content c = tryBoard.MoveGroup.Content;
             if (neighbourPts.Any(q => !NoEyeForSurvival(tryBoard, q, c)))
                 return false;
             return true;
