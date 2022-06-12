@@ -77,12 +77,16 @@ namespace Go
         /// Check no eye for survival <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A52" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q16594" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A41" /> 
+        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_3" /> 
+        /// Check eye at eye point <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26" /> 
         /// Check no eye for survival for opponent <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_B2" /> 
-        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26" /> 
-        /// Check eye for survival <see cref="UnitTestProject.RedundantKoMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A34" />
-        /// <see cref="UnitTestProject.RedundantKoMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q30198" />
+        /// Check eye for ko fight <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q30982" /> 
+        /// Check eye for survival <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A34" />
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q30198" />
         /// Check for non semi solid eye at diagonal <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q29998" />
         /// Check liberty count without covered eye <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
+        /// Check snapback for two-point move <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31453" />
+        /// Check for double ko <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
         /// </summary>
         public static Boolean FindCoveredEyeMove(GameTryMove tryMove, GameTryMove opponentTryMove = null)
         {
@@ -124,12 +128,29 @@ namespace Go
             //ensure all groups have liberty more than two
             foreach (Group group in currentBoard.GetNeighbourGroups(eyeGroup))
             {
-                if (!WallHelper.IsStrongNeighbourGroup(currentBoard, group) || (group.Liberties.Count <= 2 && group.Liberties.Any(x => ImmovableHelper.IsSuicidalMove(currentBoard, x, c))))
+                if (!WallHelper.IsStrongNeighbourGroup(currentBoard, group))
                     return false;
+                
+                if (group.Liberties.Count <= 2)
+                {
+                    foreach (Point liberty in group.Liberties.Where(x => ImmovableHelper.IsSuicidalMove(currentBoard, x, c)))
+                    {
+                        HashSet<Group> neighbourGroups = currentBoard.GetGroupsFromStoneNeighbours(liberty, c);
+                        if (neighbourGroups.Any(n => !WallHelper.IsNonKillableGroup(currentBoard, n)))
+                            return false;
+                    }
+                }
             }
+            //check for double ko
+            if (NeutralPointDoubleKo(tryBoard))
+                return false;
 
             //check eye for survival
             if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty && !eyeGroup.Points.Contains(n) && !WallHelper.NoEyeForSurvival(currentBoard, n, c.Opposite())))
+                return false;
+
+            //check eye for ko fight
+            if (eyeGroup.Points.Count == 1 && tryBoard.GetStoneAndDiagonalNeighbours(eyePoint.x, eyePoint.y).Any(n => !WallHelper.NoEyeForSurvival(tryBoard, n, c)))
                 return false;
 
             if (opponentTryMove == null)
@@ -144,13 +165,21 @@ namespace Go
                 if (eyeGroup.Points.Any(p => currentBoard.GetDiagonalNeighbours(p.x, p.y).Any(n => currentBoard[n] == Content.Empty)))
                     return false;
 
+                //check eye at eye point
+                if (!WallHelper.NoEyeForSurvival(tryBoard, eyePoint, c.Opposite()))
+                    return false;
+
                 //check no eye for survival for opponent
                 Board opponentBoard = opponentTryMove.TryGame.Board;
                 if (!WallHelper.IsNonKillableGroup(opponentBoard, opponentBoard.MoveGroup) && !WallHelper.NoEyeForSurvivalAtNeighbourPoints(opponentBoard))
                     return false;
+            }
 
-                if (!WallHelper.NoEyeForSurvival(tryBoard, eyePoint, c.Opposite()))
-                    return false;
+            //check snapback for two-point move
+            if (tryBoard.MoveGroupLiberties == 1 && tryBoard.MoveGroup.Points.Count == 2)
+            {
+                Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard);
+                if (b != null && b.MoveGroupLiberties == 1) return false;
             }
 
             //check if link for groups
