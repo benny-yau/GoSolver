@@ -70,7 +70,6 @@ namespace Go
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_A38" /> 
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
         /// Ensure neighbour groups are escapable <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31398" /> 
-        /// Check diagonal eye killer group for opponent move <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario4dan10" /> 
         /// Check if link for groups <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" /> 
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" /> 
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q16902" /> 
@@ -78,13 +77,15 @@ namespace Go
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q16594" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A41" /> 
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_3" /> 
-        /// Check eye at eye point <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26" /> 
         /// Check no eye for survival for opponent <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_B2" /> 
         /// Check eye for survival <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q30982" /> 
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_B25" /> 
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q29277" /> 
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario4dan10" /> 
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26" /> 
         /// Check kill opponent <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A34" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q30198" />
-        /// Check for non semi solid eye at diagonal <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q29998" />
+        /// Check kill opponent - non semi solid eye at diagonal <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q29998" />
         /// Check liberty count without covered eye <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
         /// Check snapback for two-point move <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31453" />
         /// Check for double ko <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
@@ -119,13 +120,6 @@ namespace Go
             }
             if (eyeGroup == null) return false;
 
-            //check for non semi solid eye at diagonal
-            if (KoHelper.IsKoFight(tryBoard) && tryBoard.GetDiagonalNeighbours().Any(n => EyeHelper.FindNonSemiSolidEye(tryBoard, n, c.Opposite())))
-                return false;
-
-            if (DiagonalNonSemiSolidEye(currentBoard, tryBoard, eyeGroup))
-                return false;
-
             //ensure all groups have liberty more than two
             foreach (Group group in currentBoard.GetNeighbourGroups(eyeGroup))
             {
@@ -150,6 +144,10 @@ namespace Go
             if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty && !eyeGroup.Points.Contains(n) && !WallHelper.NoEyeForSurvival(currentBoard, n, c.Opposite())))
                 return false;
 
+            //check kill opponent - non semi solid eye at diagonal
+            if (KoHelper.IsKoFight(tryBoard) && tryBoard.GetDiagonalNeighbours().Any(n => EyeHelper.FindNonSemiSolidEye(tryBoard, n, c.Opposite())))
+                return false;
+
             //check eye for survival
             if (eyeGroup.Points.Any(e => tryBoard.GetStoneAndDiagonalNeighbours(e.x, e.y).Any(n => !eyeGroup.Points.Contains(n) && !WallHelper.NoEyeForSurvival(tryBoard, n, c))))
                 return false;
@@ -162,14 +160,6 @@ namespace Go
             }
             else
             {
-                //check diagonal eye killer group for opponent move
-                if (eyeGroup.Points.Any(p => currentBoard.GetDiagonalNeighbours(p.x, p.y).Any(n => currentBoard[n] == Content.Empty)))
-                    return false;
-
-                //check eye at eye point
-                if (!WallHelper.NoEyeForSurvival(tryBoard, eyePoint, c.Opposite()))
-                    return false;
-
                 //check no eye for survival for opponent
                 Board opponentBoard = opponentTryMove.TryGame.Board;
                 if (!WallHelper.IsNonKillableGroup(opponentBoard, opponentBoard.MoveGroup) && !WallHelper.NoEyeForSurvivalAtNeighbourPoints(opponentBoard))
@@ -193,19 +183,6 @@ namespace Go
                 return false;
 
             return true;
-        }
-
-        /// <summary>
-        /// Check for non semi solid eye at diagonal.
-        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q29277" /> 
-        /// </summary>
-        public static Boolean DiagonalNonSemiSolidEye(Board currentBoard, Board tryBoard, Group eyeGroup)
-        {
-            Content c = tryBoard.MoveGroup.Content;
-            List<Point> emptyDiagonals = new List<Point>();
-            eyeGroup.Points.ToList().ForEach(p => emptyDiagonals.AddRange(tryBoard.GetDiagonalNeighbours(p.x, p.y).Where(q => tryBoard[q] == Content.Empty)));
-            if (emptyDiagonals.Count > 0 && emptyDiagonals.Any(q => EyeHelper.FindNonSemiSolidEye(currentBoard, q, c))) return true;
-            return false;
         }
         #endregion
 
