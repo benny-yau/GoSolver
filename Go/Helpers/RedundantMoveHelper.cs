@@ -85,7 +85,8 @@ namespace Go
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26" /> 
         /// Check kill opponent <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A34" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q30198" />
-        /// Check kill opponent - non semi solid eye at diagonal <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q29998" />
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q29998" />
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
         /// Check liberty count without covered eye <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
         /// Check snapback for two-point move <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31453" />
         /// Check for double ko <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
@@ -141,24 +142,19 @@ namespace Go
                 return false;
 
             //check kill opponent
-            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty && !eyeGroup.Points.Contains(n) && !WallHelper.NoEyeForSurvival(currentBoard, n, c.Opposite())))
-                return false;
-
-            //check kill opponent - non semi solid eye at diagonal
-            if (KoHelper.IsKoFight(tryBoard) && tryBoard.GetDiagonalNeighbours().Any(n => EyeHelper.FindNonSemiSolidEye(tryBoard, n, c.Opposite())))
+            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == Content.Empty && !eyeGroup.Points.Contains(n) && !WallHelper.NoEyeForSurvival(currentBoard, n, c.Opposite())))
                 return false;
 
             //check eye for survival
             if (eyeGroup.Points.Any(e => tryBoard.GetStoneAndDiagonalNeighbours(e.x, e.y).Any(n => !eyeGroup.Points.Contains(n) && !WallHelper.NoEyeForSurvival(tryBoard, n, c))))
                 return false;
 
-            if (opponentTryMove == null)
-            {
-                //check no eye for survival
-                if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(tryBoard))
-                    return false;
-            }
-            else
+            //check no eye for survival
+            Boolean eyeMove = EyeHelper.CoveredMove(tryBoard, eyePoint, c);
+            if (!eyeMove && !WallHelper.NoEyeForSurvivalAtNeighbourPoints(tryBoard))
+                return false;
+
+            if (opponentTryMove != null)
             {
                 //check no eye for survival for opponent
                 Board opponentBoard = opponentTryMove.TryGame.Board;
