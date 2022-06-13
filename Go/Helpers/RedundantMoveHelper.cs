@@ -46,7 +46,7 @@ namespace Go
         /// <summary>
         /// Redundant covered eye move.
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" /> 
-        /// Two-point covered eye <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_A84_2" /> 
+        /// Two-point covered eye <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_A68" /> 
         /// Find covered eye for opponent <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18410" /> 
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31673" /> 
         /// </summary>
@@ -80,8 +80,9 @@ namespace Go
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_3" /> 
         /// Check eye at eye point <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26" /> 
         /// Check no eye for survival for opponent <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_B2" /> 
-        /// Check eye for ko fight <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q30982" /> 
-        /// Check eye for survival <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A34" />
+        /// Check eye for survival <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q30982" /> 
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_B25" /> 
+        /// Check kill opponent <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A34" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q30198" />
         /// Check for non semi solid eye at diagonal <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q29998" />
         /// Check liberty count without covered eye <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
@@ -145,12 +146,12 @@ namespace Go
             if (NeutralPointDoubleKo(tryBoard))
                 return false;
 
-            //check eye for survival
+            //check kill opponent
             if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty && !eyeGroup.Points.Contains(n) && !WallHelper.NoEyeForSurvival(currentBoard, n, c.Opposite())))
                 return false;
 
-            //check eye for ko fight
-            if (eyeGroup.Points.Count == 1 && tryBoard.GetStoneAndDiagonalNeighbours(eyePoint.x, eyePoint.y).Any(n => !WallHelper.NoEyeForSurvival(tryBoard, n, c)))
+            //check eye for survival
+            if (eyeGroup.Points.Any(e => tryBoard.GetStoneAndDiagonalNeighbours(e.x, e.y).Any(n => !eyeGroup.Points.Contains(n) && !WallHelper.NoEyeForSurvival(tryBoard, n, c))))
                 return false;
 
             if (opponentTryMove == null)
