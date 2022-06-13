@@ -55,6 +55,8 @@ namespace Go
         /// Empty point <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_GuanZiPu_A3" />
         /// Check connect and die <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A28" />
         /// Check filled point connect and die <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_TianLongTu_Q16975" />
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_Q18341" />
+        /// <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_TianLongTu_Q14992_2" />
         /// Check for ko possibility <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q30986" />
         /// </summary>
         public static (Boolean, Point?) IsImmovablePoint(Point p, Content c, Board board)
@@ -81,14 +83,16 @@ namespace Go
                 (Boolean unEscapable, Point? libertyPoint, _) = UnescapableGroup(board, targetGroup);
                 if (!unEscapable)
                     return (false, null);
+
                 //check filled point connect and die
-                Board b = ImmovableHelper.CaptureSuicideGroup(board, targetGroup);
-                if (b != null && (CheckConnectAndDie(b) || ThreeLibertyConnectAndDie(b, p)))
+                if (targetGroup.Points.Count <= 2 && board.GetNeighbourGroups(targetGroup).Any(n => CheckConnectAndDie(board, n)))
                     return (false, null);
-                Point q = libertyPoint.Value;
+
                 //check for ko possibility
+                Point q = libertyPoint.Value;
                 if (CheckForKoInImmovablePoint(board, targetGroup, q))
                     return (false, null);
+
                 return (true, q);
             }
             return (false, null);
@@ -107,7 +111,7 @@ namespace Go
             Content c = targetGroup.Content.Opposite();
             if (!KoHelper.KoContentEnabled(c.Opposite(), board.GameInfo)) return false;
             //check for ko by capture neighbour groups
-            if (EyeHelper.FindEye(board, q, c.Opposite()))
+            if (EyeHelper.FindCoveredEye(board, q, c.Opposite()))
             {
                 List<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(q, c).ToList();
                 if (neighbourGroups.All(n => n.Liberties.Count == 1))
