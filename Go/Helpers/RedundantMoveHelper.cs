@@ -124,9 +124,6 @@ namespace Go
             //ensure all groups have liberty more than two
             foreach (Group group in currentBoard.GetNeighbourGroups(eyeGroup))
             {
-                if (!WallHelper.IsStrongNeighbourGroup(currentBoard, group))
-                    return false;
-                
                 if (group.Liberties.Count <= 2)
                 {
                     foreach (Point liberty in group.Liberties.Where(x => ImmovableHelper.IsSuicidalMove(currentBoard, x, c)))
@@ -170,7 +167,7 @@ namespace Go
             }
 
             //check if link for groups
-            if (EyeHelper.CoveredMove(tryBoard, eyePoint, c))
+            if (eyeMove)
             {
                 if (LinkHelper.LinkToNonEyeGroups(tryBoard, currentBoard, eyePoint))
                     return false;
