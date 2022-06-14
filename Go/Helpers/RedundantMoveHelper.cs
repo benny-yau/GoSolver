@@ -122,16 +122,13 @@ namespace Go
             if (eyeGroup == null) return false;
 
             //ensure all groups have liberty more than two
-            foreach (Group group in currentBoard.GetNeighbourGroups(eyeGroup))
+            foreach (Group group in currentBoard.GetNeighbourGroups(eyeGroup).Where(gr => gr.Liberties.Count <= 2))
             {
-                if (group.Liberties.Count <= 2)
+                foreach (Point liberty in group.Liberties.Where(x => ImmovableHelper.IsSuicidalMove(currentBoard, x, c)))
                 {
-                    foreach (Point liberty in group.Liberties.Where(x => ImmovableHelper.IsSuicidalMove(currentBoard, x, c)))
-                    {
-                        HashSet<Group> neighbourGroups = currentBoard.GetGroupsFromStoneNeighbours(liberty, c);
-                        if (neighbourGroups.Any(n => !WallHelper.IsNonKillableGroup(currentBoard, n)))
-                            return false;
-                    }
+                    HashSet<Group> neighbourGroups = currentBoard.GetGroupsFromStoneNeighbours(liberty, c);
+                    if (neighbourGroups.Any(n => !WallHelper.IsNonKillableGroup(currentBoard, n)))
+                        return false;
                 }
             }
             //check for double ko
@@ -614,15 +611,11 @@ namespace Go
 
             //check for eye at liberty point
             Point libertyPoint = opponentTryBoard.MoveGroup.Liberties.First();
-            if (EyeHelper.FindEye(currentBoard, libertyPoint, c.Opposite()))
+            if (EyeHelper.FindCoveredEye(currentBoard, libertyPoint, c.Opposite()))
             {
                 List<Point> diagonals = currentBoard.GetDiagonalNeighbours(libertyPoint.x, libertyPoint.y).Where(n => currentBoard[n] == c).ToList();
-                foreach (Point diagonal in diagonals)
-                {
-                    (_, Board b) = ImmovableHelper.ConnectAndDie(currentBoard, currentBoard.GetGroupAt(diagonal));
-                    if (b != null && EyeHelper.FindSemiSolidEyes(libertyPoint, b, c.Opposite()).Item1)
-                        return false;
-                }
+                if (diagonals.Select(d => new { dgroup = currentBoard.GetGroupAt(d) }).Any(n => n.dgroup.Liberties.Count > 1 && ImmovableHelper.CheckConnectAndDie(currentBoard, n.dgroup)))
+                    return false;
             }
 
             //check for tiger mouth at liberty point
