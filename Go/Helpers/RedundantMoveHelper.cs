@@ -1198,6 +1198,10 @@ namespace Go
             List<Point> liberties = eyeGroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
             if (liberties.Count > 2) return true;
 
+            //atari neighbour group
+            if (AtariHelper.AtariByGroup(capturedBoard, eyeGroup))
+                return true;
+
             foreach (Point lib in liberties)
             {
                 Board b = capturedBoard.MakeMoveOnNewBoard(lib, c);
