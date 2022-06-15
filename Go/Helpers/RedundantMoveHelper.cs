@@ -1179,21 +1179,32 @@ namespace Go
         private static Boolean CheckTwoPointGroupInSuicideRealEye(GameTryMove tryMove, Board capturedBoard)
         {
             Point move = tryMove.Move;
+            Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
+            //capture group
+            Point liberty = tryBoard.MoveGroup.Liberties.First(lib => !lib.Equals(move));
+            if (currentBoard.GetGroupsFromStoneNeighbours(liberty, c).Any(n => n.Liberties.Count == 1))
+                return true;
 
             //check connect and die
             if (ImmovableHelper.CheckConnectAndDie(capturedBoard))
                 return false;
 
             //check for liberty fight
-            HashSet<Group> neighbourGroups = capturedBoard.GetGroupsFromStoneNeighbours(move, c);
-            if (neighbourGroups.Count() != 1) return false;
-            List<Point> liberties = neighbourGroups.First().Liberties.Where(lib => !lib.Equals(move)).ToList();
+            HashSet<Group> eyeGroups = capturedBoard.GetGroupsFromStoneNeighbours(move, c);
+            if (eyeGroups.Count() != 1) return false;
+            Group eyeGroup = eyeGroups.First();
+            List<Point> liberties = eyeGroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
             if (liberties.Count > 2) return true;
-            foreach (Point liberty in liberties)
+
+            //atari neighbour group
+            if (AtariHelper.AtariByGroup(capturedBoard, eyeGroup))
+                return true;
+
+            foreach (Point lib in liberties)
             {
-                Board b = capturedBoard.MakeMoveOnNewBoard(liberty, c);
+                Board b = capturedBoard.MakeMoveOnNewBoard(lib, c);
                 if (b != null && WallHelper.StrongNeighbourGroups(b, b.GetNeighbourGroups(capturedBoard.MoveGroup)))
                     return true;
             }
@@ -1468,13 +1479,13 @@ namespace Go
 
                 //if diagonal point is non killable group and point up is empty and not next to opponent stone then redundant
                 Boolean found = false;
-                if (tryBoard[pointUp] == Content.Empty && tryBoard[pointUpLeft] == c.Opposite() && CheckBaseLineDiagonalPoint(tryBoard, pointUpLeft))
+                if (tryBoard[pointUp] == Content.Empty && tryBoard[pointUpLeft] == c.Opposite() && WallHelper.IsNonKillableGroup(tryBoard, pointUpLeft))
                 {
                     Point pointRight = dh.GetPointInDirection(tryBoard, move, dh.GetNewDirection(Direction.Right, i));
                     if (tryBoard[pointRight] != c.Opposite())
                         found = true;
                 }
-                else if (tryBoard[pointUp] == Content.Empty && tryBoard[pointUpRight] == c.Opposite() && CheckBaseLineDiagonalPoint(tryBoard, pointUpRight))
+                else if (tryBoard[pointUp] == Content.Empty && tryBoard[pointUpRight] == c.Opposite() && WallHelper.IsNonKillableGroup(tryBoard, pointUpRight))
                 {
                     Point pointLeft = dh.GetPointInDirection(tryBoard, move, dh.GetNewDirection(Direction.Left, i));
                     if (tryBoard[pointLeft] != c.Opposite())
@@ -1489,17 +1500,6 @@ namespace Go
                         return true;
                 }
             }
-            return false;
-        }
-
-        private static Boolean CheckBaseLineDiagonalPoint(Board tryBoard, Point point)
-        {
-            if (WallHelper.IsNonKillableGroup(tryBoard, point))
-                return true;
-            if (tryBoard.MoveGroup.Points.Count != 1) return false;
-            Content c = tryBoard[tryBoard.Move.Value];
-            List<Point> opponentStones = tryBoard.GetClosestNeighbour(point, 3, c.Opposite());
-            if (!SiegedScenario(tryBoard, opponentStones, 1)) return true;
             return false;
         }
 
@@ -2452,17 +2452,28 @@ namespace Go
 
         /// <summary>
         /// Filler moves without killer group. <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q6150" />
-        /// Filler moves with killer group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_B3_2" />
+        /// Filler moves with killer group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_B3" />
         /// Check for one point leap move <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_B10_2" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_B40" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30278" />
         /// Check two-point group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Side_B35" />
         /// Check if killer group created with opposite content within the group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_A171_101Weiqi" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario3dan22" />
         /// </summary>
         private static Boolean FillerMoveWithoutKillerGroup(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryBoard.Move.Value;
             Content c = tryMove.MoveContent;
+
+            if (!GenericEyeFillerMove(tryMove, opponentMove)) return false;
+            
+            //check for opposite content
+            if (CheckOppositeContentForFillerMove(tryMove))
+                return false;
+
+            if (WallHelper.IsNonKillableGroup(tryBoard, tryBoard.MoveGroup)) return true;
+
             //check for one point leap move
             if (tryBoard.MoveGroup.Points.Count == 1 && !tryBoard.CornerPoint(move))
             {
@@ -2486,9 +2497,6 @@ namespace Go
                     return false;
             }
 
-            //check for opposite content
-            if (CheckOppositeContentForFillerMove(tryMove))
-                return false;
 
             //check if killer group created with opposite content within the group
             if (tryMove.IncreasedKillerGroups)
@@ -2498,7 +2506,7 @@ namespace Go
                     return false;
             }
 
-            return GenericEyeFillerMove(tryMove, opponentMove);
+            return true;
         }
 
         /// <summary>
@@ -2513,6 +2521,7 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryBoard.Move.Value;
             Content c = tryMove.MoveContent;
+            if (tryBoard.CornerPoint(move)) return false;
             //ensure no opposite content at stone and diagonal
             if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite()))
                 return true;
