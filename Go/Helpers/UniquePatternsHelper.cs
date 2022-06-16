@@ -62,7 +62,7 @@ namespace Go
                 List<Point> emptyPoints = killerGroup.Points.Where(t => tryBoard[t] == Content.Empty).ToList();
                 if (emptyPoints.Count != 2) return false;
                 //get end points of content group
-                List<Point> endPoints = contentPoints.Where(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 1).ToList();
+                List<Point> endPoints = contentPoints.Where(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 1).ToList();                
                 //both end points connect with one empty point each
                 Boolean endConnect = endPoints.All(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(emptyPoints).Count() == 1);
                 if (!endConnect) return false;
@@ -77,23 +77,25 @@ namespace Go
         /// <summary>
         /// The ten thousand year ko appears to be ko alive but is essentially alive. 
         /// https://senseis.xmp.net/?TenThousandYearKo
-        /// <see cref="UnitTestProject.TenThousandYearKoTest.TenThousandYearKoTest_Scenario_GuanZiPu_A2Q28_101Weiqi_2" />
+        /// <see cref="UnitTestProject.TenThousandYearKoTest.TenThousandYearKoTest_Scenario_XuanXuanGo_Q18500" />
         /// </summary>
-        public static Boolean CheckForTenThousandYearKo(Board board)
+        public static Boolean CheckForTenThousandYearKo(Game game)
         {
+            Board board = game.Board;
             List<Group> killerGroups = BothAliveHelper.GetCorneredKillerGroup(board);
             if (killerGroups.Count != 1)
                 return false;
             //check for only one neighbour group
             Group killerGroup = killerGroups[0];
-            List<Group> neighbourGroups = board.GetNeighbourGroups(killerGroup);
-            if (neighbourGroups.Count != 1)
+            List<Group> survivalGroups = board.GetNeighbourGroups(killerGroup);
+            if (survivalGroups.Count != 1)
                 return false;
-            //at least 7 points in killer group of ten thousand year ko
+            //at least 7 points in killer group with 3 empty points
             if (killerGroup.Points.Count >= 7)
             {
                 List<Point> emptyPoints = killerGroup.Points.Where(m => board[m] == Content.Empty).ToList();
-                if (emptyPoints.Count == 3)
+                //ensure at least 3 external liberties 
+                if (emptyPoints.Count == 3 && survivalGroups.First().Liberties.Except(emptyPoints).Count() >= 3)
                 {
                     //one ten thousand year eye plus one empty group with two points
                     List<Point> eyeFound = emptyPoints.Where(p => TenThousandYearKoEye(board, p)).ToList();
@@ -102,11 +104,6 @@ namespace Go
                 }
             }
             return false;
-        }
-
-        public static Boolean CheckForTenThousandYearKo(Game g)
-        {
-            return CheckForTenThousandYearKo(g.Board);
         }
 
 

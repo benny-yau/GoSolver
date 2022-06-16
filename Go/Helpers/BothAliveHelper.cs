@@ -156,16 +156,7 @@ namespace Go
                 //all game try moves should be within killer group to enable pass move
                 List<GameTryMove> externalMoves = tryMoves.Where(p => !emptyPoints.Contains(p.Move) && !ImmovableHelper.SinglePointOpponentImmovable(p)).ToList();
                 if (externalMoves.Count > 0)
-                {
-                    //enable pass move for ten thousand year ko
-                    if (externalMoves.Count == 1)
-                    {
-                        Board b = board.MakeMoveOnNewBoard(externalMoves.First().Move, content, true);
-                        if (b != null && UniquePatternsHelper.CheckForTenThousandYearKo(b))
-                            return true;
-                    }
                     return false;
-                }
             }
 
             //ensure at least two liberties in survival neighbour group
