@@ -140,7 +140,7 @@ namespace Go
                 return false;
 
             //check eye for survival
-            if (eyeGroup.Points.Any(e => tryBoard.GetStoneAndDiagonalNeighbours(e.x, e.y).Any(n => !eyeGroup.Points.Contains(n) && !WallHelper.NoEyeForSurvival(tryBoard, n, c))))
+            if (eyeGroup.Points.Any(e => tryBoard.GetStoneAndDiagonalNeighbours(e.x, e.y).Any(n => !eyeGroup.Points.Contains(n) && !WallHelper.NoEyeForSurvival(tryBoard, n, c))))            
                 return false;
 
             //check no eye for survival
@@ -152,7 +152,7 @@ namespace Go
             {
                 //check no eye for survival for opponent
                 Board opponentBoard = opponentTryMove.TryGame.Board;
-                if (!WallHelper.IsNonKillableGroup(opponentBoard, opponentBoard.MoveGroup) && !WallHelper.NoEyeForSurvivalAtNeighbourPoints(opponentBoard))
+                if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(opponentBoard))
                     return false;
             }
 
@@ -215,10 +215,13 @@ namespace Go
                     return true;
             }
 
-            if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
+            List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).ToList();
+
+            //not ko enabled
+            if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo) && eyeGroups.Any(e => e.Points.Count == 1 && e.Liberties.Count == 1))
+                return false;
 
             //ensure group more than one point have more than one liberty
-            List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).ToList();
             if (eyeGroups.Any(e => e.Points.Count > 1 && e.Liberties.Count == 1)) return false;
 
             if (eyeGroups.Count > 2)
@@ -643,7 +646,7 @@ namespace Go
             //check for both alive
             if (BothAliveHelper.EnableCheckForPassMove(tryBoard)) return false;
 
-            if (WallHelper.IsNonKillableGroup(tryBoard, tryBoard.MoveGroup)) //set neutral point move
+            if (WallHelper.IsNonKillableGroup(tryBoard)) //set neutral point move
                 tryMove.IsNeutralPoint = true;
             else if (tryBoard.GetDiagonalNeighbours().Any(n => EyeHelper.FindEye(tryBoard, n, c))) //set diagonal eye move
                 tryMove.IsDiagonalEyeMove = true;
@@ -918,7 +921,7 @@ namespace Go
                     Board opponentBoard = opponentMove.TryGame.Board;
                     if (opponentBoard.CapturedList.Count > 0) return false;
                     //set neutral point move
-                    if (WallHelper.IsNonKillableGroup(opponentBoard, opponentBoard.MoveGroup)) opponentMove.IsNeutralPoint = true;
+                    if (WallHelper.IsNonKillableGroup(opponentBoard)) opponentMove.IsNeutralPoint = true;
                 }
                 return true;
             }
@@ -2460,7 +2463,7 @@ namespace Go
 
             if (!GenericEyeFillerMove(tryMove, opponentMove)) return false;
 
-            if (WallHelper.IsNonKillableGroup(tryBoard, tryBoard.MoveGroup)) return true;
+            if (WallHelper.IsNonKillableGroup(tryBoard)) return true;
 
             //check for one point leap move
             if (tryBoard.MoveGroup.Points.Count == 1 && !tryBoard.CornerPoint(move))

@@ -41,7 +41,7 @@ namespace Go
         {
             IEnumerable<Point> neighbourPts = tryBoard.GetStoneAndDiagonalNeighbours();
             Content c = tryBoard.MoveGroup.Content;
-            if (neighbourPts.Any(q => !NoEyeForSurvival(tryBoard, q, c)))
+            if (!WallHelper.IsNonKillableGroup(tryBoard) && neighbourPts.Any(q => !NoEyeForSurvival(tryBoard, q, c)))
                 return false;
             return true;
         }
@@ -67,8 +67,9 @@ namespace Go
             return IsNonKillableGroup(board, group);
         }
 
-        public static Boolean IsNonKillableGroup(Board board, Group group)
+        public static Boolean IsNonKillableGroup(Board board, Group group = null)
         {
+            if (group == null) group = board.MoveGroup;
             if (group.IsNonKillable != null) return group.IsNonKillable.Value;
 
             if (GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Kill) != group.Content)
