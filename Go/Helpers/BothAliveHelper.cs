@@ -242,7 +242,7 @@ namespace Go
             Content content = killerGroup.Content;
 
             //ensure at least two liberties within killer group in survival neighbour group
-            if (neighbourGroups.Any(n => n.Liberties.Count(p => GetKillerGroupFromCache(board, p) != null) < 2))
+            if (neighbourGroups.Any(n => n.Liberties.Count(p => killerGroup.Points.Contains(p) || BothAliveDiagonalEye(board, killerGroup, p)) < 2))
                 return false;
 
             //check diagonal at eye point
@@ -273,6 +273,21 @@ namespace Go
                     return false;
             }
             return true;
+        }
+
+        /// <summary>
+        /// Check if eye at diagonal of killer group for both alive.
+        /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275" />
+        /// </summary>
+        private static Boolean BothAliveDiagonalEye(Board board, Group killerGroup, Point eye)
+        {
+            Content c = killerGroup.Content;
+            if (EyeHelper.FindEye(board, eye, c.Opposite()) && board.GetStoneNeighbours(eye.x, eye.y).All(n => board.GetGroupAt(n).Liberties.Count > 1))
+            {
+                if (board.GetDiagonalNeighbours(eye.x, eye.y).Any(n => board[n] == Content.Empty && killerGroup.Points.Contains(n)))
+                    return true;
+            }
+            return false;
         }
 
         /// <summary>

@@ -193,6 +193,7 @@ namespace Go
         /// Check survival eye <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A36" /> 
         /// <see cref="UnitTestProject.KoTest.KoTest_Scenario_Corner_A80" /> 
         /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WuQingYuan_Q30982" /> 
+        /// Set as neutral point for non killable move group <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16490" />
         /// </summary>
         public static Boolean FillKoEyeMove(GameTryMove tryMove)
         {
@@ -248,6 +249,10 @@ namespace Go
             //check suicide at tiger mouth
             (Boolean suicide, Board suicideBoard, Point? liberty) = SuicideAtBigTigerMouth(tryMove);
             if (suicide) return false;
+
+            //set as neutral point for non killable move group
+            if (WallHelper.IsNonKillableGroup(tryBoard))
+                tryMove.IsNeutralPoint = true;
 
             return true;
         }
@@ -954,7 +959,7 @@ namespace Go
                 return true;
 
             //ensure no diagonal groups found
-            Boolean diagonalGroups = LinkHelper.GetGroupLinkedDiagonals(tryBoard, tryBoard.MoveGroup, false).Any();
+            Boolean diagonalGroups = LinkHelper.GetGroupLinkedDiagonals(tryBoard).Any();
             if (!diagonalGroups)
             {
                 if (tryBoard.MoveGroup.Points.Count > 1)
@@ -1794,8 +1799,9 @@ namespace Go
         /// Two pre-atari moves <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A55" />
         /// No try moves left <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Side_A20" />
         /// Remaining move at liberty point <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
-        /// Check connect and die for last try move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B35" />
+        /// Check connect and die for last two try moves <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B35" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_5" />
+        /// Check capture at diagonal <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16490" />
         /// </summary>
         public static void RestoreNeutralMove(Game currentGame, List<GameTryMove> tryMoves, List<GameTryMove> neutralPointMoves)
         {
@@ -1850,8 +1856,9 @@ namespace Go
 
             if (tryMoves.Count <= 2)
             {
-                //check connect and die for last try move
-                if (tryMoves.All(tryMove => ImmovableHelper.CheckConnectAndDie(tryMove.TryGame.Board)))
+                //check connect and die for last two try moves
+                //check capture at diagonal
+                if (tryMoves.Select(t => new { tryBoard = t.TryGame.Board }).All(t => ImmovableHelper.CheckConnectAndDie(t.tryBoard) || LinkHelper.GetGroupLinkedDiagonals(t.tryBoard).Select(d => new { diagonalGroup = t.tryBoard.GetGroupAt(d.Move) }).Any(d => d.diagonalGroup.Liberties.Count == 1 && d.diagonalGroup.Points.Count >= 3)))
                     tryMoves.Add(neutralPointMoves.First());
             }
         }
@@ -2481,13 +2488,12 @@ namespace Go
             }
 
             //check two-point group
-            if (tryBoard.MoveGroup.Points.Count == 2 && LinkHelper.GetGroupLinkedDiagonals(tryBoard, tryBoard.MoveGroup, false).Count == 0)
+            if (tryBoard.MoveGroup.Points.Count == 2 && LinkHelper.GetGroupLinkedDiagonals(tryBoard).Count == 0)
             {
                 List<Point> neighbours = tryBoard.GetClosestNeighbour(move, 2).Except(tryBoard.MoveGroup.Points).ToList();
                 if (SiegedScenario(tryBoard, neighbours))
                     return false;
             }
-
 
             //check if killer group created with opposite content within the group
             if (tryMove.IncreasedKillerGroups)

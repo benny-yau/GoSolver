@@ -209,9 +209,10 @@ namespace Go
         /// <summary>
         /// Get linked diagonals of group.
         /// </summary>
-        public static List<LinkedPoint<Point>> GetGroupLinkedDiagonals(Board board, Group group, Boolean checkLinked = true)
+        public static List<LinkedPoint<Point>> GetGroupLinkedDiagonals(Board board, Group group = null, Boolean checkLinked = false)
         {
             List<LinkedPoint<Point>> rc = new List<LinkedPoint<Point>>();
+            if (group == null) group = board.MoveGroup;
             Content c = group.Content;
             foreach (Point p in group.Points)
             {
@@ -263,7 +264,7 @@ namespace Go
         {
             groups.Add(group);
             //find group diagonals of same content
-            List<LinkedPoint<Point>> diagonalPoints = GetGroupDiagonals(board, group).Where(d => board[d.Move] == group.Content).OrderBy(d => board.GetGroupAt(d.Move).Liberties.Count).ToList();
+            List<LinkedPoint<Point>> diagonalPoints = GetGroupLinkedDiagonals(board, group).OrderBy(d => board.GetGroupAt(d.Move).Liberties.Count).ToList();
             if (findGroup != null)
             {
                 //diagonal with find group
