@@ -284,7 +284,7 @@ namespace Go
             Content c = killerGroup.Content;
             if (EyeHelper.FindEye(board, eye, c.Opposite()) && board.GetStoneNeighbours(eye.x, eye.y).All(n => board.GetGroupAt(n).Liberties.Count > 1))
             {
-                if (board.GetDiagonalNeighbours(eye.x, eye.y).Any(n => board[n] == Content.Empty && killerGroup.Points.Contains(n)))
+                if (board.GetDiagonalNeighbours(eye.x, eye.y).Any(n => killerGroup.Points.Contains(n)))
                     return true;
             }
             return false;
