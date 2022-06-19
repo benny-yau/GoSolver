@@ -181,20 +181,23 @@ namespace Go
         /// Three liberty connect and die, not all inclusive. Connect and die group may not be target group for two liberties target group.
         /// <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_TianLongTu_Q14992_2" />
         /// <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_TianLongTu_Q14992" />
+        /// Check if escapable <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_Corner_A86" />
         /// </summary>
         public static Boolean ThreeLibertyConnectAndDie(Board board, Point p)
         {
             Group targetGroup = board.MoveGroup;
             Content c = targetGroup.Content;
             Board b = board.MakeMoveOnNewBoard(p, c.Opposite());
-            if (b == null) return false;
-            if (b.MoveGroupLiberties == 1)
-            {
-                if (b.AtariTargets.Count != 1) return false;
-                Board b2 = ImmovableHelper.CaptureSuicideGroup(b);
-                if (b2 != null && CheckConnectAndDie(b2, b2.GetGroupAt(targetGroup.Points.First())))
-                    return true;
-            }
+            if (b == null || b.MoveGroupLiberties != 1) return false;
+            if (b.AtariTargets.Count != 1) return false;
+            Board b2 = ImmovableHelper.CaptureSuicideGroup(b);
+            if (b2 == null || b2.MoveGroupLiberties != 2) return false;
+            if (!EyeHelper.FindCoveredEye(b2, p, c)) return false;
+            //check if escapable
+            if (b2.MoveGroup.Liberties.Any(lib => !lib.Equals(p) && b2.GetGroupsFromStoneNeighbours(lib, c.Opposite()).Any(n => !n.Equals(b2.MoveGroup))))
+                return false;
+            if (CheckConnectAndDie(b2, b2.GetGroupAt(targetGroup.Points.First())))
+                return true;
             return false;
         }
 

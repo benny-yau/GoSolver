@@ -510,7 +510,6 @@ namespace Go
         /// Three liberty suicidal.
         /// <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario5dan18" />
         /// Stone neighbours at diagonal of each other <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_Side_B19" />
-        /// Check previous group <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_Corner_A86" />
         /// </summary>
         private static Boolean ThreeLibertySuicidal(GameTryMove tryMove)
         {
@@ -521,27 +520,27 @@ namespace Go
             if (!tryMove.IsNegligible) return false;
             if (tryBoard.MoveGroupLiberties != 2 && tryBoard.MoveGroupLiberties != 3) return false;
             if (BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite()) != null) return false;
+
+            List<Point> tigerMouth = new List<Point>();
             if (tryBoard.MoveGroupLiberties == 2)
             {
-                List<Point> tigerMouth = tryBoard.GetStoneNeighbours().Where(n => tryBoard[n] == Content.Empty && ImmovableHelper.FindTigerMouth(tryBoard, c, n)).ToList();
+                tigerMouth = tryBoard.GetStoneNeighbours().Where(n => tryBoard[n] == Content.Empty && ImmovableHelper.FindTigerMouth(tryBoard, c, n)).ToList();
                 if (tigerMouth.Count != 1) return false;
                 Point t = tigerMouth.First();
                 //ensure not covered move
-                if (EyeHelper.CoveredMove(tryBoard, t, c)) return false;
+                if (!EyeHelper.FindUncoveredPoint(tryBoard, t, c)) return false;
+
                 //two-point empty group
                 List<Point> emptyNeighbour = tryBoard.GetStoneNeighbours(t.x, t.y).Where(n => tryBoard[n] == Content.Empty).ToList();
                 if (emptyNeighbour.Count != 1) return false;
                 Point e = emptyNeighbour.First();
+                if (EyeHelper.FindUncoveredPoint(tryBoard, e, c)) return false;
                 Boolean twoPointGroup = (tryBoard.GetStoneNeighbours(e.x, e.y).Where(n => !n.Equals(t)).All(n => tryBoard[n] == c));
                 if (!twoPointGroup) return false;
+                tigerMouth.Add(e);
             }
-            else
-            {
-                //check previous group
-                List<Group> previousGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
-                if (previousGroups.Any(gr => gr.Liberties.Count > 3)) return false;
-            }
-            foreach (Point lib in tryBoard.MoveGroup.Liberties)
+
+            foreach (Point lib in tryBoard.MoveGroup.Liberties.Union(tigerMouth).Distinct())
             {
                 //find tiger mouth
                 if (!ImmovableHelper.FindTigerMouth(tryBoard, c, lib)) continue;
