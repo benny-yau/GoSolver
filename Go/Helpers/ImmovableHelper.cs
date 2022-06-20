@@ -181,15 +181,27 @@ namespace Go
         /// Three liberty connect and die, not all inclusive. Connect and die group may not be target group for two liberties target group.
         /// <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_TianLongTu_Q14992_2" />
         /// <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_TianLongTu_Q14992" />
+        /// Stone neighbours at diagonal of each other <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_Side_B19" />
         /// Check if escapable <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_Corner_A86" />
         /// </summary>
         public static Boolean ThreeLibertyConnectAndDie(Board board, Point p)
         {
             Group targetGroup = board.MoveGroup;
             Content c = targetGroup.Content;
+
+            if (!ImmovableHelper.FindTigerMouth(board, c, p)) return false;
+
+            //stone neighbours at diagonal of each other
+            List<Point> stoneNeighbours = board.GetStoneNeighbours(p.x, p.y).Where(n => board[n] == c).ToList();
+            if (stoneNeighbours.Count == 0) return false;
+            Point q = stoneNeighbours.First();
+            Boolean diagonals = stoneNeighbours.Any(n => board.GetDiagonalNeighbours(q.x, q.y).Intersect(stoneNeighbours).Any());
+            if (!diagonals) return false;
+
             Board b = board.MakeMoveOnNewBoard(p, c.Opposite());
             if (b == null || b.MoveGroupLiberties != 1) return false;
             if (b.AtariTargets.Count != 1) return false;
+
             Board b2 = ImmovableHelper.CaptureSuicideGroup(b);
             if (b2 == null || b2.MoveGroupLiberties != 2) return false;
             if (!EyeHelper.FindCoveredEye(b2, p, c)) return false;

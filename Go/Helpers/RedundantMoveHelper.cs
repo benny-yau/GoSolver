@@ -136,7 +136,7 @@ namespace Go
                 return false;
 
             //check kill opponent
-            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == Content.Empty && !eyeGroup.Points.Contains(n) && !WallHelper.NoEyeForSurvival(currentBoard, n, c.Opposite())))
+            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == Content.Empty && !eyeGroup.Points.Contains(n) && tryBoard.GetStoneNeighbours(n.x, n.y).Any(s => tryBoard[s] == c.Opposite()) && !WallHelper.NoEyeForSurvival(currentBoard, n, c.Opposite())))
                 return false;
 
             //check eye for survival
@@ -190,6 +190,8 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie20" />
         /// Check weak group in connect and die <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_XuanXuanGo_B6" /> 
         /// Check suicide at tiger mouth <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_B3" /> 
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30358" /> 
+        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q30225" /> 
         /// Check survival eye <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A36" /> 
         /// <see cref="UnitTestProject.KoTest.KoTest_Scenario_Corner_A80" /> 
         /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WuQingYuan_Q30982" /> 
@@ -248,12 +250,12 @@ namespace Go
 
             //check suicide at tiger mouth
             (Boolean suicide, Board suicideBoard, Point? liberty) = SuicideAtBigTigerMouth(tryMove);
-            if (suicide) return false;
+            if (suicide && (suicideBoard.MoveGroup.Liberties.Count > 1 || suicideBoard.AtariTargets.Count > 0 || ImmovableHelper.AllConnectAndDie(currentBoard, move))) return false; 
 
             //set as neutral point for non killable move group
             if (WallHelper.IsNonKillableGroup(tryBoard))
                 tryMove.IsNeutralPoint = true;
-
+            
             return true;
         }
 
@@ -509,7 +511,6 @@ namespace Go
         /// <summary>
         /// Three liberty suicidal.
         /// <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario5dan18" />
-        /// Stone neighbours at diagonal of each other <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_Side_B19" />
         /// </summary>
         private static Boolean ThreeLibertySuicidal(GameTryMove tryMove)
         {
@@ -542,14 +543,6 @@ namespace Go
 
             foreach (Point lib in tryBoard.MoveGroup.Liberties.Union(tigerMouth).Distinct())
             {
-                //find tiger mouth
-                if (!ImmovableHelper.FindTigerMouth(tryBoard, c, lib)) continue;
-                //stone neighbours at diagonal of each other
-                List<Point> stoneNeighbours = tryBoard.GetStoneNeighbours(lib.x, lib.y).Where(n => tryBoard[n] == c).ToList();
-                if (stoneNeighbours.Count == 0) continue;
-                Point p = stoneNeighbours.First();
-                Boolean diagonals = stoneNeighbours.Any(n => tryBoard.GetDiagonalNeighbours(p.x, p.y).Intersect(stoneNeighbours).Any());
-                if (!diagonals) continue;
                 if (ImmovableHelper.ThreeLibertyConnectAndDie(tryBoard, lib))
                     return true;
             }
