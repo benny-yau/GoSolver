@@ -250,7 +250,7 @@ namespace Go
 
             //check suicide at tiger mouth
             (Boolean suicide, Board suicideBoard, Point? liberty) = SuicideAtBigTigerMouth(tryMove);
-            if (suicide && (suicideBoard.MoveGroup.Liberties.Count > 1 || suicideBoard.AtariTargets.Count > 0 || ImmovableHelper.AllConnectAndDie(currentBoard, move))) return false; 
+            if (suicide) return false;
 
             //set as neutral point for non killable move group
             if (WallHelper.IsNonKillableGroup(tryBoard))
