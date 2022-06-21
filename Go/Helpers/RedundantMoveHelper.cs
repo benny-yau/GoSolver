@@ -247,10 +247,9 @@ namespace Go
                         return false;
                 }
             }
-
             //check suicide at tiger mouth
-            (Boolean suicide, Board suicideBoard, Point? liberty) = SuicideAtBigTigerMouth(tryMove);
-            if (suicide) return false;
+            (Boolean suicide, Board suicideBoard) = SuicideAtBigTigerMouth(tryMove);
+            if (suicide && (MustHaveMoveAtBigTigerMouth(suicideBoard, tryBoard) || ImmovableHelper.AllConnectAndDie(currentBoard, move))) return false;
 
             //set as neutral point for non killable move group
             if (WallHelper.IsNonKillableGroup(tryBoard))
@@ -267,7 +266,7 @@ namespace Go
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_TianLongTu_Q16827_2" />
         /// Unstoppable group <see cref="UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_XuanXuanQiJing_A53" /> 
         /// </summary>
-        private static (Boolean, Board, Point?) SuicideAtBigTigerMouth(GameTryMove tryMove)
+        private static (Boolean, Board) SuicideAtBigTigerMouth(GameTryMove tryMove)
         {
             Point move = tryMove.Move;
             Board tryBoard = tryMove.TryGame.Board;
@@ -284,9 +283,9 @@ namespace Go
 
                 (Boolean suicide, Board b) = ImmovableHelper.IsSuicidalMove(liberty, eyeGroup.Content, currentBoard);
                 if (suicide)
-                    return (true, b, liberty);
+                    return (true, b);
                 if (ImmovableHelper.CheckConnectAndDie(b))
-                    return (true, b, liberty);
+                    return (true, b);
                 if (b != null && b.MoveGroup.Liberties.Count == 2)
                 {
                     List<Point> moveGroupLiberties = b.MoveGroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
@@ -296,9 +295,9 @@ namespace Go
                     //check for opponent survival move
                     if (tryBoard.MoveGroup.Points.Count >= 2)
                     {
-                        if (b2.CapturedPoints.Count() >= 3) return (true, b, liberty);
+                        if (b2.CapturedPoints.Count() >= 3) return (true, b);
                         if (b2.GetStoneNeighbours().Where(n => b2[n] != c.Opposite()).Select(n => new { kgroup = BothAliveHelper.GetKillerGroupFromCache(b2, n, c.Opposite()) }).Any(n => n.kgroup != null && KillerFormationHelper.CrowbarFormation(b2, n.kgroup)))
-                            return (true, b, liberty);
+                            return (true, b);
                     }
 
                     b[move] = b2[move] = c;
@@ -307,11 +306,11 @@ namespace Go
                     {
                         HashSet<Group> neighbourGroups = b2.GetGroupsFromStoneNeighbours(liberty, c);
                         if (neighbourGroups.Count == 1 || neighbourGroups.Any(n => n.Liberties.Count == 1) || WallHelper.StrongNeighbourGroups(b2, neighbourGroups)) continue;
-                        return (true, b, liberty);
+                        return (true, b);
                     }
                 }
             }
-            return (false, null, null);
+            return (false, null);
         }
         #endregion
 
@@ -1257,7 +1256,7 @@ namespace Go
         /// Check corner point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A26_2" />
         /// Check connect and die <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_5" />
         /// Specific filler move <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A17_2" />
-        /// Atari target <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A84_2" />
+        /// One point target <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A84_2" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A95" />
         /// <see cref="UnitTestProject.KoTest.KoTest_Scenario_WuQingYuan_Q31680" />
         private static Boolean CornerPointSuicide(GameTryMove tryMove, Board captureBoard)
@@ -1276,8 +1275,8 @@ namespace Go
                 return false;
 
 
-            //atari target
-            if (!tryBoard.AtariTargets.Any())
+            //one point target
+            if (!tryBoard.AtariTargets.Any(t => t.Points.Count == 1))
                 return true;
             //check connect and die
             if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c && ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.GetGroupAt(n))))
@@ -1682,8 +1681,6 @@ namespace Go
         /// Negative example <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A27" />
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23" />
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_GuanZiPu_Weiqi101_19138" />
-        /// Check opponent capture <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
-        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23" />
         /// </summary>
         private static (Boolean, Point?) MustHaveNeutralPoint(GameTryMove tryMove, GameTryMove opponentMove)
         {
@@ -1699,31 +1696,45 @@ namespace Go
             if (Convert.ToBoolean(tigerMouth.NotEmpty))
             {
                 //redundant suicidal at tiger mouth
-                if (RedundantSuicidalForMustHaveNeutralPoint(tryBoard, tigerMouth))
+                if (StrongGroupsAtMustHaveMove(tryBoard, tigerMouth))
                     return (false, null);
                 return (true, tigerMouth);
             }
+
             //neutral point at big tiger mouth
-            (Boolean suicide, Board suicideBoard, Point? liberty) = SuicideAtBigTigerMouth(tryMove);
+            (Boolean suicide, Board suicideBoard) = SuicideAtBigTigerMouth(tryMove);
             if (suicide)
             {
-                //check opponent capture
-                if (suicideBoard.MoveGroup.Liberties.Count == 2 && suicideBoard.MoveGroup.Points.Count >= 2)
-                    return (true, liberty.Value);
-                //redundant suicidal at tiger mouth
-                if (RedundantSuicidalForMustHaveNeutralPoint(tryBoard, liberty.Value))
-                    return (false, null);
-                return (true, liberty.Value);
+                Point liberty = suicideBoard.Move.Value;
+                if (MustHaveMoveAtBigTigerMouth(suicideBoard, tryBoard))
+                    return (true, liberty);
             }
 
             return (false, null);
         }
 
         /// <summary>
-        /// Redundant suicidal at tiger mouth.
+        /// Must have move at big tiger mouth.        
+        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
+        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23" />
+        /// </summary>
+        private static Boolean MustHaveMoveAtBigTigerMouth(Board suicideBoard, Board tryBoard)
+        {
+            Point liberty = suicideBoard.Move.Value;
+            //must have move for liberties more than one
+            if (suicideBoard.MoveGroup.Liberties.Count > 1)
+                return true;
+            //redundant suicidal at tiger mouth
+            if (StrongGroupsAtMustHaveMove(tryBoard, liberty))
+                return false;
+            return true;
+        }
+
+        /// <summary>
+        /// Strong neighbour groups at tiger mouth for must-have move.
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario5dan27_3" />
         /// </summary>
-        private static Boolean RedundantSuicidalForMustHaveNeutralPoint(Board tryBoard, Point tigerMouth)
+        private static Boolean StrongGroupsAtMustHaveMove(Board tryBoard, Point tigerMouth)
         {
             Content c = tryBoard.MoveGroup.Content;
             Board board = tryBoard.MakeMoveOnNewBoard(tigerMouth, c);
