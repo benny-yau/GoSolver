@@ -117,6 +117,7 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17183" />
         /// Check for corner six <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
+        /// Find real eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18796_2" />
         /// </summary>
         public static Boolean CheckRealEyeInNeighbourGroups(Board tryBoard, Board captureBoard = null)
         {
@@ -161,7 +162,7 @@ namespace Go
                 if (neighbourKillerGroups.Count == 1)
                     return true;
                 //find real eye
-                if (EyeHelper.FindRealEyeWithinEmptySpace(b, killerGroup, EyeType.SemiSolidEye))
+                if (EyeHelper.FindRealEyeWithinEmptySpace(b, killerGroup, EyeType.SemiSolidEye) && WallHelper.StrongNeighbourGroups(b, neighbourKillerGroups))
                     return true;
             }
             return false;
@@ -883,12 +884,13 @@ namespace Go
                 List<Point> moveGroup = killBoard.MoveGroup.Points.ToList();
                 int maxLengthOfGrid = MaxLengthOfGrid(moveGroup);
                 int maxIntersect = moveGroup.Max(q => killBoard.GetStoneNeighbours(q.x, q.y).Intersect(moveGroup).Count());
-                HashSet<Group> neighbourGroups = killBoard.GetGroupsFromStoneNeighbours(p, killBoard.MoveGroup.Content);
-                int minNeighbourLiberties = (neighbourGroups.Count == 0) ? 0 : neighbourGroups.Min(group => group.Liberties.Count);
-                list.Add(new LinkedPoint<Point>(p, new { maxLengthOfGrid, maxIntersect, minNeighbourLiberties, killBoard }));
+                List<Group> neighbourGroups = killBoard.GetGroupsFromStoneNeighbours(p, killBoard.MoveGroup.Content).OrderBy(n => n.Liberties.Count).ToList();
+                int minNeighbourLiberties = (neighbourGroups.Count == 0) ? 0 : neighbourGroups.First().Liberties.Count;
+                int minNeighbourPointCount = (neighbourGroups.Count == 0) ? 0 : neighbourGroups.First().Points.Count;
+                list.Add(new LinkedPoint<Point>(p, new { maxLengthOfGrid, maxIntersect, minNeighbourLiberties, minNeighbourPointCount, killBoard }));
             }
-            //order by grid length then by max of intersection then by minimum neighbour liberties
-            list = list.OrderBy(m => ((dynamic)m.CheckMove).maxLengthOfGrid).OrderByDescending(m => ((dynamic)m.CheckMove).maxIntersect).OrderBy(m => ((dynamic)m.CheckMove).minNeighbourLiberties).ToList();
+            //order by grid length then by max of intersection then by minimum neighbour liberties then by minimum neighbour point count
+            list = list.OrderBy(m => ((dynamic)m.CheckMove).maxLengthOfGrid).OrderByDescending(m => ((dynamic)m.CheckMove).maxIntersect).OrderBy(m => ((dynamic)m.CheckMove).minNeighbourLiberties).OrderBy(m => ((dynamic)m.CheckMove).minNeighbourPointCount).ToList();
 
             //check for dead formation
             List<Group> killerGroups = BothAliveHelper.GetCorneredKillerGroup(currentBoard, false);
