@@ -1276,7 +1276,7 @@ namespace Go
 
 
             //one point target
-            if (!tryBoard.AtariTargets.Any(t => t.Points.Count == 1))
+            if (!tryBoard.AtariTargets.Any())
                 return true;
             //check connect and die
             if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c && ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.GetGroupAt(n))))
