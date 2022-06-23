@@ -90,6 +90,7 @@ namespace Go
         /// Check liberty count without covered eye <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
         /// Check snapback for two-point move <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31453" />
         /// Check for double ko <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
+        /// Check redundant atari <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_2" />
         /// </summary>
         public static Boolean FindCoveredEyeMove(GameTryMove tryMove, GameTryMove opponentTryMove = null)
         {
@@ -98,7 +99,7 @@ namespace Go
             Point move = tryBoard.Move.Value;
             Content c = tryMove.MoveContent;
 
-            if (tryBoard.AtariResolved || tryBoard.IsAtariMove) return false;
+            if (tryBoard.AtariResolved) return false;
             Group eyeGroup = null;
             Point eyePoint;
             if (tryBoard.CapturedList.Count == 1 && tryBoard.CapturedPoints.Count() == 2 && EyeHelper.FindCoveredEyeByCapture(tryBoard, tryBoard.CapturedList.First()))
@@ -121,6 +122,17 @@ namespace Go
             }
             if (eyeGroup == null) return false;
 
+            if (tryBoard.IsAtariMove)
+            {
+                //check redundant atari
+                if (tryBoard.AtariTargets.Count > 1) return false;
+                Group atariTarget = tryBoard.AtariTargets.First();
+                Boolean redundantAtari = tryBoard.GetGroupsFromStoneNeighbours(move, c).Count == 1 && WallHelper.IsNonKillableGroup(currentBoard, currentBoard.GetGroupAt(atariTarget.Points.First())) && !ImmovableHelper.UnescapableGroup(tryBoard, atariTarget).Item1;
+                if (!redundantAtari)
+                    return false;
+                atariTarget.IsNonKillable = true;
+            }
+
             //ensure all groups have liberty more than two
             foreach (Group group in currentBoard.GetNeighbourGroups(eyeGroup).Where(gr => gr.Liberties.Count <= 2))
             {
@@ -140,7 +152,7 @@ namespace Go
                 return false;
 
             //check eye for survival
-            if (eyeGroup.Points.Any(e => tryBoard.GetStoneAndDiagonalNeighbours(e.x, e.y).Any(n => !eyeGroup.Points.Contains(n) && !WallHelper.NoEyeForSurvival(tryBoard, n, c))))            
+            if (eyeGroup.Points.Any(e => tryBoard.GetStoneAndDiagonalNeighbours(e.x, e.y).Any(n => !eyeGroup.Points.Contains(n) && !WallHelper.NoEyeForSurvival(tryBoard, n, c))))
                 return false;
 
             //check no eye for survival
@@ -2947,7 +2959,7 @@ namespace Go
             {
                 //check that ko fight is necessary
                 List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
-                if (ngroups.Count == 1 && tryBoard.GetNeighbourGroups(ngroups.First()).Any(group => group.Liberties.Count <= 2 && !WallHelper.IsNonKillableGroup(tryBoard, group)))
+                if (ngroups.Count == 1 && tryBoard.GetNeighbourGroups(ngroups.First()).Any(group => group.Liberties.Count == 2 && !WallHelper.IsNonKillableGroup(tryBoard, group)))
                     return false;
             }
 
