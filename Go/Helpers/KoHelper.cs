@@ -165,7 +165,7 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             if (tryBoard.singlePointCapture == null) return false;
             Point move = tryBoard.Move.Value;
-            Content c = tryBoard.MoveGroup.Content; 
+            Content c = tryBoard.MoveGroup.Content;
             Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
             if (killerGroup == null) return false;
             List<Group> neighbourGroups = tryBoard.GetNeighbourGroups(killerGroup);
@@ -201,6 +201,26 @@ namespace Go
                 if (eyePoints.Count != 1) return null;
                 return eyePoints.First();
             }
+        }
+
+        /// <summary>
+        /// Check essential atari for ko move.
+        /// </summary>
+        public static Boolean EssentialAtariForKoMove(GameTryMove tryMove)
+        {
+            Board tryBoard = tryMove.TryGame.Board;
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Point move = tryBoard.Move.Value;
+            Content c = tryMove.MoveContent;
+
+            if (!tryBoard.IsAtariMove) return false;
+            if (tryBoard.AtariTargets.Count > 1) return true;
+            Group atariTarget = tryBoard.AtariTargets.First();
+            Boolean redundantAtari = tryBoard.GetGroupsFromStoneNeighbours(move, c).Count == 1 && WallHelper.IsNonKillableGroup(currentBoard, currentBoard.GetGroupAt(atariTarget.Points.First())) && !ImmovableHelper.UnescapableGroup(tryBoard, atariTarget).Item1;
+            if (!redundantAtari)
+                return true;
+            atariTarget.IsNonKillable = true;
+            return false;
         }
     }
 }

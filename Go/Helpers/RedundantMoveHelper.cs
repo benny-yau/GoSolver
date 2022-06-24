@@ -122,16 +122,9 @@ namespace Go
             }
             if (eyeGroup == null) return false;
 
-            if (tryBoard.IsAtariMove)
-            {
-                //check redundant atari
-                if (tryBoard.AtariTargets.Count > 1) return false;
-                Group atariTarget = tryBoard.AtariTargets.First();
-                Boolean redundantAtari = tryBoard.GetGroupsFromStoneNeighbours(move, c).Count == 1 && WallHelper.IsNonKillableGroup(currentBoard, currentBoard.GetGroupAt(atariTarget.Points.First())) && !ImmovableHelper.UnescapableGroup(tryBoard, atariTarget).Item1;
-                if (!redundantAtari)
-                    return false;
-                atariTarget.IsNonKillable = true;
-            }
+            //check atari for ko move
+            if (KoHelper.EssentialAtariForKoMove(tryMove))
+                return false;
 
             //ensure all groups have liberty more than two
             foreach (Group group in currentBoard.GetNeighbourGroups(eyeGroup).Where(gr => gr.Liberties.Count <= 2))
@@ -152,7 +145,7 @@ namespace Go
                 return false;
 
             //check eye for survival
-            if (eyeGroup.Points.Any(e => tryBoard.GetStoneAndDiagonalNeighbours(e.x, e.y).Any(n => !eyeGroup.Points.Contains(n) && !WallHelper.NoEyeForSurvival(tryBoard, n, c))))
+            if (eyeGroup.Points.Any(e => tryBoard.GetDiagonalNeighbours(e.x, e.y).Any(n => !WallHelper.NoEyeForSurvival(tryBoard, n, c))))
                 return false;
 
             //check no eye for survival
@@ -266,7 +259,7 @@ namespace Go
             //set as neutral point for non killable move group
             if (WallHelper.IsNonKillableGroup(tryBoard))
                 tryMove.IsNeutralPoint = true;
-            
+
             return true;
         }
 
@@ -2881,8 +2874,6 @@ namespace Go
             Boolean koEnabled = KoHelper.KoSurvivalEnabled(SurviveOrKill.Kill, tryMove.CurrentGame.GameInfo);
             if (!koEnabled && !PossibilityOfDoubleKo(tryMove)) return true;
             if (koEnabled && KoHelper.CheckKillerKoWithinKillerGroup(tryMove)) return true;
-            if (!tryMove.IsNegligibleForKo)
-                return false;
             Content c = tryMove.MoveContent;
 
             //make move as survival ko

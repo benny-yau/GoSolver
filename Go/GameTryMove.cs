@@ -123,8 +123,7 @@ namespace Go
         {
             get
             {
-                Board tryBoard = this.TryGame.Board;
-                if (tryBoard.IsAtariMove)
+                if (KoHelper.EssentialAtariForKoMove(this))
                     return false;
 
                 return true;
