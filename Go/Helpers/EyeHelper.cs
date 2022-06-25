@@ -305,13 +305,8 @@ namespace Go
                     return false;
 
                 //check unique corner connect and die
-                if (eyeType == EyeType.SemiSolidEye)
-                {
-                    if (killerGroup.Points.Count == 1 && CheckUniqueCornerConnectAndDie(board, killerGroup))
-                        return false;
-                    if (CheckTwoPointUniqueCornerAndDie(board, killerGroup))
-                        return false;
-                }
+                if (CheckUniqueCornerConnectAndDie(board, killerGroup))
+                    return false;
 
                 //ensure survival can make move at empty spaces
                 if (neighbourGroups.Count > 1 && killerGroup.Points.Any(p => board[p] == killerGroup.Content) && !ImmovableHelper.ClearEmptySpace(board, killerGroup))
@@ -330,42 +325,45 @@ namespace Go
         }
 
         /// <summary>
-        /// Two-point unique corner connect and die.
-        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanQiJing_A38" /> 
-        /// </summary>
-        private static Boolean CheckTwoPointUniqueCornerAndDie(Board board, Group killerGroup)
-        {
-            Content c = killerGroup.Content;
-            if (!KoHelper.KoContentEnabled(c, board.GameInfo)) return false;
-            if (killerGroup.Points.Count != 3) return false;
-            List<Point> contentPoints = killerGroup.Points.Where(t => board[t] == c).ToList();
-            if (contentPoints.Count != 2) return false;
-
-            if (CheckUniqueCornerConnectAndDie(board, killerGroup))
-                return true;
-
-            return false;
-        }
-
-        /// <summary>
         /// Unique corner connect and die.
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_B33" /> 
+        /// One-point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_B33" /> 
+        /// Two-point capture <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanQiJing_A38" /> 
         /// </summary>
         private static Boolean CheckUniqueCornerConnectAndDie(Board board, Group killerGroup)
         {
             Content c = killerGroup.Content;
             if (!KoHelper.KoContentEnabled(c, board.GameInfo)) return false;
+
+            Board b = board;
+            if (killerGroup.Points.Count == 1)
+            {
+                //ensure corner point
+                if (!board.GetGroupsFromStoneNeighbours(killerGroup.Points.First(), c).Any(gr => gr.Points.Any(p => board.CornerPoint(p)))) return false;
+
+            }
+            else
+            {
+                //two-point capture
+                if (killerGroup.Points.Count != 3) return false;
+                List<Point> contentPoints = killerGroup.Points.Where(t => board[t] == c).ToList();
+                if (contentPoints.Count != 2) return false;
+
+                //ensure corner point
+                if (killerGroup.Points.Count > 1 && !killerGroup.Points.Any(p => board.CornerPoint(p))) return false;
+            }
+
             List<LinkedPoint<Point>> diagonalPoints = LinkHelper.GetGroupDiagonals(board, killerGroup);
             List<Point> eyeDiagonals = diagonalPoints.Select(p => p.Move).Where(p => board[p] == Content.Empty).ToList();
             if (eyeDiagonals.Count != 1) return false;
-
-            Board b = board;
-            //tiger mouth at diagonal
-            Point? libertyPoint = ImmovableHelper.FindTigerMouth(board, eyeDiagonals.First(), c.Opposite());
-            if (libertyPoint != null && board[libertyPoint.Value] == Content.Empty)
+            if (killerGroup.Points.Count > 1)
             {
-                (_, b) = ImmovableHelper.IsSuicidalMove(libertyPoint.Value, c.Opposite(), b);
-                if (b == null) return false;
+                //tiger mouth at diagonal
+                Point? libertyPoint = ImmovableHelper.FindTigerMouth(board, eyeDiagonals.First(), c.Opposite());
+                if (libertyPoint != null && board[libertyPoint.Value] == Content.Empty)
+                {
+                    (_, b) = ImmovableHelper.IsSuicidalMove(libertyPoint.Value, c.Opposite(), b);
+                    if (b == null) return false;
+                }
             }
 
             //eye at diagonal
@@ -373,9 +371,6 @@ namespace Go
             if (!EyeHelper.FindEye(b, eye)) return false;
             List<Group> eyeGroups = b.GetGroupsFromStoneNeighbours(eye, c).ToList();
             if (!eyeGroups.All(group => group.Liberties.Count > 1)) return false;
-            //ensure corner point
-            if (killerGroup.Points.Count == 1 && !eyeGroups.Any(gr => gr.Points.Any(p => board.CornerPoint(p)))) return false;
-            if (killerGroup.Points.Count > 1 && !killerGroup.Points.Any(p => board.CornerPoint(p))) return false;
 
             //check connect and die at target group
             Group targetGroup = eyeGroups.Except(b.GetNeighbourGroups(killerGroup)).FirstOrDefault();
