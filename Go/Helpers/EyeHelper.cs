@@ -338,7 +338,8 @@ namespace Go
             if (killerGroup.Points.Count == 1)
             {
                 //ensure corner point
-                if (!board.GetGroupsFromStoneNeighbours(killerGroup.Points.First(), c).Any(gr => gr.Points.Any(p => board.CornerPoint(p)))) return false;
+                Point k = killerGroup.Points.First();
+                if (!board.GetStoneNeighbours(k.x, k.y).Any(p => board.CornerPoint(p))) return false;
 
             }
             else
