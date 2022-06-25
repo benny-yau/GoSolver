@@ -290,26 +290,22 @@ namespace Go
             b.LastMoves.Clear();
 
             //ensure all groups have more than one liberty
-            List<Group> neighbourGroups = board.GetNeighbourGroups(killerGroup);
-            if (neighbourGroups.Count > 1 && neighbourGroups.Any(group => group.Liberties.Count == 1))
+            List<Group> eyeGroups = board.GetNeighbourGroups(killerGroup);
+            if (eyeGroups.Count > 1 && eyeGroups.Any(group => group.Liberties.Count == 1))
                 return false;
 
             //find real eye
             if (MakeMoveWithinEmptySpace(b, killerGroup, eyeType))
             {
-                if (neighbourGroups.Count == 1 || eyeType == EyeType.CoveredEye)
+                if (eyeGroups.Count == 1 || eyeType == EyeType.CoveredEye)
                     return true;
 
                 //check snapback
-                if (neighbourGroups.Any(group => ImmovableHelper.CheckSnapback(board, group)))
+                if (eyeGroups.Any(group => ImmovableHelper.CheckSnapback(board, group)))
                     return false;
 
                 //check unique corner connect and die
                 if (CheckUniqueCornerConnectAndDie(board, killerGroup))
-                    return false;
-
-                //ensure survival can make move at empty spaces
-                if (neighbourGroups.Count > 1 && killerGroup.Points.Any(p => board[p] == killerGroup.Content) && !ImmovableHelper.ClearEmptySpace(board, killerGroup))
                     return false;
 
                 return true;
@@ -334,12 +330,11 @@ namespace Go
             Content c = killerGroup.Content;
             if (!KoHelper.KoContentEnabled(c, board.GameInfo)) return false;
 
-            Board b = board;
             if (killerGroup.Points.Count == 1)
             {
                 //ensure corner point
                 Point k = killerGroup.Points.First();
-                if (!board.GetStoneNeighbours(k.x, k.y).Any(p => board.CornerPoint(p))) return false;
+                if (!board.GetStoneNeighbours(k.x, k.y).Any(p => board[p] == c.Opposite() && board.CornerPoint(p) && board.GetGroupAt(p).Points.Count == 1)) return false;
 
             }
             else
@@ -350,12 +345,14 @@ namespace Go
                 if (contentPoints.Count != 2) return false;
 
                 //ensure corner point
-                if (killerGroup.Points.Count > 1 && !killerGroup.Points.Any(p => board.CornerPoint(p))) return false;
+                if (!killerGroup.Points.Any(p => board.CornerPoint(p))) return false;
             }
 
             List<LinkedPoint<Point>> diagonalPoints = LinkHelper.GetGroupDiagonals(board, killerGroup);
             List<Point> eyeDiagonals = diagonalPoints.Select(p => p.Move).Where(p => board[p] == Content.Empty).ToList();
             if (eyeDiagonals.Count != 1) return false;
+
+            Board b = board;
             if (killerGroup.Points.Count > 1)
             {
                 //tiger mouth at diagonal
@@ -369,7 +366,8 @@ namespace Go
 
             //eye at diagonal
             Point eye = eyeDiagonals.First();
-            if (!EyeHelper.FindEye(b, eye)) return false;
+            if (!EyeHelper.FindEye(b, eye) || board.PointWithinMiddleArea(eye)) return false;
+
             List<Group> eyeGroups = b.GetGroupsFromStoneNeighbours(eye, c).ToList();
             if (!eyeGroups.All(group => group.Liberties.Count > 1)) return false;
 
