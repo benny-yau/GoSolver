@@ -596,7 +596,8 @@ namespace Go
                     continue;
 
                 //check connect and die
-                if (CheckConnectAndDie(tryBoard, targetGroup))
+                (_, Board board) = ConnectAndDie(tryBoard, targetGroup);
+                if (board != null && board.MoveGroup.Points.Count == 1 && board.GetGroupsFromStoneNeighbours(board.Move.Value, c).Count > 1)
                     return true;
 
                 //check unescapable group

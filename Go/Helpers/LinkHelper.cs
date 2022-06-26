@@ -357,6 +357,10 @@ namespace Go
 
         /// <summary>
         /// Link to groups that are not eye groups.
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" /> 
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q16902" /> 
+        /// Captured eye point <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" /> 
+        /// Link for kill <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
         /// </summary>
         public static Boolean LinkToNonEyeGroups(Board tryBoard, Board currentBoard, Point eyePoint)
         {
@@ -367,12 +371,17 @@ namespace Go
             List<Group> groups = currentBoard.GetGroupsFromPoints(groupPoints).ToList();
             if (groups.All(group => WallHelper.IsNonKillableGroup(currentBoard, group))) return false;
             groups = groups.Except(eyeNeighbourGroups).Where(gr => gr.Liberties.Count > 1).ToList();
+
+            //link for kill
+            if (groups.Any() && tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == c.Opposite() && !WallHelper.IsNonKillableGroup(tryBoard, n)))
+                return true;
+
             //captured eye point
             if (tryBoard.CapturedPoints.Contains(eyePoint) && (groups.Count > 0 || !currentBoard.GetNeighbourGroups(currentBoard.GetGroupAt(eyePoint)).Any(gr => WallHelper.IsNonKillableGroup(currentBoard, gr))))
                 return LinkHelper.LinkForGroups(tryBoard, currentBoard);
 
+            //normal link
             return groups.Any(group => tryBoard.MoveGroup.Points.Contains(group.Points.First()) || LinkHelper.IsDiagonallyConnectedGroups(tryBoard, tryBoard.GetGroupAt(group.Points.First()), tryBoard.MoveGroup));
         }
-
     }
 }
