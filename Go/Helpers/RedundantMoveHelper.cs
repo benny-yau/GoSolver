@@ -1596,16 +1596,56 @@ namespace Go
         /// Neutral points are moves that cannot create eye for the survival group. 
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WuQingYuan_Q30935" />
         /// </summary>
-        public static Boolean NeutralPointSurvivalMove(GameTryMove tryMove, Boolean survivalMove = true)
+        public static Boolean NeutralPointSurvivalMove(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
-            if (survivalMove && !tryMove.IsNegligible)
+            if (opponentMove == null && !tryMove.IsNegligible)
             {
                 if (!RedundantAtariAtCoveredEye(tryMove))
                     return false;
             }
             //validate neutral point
             Boolean isNeutralPoint = ValidateNeutralPoint(tryMove);
+            if (!isNeutralPoint && opponentMove == null)
+            {
+                if (NeutralPointAtNonKillableEdge(tryMove))
+                    return true;
+            }
             return isNeutralPoint;
+        }
+
+        /// <summary>
+        /// Neutral point at non killable edge. 
+        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A26" />
+        /// Check killer group for captured points <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_ScenarioHighLevel18" />
+        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_TianLongTu_Q17132" />
+        /// <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_SiHuoDaQuan_CornerA29_2" />
+        /// Check immovable point at stone and diagonal <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario3kyu28" />
+        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_TianLongTu_Q17132_3" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_A82_101Weiqi" />
+        /// </summary>
+        private static Boolean NeutralPointAtNonKillableEdge(GameTryMove tryMove)
+        {
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            Content c = tryBoard.MoveGroup.Content;
+            //ensure move at non killable edge
+            if (tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c.Opposite() && WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.GetGroupAt(n))) < 2) return false;
+
+            //check killer group for captured points
+            if (tryBoard.GetStoneAndDiagonalNeighbours().Where(n => tryBoard[n] != c).Select(n => new { kgroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, n, c) }).Any(n => n.kgroup != null && n.kgroup.Points.Any(q => tryBoard[q] == c.Opposite())))
+                return false;
+
+            //check immovable point at stone and diagonal
+            foreach (Point p in tryBoard.GetStoneAndDiagonalNeighbours().Where(n => tryBoard[n] == Content.Empty))
+            {
+                if (EyeHelper.FindEye(tryBoard, p, c)) return false;
+                (Boolean immovable, Point? q) = ImmovableHelper.IsImmovablePoint(p, c, tryBoard);
+                if (q == null) continue;
+                Board b = tryBoard.MakeMoveOnNewBoard(q.Value, c.Opposite());
+                if (b == null || ImmovableHelper.CheckConnectAndDie(b))
+                    return false;
+            }
+            return true;
         }
 
         /// <summary>
@@ -1625,7 +1665,7 @@ namespace Go
             GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
             if (opponentMove == null) return false;
 
-            Boolean isNeutralPoint = NeutralPointSurvivalMove(opponentMove, false);
+            Boolean isNeutralPoint = NeutralPointSurvivalMove(opponentMove, tryMove);
             if (isNeutralPoint)
             {
                 if (ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.MoveGroup)) return isNeutralPoint;
@@ -2309,7 +2349,7 @@ namespace Go
         /// Find eye diagonal moves that are redundant.
         /// <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18473" />
         /// Ensure diagonal not required for both alive. 
-        /// <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTestScenario_Scenario_SiHuoDaQuan_CornerA29" />
+        /// <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_SiHuoDaQuan_CornerA29_2" />
         /// Check link to groups <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_WuQingYuan_Q31154" />
         /// </summary>
         public static Boolean SurvivalEyeDiagonalMove(GameTryMove tryMove)
