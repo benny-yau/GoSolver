@@ -165,7 +165,7 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             if (tryBoard.singlePointCapture == null) return false;
             Point move = tryBoard.Move.Value;
-            Content c = tryBoard.MoveGroup.Content;
+            Content c = tryBoard.MoveGroup.Content; 
             Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
             if (killerGroup == null) return false;
             List<Group> neighbourGroups = tryBoard.GetNeighbourGroups(killerGroup);
@@ -201,6 +201,22 @@ namespace Go
                 if (eyePoints.Count != 1) return null;
                 return eyePoints.First();
             }
+        }
+
+        /// <summary>
+        /// Check break link for ko move.
+        /// </summary>
+        public static Boolean CheckBreakLinkKoMove(Board currentBoard, Point eyePoint, Content c)
+        {
+            List<Point> stoneNeighbours = currentBoard.GetStoneNeighbours(eyePoint.x, eyePoint.y).Where(n => currentBoard[n] == c).ToList();
+            stoneNeighbours = stoneNeighbours.Where(n => currentBoard.GetGroupAt(n).Liberties.Count > 1).ToList();
+            if (stoneNeighbours.Count == 2)
+            {
+                Point firstStone = stoneNeighbours[0];
+                if (!currentBoard.GetDiagonalNeighbours(firstStone.x, firstStone.y).Any(n => n.Equals(stoneNeighbours[1])))
+                    return true;
+            }
+            return false;
         }
 
         /// <summary>

@@ -186,7 +186,7 @@ namespace Go
         /// Check for weak eye group <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_B28" />
         /// Check both alive <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_SimpleSeki" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_2" /> 
-        /// Check non-diagonal link <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WuQingYuan_Q31657" /> 
+        /// Check break link <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WuQingYuan_Q31657" /> 
         /// Ensure group more than one point have more than one liberty <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Nie20" /> 
         /// Check for killer formation <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A67" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie20" />
@@ -239,15 +239,9 @@ namespace Go
                 if (BothAliveHelper.EnableCheckForPassMove(tryBoard))
                     return false;
 
-                //check non-diagonal link 
-                List<Point> stoneNeighbours = currentBoard.GetStoneNeighbours(move.x, move.y).Where(n => currentBoard[n] == c).ToList();
-                stoneNeighbours = stoneNeighbours.Where(n => currentBoard.GetGroupAt(n).Liberties.Count > 1).ToList();
-                if (stoneNeighbours.Count == 2)
-                {
-                    Point firstStone = stoneNeighbours[0];
-                    if (!currentBoard.GetDiagonalNeighbours(firstStone.x, firstStone.y).Any(n => n.Equals(stoneNeighbours[1])))
-                        return false;
-                }
+                //check break link
+                if (KoHelper.CheckBreakLinkKoMove(tryMove.CurrentGame.Board, move, c))
+                    return false;
             }
             //check suicide at tiger mouth
             (Boolean suicide, Board suicideBoard) = SuicideAtBigTigerMouth(tryMove);
@@ -1633,11 +1627,11 @@ namespace Go
             if (tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c.Opposite() && WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.GetGroupAt(n))) < 2) return false;
 
             //check if any killable group
-            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == c.Opposite() && !WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.GetGroupAt(n)))) 
+            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite() && !WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.GetGroupAt(n)))) 
                 return false;
 
             //check killer group for captured points
-                if (tryBoard.GetStoneAndDiagonalNeighbours().Where(n => tryBoard[n] != c).Select(n => new { kgroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, n, c) }).Any(n => n.kgroup != null && n.kgroup.Points.Any(q => tryBoard[q] == c.Opposite())))
+            if (tryBoard.GetStoneAndDiagonalNeighbours().Where(n => tryBoard[n] != c).Select(n => new { kgroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, n, c) }).Any(n => n.kgroup != null && n.kgroup.Points.Any(q => tryBoard[q] == c.Opposite())))
                 return false;
 
             //check immovable point at stone and diagonal
@@ -1650,7 +1644,6 @@ namespace Go
                 if (b == null || ImmovableHelper.CheckConnectAndDie(b))
                     return false;
             }
-
             return true;
         }
 
@@ -2978,6 +2971,7 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Nie20" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q2413" /> 
         /// Real eye at diagonal <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi" /> 
+        /// Break link <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30152" /> 
         /// </summary>
         public static Boolean CheckRedundantKo(GameTryMove tryMove)
         {
@@ -2994,6 +2988,10 @@ namespace Go
                 //check that ko fight is necessary
                 List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
                 if (ngroups.Count == 1 && tryBoard.GetNeighbourGroups(ngroups.First()).Any(group => group.Liberties.Count == 2 && !WallHelper.IsNonKillableGroup(tryBoard, group)))
+                    return false;
+
+                //check break link
+                if (KoHelper.CheckBreakLinkKoMove(tryBoard, eyePoint.Value, c))
                     return false;
             }
 
