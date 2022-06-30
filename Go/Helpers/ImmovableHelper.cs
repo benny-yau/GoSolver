@@ -24,7 +24,7 @@ namespace Go
             Content content = board[p];
             if (content == Content.Empty)
             {
-                List<Point> stoneNeighbours = board.GetStoneNeighbours(p.x, p.y);
+                List<Point> stoneNeighbours = board.GetStoneNeighbours(p);
                 List<Point> libertyPoint = stoneNeighbours.Where(n => board[n] != c).ToList();
                 if (libertyPoint.Count != 1) return null;
                 Point q = libertyPoint.First();
@@ -128,7 +128,7 @@ namespace Go
             }
 
             //check for reverse ko fight 
-            List<Point> stoneNeighbours = board.GetStoneNeighbours(q.x, q.y);
+            List<Point> stoneNeighbours = board.GetStoneNeighbours(q);
             if (stoneNeighbours.Any(n => board[n] == c)) return false;
             List<Point> eyeNeighbour = stoneNeighbours.Where(n => board[n] == Content.Empty).ToList();
             if (eyeNeighbour.Count == 1 && KoHelper.IsReverseKoFight(board, eyeNeighbour.First(), c.Opposite()))
@@ -192,10 +192,10 @@ namespace Go
             if (!ImmovableHelper.FindTigerMouth(board, c, p)) return false;
 
             //stone neighbours at diagonal of each other
-            List<Point> stoneNeighbours = board.GetStoneNeighbours(p.x, p.y).Where(n => board[n] == c).ToList();
+            List<Point> stoneNeighbours = board.GetStoneNeighbours(p).Where(n => board[n] == c).ToList();
             if (stoneNeighbours.Count == 0) return false;
             Point q = stoneNeighbours.First();
-            Boolean diagonals = stoneNeighbours.Any(n => board.GetDiagonalNeighbours(q.x, q.y).Intersect(stoneNeighbours).Any());
+            Boolean diagonals = stoneNeighbours.Any(n => board.GetDiagonalNeighbours(q).Intersect(stoneNeighbours).Any());
             if (!diagonals) return false;
 
             Board b = board.MakeMoveOnNewBoard(p, c.Opposite());
@@ -234,8 +234,8 @@ namespace Go
         {
             Point p = tryBoard.Move.Value;
             Content c = tryBoard[p];
-            if (currentBoard[p] != Content.Empty || currentBoard.PointWithinMiddleArea(p.x, p.y)) return false;
-            Point eyePoint = currentBoard.GetDiagonalNeighbours(p.x, p.y).FirstOrDefault(n => EyeHelper.FindEye(currentBoard, n));
+            if (currentBoard[p] != Content.Empty || currentBoard.PointWithinMiddleArea(p)) return false;
+            Point eyePoint = currentBoard.GetDiagonalNeighbours(p).FirstOrDefault(n => EyeHelper.FindEye(currentBoard, n));
             if (!Convert.ToBoolean(eyePoint.NotEmpty)) return false;
 
             (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(libertyPoint, c, currentBoard);
@@ -364,12 +364,12 @@ namespace Go
         /// </summary>
         public static Boolean IsEndCrawlingMove(Board board, Point libertyPoint, Content c)
         {
-            if (board.PointWithinMiddleArea(libertyPoint.x, libertyPoint.y)) return false;
+            if (board.PointWithinMiddleArea(libertyPoint)) return false;
             if (board.InternalMakeMove(libertyPoint, c) != MakeMoveResult.Legal) return false;
             HashSet<Point> liberties = board.GetGroupAt(libertyPoint).Liberties;
             if (liberties.Count == 1) return true;
             if (liberties.Count != 2) return false;
-            List<Point> capturePoint = liberties.Where(q => board.PointWithinMiddleArea(q.x, q.y)).ToList();
+            List<Point> capturePoint = liberties.Where(q => board.PointWithinMiddleArea(q)).ToList();
             if (capturePoint.Count == 1)
             {
                 if (board.InternalMakeMove(capturePoint.First(), c.Opposite()) != MakeMoveResult.Legal) return false;
@@ -468,13 +468,13 @@ namespace Go
                 List<Group> suicideGroups = b.GetNeighbourGroups(targetGroup).Where(gr => gr.Points.Count <= 2 && gr.Liberties.Count == 1).ToList();
                 if (suicideGroups.Count != 2) continue;
                 //one point move within two point group or two point move
-                List<Group> suicideWithinTwoPointGroup = suicideGroups.Select(gr => new { group = gr, liberty = gr.Liberties.First() }).Where(gr => gr.group.Points.Count == 2 || board.GetStoneNeighbours(gr.liberty.x, gr.liberty.y).Where(n => !n.Equals(gr.group.Points.First())).All(n => board[n] == c)).Select(gr => gr.group).ToList();
+                List<Group> suicideWithinTwoPointGroup = suicideGroups.Select(gr => new { group = gr, liberty = gr.Liberties.First() }).Where(gr => gr.group.Points.Count == 2 || board.GetStoneNeighbours(gr.liberty).Where(n => !n.Equals(gr.group.Points.First())).All(n => board[n] == c)).Select(gr => gr.group).ToList();
                 if (suicideWithinTwoPointGroup.Count != 1) continue;
 
                 Group suicideGroupAtTigerMouth = suicideGroups.Where(gr => gr != suicideWithinTwoPointGroup.First() && gr.Points.Count == 1).FirstOrDefault();
                 if (suicideGroupAtTigerMouth == null) continue;
                 Point r = suicideGroupAtTigerMouth.Points.First();
-                if (!b.GetDiagonalNeighbours(r.x, r.y).Any(n => suicideWithinTwoPointGroup.First().Points.Contains(n))) continue;
+                if (!b.GetDiagonalNeighbours(r).Any(n => suicideWithinTwoPointGroup.First().Points.Contains(n))) continue;
                 //capture move
                 if (IsSnapback(b, targetGroup, suicideGroupAtTigerMouth))
                     return true;
@@ -564,7 +564,7 @@ namespace Go
         {
             if (c == Content.Unknown)
             {
-                List<Point> stoneNeighbours = capturedBoard.GetStoneNeighbours(p.x, p.y).Where(q => capturedBoard[q] != Content.Empty).ToList();
+                List<Point> stoneNeighbours = capturedBoard.GetStoneNeighbours(p).Where(q => capturedBoard[q] != Content.Empty).ToList();
                 c = capturedBoard[stoneNeighbours.First()];
                 if (stoneNeighbours.Any(n => capturedBoard[n] != c))
                     throw new Exception("Different content in connect and die.");

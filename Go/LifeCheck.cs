@@ -121,7 +121,7 @@ namespace Go
                 //cover external liberties
                 neighbourGroups.ForEach(gr => gr.Liberties.Where(p => BothAliveHelper.GetKillerGroupFromCache(board, p, c.Opposite()) == null).ToList().ForEach(p => coveredBoard[p] = c));
                 //get middle point of group
-                Point q = group.Points.First(s => board.GetStoneNeighbours(s.x, s.y).Intersect(group.Points).Count() == 2);
+                Point q = group.Points.First(s => board.GetStoneNeighbours(s).Intersect(group.Points).Count() == 2);
                 //make move and check for unescapable group
                 Board b = coveredBoard.MakeMoveOnNewBoard(q, c);
                 if (b != null && b.AtariTargets.Count > 0 && b.AtariTargets.Any(t => ImmovableHelper.UnescapableGroup(b, t).Item1))
@@ -207,7 +207,7 @@ namespace Go
         /// </summary>
         private static Boolean CheckLibertyPointOfTigerMouths(Board board, Content c, Point tigerMouth, Point libertyPoint)
         {
-            if (!board.GetStoneNeighbours(tigerMouth.x, tigerMouth.y).Any(n => board[n] == c.Opposite())) return false;
+            if (!board.GetStoneNeighbours(tigerMouth).Any(n => board[n] == c.Opposite())) return false;
             if (BothAliveHelper.GetKillerGroupFromCache(board, libertyPoint, c) != null) return false;
             //escape at liberty point
             Board b = board.MakeMoveOnNewBoard(libertyPoint, c.Opposite(), true);
@@ -230,7 +230,7 @@ namespace Go
             Board b1 = board.MakeMoveOnNewBoard(libertyPoint, c.Opposite(), true);
             if (b1 == null || b1.MoveGroupLiberties <= 3) return false;
             //get all stone neigbours of liberty
-            List<Point> diagonals = board.GetStoneNeighbours(libertyPoint.x, libertyPoint.y);
+            List<Point> diagonals = board.GetStoneNeighbours(libertyPoint);
             diagonals.Remove(tigerMouth);
             diagonals = diagonals.Where(d => board[d] == Content.Empty && ImmovableHelper.FindTigerMouth(board, c, d)).ToList();
             foreach (Point diagonal in diagonals)

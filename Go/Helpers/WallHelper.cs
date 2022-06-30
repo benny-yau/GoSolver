@@ -19,12 +19,12 @@ namespace Go
             if (board[eyePoint] == c || IsWall(board, eyePoint))
                 return true;
 
-            if (board.GetStoneNeighbours(eyePoint.x, eyePoint.y).Any(n => IsWall(board, n)))
+            if (board.GetStoneNeighbours(eyePoint).Any(n => IsWall(board, n)))
                 return true;
 
             Boolean eyeInMiddleArea = board.PointWithinMiddleArea(eyePoint);
             int diagonalWallCount = 0;
-            foreach (Point q in board.GetDiagonalNeighbours(eyePoint.x, eyePoint.y))
+            foreach (Point q in board.GetDiagonalNeighbours(eyePoint))
             {
                 if (IsWall(board, q))
                     diagonalWallCount += 1;

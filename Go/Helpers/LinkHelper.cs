@@ -20,7 +20,7 @@ namespace Go
             Point move = tryBoard.Move.Value;
             Content c = tryBoard[move];
 
-            List<Point> groupPoints = currentBoard.GetStoneAndDiagonalNeighbours(move.x, move.y).Where(n => currentBoard[n] == c).ToList();
+            List<Point> groupPoints = currentBoard.GetStoneAndDiagonalNeighbours(move).Where(n => currentBoard[n] == c).ToList();
             tryBoard.CapturedList.ForEach(q => groupPoints.AddRange(q.Neighbours.Where(n => currentBoard[n] == c)));
             List<Group> groups = currentBoard.GetGroupsFromPoints(groupPoints).ToList();
             if (groups.Count <= 1) return false;
@@ -127,7 +127,7 @@ namespace Go
                 }
 
                 //ensure three opponent groups
-                List<Point> opponentStones = board.GetStoneNeighbours(p.x, p.y).Where(n => board[n] == c).ToList();
+                List<Point> opponentStones = board.GetStoneNeighbours(p).Where(n => board[n] == c).ToList();
                 HashSet<Group> neighbourGroups = board.GetGroupsFromPoints(opponentStones);
                 if (neighbourGroups.Count != 3 || neighbourGroups.Any(group => !threeGroups.Contains(group))) continue;
 
@@ -136,7 +136,7 @@ namespace Go
                 if (suicidal) continue;
 
                 //check if any of the other two diagonals are immovable
-                List<Point> otherDiagonals = board.GetDiagonalNeighbours(p.x, p.y).Where(n => board.GetStoneNeighbours(n.x, n.y).Intersect(opponentStones).Count() >= 2).ToList();
+                List<Point> otherDiagonals = board.GetDiagonalNeighbours(p).Where(n => board.GetStoneNeighbours(n).Intersect(opponentStones).Count() >= 2).ToList();
                 if (otherDiagonals.All(d => !ImmovableHelper.IsImmovablePoint(d, c, b).Item1))
                     return false;
             }
@@ -201,7 +201,7 @@ namespace Go
             foreach (Point liberty in liberties)
             {
                 if (EyeHelper.FindEye(board, liberty, groups.First().Content))
-                    board.GetStoneNeighbours(liberty.x, liberty.y).Where(n => board.GetGroupAt(n).Points.Count == 1).ToList().ForEach(x => groups.Add(board.GetGroupAt(x)));
+                    board.GetStoneNeighbours(liberty).Where(n => board.GetGroupAt(n).Points.Count == 1).ToList().ForEach(x => groups.Add(board.GetGroupAt(x)));
             }
             return groups;
         }
@@ -216,7 +216,7 @@ namespace Go
             Content c = group.Content;
             foreach (Point p in group.Points)
             {
-                foreach (Point q in board.GetDiagonalNeighbours(p.x, p.y))
+                foreach (Point q in board.GetDiagonalNeighbours(p))
                 {
                     if (board[q] != c) continue;
                     if (PointsBetweenDiagonals(p, q).Any(r => board[r] == c)) continue;
@@ -239,7 +239,7 @@ namespace Go
             Content c = group.Content;
             foreach (Point p in group.Points)
             {
-                foreach (Point q in board.GetDiagonalNeighbours(p.x, p.y))
+                foreach (Point q in board.GetDiagonalNeighbours(p))
                 {
                     if (PointsBetweenDiagonals(p, q).Any(r => board[r] == c)) continue;
                     rc.Add(new LinkedPoint<Point>(q, p));
@@ -367,7 +367,7 @@ namespace Go
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             HashSet<Group> eyeNeighbourGroups = currentBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite());
-            List<Point> groupPoints = currentBoard.GetStoneAndDiagonalNeighbours(move.x, move.y).Where(n => currentBoard[n] == c).ToList();
+            List<Point> groupPoints = currentBoard.GetStoneAndDiagonalNeighbours(move).Where(n => currentBoard[n] == c).ToList();
             List<Group> groups = currentBoard.GetGroupsFromPoints(groupPoints).ToList();
             if (groups.All(group => WallHelper.IsNonKillableGroup(currentBoard, group))) return false;
             groups = groups.Except(eyeNeighbourGroups).Where(gr => gr.Liberties.Count > 1).ToList();

@@ -25,8 +25,7 @@ namespace Go
         public List<Point> LastMoves = new List<Point>();
 
         private List<Group> atariTargets;
-        public List<Group> AtariTargets
-        {
+        public List<Group> AtariTargets {
             get
             {
                 if (atariTargets == null)
@@ -276,10 +275,10 @@ namespace Go
             return rc;
         }
 
-        public List<Point> GetStoneNeighbours()
+        public List<Point> GetStoneNeighbours(Point? p = null)
         {
-            Point p = this.Move.Value;
-            return GetStoneNeighbours(p.x, p.y);
+            if (p == null) p = this.Move.Value;
+            return GetStoneNeighbours(p.Value.x, p.Value.y);
         }
 
         /// <summary>
@@ -295,10 +294,10 @@ namespace Go
             return rc;
         }
 
-        public List<Point> GetDiagonalNeighbours()
+        public List<Point> GetDiagonalNeighbours(Point? p = null)
         {
-            Point p = this.Move.Value;
-            return GetDiagonalNeighbours(p.x, p.y);
+            if (p == null) p = this.Move.Value;
+            return GetDiagonalNeighbours(p.Value.x, p.Value.y);
         }
 
         /// <summary>
@@ -308,10 +307,10 @@ namespace Go
         {
             return GetStoneNeighbours(x, y).Union(GetDiagonalNeighbours(x, y)).ToList();
         }
-        public List<Point> GetStoneAndDiagonalNeighbours()
+        public List<Point> GetStoneAndDiagonalNeighbours(Point? p = null)
         {
-            Point p = this.Move.Value;
-            return GetStoneAndDiagonalNeighbours(p.x, p.y);
+            if (p == null) p = this.Move.Value;
+            return GetStoneAndDiagonalNeighbours(p.Value.x, p.Value.y);
         }
 
         /// <summary>
@@ -374,7 +373,7 @@ namespace Go
 
         public HashSet<Group> GetGroupsFromStoneNeighbours(Point p, Content c)
         {
-            List<Point> stoneNeighbours = this.GetStoneNeighbours(p.x, p.y).Where(q => this[q] == c.Opposite()).ToList();
+            List<Point> stoneNeighbours = this.GetStoneNeighbours(p).Where(q => this[q] == c.Opposite()).ToList();
             return this.GetGroupsFromPoints(stoneNeighbours);
         }
 
@@ -408,7 +407,7 @@ namespace Go
         {
             if (p == null) p = this.Move;
             Content c = this[p.Value];
-            return (this.GetStoneNeighbours(p.Value.x, p.Value.y).All(q => this[q] != c));
+            return this.GetStoneNeighbours(p).All(q => this[q] != c);
         }
 
         /// <summary>
@@ -529,7 +528,7 @@ namespace Go
 
         public Boolean CornerPoint(Point p)
         {
-            return ((p.x == 0 || p.x == SizeX - 1) && (p.y == 0 || p.y == SizeY - 1));
+            return (p.x == 0 || p.x == SizeX - 1) && (p.y == 0 || p.y == SizeY - 1);
         }
 
         /// <summary>
@@ -542,10 +541,8 @@ namespace Go
             if (lastMove.Equals(PassMove)) return null;
             Content c = board[lastMove.Value];
 
-            IEnumerable<Group> groups = board.GetGroupsFromStoneNeighbours(lastMove.Value, c).Where(group => group.Liberties.Count == 1);
-
             //set atari targets in board 
-            board.AtariTargets = groups.ToList();
+            board.AtariTargets = board.GetGroupsFromStoneNeighbours(lastMove.Value, c).Where(group => group.Liberties.Count == 1).ToList();
             return board.AtariTargets;
         }
 

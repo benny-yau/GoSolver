@@ -148,7 +148,7 @@ namespace Go
             //two to four liberties for both alive
             if (emptyPoints.Count < 2 || emptyPoints.Count > 4) return false;
             //single empty point found for more than two empty points
-            if (emptyPoints.Count > 2 && !emptyPoints.Any(p => board.GetStoneNeighbours(p.x, p.y).All(n => board[n] != Content.Empty)))
+            if (emptyPoints.Count > 2 && !emptyPoints.Any(p => board.GetStoneNeighbours(p).All(n => board[n] != Content.Empty)))
                 return false;
 
             if (tryMoves != null)
@@ -247,7 +247,7 @@ namespace Go
 
             //check diagonal at eye point
             List<Point> eyePoints = emptyPoints.Where(p => EyeHelper.FindEye(board, p, content)).ToList();
-            if (eyePoints.Any(p => board.GetDiagonalNeighbours(p.x, p.y).Any(n => board[n] == Content.Empty && !ImmovableHelper.IsSuicidalMoveForBothPlayers(board, n))))
+            if (eyePoints.Any(p => board.GetDiagonalNeighbours(p).Any(n => board[n] == Content.Empty && !ImmovableHelper.IsSuicidalMoveForBothPlayers(board, n))))
                 return false;
 
             int emptyPointCount = killerGroup.Points.Count(k => filledBoard[k] == Content.Empty);
@@ -282,9 +282,9 @@ namespace Go
         private static Boolean BothAliveDiagonalEye(Board board, Group killerGroup, Point eye)
         {
             Content c = killerGroup.Content;
-            if (EyeHelper.FindEye(board, eye, c.Opposite()) && board.GetStoneNeighbours(eye.x, eye.y).All(n => board.GetGroupAt(n).Liberties.Count > 1))
+            if (EyeHelper.FindEye(board, eye, c.Opposite()) && board.GetStoneNeighbours(eye).All(n => board.GetGroupAt(n).Liberties.Count > 1))
             {
-                if (board.GetDiagonalNeighbours(eye.x, eye.y).Any(n => killerGroup.Points.Contains(n)))
+                if (board.GetDiagonalNeighbours(eye).Any(n => killerGroup.Points.Contains(n)))
                     return true;
             }
             return false;
@@ -306,7 +306,7 @@ namespace Go
             Boolean sharedLiberty = targetGroups.All(group => group.Liberties.Intersect(killerLiberties).Any());
             if (!sharedLiberty) return false;
             //check suicidal for both players and not ko move at liberty
-            if (!targetGroups.Any(gr => gr.Liberties.Any(liberty => ImmovableHelper.IsSuicidalMoveForBothPlayers(board, liberty) || board.GetStoneNeighbours(liberty.x, liberty.y).Any(n => board[n] == c && board.GetGroupAt(n).Points.Count == 1 && board.GetGroupAt(n).Liberties.Count > 1))))
+            if (!targetGroups.Any(gr => gr.Liberties.Any(liberty => ImmovableHelper.IsSuicidalMoveForBothPlayers(board, liberty) || board.GetStoneNeighbours(liberty).Any(n => board[n] == c && board.GetGroupAt(n).Points.Count == 1 && board.GetGroupAt(n).Liberties.Count > 1))))
                 return false;
 
             //ensure at least two liberties within killer group in survival neighbour group
@@ -325,7 +325,7 @@ namespace Go
         {
             IEnumerable<Point> killerLiberties = killerGroup.Points.Where(p => board[p] == Content.Empty);
             //ensure only one killer group with or without eye
-            List<Point> eyePoints = killerLiberties.Where(t => EyeHelper.FindEye(board, t.x, t.y, killerGroup.Content)).ToList();
+            List<Point> eyePoints = killerLiberties.Where(t => EyeHelper.FindEye(board, t, killerGroup.Content)).ToList();
             Board filledBoard = board;
             if (eyePoints.Count > 0)
             {

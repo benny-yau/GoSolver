@@ -138,11 +138,11 @@ namespace Go
                 return false;
 
             //check kill opponent
-            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == Content.Empty && !eyeGroup.Points.Contains(n) && tryBoard.GetStoneNeighbours(n.x, n.y).Any(s => tryBoard[s] == c.Opposite()) && !WallHelper.NoEyeForSurvival(currentBoard, n, c.Opposite())))
+            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == Content.Empty && !eyeGroup.Points.Contains(n) && tryBoard.GetStoneNeighbours(n).Any(s => tryBoard[s] == c.Opposite()) && !WallHelper.NoEyeForSurvival(currentBoard, n, c.Opposite())))
                 return false;
 
             //check eye for survival
-            if (eyeGroup.Points.Any(e => tryBoard.GetDiagonalNeighbours(e.x, e.y).Any(n => !WallHelper.NoEyeForSurvival(tryBoard, n, c))))
+            if (eyeGroup.Points.Any(e => tryBoard.GetDiagonalNeighbours(e).Any(n => !WallHelper.NoEyeForSurvival(tryBoard, n, c))))
                 return false;
 
             //check no eye for survival
@@ -527,11 +527,11 @@ namespace Go
                 if (!EyeHelper.FindUncoveredPoint(tryBoard, t, c)) return false;
 
                 //two-point empty group
-                List<Point> emptyNeighbour = tryBoard.GetStoneNeighbours(t.x, t.y).Where(n => tryBoard[n] == Content.Empty).ToList();
+                List<Point> emptyNeighbour = tryBoard.GetStoneNeighbours(t).Where(n => tryBoard[n] == Content.Empty).ToList();
                 if (emptyNeighbour.Count != 1) return false;
                 Point e = emptyNeighbour.First();
                 if (EyeHelper.FindUncoveredPoint(tryBoard, e, c)) return false;
-                Boolean twoPointGroup = (tryBoard.GetStoneNeighbours(e.x, e.y).Where(n => !n.Equals(t)).All(n => tryBoard[n] == c));
+                Boolean twoPointGroup = (tryBoard.GetStoneNeighbours(e).Where(n => !n.Equals(t)).All(n => tryBoard[n] == c));
                 if (!twoPointGroup) return false;
                 tigerMouth.Add(e);
             }
@@ -604,14 +604,14 @@ namespace Go
                 return false;
 
             //check for bloated eye move
-            if (tryBoard.GetDiagonalNeighbours().Any(d => tryBoard[d] == Content.Empty && tryBoard.GetStoneNeighbours(d.x, d.y).Any(n => tryBoard[n] == Content.Empty && tryBoard.CornerPoint(n) && KoHelper.IsReverseKoFight(currentBoard, n, c, false))))
+            if (tryBoard.GetDiagonalNeighbours().Any(d => tryBoard[d] == Content.Empty && tryBoard.GetStoneNeighbours(d).Any(n => tryBoard[n] == Content.Empty && tryBoard.CornerPoint(n) && KoHelper.IsReverseKoFight(currentBoard, n, c, false))))
                 return false;
 
             //check for eye at liberty point
             Point libertyPoint = opponentTryBoard.MoveGroup.Liberties.First();
             if (EyeHelper.FindCoveredEye(currentBoard, libertyPoint, c.Opposite()))
             {
-                List<Point> diagonals = currentBoard.GetDiagonalNeighbours(libertyPoint.x, libertyPoint.y).Where(n => currentBoard[n] == c).ToList();
+                List<Point> diagonals = currentBoard.GetDiagonalNeighbours(libertyPoint).Where(n => currentBoard[n] == c).ToList();
                 if (diagonals.Select(d => new { dgroup = currentBoard.GetGroupAt(d) }).Any(n => n.dgroup.Liberties.Count > 1 && ImmovableHelper.CheckConnectAndDie(currentBoard, n.dgroup)))
                     return false;
             }
@@ -631,7 +631,7 @@ namespace Go
                 Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, atariTarget);
                 if (b == null || b.MoveGroupLiberties == 1) continue;
                 Point bMove = b.Move.Value;
-                if (b.GetStoneAndDiagonalNeighbours(bMove.x, bMove.y).Any(n => b[n] == c && b.GetGroupAt(n).Liberties.Count > 1 && !b.GetNeighbourGroups(atariTarget).Contains(b.GetGroupAt(n))))
+                if (b.GetStoneAndDiagonalNeighbours(bMove).Any(n => b[n] == c && b.GetGroupAt(n).Liberties.Count > 1 && !b.GetNeighbourGroups(atariTarget).Contains(b.GetGroupAt(n))))
                     return false;
             }
 
@@ -731,9 +731,9 @@ namespace Go
         /// </summary>
         public static Boolean FindBloatedEyeSuicide(Board board, Point p, Content c)
         {
-            if (EyeHelper.FindEye(board, p, c) && !board.PointWithinMiddleArea(p.x, p.y))
+            if (EyeHelper.FindEye(board, p, c) && !board.PointWithinMiddleArea(p))
             {
-                List<Point> diagonalNeighbours = board.GetDiagonalNeighbours(p.x, p.y);
+                List<Point> diagonalNeighbours = board.GetDiagonalNeighbours(p);
                 if (diagonalNeighbours.Count(q => board[q] == c.Opposite()) == 0 && diagonalNeighbours.Count(q => board[q] == Content.Empty) == 1)
                 {
                     if (board.GetGroupsFromStoneNeighbours(p, c.Opposite()).All(group => group.Liberties.Count <= 2))
@@ -953,7 +953,7 @@ namespace Go
                 {
                     Point p = tryBoard.MoveGroup.Liberties.First();
                     //check liberties are connected
-                    if (tryBoard.GetStoneNeighbours(p.x, p.y).Any(q => tryBoard.MoveGroup.Liberties.Contains(q)))
+                    if (tryBoard.GetStoneNeighbours(p).Any(q => tryBoard.MoveGroup.Liberties.Contains(q)))
                     {
                         if (tryBoard.MoveGroup.Points.Count >= 3 && KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard))
                             return false;
@@ -966,11 +966,11 @@ namespace Go
                     if (stoneNeighbours.Count == 0) return false;
                     Point p = stoneNeighbours.First();
                     //stone neighbours at diagonal of each other
-                    if (stoneNeighbours.Any(n => tryBoard.GetDiagonalNeighbours(p.x, p.y).Intersect(stoneNeighbours).Any()))
+                    if (stoneNeighbours.Any(n => tryBoard.GetDiagonalNeighbours(p).Intersect(stoneNeighbours).Any()))
                     {
                         //check diagonal at opposite corner of stone neighbours
                         List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(d => tryBoard[d] == c.Opposite()).ToList();
-                        if (diagonals.Any(d => !tryBoard.GetStoneNeighbours(d.x, d.y).Intersect(stoneNeighbours).Any()))
+                        if (diagonals.Any(d => !tryBoard.GetStoneNeighbours(d).Intersect(stoneNeighbours).Any()))
                             return false;
 
                         //cut diagonal and kill
@@ -1087,7 +1087,7 @@ namespace Go
             {
                 //check for non two-point group
                 Point liberty = tryBoard.MoveGroup.Liberties.First();
-                Boolean twoPointGroup = tryBoard.GetStoneNeighbours(liberty.x, liberty.y).Where(n => !n.Equals(move)).All(n => tryBoard[n] == c.Opposite());
+                Boolean twoPointGroup = tryBoard.GetStoneNeighbours(liberty).Where(n => !n.Equals(move)).All(n => tryBoard[n] == c.Opposite());
                 if (!twoPointGroup && CheckNonTwoPointGroupInSuicideRealEye(tryMove))
                     return true;
 
@@ -1413,7 +1413,7 @@ namespace Go
                 if (EyeHelper.FindNonSemiSolidEye(capturedBoard, q, c.Opposite()))
                     return true;
 
-                List<Point> emptyPoints = board.GetStoneNeighbours(q.x, q.y).Where(n => board[n] == Content.Empty).ToList();
+                List<Point> emptyPoints = board.GetStoneNeighbours(q).Where(n => board[n] == Content.Empty).ToList();
                 if (emptyPoints.Count != 1) return false;
                 Board b = board.MakeMoveOnNewBoard(q, c.Opposite());
                 if (b != null && EyeHelper.FindCoveredEye(b, emptyPoints.First(), c.Opposite()))
@@ -1601,14 +1601,14 @@ namespace Go
             Boolean isNeutralPoint = ValidateNeutralPoint(tryMove);
             if (!isNeutralPoint && opponentMove == null)
             {
-                if (NeutralPointAtNonKillableEdge(tryMove))
+                if (NeutralPointAtNonKillableCorner(tryMove))
                     return true;
             }
             return isNeutralPoint;
         }
 
         /// <summary>
-        /// Neutral point at non killable edge. 
+        /// Neutral point at non killable corner. 
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A26" />
         /// Check if any killable group <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WindAndTime_Q29277" />
         /// Check killer group for captured points <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_ScenarioHighLevel18" />
@@ -1618,13 +1618,17 @@ namespace Go
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_TianLongTu_Q17132_3" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_A82_101Weiqi" />
         /// </summary>
-        private static Boolean NeutralPointAtNonKillableEdge(GameTryMove tryMove)
+        private static Boolean NeutralPointAtNonKillableCorner(GameTryMove tryMove)
         {
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryBoard.MoveGroup.Content;
-            //ensure move at non killable edge
-            if (tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c.Opposite() && WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.GetGroupAt(n))) < 2) return false;
+            //ensure move at non killable corner
+            List<Point> nonKillablePoints = tryBoard.GetStoneNeighbours().Where(n => tryBoard[n] == c.Opposite() && WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.GetGroupAt(n))).ToList();
+            if (nonKillablePoints.Count != 2) return false;
+            Point k = nonKillablePoints[0];
+            Point k2 = nonKillablePoints[1];
+            if (!tryBoard.GetDiagonalNeighbours(k).Any(n => n.Equals(k2))) return false;
 
             //check if any killable group
             if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite() && !WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.GetGroupAt(n)))) 
@@ -1695,7 +1699,7 @@ namespace Go
             if (tryBoard.AtariTargets.Count == 1 && tryBoard.AtariTargets.First().Points.Count == 1)
             {
                 Point p = tryBoard.AtariTargets.First().Points.First();
-                if (!tryBoard.GetStoneNeighbours(p.x, p.y).Any(q => EyeHelper.FindCoveredEye(currentBoard, q, c.Opposite()))) return false;
+                if (!tryBoard.GetStoneNeighbours(p).Any(q => EyeHelper.FindCoveredEye(currentBoard, q, c.Opposite()))) return false;
                 Board b = ImmovableHelper.CaptureSuicideGroup(p, tryBoard, true);
                 if (b != null && KoHelper.IsKoFight(b))
                 {
@@ -1942,7 +1946,7 @@ namespace Go
                 }
 
                 //check for tiger mouth
-                Point tigerMouth = tryBoard.GetDiagonalNeighbours(liberty.x, liberty.y).FirstOrDefault(n => EyeHelper.FindEye(tryBoard, n, c) || ImmovableHelper.FindTigerMouth(tryBoard, c, n));
+                Point tigerMouth = tryBoard.GetDiagonalNeighbours(liberty).FirstOrDefault(n => EyeHelper.FindEye(tryBoard, n, c) || ImmovableHelper.FindTigerMouth(tryBoard, c, n));
                 if (Convert.ToBoolean(tigerMouth.NotEmpty))
                 {
                     result.Add(mustHaveNeutralMove);
@@ -2640,14 +2644,14 @@ namespace Go
             Point move = tryMove.TryGame.Board.Move.Value;
             Board currentBoard = tryMove.CurrentGame.Board;
             Content c = tryMove.MoveContent;
-            List<Point> stoneNeighbours = currentBoard.GetStoneNeighbours(p.x, p.y).Where(n => currentBoard[n] == c.Opposite()).ToList();
+            List<Point> stoneNeighbours = currentBoard.GetStoneNeighbours(p).Where(n => currentBoard[n] == c.Opposite()).ToList();
             if (stoneNeighbours.Count > 1 || stoneNeighbours.Any(n => currentBoard.GetGroupAt(n).Points.Count > 1))
                 return true;
 
             //check for opponent stone at try move
             if (stoneNeighbours.Count == 1 && currentBoard.GetGroupAt(stoneNeighbours.First()).Points.Count == 1)
             {
-                if (currentBoard.GetStoneNeighbours(move.x, move.y).Any(n => currentBoard[n] == c.Opposite()))
+                if (currentBoard.GetStoneNeighbours(move).Any(n => currentBoard[n] == c.Opposite()))
                     return true;
             }
             return false;
@@ -2755,7 +2759,7 @@ namespace Go
             List<Group> neighbourGroups = currentBoard.GetNeighbourGroups(killerGroup);
             if (neighbourGroups.Count > 1)
             {
-                Point noNeighbourPoint = emptyNeighbours.FirstOrDefault(m => currentBoard.GetStoneNeighbours(m.x, m.y).Count(p => currentBoard[p] == c) == 0);
+                Point noNeighbourPoint = emptyNeighbours.FirstOrDefault(m => currentBoard.GetStoneNeighbours(m).Count(p => currentBoard[p] == c) == 0);
                 if (Convert.ToBoolean(noNeighbourPoint.NotEmpty)) return false;
             }
 
@@ -2856,7 +2860,7 @@ namespace Go
         /// </summary>
         public static int PossibleEyesCreated(Board currentBoard, Point p, Content c)
         {
-            List<Point> stoneNeighbours = currentBoard.GetStoneNeighbours(p.x, p.y);
+            List<Point> stoneNeighbours = currentBoard.GetStoneNeighbours(p);
             List<Point> possibleEyes = stoneNeighbours.Where(n => currentBoard[n] != c).ToList();
             return possibleEyes.Count;
         }

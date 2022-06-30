@@ -54,7 +54,7 @@ namespace Go
         {
             List<Point> contentPoints = killerGroup.Points.Where(t => tryBoard[t] == killerGroup.Content).ToList();
             //ensure formation at corner point
-            if (!contentPoints.Any(p => tryBoard.CornerPoint(p)) || contentPoints.Any(p => tryBoard.PointWithinMiddleArea(p.x, p.y))) return false;
+            if (!contentPoints.Any(p => tryBoard.CornerPoint(p)) || contentPoints.Any(p => tryBoard.PointWithinMiddleArea(p))) return false;
             //bent three or straight three formation
             if (KillerFormationHelper.BentThreeFormation(tryBoard, contentPoints) || KillerFormationHelper.StraightThreeFormation(tryBoard, contentPoints))
             {
@@ -62,12 +62,12 @@ namespace Go
                 List<Point> emptyPoints = killerGroup.Points.Where(t => tryBoard[t] == Content.Empty).ToList();
                 if (emptyPoints.Count != 2) return false;
                 //get end points of content group
-                List<Point> endPoints = contentPoints.Where(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 1).ToList();                
+                List<Point> endPoints = contentPoints.Where(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 1).ToList();                
                 //both end points connect with one empty point each
-                Boolean endConnect = endPoints.All(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(emptyPoints).Count() == 1);
+                Boolean endConnect = endPoints.All(p => tryBoard.GetStoneNeighbours(p).Intersect(emptyPoints).Count() == 1);
                 if (!endConnect) return false;
                 //each empty point connect with only one content point
-                Boolean emptyConnect = emptyPoints.All(q => tryBoard.GetStoneNeighbours(q.x, q.y).Intersect(contentPoints).Count() == 1);
+                Boolean emptyConnect = emptyPoints.All(q => tryBoard.GetStoneNeighbours(q).Intersect(contentPoints).Count() == 1);
                 if (!emptyConnect) return false;
                 return true;
             }
@@ -98,8 +98,8 @@ namespace Go
                 if (emptyPoints.Count == 3 && survivalGroups.First().Liberties.Except(emptyPoints).Count() >= 3)
                 {
                     //one ten thousand year eye plus one empty group with two points
-                    List<Point> eyeFound = emptyPoints.Where(p => TenThousandYearKoEye(board, p)).ToList();
-                    if (eyeFound.Count == 1 && emptyPoints.Except(eyeFound).All(e => !board.CornerPoint(e) && board.GetStoneNeighbours(e.x, e.y).Count(n => board[n] == Content.Empty) == 1))
+                    List<Point> eyeFound = emptyPoints.Where(p => TenThousandYearKoEye(board, p, killerGroup.Content)).ToList();
+                    if (eyeFound.Count == 1 && emptyPoints.Except(eyeFound).All(e => !board.CornerPoint(e) && board.GetStoneNeighbours(e).Count(n => board[n] == Content.Empty) == 1))
                         return true;
                 }
             }
@@ -117,57 +117,54 @@ namespace Go
 18 O . O . X O . . . . . . . . . . . . .
         currentDirection == Direction.Up
         */
-        public static Boolean TenThousandYearKoEye(Board board, Point p)
+        public static Boolean TenThousandYearKoEye(Board board, Point p, Content c)
         {
-            Content c = GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Kill);
+            if (!EyeHelper.FindEye(board, p, c)) return false;
+            int isOppositeContent = 0;
+            //ensure eye found at the edge only
+            if (board.PointWithinMiddleArea(p)) //middle area
+                return false;
 
-            if (EyeHelper.FindEye(board, p.x, p.y, c))
+            Direction currentDirection;
+            for (int i = 0; i <= dh.DirectionLinkedList.Count - 1; i++)
             {
-                int isOppositeContent = 0;
-                //ensure eye found at the edge only
-                if (board.PointWithinMiddleArea(p)) //middle area
-                    return false;
-
-                Direction currentDirection;
-                for (int i = 0; i <= dh.DirectionLinkedList.Count - 1; i++)
+                //start with eye at bottom edge
+                currentDirection = dh.GetNewDirection(Direction.Up, i);
+                Point upPoint = dh.GetPointInDirection(board, p, currentDirection, false);
+                if (dh.IsEdgeInDirection(board, p, currentDirection.Opposite()))
                 {
-                    //start with eye at bottom edge
-                    currentDirection = dh.GetNewDirection(Direction.Up, i);
-                    Point upPoint = dh.GetPointInDirection(board, p, currentDirection, false);
-                    if (dh.IsEdgeInDirection(board, p, currentDirection.Opposite()))
+                    Point leftPoint = dh.GetPointInDirection(board, upPoint, dh.GetNewDirection(Direction.Left, i));
+                    if (leftPoint.Equals(Game.PassMove)) return false;
+
+                    Point rightPoint = dh.GetPointInDirection(board, upPoint, dh.GetNewDirection(Direction.Right, i));
+                    if (rightPoint.Equals(Game.PassMove)) return false;
+
+                    if (board[leftPoint] == c.Opposite())
                     {
-                        Point leftPoint = dh.GetPointInDirection(board, upPoint, dh.GetNewDirection(Direction.Left, i));
-                        if (leftPoint.Equals(Game.PassMove)) return false;
-
-                        Point rightPoint = dh.GetPointInDirection(board, upPoint, dh.GetNewDirection(Direction.Right, i));
-                        if (rightPoint.Equals(Game.PassMove)) return false;
-
-                        if (board[leftPoint] == c.Opposite())
-                        {
-                            isOppositeContent += 1;
-                            Point leftLeftPoint = dh.GetPointInDirection(2, board, p, dh.GetNewDirection(Direction.Left, i));
-                            if (!leftLeftPoint.Equals(Game.PassMove) && board[leftLeftPoint] != c.Opposite())
-                                return false;
-                            if (board[rightPoint] != c)
-                                return false;
-                            break;
-                        }
-                        if (board[rightPoint] == c.Opposite())
-                        {
-                            isOppositeContent += 1;
-                            Point rightRightPoint = dh.GetPointInDirection(2, board, p, dh.GetNewDirection(Direction.Right, i));
-                            if (!rightRightPoint.Equals(Game.PassMove) && board[rightRightPoint] != c.Opposite())
-                                return false;
-                            if (board[leftPoint] != c)
-                                return false;
-                            break;
-                        }
+                        isOppositeContent += 1;
+                        Point leftLeftPoint = dh.GetPointInDirection(2, board, p, dh.GetNewDirection(Direction.Left, i));
+                        if (!leftLeftPoint.Equals(Game.PassMove) && board[leftLeftPoint] != c.Opposite())
+                            return false;
+                        if (board[rightPoint] != c)
+                            return false;
+                        break;
+                    }
+                    if (board[rightPoint] == c.Opposite())
+                    {
+                        isOppositeContent += 1;
+                        Point rightRightPoint = dh.GetPointInDirection(2, board, p, dh.GetNewDirection(Direction.Right, i));
+                        if (!rightRightPoint.Equals(Game.PassMove) && board[rightRightPoint] != c.Opposite())
+                            return false;
+                        if (board[leftPoint] != c)
+                            return false;
+                        break;
                     }
                 }
-
-                if (isOppositeContent == 1)
-                    return true;
             }
+
+            if (isOppositeContent == 1)
+                return true;
+
             return false;
         }
 

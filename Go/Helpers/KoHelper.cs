@@ -39,7 +39,7 @@ namespace Go
             if (group.Points.Count != 1) return false;
             Content c = group.Content;
             Point move = group.Points.First();
-            Point eyePoint = board.GetStoneNeighbours(move.x, move.y).FirstOrDefault(n => EyeHelper.FindEye(board, n, c));
+            Point eyePoint = board.GetStoneNeighbours(move).FirstOrDefault(n => EyeHelper.FindEye(board, n, c));
             return (Convert.ToBoolean(eyePoint.NotEmpty) && group.Points.Count == 1 && group.Liberties.Count == 1 && !board.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()).Any(g => g != group && g.Liberties.Count == 1));
         }
 
@@ -135,10 +135,10 @@ namespace Go
             List<Point> liberties = pointsBetweenDiagonals.Where(p => tryBoard[p] == Content.Empty && !tryBoard.PointWithinMiddleArea(p)).ToList();
             if (liberties.Count != 1) return false;
             Point lib = liberties.First();
-            List<Point> liberties2 = tryBoard.GetStoneNeighbours(lib.x, lib.y).Where(p => tryBoard[p] == Content.Empty).ToList();
+            List<Point> liberties2 = tryBoard.GetStoneNeighbours(lib).Where(p => tryBoard[p] == Content.Empty).ToList();
             if (liberties2.Count != 1) return false;
             Point lib2 = liberties2.First();
-            Point e = tryBoard.GetDiagonalNeighbours(lib.x, lib.y).Intersect(tryBoard.GetStoneNeighbours(lib2.x, lib2.y)).First();
+            Point e = tryBoard.GetDiagonalNeighbours(lib).Intersect(tryBoard.GetStoneNeighbours(lib2)).First();
             if (BothAliveHelper.GetKillerGroupFromCache(tryBoard, e, c) == null) return false;
 
             //make opponent move to capture
@@ -197,7 +197,7 @@ namespace Go
             else
             {
                 //pre ko moves
-                List<Point> eyePoints = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindEye(tryBoard, n.x, n.y, c)).ToList();
+                List<Point> eyePoints = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindEye(tryBoard, n, c)).ToList();
                 if (eyePoints.Count != 1) return null;
                 return eyePoints.First();
             }
@@ -208,12 +208,12 @@ namespace Go
         /// </summary>
         public static Boolean CheckBreakLinkKoMove(Board currentBoard, Point eyePoint, Content c)
         {
-            List<Point> stoneNeighbours = currentBoard.GetStoneNeighbours(eyePoint.x, eyePoint.y).Where(n => currentBoard[n] == c).ToList();
+            List<Point> stoneNeighbours = currentBoard.GetStoneNeighbours(eyePoint).Where(n => currentBoard[n] == c).ToList();
             stoneNeighbours = stoneNeighbours.Where(n => currentBoard.GetGroupAt(n).Liberties.Count > 1).ToList();
             if (stoneNeighbours.Count == 2)
             {
                 Point firstStone = stoneNeighbours[0];
-                if (!currentBoard.GetDiagonalNeighbours(firstStone.x, firstStone.y).Any(n => n.Equals(stoneNeighbours[1])))
+                if (!currentBoard.GetDiagonalNeighbours(firstStone).Any(n => n.Equals(stoneNeighbours[1])))
                     return true;
             }
             return false;

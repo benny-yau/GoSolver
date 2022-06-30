@@ -346,7 +346,7 @@ namespace Go
                 //get empty point
                 Point p = killerGroup.Points.FirstOrDefault(k => tryBoard[k] == Content.Empty);
                 //move is next to empty point
-                if (tryBoard.GetStoneNeighbours(p.x, p.y).Any(n => n.Equals(move)))
+                if (tryBoard.GetStoneNeighbours(p).Any(n => n.Equals(move)))
                     return true;
             }
             return false;
@@ -435,7 +435,7 @@ namespace Go
         {
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 4) return false;
-            return (contentPoints.Any(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 3));
+            return (contentPoints.Any(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3));
         }
 
         /*
@@ -469,7 +469,7 @@ namespace Go
         {
             List<Point> contentPoints = killerPoints.Where(t => tryBoard[t] == c).ToList();
             if (contentPoints.Count() != 4) return false;
-            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 2) == 2)
+            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 2) == 2)
             {
                 if (contentPoints.GroupBy(p => p.x).Count() == 2 || contentPoints.GroupBy(p => p.y).Count() == 2)
                     return true;
@@ -503,7 +503,7 @@ namespace Go
         {
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 4) return false;
-            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 2) == 2)
+            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 2) == 2)
             {
                 if (contentPoints.GroupBy(p => p.x).Count() == 3 || contentPoints.GroupBy(p => p.y).Count() == 3)
                     return true;
@@ -523,7 +523,7 @@ namespace Go
             {
                 HashSet<Point> contentPoints = moveGroup.Points;
                 Group group = tryBoard.GetGroupAt(contentPoints.First());
-                Point eyePoint = group.Liberties.FirstOrDefault(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 2);
+                Point eyePoint = group.Liberties.FirstOrDefault(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 2);
                 if (!Convert.ToBoolean(eyePoint.NotEmpty)) return false;
                 if (!tryBoard.PointWithinMiddleArea(eyePoint))
                     return true;
@@ -577,11 +577,11 @@ namespace Go
             //knife five formation
             if (WithinThreeByTwoGrid(moveGroup))
             {
-                if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 3) == 1)
+                if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3) == 1)
                     return true;
             }
             //star formation
-            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 4) == 1)
+            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 4) == 1)
                 return true;
             return false;
         }
@@ -598,9 +598,9 @@ namespace Go
             Content c = moveGroup.Content;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 6) return false;
-            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 4) == 1)
+            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 4) == 1)
             {
-                if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 2) == 3)
+                if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 2) == 3)
                     return true;
             }
             return false;
@@ -618,10 +618,10 @@ namespace Go
             Content c = moveGroup.Content;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 7) return false;
-            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 4) == 1)
+            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 4) == 1)
             {
                 Boolean isEdge = (contentPoints.Count(p => !tryBoard.PointWithinMiddleArea(p)) == 3);
-                if (isEdge && contentPoints.Count(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 3) == 1 && contentPoints.Count(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 2) == 2)
+                if (isEdge && contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3) == 1 && contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 2) == 2)
                     return true;
             }
             return false;
@@ -639,13 +639,13 @@ namespace Go
             if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] != c)) return false;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 5) return false;
-            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 3) == 1)
+            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3) == 1)
             {
                 List<Point> middlePoint = contentPoints.Where(p => tryBoard.PointWithinMiddleArea(p)).ToList();
                 if (middlePoint.Count != 1) return false;
                 //get end point at longer end
-                List<Point> endPoints = contentPoints.Except(middlePoint).Where(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 1).ToList();
-                endPoints.RemoveAll(p => tryBoard.GetDiagonalNeighbours(p.x, p.y).Contains(middlePoint.First()));
+                List<Point> endPoints = contentPoints.Except(middlePoint).Where(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 1).ToList();
+                endPoints.RemoveAll(p => tryBoard.GetDiagonalNeighbours(p).Contains(middlePoint.First()));
                 if (endPoints.Any(p => tryBoard.CornerPoint(p))) return false;
                 if (endPoints.Count != 1) return false;
                 //check diagonal for end point at longer end
@@ -668,7 +668,7 @@ namespace Go
             if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] != c)) return false;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 5) return false;
-            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 3) == 1)
+            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3) == 1)
             {
                 List<Point> middlePoint = contentPoints.Where(p => tryBoard.PointWithinMiddleArea(p)).ToList();
                 if (middlePoint.Count != 2) return false;
@@ -691,7 +691,7 @@ namespace Go
             if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] != c)) return false;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 6) return false;
-            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 3) == 2)
+            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3) == 2)
             {
                 if (contentPoints.Count(p => !tryBoard.PointWithinMiddleArea(p)) != 4) return false;
                 if (CheckBothSideFormationDiagonal(contentPoints, tryBoard, moveGroup))
@@ -711,7 +711,7 @@ namespace Go
             Content c = moveGroup.Content;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 5) return false;
-            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 2) == 3)
+            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 2) == 3)
             {
                 if ((contentPoints.GroupBy(p => p.x).Count() == 4 && contentPoints.GroupBy(p => p.y).Count() == 2) || (contentPoints.GroupBy(p => p.x).Count() == 2 && contentPoints.GroupBy(p => p.y).Count() == 4))
                 {
@@ -729,7 +729,7 @@ namespace Go
         /// </summary>
         private static Boolean CheckBothSideFormationDiagonal(IEnumerable<Point> contentPoints, Board tryBoard, Group moveGroup)
         {
-            List<Point> endPoints = contentPoints.Where(p => tryBoard.GetStoneNeighbours(p.x, p.y).Where(n => !tryBoard.PointWithinMiddleArea(n.x, n.y)).Intersect(contentPoints).Count() == 1).ToList();
+            List<Point> endPoints = contentPoints.Where(p => tryBoard.GetStoneNeighbours(p).Where(n => !tryBoard.PointWithinMiddleArea(n)).Intersect(contentPoints).Count() == 1).ToList();
             return endPoints.Any(q => CheckSideFormationDiagonal(q, tryBoard, moveGroup));
         }
 
@@ -737,7 +737,7 @@ namespace Go
         {
             Content c = moveGroup.Content;
             Boolean oneLiberty = (moveGroup.Liberties.Count == 1);
-            return tryBoard.GetDiagonalNeighbours(endPoint.x, endPoint.y).Where(n => !moveGroup.Points.Contains(n)).Any(n => tryBoard[n] == ((oneLiberty) ? c : Content.Empty));
+            return tryBoard.GetDiagonalNeighbours(endPoint).Where(n => !moveGroup.Points.Contains(n)).Any(n => tryBoard[n] == ((oneLiberty) ? c : Content.Empty));
         }
 
 
@@ -753,7 +753,7 @@ namespace Go
             if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 3) return false;
-            if (!contentPoints.Any(p => tryBoard.CornerPoint(p)) || contentPoints.Any(p => tryBoard.PointWithinMiddleArea(p.x, p.y))) return false;
+            if (!contentPoints.Any(p => tryBoard.CornerPoint(p)) || contentPoints.Any(p => tryBoard.PointWithinMiddleArea(p))) return false;
             if (MaxLengthOfGrid(moveGroup.Points) != 1) return false;
             //ensure at least two atari targets
             if (tryBoard.AtariTargets.Count <= 1) return false;
@@ -763,12 +763,12 @@ namespace Go
         public static Boolean PossibleCornerThreeFormation(Board currentBoard, Point p, Content c)
         {
             if (!KoHelper.KoContentEnabled(c.Opposite(), currentBoard.GameInfo)) return false;
-            Point corner = currentBoard.GetStoneNeighbours(p.x, p.y).FirstOrDefault(n => currentBoard.CornerPoint(n));
+            Point corner = currentBoard.GetStoneNeighbours(p).FirstOrDefault(n => currentBoard.CornerPoint(n));
             if (!Convert.ToBoolean(corner.NotEmpty)) return false;
-            if (currentBoard.GetStoneNeighbours(corner.x, corner.y).Any(n => currentBoard[n] != Content.Empty)) return false;
-            if (currentBoard.GetDiagonalNeighbours(p.x, p.y).Any(n => currentBoard.PointWithinMiddleArea(n.x, n.y) && EyeHelper.FindSemiSolidEyes(n, currentBoard, c).Item1))
+            if (currentBoard.GetStoneNeighbours(corner).Any(n => currentBoard[n] != Content.Empty)) return false;
+            if (currentBoard.GetDiagonalNeighbours(p).Any(n => currentBoard.PointWithinMiddleArea(n) && EyeHelper.FindSemiSolidEyes(n, currentBoard, c).Item1))
             {
-                foreach (Point q in currentBoard.GetStoneNeighbours(corner.x, corner.y))
+                foreach (Point q in currentBoard.GetStoneNeighbours(corner))
                 {
                     Board b = currentBoard.MakeMoveOnNewBoard(q, c.Opposite());
                     if (b != null && !ImmovableHelper.CheckConnectAndDie(b)) return true;
@@ -791,8 +791,8 @@ namespace Go
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 6) return false;
             if (!contentPoints.Any(p => tryBoard.CornerPoint(p))) return false;
-            if (contentPoints.Where(p => tryBoard.PointWithinMiddleArea(p.x, p.y)).Count() != 1) return false;
-            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 3) != 2) return false;
+            if (contentPoints.Where(p => tryBoard.PointWithinMiddleArea(p)).Count() != 1) return false;
+            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3) != 2) return false;
             return (MaxLengthOfGrid(moveGroup.Points) == 2);
         }
 
@@ -809,8 +809,8 @@ namespace Go
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 5) return false;
             if (!contentPoints.Any(p => tryBoard.CornerPoint(p))) return false;
-            if (contentPoints.Where(p => tryBoard.PointWithinMiddleArea(p.x, p.y)).Count() != 1) return false;
-            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p.x, p.y).Intersect(contentPoints).Count() == 3) != 1) return false;
+            if (contentPoints.Where(p => tryBoard.PointWithinMiddleArea(p)).Count() != 1) return false;
+            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3) != 1) return false;
             return (MaxLengthOfGrid(moveGroup.Points) == 2);
         }
 
@@ -824,7 +824,7 @@ namespace Go
         {
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 4) return false;
-            if (!contentPoints.Any(p => tryBoard.CornerPoint(p)) || contentPoints.Any(p => tryBoard.PointWithinMiddleArea(p.x, p.y))) return false;
+            if (!contentPoints.Any(p => tryBoard.CornerPoint(p)) || contentPoints.Any(p => tryBoard.PointWithinMiddleArea(p))) return false;
             if (MaxLengthOfGrid(moveGroup.Points) != 2) return false;
             return true;
         }
@@ -883,7 +883,7 @@ namespace Go
                 Point p = killBoard.Move.Value;
                 List<Point> moveGroup = killBoard.MoveGroup.Points.ToList();
                 int maxLengthOfGrid = MaxLengthOfGrid(moveGroup);
-                int maxIntersect = moveGroup.Max(q => killBoard.GetStoneNeighbours(q.x, q.y).Intersect(moveGroup).Count());
+                int maxIntersect = moveGroup.Max(q => killBoard.GetStoneNeighbours(q).Intersect(moveGroup).Count());
                 List<Group> neighbourGroups = killBoard.GetGroupsFromStoneNeighbours(p, killBoard.MoveGroup.Content).OrderBy(n => n.Liberties.Count).ToList();
                 int minNeighbourLiberties = (neighbourGroups.Count == 0) ? 0 : neighbourGroups.First().Liberties.Count;
                 int minNeighbourPointCount = (neighbourGroups.Count == 0) ? 0 : neighbourGroups.First().Points.Count;
