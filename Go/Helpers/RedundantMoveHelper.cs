@@ -2865,8 +2865,7 @@ namespace Go
 
         #region redundant ko
         /// <summary>
-        /// Redundant ko moves from the perspective of the survival are ko moves that serve no purpose to its objective of survival.
-        /// RedundantSurvivalPreKoMove <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A46_101Weiqi_2" />
+        /// Redundant survival pre ko moves <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A46_101Weiqi_2" />
         /// Double ko recursion <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_Corner_B41" />
         /// </summary>
         public static Boolean RedundantSurvivalPreKoMove(GameTryMove tryMove)
@@ -2877,50 +2876,43 @@ namespace Go
         }
 
         /// <summary>
-        /// RedundantSurvivalKoMove <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
+        /// Redundant survival ko moves <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_SimpleSeki" />
         /// </summary>
         public static Boolean RedundantSurvivalKoMove(GameTryMove tryMove)
         {
-            Boolean koEnabled = KoHelper.KoSurvivalEnabled(SurviveOrKill.Survive, tryMove.CurrentGame.GameInfo);
+            Board tryBoard = tryMove.TryGame.Board;
+            Content c = tryBoard.MoveGroup.Content;
+            Boolean koEnabled = KoHelper.KoContentEnabled(c, tryBoard.GameInfo);
             if (!koEnabled && !PossibilityOfDoubleKo(tryMove)) return true;
             if (koEnabled && KoHelper.CheckKillerKoWithinKillerGroup(tryMove)) return true;
             if (!tryMove.IsNegligibleForKo)
                 return false;
-            return CheckRedundantKo(tryMove);
+            //check redundant ko
+            if (!CheckRedundantKo(tryMove)) return false;
+            //check for opponent
+            Point? eyePoint = KoHelper.GetKoEyePoint(tryBoard);
+            if (eyePoint == null) return false;
+            GameTryMove opponentMove = new GameTryMove(tryMove.TryGame);
+            opponentMove.TryGame.Board.InternalMakeMove(eyePoint.Value, c.Opposite(), true);
+            if (CheckRedundantKo(opponentMove))
+                return true;
+            return false;
         }
         /// <summary>
-        /// RedundantKillerPreKoMove <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKillerKoMoveTest_Scenario_XuanXuanGo_A46_101Weiqi_2" />
-        /// Added as neutral point if found redundant ko.
+        /// Redundant killer pre ko moves <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKillerKoMoveTest_Scenario_XuanXuanGo_A46_101Weiqi_2" />
         /// </summary>
         public static Boolean RedundantKillerPreKoMove(GameTryMove tryMove)
         {
-            if (tryMove.IsKoFight)
-                return RedundantKillerKoMove(tryMove);
-            return false;
+            return RedundantSurvivalPreKoMove(tryMove);
         }
 
         /// <summary>
-        /// RedundantKillerKoMove <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKillerKoMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
-        /// Check if redundant ko from point of view of survival.
+        /// Redundant killer ko moves <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKillerKoMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
         /// </summary>
         public static Boolean RedundantKillerKoMove(GameTryMove tryMove)
         {
-            Board tryBoard = tryMove.TryGame.Board;
-            Boolean koEnabled = KoHelper.KoSurvivalEnabled(SurviveOrKill.Kill, tryMove.CurrentGame.GameInfo);
-            if (!koEnabled && !PossibilityOfDoubleKo(tryMove)) return true;
-            if (koEnabled && KoHelper.CheckKillerKoWithinKillerGroup(tryMove)) return true;
-            Content c = tryMove.MoveContent;
-
-            //make move as survival ko
-            Point? eyePoint = KoHelper.GetKoEyePoint(tryBoard);
-            if (eyePoint == null) return false;
-
-            GameTryMove opponentMove = new GameTryMove(tryMove.TryGame);
-            opponentMove.TryGame.Board.InternalMakeMove(eyePoint.Value, c.Opposite(), true);
-            if (!opponentMove.IsNegligibleForKo)
-                return false;
-            return CheckRedundantKo(opponentMove);
+            return RedundantSurvivalKoMove(tryMove);
         }
 
         /// <summary>
@@ -2964,8 +2956,8 @@ namespace Go
         }
 
         /// <summary>
-        /// Check if redundant ko from point of view of survival. Check ko move not required to create eyes at the two diagonals of ko eye opposite of ko move direction.
-        /// ko fight necessary (avoid use of atari resolved) <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario2kyu18" /> 
+        /// Check redundant ko. 
+        /// ko fight necessary <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario2kyu18" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A62" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Nie20" /> 
@@ -2975,17 +2967,21 @@ namespace Go
         /// </summary>
         public static Boolean CheckRedundantKo(GameTryMove tryMove)
         {
+            Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
             Point? eyePoint = KoHelper.GetKoEyePoint(tryBoard);
             if (eyePoint == null) return false;
 
-            //check diagonals opposite of ko move direction are filled with same content
+            if (currentBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).All(n => WallHelper.IsNonKillableGroup(currentBoard, n)))
+                return true;
+
+            //check diagonals opposite of ko move direction
             List<Point> diagonals = RedundantMoveHelper.TigerMouthEyePoints(tryBoard, eyePoint.Value, move).Where(q => tryBoard[q] != c).ToList();
             if (diagonals.Count == 0)
             {
-                //check that ko fight is necessary
+                //check ko fight necessary
                 List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
                 if (ngroups.Count == 1 && tryBoard.GetNeighbourGroups(ngroups.First()).Any(group => group.Liberties.Count == 2 && !WallHelper.IsNonKillableGroup(tryBoard, group)))
                     return false;
