@@ -1317,6 +1317,7 @@
             Check immovable point at stone and diagonal <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario3kyu28" />
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_TianLongTu_Q17132_3" />
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_A82_101Weiqi" />
+            <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.NeutralPointKillMove(Go.GameTryMove)">

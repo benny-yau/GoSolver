@@ -250,7 +250,7 @@ namespace Go
             //set as neutral point for non killable move group
             if (WallHelper.IsNonKillableGroup(tryBoard))
                 tryMove.IsNeutralPoint = true;
-            
+
             return true;
         }
 
@@ -612,7 +612,7 @@ namespace Go
             if (EyeHelper.FindCoveredEye(currentBoard, libertyPoint, c.Opposite()))
             {
                 List<Point> diagonals = currentBoard.GetDiagonalNeighbours(libertyPoint).Where(n => currentBoard[n] == c).ToList();
-                if (diagonals.Select(d => new { dgroup = currentBoard.GetGroupAt(d) }).Any(n => n.dgroup.Liberties.Count > 1 && ImmovableHelper.CheckConnectAndDie(currentBoard, n.dgroup)))
+                if (diagonals.Select(d => new { dgroup = currentBoard.GetGroupAt(d) }).Any(n => ImmovableHelper.CheckConnectAndDie(currentBoard, n.dgroup)))
                     return false;
             }
 
@@ -1617,6 +1617,7 @@ namespace Go
         /// Check immovable point at stone and diagonal <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario3kyu28" />
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_TianLongTu_Q17132_3" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_A82_101Weiqi" />
+        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
         /// </summary>
         private static Boolean NeutralPointAtNonKillableCorner(GameTryMove tryMove)
         {
@@ -1631,7 +1632,7 @@ namespace Go
             if (!tryBoard.GetDiagonalNeighbours(k).Any(n => n.Equals(k2))) return false;
 
             //check if any killable group
-            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite() && !WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.GetGroupAt(n)))) 
+            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite() && !WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.GetGroupAt(n))))
                 return false;
 
             //check killer group for captured points
@@ -1644,6 +1645,8 @@ namespace Go
                 if (EyeHelper.FindEye(tryBoard, p, c)) return false;
                 (Boolean immovable, Point? q) = ImmovableHelper.IsImmovablePoint(p, c, tryBoard);
                 if (q == null) continue;
+                if (tryBoard.GetStoneAndDiagonalNeighbours(p.x, p.y).Any(n => tryBoard[n] == c.Opposite() && !WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.GetGroupAt(n))))
+                    return false;
                 Board b = tryBoard.MakeMoveOnNewBoard(q.Value, c.Opposite());
                 if (b == null || ImmovableHelper.CheckConnectAndDie(b))
                     return false;
