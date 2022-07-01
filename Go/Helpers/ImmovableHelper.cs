@@ -579,25 +579,33 @@ namespace Go
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_WuQingYuan_Q31154" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_WindAndTime_Q30370" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_A55" />
+        /// Check if any liberty is suicidal <see cref="UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18410" />
         /// Rare scenario <see cref="UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_WindAndTime_Q30275" />
         /// Check unescapable group <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A85" />
+        /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_WuQingYuan_Q31154" />
         /// </summary>
         public static Boolean PreAtariMove(GameTryMove tryMove)
         {
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryBoard.Move.Value;
-            Content c = tryBoard[move];
+            Content c = tryBoard.MoveGroup.Content;
             IEnumerable<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(move);
             foreach (Group targetGroup in neighbourGroups)
             {
                 //check conditions for pre-atari
-                if (!CheckPreAtariNeighbour(targetGroup, tryBoard))
+                HashSet<Point> targetLiberties = targetGroup.Liberties;
+                if (targetLiberties.Count != 2) continue;
+
+                //check if any liberty is suicidal
+                if (targetLiberties.Any(t => ImmovableHelper.IsSuicidalMove(t, c, tryBoard).Item2 == null))
+                    continue;
+                if (AtariHelper.AtariByGroup(tryBoard, targetGroup))
                     continue;
 
                 //check connect and die
                 (_, Board board) = ConnectAndDie(tryBoard, targetGroup);
-                if (board != null && board.MoveGroup.Points.Count == 1 && board.GetGroupsFromStoneNeighbours(board.Move.Value, c).Count > 1)
+                if (board != null && board.MoveGroup.Points.Count == 1 && board.GetGroupsFromStoneNeighbours(board.Move.Value, c).Count > 1 && EscapePreAtariLink(tryBoard, targetGroup))
                     return true;
 
                 //check unescapable group
@@ -607,39 +615,10 @@ namespace Go
                     if (b == null || b.AtariTargets.Count == 0) continue;
                     if (b.AtariTargets.Any(t => ImmovableHelper.UnescapableGroup(b, t).Item1 && BothAliveHelper.GetKillerGroupFromCache(b, t.Points.First(), c.Opposite()) == null))
                     {
-                        if (ImmovableHelper.IsSuicidalMove(tryBoard, liberty, c.Opposite()))
+                        if (ImmovableHelper.IsSuicidalMoveForBothPlayers(tryBoard, liberty))
                             return true;
                     }
                 }
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Check conditions for pre-atari.
-        /// Check link at liberty to escape atari <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16594" />
-        /// Check if immovable at liberties <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_WuQingYuan_Q31154" />
-        /// Check if any liberty is suicidal <see cref="UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18410" />
-        /// </summary>
-        private static Boolean CheckPreAtariNeighbour(Group targetGroup, Board board)
-        {
-            HashSet<Point> targetLiberties = targetGroup.Liberties;
-            if (targetLiberties.Count != 2) return false;
-
-            //check if any liberty is suicidal
-            if (targetLiberties.Any(t => ImmovableHelper.IsSuicidalMove(t, targetGroup.Content.Opposite(), board).Item2 == null))
-                return false;
-            if (AtariHelper.AtariByGroup(board, targetGroup))
-                return false;
-            if (EscapePreAtariLink(board, targetGroup))
-                return true;
-
-            //check if immovable at liberties
-            foreach (Point liberty in targetLiberties)
-            {
-                List<Group> neighbourGroups = board.GetNeighbourGroups(targetGroup);
-                if (neighbourGroups.Any(group => group.Liberties.Count == 2 && !AtariHelper.AtariByGroup(board, group) && group.Liberties.Any(p => ImmovableHelper.IsSuicidalMoveForBothPlayers(board, p))))
-                    return true;
             }
             return false;
         }
