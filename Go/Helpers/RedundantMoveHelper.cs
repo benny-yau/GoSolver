@@ -126,6 +126,7 @@ namespace Go
             //ensure all groups have liberty more than two
             foreach (Group group in currentBoard.GetNeighbourGroups(eyeGroup).Where(gr => gr.Liberties.Count <= 2))
             {
+                if (ImmovableHelper.EscapeCaptureLink(currentBoard, group)) continue;
                 foreach (Point liberty in group.Liberties.Where(x => ImmovableHelper.IsSuicidalMove(currentBoard, x, c)))
                 {
                     HashSet<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(liberty, c);
@@ -2320,7 +2321,7 @@ namespace Go
                 return false;
             //check for three groups
             HashSet<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(move, c);
-            if (neighbourGroups.Count >= 3 && (neighbourGroups.Count(g => g.Liberties.Count <= 2) >= 2 || LinkHelper.FindDiagonalCut(tryBoard, tryBoard.MoveGroup).Item1 != null)) return false;
+            if (neighbourGroups.Count >= 3 && (neighbourGroups.Count(g => g.Liberties.Count <= 2) >= 2 || LinkHelper.DiagonalCutMove(tryBoard).Item1 != null)) return false;
             //check for strong neighbour groups
             if (WallHelper.StrongNeighbourGroups(currentBoard, currentBoard.GetGroupsFromStoneNeighbours(move, c), false) && capturedBoard.MoveGroupLiberties > 2)
                 return true;
@@ -2780,7 +2781,7 @@ namespace Go
                 killBoards.Add(p, b);
             }
             //check immovable at liberties
-            KeyValuePair<Point, Board> immovableAtLiberties = killBoards.FirstOrDefault(b => b.Value.MoveGroupLiberties == 2 && b.Value.MoveGroup.Liberties.All(m => ImmovableHelper.IsSuicidalMoveForBothPlayers(b.Value, m)) && b.Value.GetNeighbourGroups().Count > 1);
+            KeyValuePair<Point, Board> immovableAtLiberties = killBoards.FirstOrDefault(b => b.Value.MoveGroupLiberties == 2 && b.Value.MoveGroup.Liberties.All(m => ImmovableHelper.IsSuicidalMoveForBothPlayers(b.Value, m)) && LinkHelper.DiagonalCutMove(b.Value).Item1);
             if (immovableAtLiberties.Value != null)
                 return !tryMove.Move.Equals(immovableAtLiberties.Key);
 

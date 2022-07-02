@@ -333,6 +333,7 @@ namespace Go
         public static (Point?, List<Point>) FindDiagonalCut(Board board, Group group)
         {
             Content c = group.Content;
+            if (board.GetNeighbourGroups(group).Count <= 1) return (null, null);
             List<LinkedPoint<Point>> diagonals = GetGroupDiagonals(board, group).Where(d => board[d.Move] == c).ToList();
             foreach (LinkedPoint<Point> diagonal in diagonals)
             {
@@ -341,6 +342,24 @@ namespace Go
                     return (diagonal.Move, pointsBetweenDiagonals);
             }
             return (null, null);
+        }
+
+        /// <summary>
+        /// Diagonal cut at move.
+        /// </summary>
+        public static (Boolean, List<Point>) DiagonalCutMove(Board board)
+        {
+            Point move = board.Move.Value;
+            Content c = board.MoveGroup.Content;
+            if (board.GetNeighbourGroups().Count <= 1) return (false, null);
+            List<Point> diagonals = board.GetDiagonalNeighbours().Where(d => board[d] == c).ToList();
+            foreach (Point diagonal in diagonals)
+            {
+                List<Point> pointsBetweenDiagonals = PointsBetweenDiagonals(diagonal, move);
+                if (pointsBetweenDiagonals.All(d => board[d] == c.Opposite()) && board.GetGroupAt(diagonal).Liberties.Count > 1)
+                    return (true, pointsBetweenDiagonals);
+            }
+            return (false, null);
         }
 
         /// <summary>
