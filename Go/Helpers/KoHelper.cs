@@ -221,6 +221,7 @@ namespace Go
 
         /// <summary>
         /// Check essential atari for ko move.
+        /// Check redundant atari <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_2" />
         /// </summary>
         public static Boolean EssentialAtariForKoMove(GameTryMove tryMove)
         {
@@ -232,11 +233,17 @@ namespace Go
             if (!tryBoard.IsAtariMove) return false;
             if (tryBoard.AtariTargets.Count > 1) return true;
             Group atariTarget = tryBoard.AtariTargets.First();
-            Boolean redundantAtari = tryBoard.GetGroupsFromStoneNeighbours(move, c).Count == 1 && WallHelper.IsNonKillableGroup(currentBoard, currentBoard.GetGroupAt(atariTarget.Points.First())) && !ImmovableHelper.UnescapableGroup(tryBoard, atariTarget).Item1;
-            if (!redundantAtari)
-                return true;
-            atariTarget.IsNonKillable = true;
-            return false;
+            //check redundant atari
+            if (tryBoard.GetGroupsFromStoneNeighbours(move, c).Count == 1 && WallHelper.IsNonKillableGroup(currentBoard, currentBoard.GetGroupAt(atariTarget.Points.First())))
+            {
+                (Boolean unEscapable, _, Board b) = ImmovableHelper.UnescapableGroup(tryBoard, atariTarget);
+                if (!unEscapable && b != null && b.MoveGroupLiberties > 1)
+                {
+                    atariTarget.IsNonKillable = true;
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

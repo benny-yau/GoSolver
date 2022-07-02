@@ -1904,8 +1904,7 @@ namespace Go
             //no try moves left
             if (tryMoves.Count == 0)
                 tryMoves.Add(neutralPointMoves.First());
-
-            if (tryMoves.Count <= 2)
+            else if (tryMoves.Count <= 2)
             {
                 //check connect and die for last two try moves
                 //check capture at diagonal
@@ -2885,6 +2884,7 @@ namespace Go
         /// <summary>
         /// Redundant survival ko moves <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_SimpleSeki" />
+        /// Check for opponent <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30152" />
         /// </summary>
         public static Boolean RedundantSurvivalKoMove(GameTryMove tryMove)
         {
