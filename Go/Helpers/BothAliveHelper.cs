@@ -87,6 +87,10 @@ namespace Go
             return killerGroups;
         }
 
+
+        /// <summary>
+        /// Ensure neighbour groups of killer group are diagonal groups.
+        /// </summary>
         private static Boolean CheckNeighbourGroupsOfKillerGroup(Board board, Group killerGroup)
         {
             List<Group> neighbourGroups = board.GetNeighbourGroups(killerGroup);

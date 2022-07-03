@@ -170,7 +170,6 @@ namespace Go
             if (killerGroup == null) return false;
             List<Group> neighbourGroups = tryBoard.GetNeighbourGroups(killerGroup);
             //ensure all neighbour groups within killer group
-            //if (neighbourGroups.All(n => BothAliveHelper.GetKillerGroupFromCache(tryBoard, n.Points.First(), c) == null)) return false;
             List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(tryBoard.singlePointCapture.Value, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
             if (ngroups.Count == 1 && currentBoard.GetGroupLiberties(ngroups.First().Points.First()) == 1)
             {

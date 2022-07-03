@@ -2903,10 +2903,7 @@ namespace Go
             Boolean koEnabled = KoHelper.KoContentEnabled(c, tryBoard.GameInfo);
             if (!koEnabled && !PossibilityOfDoubleKo(tryMove)) return true;
             if (koEnabled && KoHelper.CheckKillerKoWithinKillerGroup(tryMove))
-            {
-                DebugHelper.PrintGameTryMovesToText(tryBoard, "CheckKillerKoWithinKillerGroup1.txt");
                 return true;
-            }
             if (!tryMove.IsNegligibleForKo)
                 return false;
             //check redundant ko
