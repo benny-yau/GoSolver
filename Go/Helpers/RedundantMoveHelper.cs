@@ -66,9 +66,11 @@ namespace Go
         }
 
         /// <summary>
-        /// Ensure all groups have liberty more than two <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_Corner_B41" /> 
+        /// Check groups with two liberties <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_Corner_B41" /> 
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_A38" /> 
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
+        /// Check eye for suicidal move <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q30275" />
+        /// Check escape capture link <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_3" />
         /// Ensure neighbour groups are escapable <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31398" /> 
         /// Check no eye for survival <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A52" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q16594" />
@@ -123,15 +125,22 @@ namespace Go
             if (KoHelper.EssentialAtariForKoMove(tryMove))
                 return false;
 
-            //ensure all groups have liberty more than two
-            foreach (Group group in currentBoard.GetNeighbourGroups(eyeGroup).Where(gr => gr.Liberties.Count <= 2))
+            //check groups with two liberties 
+            foreach (Group group in currentBoard.GetNeighbourGroups(eyeGroup).Where(gr => gr.Liberties.Count == 2))
             {
-                if (ImmovableHelper.EscapeCaptureLink(currentBoard, group)) continue;
-                foreach (Point liberty in group.Liberties.Where(x => ImmovableHelper.IsSuicidalMove(currentBoard, x, c)))
+                foreach (Point liberty in group.Liberties)
                 {
+                    (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c, currentBoard);
+                    if (!suicidal) continue;
                     HashSet<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(liberty, c);
-                    if (neighbourGroups.Any(n => !WallHelper.IsNonKillableGroup(tryBoard, n)))
+                    if (!neighbourGroups.Any(n => !WallHelper.IsNonKillableGroup(tryBoard, n))) continue;
+                    Point liberty2 = group.Liberties.First(p => !p.Equals(liberty));
+                    //check eye for suicidal move
+                    if (b != null && EyeHelper.FindEye(b, liberty2, c))
                         return false;
+                    //check escape capture link
+                    if (ImmovableHelper.EscapeCaptureLink(currentBoard, group)) continue;
+                    return false;
                 }
             }
             //check for double ko
@@ -2893,7 +2902,11 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             Boolean koEnabled = KoHelper.KoContentEnabled(c, tryBoard.GameInfo);
             if (!koEnabled && !PossibilityOfDoubleKo(tryMove)) return true;
-            if (koEnabled && KoHelper.CheckKillerKoWithinKillerGroup(tryMove)) return true;
+            if (koEnabled && KoHelper.CheckKillerKoWithinKillerGroup(tryMove))
+            {
+                DebugHelper.PrintGameTryMovesToText(tryBoard, "CheckKillerKoWithinKillerGroup1.txt");
+                return true;
+            }
             if (!tryMove.IsNegligibleForKo)
                 return false;
             //check redundant ko

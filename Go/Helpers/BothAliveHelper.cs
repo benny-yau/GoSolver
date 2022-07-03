@@ -68,6 +68,7 @@ namespace Go
                 //find killer groups with no liberties left
                 if (group.Liberties.Count == 0)
                 {
+                    if (!CheckNeighbourGroupsOfKillerGroup(board, group)) continue;
                     if (IsLibertyGroup(group, board))
                     {
                         //return as liberty group as first group
@@ -84,6 +85,18 @@ namespace Go
             //remove where group is covered eye (or false eye)
             killerGroups.RemoveAll(group => group.Points.Count <= 2 && !EyeHelper.FindRealEyeWithinEmptySpace(clearedBoard, group, EyeType.UnCoveredEye));
             return killerGroups;
+        }
+
+        private static Boolean CheckNeighbourGroupsOfKillerGroup(Board board, Group killerGroup)
+        {
+            List<Group> neighbourGroups = board.GetNeighbourGroups(killerGroup);
+            neighbourGroups.RemoveAll(group => board.GetNeighbourGroups(group).Count == 1 && group.Liberties.All(lib => killerGroup.Points.Contains(lib)));
+            if (neighbourGroups.Count == 0) return false;
+            if (neighbourGroups.Count == 1) return true;
+            List<Group> diagonalGroups = LinkHelper.GetAllDiagonalGroups(board, neighbourGroups.First());
+            if (neighbourGroups.Except(diagonalGroups).Any()) 
+                return false;
+            return true;
         }
 
         /// <summary>

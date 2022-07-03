@@ -311,6 +311,27 @@ namespace Go
         }
 
         /// <summary>
+        /// Get all diagonal groups for checking neighbour groups of killer group.
+        /// </summary>
+        public static List<Group> GetAllDiagonalGroups(Board board, Group group, List<Group> allConnectedGroups = null)
+        {
+            if (allConnectedGroups == null)
+            {
+                allConnectedGroups = new List<Group>();
+                allConnectedGroups.Add(group);
+            }
+            List<LinkedPoint<Point>> diagonalPoints = GetGroupLinkedDiagonals(board, group);
+            foreach (LinkedPoint<Point> diagonalPoint in diagonalPoints)
+            {
+                Group g = board.GetGroupAt(diagonalPoint.Move);
+                if (allConnectedGroups.Contains(g)) continue;
+                allConnectedGroups.Add(g);
+                GetAllDiagonalGroups(board, g, allConnectedGroups);
+            }
+            return allConnectedGroups;
+        }
+
+        /// <summary>
         /// Get the opposite diagonals of the two diagonal points.
         /// </summary>
         public static List<Point> PointsBetweenDiagonals(Point p, Point q)
