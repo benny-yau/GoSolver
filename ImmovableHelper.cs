@@ -214,9 +214,9 @@ namespace Go
         }
 
         /// <summary>
-        /// Check link at liberty to escape capture.
+        /// Check link at liberty to escape pre-atari.
         /// </summary>
-        public static Boolean EscapeCaptureLink(Board board, Group targetGroup)
+        private static Boolean EscapePreAtariLink(Board board, Group targetGroup)
         {
             foreach (Point liberty in targetGroup.Liberties)
             {
@@ -605,7 +605,7 @@ namespace Go
 
                 //check connect and die
                 (_, Board board) = ConnectAndDie(tryBoard, targetGroup);
-                if (board != null && board.MoveGroup.Points.Count == 1 && board.GetGroupsFromStoneNeighbours(board.Move.Value, c).Count > 1 && EscapeCaptureLink(tryBoard, targetGroup))
+                if (board != null && board.MoveGroup.Points.Count == 1 && board.GetGroupsFromStoneNeighbours(board.Move.Value, c).Count > 1 && EscapePreAtariLink(tryBoard, targetGroup))
                     return true;
 
                 //check unescapable group
