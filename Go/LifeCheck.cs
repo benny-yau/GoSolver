@@ -40,29 +40,24 @@ namespace Go
             List<LinkedPoint<Point>> tigerMouthList = new List<LinkedPoint<Point>>();
 
             Content c = board[target];
-            List<Group> killerGroups = BothAliveHelper.GetCorneredKillerGroup(board, c, false);
-
-            //get at least two possible eyes
-            if (killerGroups.Count < 2) return ConfirmAliveResult.Unknown;
-
-            //get eye groups not more than four points
-            List<Group> possibleEyes = killerGroups.Where(s => s.Points.Count <= 4).ToList();
-            if (possibleEyes.Count < 2) return ConfirmAliveResult.Unknown;
-
             //ensure at least two liberties
             Group targetGroup = board.GetGroupAt(target);
             if (targetGroup.Liberties.Count == 1) return ConfirmAliveResult.Unknown;
 
+            //get at least two possible eyes
+            List<Group> killerGroups = BothAliveHelper.GetCorneredKillerGroup(board, c, false);
+            if (killerGroups.Count < 2) return ConfirmAliveResult.Unknown;
             //get extended groups from target group
             HashSet<Group> groups = LinkHelper.GetAllDiagonalConnectedGroups(board, targetGroup);
+            //get eye groups not more than three points
+            List<Group> possibleEyes = killerGroups.Where(s => s.Points.Count <= 3).ToList();
+            //ensure group is connected to target
+            possibleEyes.RemoveAll(e => !board.GetNeighbourGroups(e).All(n => groups.Contains(n)));
+            if (possibleEyes.Count < 2) return ConfirmAliveResult.Unknown;
 
             for (int i = 0; i <= possibleEyes.Count - 1; i++)
             {
                 Group group = possibleEyes[i];
-                //ensure group is connected to target
-                if (board.GetNeighbourGroups(group).Except(groups).Any())
-                    continue;
-
                 if (group.Points.Count > 1)
                 {
                     //check for semi solid eye within group

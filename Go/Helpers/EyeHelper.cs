@@ -276,7 +276,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Find if killer group of four points or less can produce real eye. 
+        /// Find if killer group of three points or less can produce real eye. 
         /// Check snapback <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Scenario_XuanXuanGo_B31" /> 
         /// Ensure all groups have more than one liberty <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31469" /> 
         /// Ensure survival can make move at empty spaces <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18796_2" /> 
@@ -286,13 +286,13 @@ namespace Go
             if (killerGroup.Points.Count > 3)
                 return false;
 
-            Board b = new Board(board);
-            b.LastMoves.Clear();
-
             //ensure all groups have more than one liberty
             List<Group> eyeGroups = board.GetNeighbourGroups(killerGroup);
             if (eyeGroups.Count > 1 && eyeGroups.Any(group => group.Liberties.Count == 1))
                 return false;
+
+            Board b = new Board(board);
+            b.LastMoves.Clear();
 
             //find real eye
             if (MakeMoveWithinEmptySpace(b, killerGroup, eyeType))
