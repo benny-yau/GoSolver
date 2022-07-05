@@ -417,7 +417,7 @@ namespace Go
                 return true;
 
             //captured eye point
-            if (tryBoard.CapturedPoints.Contains(eyePoint) && (groups.Count > 0 || !currentBoard.GetNeighbourGroups(currentBoard.GetGroupAt(eyePoint)).Any(gr => WallHelper.IsNonKillableGroup(currentBoard, gr))))
+            if (tryBoard.CapturedPoints.Contains(eyePoint) && (groups.Count > 0 || currentBoard.GetNeighbourGroups(currentBoard.GetGroupAt(eyePoint)).Any(gr => !WallHelper.IsNonKillableGroup(currentBoard, gr))))
                 return LinkHelper.LinkForGroups(tryBoard, currentBoard);
 
             //normal link
