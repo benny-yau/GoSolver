@@ -215,14 +215,26 @@ namespace Go
         }
 
         /// <summary>
-        /// Check link at liberty to escape capture.
+        /// Check if escapable for target group with two liberties.
         /// </summary>
-        public static Boolean EscapeCaptureLink(Board board, Group targetGroup)
+        public static Boolean EscapeCaptureLink(Board board, Group targetGroup, Point? capturePoint = null)
         {
+            //check if absolute link at liberty
             foreach (Point liberty in targetGroup.Liberties)
             {
                 Board b = board.MakeMoveOnNewBoard(liberty, targetGroup.Content, true);
-                if (b != null && LinkHelper.IsAbsoluteLinkForGroups(board, b) && b.GetGroupLiberties(targetGroup.Points.First()) > 2)
+                if (b == null || !LinkHelper.IsAbsoluteLinkForGroups(board, b))
+                    continue;
+                if (b.GetGroupLiberties(targetGroup.Points.First()) > 2)
+                    return true;
+            }
+            //check for atari target group other than capture point
+            List<Group> ngroups = board.GetNeighbourGroups(targetGroup).Where(n => n.Liberties.Count == 1).ToList();
+            foreach (Group ngroup in ngroups)
+            {
+                if (capturePoint != null && ngroup.Points.Contains(capturePoint.Value)) continue;
+                Board b = ImmovableHelper.CaptureSuicideGroup(board, ngroup);
+                if (b != null && b.GetGroupAt(targetGroup.Points.First()).Liberties.Count > 2)
                     return true;
             }
             return false;

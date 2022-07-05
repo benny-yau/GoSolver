@@ -133,13 +133,14 @@ namespace Go
                     (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c, currentBoard);
                     if (!suicidal) continue;
                     HashSet<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(liberty, c);
-                    if (!neighbourGroups.Any(n => !WallHelper.IsNonKillableGroup(tryBoard, n))) continue;
+                    if (!neighbourGroups.Any(n => ImmovableHelper.CheckConnectAndDie(tryBoard, n))) continue;
                     Point liberty2 = group.Liberties.First(p => !p.Equals(liberty));
                     //check eye for suicidal move
                     if (b != null && EyeHelper.FindEye(b, liberty2, c))
                         return false;
                     //check escape capture link
-                    if (ImmovableHelper.EscapeCaptureLink(currentBoard, group)) continue;
+                    if (ImmovableHelper.EscapeCaptureLink(currentBoard, group, eyePoint))
+                        continue;
                     return false;
                 }
             }
@@ -2975,7 +2976,7 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Nie20" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q2413" /> 
         /// Real eye at diagonal <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi" /> 
-        /// Break link <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30152" /> 
+        /// Check link for groups <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30152" /> 
         /// </summary>
         public static Boolean CheckRedundantKo(GameTryMove tryMove)
         {
@@ -2996,11 +2997,11 @@ namespace Go
             {
                 //check ko fight necessary
                 List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
-                if (ngroups.Count == 1 && tryBoard.GetNeighbourGroups(ngroups.First()).Any(group => group.Points.Count > 1 && group.Liberties.Count <= 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, group) && !ImmovableHelper.EscapeCaptureLink(tryBoard, group)))
+                if (ngroups.Count == 1 && tryBoard.GetNeighbourGroups(ngroups.First()).Any(group => group.Points.Count > 1 && group.Liberties.Count <= 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, group) && !ImmovableHelper.EscapeCaptureLink(tryBoard, group, move)))
                     return false;
 
-                //check break link
-                if (KoHelper.CheckBreakLinkKoMove(tryBoard, eyePoint.Value, c))
+                //check link for groups
+                if (LinkHelper.LinkForGroups(tryBoard, currentBoard))
                     return false;
             }
 
