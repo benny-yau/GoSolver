@@ -68,7 +68,7 @@ namespace Go
                 //find killer groups with no liberties left
                 if (group.Liberties.Count == 0)
                 {
-                    if (!CheckNeighbourGroupsOfKillerGroup(board, group)) continue;
+                    if (!CheckNeighbourGroupsOfKillerGroup(filledBoard, group)) continue;
                     if (IsLibertyGroup(group, board))
                     {
                         //return as liberty group as first group
@@ -94,7 +94,7 @@ namespace Go
         private static Boolean CheckNeighbourGroupsOfKillerGroup(Board board, Group killerGroup)
         {
             List<Group> neighbourGroups = board.GetNeighbourGroups(killerGroup);
-            neighbourGroups.RemoveAll(group => board.GetNeighbourGroups(group).Count == 1 && group.Liberties.All(lib => killerGroup.Points.Contains(lib)));
+            neighbourGroups.RemoveAll(group => group.Neighbours.All(n => board[n] == killerGroup.Content && board.GetGroupAt(n) == killerGroup));
             if (neighbourGroups.Count == 0) return false;
             if (neighbourGroups.Count == 1) return true;
             List<Group> diagonalGroups = LinkHelper.GetAllDiagonalGroups(board, neighbourGroups.First());

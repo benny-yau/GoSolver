@@ -206,7 +206,8 @@ namespace Go
             if (b2 == null || b2.MoveGroupLiberties != 2) return false;
             if (!EyeHelper.FindCoveredEye(b2, p, c)) return false;
             //check if escapable
-            if (b2.MoveGroup.Liberties.Any(lib => !lib.Equals(p) && b2.GetGroupsFromStoneNeighbours(lib, c.Opposite()).Any(n => !n.Equals(b2.MoveGroup))))
+            Point e = b2.MoveGroup.Liberties.First(lib => !lib.Equals(p));
+            if (!ImmovableHelper.IsSuicidalMove(b2, e, c))
                 return false;
             if (CheckConnectAndDie(b2, b2.GetGroupAt(targetGroup.Points.First())))
                 return true;
@@ -608,12 +609,12 @@ namespace Go
                 if (board != null && board.MoveGroup.Points.Count == 1 && board.GetGroupsFromStoneNeighbours(board.Move.Value, c).Count > 1 && EscapeCaptureLink(tryBoard, targetGroup))
                     return true;
 
-                //check unescapable group
+                //check unescapable group                
                 foreach (Point liberty in currentBoard.GetGroupLibertyPoints(targetGroup))
                 {
                     Board b = currentBoard.MakeMoveOnNewBoard(liberty, c.Opposite());
                     if (b == null || b.AtariTargets.Count == 0) continue;
-                    if (b.AtariTargets.Any(t => ImmovableHelper.UnescapableGroup(b, t).Item1 && BothAliveHelper.GetKillerGroupFromCache(b, t.Points.First(), c.Opposite()) == null))
+                    if (b.AtariTargets.Any(t => ImmovableHelper.UnescapableGroup(b, t).Item1))
                     {
                         if (ImmovableHelper.IsSuicidalMoveForBothPlayers(tryBoard, liberty))
                             return true;

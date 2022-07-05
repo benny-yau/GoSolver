@@ -2895,8 +2895,8 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryBoard.MoveGroup.Content;
             Boolean koEnabled = KoHelper.KoContentEnabled(c, tryBoard.GameInfo);
-            if (!koEnabled && !PossibilityOfDoubleKo(tryMove)) return true;
-            if (koEnabled && KoHelper.CheckKillerKoWithinKillerGroup(tryMove))
+            if (!koEnabled) return !PossibilityOfDoubleKo(tryMove);
+            if (KoHelper.CheckKillerKoWithinKillerGroup(tryMove))
                 return true;
             if (!tryMove.IsNegligibleForKo)
                 return false;
@@ -2996,7 +2996,7 @@ namespace Go
             {
                 //check ko fight necessary
                 List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
-                if (ngroups.Count == 1 && tryBoard.GetNeighbourGroups(ngroups.First()).Any(group => ((group.Liberties.Count == 1 && group.Points.Count > 1) ||  group.Liberties.Count == 2) && !WallHelper.IsNonKillableGroup(tryBoard, group)))
+                if (ngroups.Count == 1 && tryBoard.GetNeighbourGroups(ngroups.First()).Any(group => group.Points.Count > 1 && group.Liberties.Count <= 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, group) && !ImmovableHelper.EscapeCaptureLink(tryBoard, group)))
                     return false;
 
                 //check break link
