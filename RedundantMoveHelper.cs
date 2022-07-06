@@ -133,13 +133,14 @@ namespace Go
                     (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c, currentBoard);
                     if (!suicidal) continue;
                     HashSet<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(liberty, c);
-                    if (!neighbourGroups.Any(n => !WallHelper.IsNonKillableGroup(tryBoard, n))) continue;
+                    if (!neighbourGroups.Any(n => ImmovableHelper.CheckConnectAndDie(tryBoard, n))) continue;
                     Point liberty2 = group.Liberties.First(p => !p.Equals(liberty));
                     //check eye for suicidal move
                     if (b != null && EyeHelper.FindEye(b, liberty2, c))
                         return false;
                     //check escape capture link
-                    if (ImmovableHelper.EscapeCaptureLink(currentBoard, group)) continue;
+                    if (ImmovableHelper.EscapeCaptureLink(currentBoard, group, eyePoint))
+                        continue;
                     return false;
                 }
             }
@@ -525,7 +526,6 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             if (!tryMove.IsNegligible) return false;
             if (tryBoard.MoveGroupLiberties != 2 && tryBoard.MoveGroupLiberties != 3) return false;
-            if (BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite()) != null) return false;
 
             List<Point> tigerMouth = new List<Point>();
             if (tryBoard.MoveGroupLiberties == 2)
@@ -1060,11 +1060,10 @@ namespace Go
         /// Check for snapback  <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B31" />
         /// Atari move required <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q2757" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18500_3" />
-        /// One liberty - kill from external <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_A19" />
         /// One liberty - suicide for both players <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40_2" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_A19" />
         /// Crowbar formation <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
-        /// Two liberties - suicide for both players <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30215" />
+        /// Two liberties - suicide for both players <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_A19" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30215" />
         /// </summary>
         public static Boolean SuicideWithinRealEye(GameTryMove tryMove, Board capturedBoard)
         {
@@ -2010,7 +2009,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Specific kill with immovable points. At least two neighbour groups.
+        /// Specific kill with immovable points with at least two neighbour groups.
         /// Survival group has liberty less or equals to two <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario5dan27" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16735" />
         /// At least one liberty shared with killer group <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_A54_2" />
@@ -2018,7 +2017,6 @@ namespace Go
         /// </summary>
         public static GameTryMove SpecificKillWithImmovablePoints(Board board, List<GameTryMove> neutralPointMoves, Group killerGroup)
         {
-            //check for atari
             List<Point> contentPoints = killerGroup.Points.Where(t => board[t] == killerGroup.Content).ToList();
             if (board.GetGroupsFromPoints(contentPoints).Any(group => group.Liberties.Count == 1)) return null;
             List<Point> killerLiberties = killerGroup.Points.Where(p => board[p] == Content.Empty).ToList();
@@ -2255,7 +2253,6 @@ namespace Go
             if (KillerFormationHelper.CornerThreeFormation(tryBoard, tryBoard.MoveGroup) || KillerFormationHelper.PossibleCornerThreeFormation(currentBoard, move, c.Opposite())) return false;
 
             Group moveKillerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
-            //check if eye point is killer group
             foreach (Point eyePoint in eyePoints)
             {
                 Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, eyePoint, c.Opposite());
@@ -2269,6 +2266,7 @@ namespace Go
                         return true;
                     }
                 }
+                //ensure eye point within killer group
                 if (killerGroup == null) continue;
                 if (moveKillerGroup == null)
                 {
@@ -2751,9 +2749,6 @@ namespace Go
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
             if (!tryMove.IsNegligible) return false;
-            GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
-            if (opponentMove != null && !opponentMove.IsNegligible) return false;
-
             Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, move);
             if (killerGroup == null)
                 return false;
@@ -2834,7 +2829,7 @@ namespace Go
         {
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryBoard.Move.Value;
-            Content c = tryBoard[move];
+            Content c = tryBoard.MoveGroup.Content;
 
             //check to ensure is ko
             List<Point> eyePoints = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindNonSemiSolidEye(tryBoard, n, c)).ToList();
@@ -2852,14 +2847,14 @@ namespace Go
             {
                 GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
                 if (opponentMove == null) return false;
-                tryBoard = opponentMove.TryGame.Board;
-                c = tryBoard[tryBoard.Move.Value];
-                Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, tryMove.Move, c.Opposite());
+                Board opponentBoard = opponentMove.TryGame.Board;
+                c = opponentBoard.MoveGroup.Content;
+                Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(opponentBoard, move, c.Opposite());
                 if (killerGroup == null) return false;
-                eyePoints = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindNonSemiSolidEye(tryBoard, n, c)).ToList();
+                eyePoints = opponentBoard.GetStoneNeighbours().Where(n => EyeHelper.FindNonSemiSolidEye(opponentBoard, n, c)).ToList();
                 if (eyePoints.Count == 0) return false;
 
-                Board coveredBoard = BothAliveHelper.FillEyePointsBoard(tryBoard, killerGroup);
+                Board coveredBoard = BothAliveHelper.FillEyePointsBoard(opponentBoard, killerGroup);
                 //group has one or no liberties
                 if (coveredBoard.GetGroupLiberties(move) <= 1)
                     return true;
@@ -2901,8 +2896,8 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryBoard.MoveGroup.Content;
             Boolean koEnabled = KoHelper.KoContentEnabled(c, tryBoard.GameInfo);
-            if (!koEnabled && !PossibilityOfDoubleKo(tryMove)) return true;
-            if (koEnabled && KoHelper.CheckKillerKoWithinKillerGroup(tryMove))
+            if (!koEnabled) return !PossibilityOfDoubleKo(tryMove);
+            if (KoHelper.CheckKillerKoWithinKillerGroup(tryMove))
                 return true;
             if (!tryMove.IsNegligibleForKo)
                 return false;
@@ -2981,7 +2976,7 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Nie20" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q2413" /> 
         /// Real eye at diagonal <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi" /> 
-        /// Break link <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30152" /> 
+        /// Check break link <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30152" /> 
         /// </summary>
         public static Boolean CheckRedundantKo(GameTryMove tryMove)
         {
@@ -2992,6 +2987,7 @@ namespace Go
             Point? eyePoint = KoHelper.GetKoEyePoint(tryBoard);
             if (eyePoint == null) return false;
 
+            //check all eye groups are non killable
             if (currentBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).All(n => WallHelper.IsNonKillableGroup(currentBoard, n)))
                 return true;
 
@@ -3001,7 +2997,7 @@ namespace Go
             {
                 //check ko fight necessary
                 List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
-                if (ngroups.Count == 1 && tryBoard.GetNeighbourGroups(ngroups.First()).Any(group => group.Liberties.Count == 2 && !WallHelper.IsNonKillableGroup(tryBoard, group)))
+                if (ngroups.Count == 1 && tryBoard.GetNeighbourGroups(ngroups.First()).Any(group => group.Points.Count > 1 && group.Liberties.Count <= 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, group) && !ImmovableHelper.EscapeCaptureLink(tryBoard, group, move)))
                     return false;
 
                 //check break link
