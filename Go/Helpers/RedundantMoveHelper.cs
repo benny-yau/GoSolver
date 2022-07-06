@@ -2976,7 +2976,7 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Nie20" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q2413" /> 
         /// Real eye at diagonal <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi" /> 
-        /// Check link for groups <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30152" /> 
+        /// Check break link <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30152" /> 
         /// </summary>
         public static Boolean CheckRedundantKo(GameTryMove tryMove)
         {
@@ -3000,8 +3000,8 @@ namespace Go
                 if (ngroups.Count == 1 && tryBoard.GetNeighbourGroups(ngroups.First()).Any(group => group.Points.Count > 1 && group.Liberties.Count <= 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, group) && !ImmovableHelper.EscapeCaptureLink(tryBoard, group, move)))
                     return false;
 
-                //check link for groups
-                if (LinkHelper.LinkForGroups(tryBoard, currentBoard))
+                //check break link
+                if (KoHelper.CheckBreakLinkKoMove(tryBoard, eyePoint.Value, c))
                     return false;
             }
 
