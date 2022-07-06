@@ -1623,9 +1623,9 @@ namespace Go
         /// Check killer group for captured points <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_ScenarioHighLevel18" />
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_TianLongTu_Q17132" />
         /// <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_SiHuoDaQuan_CornerA29_2" />
-        /// Check immovable point at stone and diagonal <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario3kyu28" />
+        /// Check eye or tiger mouth at stone and diagonal <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario3kyu28" />
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_TianLongTu_Q17132_3" />
-        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_A82_101Weiqi" />
+        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_TianLongTu_Q16466" />
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
         /// </summary>
         private static Boolean NeutralPointAtNonKillableCorner(GameTryMove tryMove)
@@ -1648,18 +1648,10 @@ namespace Go
             if (tryBoard.GetStoneAndDiagonalNeighbours().Where(n => tryBoard[n] != c).Select(n => new { kgroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, n, c) }).Any(n => n.kgroup != null && n.kgroup.Points.Any(q => tryBoard[q] == c.Opposite())))
                 return false;
 
-            //check immovable point at stone and diagonal
-            foreach (Point p in tryBoard.GetStoneAndDiagonalNeighbours().Where(n => tryBoard[n] == Content.Empty))
-            {
-                if (EyeHelper.FindEye(tryBoard, p, c)) return false;
-                (Boolean immovable, Point? q) = ImmovableHelper.IsImmovablePoint(p, c, tryBoard);
-                if (q == null) continue;
-                if (tryBoard.GetStoneAndDiagonalNeighbours(p.x, p.y).Any(n => tryBoard[n] == c.Opposite() && !WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.GetGroupAt(n))))
-                    return false;
-                Board b = tryBoard.MakeMoveOnNewBoard(q.Value, c.Opposite());
-                if (b == null || ImmovableHelper.CheckConnectAndDie(b))
-                    return false;
-            }
+            //check eye or tiger mouth at stone and diagonal
+            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == Content.Empty && (EyeHelper.FindEye(tryBoard, n, c) || ImmovableHelper.FindTigerMouth(tryBoard, c, n))))
+                return false;
+
             return true;
         }
 
@@ -2977,6 +2969,7 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q2413" /> 
         /// Real eye at diagonal <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi" /> 
         /// Check break link <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30152" /> 
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q30152" /> 
         /// </summary>
         public static Boolean CheckRedundantKo(GameTryMove tryMove)
         {
