@@ -409,12 +409,13 @@ namespace Go
                 //killer move
                 if (content == c)
                 {
-                    //capture of points outside of killer group
-                    if (b.CapturedList.Count > 0 && !b.CapturedPoints.All(x => killerGroup.Points.Contains(x)))
+                    if (b.CapturedList.Count > 0)
+                    {
+                        //capture of real eye group
+                        if (b.CapturedList.Count == 1 && b.GetNeighbourGroups().Count == 0)
+                            return true;
                         return false;
-                    //atari move that opponent cannot escape
-                    if (b.MoveGroupLiberties > 1 && b.AtariTargets.Any(t => ImmovableHelper.UnescapableGroup(b, t).Item1))
-                        return false;
+                    }
                 }
                 //make opponent move
                 result = MakeMoveWithinEmptySpace(b, killerGroup, eyeType);
