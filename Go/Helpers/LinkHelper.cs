@@ -399,18 +399,21 @@ namespace Go
         /// Link to groups that are not eye groups.
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" /> 
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q16902" /> 
-        /// Captured eye point <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" /> 
+        /// Captured eye point <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" />
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_Q18340" /> 
         /// Link for kill <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
         /// </summary>
         public static Boolean LinkToNonEyeGroups(Board tryBoard, Board currentBoard, Point eyePoint)
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            HashSet<Group> eyeNeighbourGroups = currentBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite());
+            HashSet<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite());
+            //get neighbour groups of move
             List<Point> groupPoints = currentBoard.GetStoneAndDiagonalNeighbours(move).Where(n => currentBoard[n] == c).ToList();
             List<Group> groups = currentBoard.GetGroupsFromPoints(groupPoints).ToList();
-            if (groups.All(group => WallHelper.IsNonKillableGroup(currentBoard, group))) return false;
-            groups = groups.Except(eyeNeighbourGroups).Where(gr => gr.Liberties.Count > 1).ToList();
+            if (groups.Union(eyeGroups).All(group => WallHelper.IsNonKillableGroup(currentBoard, group))) return false;
+            //get non-eye groups
+            groups = groups.Except(eyeGroups).Where(gr => gr.Liberties.Count > 1).ToList();
 
             //link for kill
             if (groups.Any() && tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == c.Opposite() && !WallHelper.IsNonKillableGroup(tryBoard, n)))
