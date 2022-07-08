@@ -2410,6 +2410,8 @@ namespace Go
         /// Real eye at diagonal with empty point should be semi solid eye or within enclosed killer group. If eye is filled then check if possible to create real eye.
         /// Eye filled <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTestScenario_XuanXuanGo_A46_101Weiqi" />
         /// Check if covered eye <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_GuanZiPu_A2Q29_101Weiqi" />
+        /// Check for double capture <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WuQingYuan_Q30982" />
+        /// <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_WuQingYuan_Q30982" />
         /// </summary>
         public static Boolean RealEyeAtDiagonal(GameTryMove tryMove, Point eye)
         {
@@ -2423,8 +2425,17 @@ namespace Go
             Group eyeGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, eye);
             if (eyeGroup == null) return false;
 
+            //find real eye
             if (EyeHelper.FindRealEyeWithinEmptySpace(killerBoard, eyeGroup, EyeType.SemiSolidEye))
+            {
+                //check for double capture
+                if (eyeGroup.Points.Count == 3)
+                {
+                    List<Point> capturedStones = eyeGroup.Points.Where(p => killerBoard[p] == eyeGroup.Content).ToList();
+                    if (capturedStones.Count == 2 && killerBoard.GetGroupsFromPoints(capturedStones).Count == 2) return false;
+                }
                 return true;
+            }
 
             if (DiagonalRedundancy(tryMove, eye, eyeGroup))
                 return true;
