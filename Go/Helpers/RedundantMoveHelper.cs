@@ -153,7 +153,7 @@ namespace Go
                 return false;
 
             //check eye for survival
-            if (eyeGroup.Points.Any(e => tryBoard.GetDiagonalNeighbours(e).Any(n => !WallHelper.NoEyeForSurvival(tryBoard, n, c))))
+            if (eyeGroup.Points.Any(e => tryBoard.GetDiagonalNeighbours(e).Any(n => !WallHelper.NoEyeForSurvival(tryBoard, n, c) && !RedundantMoveHelper.RealEyeAtDiagonal(tryMove, n))))
                 return false;
 
             //check no eye for survival
@@ -776,7 +776,7 @@ namespace Go
                 Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite());
                 if (killerGroup == null) return false;
                 Boolean splitKillerGroup = captureBoard.GetStoneNeighbours().Where(n => tryBoard[n] != c && !n.Equals(move)).Select(n => new { kGroup = BothAliveHelper.GetKillerGroupFromCache(captureBoard, n, c.Opposite()) }).Any(n => n.kGroup != null && n.kGroup != killerGroup);
-                if (!splitKillerGroup) return false;
+                if (!splitKillerGroup && !EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, killerGroup)) return false;
 
                 //check for corner six formation
                 Group tryKillerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
@@ -784,7 +784,11 @@ namespace Go
                     return false;
             }
             else if (tryBoard.MoveGroup.Points.Count == 2)
-                return false;
+            {
+                Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite());
+                if (killerGroup == null) return false;
+                if (!EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, killerGroup)) return false;
+            }
 
             return KillerFormationHelper.CheckRealEyeInNeighbourGroups(tryBoard, captureBoard);
         }
@@ -1215,6 +1219,7 @@ namespace Go
         /// Diagonal neighbours that are non killable groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17160" />
         /// Opponent suicide <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_A25" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A55" />
+        /// Check real eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17132_3" />
         /// </summary>
         private static Boolean RedundantSuicideNearNonKillableGroup(GameTryMove tryMove, Board capturedBoard, GameTryMove opponentTryMove = null)
         {
@@ -1251,7 +1256,11 @@ namespace Go
             {
                 //make move at empty point to connect to non killable group
                 (Boolean isSuicide, IEnumerable<Point> diagonalNeighbours) = SuicideNearNonKillableGroup(tryBoard);
-                if (isSuicide && diagonalNeighbours.Any(n => LinkHelper.PointsBetweenDiagonals(move, n).Any(d => tryBoard[d] == Content.Empty)))
+                if (!isSuicide) return false;
+                if (diagonalNeighbours.Any(n => LinkHelper.PointsBetweenDiagonals(move, n).Any(d => tryBoard[d] == Content.Empty)))
+                    return true;
+                //check real eye
+                if (capturedBoard.GetDiagonalNeighbours(move.x, move.y).Any(n => capturedBoard[n] == Content.Empty && EyeHelper.FindRealEyeWithinEmptySpace(capturedBoard, n, c.Opposite())) && !ImmovableHelper.AllConnectAndDie(capturedBoard, move, c.Opposite()))
                     return true;
             }
             return false;
@@ -2353,6 +2362,7 @@ namespace Go
         /// <summary>
         /// Find eye diagonal moves that are redundant.
         /// <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18473" />
+        /// Check diagonals are real eyes <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B31" />
         /// Ensure diagonal not required for both alive. 
         /// <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_SiHuoDaQuan_CornerA29_2" />
         /// Check link to groups <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_WuQingYuan_Q31154" />
@@ -2379,7 +2389,7 @@ namespace Go
 
             diagonals.RemoveAll(d => BothAliveHelper.GetKillerGroupFromCache(currentBoard, d) == null);
             if (diagonals.Count == 0) return false;
-            //if all diagonals are real eyes then redundant
+            //check diagonals are real eyes
             if (diagonals.All(eye => RealEyeAtDiagonal(tryMove, eye)))
             {
                 //check other surrounding points are not possible eyes
