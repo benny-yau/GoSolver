@@ -70,6 +70,7 @@ namespace Go
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_A38" /> 
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
         /// Check eye for suicidal move <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q30275" />
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_A84_3" />
         /// Check escape capture link <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_3" />
         /// Ensure neighbour groups are escapable <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31398" /> 
         /// Check no eye for survival <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A52" />
@@ -132,12 +133,12 @@ namespace Go
                 {
                     (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c, currentBoard);
                     if (!suicidal) continue;
-                    HashSet<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(liberty, c);
-                    if (!neighbourGroups.Any(n => ImmovableHelper.CheckConnectAndDie(tryBoard, n))) continue;
                     Point liberty2 = group.Liberties.First(p => !p.Equals(liberty));
                     //check eye for suicidal move
                     if (b != null && EyeHelper.FindEye(b, liberty2, c))
                         return false;
+                    HashSet<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(liberty, c);
+                    if (!neighbourGroups.Any(n => ImmovableHelper.CheckConnectAndDie(tryBoard, n))) continue;
                     //check escape capture link
                     if (ImmovableHelper.EscapeCaptureLink(currentBoard, group, eyePoint))
                         continue;
