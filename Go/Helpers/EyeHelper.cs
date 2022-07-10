@@ -72,7 +72,7 @@ namespace Go
             return true;
         }
 
-        private static Boolean IsCovered(Board board, List<Point> points, Content c)
+        public static Boolean IsCovered(Board board, List<Point> points, Content c)
         {
             List<Point> oppositeContent = points.Where(q => board[q] == c.Opposite()).ToList();
             if (points.Count == 4) // middle area

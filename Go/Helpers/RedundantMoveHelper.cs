@@ -771,7 +771,7 @@ namespace Go
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.MoveGroup.Points.Count == 1 || tryBoard.MoveGroup.Points.Count == 2)
+            if (tryBoard.MoveGroup.Points.Count == 1)
             {
                 //check for split killer group
                 Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite());
@@ -780,13 +780,17 @@ namespace Go
                 if (!splitKillerGroup && !EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, killerGroup)) return false;
 
                 //check for corner six formation
-                if (tryBoard.MoveGroup.Points.Count == 1)
-                {
-                    Group tryKillerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
-                    if (tryKillerGroup != null && KillerFormationHelper.CornerSixFormation(tryBoard, tryKillerGroup))
-                        return false;
-                }
+                Group tryKillerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
+                if (tryKillerGroup != null && KillerFormationHelper.CornerSixFormation(tryBoard, tryKillerGroup))
+                    return false;
             }
+            else if (tryBoard.MoveGroup.Points.Count == 2)
+            {
+                Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite());
+                if (killerGroup == null) return false;
+                if (!EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, killerGroup)) return false;
+            }
+
             return KillerFormationHelper.CheckRealEyeInNeighbourGroups(tryBoard, captureBoard);
         }
 
@@ -853,10 +857,12 @@ namespace Go
         /// Check reverse ko fight <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A80" />
         /// Check opponent move liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_3" />
         /// Check snapback at diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q6710_2" />
+        /// Check move in real eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17132_4" />
         /// </summary>
         private static Boolean CheckOnePointMoveInConnectAndDie(GameTryMove tryMove, Board captureBoard)
         {
             Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryBoard.Move.Value;
             Content c = tryMove.MoveContent;
             if (tryBoard.MoveGroup.Points.Count != 1) return false;
 
@@ -876,6 +882,16 @@ namespace Go
             Group escapeGroup = b2.GetGroupAt(b.Move.Value);
             if (escapeGroup.Liberties.Count > 1 || !ImmovableHelper.UnescapableGroup(b2, escapeGroup).Item1)
                 return true;
+
+            //check move in real eye
+            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite());
+            if (killerGroup == null) return false;
+            if (tryBoard.MoveGroup.Points.Count == 1 && EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, killerGroup) && !ImmovableHelper.CheckConnectAndDie(captureBoard))
+            {
+                Group tryKillerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
+                if (tryKillerGroup != null && tryKillerGroup.Points.Count == 3 && !EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, tryKillerGroup) && tryKillerGroup.Points.Any(p => EyeHelper.IsCovered(tryBoard, tryBoard.GetDiagonalNeighbours(p.x, p.y), c.Opposite())))
+                    return true;
+            }
             return false;
         }
 
@@ -1638,6 +1654,7 @@ namespace Go
         {
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             //ensure move at non killable corner
             List<Point> nonKillablePoints = tryBoard.GetStoneNeighbours().Where(n => tryBoard[n] == c.Opposite() && WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.GetGroupAt(n))).ToList();
@@ -1655,9 +1672,19 @@ namespace Go
                 return false;
 
             //check eye or tiger mouth at stone and diagonal
-            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == Content.Empty && (EyeHelper.FindEye(tryBoard, n, c) || ImmovableHelper.FindTigerMouth(tryBoard, c, n))))
-                return false;
+            foreach (Point p in tryBoard.GetStoneAndDiagonalNeighbours().Where(n => tryBoard[n] == Content.Empty))
+            {
+                //check eye
+                if (EyeHelper.FindEye(tryBoard, p, c) && tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).All(n => n.Liberties.Count > 1))
+                    return false;
 
+                //check tiger mouth
+                Point? q = ImmovableHelper.FindTigerMouth(tryBoard, p, c);
+                if (q == null) continue;
+                if (tryBoard.GetStoneNeighbours(q.Value).Any(n => tryBoard[n] == c.Opposite() && WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.GetGroupAt(n)))) continue;
+                if (tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Any(gr => ImmovableHelper.CheckConnectAndDie(tryBoard, gr))) continue;
+                return false;
+            }
             return true;
         }
 
@@ -2900,7 +2927,7 @@ namespace Go
         /// Redundant survival ko moves <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_SimpleSeki" />
         /// Check for opponent <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30152" />
-        /// Check if all target points captured <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_B10" />
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_B10" />
         /// </summary>
         public static Boolean RedundantSurvivalKoMove(GameTryMove tryMove)
         {
@@ -2914,19 +2941,11 @@ namespace Go
                 return false;
             //check redundant ko
             if (!CheckRedundantKo(tryMove)) return false;
-
             //check for opponent
             Point? eyePoint = KoHelper.GetKoEyePoint(tryBoard);
             if (eyePoint == null) return false;
             GameTryMove opponentMove = new GameTryMove(tryMove.TryGame);
-            Board opponentBoard = opponentMove.TryGame.Board;
-            opponentBoard.InternalMakeMove(eyePoint.Value, c.Opposite(), true);
-            /*if (!opponentMove.IsNegligibleForKo)
-            {
-                //check if all target points captured
-                if (!LifeCheck.AllTargetsCaptured(opponentBoard, opponentBoard.GetAllPointsFromGroups(opponentBoard.AtariTargets)))
-                    return false;
-            }*/
+            opponentMove.TryGame.Board.InternalMakeMove(eyePoint.Value, c.Opposite(), true);
             if (CheckRedundantKo(opponentMove))
                 return true;
             return false;
