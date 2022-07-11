@@ -220,7 +220,7 @@ namespace Go
                 if (isImmovable)
                 {
                     immovablePoints.Add(p);
-                    if (isTigerMouth != null)
+                    if (isTigerMouth != null && board[isTigerMouth.Value] == Content.Empty)
                         tigerMouthPoints.Add(new LinkedPoint<Point>(p, eyePoint));
                 }
             }

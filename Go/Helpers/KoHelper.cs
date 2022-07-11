@@ -139,7 +139,6 @@ namespace Go
             if (liberties2.Count != 1) return false;
             Point lib2 = liberties2.First();
             Point e = tryBoard.GetDiagonalNeighbours(lib).Intersect(tryBoard.GetStoneNeighbours(lib2)).First();
-            if (BothAliveHelper.GetKillerGroupFromCache(tryBoard, e, c) == null) return false;
 
             //make opponent move to capture
             Board b = tryBoard.MakeMoveOnNewBoard(e, c.Opposite());
@@ -165,7 +164,7 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             if (tryBoard.singlePointCapture == null) return false;
             Point move = tryBoard.Move.Value;
-            Content c = tryBoard.MoveGroup.Content; 
+            Content c = tryBoard.MoveGroup.Content;
             Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
             if (killerGroup == null) return false;
             List<Group> neighbourGroups = tryBoard.GetNeighbourGroups(killerGroup);

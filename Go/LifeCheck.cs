@@ -67,9 +67,7 @@ namespace Go
                         if (CheckForPreAtariGroups(board, group)) continue;
 
                         eyeGroups.Add(group);
-
-                        //get tiger mouths for two=point group to check for exception
-                        GetTigerMouthsInTwoPointGroup(board, group, tigerMouthList);
+                        GetTigerMouthsInMultiPointGroup(board, group, tigerMouthList);
                     }
                 }
                 else
@@ -80,9 +78,7 @@ namespace Go
                     if (found)
                     {
                         eyeGroups.Add(group);
-                        //get all tiger mouths to check for exception
-                        if (!EyeHelper.FindRealSolidEyes(p, c, board))
-                            tigerMouthList.AddRange(tigerMouths);
+                        tigerMouthList.AddRange(tigerMouths);
                     }
                 }
                 if (eyeGroups.Count + possibleEyes.Count - 1 - i < 2)
@@ -239,7 +235,7 @@ namespace Go
                 if (b2 != null && LinkHelper.IsAbsoluteLinkForGroups(b1, b2))
                 {
                     //check for three groups
-                    if (threeGroups != null && board.GetGroupsFromStoneNeighbours(diagonal, c.Opposite()).Intersect(threeGroups).Count() != 2) 
+                    if (threeGroups != null && board.GetGroupsFromStoneNeighbours(diagonal, c.Opposite()).Intersect(threeGroups).Count() != 2)
                         continue;
                     return true;
                 }
@@ -248,26 +244,22 @@ namespace Go
         }
 
         /// <summary>
-        /// Get tiger mouth in two-point groups.
+        /// Get tiger mouth in mulit-point groups.
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_2" />
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_3" />
         /// </summary>
-        private static void GetTigerMouthsInTwoPointGroup(Board board, Group group, List<LinkedPoint<Point>> tigerMouthList)
+        private static void GetTigerMouthsInMultiPointGroup(Board board, Group group, List<LinkedPoint<Point>> tigerMouthList)
         {
             Content c = group.Content;
-            if (group.Points.Count != 2) return;
-            foreach (Point p in group.Points)
+            List<LinkedPoint<Point>> diagonalPoints = LinkHelper.GetGroupDiagonals(board, group);
+            foreach (LinkedPoint<Point> p in diagonalPoints)
             {
-                Board b = board.MakeMoveOnNewBoard(p, c.Opposite());
-                if (b == null) continue;
-                Point q = group.Points.First(point => !point.Equals(p));
-                (Boolean found, _, List<LinkedPoint<Point>> tigerMouths) = EyeHelper.FindSemiSolidEyes(q, b, c.Opposite());
-                if (found && !EyeHelper.FindRealSolidEyes(q, c.Opposite(), b))
-                    tigerMouthList.AddRange(tigerMouths);
+                if (board[p.Move] == Content.Empty && ImmovableHelper.FindTigerMouth(board, c.Opposite(), p.Move))
+                    tigerMouthList.Add(p);
             }
         }
 
-        
+
         /// <summary>
         /// Check opponent atari moves.
         /// </summary>
