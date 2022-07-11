@@ -474,6 +474,12 @@
             Allow opponent to make move within eye space to ensure the space can produce the required eye type. 
             </summary>
         </member>
+        <member name="M:Go.EyeHelper.RealEyeOfDiagonallyConnectedGroups(Go.Board,Go.Group)">
+            <summary>
+            Real eye of diagonally connected groups.
+            Check for straight four formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_4" /> 
+            </summary>
+        </member>
         <member name="M:Go.GameHelper.GetTryMovesForGame(Go.Game)">
             <summary>
             Get all try moves for next move.
@@ -989,7 +995,7 @@
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q16594" />
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A41" /> 
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_3" /> 
-            Check no eye for survival for opponent <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_B2" /> 
+            Check no eye for survival for opponent <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_A80" /> 
             Check eye for survival <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q30982" /> 
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_B25" /> 
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q29277" /> 
@@ -1949,9 +1955,9 @@
             Check for three groups <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571" />
             </summary>
         </member>
-        <member name="M:Go.LifeCheck.GetTigerMouthsInMultiPointGroup(Go.Board,Go.Group,System.Collections.Generic.List{Go.LinkedPoint{Go.Point}})">
+        <member name="M:Go.LifeCheck.GetTigerMouthsOfEyeGroups(Go.Board,Go.Group,System.Collections.Generic.List{Go.LinkedPoint{Go.Point}})">
             <summary>
-            Get tiger mouth in mulit-point groups.
+            Get tiger mouth of eye groups.
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_2" />
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_3" />
             </summary>

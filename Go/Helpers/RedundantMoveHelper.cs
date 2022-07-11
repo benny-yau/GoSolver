@@ -77,7 +77,7 @@ namespace Go
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q16594" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A41" /> 
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_3" /> 
-        /// Check no eye for survival for opponent <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_B2" /> 
+        /// Check no eye for survival for opponent <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_A80" /> 
         /// Check eye for survival <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q30982" /> 
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_B25" /> 
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q29277" /> 
@@ -262,7 +262,7 @@ namespace Go
             //set as neutral point for non killable move group
             if (WallHelper.IsNonKillableGroup(tryBoard))
                 tryMove.IsNeutralPoint = true;
-
+            
             return true;
         }
 
@@ -1088,8 +1088,7 @@ namespace Go
             Content c = tryMove.MoveContent;
 
             //ensure semi-solid eye
-            (Boolean isRealEye, _, List<LinkedPoint<Point>> tigerMouthPoints) = EyeHelper.FindSemiSolidEyes(move, capturedBoard, c.Opposite());
-            if (!isRealEye)
+            if (!EyeHelper.FindSemiSolidEyes(move, capturedBoard, c.Opposite()).Item1)
                 return false;
 
             //remove one point from two-point empty group
@@ -1662,7 +1661,7 @@ namespace Go
             if (!tryBoard.GetDiagonalNeighbours(k).Any(n => n.Equals(k2))) return false;
 
             //check if any killable group
-            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite() && !WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.GetGroupAt(n))))
+            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite() && !WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.GetGroupAt(n)))) 
                 return false;
 
             //check killer group for captured points

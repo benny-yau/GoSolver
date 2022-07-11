@@ -68,7 +68,7 @@ namespace Go
                 //find killer groups with no liberties left
                 if (group.Liberties.Count == 0)
                 {
-                    if (!CheckNeighbourGroupsOfKillerGroup(filledBoard, group)) continue;
+                    if (!CheckNeighbourGroupsOfKillerGroup(filledBoard, group).Item1) continue;
                     if (IsLibertyGroup(group, board))
                     {
                         //return as liberty group as first group
@@ -91,16 +91,18 @@ namespace Go
         /// <summary>
         /// Ensure neighbour groups of killer group are diagonal groups.
         /// </summary>
-        private static Boolean CheckNeighbourGroupsOfKillerGroup(Board board, Group killerGroup)
+        public static (Boolean, List<Group>) CheckNeighbourGroupsOfKillerGroup(Board board, Group killerGroup)
         {
             List<Group> neighbourGroups = board.GetNeighbourGroups(killerGroup);
+            //remove groups surrounded by killer group
             neighbourGroups.RemoveAll(group => group.Neighbours.All(n => board[n] == killerGroup.Content && board.GetGroupAt(n) == killerGroup));
-            if (neighbourGroups.Count == 0) return false;
-            if (neighbourGroups.Count == 1) return true;
+            if (neighbourGroups.Count == 0) return (false, null);
+            if (neighbourGroups.Count == 1) return (true, neighbourGroups);
+            //get all diagonal groups
             List<Group> diagonalGroups = LinkHelper.GetAllDiagonalGroups(board, neighbourGroups.First());
-            if (neighbourGroups.Except(diagonalGroups).Any()) 
-                return false;
-            return true;
+            if (neighbourGroups.Except(diagonalGroups).Any())
+                return (false, null);
+            return (true, neighbourGroups);
         }
 
         /// <summary>
@@ -220,7 +222,7 @@ namespace Go
                 HashSet<Group> diagonalGroups = board.GetGroupsFromPoints(pointsBetweenDiagonals);
                 if (diagonalGroups.Count != 2) return false;
 
-                List<Group> complexSekiGroups = new List<Group>(); 
+                List<Group> complexSekiGroups = new List<Group>();
                 foreach (Group diagonalGroup in diagonalGroups)
                 {
                     Group diagonalKillerGroup = BothAliveHelper.GetKillerGroupFromCache(board, diagonalGroup.Points.First(), killerGroup.Content);

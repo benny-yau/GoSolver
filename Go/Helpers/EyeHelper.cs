@@ -178,21 +178,21 @@ namespace Go
         /// <summary>
         /// Semi solid eyes are real eyes that can have diagonals with immovable points.
         /// </summary>
-        public static (Boolean, List<Point>, List<LinkedPoint<Point>>) FindSemiSolidEyes(Point p, Board board, Content c = Content.Unknown)
+        public static (Boolean, List<Point>) FindSemiSolidEyes(Point p, Board board, Content c = Content.Unknown)
         {
             GameInfo gameInfo = board.GameInfo;
             (Boolean isEye, Content content) = FindEye(p.x, p.y, board, c);
             if (!isEye)
-                return (false, null, null);
+                return (false, null);
             if (c == Content.Unknown) c = content;
 
             //ensure all groups have more than one liberty
             HashSet<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(p, c.Opposite());
             if (neighbourGroups.Count > 1 && neighbourGroups.Any(group => group.Liberties.Count == 1))
-                return (false, null, null);
+                return (false, null);
 
             //get suicide point or tiger's mouth at all diagonals
-            (List<Point> immovablePoints, List<LinkedPoint<Point>> tigerMouthPoints) = GetImmovablePoints(p, board, c);
+            List<Point> immovablePoints = GetImmovablePoints(p, board, c);
             Boolean found = false;
             List<Point> diagonals = board.GetDiagonalNeighbours(p);
             int stoneCount = diagonals.Count(d => board[d] == c);
@@ -202,29 +202,22 @@ namespace Go
                 found = (stoneCount + immovablePoints.Count >= diagonalCount - 1);
             else //for eye point at side or corner, all diagonals should be immovable
                 found = (stoneCount + immovablePoints.Count == diagonalCount);
-            return (found, immovablePoints, tigerMouthPoints);
+            return (found, immovablePoints);
         }
 
         /// <summary>
         /// Get all immovable points at eye point diagonals.
         /// </summary>
-        private static (List<Point>, List<LinkedPoint<Point>>) GetImmovablePoints(Point eyePoint, Board board, Content c)
+        private static List<Point> GetImmovablePoints(Point eyePoint, Board board, Content c)
         {
             List<Point> immovablePoints = new List<Point>();
-            List<LinkedPoint<Point>> tigerMouthPoints = new List<LinkedPoint<Point>>();
-
             foreach (Point p in board.GetDiagonalNeighbours(eyePoint))
             {
                 if (board[p] == c) continue;
-                (Boolean isImmovable, Point? isTigerMouth) = ImmovableHelper.IsImmovablePoint(p, c, board);
-                if (isImmovable)
-                {
+                if (ImmovableHelper.IsImmovablePoint(p, c, board).Item1)
                     immovablePoints.Add(p);
-                    if (isTigerMouth != null && board[isTigerMouth.Value] == Content.Empty)
-                        tigerMouthPoints.Add(new LinkedPoint<Point>(p, eyePoint));
-                }
             }
-            return (immovablePoints, tigerMouthPoints);
+            return immovablePoints;
         }
 
 
@@ -433,6 +426,24 @@ namespace Go
                 }
             }
             return result;
+        }
+
+        /// <summary>
+        /// Real eye of diagonally connected groups.
+        /// Check for straight four formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_4" /> 
+        /// </summary>
+        public static Boolean RealEyeOfDiagonallyConnectedGroups(Board board, Group killerGroup)
+        {
+            if (killerGroup.Points.Count <= 3 || killerGroup.Points.Any(p => board[p] != Content.Empty)) return false;
+            //check for straight four formation
+            if (killerGroup.Points.Count == 4 && KillerFormationHelper.StraightFourFormation(board, killerGroup)) return false;
+            (Boolean isKillerGroup, List<Group> groups) = BothAliveHelper.CheckNeighbourGroupsOfKillerGroup(board, killerGroup);
+            if (!isKillerGroup) return false;
+
+            HashSet<Group> connectedGroups = LinkHelper.GetAllDiagonalConnectedGroups(board, groups.First());
+            if (groups.Except(connectedGroups).Any())
+                return false;
+            return true;
         }
     }
 }

@@ -45,43 +45,35 @@ namespace Go
             if (targetGroup.Liberties.Count == 1) return ConfirmAliveResult.Unknown;
 
             //get at least two possible eyes
-            List<Group> killerGroups = BothAliveHelper.GetCorneredKillerGroup(board, c, false);
+            List<Group> killerGroups = BothAliveHelper.GetCorneredKillerGroup(board, c, false).ToList();
             if (killerGroups.Count < 2) return ConfirmAliveResult.Unknown;
             //get extended groups from target group
             HashSet<Group> groups = LinkHelper.GetAllDiagonalConnectedGroups(board, targetGroup);
-            //get eye groups not more than three points
-            List<Group> possibleEyes = killerGroups.Where(s => s.Points.Count <= 3).ToList();
             //ensure group is connected to target
-            possibleEyes.RemoveAll(e => !board.GetNeighbourGroups(e).All(n => groups.Contains(n)));
-            if (possibleEyes.Count < 2) return ConfirmAliveResult.Unknown;
+            killerGroups.RemoveAll(e => !board.GetNeighbourGroups(e).All(n => groups.Contains(n)));
+            if (killerGroups.Count < 2) return ConfirmAliveResult.Unknown;
 
-            for (int i = 0; i <= possibleEyes.Count - 1; i++)
+            //check for semi solid eyes
+            for (int i = 0; i <= killerGroups.Count - 1; i++)
             {
-                Group group = possibleEyes[i];
-                if (group.Points.Count > 1)
+                Group group = killerGroups[i];
+                if (group.Points.Count <= 3)
                 {
-                    //check for semi solid eye within group
                     if (EyeHelper.FindRealEyeWithinEmptySpace(board, group, EyeType.SemiSolidEye))
                     {
                         //remove preatari groups
                         if (CheckForPreAtariGroups(board, group)) continue;
-
                         eyeGroups.Add(group);
-                        GetTigerMouthsInMultiPointGroup(board, group, tigerMouthList);
                     }
                 }
                 else
                 {
-                    //check if semi solid eyes for single point eye
-                    Point p = group.Points.First();
-                    (Boolean found, _, List<LinkedPoint<Point>> tigerMouths) = EyeHelper.FindSemiSolidEyes(p, board, c);
-                    if (found)
-                    {
+                    if (EyeHelper.RealEyeOfDiagonallyConnectedGroups(board, group))
                         eyeGroups.Add(group);
-                        tigerMouthList.AddRange(tigerMouths);
-                    }
                 }
-                if (eyeGroups.Count + possibleEyes.Count - 1 - i < 2)
+                //get tiger mouths of eye groups
+                GetTigerMouthsOfEyeGroups(board, group, tigerMouthList);
+                if (eyeGroups.Count + killerGroups.Count - 1 - i < 2)
                     break;
             }
             //check for exception case scenario
@@ -91,7 +83,6 @@ namespace Go
             //at least two semi solid eyes to predetermine target group is alive
             if (eyeGroups.Count >= 2)
                 return ConfirmAliveResult.Alive;
-
             return ConfirmAliveResult.Unknown;
         }
 
@@ -244,11 +235,11 @@ namespace Go
         }
 
         /// <summary>
-        /// Get tiger mouth in mulit-point groups.
+        /// Get tiger mouth of eye groups.
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_2" />
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_3" />
         /// </summary>
-        private static void GetTigerMouthsInMultiPointGroup(Board board, Group group, List<LinkedPoint<Point>> tigerMouthList)
+        private static void GetTigerMouthsOfEyeGroups(Board board, Group group, List<LinkedPoint<Point>> tigerMouthList)
         {
             Content c = group.Content;
             List<LinkedPoint<Point>> diagonalPoints = LinkHelper.GetGroupDiagonals(board, group);
