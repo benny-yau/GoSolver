@@ -474,7 +474,7 @@
             Allow opponent to make move within eye space to ensure the space can produce the required eye type. 
             </summary>
         </member>
-        <member name="M:Go.EyeHelper.RealEyeOfDiagonallyConnectedGroups(Go.Board,Go.Group)">
+        <member name="M:Go.EyeHelper.RealEyeOfDiagonallyConnectedGroups(Go.Board,Go.Group,System.Boolean)">
             <summary>
             Real eye of diagonally connected groups.
             Check for straight four formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_4" /> 
@@ -1925,7 +1925,7 @@
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_4" />
             </summary>
         </member>
-        <member name="M:Go.LifeCheck.CheckTigerMouthForException(Go.Board,System.Collections.Generic.List{Go.LinkedPoint{Go.Point}},System.Collections.Generic.List{Go.Group},Go.Content)">
+        <member name="M:Go.LifeCheck.CheckTigerMouthForException(Go.Board,System.Collections.Generic.List{Go.LinkedPoint{Go.Point}},System.Collections.Generic.List{Go.Group})">
             <summary>
             Check exceptions to confirm alive at tiger mouths for semi solid eye.
             Tiger mouth escape with atari <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150" />
@@ -1962,15 +1962,10 @@
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_3" />
             </summary>
         </member>
-        <member name="M:Go.LifeCheck.CheckOpponentAtariMoves(Go.Board,System.Collections.Generic.List{Go.Group},System.Collections.Generic.List{Go.LinkedPoint{Go.Point}})">
+        <member name="M:Go.LifeCheck.CheckOpponentDoubleAtariMoves(Go.Board,System.Collections.Generic.List{Go.Group},System.Collections.Generic.List{Go.LinkedPoint{Go.Point}})">
             <summary>
-            Check opponent atari moves.
-            </summary>
-        </member>
-        <member name="M:Go.LifeCheck.DoubleAtariCapture(Go.Board)">
-            <summary>
-            Double atari by opponent breaks eye.
-            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60" />
+            Check opponent double atari moves.
+            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_7" />
             </summary>
         </member>
         <member name="M:Go.LifeCheck.GetTargets(Go.Board,System.Collections.Generic.List{Go.Point})">

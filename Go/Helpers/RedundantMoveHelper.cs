@@ -262,7 +262,7 @@ namespace Go
             //set as neutral point for non killable move group
             if (WallHelper.IsNonKillableGroup(tryBoard))
                 tryMove.IsNeutralPoint = true;
-            
+
             return true;
         }
 
@@ -780,7 +780,7 @@ namespace Go
                 Group tryKillerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
                 if (EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, killerGroup) && !ImmovableHelper.CheckConnectAndDie(captureBoard))
                 {
-                    if (tryKillerGroup != null && tryKillerGroup.Points.Count == 3 && !EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, tryKillerGroup) && tryKillerGroup.Points.Any(p => EyeHelper.IsCovered(tryBoard, tryBoard.GetDiagonalNeighbours(p.x, p.y), c.Opposite())))
+                    if (tryKillerGroup != null && tryKillerGroup.Points.Count == 3 && !EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, tryKillerGroup) && tryKillerGroup.Points.Any(p => EyeHelper.IsCovered(tryBoard, p, c.Opposite())))
                         return true;
                 }
 
@@ -1661,7 +1661,7 @@ namespace Go
             if (!tryBoard.GetDiagonalNeighbours(k).Any(n => n.Equals(k2))) return false;
 
             //check if any killable group
-            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite() && !WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.GetGroupAt(n)))) 
+            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite() && !WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.GetGroupAt(n))))
                 return false;
 
             //check killer group for captured points

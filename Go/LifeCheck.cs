@@ -77,8 +77,8 @@ namespace Go
                     break;
             }
             //check for exception case scenario
-            CheckTigerMouthForException(board, tigerMouthList, eyeGroups, c);
-            CheckOpponentAtariMoves(board, eyeGroups, tigerMouthList);
+            CheckTigerMouthForException(board, tigerMouthList, eyeGroups);
+            CheckOpponentDoubleAtariMoves(board, eyeGroups, tigerMouthList);
 
             //at least two semi solid eyes to predetermine target group is alive
             if (eyeGroups.Count >= 2)
@@ -117,10 +117,10 @@ namespace Go
         /// Tiger mouth escape with atari <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150" />
         /// Double tiger mouth <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_B3" />
         /// </summary>
-        private static void CheckTigerMouthForException(Board board, List<LinkedPoint<Point>> tigerMouthList, List<Group> eyeGroups, Content c)
+        private static void CheckTigerMouthForException(Board board, List<LinkedPoint<Point>> tigerMouthList, List<Group> eyeGroups)
         {
             if (eyeGroups.Count < 2) return;
-
+            Content c = eyeGroups.First().Content.Opposite();
             HashSet<Point> libertyPoints = new HashSet<Point>();
             foreach (LinkedPoint<Point> tigerMouth in tigerMouthList)
             {
@@ -250,11 +250,11 @@ namespace Go
             }
         }
 
-
         /// <summary>
-        /// Check opponent atari moves.
+        /// Check opponent double atari moves.
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_7" />
         /// </summary>
-        private static void CheckOpponentAtariMoves(Board board, List<Group> eyeGroups, List<LinkedPoint<Point>> tigerMouthList)
+        private static void CheckOpponentDoubleAtariMoves(Board board, List<Group> eyeGroups, List<LinkedPoint<Point>> tigerMouthList)
         {
             if (eyeGroups.Count < 2) return;
             //get neighbours of eye groups
@@ -264,7 +264,7 @@ namespace Go
             //get neighbours of tiger mouths
             Content c = eyeGroups.First().Content;
             tigerMouthList.ForEach(tigerMouth => targetGroups.AddRange(board.GetGroupsFromStoneNeighbours(tigerMouth.Move, c)));
-
+            targetGroups = targetGroups.Where(t => t.Liberties.Count == 2).Distinct().ToList();
             //get distinct liberties of target groups
             List<Point> liberties = board.GetLibertiesOfGroups(targetGroups).Distinct().ToList();
 
@@ -276,38 +276,13 @@ namespace Go
                 //make atari move
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c, board);
                 if (suicidal) continue;
-                if (b.AtariTargets.Count == 0) continue;
-                //ensure all atari targets are connected groups
-                if (b.AtariTargets.Any(a => targetGroups.Any(t => t.Points.Contains(a.Points.First()))))
+                //double atari with any target group
+                if (b.AtariTargets.Count >= 2 && b.AtariTargets.Any(a => targetGroups.Any(t => t.Points.Contains(a.Points.First()))))
                 {
-                    //check for double atari
-                    if (DoubleAtariCapture(b))
-                    {
-                        eyeGroups.Clear();
-                        return;
-                    }
+                    eyeGroups.Clear();
+                    return;
                 }
             }
-        }
-
-        /// <summary>
-        /// Double atari by opponent breaks eye.
-        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60" />
-        /// </summary>
-        public static Boolean DoubleAtariCapture(Board board)
-        {
-            //more than one atari target
-            if (board.AtariTargets.Count <= 1) return false;
-            foreach (Group targetGroup in board.AtariTargets)
-            {
-                //get liberty point for target group
-                (Boolean unEscapable, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(board, targetGroup);
-                if (unEscapable) continue;
-                //check if any atari targets left
-                if (!board.AtariTargets.Any(t => escapeBoard.GetGroupLiberties(t.Points.First()) == 1))
-                    return false;
-            }
-            return true;
         }
 
         /// <summary>

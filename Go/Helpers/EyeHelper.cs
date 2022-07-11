@@ -58,8 +58,7 @@ namespace Go
 
         public static Boolean FindUncoveredPoint(Board currentBoard, Point eyePoint, Content c)
         {
-            List<Point> diagonalPoints = currentBoard.GetDiagonalNeighbours(eyePoint);
-            return !IsCovered(currentBoard, diagonalPoints, c);
+            return !IsCovered(currentBoard, eyePoint, c);
         }
 
         public static Boolean CoveredMove(Board board, Point eyePoint, Content c)
@@ -68,14 +67,15 @@ namespace Go
             List<Point> stonePoints = board.GetStoneNeighbours();
             diagonalPoints = diagonalPoints.Intersect(stonePoints).ToList();
             if (!diagonalPoints.All(p => board[p] == c.Opposite())) return false;
-            if (!IsCovered(board, diagonalPoints, c)) return false;
+            if (!IsCovered(board, eyePoint, c)) return false;
             return true;
         }
 
-        public static Boolean IsCovered(Board board, List<Point> points, Content c)
+        public static Boolean IsCovered(Board board, Point p, Content c)
         {
-            List<Point> oppositeContent = points.Where(q => board[q] == c.Opposite()).ToList();
-            if (points.Count == 4) // middle area
+            List<Point> diagonalNeighbours = board.GetDiagonalNeighbours(p);
+            List<Point> oppositeContent = diagonalNeighbours.Where(q => board[q] == c.Opposite()).ToList();
+            if (diagonalNeighbours.Count == 4) // middle area
                 return (oppositeContent.Count >= 2);
             else //side or corner
                 return (oppositeContent.Count >= 1);
@@ -88,8 +88,7 @@ namespace Go
         {
             if (FindNonSemiSolidEye(tryBoard, p, c))
             {
-                List<Point> diagonalNeighbours = tryBoard.GetDiagonalNeighbours(p);
-                if (IsCovered(tryBoard, diagonalNeighbours, c))
+                if (IsCovered(tryBoard, p, c))
                     return true;
             }
             return false;
@@ -432,17 +431,22 @@ namespace Go
         /// Real eye of diagonally connected groups.
         /// Check for straight four formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_4" /> 
         /// </summary>
-        public static Boolean RealEyeOfDiagonallyConnectedGroups(Board board, Group killerGroup)
+        public static Boolean RealEyeOfDiagonallyConnectedGroups(Board board, Group killerGroup, Boolean checkConnected = false)
         {
+            Content c = killerGroup.Content;
             if (killerGroup.Points.Count <= 3 || killerGroup.Points.Any(p => board[p] != Content.Empty)) return false;
             //check for straight four formation
-            if (killerGroup.Points.Count == 4 && KillerFormationHelper.StraightFourFormation(board, killerGroup)) return false;
-            (Boolean isKillerGroup, List<Group> groups) = BothAliveHelper.CheckNeighbourGroupsOfKillerGroup(board, killerGroup);
-            if (!isKillerGroup) return false;
+            if (killerGroup.Points.Count == 4 && (KillerFormationHelper.StraightFourFormation(board, killerGroup) || KillerFormationHelper.OneByThreeFormation(board, killerGroup)) && killerGroup.Points.Count(p => EyeHelper.IsCovered(board, p, c.Opposite())) >= 2) return false;
 
-            HashSet<Group> connectedGroups = LinkHelper.GetAllDiagonalConnectedGroups(board, groups.First());
-            if (groups.Except(connectedGroups).Any())
-                return false;
+            if (checkConnected)
+            {
+                (Boolean isKillerGroup, List<Group> groups) = BothAliveHelper.CheckNeighbourGroupsOfKillerGroup(board, killerGroup);
+                if (!isKillerGroup) return false;
+
+                HashSet<Group> connectedGroups = LinkHelper.GetAllDiagonalConnectedGroups(board, groups.First());
+                if (groups.Except(connectedGroups).Any())
+                    return false;
+            }
             return true;
         }
     }
