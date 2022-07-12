@@ -34,6 +34,21 @@ namespace Go
         public bool MustHaveNeutralPoint { get; set; }
         public LinkedPoint<Point> LinkPoint { get; set; }
 
+        private bool? atariResolved = null;
+        public bool AtariResolved
+        {
+            get
+            {
+                if (atariResolved == null)
+                    atariResolved = Board.ResolveAtari(CurrentGame.Board, TryGame.Board);
+                return atariResolved.Value;
+            }
+            set
+            {
+                atariResolved = value;
+            }
+        }
+
         public Point Move
         {
             get
@@ -68,8 +83,8 @@ namespace Go
         }
 
         /// <summary>
-        /// Make ko move within board. Set KoGameCheck to mark game within ko and koMoveRepeat to limit ko repeats.
-        /// </summary>
+         /// Make ko move within board. Set KoGameCheck to mark game within ko and koMoveRepeat to limit ko repeats.
+         /// </summary>
         public void MakeKoMove(Point p, SurviveOrKill surviveOrKill)
         {
             this.TryGame.KoGameCheck = (surviveOrKill == SurviveOrKill.Kill) ? KoCheck.Kill : KoCheck.Survive;
@@ -92,7 +107,7 @@ namespace Go
             get
             {
                 Board board = this.TryGame.Board;
-                return (board.CapturedList.Count == 0 && !board.AtariResolved && !(board.IsAtariMove && board.MoveGroupLiberties > 1));
+                return (board.CapturedList.Count == 0 && !AtariResolved && !(board.IsAtariMove && board.MoveGroupLiberties > 1));
             }
         }
 
@@ -127,6 +142,7 @@ namespace Go
                 if (opponentMove)
                 {
                     Board tryBoard = this.TryGame.Board;
+                    if (AtariResolved) return false;
                     List<Point> targets = LifeCheck.GetTargets(tryBoard);
                     foreach (Point t in targets)
                     {

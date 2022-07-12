@@ -81,7 +81,7 @@ namespace Go
             CheckOpponentDoubleAtariMoves(board, eyeGroups, tigerMouthList);
 
             //at least two semi solid eyes to predetermine target group is alive
-            if (eyeGroups.Count >= 2)
+            if (eyeGroups.Count >= 2)            
                 return ConfirmAliveResult.Alive;
             return ConfirmAliveResult.Unknown;
         }
@@ -172,8 +172,8 @@ namespace Go
             //check for atari that is not tiger mouth  
             if (b1.AtariTargets.Count() > 0 || b1.CapturedList.Count > 0)
                 return true;
-            Board.ResolveAtari(board, b1);
-            if (b1.AtariResolved) return true;
+            
+            if (Board.ResolveAtari(board, b1)) return true;
 
             //check liberty point
             if (CheckLibertyPointOfTigerMouths(board, c, tigerMouth.Move, libertyPoint))

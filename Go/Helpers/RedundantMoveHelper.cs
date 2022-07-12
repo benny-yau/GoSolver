@@ -99,7 +99,7 @@ namespace Go
             Point move = tryBoard.Move.Value;
             Content c = tryMove.MoveContent;
 
-            if (tryBoard.AtariResolved) return false;
+            if (tryMove.AtariResolved) return false;
             Group eyeGroup = null;
             Point eyePoint;
             if (tryBoard.CapturedList.Count == 1 && tryBoard.CapturedPoints.Count() == 2 && EyeHelper.FindCoveredEyeByCapture(tryBoard, tryBoard.CapturedList.First()))
@@ -262,7 +262,7 @@ namespace Go
             //set as neutral point for non killable move group
             if (WallHelper.IsNonKillableGroup(tryBoard))
                 tryMove.IsNeutralPoint = true;
-
+            
             return true;
         }
 
@@ -337,7 +337,7 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryBoard.MoveGroup.Content;
-            if (!tryBoard.IsAtariMove || tryBoard.AtariTargets.Count > 1 || tryBoard.AtariResolved || tryBoard.MoveGroupLiberties == 1 || tryBoard.CapturedList.Count > 0) return false;
+            if (!tryBoard.IsAtariMove || tryBoard.AtariTargets.Count > 1 || tryMove.AtariResolved || tryBoard.MoveGroupLiberties == 1 || tryBoard.CapturedList.Count > 0) return false;
             Group atariTarget = tryBoard.AtariTargets.First();
             //ensure target group can escape
             if (ImmovableHelper.UnescapableGroup(tryBoard, atariTarget).Item1)
@@ -686,7 +686,7 @@ namespace Go
             if (LifeCheck.GetTargets(tryBoard).All(t => tryBoard.MoveGroup.Points.Contains(t))) return true;
 
             //reverse connect and die
-            if (tryBoard.MoveGroup.Points.Count == 1 && captureBoard.MoveGroup.Points.Count == 1 && !tryBoard.GetNeighbourGroups().Any(gr => gr.Liberties.Count == 1) && ImmovableHelper.CheckConnectAndDie(captureBoard))
+                if (tryBoard.MoveGroup.Points.Count == 1 && captureBoard.MoveGroup.Points.Count == 1 && !tryBoard.GetNeighbourGroups().Any(gr => gr.Liberties.Count == 1) && ImmovableHelper.CheckConnectAndDie(captureBoard))
                 return false;
 
             //check capture moves
@@ -842,7 +842,7 @@ namespace Go
             if (!neighbourGroups.Any(group => group.Liberties.Count > 2)) return false;
             Group weakGroup = neighbourGroups.FirstOrDefault(group => (group.Points.Count >= 2 && group.Liberties.Count == 2 && !WallHelper.IsStrongNeighbourGroup(tryBoard, group) && !WallHelper.IsNonKillableGroup(tryBoard, group)));
             if (weakGroup == null) return false;
-            if (tryBoard.AtariResolved && !tryBoard.GetNeighbourGroups(weakGroup).Any(g => WallHelper.IsNonKillableGroup(tryBoard, g))) return true;
+            if (tryMove.AtariResolved && !tryBoard.GetNeighbourGroups(weakGroup).Any(g => WallHelper.IsNonKillableGroup(tryBoard, g))) return true;
 
             //check multi-point snapback
             if (ImmovableHelper.CheckConnectAndDie(captureBoard, captureBoard.GetGroupAt(weakGroup.Points.First())))
@@ -914,7 +914,7 @@ namespace Go
 
             if (tryBoard.MoveGroupLiberties != 2) return false;
             //check atari resolved
-            if (tryBoard.AtariResolved) return false;
+            if (tryMove.AtariResolved) return false;
             //check connect and die
             (Boolean suicidal, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
             if (!suicidal) return false;
@@ -1661,7 +1661,7 @@ namespace Go
             if (!tryBoard.GetDiagonalNeighbours(k).Any(n => n.Equals(k2))) return false;
 
             //check if any killable group
-            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite() && !WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.GetGroupAt(n))))
+            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite() && !WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.GetGroupAt(n)))) 
                 return false;
 
             //check killer group for captured points
@@ -1729,7 +1729,7 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.AtariResolved || tryBoard.CapturedList.Count > 0 || tryBoard.MoveGroupLiberties == 1) return false;
+            if (tryMove.AtariResolved || tryBoard.CapturedList.Count > 0 || tryBoard.MoveGroupLiberties == 1) return false;
             if (tryBoard.AtariTargets.Count == 1 && tryBoard.AtariTargets.First().Points.Count == 1)
             {
                 Point p = tryBoard.AtariTargets.First().Points.First();

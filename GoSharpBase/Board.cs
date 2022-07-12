@@ -41,7 +41,6 @@ namespace Go
             }
         }
 
-        public bool AtariResolved { get; set; }
         public Dictionary<Content, List<Group>> CorneredKillerGroup { get; set; }
         public GameInfo GameInfo { get; set; }
         public static readonly Point PassMove = new Point(-1, -1);
@@ -554,10 +553,7 @@ namespace Go
         {
             //capture stones to resolve atari
             if (tryBoard.CapturedList.Any(group => currentBoard.GetNeighbourGroups(group).Any(g => g.Liberties.Count == 1)))
-            {
-                tryBoard.AtariResolved = true;
                 return true;
-            }
 
             //check neighbour points with group liberty increased from one.
             if (tryBoard.MoveGroupLiberties > 1)
@@ -566,10 +562,7 @@ namespace Go
                 Content c = tryBoard[move];
                 HashSet<Group> groups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite());
                 if (groups.Any(group => group.Liberties.Count == 1))
-                {
-                    tryBoard.AtariResolved = true;
                     return true;
-                }
             }
             return false;
         }

@@ -87,9 +87,8 @@ namespace Go
                 if (excludePoint != null && p.Equals(excludePoint)) continue;
                 Board b = ImmovableHelper.CaptureSuicideGroup(p, board, true);
                 if (b != null && KoHelper.IsKoFight(b))
-                {
-                    Board.ResolveAtari(board, b);
-                    if (!b.AtariResolved) continue;
+                {                    
+                    if (!Board.ResolveAtari(board, b)) continue;
                     return (true, b);
                 }
             }

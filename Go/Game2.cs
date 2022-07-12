@@ -148,7 +148,7 @@ namespace Go
             }
 
             //sort game try moves
-            tryMoves = (from entry in tryMoves orderby entry.TryGame.Board.AtariResolved descending, entry.IncreasedKillerGroups descending, entry.TryGame.Board.MoveGroupLiberties descending select entry).ToList();
+            tryMoves = (from tryMove in tryMoves orderby tryMove.AtariResolved descending, tryMove.IncreasedKillerGroups descending, tryMove.TryGame.Board.MoveGroupLiberties descending select tryMove).ToList();
 
             //check for bent four and both alive scenarios
             if (UniquePatternsHelper.CheckForBentFour(currentGame, tryMoves))
@@ -160,8 +160,6 @@ namespace Go
 
             //restore redundant ko
             RestoreRedundantKo(tryMoves, redundantTryMoves);
-            if (!mappingRange && koBlockedMove != null && koBlockedMove.IsRedundantKo)
-                koBlockedMove = null;
 
             //create random move
             CreateRandomMove(tryMoves, currentGame, SurviveOrKill.Survive);
@@ -449,7 +447,7 @@ namespace Go
             }
 
             //sort game try moves
-            tryMoves = (from entry in tryMoves orderby entry.TryGame.Board.AtariResolved descending, entry.TryGame.Board.MoveGroupLiberties descending select entry).ToList();
+            tryMoves = (from tryMove in tryMoves orderby tryMove.AtariResolved descending, tryMove.TryGame.Board.MoveGroupLiberties descending select tryMove).ToList();
 
             //restore redundant ko
             RestoreRedundantKo(tryMoves, redundantTryMoves);
@@ -499,7 +497,7 @@ namespace Go
             if (!separateGroup) return;
             tryMoves.Add(koMove);
         }
-
+    
 
         /// <summary>
         /// Make random move to wait a turn where no other move is available or on ko move from opponent.
