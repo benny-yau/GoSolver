@@ -683,7 +683,7 @@ namespace Go
             (Boolean suicidal, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
             if (!suicidal) return false;
 
-            if (tryBoard.GameInfo.targetPoints.All(t => tryBoard.MoveGroup.Points.Contains(t) || tryBoard[t] == Content.Empty)) return true;
+            if (LifeCheck.GetTargets(tryBoard).All(t => tryBoard.MoveGroup.Points.Contains(t))) return true;
 
             //reverse connect and die
             if (tryBoard.MoveGroup.Points.Count == 1 && captureBoard.MoveGroup.Points.Count == 1 && !tryBoard.GetNeighbourGroups().Any(gr => gr.Liberties.Count == 1) && ImmovableHelper.CheckConnectAndDie(captureBoard))
@@ -2934,15 +2934,20 @@ namespace Go
             if (!koEnabled) return !PossibilityOfDoubleKo(tryMove);
             if (KoHelper.CheckKillerKoWithinKillerGroup(tryMove))
                 return true;
-            if (!tryMove.IsNegligibleForKo)
-                return false;
+
             //check redundant ko
+            if (!tryMove.IsNegligibleForKo())
+                return false;
             if (!CheckRedundantKo(tryMove)) return false;
+
             //check for opponent
             Point? eyePoint = KoHelper.GetKoEyePoint(tryBoard);
             if (eyePoint == null) return false;
             GameTryMove opponentMove = new GameTryMove(tryMove.TryGame);
             opponentMove.TryGame.Board.InternalMakeMove(eyePoint.Value, c.Opposite(), true);
+
+            if (!opponentMove.IsNegligibleForKo(true))
+                return false;
             if (CheckRedundantKo(opponentMove))
                 return true;
             return false;

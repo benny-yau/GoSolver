@@ -219,7 +219,7 @@
             Increased count of killer groups.
             </summary>
         </member>
-        <member name="P:Go.GameTryMove.IsNegligibleForKo">
+        <member name="M:Go.GameTryMove.IsNegligibleForKo(System.Boolean)">
             <summary>
             Ko moves only - Check for atari moves. Return false if not redundant.
             </summary>
@@ -477,7 +477,7 @@
         <member name="M:Go.EyeHelper.RealEyeOfDiagonallyConnectedGroups(Go.Board,Go.Group,System.Boolean)">
             <summary>
             Real eye of diagonally connected groups.
-            Check for straight four formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_4" /> 
+            Check for covered eye killer group <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16738" /> 
             </summary>
         </member>
         <member name="M:Go.GameHelper.GetTryMovesForGame(Go.Game)">

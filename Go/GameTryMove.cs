@@ -119,15 +119,27 @@ namespace Go
         /// <summary>
         /// Ko moves only - Check for atari moves. Return false if not redundant.
         /// </summary>
-        public bool IsNegligibleForKo
+        public bool IsNegligibleForKo(Boolean opponentMove = false)
         {
-            get
+            if (KoHelper.EssentialAtariForKoMove(this))
             {
-                if (KoHelper.EssentialAtariForKoMove(this))
-                    return false;
-
-                return true;
+                //check if all target points captured
+                if (opponentMove)
+                {
+                    Board tryBoard = this.TryGame.Board;
+                    List<Point> targets = LifeCheck.GetTargets(tryBoard);
+                    foreach (Point t in targets)
+                    {
+                        Group group = tryBoard.GetGroupAt(t);
+                        if (group.Liberties.Count != 1) continue;
+                        Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(tryBoard, group, group.Content);
+                        if (b == null || b.MoveGroupLiberties == 1)
+                            return true;
+                    }
+                }
+                return false;
             }
+            return true;
         }
 
         /// <summary>

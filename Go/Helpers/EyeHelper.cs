@@ -429,14 +429,14 @@ namespace Go
 
         /// <summary>
         /// Real eye of diagonally connected groups.
-        /// Check for straight four formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_4" /> 
+        /// Check for covered eye killer group <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16738" /> 
         /// </summary>
         public static Boolean RealEyeOfDiagonallyConnectedGroups(Board board, Group killerGroup, Boolean checkConnected = false)
         {
             Content c = killerGroup.Content;
             if (killerGroup.Points.Count <= 3 || killerGroup.Points.Any(p => board[p] != Content.Empty)) return false;
-            //check for straight four formation
-            if (killerGroup.Points.Count == 4 && (KillerFormationHelper.StraightFourFormation(board, killerGroup) || KillerFormationHelper.OneByThreeFormation(board, killerGroup)) && killerGroup.Points.Count(p => EyeHelper.IsCovered(board, p, c.Opposite())) >= 2) return false;
+            //check for covered eye killer group
+            if (killerGroup.Points.Any(p => EyeHelper.IsCovered(board, p, c.Opposite()))) return false;
 
             if (checkConnected)
             {

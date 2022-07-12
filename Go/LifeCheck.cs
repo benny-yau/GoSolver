@@ -289,7 +289,7 @@ namespace Go
         /// Get targets of survival group. Can specify other targets than specified in game info.
         /// Specify another target <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_GuanZiPu_B3" />
         /// </summary>
-        public static List<Point> GetTargets(Board board, List<Point> target)
+        public static List<Point> GetTargets(Board board, List<Point> target = null)
         {
             Content content = Content.Unknown;
             if (target == null)
@@ -316,7 +316,7 @@ namespace Go
             HashSet<Group> groups = new HashSet<Group>();
             if (target == null)
             {
-                target = LifeCheck.GetTargets(board, board.GameInfo.targetPoints);
+                target = LifeCheck.GetTargets(board);
                 if (target.Count == 0) return groups;
             }
             foreach (Group targetGroup in board.GetGroupsFromPoints(target))
