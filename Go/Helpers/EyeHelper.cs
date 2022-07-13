@@ -396,7 +396,7 @@ namespace Go
                 Board b = new Board(board);
                 Point q = availablePoints[j];
                 //make move
-                if (b.InternalMakeMove(q, content, true) != MakeMoveResult.Legal)
+                if (b.InternalMakeMove(q, content) != MakeMoveResult.Legal)
                     b.LastMoves.Add(Game.PassMove);
                 //killer move
                 if (content == c)

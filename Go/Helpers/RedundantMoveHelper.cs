@@ -1730,26 +1730,26 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryBoard.MoveGroup.Content;
             if (tryMove.AtariResolved || tryBoard.CapturedList.Count > 0 || tryBoard.MoveGroupLiberties == 1) return false;
-            if (tryBoard.AtariTargets.Count == 1 && tryBoard.AtariTargets.First().Points.Count == 1)
-            {
-                Point p = tryBoard.AtariTargets.First().Points.First();
-                if (!tryBoard.GetStoneNeighbours(p).Any(q => EyeHelper.FindCoveredEye(currentBoard, q, c.Opposite()))) return false;
-                Board b = ImmovableHelper.CaptureSuicideGroup(p, tryBoard, true);
-                if (b != null && KoHelper.IsKoFight(b))
-                {
-                    //check for ko fight
-                    if (!KoHelper.KoContentEnabled(c, currentBoard.GameInfo))
-                        return true;
+            if (tryBoard.AtariTargets.Count != 1) return false;
+            Group atariTarget = tryBoard.AtariTargets.First();
+            if (atariTarget.Points.Count != 1) return false;
+            Point p = atariTarget.Points.First();
+            if (!tryBoard.GetStoneNeighbours(p).Any(q => EyeHelper.FindCoveredEye(currentBoard, q, c.Opposite()))) return false;
+            //check for ko fight
+            Board b = KoHelper.IsCaptureKoFight(tryBoard, tryBoard.GetGroupAt(p));
+            if (b == null) return false;
 
-                    List<Group> neighbourGroups = b.GetNeighbourGroups();
-                    if (neighbourGroups.All(group => WallHelper.IsNonKillableGroup(b, group)))
-                        return true;
+            //check for ko enabled
+            if (!KoHelper.KoContentEnabled(c, currentBoard.GameInfo))
+                return true;
 
-                    //check for groups with two or less liberties
-                    if (WallHelper.StrongNeighbourGroups(b, neighbourGroups))
-                        return true;
-                }
-            }
+            List<Group> neighbourGroups = b.GetNeighbourGroups();
+            if (neighbourGroups.All(group => WallHelper.IsNonKillableGroup(b, group)))
+                return true;
+
+            //check for groups with two or less liberties
+            if (WallHelper.StrongNeighbourGroups(b, neighbourGroups))
+                return true;
             return false;
         }
 
@@ -2985,7 +2985,7 @@ namespace Go
             Point capturePoint = tryBoard.singlePointCapture.Value;
             List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(capturePoint, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
             List<Group> targetGroups = new List<Group>();
-            ngroups.ForEach(atariGroup => targetGroups.AddRange(currentBoard.GetNeighbourGroups(atariGroup.Points.First()).Where(gr => gr.Points.Count == 1 && KoHelper.IsKoFight(currentBoard, gr))));
+            ngroups.ForEach(atariGroup => targetGroups.AddRange(currentBoard.GetNeighbourGroups(atariGroup.Points.First()).Where(gr => KoHelper.IsKoFight(currentBoard, gr))));
             targetGroups = targetGroups.Distinct().ToList();
             //survival double ko
             if (targetGroups.Count >= 2 && AtariHelper.KoAtariByNeighbour(currentBoard, targetGroups, capturePoint).Item1)
@@ -2993,7 +2993,7 @@ namespace Go
 
             //kill double ko
             HashSet<Group> connectedGroups = LinkHelper.GetAllDiagonalConnectedGroups(currentBoard, currentBoard.GetGroupAt(capturePoint));
-            List<Group> koGroups = connectedGroups.Where(group => group.Points.Count == 1 && KoHelper.IsKoFight(currentBoard, group)).ToList();
+            List<Group> koGroups = connectedGroups.Where(group => KoHelper.IsKoFight(currentBoard, group)).ToList();
             if (koGroups.Count < 2) return false;
             Group koGroup = koGroups.First(group => !group.Points.Contains(capturePoint));
             Board b = ImmovableHelper.CaptureSuicideGroup(currentBoard, koGroup, true);

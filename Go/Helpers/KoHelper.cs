@@ -87,6 +87,18 @@ namespace Go
             return false;
         }
 
+        /// <summary>
+        /// Is ko fight after capture.
+        /// </summary>
+        public static Board IsCaptureKoFight(Board board, Group group)
+        {
+            if (group.Points.Count != 1) return null;
+            Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(board, group);
+            if (capturedBoard == null) return null;
+            if (KoHelper.IsKoFight(capturedBoard))
+                return capturedBoard;
+            return null;
+        }
 
         /// <summary>
         /// Double ko fight.

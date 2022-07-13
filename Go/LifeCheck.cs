@@ -180,7 +180,7 @@ namespace Go
             if (board[tigerMouth] != Content.Empty || board[libertyPoint] != Content.Empty) return false;
             //make killer move at liberty
             Board b1 = board.MakeMoveOnNewBoard(libertyPoint, c.Opposite(), true);
-            if (b1 == null || b1.MoveGroupLiberties <= 3) return false;
+            if (b1 == null || b1.MoveGroupLiberties <= 2) return false;
             //get all stone neigbours of liberty
             List<Point> diagonals = board.GetStoneNeighbours(libertyPoint);
             diagonals.Remove(tigerMouth);
@@ -188,12 +188,10 @@ namespace Go
             foreach (Point diagonal in diagonals)
             {
                 //ensure tiger mouth is external
-                Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(board, diagonal, c);
-                if (killerGroup != null) continue;
-
+                if (BothAliveHelper.GetKillerGroupFromCache(board, diagonal, c) != null) continue;
                 //ensure link for groups
                 Board b2 = b1.MakeMoveOnNewBoard(diagonal, c);
-                if (b2 != null && LinkHelper.IsAbsoluteLinkForGroups(b1, b2))
+                if (b2 != null && LinkHelper.IsAbsoluteLinkForGroups(b1, b2) && !ImmovableHelper.IsSuicidalMove(b2, tigerMouth, c.Opposite()))
                     return true;
             }
             return false;
@@ -239,18 +237,36 @@ namespace Go
             foreach (Point liberty in liberties)
             {
                 //get external liberty
-                Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(board, liberty, c.Opposite());
-                if (killerGroup != null) continue;
+                if (BothAliveHelper.GetKillerGroupFromCache(board, liberty, c.Opposite()) != null) continue;
                 //make atari move
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c, board);
                 if (suicidal) continue;
                 //double atari with any target group
                 if (b.AtariTargets.Count >= 2 && b.AtariTargets.Any(a => targetGroups.Any(t => t.Points.Contains(a.Points.First()))))
                 {
+                    if (!DoubleAtariEscape(b)) continue;
                     eyeGroups.Clear();
                     return;
                 }
             }
+        }
+
+        /// <summary>
+        /// Double atari escape.
+        /// </summary>
+        private static Boolean DoubleAtariEscape(Board board)
+        {
+            if (board.AtariTargets.Count <= 1) return false;
+            foreach (Group targetGroup in board.AtariTargets)
+            {
+                //make escape move for target group
+                (Boolean unEscapable, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(board, targetGroup);
+                if (unEscapable) continue;
+                //check if any atari targets left
+                if (!board.AtariTargets.Any(t => escapeBoard.GetGroupLiberties(t.Points.First()) == 1))
+                    return false;
+            }
+            return true;
         }
 
         /// <summary>

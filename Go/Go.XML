@@ -222,6 +222,7 @@
         <member name="M:Go.GameTryMove.IsNegligibleForKo(System.Boolean)">
             <summary>
             Ko moves only - Check for atari moves. Return false if not redundant.
+            Check if all target points captured <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi" />
             </summary>
         </member>
         <member name="M:Go.GameTryMove.MakeMoveWithOpponentAtSamePoint(System.Boolean)">
@@ -826,6 +827,11 @@
             <summary>
             Check if ko fight for try move.
             <see cref="!:UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario_TianLongTu_Q17160" />
+            </summary>
+        </member>
+        <member name="M:Go.KoHelper.IsCaptureKoFight(Go.Board,Go.Group)">
+            <summary>
+            Is ko fight after capture.
             </summary>
         </member>
         <member name="M:Go.KoHelper.DoubleKoFight(Go.Board,Go.Group)">
@@ -1960,6 +1966,11 @@
             <summary>
             Check opponent double atari moves.
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_7" />
+            </summary>
+        </member>
+        <member name="M:Go.LifeCheck.DoubleAtariEscape(Go.Board)">
+            <summary>
+            Double atari escape.
             </summary>
         </member>
         <member name="M:Go.LifeCheck.GetTargets(Go.Board,System.Collections.Generic.List{Go.Point})">

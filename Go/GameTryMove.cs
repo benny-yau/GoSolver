@@ -83,8 +83,8 @@ namespace Go
         }
 
         /// <summary>
-         /// Make ko move within board. Set KoGameCheck to mark game within ko and koMoveRepeat to limit ko repeats.
-         /// </summary>
+        /// Make ko move within board. Set KoGameCheck to mark game within ko and koMoveRepeat to limit ko repeats.
+        /// </summary>
         public void MakeKoMove(Point p, SurviveOrKill surviveOrKill)
         {
             this.TryGame.KoGameCheck = (surviveOrKill == SurviveOrKill.Kill) ? KoCheck.Kill : KoCheck.Survive;
@@ -133,6 +133,7 @@ namespace Go
 
         /// <summary>
         /// Ko moves only - Check for atari moves. Return false if not redundant.
+        /// Check if all target points captured <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi" />
         /// </summary>
         public bool IsNegligibleForKo(Boolean opponentMove = false)
         {
@@ -144,14 +145,8 @@ namespace Go
                     Board tryBoard = this.TryGame.Board;
                     if (AtariResolved) return false;
                     List<Point> targets = LifeCheck.GetTargets(tryBoard);
-                    foreach (Point t in targets)
-                    {
-                        Group group = tryBoard.GetGroupAt(t);
-                        if (group.Liberties.Count != 1) continue;
-                        Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(tryBoard, group, group.Content);
-                        if (b == null || b.MoveGroupLiberties == 1)
-                            return true;
-                    }
+                    if (targets.Select(t => new { gr = tryBoard.GetGroupAt(t) }).All(t => t.gr.Liberties.Count == 1 && tryBoard.GetNeighbourGroups(t.gr).All(n => WallHelper.IsNonKillableGroup(tryBoard, n) || KoHelper.IsCaptureKoFight(tryBoard, n) != null)))
+                        return true;
                 }
                 return false;
             }

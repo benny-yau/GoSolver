@@ -41,19 +41,17 @@ namespace Go
                 Group group = targetGroups[i];
                 if (group.Points.Count != 1) continue;
                 Point p = group.Points.First();
-                Board b = ImmovableHelper.CaptureSuicideGroup(p, board, true);
-                if (b != null && KoHelper.IsKoFight(b))
+                Board b = KoHelper.IsCaptureKoFight(board, group);
+                if (b == null) continue;
+                if (excludeKo)
+                    targetGroups.Remove(group);
+                else
                 {
-                    if (excludeKo)
+                    if (!KoHelper.KoContentEnabled(atariGroup.Content, board.GameInfo))
                         targetGroups.Remove(group);
-                    else
-                    {
-                        if (!KoHelper.KoContentEnabled(atariGroup.Content, board.GameInfo))
-                            targetGroups.Remove(group);
 
-                        if (board.MakeMoveOnNewBoard(b.Move.Value, atariGroup.Content) == null)
-                            targetGroups.Remove(group);
-                    }
+                    if (board.MakeMoveOnNewBoard(b.Move.Value, atariGroup.Content) == null)
+                        targetGroups.Remove(group);
                 }
             }
             return targetGroups;
@@ -87,7 +85,7 @@ namespace Go
                 if (excludePoint != null && p.Equals(excludePoint)) continue;
                 Board b = ImmovableHelper.CaptureSuicideGroup(p, board, true);
                 if (b != null && KoHelper.IsKoFight(b))
-                {                    
+                {
                     if (!Board.ResolveAtari(board, b)) continue;
                     return (true, b);
                 }
