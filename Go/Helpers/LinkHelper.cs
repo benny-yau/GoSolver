@@ -31,7 +31,7 @@ namespace Go
                     if (groups[i] == groups[j]) continue;
                     if (WallHelper.IsNonKillableGroup(currentBoard, groups[i]) && WallHelper.IsNonKillableGroup(currentBoard, groups[j])) continue;
                     Group groupI = tryBoard.GetGroupAt(groups[i].Points.First());
-                    Group groupJ = tryBoard.GetGroupAt(groups[j].Points.First());                    
+                    Group groupJ = tryBoard.GetGroupAt(groups[j].Points.First());
                     if (groupI == groupJ && ImmovableHelper.CheckConnectAndDie(tryBoard)) return false;
                     //check if currently linked
                     Boolean isLinked = (groupI == groupJ) || IsDiagonallyConnectedGroups(tryBoard, groupI, groupJ);
@@ -121,7 +121,7 @@ namespace Go
                     HashSet<Group> tigerMouthGroups = board.GetGroupsFromStoneNeighbours(p, c.Opposite());
                     if (tigerMouthGroups.Any(g => g.Points.Count == 1) && tigerMouthGroups.Intersect(threeGroups).Count() == 2)
                     {
-                        if (LifeCheck.DoubleTigerMouthLink(board, c, p, isTigerMouth.Value, threeGroups))
+                        if (LifeCheck.DoubleTigerMouthLink(board, c, p, isTigerMouth.Value))
                             return false;
                     }
                 }

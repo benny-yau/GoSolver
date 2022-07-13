@@ -1942,13 +1942,7 @@
             Check for atari that is not tiger mouth  <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150_2" />
             </summary>
         </member>
-        <member name="M:Go.LifeCheck.CheckLibertyPointOfTigerMouths(Go.Board,Go.Content,Go.Point,Go.Point)">
-            <summary>
-            Check liberty point of tiger mouth not link for groups
-            to ensure not liberty point of another tiger mouth.
-            </summary>
-        </member>
-        <member name="M:Go.LifeCheck.DoubleTigerMouthLink(Go.Board,Go.Content,Go.Point,Go.Point,System.Collections.Generic.List{Go.Group})">
+        <member name="M:Go.LifeCheck.DoubleTigerMouthLink(Go.Board,Go.Content,Go.Point,Go.Point)">
             <summary>
             Double tiger mouth one of which is link for groups.
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571" />

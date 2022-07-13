@@ -25,7 +25,8 @@ namespace Go
         public List<Point> LastMoves = new List<Point>();
 
         private List<Group> atariTargets;
-        public List<Group> AtariTargets {
+        public List<Group> AtariTargets
+        {
             get
             {
                 if (atariTargets == null)
