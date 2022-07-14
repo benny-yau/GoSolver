@@ -98,16 +98,21 @@ namespace Go
             if (group.Points.Count == 3 && group.Points.All(p => board[p] == Content.Empty) && board.GetNeighbourGroups(group).Count >= 3 && KillerFormationHelper.MaxLengthOfGrid(group.Points) == 1)
             {
                 Content c = group.Content;
-                Board coveredBoard = new Board(board);
                 List<Group> neighbourGroups = board.GetNeighbourGroups(group);
-                //cover external liberties
-                neighbourGroups.ForEach(gr => gr.Liberties.Where(p => BothAliveHelper.GetKillerGroupFromCache(board, p, c.Opposite()) == null).ToList().ForEach(p => coveredBoard[p] = c));
-                //get middle point of group
-                Point q = group.Points.First(s => board.GetStoneNeighbours(s).Intersect(group.Points).Count() == 2);
-                //make move and check for unescapable group
-                Board b = coveredBoard.MakeMoveOnNewBoard(q, c);
-                if (b != null && b.AtariTargets.Count > 0 && b.AtariTargets.Any(t => ImmovableHelper.UnescapableGroup(b, t).Item1))
-                    return true;
+
+                foreach (Group ngroup in neighbourGroups.Where(gr => gr.Liberties.Count == 3))
+                {
+                    List<Point> externalLib = ngroup.Liberties.Where(lib => !group.Points.Contains(lib) && BothAliveHelper.GetKillerGroupFromCache(board, lib, c.Opposite()) == null).ToList();
+                    if (externalLib.Count != 1) continue;
+                    Board preAtariBoard = board.MakeMoveOnNewBoard(externalLib.First(), c);
+                    if (preAtariBoard == null || preAtariBoard.MoveGroupLiberties == 1) continue;
+                    //get middle point of group
+                    Point q = group.Points.First(s => board.GetStoneNeighbours(s).Intersect(group.Points).Count() == 2);
+                    //make move and check for unescapable group
+                    Board b = preAtariBoard.MakeMoveOnNewBoard(q, c);
+                    if (b != null && b.AtariTargets.Count > 0 && b.AtariTargets.Any(t => ImmovableHelper.UnescapableGroup(b, t).Item1))
+                        return true;
+                }
             }
             return false;
         }
@@ -123,14 +128,12 @@ namespace Go
             Content c = eyeGroups.First().Content.Opposite();
             foreach (LinkedPoint<Point> tigerMouth in tigerMouthList)
             {
-                if (board[tigerMouth.Move] != Content.Empty) continue;
                 Point? libertyPoint = ImmovableHelper.FindTigerMouth(board, tigerMouth.Move, c);
                 if (libertyPoint == null) continue;
+                if (board[libertyPoint.Value] != Content.Empty) continue;
 
                 //ensure tiger mouth is external
-                Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(board, libertyPoint.Value, c);
-                if (killerGroup != null) continue;
-
+                if (BothAliveHelper.GetKillerGroupFromCache(board, libertyPoint.Value, c) != null) continue;
                 //check for other exceptions
                 if (TigerMouthExceptions(board, c, tigerMouth, libertyPoint.Value))
                 {
@@ -150,7 +153,6 @@ namespace Go
         /// </summary>
         public static Boolean TigerMouthExceptions(Board board, Content c, LinkedPoint<Point> tigerMouth, Point libertyPoint)
         {
-            if (board[tigerMouth.Move] != Content.Empty || board[libertyPoint] != Content.Empty) return false;
             //possible corner three formation
             if (KillerFormationHelper.PossibleCornerThreeFormation(board, tigerMouth.Move, c))
                 return true;
@@ -161,11 +163,11 @@ namespace Go
             (Boolean suicidal, Board b1) = ImmovableHelper.IsSuicidalMove(libertyPoint, c.Opposite(), board);
             if (suicidal) return false;
             //check for atari that is not tiger mouth  
-            if (b1.AtariTargets.Count() > 0 || b1.CapturedList.Count > 0)
+            if ((b1.MoveGroupLiberties > 1 && b1.AtariTargets.Count() > 0) || b1.CapturedList.Count > 0)
                 return true;
 
-            if (Board.ResolveAtari(board, b1)) return true;
-
+            if (Board.ResolveAtari(board, b1))
+                return true;
             //check if another tiger mouth present at diagonal neighbours
             return DoubleTigerMouthLink(board, c, tigerMouth.Move, libertyPoint);
         }
@@ -179,7 +181,7 @@ namespace Go
         {
             if (board[tigerMouth] != Content.Empty || board[libertyPoint] != Content.Empty) return false;
             //make killer move at liberty
-            Board b1 = board.MakeMoveOnNewBoard(libertyPoint, c.Opposite(), true);
+            Board b1 = board.MakeMoveOnNewBoard(libertyPoint, c.Opposite());
             if (b1 == null || b1.MoveGroupLiberties <= 2) return false;
             //get all stone neigbours of liberty
             List<Point> diagonals = board.GetStoneNeighbours(libertyPoint);
@@ -210,6 +212,7 @@ namespace Go
             {
                 if (board[p.Move] == Content.Empty && ImmovableHelper.FindTigerMouth(board, c.Opposite(), p.Move))
                 {
+                    //ensure tiger mouth is immovable
                     if (ImmovableHelper.IsImmovablePoint(p.Move, c.Opposite(), board).Item1)
                         tigerMouthList.Add(p);
                 }
@@ -244,7 +247,7 @@ namespace Go
                 //double atari with any target group
                 if (b.AtariTargets.Count >= 2 && b.AtariTargets.Any(a => targetGroups.Any(t => t.Points.Contains(a.Points.First()))))
                 {
-                    if (!DoubleAtariEscape(b)) continue;
+                    if (DoubleAtariEscape(b)) continue;
                     eyeGroups.Clear();
                     return;
                 }
@@ -264,9 +267,9 @@ namespace Go
                 if (unEscapable) continue;
                 //check if any atari targets left
                 if (!board.AtariTargets.Any(t => escapeBoard.GetGroupLiberties(t.Points.First()) == 1))
-                    return false;
+                    return true;
             }
-            return true;
+            return false;
         }
 
         /// <summary>

@@ -1003,7 +1003,7 @@ namespace Go
                         {
                             List<Point> cutDiagonal = LinkHelper.PointsBetweenDiagonals(stoneNeighbours[0], stoneNeighbours[1]);
                             cutDiagonal.Remove(move);
-                            Board b = tryBoard.MakeMoveOnNewBoard(cutDiagonal.First(), c, true);
+                            Board b = tryBoard.MakeMoveOnNewBoard(cutDiagonal.First(), c);
                             if (b != null && stoneNeighbours.Any(n => ImmovableHelper.CheckConnectAndDie(b, b.GetGroupAt(n))))
                                 return false;
                         }
@@ -1474,7 +1474,7 @@ namespace Go
                 Group atariTarget = tryBoard.AtariTargets.FirstOrDefault(t => t.Points.Count == 1);
                 if (atariTarget != null && !EyeHelper.FindEye(tryBoard, atariTarget.Liberties.First(), c.Opposite()))
                 {
-                    Board b = tryBoard.MakeMoveOnNewBoard(atariTarget.Liberties.First(), c, true);
+                    Board b = tryBoard.MakeMoveOnNewBoard(atariTarget.Liberties.First(), c);
                     if (b != null && b.AtariTargets.Count == 0) return true;
                 }
             }
@@ -1971,7 +1971,7 @@ namespace Go
                 Point liberty = mustHaveNeutralMove.LinkPoint.Move;
 
                 //check if atari / link for groups
-                Board b = tryBoard.MakeMoveOnNewBoard(liberty, c.Opposite(), true);
+                Board b = tryBoard.MakeMoveOnNewBoard(liberty, c.Opposite());
                 if (b != null && (AtariHelper.AtariByGroup(b, b.MoveGroup) || LinkHelper.IsAbsoluteLinkForGroups(tryBoard, b)))
                 {
                     result.Add(mustHaveNeutralMove);
@@ -2814,7 +2814,7 @@ namespace Go
             foreach (Point p in emptyNeighbours)
             {
                 if (!bestMoves.Contains(p)) continue;
-                Board b = currentBoard.MakeMoveOnNewBoard(p, c.Opposite(), true);
+                Board b = currentBoard.MakeMoveOnNewBoard(p, c.Opposite());
                 if (b == null) continue;
                 killBoards.Add(p, b);
             }
@@ -2839,7 +2839,7 @@ namespace Go
 
             foreach (Point p in bestMoves)
             {
-                Board b = currentBoard.MakeMoveOnNewBoard(p, c, true);
+                Board b = currentBoard.MakeMoveOnNewBoard(p, c);
                 if (b == null) continue;
                 if (b.GetStoneNeighbours().Any(n => EyeHelper.FindSemiSolidEyes(n, b, c).Item1))
                     return !tryMove.Move.Equals(p);
@@ -2870,7 +2870,7 @@ namespace Go
             foreach (Point eyePoint in eyePoints)
             {
                 //ko fight without killer group
-                Board b = tryBoard.MakeMoveOnNewBoard(eyePoint, c.Opposite(), true);
+                Board b = tryBoard.MakeMoveOnNewBoard(eyePoint, c.Opposite());
                 if (b != null && KoHelper.IsKoFight(b))
                     return true;
             }

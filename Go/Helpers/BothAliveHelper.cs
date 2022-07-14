@@ -287,7 +287,7 @@ namespace Go
             //check for increased killer groups
             foreach (Point emptyPoint in emptyPoints)
             {
-                Board b = board.MakeMoveOnNewBoard(emptyPoint, content.Opposite(), true);
+                Board b = board.MakeMoveOnNewBoard(emptyPoint, content.Opposite());
                 if (b != null && b.MoveGroupLiberties > 1 && GameTryMove.IncreaseKillerGroups(b, board))
                     return false;
             }

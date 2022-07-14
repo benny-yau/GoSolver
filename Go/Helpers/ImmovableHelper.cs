@@ -29,7 +29,7 @@ namespace Go
                 if (libertyPoint.Count != 1) return null;
                 Point q = libertyPoint.First();
                 //make move into tiger mouth
-                Board b = board.MakeMoveOnNewBoard(p, c.Opposite(), true);
+                Board b = board.MakeMoveOnNewBoard(p, c.Opposite());
                 if (b == null) return q;
                 //capture move at tiger mouth
                 Board b2 = CaptureSuicideGroup(b);
@@ -222,7 +222,7 @@ namespace Go
             //check if absolute link at liberty
             foreach (Point liberty in targetGroup.Liberties)
             {
-                Board b = board.MakeMoveOnNewBoard(liberty, targetGroup.Content, true);
+                Board b = board.MakeMoveOnNewBoard(liberty, targetGroup.Content);
                 if (b == null || !LinkHelper.IsAbsoluteLinkForGroups(board, b))
                     continue;
                 if (b.GetGroupLiberties(targetGroup.Points.First()) > 2)
@@ -475,7 +475,7 @@ namespace Go
                 Point? q = ImmovableHelper.FindTigerMouth(board, libertyPoint, c);
                 if (!q.HasValue || board[q.Value] != Content.Empty) continue;
                 //make move at suicide point
-                Board b = board.MakeMoveOnNewBoard(libertyPoint, c.Opposite(), true);
+                Board b = board.MakeMoveOnNewBoard(libertyPoint, c.Opposite());
                 if (b == null) continue;
 
                 List<Group> suicideGroups = b.GetNeighbourGroups(targetGroup).Where(gr => gr.Points.Count <= 2 && gr.Liberties.Count == 1).ToList();
