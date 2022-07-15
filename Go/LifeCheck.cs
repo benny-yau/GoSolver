@@ -95,16 +95,20 @@ namespace Go
         private static Boolean CheckForPreAtariGroups(Board board, Group group)
         {
             Content c = group.Content;
-            if (group.Points.Count == 3 && group.Points.All(p => board[p] == Content.Empty) && board.GetNeighbourGroups(group).Count >= 2 && KillerFormationHelper.MaxLengthOfGrid(group.Points) == 1)
+            if (group.Points.Count == 3 && group.Points.All(p => board[p] == Content.Empty) && board.GetNeighbourGroups(group).Count >= 3 && KillerFormationHelper.MaxLengthOfGrid(group.Points) == 1)
             {
                 List<Group> neighbourGroups = board.GetNeighbourGroups(group);
                 foreach (Group ngroup in neighbourGroups.Where(gr => gr.Liberties.Count == 3))
                 {
                     List<Point> externalLib = ngroup.Liberties.Where(lib => !group.Points.Contains(lib) && BothAliveHelper.GetKillerGroupFromCache(board, lib, c.Opposite()) == null).ToList();
                     if (externalLib.Count != 1) continue;
-                    Board preAtariBoard = board.MakeMoveOnNewBoard(externalLib.First(), c);
-                    if (preAtariBoard == null || preAtariBoard.MoveGroupLiberties == 1) continue;
-                    if (ImmovableHelper.CheckConnectAndDie(preAtariBoard, preAtariBoard.GetGroupAt(ngroup.Points.First())))
+                    (Boolean suicidal, Board preAtariBoard) = ImmovableHelper.IsSuicidalMove(externalLib.First(), c, board);
+                    if (suicidal) continue;
+                    //get middle point of group
+                    Point q = group.Points.First(s => board.GetStoneNeighbours(s).Intersect(group.Points).Count() == 2);
+                    //make move and check for unescapable group
+                    Board b = preAtariBoard.MakeMoveOnNewBoard(q, c);
+                    if (b != null && b.AtariTargets.Any(t => ImmovableHelper.UnescapableGroup(b, t).Item1))
                         return true;
                 }
             }

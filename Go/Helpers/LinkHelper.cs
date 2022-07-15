@@ -86,9 +86,6 @@ namespace Go
                     //make connection at other diagonal
                     if (ImmovableHelper.IsSuicidalMove(q, c, b).Item1)
                         return false;
-                    //check if immovable already
-                    if (ImmovableHelper.IsImmovablePoint(q, c, b).Item1)
-                        return true;
                 }
                 return true;
             }
