@@ -987,11 +987,9 @@ namespace Go
                 }
                 else
                 {
-                    List<Point> stoneNeighbours = tryBoard.GetStoneNeighbours().Where(n => tryBoard[n] == c.Opposite()).ToList();
-                    if (stoneNeighbours.Count == 0) return false;
-                    Point p = stoneNeighbours.First();
                     //stone neighbours at diagonal of each other
-                    if (stoneNeighbours.Any(n => tryBoard.GetDiagonalNeighbours(p).Intersect(stoneNeighbours).Any()))
+                    List<Point> stoneNeighbours = LinkHelper.GetNeighboursDiagonallyLinked(tryBoard);
+                    if (stoneNeighbours.Any())
                     {
                         //check diagonal at opposite corner of stone neighbours
                         List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(d => tryBoard[d] == c.Opposite()).ToList();

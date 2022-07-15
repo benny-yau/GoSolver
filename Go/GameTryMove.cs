@@ -30,9 +30,23 @@ namespace Go
         public bool IsRedundantEyeFiller { get; set; }
         public bool IsLeapMove { get; set; }
         public bool IsAtariRedundant { get; set; }
-        public bool IsKoFight { get; set; }
         public bool MustHaveNeutralPoint { get; set; }
         public LinkedPoint<Point> LinkPoint { get; set; }
+
+        private bool? isKoFight = null;
+        public bool IsKoFight
+        {
+            get
+            {
+                if (isKoFight == null)
+                    isKoFight = KoHelper.IsKoFight(TryGame.Board);
+                return isKoFight.Value;
+            }
+            set
+            {
+                isKoFight = value;
+            }
+        }
 
         private bool? atariResolved = null;
         public bool AtariResolved
@@ -89,7 +103,6 @@ namespace Go
         {
             this.TryGame.KoGameCheck = (surviveOrKill == SurviveOrKill.Kill) ? KoCheck.Kill : KoCheck.Survive;
             this.TryGame.InternalMakeMove(p.x, p.y, true);
-            ProcessGameTryMoves();
         }
 
         public bool IsRedundantMove
@@ -107,7 +120,7 @@ namespace Go
             get
             {
                 Board board = this.TryGame.Board;
-                return (board.CapturedList.Count == 0 && !AtariResolved && !(board.IsAtariMove && board.MoveGroupLiberties > 1));
+                return (board.CapturedList.Count == 0 && !AtariResolved && !board.IsAtariWithoutSuicide);
             }
         }
 
@@ -165,7 +178,6 @@ namespace Go
             {
                 GameTryMove move = new GameTryMove(CurrentGame);
                 move.TryGame.Board = opponentTryBoard;
-                AtariHelper.FindAndResolveAtari(move);
                 return move;
             }
             return null;
@@ -174,15 +186,6 @@ namespace Go
         public Boolean LinkForGroups()
         {
             return LinkHelper.LinkForGroups(TryGame.Board, CurrentGame.Board);
-        }
-
-        /// <summary>
-        /// Process game try moves for finding redundant moves and sorting.
-        /// </summary>
-        public void ProcessGameTryMoves()
-        {
-            AtariHelper.FindAndResolveAtari(this);
-            KoHelper.CheckIsKoFight(this);
         }
 
         public override string ToString()

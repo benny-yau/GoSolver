@@ -400,6 +400,14 @@ namespace Go
             }
         }
 
+        public bool IsAtariWithoutSuicide
+        {
+            get
+            {
+                return AtariTargets.Count > 0 && MoveGroupLiberties > 1;
+            }
+        }
+
         /// <summary>
         /// Check if point is single point from direct connected points.
         /// </summary>

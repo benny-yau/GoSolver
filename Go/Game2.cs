@@ -128,8 +128,6 @@ namespace Go
                     //check recursion and return as alive
                     if (CheckForRecursion(move))
                         return (ConfirmAliveResult.Alive, new List<GameTryMove>() { move }, null);
-                    //process try moves
-                    move.ProcessGameTryMoves();
                     //find redundant moves
                     CheckSurvivalRedundantMoves(move);
                     tryMoves.Add(move);
@@ -148,7 +146,7 @@ namespace Go
             }
 
             //sort game try moves
-            tryMoves = (from tryMove in tryMoves orderby tryMove.AtariResolved descending, tryMove.IncreasedKillerGroups descending, tryMove.TryGame.Board.MoveGroupLiberties descending select tryMove).ToList();
+            tryMoves = (from tryMove in tryMoves orderby tryMove.AtariResolved descending, tryMove.TryGame.Board.IsAtariWithoutSuicide descending, tryMove.IncreasedKillerGroups descending, tryMove.TryGame.Board.MoveGroupLiberties descending select tryMove).ToList();
 
             //check for bent four and both alive scenarios
             if (UniquePatternsHelper.CheckForBentFour(currentGame, tryMoves))
@@ -422,8 +420,6 @@ namespace Go
                     ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Kill, move.TryGame, true);
                     if (!getAll && confirmAlive == ConfirmAliveResult.Dead)
                         return (ConfirmAliveResult.Dead, new List<GameTryMove>() { move }, null);
-                    //process try moves
-                    move.ProcessGameTryMoves();
                     //find redundant moves
                     CheckKillRedundantMoves(move);
                     tryMoves.Add(move);
@@ -447,7 +443,7 @@ namespace Go
             }
 
             //sort game try moves
-            tryMoves = (from tryMove in tryMoves orderby tryMove.AtariResolved descending, tryMove.TryGame.Board.MoveGroupLiberties descending select tryMove).ToList();
+            tryMoves = (from tryMove in tryMoves orderby tryMove.AtariResolved descending, tryMove.TryGame.Board.IsAtariWithoutSuicide descending, tryMove.TryGame.Board.MoveGroupLiberties descending select tryMove).ToList();
 
             //restore redundant ko
             RestoreRedundantKo(tryMoves, redundantTryMoves);
@@ -497,7 +493,7 @@ namespace Go
             if (!separateGroup) return;
             tryMoves.Add(koMove);
         }
-    
+
 
         /// <summary>
         /// Make random move to wait a turn where no other move is available or on ko move from opponent.

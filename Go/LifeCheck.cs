@@ -148,6 +148,7 @@ namespace Go
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31503" />
         /// Suicidal at tiger mouth  <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31177" />
         /// Check for atari that is not tiger mouth  <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150_2" />
+        /// Check for link breakage <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_2" />
         /// </summary>
         public static Boolean TigerMouthExceptions(Board board, Content c, LinkedPoint<Point> tigerMouth, Point libertyPoint)
         {
@@ -161,11 +162,19 @@ namespace Go
             (Boolean suicidal, Board b1) = ImmovableHelper.IsSuicidalMove(libertyPoint, c.Opposite(), board);
             if (suicidal) return false;
             //check for atari that is not tiger mouth  
-            if ((b1.MoveGroupLiberties > 1 && b1.AtariTargets.Count() > 0) || b1.CapturedList.Count > 0)
+            if (b1.IsAtariWithoutSuicide || b1.CapturedList.Count > 0)
                 return true;
 
             if (Board.ResolveAtari(board, b1))
                 return true;
+
+            //check for link breakage
+            if (b1.MoveGroup.Points.Count > 1)
+            {
+                List<Point> stoneNeighbours = LinkHelper.GetNeighboursDiagonallyLinked(b1);
+                if (b1.GetGroupsFromPoints(stoneNeighbours).Count >= 2 && !ImmovableHelper.CheckConnectAndDie(b1))
+                    return true;
+            }
             //check if another tiger mouth present at diagonal neighbours
             return DoubleTigerMouthLink(board, c, tigerMouth.Move, libertyPoint);
         }

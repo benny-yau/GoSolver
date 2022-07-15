@@ -423,5 +423,24 @@ namespace Go
             //normal link
             return groups.Any(group => tryBoard.MoveGroup.Points.Contains(group.Points.First()) || LinkHelper.IsDiagonallyConnectedGroups(tryBoard, tryBoard.GetGroupAt(group.Points.First()), tryBoard.MoveGroup));
         }
+
+        /// <summary>
+        /// Get stone neighbours at diagonal of each other.
+        /// </summary>
+        /// <returns></returns>
+        public static List<Point> GetNeighboursDiagonallyLinked(Board board)
+        {
+            Point move = board.Move.Value;
+            Content c = board.MoveGroup.Content;
+            return GetNeighboursDiagonallyLinked(board, move, c.Opposite());
+        }
+
+        public static List<Point> GetNeighboursDiagonallyLinked(Board board, Point p, Content c)
+        {
+            List<Point> stoneNeighbours = board.GetStoneNeighbours(p).Where(n => board[n] == c).ToList();
+            if (stoneNeighbours.Count == 0) return stoneNeighbours;
+            stoneNeighbours = stoneNeighbours.Where(n => board.GetDiagonalNeighbours(n).Intersect(stoneNeighbours).Any()).ToList();
+            return stoneNeighbours;
+        }
     }
 }

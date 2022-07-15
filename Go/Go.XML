@@ -230,11 +230,6 @@
             Make move at same point as game try move but as opponent instead.
             </summary>
         </member>
-        <member name="M:Go.GameTryMove.ProcessGameTryMoves">
-            <summary>
-            Process game try moves for finding redundant moves and sorting.
-            </summary>
-        </member>
         <member name="M:Go.AtariHelper.FindAndResolveAtari(Go.GameTryMove)">
             <summary>
             Find target groups where the neighbour group of the move is reduced to liberty of one only.
@@ -969,6 +964,12 @@
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_Q18340" /> 
             Link for kill <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
             </summary>
+        </member>
+        <member name="M:Go.LinkHelper.GetNeighboursDiagonallyLinked(Go.Board)">
+            <summary>
+            Get stone neighbours at diagonal of each other.
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:Go.RedundantMoveHelper.FindPotentialEye(Go.GameTryMove)">
             <summary>
@@ -1946,6 +1947,7 @@
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31503" />
             Suicidal at tiger mouth  <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31177" />
             Check for atari that is not tiger mouth  <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150_2" />
+            Check for link breakage <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_2" />
             </summary>
         </member>
         <member name="M:Go.LifeCheck.DoubleTigerMouthLink(Go.Board,Go.Content,Go.Point,Go.Point)">

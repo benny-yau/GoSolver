@@ -192,11 +192,8 @@ namespace Go
             if (!ImmovableHelper.FindTigerMouth(board, c, p)) return false;
 
             //stone neighbours at diagonal of each other
-            List<Point> stoneNeighbours = board.GetStoneNeighbours(p).Where(n => board[n] == c).ToList();
-            if (stoneNeighbours.Count == 0) return false;
-            Point q = stoneNeighbours.First();
-            Boolean diagonals = stoneNeighbours.Any(n => board.GetDiagonalNeighbours(q).Intersect(stoneNeighbours).Any());
-            if (!diagonals) return false;
+            List<Point> stoneNeighbours = LinkHelper.GetNeighboursDiagonallyLinked(board, p, c);
+            if (!stoneNeighbours.Any()) return false;
 
             Board b = board.MakeMoveOnNewBoard(p, c.Opposite());
             if (b == null || b.MoveGroupLiberties != 1) return false;
