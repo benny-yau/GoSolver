@@ -281,6 +281,10 @@ namespace Go
                 if (!CheckIsDiagonalLinked(diagonalPoint.Move, (Point)diagonalPoint.CheckMove, board))
                     continue;
 
+                //check tiger mouth exceptions
+                if (CheckTigerMouthExceptionsForLinks(board, g))
+                    continue;
+
                 //check for links with double linkage
                 if (!CheckDoubleLinkage(board, diagonalPoint, groups.Union(new HashSet<Group> { g })))
                     continue;
@@ -305,6 +309,19 @@ namespace Go
         public static Boolean IsDiagonallyConnectedGroups(Board board, Group group, Group findGroup)
         {
             return IsDiagonallyConnectedGroups(new HashSet<Group>() { group }, new HashSet<Group>(), board, group, findGroup);
+        }
+
+        /// <summary>
+        /// Check tiger mouth exceptions for links.
+        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_2" /> 
+        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_3" /> 
+        /// </summary>
+        public static Boolean CheckTigerMouthExceptionsForLinks(Board board, Group group)
+        {
+            List<Point> tigerMouthList = LifeCheck.GetTigerMouthsOfLinks(board, group);
+            if (LifeCheck.CheckTigerMouthForException(board, tigerMouthList, group.Content))
+                return true;
+            return false;
         }
 
         /// <summary>

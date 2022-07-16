@@ -930,6 +930,13 @@
             Find if two groups are connected diagonally. If find group parameter is null then look for all connected groups.
             </summary>
         </member>
+        <member name="M:Go.LinkHelper.CheckTigerMouthExceptionsForLinks(Go.Board,Go.Group)">
+            <summary>
+            Check tiger mouth exceptions for links.
+            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_2" /> 
+            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_3" /> 
+            </summary>
+        </member>
         <member name="M:Go.LinkHelper.GetAllDiagonalGroups(Go.Board,Go.Group,System.Collections.Generic.List{Go.Group})">
             <summary>
             Get all diagonal groups for checking neighbour groups of killer group.
@@ -1932,21 +1939,21 @@
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_4" />
             </summary>
         </member>
-        <member name="M:Go.LifeCheck.CheckTigerMouthForException(Go.Board,System.Collections.Generic.List{Go.LinkedPoint{Go.Point}},System.Collections.Generic.List{Go.Group})">
+        <member name="M:Go.LifeCheck.CheckTigerMouthForException(Go.Board,System.Collections.Generic.IEnumerable{Go.Point},Go.Content)">
             <summary>
             Check exceptions to confirm alive at tiger mouths for semi solid eye.
             Tiger mouth escape with atari <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150" />
             Double tiger mouth <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_B3" />
             </summary>
         </member>
-        <member name="M:Go.LifeCheck.TigerMouthExceptions(Go.Board,Go.Content,Go.LinkedPoint{Go.Point},Go.Point)">
+        <member name="M:Go.LifeCheck.TigerMouthExceptions(Go.Board,Go.Content,Go.Point,Go.Point)">
             <summary>
             Atari, resolve atari, and captured at tiger mouth liberty move.
             Possible corner three formation
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A139_2" />
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31503" />
             Suicidal at tiger mouth  <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31177" />
-            Check for atari that is not tiger mouth  <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150_2" />
+            Check for tiger mouth threat group  <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150_2" />
             Check for link breakage <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_2" />
             </summary>
         </member>
