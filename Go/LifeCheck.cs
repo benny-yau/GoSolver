@@ -158,21 +158,21 @@ namespace Go
             if (board.GetGroupsFromStoneNeighbours(tigerMouth, c.Opposite()).All(n => n.Liberties.Count <= 2) && ImmovableHelper.IsSuicidalMove(board, tigerMouth, c))
                 return true;
 
-            //check for tiger mouth threat group
-            List<Point> lib = board.GetStoneNeighbours(tigerMouth).Where(n => board[n] != c).ToList();
-            if (lib.Count == 1 && board[lib.First()] == c.Opposite())
-            {
-                Group threatGroup = board.GetGroupAt(lib.First());
-                if (threatGroup.Liberties.Count == 2)
-                    return true;
-            }
-
             (Boolean suicidal, Board b1) = ImmovableHelper.IsSuicidalMove(libertyPoint, c.Opposite(), board);
             if (!suicidal)
             {
                 //check for atari at tiger mouth
                 Boolean isNegligible = !b1.IsAtariWithoutSuicide && b1.CapturedList.Count == 0 && !Board.ResolveAtari(board, b1);
                 if (!isNegligible) return true;
+
+                //check for tiger mouth threat group
+                List<Point> lib = board.GetStoneNeighbours(tigerMouth).Where(n => board[n] != c).ToList();
+                if (lib.Count == 1 && board[lib.First()] == c.Opposite())
+                {
+                    Group threatGroup = board.GetGroupAt(lib.First());
+                    if (threatGroup.Liberties.Count == 2 && LinkHelper.GetPreviousMoveGroup(board, b1).Any(t => t.Liberties.Count == 2 && !t.Points.Contains(lib.First())))
+                        return true;
+                }
 
                 //check for link breakage
                 if (b1.MoveGroup.Points.Count > 1)
