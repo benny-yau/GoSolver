@@ -77,7 +77,7 @@ namespace Go
                     break;
             }
             if (eyeGroups.Count < 2) return ConfirmAliveResult.Unknown;
-            //check for exception case scenario
+            //check for tiger mouth exception
             if (CheckTigerMouthForException(board, tigerMouthList.Select(t => t.Move), c)) return ConfirmAliveResult.Unknown;
 
             if (CheckOpponentDoubleAtariMoves(board, eyeGroups, tigerMouthList)) return ConfirmAliveResult.Unknown;
@@ -132,7 +132,7 @@ namespace Go
 
                 //ensure tiger mouth is external
                 if (BothAliveHelper.GetKillerGroupFromCache(board, libertyPoint.Value, c) != null) continue;
-                //check for other exceptions
+
                 if (TigerMouthExceptions(board, c, tigerMouth, libertyPoint.Value))
                     return true;
             }
@@ -147,6 +147,7 @@ namespace Go
         /// Suicidal at tiger mouth  <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31177" />
         /// Check for tiger mouth threat group  <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150_2" />
         /// Check for link breakage <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_2" />
+        /// Check for atari at tiger mouth <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_4" />
         /// </summary>
         public static Boolean TigerMouthExceptions(Board board, Content c, Point tigerMouth, Point libertyPoint)
         {
@@ -166,14 +167,22 @@ namespace Go
                     return true;
             }
 
-            //check for link breakage
             (Boolean suicidal, Board b1) = ImmovableHelper.IsSuicidalMove(libertyPoint, c.Opposite(), board);
-            if (!suicidal && b1.MoveGroup.Points.Count > 1)
+            if (!suicidal)
             {
-                List<Point> stoneNeighbours = LinkHelper.GetNeighboursDiagonallyLinked(b1);
-                if (b1.GetGroupsFromPoints(stoneNeighbours).Count >= 2 && !ImmovableHelper.CheckConnectAndDie(b1))
-                    return true;
+                //check for atari at tiger mouth
+                Boolean isNegligible = !b1.IsAtariWithoutSuicide && b1.CapturedList.Count == 0 && !Board.ResolveAtari(board, b1);
+                if (!isNegligible) return true;
+
+                //check for link breakage
+                if (b1.MoveGroup.Points.Count > 1)
+                {
+                    List<Point> stoneNeighbours = LinkHelper.GetNeighboursDiagonallyLinked(b1);
+                    if (b1.GetGroupsFromPoints(stoneNeighbours).Count >= 2 && !ImmovableHelper.CheckConnectAndDie(b1))
+                        return true;
+                }
             }
+
             //check if another tiger mouth present at diagonal neighbours
             return DoubleTigerMouthLink(board, c, tigerMouth, libertyPoint);
         }
@@ -227,27 +236,6 @@ namespace Go
             }
         }
 
-        public static List<Point> GetTigerMouthsOfLinks(Board board, Group group)
-        {
-            List<Point> tigerMouthList = new List<Point>();
-            Content c = group.Content;
-            List<LinkedPoint<Point>> diagonalPoints = LinkHelper.GetGroupDiagonals(board, group);
-            foreach (LinkedPoint<Point> p in diagonalPoints)
-            {
-                List<Point> pointsBetweenDiagonals = LinkHelper.PointsBetweenDiagonals(p.Move, (Point)p.CheckMove);
-                foreach (Point q in pointsBetweenDiagonals)
-                {
-                    if (board[q] == Content.Empty && ImmovableHelper.FindTigerMouth(board, c, q))
-                    {
-                        if (BothAliveHelper.GetKillerGroupFromCache(board, q, c) != null) continue;
-                        //ensure tiger mouth is immovable
-                        if (ImmovableHelper.IsImmovablePoint(q, c, board).Item1)
-                            tigerMouthList.Add(q);
-                    }
-                }
-            }
-            return tigerMouthList.Distinct().ToList();
-        }
 
         /// <summary>
         /// Check opponent double atari moves.

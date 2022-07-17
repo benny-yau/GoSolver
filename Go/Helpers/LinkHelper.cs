@@ -10,7 +10,8 @@ namespace Go
     {
 
         /// <summary>
-        /// Check if move links two or more groups together which are not previously linked in current board.
+        /// Check if move links two or more groups together which are not previously linked in current board. For neutral point move, covered eye move, and eye diagonal move.
+        /// Current links do not check for tiger mouth exceptions and may not be absolutely linked.
         /// <see cref="UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario5dan25" />
         /// <see cref="UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_XuanXuanGo_Q18358" />
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" />
@@ -33,8 +34,8 @@ namespace Go
                     Group groupI = tryBoard.GetGroupAt(groups[i].Points.First());
                     Group groupJ = tryBoard.GetGroupAt(groups[j].Points.First());
                     if (groupI == groupJ && ImmovableHelper.CheckConnectAndDie(tryBoard)) return false;
-                    //check if currently linked
-                    Boolean isLinked = (groupI == groupJ) || IsDiagonallyConnectedGroups(tryBoard, groupI, groupJ);
+                    //check if currently linked without checking exceptions
+                    Boolean isLinked = (groupI == groupJ) || IsDiagonallyConnectedGroups(tryBoard, groupI, groupJ, false);
                     if (isLinked)
                     {
                         //check if previously linked
@@ -64,6 +65,8 @@ namespace Go
         /// Both diagonals empty <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_4" />
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_2" />
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q17078" />
+        /// Check not negligible <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_4" />
+        /// Check any diagonal separated by opposite content <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_5" />
         /// </summary>
         public static Boolean CheckIsDiagonalLinked(Point pointA, Point pointB, Board board)
         {
@@ -82,6 +85,11 @@ namespace Go
                     //make opponent move at diagonal
                     (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board);
                     if (suicidal) return true;
+                    //check not negligible
+                    Boolean isNegligible = !b.AtariTargets.Any(t => !t.Points.Contains(pointA) && !t.Points.Contains(pointB)) && b.CapturedList.Count == 0 && !Board.ResolveAtari(board, b);
+                    if (!isNegligible)
+                        return false;
+
                     Point q = diagonals.First(d => !d.Equals(p));
                     //make connection at other diagonal
                     if (ImmovableHelper.IsSuicidalMove(q, c, b).Item1)
@@ -89,8 +97,8 @@ namespace Go
                 }
                 return true;
             }
-            //check if immovable for any diagonal separated by opposite content
-            if (diagonals.Any(diagonal => ImmovableHelper.IsImmovablePoint(diagonal, c, board).Item1))
+            //check any diagonal separated by opposite content
+            if (diagonals.Any(diagonal => ImmovableHelper.IsImmovablePoint(diagonal, c, board).Item1 && (board[diagonal] == Content.Empty || BothAliveHelper.GetKillerGroupFromCache(board, diagonal, c) != null)))
                 return true;
             return false;
         }
@@ -257,7 +265,7 @@ namespace Go
         /// <summary>
         /// Find if two groups are connected diagonally. If find group parameter is null then look for all connected groups.
         /// </summary>
-        public static Boolean IsDiagonallyConnectedGroups(HashSet<Group> allConnectedGroups, HashSet<Group> groups, Board board, Group group, Group findGroup = null)
+        public static Boolean IsDiagonallyConnectedGroups(HashSet<Group> allConnectedGroups, HashSet<Group> groups, Board board, Group group, Group findGroup = null, Boolean checkExceptions = true)
         {
             groups.Add(group);
             //find group diagonals of same content
@@ -281,17 +289,20 @@ namespace Go
                 if (!CheckIsDiagonalLinked(diagonalPoint.Move, (Point)diagonalPoint.CheckMove, board))
                     continue;
 
-                //check tiger mouth exceptions
-                if (CheckTigerMouthExceptionsForLinks(board, g))
-                    continue;
+                if (checkExceptions)
+                {
+                    //check tiger mouth exceptions
+                    if (CheckTigerMouthExceptionsForLinks(board, g))
+                        continue;
 
-                //check for links with double linkage
-                if (!CheckDoubleLinkage(board, diagonalPoint, groups.Union(new HashSet<Group> { g })))
-                    continue;
+                    //check for links with double linkage
+                    if (!CheckDoubleLinkage(board, diagonalPoint, groups.Union(new HashSet<Group> { g })))
+                        continue;
 
-                //check double atari for links
-                if (CheckDoubleAtariForLinks(board, allConnectedGroups, g, diagonalPoint))
-                    continue;
+                    //check double atari for links
+                    if (CheckDoubleAtariForLinks(board, allConnectedGroups, g, diagonalPoint))
+                        continue;
+                }
 
                 allConnectedGroups.Add(g);
 
@@ -306,9 +317,9 @@ namespace Go
             return false;
         }
 
-        public static Boolean IsDiagonallyConnectedGroups(Board board, Group group, Group findGroup)
+        public static Boolean IsDiagonallyConnectedGroups(Board board, Group group, Group findGroup, Boolean checkExceptions = true)
         {
-            return IsDiagonallyConnectedGroups(new HashSet<Group>() { group }, new HashSet<Group>(), board, group, findGroup);
+            return IsDiagonallyConnectedGroups(new HashSet<Group>() { group }, new HashSet<Group>(), board, group, findGroup, checkExceptions);
         }
 
         /// <summary>
@@ -318,10 +329,35 @@ namespace Go
         /// </summary>
         public static Boolean CheckTigerMouthExceptionsForLinks(Board board, Group group)
         {
-            List<Point> tigerMouthList = LifeCheck.GetTigerMouthsOfLinks(board, group);
+            List<Point> tigerMouthList = GetTigerMouthsOfLinks(board, group);
             if (LifeCheck.CheckTigerMouthForException(board, tigerMouthList, group.Content))
                 return true;
             return false;
+        }
+
+        /// <summary>
+        /// Get tiger mouth of links.
+        /// </summary>
+        public static List<Point> GetTigerMouthsOfLinks(Board board, Group group)
+        {
+            List<Point> tigerMouthList = new List<Point>();
+            Content c = group.Content;
+            List<LinkedPoint<Point>> diagonalPoints = LinkHelper.GetGroupDiagonals(board, group);
+            foreach (LinkedPoint<Point> p in diagonalPoints)
+            {
+                List<Point> pointsBetweenDiagonals = LinkHelper.PointsBetweenDiagonals(p.Move, (Point)p.CheckMove);
+                foreach (Point q in pointsBetweenDiagonals)
+                {
+                    if (board[q] == Content.Empty && ImmovableHelper.FindTigerMouth(board, c, q))
+                    {
+                        if (BothAliveHelper.GetKillerGroupFromCache(board, q, c) != null) continue;
+                        //ensure tiger mouth is immovable
+                        if (ImmovableHelper.IsImmovablePoint(q, c, board).Item1)
+                            tigerMouthList.Add(q);
+                    }
+                }
+            }
+            return tigerMouthList.Distinct().ToList();
         }
 
         /// <summary>
