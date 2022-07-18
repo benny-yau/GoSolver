@@ -11,7 +11,6 @@ namespace Go
 
         /// <summary>
         /// Check if move links two or more groups together which are not previously linked in current board. For neutral point move, covered eye move, and eye diagonal move.
-        /// Current links do not check for tiger mouth exceptions and may not be absolutely linked.
         /// <see cref="UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario5dan25" />
         /// <see cref="UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_XuanXuanGo_Q18358" />
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" />
@@ -34,8 +33,8 @@ namespace Go
                     Group groupI = tryBoard.GetGroupAt(groups[i].Points.First());
                     Group groupJ = tryBoard.GetGroupAt(groups[j].Points.First());
                     if (groupI == groupJ && ImmovableHelper.CheckConnectAndDie(tryBoard)) return false;
-                    //check if currently linked without checking exceptions
-                    Boolean isLinked = (groupI == groupJ) || IsDiagonallyConnectedGroups(tryBoard, groupI, groupJ, false);
+                    //check if currently linked
+                    Boolean isLinked = (groupI == groupJ) || IsImmediateDiagonallyConnected(tryBoard, groupI, groupJ);
                     if (isLinked)
                     {
                         //check if previously linked
@@ -265,7 +264,7 @@ namespace Go
         /// <summary>
         /// Find if two groups are connected diagonally. If find group parameter is null then look for all connected groups.
         /// </summary>
-        public static Boolean IsDiagonallyConnectedGroups(HashSet<Group> allConnectedGroups, HashSet<Group> groups, Board board, Group group, Group findGroup = null, Boolean checkExceptions = true)
+        public static Boolean IsDiagonallyConnectedGroups(HashSet<Group> allConnectedGroups, HashSet<Group> groups, Board board, Group group, Group findGroup = null)
         {
             groups.Add(group);
             //find group diagonals of same content
@@ -289,20 +288,17 @@ namespace Go
                 if (!CheckIsDiagonalLinked(diagonalPoint.Move, (Point)diagonalPoint.CheckMove, board))
                     continue;
 
-                if (checkExceptions)
-                {
-                    //check tiger mouth exceptions
-                    if (CheckTigerMouthExceptionsForLinks(board, g))
-                        continue;
+                //check tiger mouth exceptions
+                if (CheckTigerMouthExceptionsForLinks(board, g))
+                    continue;
 
-                    //check for links with double linkage
-                    if (!CheckDoubleLinkage(board, diagonalPoint, groups.Union(new HashSet<Group> { g })))
-                        continue;
+                //check for links with double linkage
+                if (!CheckDoubleLinkage(board, diagonalPoint, groups.Union(new HashSet<Group> { g })))
+                    continue;
 
-                    //check double atari for links
-                    if (CheckDoubleAtariForLinks(board, allConnectedGroups, g, diagonalPoint))
-                        continue;
-                }
+                //check double atari for links
+                if (CheckDoubleAtariForLinks(board, allConnectedGroups, g, diagonalPoint))
+                    continue;
 
                 allConnectedGroups.Add(g);
 
@@ -317,9 +313,26 @@ namespace Go
             return false;
         }
 
-        public static Boolean IsDiagonallyConnectedGroups(Board board, Group group, Group findGroup, Boolean checkExceptions = true)
+        public static Boolean IsDiagonallyConnectedGroups(Board board, Group group, Group findGroup)
         {
-            return IsDiagonallyConnectedGroups(new HashSet<Group>() { group }, new HashSet<Group>(), board, group, findGroup, checkExceptions);
+            return IsDiagonallyConnectedGroups(new HashSet<Group>() { group }, new HashSet<Group>(), board, group, findGroup);
+        }
+
+
+        /// <summary>
+        /// Find if two groups are connected diagonally directly or through move group. 
+        /// </summary>
+        public static Boolean IsImmediateDiagonallyConnected(Board board, Group group, Group findGroup)
+        {
+            //link between the two groups
+            if (GetGroupLinkedDiagonals(board, group, true).Any(d => board.GetGroupAt(d.Move) == findGroup))
+                return true;
+
+            //link through move group
+            Boolean isLinked = (group == board.MoveGroup || GetGroupLinkedDiagonals(board, group, true).Any(d => board.GetGroupAt(d.Move) == board.MoveGroup));
+            Boolean isLinked2 = (findGroup == board.MoveGroup || GetGroupLinkedDiagonals(board, findGroup, true).Any(d => board.GetGroupAt(d.Move) == board.MoveGroup));
+
+            return isLinked && isLinked2;
         }
 
         /// <summary>

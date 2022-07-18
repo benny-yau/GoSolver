@@ -170,6 +170,7 @@ namespace Go
                 if (lib.Count == 1 && board[lib.First()] == c.Opposite())
                 {
                     Group threatGroup = board.GetGroupAt(lib.First());
+                    if (AtariHelper.AtariByGroup(board, threatGroup)) return true;
                     if (threatGroup.Liberties.Count == 2 && LinkHelper.GetPreviousMoveGroup(board, b1).Any(t => t.Liberties.Count == 2 && !t.Points.Contains(lib.First())))
                         return true;
                 }

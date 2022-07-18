@@ -865,7 +865,6 @@
         <member name="M:Go.LinkHelper.LinkForGroups(Go.Board,Go.Board)">
             <summary>
             Check if move links two or more groups together which are not previously linked in current board. For neutral point move, covered eye move, and eye diagonal move.
-            Current links do not check for tiger mouth exceptions and may not be absolutely linked.
             <see cref="!:UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario5dan25" />
             <see cref="!:UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_XuanXuanGo_Q18358" />
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" />
@@ -928,9 +927,14 @@
             Get diagonals of move of same content that are not part of the move group.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.IsDiagonallyConnectedGroups(System.Collections.Generic.HashSet{Go.Group},System.Collections.Generic.HashSet{Go.Group},Go.Board,Go.Group,Go.Group,System.Boolean)">
+        <member name="M:Go.LinkHelper.IsDiagonallyConnectedGroups(System.Collections.Generic.HashSet{Go.Group},System.Collections.Generic.HashSet{Go.Group},Go.Board,Go.Group,Go.Group)">
             <summary>
             Find if two groups are connected diagonally. If find group parameter is null then look for all connected groups.
+            </summary>
+        </member>
+        <member name="M:Go.LinkHelper.IsImmediateDiagonallyConnected(Go.Board,Go.Group,Go.Group)">
+            <summary>
+            Find if two groups are connected diagonally directly or through move group. 
             </summary>
         </member>
         <member name="M:Go.LinkHelper.CheckTigerMouthExceptionsForLinks(Go.Board,Go.Group)">
