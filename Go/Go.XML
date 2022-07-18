@@ -890,8 +890,6 @@
             Check for double linkage.
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_2" />
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_3" />
-            Check for double tiger mouth exception <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571" />
-            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150" />
             </summary>
         </member>
         <member name="M:Go.LinkHelper.CheckDoubleAtariForLinks(Go.Board,System.Collections.Generic.HashSet{Go.Group},Go.Group,Go.LinkedPoint{Go.Point})">
@@ -1967,14 +1965,16 @@
             Suicidal at tiger mouth  <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31177" />
             Check for tiger mouth threat group  <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150_2" />
             Check for link breakage <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_2" />
+            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_Nie60_2" />
             Check for atari at tiger mouth <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_4" />
             </summary>
         </member>
         <member name="M:Go.LifeCheck.DoubleTigerMouthLink(Go.Board,Go.Content,Go.Point,Go.Point)">
             <summary>
-            Double tiger mouth one of which is link for groups.
+            Double tiger mouth link.
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571" />
-            Check for three groups <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571" />
+            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571" />
+            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150" />
             </summary>
         </member>
         <member name="M:Go.LifeCheck.GetTigerMouthsOfEyeGroups(Go.Board,Go.Group,System.Collections.Generic.List{Go.LinkedPoint{Go.Point}})">

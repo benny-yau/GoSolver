@@ -106,8 +106,6 @@ namespace Go
         /// Check for double linkage.
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_2" />
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_3" />
-        /// Check for double tiger mouth exception <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571" />
-        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150" />
         /// </summary>
         private static Boolean CheckDoubleLinkage(Board board, LinkedPoint<Point> diagonalLink, IEnumerable<Group> groups)
         {
@@ -118,18 +116,6 @@ namespace Go
 
             foreach (Point p in diagonals)
             {
-                //check for double tiger mouth exception
-                (Boolean immovable, Point? isTigerMouth) = ImmovableHelper.IsImmovablePoint(p, c, board);
-                if (isTigerMouth != null)
-                {
-                    HashSet<Group> tigerMouthGroups = board.GetGroupsFromStoneNeighbours(p, c.Opposite());
-                    if (tigerMouthGroups.Any(g => g.Points.Count == 1) && tigerMouthGroups.Intersect(threeGroups).Count() == 2)
-                    {
-                        if (LifeCheck.DoubleTigerMouthLink(board, c, p, isTigerMouth.Value))
-                            return false;
-                    }
-                }
-
                 //ensure three opponent groups
                 List<Point> opponentStones = board.GetStoneNeighbours(p).Where(n => board[n] == c).ToList();
                 HashSet<Group> neighbourGroups = board.GetGroupsFromPoints(opponentStones);
