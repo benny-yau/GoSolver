@@ -8,7 +8,7 @@ namespace Go
     public class LifeCheck
     {
         /// <summary>
-        /// Confirm if result is alive by surrounding target group and trying to kill by all possible means.
+        /// Confirm alive.
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_ScenarioTestConfirmAlive1" />
         /// Partial alive <see cref="UnitTestProject.PartiallyAliveTest.PartiallyAliveTest_Scenario_WindAndTime_Q30215" />
         /// </summary>
@@ -17,7 +17,7 @@ namespace Go
             target = LifeCheck.GetTargets(board, target);
             if (target == null || target.Count == 0) return ConfirmAliveResult.Unknown;
 
-            if (target.Count > 1) //more than one target point (allow partial alive)
+            if (target.Count > 1) //partial alive
             {
                 if (target.Any(p => ConfirmAlive(board, p) == ConfirmAliveResult.Alive))
                     return ConfirmAliveResult.Alive;
@@ -30,13 +30,12 @@ namespace Go
         }
 
         /// <summary>
-        /// Extended life check predetermines target group is alive if two semi-solid eyes found, so the target group can be confirmed alive earlier than if the preliminary life check is used only.
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16860" />
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A28" />
         /// </summary>
         public static ConfirmAliveResult ConfirmAlive(Board board, Point target)
         {
-            List<Group> eyeGroups = new List<Group>();
+            List<Group> eyes = new List<Group>();
             List<LinkedPoint<Point>> tigerMouthList = new List<LinkedPoint<Point>>();
 
             Content c = board[target];
@@ -60,40 +59,39 @@ namespace Go
                 if (group.Points.Count <= 3)
                 {
                     if (EyeHelper.FindRealEyeWithinEmptySpace(board, group, EyeType.SemiSolidEye))
-                        eyeGroups.Add(group);
+                        eyes.Add(group);
                 }
                 else
                 {
                     if (EyeHelper.RealEyeOfDiagonallyConnectedGroups(board, group))
-                        eyeGroups.Add(group);
+                        eyes.Add(group);
                 }
                 //get tiger mouths of eye groups
                 GetTigerMouthsOfEyeGroups(board, group, tigerMouthList);
-                if (eyeGroups.Count + killerGroups.Count - 1 - i < 2)
+                if (eyes.Count + killerGroups.Count - 1 - i < 2)
                     break;
             }
-            if (eyeGroups.Count < 2) return ConfirmAliveResult.Unknown;
+            if (eyes.Count < 2) return ConfirmAliveResult.Unknown;
             //check for tiger mouth exception
-            if (CheckTigerMouthForException(board, tigerMouthList.Select(t => t.Move), c, true)) return ConfirmAliveResult.Unknown;
+            if (CheckTigerMouthExceptions(board, tigerMouthList.Select(t => t.Move), c, true)) return ConfirmAliveResult.Unknown;
 
-            if (CheckOpponentDoubleAtariMoves(board, eyeGroups, tigerMouthList)) return ConfirmAliveResult.Unknown;
+            if (CheckOpponentDoubleAtari(board, eyes, tigerMouthList)) return ConfirmAliveResult.Unknown;
 
             //at least two semi solid eyes to predetermine target group is alive
-            if (eyeGroups.Count >= 2)
+            if (eyes.Count >= 2)
                 return ConfirmAliveResult.Alive;
             return ConfirmAliveResult.Unknown;
         }
 
         /// <summary>
-        /// Check exceptions to confirm alive at tiger mouths for semi solid eye.
-        /// Possible corner three formation
-        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A139_2" />
+        /// Check tiger mouth exceptions.
+        /// Possible corner three formation <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A139_2" />
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31503" />
         /// Suicidal at tiger mouth  <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31177" />
         /// Tiger mouth escape with atari <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150" />
         /// Double tiger mouth <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_B3" />
         /// </summary>
-        public static Boolean CheckTigerMouthForException(Board board, IEnumerable<Point> tigerMouthList, Content c, Boolean lifeCheck = false)
+        public static Boolean CheckTigerMouthExceptions(Board board, IEnumerable<Point> tigerMouthList, Content c, Boolean lifeCheck = false)
         {
             foreach (Point tigerMouth in tigerMouthList)
             {
@@ -115,14 +113,14 @@ namespace Go
                         return true;
                 }
 
-                if (TigerMouthExceptions(board, c, tigerMouth, libertyPoint.Value))
+                if (CommonTigerMouthExceptions(board, c, tigerMouth, libertyPoint.Value))
                     return true;
             }
             return false;
         }
 
         /// <summary>
-        /// Atari, resolve atari, and captured at tiger mouth liberty move.
+        /// Common tiger mouth exceptions.
         /// Check for atari at tiger mouth <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_4" />
         /// Check for tiger mouth threat group  <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150_2" />
         /// Check for link breakage <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_2" />
@@ -131,7 +129,7 @@ namespace Go
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_3" />
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_4" />
         /// </summary>
-        public static Boolean TigerMouthExceptions(Board board, Content c, Point tigerMouth, Point libertyPoint)
+        public static Boolean CommonTigerMouthExceptions(Board board, Content c, Point tigerMouth, Point libertyPoint)
         {
             Board b = board.MakeMoveOnNewBoard(libertyPoint, c.Opposite());
             if (b != null && !ImmovableHelper.CheckConnectAndDie(b))
@@ -147,8 +145,9 @@ namespace Go
                 if (lib.Count == 1 && board[lib.First()] == c.Opposite())
                 {
                     Group threatGroup = board.GetGroupAt(lib.First());
-                    if (AtariHelper.AtariByGroup(board, threatGroup)) return true;
-                    if (threatGroup.Liberties.Count == 2 && LinkHelper.GetPreviousMoveGroup(board, b).Any(t => t.Liberties.Count == 2 && !t.Points.Contains(lib.First())))
+                    if (AtariHelper.AtariByGroup(board, threatGroup))
+                        return true;
+                    if (threatGroup.Liberties.Count == 2 && LinkHelper.GetPreviousMoveGroup(board, b).Any(t => t.Liberties.Count == 2 && !t.Points.Contains(lib.First()) && t.Liberties.Any(l => ImmovableHelper.FindTigerMouth(board, c, l))))
                         return true;
                 }
 
@@ -198,16 +197,16 @@ namespace Go
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_2" />
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_3" />
         /// </summary>
-        private static void GetTigerMouthsOfEyeGroups(Board board, Group group, List<LinkedPoint<Point>> tigerMouthList)
+        private static void GetTigerMouthsOfEyeGroups(Board board, Group eye, List<LinkedPoint<Point>> tigerMouthList)
         {
-            Content c = group.Content;
-            List<LinkedPoint<Point>> diagonalPoints = LinkHelper.GetGroupDiagonals(board, group);
+            Content c = eye.Content;
+            List<LinkedPoint<Point>> diagonalPoints = LinkHelper.GetGroupDiagonals(board, eye);
             foreach (LinkedPoint<Point> p in diagonalPoints)
             {
                 if (board[p.Move] == Content.Empty && ImmovableHelper.FindTigerMouth(board, c.Opposite(), p.Move))
                 {
                     if (BothAliveHelper.GetKillerGroupFromCache(board, p.Move, c.Opposite()) != null) continue;
-
+                    if (board.GetGroupsFromStoneNeighbours(p.Move, c).Count() == 1) continue;
                     //ensure tiger mouth is immovable
                     if (ImmovableHelper.IsImmovablePoint(p.Move, c.Opposite(), board).Item1)
                         tigerMouthList.Add(p);
@@ -220,14 +219,14 @@ namespace Go
         /// Check opponent double atari moves.
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_7" />
         /// </summary>
-        private static Boolean CheckOpponentDoubleAtariMoves(Board board, List<Group> eyeGroups, List<LinkedPoint<Point>> tigerMouthList)
+        private static Boolean CheckOpponentDoubleAtari(Board board, List<Group> eyes, List<LinkedPoint<Point>> tigerMouthList)
         {
-            //get neighbours of eye groups
+            //get eye groups
             List<Group> targetGroups = new List<Group>();
-            eyeGroups.ForEach(eyeGroup => targetGroups.AddRange(board.GetNeighbourGroups(eyeGroup)));
+            eyes.ForEach(eye => targetGroups.AddRange(board.GetNeighbourGroups(eye)));
 
-            //get neighbours of tiger mouths
-            Content c = eyeGroups.First().Content;
+            //get tiger mouth groups
+            Content c = eyes.First().Content;
             tigerMouthList.ForEach(tigerMouth => targetGroups.AddRange(board.GetGroupsFromStoneNeighbours(tigerMouth.Move, c)));
             targetGroups = targetGroups.Where(t => t.Liberties.Count == 2).Distinct().ToList();
             //get distinct liberties of target groups

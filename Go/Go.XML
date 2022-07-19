@@ -872,12 +872,12 @@
         </member>
         <member name="M:Go.LinkHelper.IsAbsoluteLinkForGroups(Go.Board,Go.Board)">
             <summary>
-            Is linked by stone only, ignoring whether empty points are immovable.
+            Is absolute link by stone only.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.CheckIsDiagonalLinked(Go.Point,Go.Point,Go.Board)">
             <summary>
-            Check if diagonals are linked either by same content or immovable.
+            Check if diagonals are linked.
             Both diagonals empty <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_4" />
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_2" />
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q17078" />
@@ -885,7 +885,7 @@
             Check any diagonal separated by opposite content <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_5" />
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.CheckDoubleLinkage(Go.Board,Go.LinkedPoint{Go.Point},System.Collections.Generic.IEnumerable{Go.Group})">
+        <member name="M:Go.LinkHelper.CheckDoubleLinkage(Go.Board,Go.LinkedPoint{Go.Point},Go.Content)">
             <summary>
             Check for double linkage.
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_2" />
@@ -905,14 +905,9 @@
             Get all diagonal connected groups. Ensure connected parameter to check if is immovable for opponent at any of the two points between the diagonals.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.GetAllDiagonalConnectedGroupsIncludingEyes(Go.Board,System.Collections.Generic.HashSet{Go.Group})">
-            <summary>
-            Get all diagonal connected groups including eyes. 
-            </summary>
-        </member>
         <member name="M:Go.LinkHelper.GetGroupLinkedDiagonals(Go.Board,Go.Group,System.Boolean)">
             <summary>
-            Get linked diagonals of group.
+            Get group linked diagonals.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.GetGroupDiagonals(Go.Board,Go.Group)">
@@ -925,7 +920,7 @@
             Get diagonals of move of same content that are not part of the move group.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.IsDiagonallyConnectedGroups(System.Collections.Generic.HashSet{Go.Group},System.Collections.Generic.HashSet{Go.Group},Go.Board,Go.Group,Go.Group)">
+        <member name="M:Go.LinkHelper.IsDiagonallyConnectedGroups(System.Collections.Generic.HashSet{Go.Group},Go.Board,Go.Group,Go.Group)">
             <summary>
             Find if two groups are connected diagonally. If find group parameter is null then look for all connected groups.
             </summary>
@@ -1929,32 +1924,30 @@
         </member>
         <member name="M:Go.LifeCheck.ConfirmAlive(Go.Board,System.Collections.Generic.List{Go.Point})">
             <summary>
-            Confirm if result is alive by surrounding target group and trying to kill by all possible means.
+            Confirm alive.
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_ScenarioTestConfirmAlive1" />
             Partial alive <see cref="!:UnitTestProject.PartiallyAliveTest.PartiallyAliveTest_Scenario_WindAndTime_Q30215" />
             </summary>
         </member>
         <member name="M:Go.LifeCheck.ConfirmAlive(Go.Board,Go.Point)">
             <summary>
-            Extended life check predetermines target group is alive if two semi-solid eyes found, so the target group can be confirmed alive earlier than if the preliminary life check is used only.
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16860" />
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A28" />
             </summary>
         </member>
-        <member name="M:Go.LifeCheck.CheckTigerMouthForException(Go.Board,System.Collections.Generic.IEnumerable{Go.Point},Go.Content,System.Boolean)">
+        <member name="M:Go.LifeCheck.CheckTigerMouthExceptions(Go.Board,System.Collections.Generic.IEnumerable{Go.Point},Go.Content,System.Boolean)">
             <summary>
-            Check exceptions to confirm alive at tiger mouths for semi solid eye.
-            Possible corner three formation
-            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A139_2" />
+            Check tiger mouth exceptions.
+            Possible corner three formation <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A139_2" />
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31503" />
             Suicidal at tiger mouth  <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31177" />
             Tiger mouth escape with atari <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150" />
             Double tiger mouth <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_B3" />
             </summary>
         </member>
-        <member name="M:Go.LifeCheck.TigerMouthExceptions(Go.Board,Go.Content,Go.Point,Go.Point)">
+        <member name="M:Go.LifeCheck.CommonTigerMouthExceptions(Go.Board,Go.Content,Go.Point,Go.Point)">
             <summary>
-            Atari, resolve atari, and captured at tiger mouth liberty move.
+            Common tiger mouth exceptions.
             Check for atari at tiger mouth <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_4" />
             Check for tiger mouth threat group  <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150_2" />
             Check for link breakage <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_2" />
@@ -1979,7 +1972,7 @@
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_3" />
             </summary>
         </member>
-        <member name="M:Go.LifeCheck.CheckOpponentDoubleAtariMoves(Go.Board,System.Collections.Generic.List{Go.Group},System.Collections.Generic.List{Go.LinkedPoint{Go.Point}})">
+        <member name="M:Go.LifeCheck.CheckOpponentDoubleAtari(Go.Board,System.Collections.Generic.List{Go.Group},System.Collections.Generic.List{Go.LinkedPoint{Go.Point}})">
             <summary>
             Check opponent double atari moves.
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_7" />

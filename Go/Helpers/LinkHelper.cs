@@ -48,7 +48,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Is linked by stone only, ignoring whether empty points are immovable.
+        /// Is absolute link by stone only.
         /// </summary>
         public static Boolean IsAbsoluteLinkForGroups(Board currentBoard, Board tryBoard)
         {
@@ -60,7 +60,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Check if diagonals are linked either by same content or immovable.
+        /// Check if diagonals are linked.
         /// Both diagonals empty <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_4" />
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_2" />
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q17078" />
@@ -113,19 +113,15 @@ namespace Go
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_2" />
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_3" />
         /// </summary>
-        private static Boolean CheckDoubleLinkage(Board board, LinkedPoint<Point> diagonalLink, IEnumerable<Group> groups)
+        private static Boolean CheckDoubleLinkage(Board board, LinkedPoint<Point> diagonalLink, Content c)
         {
-            List<Group> threeGroups = groups.Skip(groups.Count() - 3).Take(3).ToList();
-            if (threeGroups.Count != 3) return true;
-            Content c = threeGroups.First().Content;
             List<Point> diagonals = LinkHelper.PointsBetweenDiagonals(diagonalLink);
-
             foreach (Point p in diagonals)
             {
                 //ensure three opponent groups
                 List<Point> opponentStones = board.GetStoneNeighbours(p).Where(n => board[n] == c).ToList();
                 HashSet<Group> neighbourGroups = board.GetGroupsFromPoints(opponentStones);
-                if (neighbourGroups.Count != 3 || neighbourGroups.Any(group => !threeGroups.Contains(group))) continue;
+                if (neighbourGroups.Count != 3) continue;
 
                 //make opponent move at diagonal
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board);
@@ -184,26 +180,12 @@ namespace Go
         public static HashSet<Group> GetAllDiagonalConnectedGroups(Board board, Group group)
         {
             HashSet<Group> allConnectedGroups = new HashSet<Group>() { group };
-            IsDiagonallyConnectedGroups(allConnectedGroups, new HashSet<Group>(), board, group);
+            IsDiagonallyConnectedGroups(allConnectedGroups, board, group);
             return allConnectedGroups;
         }
 
         /// <summary>
-        /// Get all diagonal connected groups including eyes. 
-        /// </summary>
-        public static HashSet<Group> GetAllDiagonalConnectedGroupsIncludingEyes(Board board, HashSet<Group> groups)
-        {
-            HashSet<Point> liberties = board.GetLibertiesOfGroups(groups.ToList());
-            foreach (Point liberty in liberties)
-            {
-                if (EyeHelper.FindEye(board, liberty, groups.First().Content))
-                    board.GetStoneNeighbours(liberty).Where(n => board.GetGroupAt(n).Points.Count == 1).ToList().ForEach(x => groups.Add(board.GetGroupAt(x)));
-            }
-            return groups;
-        }
-
-        /// <summary>
-        /// Get linked diagonals of group.
+        /// Get group linked diagonals.
         /// </summary>
         public static List<LinkedPoint<Point>> GetGroupLinkedDiagonals(Board board, Group group = null, Boolean checkLinked = false)
         {
@@ -256,9 +238,8 @@ namespace Go
         /// <summary>
         /// Find if two groups are connected diagonally. If find group parameter is null then look for all connected groups.
         /// </summary>
-        public static Boolean IsDiagonallyConnectedGroups(HashSet<Group> allConnectedGroups, HashSet<Group> groups, Board board, Group group, Group findGroup = null)
+        public static Boolean IsDiagonallyConnectedGroups(HashSet<Group> allConnectedGroups, Board board, Group group, Group findGroup = null)
         {
-            groups.Add(group);
             //find group diagonals of same content
             List<LinkedPoint<Point>> diagonalPoints = GetGroupLinkedDiagonals(board, group).OrderBy(d => board.GetGroupAt(d.Move).Liberties.Count).ToList();
             if (findGroup != null)
@@ -274,7 +255,7 @@ namespace Go
             foreach (LinkedPoint<Point> diagonalPoint in diagonalPoints)
             {
                 Group g = board.GetGroupAt(diagonalPoint.Move);
-                if (groups.Contains(g)) continue;
+                if (allConnectedGroups.Contains(g)) continue;
 
                 //check if diagonally linked
                 if (!CheckIsDiagonalLinked(diagonalPoint, board))
@@ -285,7 +266,7 @@ namespace Go
                     continue;
 
                 //check for links with double linkage
-                if (!CheckDoubleLinkage(board, diagonalPoint, groups.Union(new HashSet<Group> { g })))
+                if (!CheckDoubleLinkage(board, diagonalPoint, group.Content))
                     continue;
 
                 //check double atari for links
@@ -299,7 +280,7 @@ namespace Go
                     return true;
 
                 //get diagonal connected groups recursively
-                Boolean connected = IsDiagonallyConnectedGroups(allConnectedGroups, new HashSet<Group>(groups), board, g, findGroup);
+                Boolean connected = IsDiagonallyConnectedGroups(allConnectedGroups, board, g, findGroup);
                 if (connected) return true;
             }
             return false;
@@ -307,7 +288,7 @@ namespace Go
 
         public static Boolean IsDiagonallyConnectedGroups(Board board, Group group, Group findGroup)
         {
-            return IsDiagonallyConnectedGroups(new HashSet<Group>() { group }, new HashSet<Group>(), board, group, findGroup);
+            return IsDiagonallyConnectedGroups(new HashSet<Group>() { group }, board, group, findGroup);
         }
 
 
@@ -335,7 +316,7 @@ namespace Go
         public static Boolean CheckTigerMouthExceptionsForLinks(Board board, Group group)
         {
             List<Point> tigerMouthList = GetTigerMouthsOfLinks(board, group);
-            if (LifeCheck.CheckTigerMouthForException(board, tigerMouthList, group.Content))
+            if (LifeCheck.CheckTigerMouthExceptions(board, tigerMouthList, group.Content))
                 return true;
             return false;
         }
@@ -356,6 +337,7 @@ namespace Go
                     if (board[q] == Content.Empty && ImmovableHelper.FindTigerMouth(board, c, q))
                     {
                         if (BothAliveHelper.GetKillerGroupFromCache(board, q, c) != null) continue;
+                        if (board.GetGroupsFromStoneNeighbours(q, c.Opposite()).Count() == 1) continue;
                         //ensure tiger mouth is immovable
                         if (ImmovableHelper.IsImmovablePoint(q, c, board).Item1)
                             tigerMouthList.Add(q);
@@ -368,22 +350,22 @@ namespace Go
         /// <summary>
         /// Get all diagonal groups for checking neighbour groups of killer group.
         /// </summary>
-        public static List<Group> GetAllDiagonalGroups(Board board, Group group, List<Group> allConnectedGroups = null)
+        public static List<Group> GetAllDiagonalGroups(Board board, Group group, List<Group> groups = null)
         {
-            if (allConnectedGroups == null)
+            if (groups == null)
             {
-                allConnectedGroups = new List<Group>();
-                allConnectedGroups.Add(group);
+                groups = new List<Group>();
+                groups.Add(group);
             }
             List<LinkedPoint<Point>> diagonalPoints = GetGroupLinkedDiagonals(board, group);
             foreach (LinkedPoint<Point> diagonalPoint in diagonalPoints)
             {
                 Group g = board.GetGroupAt(diagonalPoint.Move);
-                if (allConnectedGroups.Contains(g)) continue;
-                allConnectedGroups.Add(g);
-                GetAllDiagonalGroups(board, g, allConnectedGroups);
+                if (groups.Contains(g)) continue;
+                groups.Add(g);
+                GetAllDiagonalGroups(board, g, groups);
             }
-            return allConnectedGroups;
+            return groups;
         }
 
         /// <summary>
