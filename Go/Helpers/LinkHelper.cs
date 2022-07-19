@@ -336,7 +336,6 @@ namespace Go
                 {
                     if (board[q] == Content.Empty && ImmovableHelper.FindTigerMouth(board, c, q))
                     {
-                        if (BothAliveHelper.GetKillerGroupFromCache(board, q, c) != null) continue;
                         if (board.GetGroupsFromStoneNeighbours(q, c.Opposite()).Count() == 1) continue;
                         //ensure tiger mouth is immovable
                         if (ImmovableHelper.IsImmovablePoint(q, c, board).Item1)

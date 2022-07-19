@@ -191,7 +191,7 @@ namespace Go
             List<Group> contentGroups = filledBoard.GetGroupsFromPoints(contentPoints).ToList();
             //more than one content group
             if (contentGroups.Count > 2 || (contentGroups.Count == 2 && emptyPoints.Count != 2)) return false;
-            if (contentGroups.Count == 2 && !LinkHelper.IsDiagonallyConnectedGroups(board, contentGroups[0], contentGroups[1])) return false;
+            if (contentGroups.Count == 2 && !LinkHelper.IsImmediateDiagonallyConnected(board, contentGroups[0], contentGroups[1])) return false;
 
             if (killerGroups.Count == 1)  //simple seki
             {
