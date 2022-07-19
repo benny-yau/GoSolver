@@ -102,6 +102,12 @@ namespace Go
             return false;
         }
 
+        public static Boolean CheckIsDiagonalLinked(LinkedPoint<Point> diagonal, Board board)
+        {
+            return CheckIsDiagonalLinked(diagonal.Move, (Point)diagonal.CheckMove, board);
+        }
+
+
         /// <summary>
         /// Check for double linkage.
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_2" />
@@ -112,7 +118,7 @@ namespace Go
             List<Group> threeGroups = groups.Skip(groups.Count() - 3).Take(3).ToList();
             if (threeGroups.Count != 3) return true;
             Content c = threeGroups.First().Content;
-            List<Point> diagonals = LinkHelper.PointsBetweenDiagonals(diagonalLink.Move, (Point)diagonalLink.CheckMove);
+            List<Point> diagonals = LinkHelper.PointsBetweenDiagonals(diagonalLink);
 
             foreach (Point p in diagonals)
             {
@@ -142,7 +148,7 @@ namespace Go
         private static Boolean CheckDoubleAtariForLinks(Board board, HashSet<Group> groups, Group group, LinkedPoint<Point> diagonalPoint)
         {
             Content c = group.Content;
-            List<Point> diagonals = LinkHelper.PointsBetweenDiagonals(diagonalPoint.Move, (Point)diagonalPoint.CheckMove);
+            List<Point> diagonals = LinkHelper.PointsBetweenDiagonals(diagonalPoint);
             diagonals.RemoveAll(diagonal => board[diagonal] != Content.Empty);
             if (diagonals.Count != 1) return false;
             Point d = diagonals.First();
@@ -271,7 +277,7 @@ namespace Go
                 if (groups.Contains(g)) continue;
 
                 //check if diagonally linked
-                if (!CheckIsDiagonalLinked(diagonalPoint.Move, (Point)diagonalPoint.CheckMove, board))
+                if (!CheckIsDiagonalLinked(diagonalPoint, board))
                     continue;
 
                 //check tiger mouth exceptions
@@ -311,12 +317,12 @@ namespace Go
         public static Boolean IsImmediateDiagonallyConnected(Board board, Group group, Group findGroup)
         {
             //link between the two groups
-            if (GetGroupLinkedDiagonals(board, group, true).Any(d => board.GetGroupAt(d.Move) == findGroup))
+            if (GetGroupLinkedDiagonals(board, group).Any(d => board.GetGroupAt(d.Move) == findGroup && CheckIsDiagonalLinked(d, board)))
                 return true;
 
             //link through move group
-            Boolean isLinked = (group == board.MoveGroup || GetGroupLinkedDiagonals(board, group, true).Any(d => board.GetGroupAt(d.Move) == board.MoveGroup));
-            Boolean isLinked2 = (findGroup == board.MoveGroup || GetGroupLinkedDiagonals(board, findGroup, true).Any(d => board.GetGroupAt(d.Move) == board.MoveGroup));
+            Boolean isLinked = (group == board.MoveGroup || GetGroupLinkedDiagonals(board, group).Any(d => board.GetGroupAt(d.Move) == board.MoveGroup && CheckIsDiagonalLinked(d, board)));
+            Boolean isLinked2 = (findGroup == board.MoveGroup || GetGroupLinkedDiagonals(board, findGroup).Any(d => board.GetGroupAt(d.Move) == board.MoveGroup && CheckIsDiagonalLinked(d, board)));
 
             return isLinked && isLinked2;
         }
@@ -344,7 +350,7 @@ namespace Go
             List<LinkedPoint<Point>> diagonalPoints = LinkHelper.GetGroupDiagonals(board, group);
             foreach (LinkedPoint<Point> p in diagonalPoints)
             {
-                List<Point> pointsBetweenDiagonals = LinkHelper.PointsBetweenDiagonals(p.Move, (Point)p.CheckMove);
+                List<Point> pointsBetweenDiagonals = LinkHelper.PointsBetweenDiagonals(p);
                 foreach (Point q in pointsBetweenDiagonals)
                 {
                     if (board[q] == Content.Empty && ImmovableHelper.FindTigerMouth(board, c, q))
@@ -397,6 +403,11 @@ namespace Go
             return diagonalPoints;
         }
 
+        public static List<Point> PointsBetweenDiagonals(LinkedPoint<Point> diagonal)
+        {
+            return PointsBetweenDiagonals(diagonal.Move, (Point)diagonal.CheckMove);
+        }
+
         /// <summary>
         /// Diagonal cut between two neighbour groups.
         /// </summary>
@@ -407,7 +418,7 @@ namespace Go
             List<LinkedPoint<Point>> diagonals = GetGroupDiagonals(board, group).Where(d => board[d.Move] == c).ToList();
             foreach (LinkedPoint<Point> diagonal in diagonals)
             {
-                List<Point> pointsBetweenDiagonals = PointsBetweenDiagonals(diagonal.Move, (Point)diagonal.CheckMove);
+                List<Point> pointsBetweenDiagonals = PointsBetweenDiagonals(diagonal);
                 if (pointsBetweenDiagonals.All(d => board[d] == c.Opposite()) && board.GetGroupAt(diagonal.Move).Liberties.Count > 1)
                     return (diagonal.Move, pointsBetweenDiagonals);
             }

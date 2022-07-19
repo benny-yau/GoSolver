@@ -1941,17 +1941,13 @@
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A28" />
             </summary>
         </member>
-        <member name="M:Go.LifeCheck.CheckForPreAtariGroups(Go.Board,Go.Group)">
-            <summary>
-            Pre atari groups.
-            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_2" />
-            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_3" />
-            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_4" />
-            </summary>
-        </member>
-        <member name="M:Go.LifeCheck.CheckTigerMouthForException(Go.Board,System.Collections.Generic.IEnumerable{Go.Point},Go.Content)">
+        <member name="M:Go.LifeCheck.CheckTigerMouthForException(Go.Board,System.Collections.Generic.IEnumerable{Go.Point},Go.Content,System.Boolean)">
             <summary>
             Check exceptions to confirm alive at tiger mouths for semi solid eye.
+            Possible corner three formation
+            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A139_2" />
+            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31503" />
+            Suicidal at tiger mouth  <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31177" />
             Tiger mouth escape with atari <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150" />
             Double tiger mouth <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_B3" />
             </summary>
@@ -1959,14 +1955,13 @@
         <member name="M:Go.LifeCheck.TigerMouthExceptions(Go.Board,Go.Content,Go.Point,Go.Point)">
             <summary>
             Atari, resolve atari, and captured at tiger mouth liberty move.
-            Possible corner three formation
-            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A139_2" />
-            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31503" />
-            Suicidal at tiger mouth  <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31177" />
+            Check for atari at tiger mouth <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_4" />
             Check for tiger mouth threat group  <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150_2" />
             Check for link breakage <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_2" />
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_Nie60_2" />
-            Check for atari at tiger mouth <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_4" />
+            Link breakage for pre atari groups <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_2" />
+            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_3" />
+            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_4" />
             </summary>
         </member>
         <member name="M:Go.LifeCheck.DoubleTigerMouthLink(Go.Board,Go.Content,Go.Point,Go.Point)">
