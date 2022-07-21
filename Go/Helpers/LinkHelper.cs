@@ -128,8 +128,7 @@ namespace Go
                 if (suicidal) continue;
 
                 //check if any of the other two diagonals are immovable
-                List<Point> otherDiagonals = board.GetDiagonalNeighbours(p).Where(n => board[n] == Content.Empty && board.GetStoneNeighbours(n).Intersect(opponentStones).Count() >= 2).ToList();
-                if (otherDiagonals.Count != 2) return false;
+                List<Point> otherDiagonals = board.GetDiagonalNeighbours(p).Where(n => board.GetStoneNeighbours(n).Intersect(opponentStones).Count() >= 2).ToList();
                 if (otherDiagonals.All(d => !ImmovableHelper.IsImmovablePoint(d, c, b).Item1))
                     return false;
             }
