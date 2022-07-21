@@ -124,6 +124,7 @@ namespace Go
         /// Check for tiger mouth threat group  
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_7" />
         /// Check for two threat groups <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_6" />
+        /// Check for another tiger mouth at move <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_10" />
         /// Check for link breakage <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_2" />
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_Nie60_2" />
         /// Link breakage for pre atari groups <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_2" />
@@ -147,9 +148,15 @@ namespace Go
                 if (!isNegligible)
                     return true;
 
-                //check for two threat groups
-                if (threatGroup != null && LinkHelper.GetPreviousMoveGroup(board, b).Any(t => t.Liberties.Count == 2 && !t.Points.Contains(threatGroup.Points.First()) && t.Liberties.Any(l => ImmovableHelper.FindTigerMouth(board, c, l))))
-                    return true;
+                if (threatGroup != null)
+                {
+                    //check for two threat groups
+                    if (LinkHelper.GetPreviousMoveGroup(board, b).Any(t => t.Liberties.Count == 2 && !t.Points.Contains(threatGroup.Points.First()) && t.Liberties.Any(l => ImmovableHelper.FindTigerMouth(board, c, l))))
+                        return true;
+                    //check for another tiger mouth at move
+                    if (b.GetStoneNeighbours().Any(n => b[n] == Content.Empty && ImmovableHelper.FindTigerMouth(board, c, n)))
+                        return true;
+                }
 
                 //check for link breakage
                 if (b.MoveGroup.Points.Count > 1)
@@ -185,7 +192,7 @@ namespace Go
         /// </summary>
         public static Boolean DoubleTigerMouthLink(Board board, Content c, Point tigerMouth, Point libertyPoint)
         {
-            if (board[tigerMouth] != Content.Empty || board[libertyPoint] != Content.Empty) return false;
+            if (board[tigerMouth] != Content.Empty || !board.GetStoneNeighbours(tigerMouth).Contains(libertyPoint)) return false;
             //make killer move at liberty
             Board b = board.MakeMoveOnNewBoard(libertyPoint, c.Opposite());
             if (b == null || b.MoveGroupLiberties <= 2) return false;
@@ -195,8 +202,6 @@ namespace Go
             diagonals = diagonals.Where(d => board[d] == Content.Empty && ImmovableHelper.FindTigerMouth(board, c, d)).ToList();
             foreach (Point diagonal in diagonals)
             {
-                //ensure tiger mouth is external
-                if (BothAliveHelper.GetKillerGroupFromCache(board, diagonal, c) != null) continue;
                 //ensure link for groups
                 Board b2 = b.MakeMoveOnNewBoard(diagonal, c);
                 if (b2 != null && LinkHelper.IsAbsoluteLinkForGroups(b, b2) && !ImmovableHelper.IsSuicidalMove(b2, tigerMouth, c.Opposite()))
@@ -246,8 +251,6 @@ namespace Go
 
             foreach (Point liberty in liberties)
             {
-                //get external liberty
-                if (BothAliveHelper.GetKillerGroupFromCache(board, liberty, c.Opposite()) != null) continue;
                 //make atari move
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c, board);
                 if (suicidal) continue;
