@@ -262,7 +262,7 @@ namespace Go
             //set as neutral point for non killable move group
             if (WallHelper.IsNonKillableGroup(tryBoard))
                 tryMove.IsNeutralPoint = true;
-
+            
             return true;
         }
 
@@ -686,7 +686,7 @@ namespace Go
             if (LifeCheck.GetTargets(tryBoard).All(t => tryBoard.MoveGroup.Points.Contains(t))) return true;
 
             //reverse connect and die
-            if (tryBoard.MoveGroup.Points.Count == 1 && captureBoard.MoveGroup.Points.Count == 1 && !tryBoard.GetNeighbourGroups().Any(gr => gr.Liberties.Count == 1) && ImmovableHelper.CheckConnectAndDie(captureBoard))
+                if (tryBoard.MoveGroup.Points.Count == 1 && captureBoard.MoveGroup.Points.Count == 1 && !tryBoard.GetNeighbourGroups().Any(gr => gr.Liberties.Count == 1) && ImmovableHelper.CheckConnectAndDie(captureBoard))
                 return false;
 
             //check capture moves
@@ -1278,7 +1278,8 @@ namespace Go
         /// Check corner point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A26_2" />
         /// Check connect and die <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_5" />
         /// Specific filler move <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A17_2" />
-        /// One point target <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A84_2" />
+        /// One point target <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A26_2" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A84_2" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A95" />
         /// <see cref="UnitTestProject.KoTest.KoTest_Scenario_WuQingYuan_Q31680" />
         private static Boolean CornerPointSuicide(GameTryMove tryMove, Board captureBoard)
@@ -1300,6 +1301,16 @@ namespace Go
             //one point target
             if (!tryBoard.AtariTargets.Any())
                 return true;
+            else if (tryBoard.AtariTargets.Count == 1)
+            {
+                Group atariTarget = tryBoard.AtariTargets.First();
+                if (WallHelper.IsNonKillableGroup(currentBoard, currentBoard.GetGroupAt(atariTarget.Points.First())))
+                {
+                    Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(tryBoard, atariTarget, c.Opposite());
+                    if (b != null && b.MoveGroupLiberties > 1)
+                        return true;
+                }
+            }
             //check connect and die
             if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c && ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.GetGroupAt(n))))
                 return true;
@@ -1659,7 +1670,7 @@ namespace Go
             if (!tryBoard.GetDiagonalNeighbours(k).Any(n => n.Equals(k2))) return false;
 
             //check if any killable group
-            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite() && !WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.GetGroupAt(n))))
+            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite() && !WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.GetGroupAt(n)))) 
                 return false;
 
             //check killer group for captured points
@@ -2636,6 +2647,9 @@ namespace Go
         /// Check any opponent stone at stone points <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_Q18500" />
         /// Check any opponent stone at neighbour points <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q16827" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q16827_2" />
+        /// Check corner point <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_A26" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_B8" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
         /// </summary>
         public static Boolean GenericEyeFillerMove(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
@@ -2664,14 +2678,22 @@ namespace Go
             foreach (Point p in emptyNeighbours)
             {
                 if (tryBoard.CornerPoint(p)) continue;
-                //count eyes created at empty neighbour points
-                int possibleEyesAtNeighbourPt = PossibleEyesCreated(currentBoard, p, c);
-                //check if possibility of eyes created by move at any stone neighbour is more than at try move point
-                if (possibleEyesAtNeighbourPt <= possibleEyes) continue;
                 //check any opponent stone at neighbour points
                 if (CheckOpponentStoneAtFillerMove(tryMove, p))
                     continue;
-                return true;
+                //count eyes created at empty neighbour points
+                int possibleEyesAtNeighbourPt = PossibleEyesCreated(currentBoard, p, c);
+                //check if possibility of eyes created by move at any stone neighbour is more than at try move point
+                if (possibleEyesAtNeighbourPt > possibleEyes)
+                    return true;
+
+                //check corner point
+                if (tryBoard.CornerPoint(move) && possibleEyesAtNeighbourPt >= possibleEyes)
+                {
+                    if (tryBoard.GetStoneNeighbours(p.x, p.y).Any(n => !move.Equals(n) && !tryBoard.PointWithinMiddleArea(n) && (currentBoard[n] != Content.Empty || PossibleEyesCreated(currentBoard, n, c) > possibleEyes)))
+                        return true;
+                }
+                
             }
             return false;
         }
