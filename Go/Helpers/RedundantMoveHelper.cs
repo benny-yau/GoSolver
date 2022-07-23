@@ -262,7 +262,7 @@ namespace Go
             //set as neutral point for non killable move group
             if (WallHelper.IsNonKillableGroup(tryBoard))
                 tryMove.IsNeutralPoint = true;
-            
+
             return true;
         }
 
@@ -686,7 +686,7 @@ namespace Go
             if (LifeCheck.GetTargets(tryBoard).All(t => tryBoard.MoveGroup.Points.Contains(t))) return true;
 
             //reverse connect and die
-                if (tryBoard.MoveGroup.Points.Count == 1 && captureBoard.MoveGroup.Points.Count == 1 && !tryBoard.GetNeighbourGroups().Any(gr => gr.Liberties.Count == 1) && ImmovableHelper.CheckConnectAndDie(captureBoard))
+            if (tryBoard.MoveGroup.Points.Count == 1 && captureBoard.MoveGroup.Points.Count == 1 && !tryBoard.GetNeighbourGroups().Any(gr => gr.Liberties.Count == 1) && ImmovableHelper.CheckConnectAndDie(captureBoard))
                 return false;
 
             //check capture moves
@@ -1135,7 +1135,7 @@ namespace Go
             {
                 //one liberty - suicide for both players
                 Point q = liberties.First();
-                if (BothAliveHelper.GetKillerGroupFromCache(tryBoard, q) != null && ImmovableHelper.IsSuicidalMoveForBothPlayers(capturedBoard, q))
+                if (BothAliveHelper.GetKillerGroupFromCache(tryBoard, q, c.Opposite()) != null && ImmovableHelper.IsSuicidalMoveForBothPlayers(capturedBoard, q))
                     return false;
 
                 //crowbar formation
@@ -1152,7 +1152,7 @@ namespace Go
                     if (isSuicidal) continue;
                     //both players are suicidal at the liberty
                     Point q = liberties.First(liberty => !liberty.Equals(p));
-                    if (BothAliveHelper.GetKillerGroupFromCache(tryBoard, q) != null && ImmovableHelper.IsSuicidalMoveForBothPlayers(b, q))
+                    if (BothAliveHelper.GetKillerGroupFromCache(tryBoard, q, c.Opposite()) != null && ImmovableHelper.IsSuicidalMoveForBothPlayers(b, q))
                         return false;
                 }
             }
@@ -1670,7 +1670,7 @@ namespace Go
             if (!tryBoard.GetDiagonalNeighbours(k).Any(n => n.Equals(k2))) return false;
 
             //check if any killable group
-            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite() && !WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.GetGroupAt(n)))) 
+            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite() && !WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.GetGroupAt(n))))
                 return false;
 
             //check killer group for captured points
@@ -2155,7 +2155,7 @@ namespace Go
                 //ensure more than one liberty
                 if (tryMove.TryGame.Board.MoveGroupLiberties == 1) continue;
                 //exclude try moves within killer group
-                if (BothAliveHelper.GetKillerGroupFromCache(tryBoard, tryMove.Move) != null)
+                if (BothAliveHelper.GetKillerGroupFromCache(tryBoard, tryMove.Move, c.Opposite()) != null)
                     continue;
 
                 //target group already targeted by other try moves
@@ -2417,7 +2417,7 @@ namespace Go
             if (diagonals.Count == 0)
                 return false;
 
-            diagonals.RemoveAll(d => BothAliveHelper.GetKillerGroupFromCache(currentBoard, d) == null);
+            diagonals.RemoveAll(d => BothAliveHelper.GetKillerGroupFromCache(currentBoard, d, c) == null);
             if (diagonals.Count == 0) return false;
             //check diagonals are real eyes
             if (diagonals.All(eye => RealEyeAtDiagonal(tryMove, eye)))
@@ -2460,9 +2460,10 @@ namespace Go
             if (opponentMove == null) return false;
             Board currentBoard = tryMove.CurrentGame.Board;
             Board killerBoard = opponentMove.TryGame.Board;
+            Content c = tryMove.MoveContent;
 
             //check if eye is within enclosed killer group
-            Group eyeGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, eye);
+            Group eyeGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, eye, c);
             if (eyeGroup == null) return false;
 
             //find real eye
@@ -2517,9 +2518,10 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
+            Content c = tryMove.MoveContent;
             if (!tryMove.IsNegligible || tryBoard.IsAtariMove)
                 return false;
-            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, move);
+            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, move, c);
 
 
             //check if any move in killer group
@@ -2537,9 +2539,10 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
+            Content c = tryMove.MoveContent;
             if (!tryMove.IsNegligible || tryBoard.IsAtariMove)
                 return false;
-            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, move);
+            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
 
             GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
             if (opponentMove == null) return false;
@@ -2599,7 +2602,7 @@ namespace Go
             //check if killer group created with opposite content within the group
             if (tryMove.IncreasedKillerGroups)
             {
-                IEnumerable<Group> createdGroups = BothAliveHelper.GetCorneredKillerGroup(tryBoard, false).Except(BothAliveHelper.GetCorneredKillerGroup(tryMove.CurrentGame.Board, false));
+                IEnumerable<Group> createdGroups = BothAliveHelper.GetCorneredKillerGroup(tryBoard, c, false).Except(BothAliveHelper.GetCorneredKillerGroup(tryMove.CurrentGame.Board, c, false));
                 if (createdGroups.Any(group => group.Points.Any(p => tryBoard[p] == group.Content)))
                     return false;
             }
@@ -2693,7 +2696,7 @@ namespace Go
                     if (tryBoard.GetStoneNeighbours(p.x, p.y).Any(n => !move.Equals(n) && !tryBoard.PointWithinMiddleArea(n) && (currentBoard[n] != Content.Empty || PossibleEyesCreated(currentBoard, n, c) > possibleEyes)))
                         return true;
                 }
-                
+
             }
             return false;
         }
@@ -2803,7 +2806,7 @@ namespace Go
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
             if (!tryMove.IsNegligible) return false;
-            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, move);
+            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, move, c);
             if (killerGroup == null)
                 return false;
 

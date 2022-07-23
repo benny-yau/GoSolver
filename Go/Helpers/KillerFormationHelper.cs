@@ -127,7 +127,7 @@ namespace Go
             //check for covered eye
             if (EyeHelper.CheckCoveredEyeAtSuicideGroup(b, tryBoard.MoveGroup))
                 return false;
-            
+
             //allow two-point group without real eye
             if (tryBoard.MoveGroup.Points.Count <= 2)
             {
@@ -137,7 +137,7 @@ namespace Go
             }
 
             //check for corner six
-            if (KillerFormationHelper.CornerSixFormation(tryBoard, tryBoard.MoveGroup)) 
+            if (KillerFormationHelper.CornerSixFormation(tryBoard, tryBoard.MoveGroup))
                 return false;
 
             //corner ko move
@@ -877,6 +877,7 @@ namespace Go
         /// </summary>
         public static LinkedPoint<Point> GetMaxBindingPoint(Board currentBoard, IEnumerable<Board> killBoards)
         {
+            Content c = killBoards.First().MoveGroup.Content;
             List<LinkedPoint<Point>> list = new List<LinkedPoint<Point>>();
             foreach (Board killBoard in killBoards)
             {
@@ -884,7 +885,7 @@ namespace Go
                 List<Point> moveGroup = killBoard.MoveGroup.Points.ToList();
                 int maxLengthOfGrid = MaxLengthOfGrid(moveGroup);
                 int maxIntersect = moveGroup.Max(q => killBoard.GetStoneNeighbours(q).Intersect(moveGroup).Count());
-                List<Group> neighbourGroups = killBoard.GetGroupsFromStoneNeighbours(p, killBoard.MoveGroup.Content).OrderBy(n => n.Liberties.Count).ToList();
+                List<Group> neighbourGroups = killBoard.GetGroupsFromStoneNeighbours(p, c).OrderBy(n => n.Liberties.Count).ToList();
                 int minNeighbourLiberties = (neighbourGroups.Count == 0) ? 0 : neighbourGroups.First().Liberties.Count;
                 int minNeighbourPointCount = (neighbourGroups.Count == 0) ? 0 : neighbourGroups.First().Points.Count;
                 list.Add(new LinkedPoint<Point>(p, new { maxLengthOfGrid, maxIntersect, minNeighbourLiberties, minNeighbourPointCount, killBoard }));
@@ -893,7 +894,7 @@ namespace Go
             list = list.OrderBy(m => ((dynamic)m.CheckMove).maxLengthOfGrid).OrderByDescending(m => ((dynamic)m.CheckMove).maxIntersect).OrderBy(m => ((dynamic)m.CheckMove).minNeighbourLiberties).OrderBy(m => ((dynamic)m.CheckMove).minNeighbourPointCount).ToList();
 
             //check for dead formation
-            List<Group> killerGroups = BothAliveHelper.GetCorneredKillerGroup(currentBoard, false);
+            List<Group> killerGroups = BothAliveHelper.GetCorneredKillerGroup(currentBoard, c.Opposite(), false);
             Group killerGroup = killerGroups.First();
             foreach (LinkedPoint<Point> p in list)
             {
@@ -901,7 +902,7 @@ namespace Go
                 if (DeadFormationInBothAlive(killBoard, killerGroup))
                 {
                     //check for suicidal move by survival
-                    if (ImmovableHelper.IsSuicidalMove(p.Move, killerGroup.Content.Opposite(), currentBoard).Item1) continue;
+                    if (ImmovableHelper.IsSuicidalMove(p.Move, c.Opposite(), currentBoard).Item1) continue;
                     return p;
                 }
             }

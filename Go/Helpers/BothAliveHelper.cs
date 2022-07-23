@@ -329,7 +329,7 @@ namespace Go
                 return false;
 
             //ensure at least two liberties within killer group in survival neighbour group
-            if (targetGroups.Any(n => n.Liberties.Count(p => GetKillerGroupFromCache(board, p) != null) < 2))
+            if (targetGroups.Any(n => n.Liberties.Count(p => GetKillerGroupFromCache(board, p, c.Opposite()) != null) < 2))
                 return false;
             //find uncovered eye
             if (FindUncoveredEyeInComplexSeki(board, killerGroups))
