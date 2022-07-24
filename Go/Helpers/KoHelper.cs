@@ -177,7 +177,7 @@ namespace Go
             if (tryBoard.singlePointCapture == null) return false;
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
             if (killerGroup == null) return false;
             List<Group> neighbourGroups = tryBoard.GetNeighbourGroups(killerGroup);
             //ensure all neighbour groups within killer group

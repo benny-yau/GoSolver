@@ -30,7 +30,7 @@ namespace Go
         public static Boolean CheckForBentFour(Game currentGame, List<GameTryMove> tryMoves = null)
         {
             Board board = currentGame.Board;
-            List<Group> killerGroups = BothAliveHelper.GetCorneredKillerGroup(board, true);
+            List<Group> killerGroups = GroupHelper.GetKillerGroups(board, Content.Unknown, true);
             if (killerGroups.Count != 1 || killerGroups[0].Points.Count != 5)
                 return false;
 
@@ -62,7 +62,7 @@ namespace Go
                 List<Point> emptyPoints = killerGroup.Points.Where(t => tryBoard[t] == Content.Empty).ToList();
                 if (emptyPoints.Count != 2) return false;
                 //get end points of content group
-                List<Point> endPoints = contentPoints.Where(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 1).ToList();                
+                List<Point> endPoints = contentPoints.Where(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 1).ToList();
                 //both end points connect with one empty point each
                 Boolean endConnect = endPoints.All(p => tryBoard.GetStoneNeighbours(p).Intersect(emptyPoints).Count() == 1);
                 if (!endConnect) return false;
@@ -82,7 +82,7 @@ namespace Go
         public static Boolean CheckForTenThousandYearKo(Game game)
         {
             Board board = game.Board;
-            List<Group> killerGroups = BothAliveHelper.GetCorneredKillerGroup(board);
+            List<Group> killerGroups = GroupHelper.GetKillerGroups(board, Content.Unknown, true);
             if (killerGroups.Count != 1)
                 return false;
             //check for only one neighbour group

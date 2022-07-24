@@ -42,7 +42,7 @@ namespace Go
             }
         }
 
-        public Dictionary<Content, List<Group>> CorneredKillerGroup { get; set; }
+        public Dictionary<Content, List<Group>> killerGroup { get; set; }
         public GameInfo GameInfo { get; set; }
         public static readonly Point PassMove = new Point(-1, -1);
 
@@ -435,7 +435,7 @@ namespace Go
         {
             GroupCache.Clear();
             GroupCacheFromPoint = null;
-            CorneredKillerGroup = null;
+            killerGroup = null;
             AtariTargets = null;
             CapturedList.Clear();
         }

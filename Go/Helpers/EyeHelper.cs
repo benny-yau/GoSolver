@@ -149,7 +149,7 @@ namespace Go
             Point move = tryBoard.Move.Value;
             Content c = capturedBoard.MoveGroup.Content;
             if (tryBoard.MoveGroup.Points.Count != 2) return false;
-            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c);
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, move, c);
             foreach (Group group in capturedBoard.CapturedList)
             {
                 if (group.Points.Count != 2) continue;
@@ -307,7 +307,7 @@ namespace Go
 
         public static Boolean FindRealEyeWithinEmptySpace(Board board, Point p, Content c, EyeType eyeType = EyeType.SemiSolidEye)
         {
-            Group eyeGroup = BothAliveHelper.GetKillerGroupFromCache(board, p, c);
+            Group eyeGroup = GroupHelper.GetKillerGroupFromCache(board, p, c);
             if (eyeGroup == null) return false;
             return FindRealEyeWithinEmptySpace(board, eyeGroup, eyeType);
         }
@@ -440,7 +440,7 @@ namespace Go
 
             if (checkConnected)
             {
-                (Boolean isKillerGroup, List<Group> groups) = BothAliveHelper.CheckNeighbourGroupsOfKillerGroup(board, killerGroup);
+                (Boolean isKillerGroup, List<Group> groups) = GroupHelper.CheckNeighbourGroupsOfKillerGroup(board, killerGroup);
                 if (!isKillerGroup) return false;
 
                 HashSet<Group> connectedGroups = LinkHelper.GetAllDiagonalConnectedGroups(board, groups.First());

@@ -97,7 +97,7 @@ namespace Go
                 return true;
             }
             //check any diagonal separated by opposite content
-            if (diagonals.Any(diagonal => ImmovableHelper.IsImmovablePoint(diagonal, c, board).Item1 && (board[diagonal] == Content.Empty || BothAliveHelper.GetKillerGroupFromCache(board, diagonal, c) != null)))
+            if (diagonals.Any(diagonal => ImmovableHelper.IsImmovablePoint(diagonal, c, board).Item1 && (board[diagonal] == Content.Empty || GroupHelper.GetKillerGroupFromCache(board, diagonal, c) != null)))
                 return true;
             return false;
         }

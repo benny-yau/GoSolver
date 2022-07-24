@@ -196,7 +196,7 @@ namespace Go
         /// Double atari <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30358" /> 
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" /> 
         /// Check for weak eye group <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_B28" />
-        /// Check both alive <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_SimpleSeki" /> 
+        /// Check both alive <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_SimpleSeki" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_2" /> 
         /// Check break link <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WuQingYuan_Q31657" /> 
         /// Ensure group more than one point have more than one liberty <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Nie20" /> 
@@ -304,7 +304,7 @@ namespace Go
                     if (tryBoard.MoveGroup.Points.Count >= 2)
                     {
                         if (b2.CapturedPoints.Count() >= 3) return (true, b);
-                        if (b2.GetStoneNeighbours().Where(n => b2[n] != c.Opposite()).Select(n => new { kgroup = BothAliveHelper.GetKillerGroupFromCache(b2, n, c.Opposite()) }).Any(n => n.kgroup != null && KillerFormationHelper.CrowbarFormation(b2, n.kgroup)))
+                        if (b2.GetStoneNeighbours().Where(n => b2[n] != c.Opposite()).Select(n => new { kgroup = GroupHelper.GetKillerGroupFromCache(b2, n, c.Opposite()) }).Any(n => n.kgroup != null && KillerFormationHelper.CrowbarFormation(b2, n.kgroup)))
                             return (true, b);
                     }
 
@@ -410,30 +410,30 @@ namespace Go
             Group atariTarget = tryBoard.AtariTargets.First();
             Point atariPoint = atariTarget.Points.First();
             //check for redundant atari within killer group
-            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, atariPoint, c);
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, atariPoint, c);
             if (killerGroup == null) return false;
             //ensure more than one liberty for move group
             if (tryBoard.MoveGroupLiberties == 1) return false;
             //check for weak groups
             if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Any(gr => gr.Liberties.Count <= 2) && tryBoard.MoveGroupLiberties > 2) return false;
             //check for increased killer groups
-            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] != c && BothAliveHelper.GetKillerGroupFromCache(tryBoard, n, c) != killerGroup)) return false;
+            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] != c && GroupHelper.GetKillerGroupFromCache(tryBoard, n, c) != killerGroup)) return false;
             //check for reverse ko fight
             if (KoHelper.IsReverseKoFight(tryBoard)) return false;
             //check for diagonal killer group
-            if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] != c && BothAliveHelper.GetKillerGroupFromCache(tryBoard, n, c) != killerGroup)) return false;
+            if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] != c && GroupHelper.GetKillerGroupFromCache(tryBoard, n, c) != killerGroup)) return false;
 
             //make move at the other liberty
             Point q = atariTarget.Liberties.First();
             Board board = currentBoard.MakeMoveOnNewBoard(q, c);
             if (board == null || board.MoveGroupLiberties == 1) return false;
-            Group killerGroup2 = BothAliveHelper.GetKillerGroupFromCache(board, atariPoint, c);
+            Group killerGroup2 = GroupHelper.GetKillerGroupFromCache(board, atariPoint, c);
             if (killerGroup2 == null) return false;
             //ensure the other move can capture atari target as well
             if (ImmovableHelper.UnescapableGroup(board, board.GetGroupAt(atariPoint)).Item1)
             {
                 //check for increased killer groups
-                if (board.GetStoneNeighbours().Any(n => board[n] != c && BothAliveHelper.GetKillerGroupFromCache(board, n, c) != killerGroup2)) return true;
+                if (board.GetStoneNeighbours().Any(n => board[n] != c && GroupHelper.GetKillerGroupFromCache(board, n, c) != killerGroup2)) return true;
 
                 //check escape board for two or more liberties
                 Board escapeBoard = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(tryBoard, atariTarget, c.Opposite());
@@ -775,9 +775,9 @@ namespace Go
             if (tryBoard.MoveGroup.Points.Count == 1)
             {
                 //check move in real eye
-                Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite());
+                Group killerGroup = GroupHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite());
                 if (killerGroup == null) return false;
-                Group tryKillerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
+                Group tryKillerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
                 if (EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, killerGroup) && !ImmovableHelper.CheckConnectAndDie(captureBoard))
                 {
                     if (tryKillerGroup != null && tryKillerGroup.Points.Count == 3 && !EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, tryKillerGroup) && tryKillerGroup.Points.Any(p => EyeHelper.IsCovered(tryBoard, p, c.Opposite())))
@@ -785,7 +785,7 @@ namespace Go
                 }
 
                 //check for split killer group
-                Boolean splitKillerGroup = captureBoard.GetStoneNeighbours().Where(n => tryBoard[n] != c && !n.Equals(move)).Select(n => new { kGroup = BothAliveHelper.GetKillerGroupFromCache(captureBoard, n, c.Opposite()) }).Any(n => n.kGroup != null && n.kGroup != killerGroup);
+                Boolean splitKillerGroup = captureBoard.GetStoneNeighbours().Where(n => tryBoard[n] != c && !n.Equals(move)).Select(n => new { kGroup = GroupHelper.GetKillerGroupFromCache(captureBoard, n, c.Opposite()) }).Any(n => n.kGroup != null && n.kGroup != killerGroup);
                 if (!splitKillerGroup && !EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, killerGroup)) return false;
 
                 //check for corner six formation
@@ -794,7 +794,7 @@ namespace Go
             }
             else if (tryBoard.MoveGroup.Points.Count == 2)
             {
-                Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite());
+                Group killerGroup = GroupHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite());
                 if (killerGroup == null) return false;
                 if (!EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, killerGroup)) return false;
             }
@@ -918,7 +918,7 @@ namespace Go
             //check connect and die
             (Boolean suicidal, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
             if (!suicidal) return false;
-            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite());
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite());
             List<Group> groups = captureBoard.GetNeighbourGroups(killerGroup ?? tryBoard.MoveGroup);
             Boolean nonKillable = groups.Any(group => WallHelper.IsNonKillableGroup(captureBoard, group));
             if (!nonKillable) return false;
@@ -1090,7 +1090,7 @@ namespace Go
                 return false;
 
             //remove one point from two-point empty group
-            Group eyeGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
+            Group eyeGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
             if (eyeGroup != null && eyeGroup.Points.All(p => !currentBoard.CornerPoint(p)))
             {
                 Board b = EyeHelper.FindRealEyesWithinTwoEmptyPoints(currentBoard, eyeGroup, EyeType.RealSolidEye);
@@ -1135,7 +1135,7 @@ namespace Go
             {
                 //one liberty - suicide for both players
                 Point q = liberties.First();
-                if (BothAliveHelper.GetKillerGroupFromCache(tryBoard, q, c.Opposite()) != null && ImmovableHelper.IsSuicidalMoveForBothPlayers(capturedBoard, q))
+                if (GroupHelper.GetKillerGroupFromCache(tryBoard, q, c.Opposite()) != null && ImmovableHelper.IsSuicidalMoveForBothPlayers(capturedBoard, q))
                     return false;
 
                 //crowbar formation
@@ -1152,7 +1152,7 @@ namespace Go
                     if (isSuicidal) continue;
                     //both players are suicidal at the liberty
                     Point q = liberties.First(liberty => !liberty.Equals(p));
-                    if (BothAliveHelper.GetKillerGroupFromCache(tryBoard, q, c.Opposite()) != null && ImmovableHelper.IsSuicidalMoveForBothPlayers(b, q))
+                    if (GroupHelper.GetKillerGroupFromCache(tryBoard, q, c.Opposite()) != null && ImmovableHelper.IsSuicidalMoveForBothPlayers(b, q))
                         return false;
                 }
             }
@@ -1174,7 +1174,7 @@ namespace Go
             //redundant if no diagonals
             if (diagonals.Count == 0) return true;
             //check killer group
-            if (diagonals.Any(d => BothAliveHelper.GetKillerGroupFromCache(currentBoard, d, c.Opposite()) != null)) return true;
+            if (diagonals.Any(d => GroupHelper.GetKillerGroupFromCache(currentBoard, d, c.Opposite()) != null)) return true;
             //check eye for survival
             if (diagonals.Any(d => WallHelper.NoEyeForSurvival(tryBoard, d, c.Opposite()) && !WallHelper.IsNonKillableGroup(tryBoard, d)))
                 return true;
@@ -1293,7 +1293,7 @@ namespace Go
             if (!tryBoard.CornerPoint(move)) return false;
 
             //specific filler move
-            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, move, c);
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c);
             Boolean specificFillerMove = (killerGroup != null && killerGroup.Points.Count <= 5);
             if (specificFillerMove)
                 return false;
@@ -1551,7 +1551,7 @@ namespace Go
             List<Point> closestNeighbours = tryBoard.GetClosestNeighbour(move, 2, c, false);
             if (closestNeighbours.Count == 0)
             {
-                Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
+                Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
                 if (killerGroup == null || tryBoard.GetNeighbourGroups(killerGroup).Any(group => WallHelper.IsNonKillableGroup(tryBoard, group)))
                     return true;
             }
@@ -1675,7 +1675,7 @@ namespace Go
                 return false;
 
             //check killer group for captured points
-            if (tryBoard.GetStoneAndDiagonalNeighbours().Where(n => tryBoard[n] != c).Select(n => new { kgroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, n, c) }).Any(n => n.kgroup != null && n.kgroup.Points.Any(q => tryBoard[q] == c.Opposite())))
+            if (tryBoard.GetStoneAndDiagonalNeighbours().Where(n => tryBoard[n] != c).Select(n => new { kgroup = GroupHelper.GetKillerGroupFromCache(tryBoard, n, c) }).Any(n => n.kgroup != null && n.kgroup.Points.Any(q => tryBoard[q] == c.Opposite())))
                 return false;
 
             //check eye or tiger mouth at stone and diagonal
@@ -1878,7 +1878,7 @@ namespace Go
                 if (atariTargets.Count != 1) return false;
                 Group atariTarget = atariTargets.First();
                 if (!KoHelper.IsKoFight(tryBoard, atariTarget)) return false;
-                if (BothAliveHelper.GetKillerGroupFromCache(tryBoard, atariTarget.Points.First(), c) == null) return false;
+                if (GroupHelper.GetKillerGroupFromCache(tryBoard, atariTarget.Points.First(), c) == null) return false;
                 return true;
             }
             return false;
@@ -1898,7 +1898,7 @@ namespace Go
         public static void RestoreNeutralMove(Game currentGame, List<GameTryMove> tryMoves, List<GameTryMove> neutralPointMoves)
         {
             //Remove moves that are within killer group
-            neutralPointMoves.RemoveAll(n => n.TryGame.Board.MoveGroupLiberties == 1 || BothAliveHelper.GetKillerGroupFromCache(n.TryGame.Board, n.Move) != null);
+            neutralPointMoves.RemoveAll(n => n.TryGame.Board.MoveGroupLiberties == 1 || GroupHelper.GetKillerGroupFromCache(n.TryGame.Board, n.Move) != null);
 
             if (neutralPointMoves.Count == 0) return;
             GameTryMove genericNeutralMove = null;
@@ -2015,7 +2015,7 @@ namespace Go
         public static GameTryMove GetSpecificNeutralMove(Game g, List<GameTryMove> neutralPointMoves)
         {
             GameTryMove gameTryMove;
-            List<Group> killerGroups = BothAliveHelper.GetCorneredKillerGroup(g.Board);
+            List<Group> killerGroups = GroupHelper.GetKillerGroups(g.Board, Content.Unknown, true);
             if (IsImmovableKill(g, killerGroups))
                 gameTryMove = SpecificKillWithImmovablePoints(g.Board, neutralPointMoves, killerGroups[0]);
             else
@@ -2156,7 +2156,7 @@ namespace Go
                 //ensure more than one liberty
                 if (tryMove.TryGame.Board.MoveGroupLiberties == 1) continue;
                 //exclude try moves within killer group
-                if (BothAliveHelper.GetKillerGroupFromCache(tryBoard, tryMove.Move, c.Opposite()) != null)
+                if (GroupHelper.GetKillerGroupFromCache(tryBoard, tryMove.Move, c.Opposite()) != null)
                     continue;
 
                 //target group already targeted by other try moves
@@ -2178,7 +2178,7 @@ namespace Go
         public static GameTryMove GetGenericNeutralMove(Game g, List<GameTryMove> tryMoves, List<GameTryMove> neutralPointMoves)
         {
             //check for killer group
-            List<Group> killerGroups = BothAliveHelper.GetCorneredKillerGroup(g.Board, false);
+            List<Group> killerGroups = GroupHelper.GetKillerGroups(g.Board);
             if (killerGroups.Count == 0) return null;
             Group killerGroup = killerGroups[0];
 
@@ -2285,10 +2285,10 @@ namespace Go
             //check corner three and possible corner three formation
             if (KillerFormationHelper.CornerThreeFormation(tryBoard, tryBoard.MoveGroup) || KillerFormationHelper.PossibleCornerThreeFormation(currentBoard, move, c.Opposite())) return false;
 
-            Group moveKillerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
+            Group moveKillerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
             foreach (Point eyePoint in eyePoints)
             {
-                Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, eyePoint, c.Opposite());
+                Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, eyePoint, c.Opposite());
                 //opponent move at tiger mouth
                 if (opponentMove != null)
                 {
@@ -2419,7 +2419,7 @@ namespace Go
             if (diagonals.Count == 0)
                 return false;
 
-            diagonals.RemoveAll(d => BothAliveHelper.GetKillerGroupFromCache(currentBoard, d, c) == null);
+            diagonals.RemoveAll(d => GroupHelper.GetKillerGroupFromCache(currentBoard, d, c) == null);
             if (diagonals.Count == 0) return false;
             //check diagonals are real eyes
             if (diagonals.All(eye => RealEyeAtDiagonal(tryMove, eye)))
@@ -2465,7 +2465,7 @@ namespace Go
             Content c = tryMove.MoveContent;
 
             //check if eye is within enclosed killer group
-            Group eyeGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, eye, c);
+            Group eyeGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, eye, c);
             if (eyeGroup == null) return false;
 
             //find real eye
@@ -2523,7 +2523,7 @@ namespace Go
             Content c = tryMove.MoveContent;
             if (!tryMove.IsNegligible || tryBoard.IsAtariMove)
                 return false;
-            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, move, c);
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c);
 
 
             //check if any move in killer group
@@ -2544,7 +2544,7 @@ namespace Go
             Content c = tryMove.MoveContent;
             if (!tryMove.IsNegligible || tryBoard.IsAtariMove)
                 return false;
-            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
 
             GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
             if (opponentMove == null) return false;
@@ -2604,7 +2604,7 @@ namespace Go
             //check if killer group created with opposite content within the group
             if (tryMove.IncreasedKillerGroups)
             {
-                IEnumerable<Group> createdGroups = BothAliveHelper.GetCorneredKillerGroup(tryBoard, c, false).Except(BothAliveHelper.GetCorneredKillerGroup(tryMove.CurrentGame.Board, c, false));
+                IEnumerable<Group> createdGroups = GroupHelper.GetKillerGroups(tryBoard, c).Except(GroupHelper.GetKillerGroups(tryMove.CurrentGame.Board, c));
                 if (createdGroups.Any(group => group.Points.Any(p => tryBoard[p] == group.Content)))
                     return false;
             }
@@ -2808,7 +2808,7 @@ namespace Go
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
             if (!tryMove.IsNegligible) return false;
-            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(currentBoard, move, c);
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c);
             if (killerGroup == null)
                 return false;
 
@@ -2908,7 +2908,7 @@ namespace Go
                 if (opponentMove == null) return false;
                 Board opponentBoard = opponentMove.TryGame.Board;
                 c = opponentBoard.MoveGroup.Content;
-                Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(opponentBoard, move, c.Opposite());
+                Group killerGroup = GroupHelper.GetKillerGroupFromCache(opponentBoard, move, c.Opposite());
                 if (killerGroup == null) return false;
                 eyePoints = opponentBoard.GetStoneNeighbours().Where(n => EyeHelper.FindNonSemiSolidEye(opponentBoard, n, c)).ToList();
                 if (eyePoints.Count == 0) return false;

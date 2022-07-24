@@ -253,38 +253,6 @@
             Check if any ko atari by neighbour groups. Exclude point for double ko check to find other ko.
             </summary>
         </member>
-        <member name="M:Go.BothAliveHelper.GetCorneredKillerGroup(Go.Board,Go.Content,System.Boolean)">
-            <summary>
-            Get killer group fully surrounded by survival stones. Content in parameter refer to target content (usually survival). 
-            </summary>
-        </member>
-        <member name="M:Go.BothAliveHelper.GetCorneredGroup(Go.Board,Go.Content)">
-            <summary>
-            Get cornered group fully surrounded by opponent.
-            Remove where group is covered eye <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30005" />
-            </summary>
-        </member>
-        <member name="M:Go.BothAliveHelper.CheckNeighbourGroupsOfKillerGroup(Go.Board,Go.Group)">
-            <summary>
-            Ensure neighbour groups of killer group are diagonal groups.
-            </summary>
-        </member>
-        <member name="M:Go.BothAliveHelper.GetKillerGroupFromCache(Go.Board,Go.Point,Go.Content)">
-            <summary>
-            Get killer group cached in board for single point.
-            </summary>
-        </member>
-        <member name="M:Go.BothAliveHelper.GetKillerGroupForKillerRole(Go.Board,Go.Point,Go.Content)">
-            <summary>
-            Get killer group for killer role.
-            Survival in killer role <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3" />
-            </summary>
-        </member>
-        <member name="M:Go.BothAliveHelper.IsLibertyGroup(Go.Group,Go.Board)">
-            <summary>
-            Liberty group requires at least two content points and two empty points.
-            </summary>
-        </member>
         <member name="M:Go.BothAliveHelper.EnableCheckForPassMove(Go.Board,Go.Content,System.Collections.Generic.List{Go.GameTryMove})">
             <summary>
             Add pass move to survival try moves if enabled, in order to check for both alive. Ensure no other try move present other than those within killer group.
@@ -515,6 +483,32 @@
             <summary>
             Get specific board from last moves based on moveCount parameter.
             Requires that the root of the game starts from initial setup.
+            </summary>
+        </member>
+        <member name="M:Go.GroupHelper.GetKillerGroups(Go.Board,Go.Content,System.Boolean)">
+            <summary>
+            Get killer group fully surrounded by survival stones. Content in parameter refer to target content (usually survival). 
+            </summary>
+        </member>
+        <member name="M:Go.GroupHelper.GetAllKillerGroups(Go.Board,Go.Content)">
+            <summary>
+            Get cornered group fully surrounded by opponent.
+            Remove where group is covered eye <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30005" />
+            </summary>
+        </member>
+        <member name="M:Go.GroupHelper.CheckNeighbourGroupsOfKillerGroup(Go.Board,Go.Group)">
+            <summary>
+            Ensure neighbour groups of killer group are diagonal groups.
+            </summary>
+        </member>
+        <member name="M:Go.GroupHelper.GetKillerGroupFromCache(Go.Board,Go.Point,Go.Content)">
+            <summary>
+            Get killer group cached in board for single point.
+            </summary>
+        </member>
+        <member name="M:Go.GroupHelper.IsLibertyGroup(Go.Group,Go.Board)">
+            <summary>
+            Liberty group requires at least two content points and two empty points.
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.SinglePointOpponentImmovable(Go.GameTryMove)">
@@ -1036,7 +1030,7 @@
             Double atari <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30358" /> 
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" /> 
             Check for weak eye group <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_B28" />
-            Check both alive <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_SimpleSeki" /> 
+            Check both alive <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_SimpleSeki" /> 
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_2" /> 
             Check break link <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WuQingYuan_Q31657" /> 
             Ensure group more than one point have more than one liberty <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Nie20" /> 

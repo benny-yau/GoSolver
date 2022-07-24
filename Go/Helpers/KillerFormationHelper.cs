@@ -131,7 +131,7 @@ namespace Go
             //allow two-point group without real eye
             if (tryBoard.MoveGroup.Points.Count <= 2)
             {
-                Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(b, move, c.Opposite());
+                Group killerGroup = GroupHelper.GetKillerGroupFromCache(b, move, c.Opposite());
                 if (killerGroup != null && killerGroup.Points.Count <= 2 && !EyeHelper.FindRealEyeWithinEmptySpace(b, killerGroup))
                     return false;
             }
@@ -144,11 +144,11 @@ namespace Go
             if (CheckCornerKoMoveForRealEye(tryBoard))
                 return false;
 
-            Group moveKillerGroup = BothAliveHelper.GetKillerGroupFromCache(b, move, c.Opposite());
+            Group moveKillerGroup = GroupHelper.GetKillerGroupFromCache(b, move, c.Opposite());
             if (moveKillerGroup == null) moveKillerGroup = tryBoard.MoveGroup;
 
             //get all killer groups except move killer group
-            List<Group> killerGroups = BothAliveHelper.GetCorneredKillerGroup(b, c.Opposite(), false);
+            List<Group> killerGroups = GroupHelper.GetKillerGroups(b, c.Opposite());
             List<Group> neighbourGroups = b.GetNeighbourGroups(moveKillerGroup);
 
             if (neighbourGroups.Any(group => WallHelper.IsNonKillableGroup(b, group)))
@@ -332,7 +332,7 @@ namespace Go
             int moveCount = tryBoard.MoveGroup.Points.Count;
             Point move = tryBoard.Move.Value;
             Content c = tryBoard[move];
-            Group killerGroup = BothAliveHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
             //killer group contains only one more empty space
             if (killerGroup != null && killerGroup.Points.Count == moveCount + 1)
             {
@@ -894,7 +894,7 @@ namespace Go
             list = list.OrderBy(m => ((dynamic)m.CheckMove).maxLengthOfGrid).OrderByDescending(m => ((dynamic)m.CheckMove).maxIntersect).OrderBy(m => ((dynamic)m.CheckMove).minNeighbourLiberties).OrderBy(m => ((dynamic)m.CheckMove).minNeighbourPointCount).ToList();
 
             //check for dead formation
-            List<Group> killerGroups = BothAliveHelper.GetCorneredKillerGroup(currentBoard, c.Opposite(), false);
+            List<Group> killerGroups = GroupHelper.GetKillerGroups(currentBoard, c.Opposite());
             Group killerGroup = killerGroups.First();
             foreach (LinkedPoint<Point> p in list)
             {

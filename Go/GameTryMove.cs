@@ -138,8 +138,8 @@ namespace Go
         public static Boolean IncreaseKillerGroups(Board tryBoard, Board currentBoard)
         {
             Content c = tryBoard.MoveGroup.Content;
-            int tryCount = BothAliveHelper.GetCorneredKillerGroup(tryBoard, false, c).Count;
-            int currentCount = BothAliveHelper.GetCorneredKillerGroup(currentBoard, false, c).Count;
+            int tryCount = GroupHelper.GetKillerGroups(tryBoard, c).Count;
+            int currentCount = GroupHelper.GetKillerGroups(currentBoard, c).Count;
             return (tryCount > currentCount);
         }
 

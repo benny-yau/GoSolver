@@ -7,144 +7,6 @@ namespace Go
     public class BothAliveHelper
     {
         /// <summary>
-        /// Get killer group fully surrounded by survival stones. Content in parameter refer to target content (usually survival). 
-        /// </summary>
-        public static List<Group> GetCorneredKillerGroup(Board board, Content content, Boolean checkLiberties = true)
-        {
-            List<Group> killerGroups = null;
-            if (board.CorneredKillerGroup == null || !board.CorneredKillerGroup.ContainsKey(content))
-            {
-                //get cornered group
-                killerGroups = GetCorneredGroup(board, content);
-                if (killerGroups.Count > 0)
-                {
-                    //cache groups in board
-                    if (board.CorneredKillerGroup == null)
-                        board.CorneredKillerGroup = new Dictionary<Content, List<Group>>();
-                    board.CorneredKillerGroup.Add(content, killerGroups);
-                }
-            }
-            else
-            {
-                //retrieve from cache
-                killerGroups = board.CorneredKillerGroup[content];
-            }
-
-            if (checkLiberties)
-            {
-                //ensure group contain two liberties
-                if (killerGroups.Count > 0 && !IsLibertyGroup(killerGroups.First(), board))
-                    return new List<Group>();
-            }
-            return killerGroups;
-        }
-
-        public static List<Group> GetCorneredKillerGroup(Board m, Boolean checkLiberties = true, Content c = Content.Unknown)
-        {
-            if (c == Content.Unknown)
-                c = GameHelper.GetContentForSurviveOrKill(m.GameInfo, SurviveOrKill.Survive);
-            return GetCorneredKillerGroup(m, c, checkLiberties);
-        }
-
-
-        /// <summary>
-        /// Get cornered group fully surrounded by opponent.
-        /// Remove where group is covered eye <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30005" />
-        /// </summary>
-        public static List<Group> GetCorneredGroup(Board board, Content content)
-        {
-            List<Group> killerGroups = new List<Group>();
-            Board filledBoard = new Board(board);
-            //cover all empty points
-            GameInfo gameInfo = board.GameInfo;
-            Boolean isKill = (GameHelper.GetContentForSurviveOrKill(gameInfo, SurviveOrKill.Kill) == content.Opposite());
-            List<Point> coverPoints = (isKill) ? gameInfo.killMovablePoints : gameInfo.movablePoints;
-            List<Point> emptyPoints = coverPoints.Where(p => filledBoard[p] == Content.Empty).ToList();
-            emptyPoints.ForEach(p => filledBoard[p] = content.Opposite());
-
-            HashSet<Group> groups = filledBoard.GetGroupsFromPoints(emptyPoints);
-            foreach (Group group in groups)
-            {
-                //find killer groups with no liberties left
-                if (group.Liberties.Count == 0)
-                {
-                    if (!CheckNeighbourGroupsOfKillerGroup(filledBoard, group).Item1) continue;
-                    if (IsLibertyGroup(group, board))
-                    {
-                        //return as liberty group as first group
-                        killerGroups.Insert(0, group);
-                        continue;
-                    }
-                    killerGroups.Add(group);
-                }
-            }
-
-            Board clearedBoard = new Board(board);
-            //clear all killer groups with empty points
-            killerGroups.ForEach(group => group.Points.ToList().ForEach(p => clearedBoard[p] = Content.Empty));
-            //remove where group is covered eye (or false eye)
-            killerGroups.RemoveAll(group => group.Points.Count <= 2 && !EyeHelper.FindRealEyeWithinEmptySpace(clearedBoard, group, EyeType.UnCoveredEye));
-            return killerGroups;
-        }
-
-
-        /// <summary>
-        /// Ensure neighbour groups of killer group are diagonal groups.
-        /// </summary>
-        public static (Boolean, List<Group>) CheckNeighbourGroupsOfKillerGroup(Board board, Group killerGroup)
-        {
-            List<Group> neighbourGroups = board.GetNeighbourGroups(killerGroup);
-            //remove groups surrounded by killer group
-            neighbourGroups.RemoveAll(group => group.Neighbours.All(n => board[n] == killerGroup.Content && board.GetGroupAt(n) == killerGroup));
-            if (neighbourGroups.Count == 0) return (false, null);
-            if (neighbourGroups.Count == 1) return (true, neighbourGroups);
-            //get all diagonal groups
-            List<Group> diagonalGroups = LinkHelper.GetAllDiagonalGroups(board, neighbourGroups.First());
-            if (neighbourGroups.Except(diagonalGroups).Any())
-                return (false, null);
-            return (true, neighbourGroups);
-        }
-
-        /// <summary>
-        /// Get killer group cached in board for single point.
-        /// </summary>
-        public static Group GetKillerGroupFromCache(Board board, Point p, Content c = Content.Unknown)
-        {
-            c = (c == Content.Unknown) ? GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive) : c;
-            List<Group> groups = GetCorneredKillerGroup(board, c, false);
-            Group group = groups.FirstOrDefault(g => g.Points.Contains(p));
-            if (group == null) return null;
-            return (c == group.Content.Opposite()) ? group : null;
-        }
-
-        /// <summary>
-        /// Get killer group for killer role.
-        /// Survival in killer role <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3" />
-        /// </summary>
-        public static Group GetKillerGroupForKillerRole(Board board, Point p, Content c)
-        {
-            List<Group> groups = GetCorneredGroup(board, c);
-            Group group = groups.FirstOrDefault(g => g.Points.Contains(p));
-            if (group == null) return null;
-
-            List<Group> killerGroups = GetCorneredGroup(board, c.Opposite());
-            Group killerGroup = killerGroups.FirstOrDefault(g => g.Points.Contains(p));
-            if (killerGroup == null) return group;
-            if (killerGroup != null && group.Points.Count < killerGroup.Points.Count) return group;
-            return null;
-        }
-
-        /// <summary>
-        /// Liberty group requires at least two content points and two empty points.
-        /// </summary>
-        private static Boolean IsLibertyGroup(Group group, Board board)
-        {
-            if (group.Content == Content.Empty) return false;
-            return (group.Points.Count(t => board[t] == group.Content) >= 2 && group.Points.Count(t => board[t] == Content.Empty) >= 2);
-        }
-
-
-        /// <summary>
         /// Add pass move to survival try moves if enabled, in order to check for both alive. Ensure no other try move present other than those within killer group.
         /// Enable pass move for ten thousand year ko as well.
         /// For simple seki which is usually the case, find one killer group with at least two liberties, and one survival neighbour group with at least two liberties. Simple seki <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_SimpleSeki" />
@@ -159,7 +21,7 @@ namespace Go
         public static Boolean EnableCheckForPassMove(Board board, Content c = Content.Unknown, List<GameTryMove> tryMoves = null)
         {
             c = (c == Content.Unknown) ? GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive) : c;
-            List<Group> killerGroups = GetCorneredKillerGroup(board, c);
+            List<Group> killerGroups = GroupHelper.GetKillerGroups(board, c, true);
             if (killerGroups.Count == 0) return false;
 
             Group killerGroup = killerGroups[0];
@@ -181,7 +43,7 @@ namespace Go
 
             //ensure at least two liberties in survival neighbour group
             List<Group> targetGroups = board.GetNeighbourGroups(killerGroup);
-            if (targetGroups.Any(g => g.Liberties.Count == 1 && BothAliveHelper.GetKillerGroupFromCache(board, g.Points.First(), g.Content.Opposite()) == null))
+            if (targetGroups.Any(g => g.Liberties.Count == 1 && GroupHelper.GetKillerGroupFromCache(board, g.Points.First(), g.Content.Opposite()) == null))
                 return false;
 
             //fill eye points with content
@@ -226,7 +88,7 @@ namespace Go
                 List<Group> complexSekiGroups = new List<Group>();
                 foreach (Group diagonalGroup in diagonalGroups)
                 {
-                    Group diagonalKillerGroup = BothAliveHelper.GetKillerGroupFromCache(board, diagonalGroup.Points.First(), killerGroup.Content);
+                    Group diagonalKillerGroup = GroupHelper.GetKillerGroupFromCache(board, diagonalGroup.Points.First(), killerGroup.Content);
                     if (diagonalKillerGroup == null) continue;
                     List<Group> cutKillerGroups = killerGroups.Where(g => diagonalKillerGroup.Points.Contains(g.Points.First())).ToList();
                     List<Group> cutTargetGroups = targetGroups.Where(group => diagonalKillerGroup.Points.Contains(group.Points.First())).ToList();
@@ -330,7 +192,7 @@ namespace Go
                 return false;
 
             //ensure at least two liberties within killer group in survival neighbour group
-            if (targetGroups.Any(n => n.Liberties.Count(p => GetKillerGroupFromCache(board, p, c.Opposite()) != null) < 2))
+            if (targetGroups.Any(n => n.Liberties.Count(p => GroupHelper.GetKillerGroupFromCache(board, p, c.Opposite()) != null) < 2))
                 return false;
             //find uncovered eye
             if (FindUncoveredEyeInComplexSeki(board, killerGroups))

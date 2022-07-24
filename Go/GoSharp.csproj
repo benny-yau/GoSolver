@@ -91,6 +91,7 @@
     <Compile Include="Helpers\DirectionHelper.cs" />
     <Compile Include="Helpers\EyeHelper.cs" />
     <Compile Include="Helpers\GameHelper.cs" />
+    <Compile Include="Helpers\GroupHelper.cs" />
     <Compile Include="Helpers\ImmovableHelper.cs" />
     <Compile Include="Helpers\KillerFormationHelper.cs" />
     <Compile Include="Helpers\KoHelper.cs" />

@@ -85,13 +85,13 @@ namespace Go
         private static Boolean ResultBothAlive(Game g)
         {
             //ensure all liberties are in killer groups
-            List<Group> killerGroups = BothAliveHelper.GetCorneredKillerGroup(g.Board);
+            List<Group> killerGroups = GroupHelper.GetKillerGroups(g.Board, Content.Unknown, true);
             if (killerGroups.Count == 0) return false;
             List<Point> targets = LifeCheck.GetTargets(g.Board, g.GameInfo.targetPoints);
             foreach (Point target in targets)
             {
                 HashSet<Point> liberties = g.Board.GetGroupAt(target).Liberties;
-                if (liberties.All(liberty => BothAliveHelper.GetKillerGroupFromCache(g.Board, liberty) != null))
+                if (liberties.All(liberty => GroupHelper.GetKillerGroupFromCache(g.Board, liberty) != null))
                     return true;
             }
             return false;

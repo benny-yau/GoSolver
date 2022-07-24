@@ -448,11 +448,8 @@ namespace Go
             //restore redundant ko
             RestoreRedundantKo(tryMoves, redundantTryMoves);
 
-            //check for ten thousand year ko scenario
-            if (UniquePatternsHelper.CheckForTenThousandYearKo(currentGame))
-                tryMoves.Clear();
-            else //create random move
-                CreateRandomMove(tryMoves, currentGame, SurviveOrKill.Kill);
+            //create random move
+            CreateRandomMove(tryMoves, currentGame, SurviveOrKill.Kill);
 
             PrintGameMoveList(tryMoves, redundantTryMoves, currentGame);
 
@@ -481,15 +478,15 @@ namespace Go
             {
                 //double ko / killer ko within killer group
                 if (groups.First().Liberties.Count != 2) return;
-                if (currentBoard[eyePoint.Value] == c.Opposite() && BothAliveHelper.GetKillerGroupFromCache(currentBoard, eyePoint.Value, c) != null)
+                if (currentBoard[eyePoint.Value] == c.Opposite() && GroupHelper.GetKillerGroupFromCache(currentBoard, eyePoint.Value, c) != null)
                     tryMoves.Add(koMove);
                 return;
             }
             //end ko
             //find trapped group within killer group
-            Group trappedGroup = groups.FirstOrDefault(gr => BothAliveHelper.GetKillerGroupFromCache(currentBoard, gr.Points.First(), c.Opposite()) != null);
+            Group trappedGroup = groups.FirstOrDefault(gr => GroupHelper.GetKillerGroupFromCache(currentBoard, gr.Points.First(), c.Opposite()) != null);
             if (trappedGroup == null) return;
-            Boolean separateGroup = groups.Any(gr => gr != trappedGroup && BothAliveHelper.GetKillerGroupFromCache(currentBoard, gr.Points.First(), c.Opposite()) != BothAliveHelper.GetKillerGroupFromCache(currentBoard, trappedGroup.Points.First(), c.Opposite()));
+            Boolean separateGroup = groups.Any(gr => gr != trappedGroup && GroupHelper.GetKillerGroupFromCache(currentBoard, gr.Points.First(), c.Opposite()) != GroupHelper.GetKillerGroupFromCache(currentBoard, trappedGroup.Points.First(), c.Opposite()));
             if (!separateGroup) return;
             tryMoves.Add(koMove);
         }
