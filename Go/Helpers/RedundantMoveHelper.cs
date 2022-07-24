@@ -248,7 +248,7 @@ namespace Go
                     return false;
 
                 //check both alive
-                if (BothAliveHelper.EnableCheckForPassMove(tryBoard))
+                if (BothAliveHelper.EnableCheckForPassMove(tryBoard, c))
                     return false;
 
                 //check break link
@@ -647,7 +647,7 @@ namespace Go
             }
 
             //check for both alive
-            if (BothAliveHelper.EnableCheckForPassMove(tryBoard)) return false;
+            if (BothAliveHelper.EnableCheckForPassMove(tryBoard, c)) return false;
 
             if (WallHelper.IsNonKillableGroup(tryBoard)) //set neutral point move
                 tryMove.IsNeutralPoint = true;
@@ -1227,6 +1227,7 @@ namespace Go
         /// Diagonal neighbours that are non killable groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17160" />
         /// Opponent suicide <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_A25" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A55" />
+        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_Nie67" />
         /// Check real eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17132_3" />
         /// </summary>
         private static Boolean RedundantSuicideNearNonKillableGroup(GameTryMove tryMove, Board capturedBoard, GameTryMove opponentTryMove = null)
@@ -1244,7 +1245,7 @@ namespace Go
             //opponent suicide
             if (opponentTryMove != null)
             {
-                if (SuicideAtBigTigerMouth(opponentTryMove).Item1 || BothAliveHelper.EnableCheckForPassMove(opponentTryMove.TryGame.Board))
+                if (SuicideAtBigTigerMouth(opponentTryMove).Item1 || BothAliveHelper.EnableCheckForPassMove(opponentTryMove.TryGame.Board, c.Opposite()))
                     return false;
             }
 
@@ -2250,7 +2251,8 @@ namespace Go
         /// Check two point atari move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" />
         /// Check corner three formation <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_Q18860" />
         /// Check possible corner three formation <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WuQingYuan_Q31503_2" />
-        /// Opponent move at tiger mouth <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A151_101Weiqi_2" />
+        /// Opponent move at tiger mouth <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A151_101Weiqi" />
+        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_Nie67" />
         /// Check for strong neighbour groups <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario3dan22" />
         /// Check for suicide at big tiger mouth <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_Corner_A87" />
@@ -2292,7 +2294,7 @@ namespace Go
                 {
                     if (killerGroup != null || ImmovableHelper.IsImmovablePoint(eyePoint, c.Opposite(), currentBoard).Item1)
                     {
-                        if (SuicideAtBigTigerMouth(opponentMove).Item1 || BothAliveHelper.EnableCheckForPassMove(opponentMove.TryGame.Board))
+                        if (SuicideAtBigTigerMouth(opponentMove).Item1 || BothAliveHelper.EnableCheckForPassMove(opponentMove.TryGame.Board, c.Opposite()))
                             continue;
                         return true;
                     }

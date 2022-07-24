@@ -156,9 +156,10 @@ namespace Go
         /// Ensure shared liberty suicidal for killer <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31445" />
         /// </summary>
-        public static Boolean EnableCheckForPassMove(Board board, List<GameTryMove> tryMoves = null)
+        public static Boolean EnableCheckForPassMove(Board board, Content c = Content.Unknown, List<GameTryMove> tryMoves = null)
         {
-            List<Group> killerGroups = GetCorneredKillerGroup(board);
+            c = (c == Content.Unknown) ? GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive) : c;
+            List<Group> killerGroups = GetCorneredKillerGroup(board, c);
             if (killerGroups.Count == 0) return false;
 
             Group killerGroup = killerGroups[0];

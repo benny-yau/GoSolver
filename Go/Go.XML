@@ -285,7 +285,7 @@
             Liberty group requires at least two content points and two empty points.
             </summary>
         </member>
-        <member name="M:Go.BothAliveHelper.EnableCheckForPassMove(Go.Board,System.Collections.Generic.List{Go.GameTryMove})">
+        <member name="M:Go.BothAliveHelper.EnableCheckForPassMove(Go.Board,Go.Content,System.Collections.Generic.List{Go.GameTryMove})">
             <summary>
             Add pass move to survival try moves if enabled, in order to check for both alive. Ensure no other try move present other than those within killer group.
             Enable pass move for ten thousand year ko as well.
@@ -1274,6 +1274,7 @@
             Diagonal neighbours that are non killable groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17160" />
             Opponent suicide <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_A25" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A55" />
+            <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_Nie67" />
             Check real eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17132_3" />
             </summary>
         </member>
@@ -1505,7 +1506,8 @@
             Check two point atari move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" />
             Check corner three formation <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_Q18860" />
             Check possible corner three formation <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WuQingYuan_Q31503_2" />
-            Opponent move at tiger mouth <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A151_101Weiqi_2" />
+            Opponent move at tiger mouth <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A151_101Weiqi" />
+            <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_Nie67" />
             Check for strong neighbour groups <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario3dan22" />
             Check for suicide at big tiger mouth <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_Corner_A87" />

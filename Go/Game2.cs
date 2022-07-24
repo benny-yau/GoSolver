@@ -151,7 +151,7 @@ namespace Go
             //check for bent four and both alive scenarios
             if (UniquePatternsHelper.CheckForBentFour(currentGame, tryMoves))
                 tryMoves.Clear();
-            else if (BothAliveHelper.EnableCheckForPassMove(currentGame.Board, tryMoves))
+            else if (BothAliveHelper.EnableCheckForPassMove(currentGame.Board, content, tryMoves))
                 tryMoves.Add(BothAliveHelper.AddPassMove(currentGame));
             else if (tryMoves.Count == 0 && redundantTryMoves.Any(move => move.IsDiagonalEyeMove))
                 tryMoves.Add(redundantTryMoves.First(move => move.IsDiagonalEyeMove));
