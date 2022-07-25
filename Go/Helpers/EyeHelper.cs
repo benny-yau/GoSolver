@@ -112,7 +112,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Check for covered eye with one or more liberties for suicide group.
+        /// Check for two-point covered eye for suicide group.
         /// </summary>
         public static Boolean CheckCoveredEyeAtSuicideGroup(Board tryBoard, Group group = null)
         {
@@ -138,12 +138,12 @@ namespace Go
         }
 
         /// <summary>
-        /// Suicide at covered eye.
+        /// Two-point suicide at covered eye.
         /// Make move at the other empty point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B57" />
         /// Check for killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16424_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499_2" />
         /// </summary>
-        public static Boolean SuicideAtCoveredEye(Board capturedBoard, Board tryBoard)
+        public static Boolean TwoPointSuicideAtCoveredEye(Board capturedBoard, Board tryBoard)
         {
             if (capturedBoard == null || tryBoard == null) return false;
             Point move = tryBoard.Move.Value;
@@ -154,21 +154,19 @@ namespace Go
             {
                 if (group.Points.Count != 2) continue;
                 //make move again at last move
-                Board board = capturedBoard.MakeMoveOnNewBoard(move, c.Opposite());
-                if (board == null) continue;
+                Board b = capturedBoard.MakeMoveOnNewBoard(move, c.Opposite());
+                if (b == null) continue;
                 //capture move and find covered eye
-                Board b = ImmovableHelper.CaptureSuicideGroup(board);
-                if (b != null && FindCoveredEye(b, move, c))
+                if (EyeHelper.FindCoveredEyeByCapture(b))
                     return true;
                 //check for killer group
                 if (killerGroup == null) continue;
                 if (!tryBoard.GetStoneNeighbours().Any(p => tryBoard[p] == Content.Empty)) continue;
                 //make move at the other empty point
                 Point move2 = group.Points.First(p => !p.Equals(move));
-                Board board2 = capturedBoard.MakeMoveOnNewBoard(move2, c.Opposite());
-                if (board2 == null) continue;
-                Board b2 = ImmovableHelper.CaptureSuicideGroup(board2);
-                if (b2 != null && FindCoveredEye(b2, move2, c))
+                Board b2 = capturedBoard.MakeMoveOnNewBoard(move2, c.Opposite());
+                if (b2 == null) continue;
+                if (EyeHelper.FindCoveredEyeByCapture(b2))
                     return true;
             }
             return false;

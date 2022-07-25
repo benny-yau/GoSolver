@@ -2480,7 +2480,10 @@ namespace Go
                 return true;
             }
 
-            if (DiagonalRedundancy(tryMove, eye, eyeGroup))
+            if (EyeHelper.RealEyeOfDiagonallyConnectedGroups(killerBoard, eyeGroup))
+                return true;
+
+            if (TwoPointDiagonalRedundancy(tryMove, eye, eyeGroup))
                 return true;
 
             return false;
@@ -2490,7 +2493,7 @@ namespace Go
         /// Redundant eye diagonal move.
         /// Two point empty group <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_XuanXuanGo_Q18331" />
         /// </summary>
-        private static Boolean DiagonalRedundancy(GameTryMove tryMove, Point eye, Group eyeGroup)
+        private static Boolean TwoPointDiagonalRedundancy(GameTryMove tryMove, Point eye, Group eyeGroup)
         {
             Board currentBoard = tryMove.CurrentGame.Board;
             int eyeGroupCount = eyeGroup.Points.Count;
@@ -3040,7 +3043,9 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A62" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Nie20" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q2413" /> 
-        /// Real eye at diagonal <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi" /> 
+        /// Real eye at diagonal <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WuQingYuan_Q30982" /> 
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" /> 
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_2" /> 
         /// Check break link <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30152" /> 
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q30152" /> 
         /// </summary>

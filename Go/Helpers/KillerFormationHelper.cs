@@ -223,7 +223,7 @@ namespace Go
             {
                 //covered eye
                 if (EyeHelper.CheckCoveredEyeAtSuicideGroup(tryBoard))
-                    return EyeHelper.SuicideAtCoveredEye(capturedBoard, tryBoard);
+                    return EyeHelper.TwoPointSuicideAtCoveredEye(capturedBoard, tryBoard);
 
                 //two-point move with empty point
                 if (tryBoard.GetStoneNeighbours().Any(p => tryBoard[p] == Content.Empty))
@@ -337,7 +337,7 @@ namespace Go
             if (killerGroup != null && killerGroup.Points.Count == moveCount + 1)
             {
                 //covered eye
-                if (moveCount == 2 && EyeHelper.SuicideAtCoveredEye(capturedBoard, tryBoard))
+                if (moveCount == 2 && EyeHelper.TwoPointSuicideAtCoveredEye(capturedBoard, tryBoard))
                     return true;
 
                 //whole survival group dying

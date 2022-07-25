@@ -72,12 +72,14 @@ namespace Go
                     killerGroups.Add(group);
                 }
             }
-
-            Board clearedBoard = new Board(board);
-            //clear all killer groups with empty points
-            killerGroups.ForEach(group => group.Points.ToList().ForEach(p => clearedBoard[p] = Content.Empty));
-            //remove where group is covered eye (or false eye)
-            killerGroups.RemoveAll(group => group.Points.Count <= 2 && !EyeHelper.FindRealEyeWithinEmptySpace(clearedBoard, group, EyeType.UnCoveredEye));
+            if (killerGroups.Any(group => group.Points.Count <= 2))
+            {
+                Board clearedBoard = new Board(board);
+                //clear all killer groups with empty points
+                killerGroups.ForEach(group => group.Points.ToList().ForEach(p => clearedBoard[p] = Content.Empty));
+                //remove where group is covered eye (or false eye)
+                killerGroups.RemoveAll(group => group.Points.Count <= 2 && !EyeHelper.FindRealEyeWithinEmptySpace(clearedBoard, group, EyeType.UnCoveredEye));
+            }
             return killerGroups;
         }
 

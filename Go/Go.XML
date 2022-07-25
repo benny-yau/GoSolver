@@ -382,7 +382,7 @@
         </member>
         <member name="M:Go.EyeHelper.CheckCoveredEyeAtSuicideGroup(Go.Board,Go.Group)">
             <summary>
-            Check for covered eye with one or more liberties for suicide group.
+            Check for two-point covered eye for suicide group.
             </summary>
         </member>
         <member name="M:Go.EyeHelper.FindNonSemiSolidEye(Go.Board,Go.Point,Go.Content)">
@@ -390,9 +390,9 @@
             Find eye that is not semi solid eye.
             </summary>
         </member>
-        <member name="M:Go.EyeHelper.SuicideAtCoveredEye(Go.Board,Go.Board)">
+        <member name="M:Go.EyeHelper.TwoPointSuicideAtCoveredEye(Go.Board,Go.Board)">
             <summary>
-            Suicide at covered eye.
+            Two-point suicide at covered eye.
             Make move at the other empty point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B57" />
             Check for killer group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16424_2" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499_2" />
@@ -492,7 +492,7 @@
         </member>
         <member name="M:Go.GroupHelper.GetAllKillerGroups(Go.Board,Go.Content)">
             <summary>
-            Get cornered group fully surrounded by opponent.
+            Get killer groups fully surrounded by opponent.
             Remove where group is covered eye <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30005" />
             </summary>
         </member>
@@ -1546,7 +1546,7 @@
             <see cref="!:UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_WuQingYuan_Q30982" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.DiagonalRedundancy(Go.GameTryMove,Go.Point,Go.Group)">
+        <member name="M:Go.RedundantMoveHelper.TwoPointDiagonalRedundancy(Go.GameTryMove,Go.Point,Go.Group)">
             <summary>
             Redundant eye diagonal move.
             Two point empty group <see cref="!:UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_XuanXuanGo_Q18331" />
@@ -1710,7 +1710,9 @@
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A62" /> 
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Nie20" /> 
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q2413" /> 
-            Real eye at diagonal <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi" /> 
+            Real eye at diagonal <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WuQingYuan_Q30982" /> 
+            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" /> 
+            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_2" /> 
             Check break link <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30152" /> 
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q30152" /> 
             </summary>

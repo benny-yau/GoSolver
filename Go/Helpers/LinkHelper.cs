@@ -452,7 +452,6 @@ namespace Go
             //get neighbour groups of move
             List<Point> groupPoints = currentBoard.GetStoneAndDiagonalNeighbours(move).Where(n => currentBoard[n] == c).ToList();
             List<Group> groups = currentBoard.GetGroupsFromPoints(groupPoints).ToList();
-            if (groups.Union(eyeGroups).All(group => WallHelper.IsNonKillableGroup(currentBoard, group))) return false;
             //get non-eye groups
             groups = groups.Except(eyeGroups).Where(gr => gr.Liberties.Count > 1).ToList();
 
@@ -460,12 +459,7 @@ namespace Go
             if (groups.Any() && tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == c.Opposite() && !WallHelper.IsNonKillableGroup(tryBoard, n)))
                 return true;
 
-            //captured eye point
-            if (tryBoard.CapturedPoints.Contains(eyePoint) && (groups.Count > 0 || currentBoard.GetNeighbourGroups(currentBoard.GetGroupAt(eyePoint)).Any(gr => !WallHelper.IsNonKillableGroup(currentBoard, gr))))
-                return LinkHelper.LinkForGroups(tryBoard, currentBoard);
-
-            //normal link
-            return groups.Any(group => tryBoard.MoveGroup.Points.Contains(group.Points.First()) || LinkHelper.IsDiagonallyConnectedGroups(tryBoard, tryBoard.GetGroupAt(group.Points.First()), tryBoard.MoveGroup));
+            return LinkHelper.LinkForGroups(tryBoard, currentBoard);
         }
 
         /// <summary>
