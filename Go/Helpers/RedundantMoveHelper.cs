@@ -162,14 +162,6 @@ namespace Go
             if (!eyeMove && !WallHelper.NoEyeForSurvivalAtNeighbourPoints(tryBoard))
                 return false;
 
-            if (opponentTryMove != null)
-            {
-                //check no eye for survival for opponent
-                Board opponentBoard = opponentTryMove.TryGame.Board;
-                if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(opponentBoard))
-                    return false;
-            }
-
             //check snapback for two-point move
             if (tryBoard.MoveGroupLiberties == 1 && tryBoard.MoveGroup.Points.Count == 2)
             {
@@ -840,7 +832,7 @@ namespace Go
             //check killable group with two or less liberties
             IEnumerable<Group> neighbourGroups = tryBoard.GetNeighbourGroups();
             if (!neighbourGroups.Any(group => group.Liberties.Count > 2)) return false;
-            Group weakGroup = neighbourGroups.FirstOrDefault(group => (group.Points.Count >= 2 && group.Liberties.Count == 2 && !WallHelper.IsStrongNeighbourGroup(tryBoard, group) && !WallHelper.IsNonKillableGroup(tryBoard, group)));
+            Group weakGroup = neighbourGroups.FirstOrDefault(group => group.Points.Count >= 2 && group.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, group));
             if (weakGroup == null) return false;
             if (tryMove.AtariResolved && !tryBoard.GetNeighbourGroups(weakGroup).Any(g => WallHelper.IsNonKillableGroup(tryBoard, g))) return true;
 
@@ -2605,7 +2597,7 @@ namespace Go
             }
 
             //check if killer group created with opposite content within the group
-            if (tryMove.IncreasedKillerGroups)
+            if (tryBoard.MoveGroup.Points.Count > 1 && tryMove.IncreasedKillerGroups)
             {
                 IEnumerable<Group> createdGroups = GroupHelper.GetKillerGroups(tryBoard, c).Except(GroupHelper.GetKillerGroups(tryMove.CurrentGame.Board, c));
                 if (createdGroups.Any(group => group.Points.Any(p => tryBoard[p] == group.Content)))

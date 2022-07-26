@@ -11,7 +11,10 @@ namespace Go
         /// </summary>
         public static Boolean SinglePointOpponentImmovable(GameTryMove tryMove)
         {
-            return EyeHelper.FindEye(tryMove.CurrentGame.Board, tryMove.Move, tryMove.MoveContent) && (tryMove.MakeMoveWithOpponentAtSamePoint() == null);
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Point move = tryMove.Move;
+            Content c = tryMove.MoveContent;
+            return EyeHelper.FindEye(currentBoard, move, c) && !currentBoard.GetGroupsFromStoneNeighbours(move, c).Any(n => n.Liberties.Count == 1);
         }
 
         /// <summary>
