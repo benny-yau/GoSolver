@@ -144,10 +144,6 @@ namespace Go
             if (CheckCornerKoMoveForRealEye(tryBoard))
                 return false;
 
-            //check ko fight
-            if (tryBoard.GetNeighbourGroups().Any(group => group.Liberties.Count == 1 && KoHelper.IsCaptureKoFight(b, group) != null))
-                return true;
-
             Group moveKillerGroup = GroupHelper.GetKillerGroupFromCache(b, move, c.Opposite());
             if (moveKillerGroup == null) moveKillerGroup = tryBoard.MoveGroup;
 
