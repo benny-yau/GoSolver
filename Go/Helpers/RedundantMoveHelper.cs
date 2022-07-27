@@ -821,7 +821,7 @@ namespace Go
             IEnumerable<Group> neighbourGroups = tryBoard.GetNeighbourGroups();
             Group weakGroup = neighbourGroups.FirstOrDefault(group => group.Points.Count >= 2 && group.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, group));
             if (weakGroup == null) return false;
-            if (tryBoard.GetNeighbourGroups(weakGroup).Any(g => WallHelper.IsNonKillableGroup(tryBoard, g)))
+            if (!tryBoard.GetNeighbourGroups(weakGroup).Any(g => WallHelper.IsNonKillableGroup(tryBoard, g)))
             {
                 if (DoubleAtariForWeakGroup(captureBoard))
                     return true;
@@ -833,14 +833,22 @@ namespace Go
             return false;
         }
 
+
         private static Boolean DoubleAtariForWeakGroup(Board captureBoard)
         {
             Content c = captureBoard.MoveGroup.Content;
             foreach (Point liberty in captureBoard.MoveGroup.Liberties)
             {
                 Board b = captureBoard.MakeMoveOnNewBoard(liberty, c.Opposite());
-                if (b != null && b.MoveGroupLiberties > 1 && b.AtariTargets.Count >= 2)
+                if (b == null || b.AtariTargets.Count < 2) continue;
+                if (b.MoveGroupLiberties > 1)
                     return true;
+                else
+                {
+                    Board b2 = ImmovableHelper.CaptureSuicideGroup(b);
+                    if (b2 != null && b2.MoveGroup.Points.Count > 1 && b2.MoveGroupLiberties == 1)
+                        return true;
+                }
             }
             return false;
         }
