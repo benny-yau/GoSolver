@@ -241,9 +241,9 @@ namespace Go
             Content c = tryMove.MoveContent;
 
             if (!tryBoard.IsAtariMove) return false;
-            if (tryBoard.AtariTargets.Count > 1) return true;
             if (tryBoard.MoveGroupLiberties == 1 && !KoHelper.IsKoFight(tryBoard))
                 return false;
+            if (tryBoard.AtariTargets.Count > 1) return true;
             Group atariTarget = tryBoard.AtariTargets.First();
             //check redundant atari
             if (tryBoard.GetGroupsFromStoneNeighbours(move, c).Count == 1 && WallHelper.IsNonKillableGroup(currentBoard, currentBoard.GetGroupAt(atariTarget.Points.First())))

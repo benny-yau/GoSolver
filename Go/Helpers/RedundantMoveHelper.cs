@@ -808,18 +808,9 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
-            if (tryBoard.MoveGroup.Points.Count == 1)
-            {
-                //check for double atari for one-point move
-                foreach (Point liberty in captureBoard.MoveGroup.Liberties)
-                {
-                    Board b = captureBoard.MakeMoveOnNewBoard(liberty, c);
-                    if (b != null && b.AtariTargets.Count >= 2) return true;
-                }
-                return false;
-            }
+            //check for double atari for one-point move
             //check for weak group capturing atari group
-            if (tryBoard.IsAtariMove && captureBoard.MoveGroup.Points.Count == 1)
+            if ((tryBoard.MoveGroup.Points.Count == 1 && tryBoard.GetNeighbourGroups().Any(gr => gr.Liberties.Count <= 2)) || (tryBoard.IsAtariMove && captureBoard.MoveGroup.Points.Count == 1))
             {
                 foreach (Point liberty in captureBoard.MoveGroup.Liberties)
                 {
@@ -830,6 +821,7 @@ namespace Go
             }
 
             //check killable group with two or less liberties
+            if (tryBoard.MoveGroup.Points.Count == 1) return false;
             IEnumerable<Group> neighbourGroups = tryBoard.GetNeighbourGroups();
             if (!neighbourGroups.Any(group => group.Liberties.Count > 2)) return false;
             Group weakGroup = neighbourGroups.FirstOrDefault(group => group.Points.Count >= 2 && group.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, group));
@@ -1723,7 +1715,7 @@ namespace Go
         /// Redundant atari at covered eye.
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario4dan17" />
         /// Check for ko fight <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_A36" />
-        /// Check for groups with two or less liberties <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Phenomena_B7" />
+        /// Check for connect and die <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Phenomena_B7" />
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_3" />
         /// </summary>
         private static Boolean RedundantAtariAtCoveredEye(GameTryMove tryMove)
@@ -1745,14 +1737,13 @@ namespace Go
             if (!KoHelper.KoContentEnabled(c, currentBoard.GameInfo))
                 return true;
 
-            List<Group> neighbourGroups = b.GetNeighbourGroups();
-            if (neighbourGroups.All(group => WallHelper.IsNonKillableGroup(b, group)))
-                return true;
 
-            //check for groups with two or less liberties
-            if (WallHelper.StrongNeighbourGroups(b, neighbourGroups))
-                return true;
-            return false;
+            //check for connect and die
+            List<Group> neighbourGroups = b.GetNeighbourGroups();
+            if (neighbourGroups.Any(gr => ImmovableHelper.CheckConnectAndDie(b, gr)))
+                return false;
+
+            return true;
         }
 
         /// <summary>

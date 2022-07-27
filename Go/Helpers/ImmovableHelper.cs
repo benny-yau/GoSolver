@@ -67,7 +67,12 @@ namespace Go
             if (board[p] == Content.Empty) //empty point
             {
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board);
-                if (!suicidal) return (false, null);
+                if (!suicidal)
+                {
+                    if (GroupHelper.GetKillerGroupFromCache(board, p, c) != null && ImmovableHelper.CheckConnectAndDie(b))
+                        return (true, null);
+                    return (false, null);
+                }
                 if (b == null)
                 {
                     //check connect and die
