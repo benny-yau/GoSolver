@@ -812,26 +812,34 @@ namespace Go
             //check for weak group capturing atari group
             if ((tryBoard.MoveGroup.Points.Count == 1 && tryBoard.GetNeighbourGroups().Any(gr => gr.Liberties.Count <= 2)) || (tryBoard.IsAtariMove && captureBoard.MoveGroup.Points.Count == 1))
             {
-                foreach (Point liberty in captureBoard.MoveGroup.Liberties)
-                {
-                    Board b = captureBoard.MakeMoveOnNewBoard(liberty, c);
-                    if (b != null && b.MoveGroupLiberties > 1 && b.AtariTargets.Count >= 2)
-                        return true;
-                }
+                if (DoubleAtariForWeakGroup(captureBoard, c))
+                    return true;
             }
 
             //check killable group with two or less liberties
             if (tryBoard.MoveGroup.Points.Count == 1) return false;
             IEnumerable<Group> neighbourGroups = tryBoard.GetNeighbourGroups();
-            if (!neighbourGroups.Any(group => group.Liberties.Count > 2)) return false;
             Group weakGroup = neighbourGroups.FirstOrDefault(group => group.Points.Count >= 2 && group.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, group));
             if (weakGroup == null) return false;
-            if (tryMove.AtariResolved && !tryBoard.GetNeighbourGroups(weakGroup).Any(g => WallHelper.IsNonKillableGroup(tryBoard, g))) return true;
+            if (tryBoard.GetNeighbourGroups(weakGroup).Any(g => WallHelper.IsNonKillableGroup(tryBoard, g))) return false;
+            if (DoubleAtariForWeakGroup(captureBoard, c))
+                return true;
 
             //check multi-point snapback
             if (ImmovableHelper.CheckConnectAndDie(captureBoard, captureBoard.GetGroupAt(weakGroup.Points.First())))
                 return true;
 
+            return false;
+        }
+
+        private static Boolean DoubleAtariForWeakGroup(Board captureBoard, Content c)
+        {
+            foreach (Point liberty in captureBoard.MoveGroup.Liberties)
+            {
+                Board b = captureBoard.MakeMoveOnNewBoard(liberty, c);
+                if (b != null && b.MoveGroupLiberties > 1 && b.AtariTargets.Count >= 2)
+                    return true;
+            }
             return false;
         }
 
