@@ -812,7 +812,7 @@ namespace Go
             //check for weak group capturing atari group
             if ((tryBoard.MoveGroup.Points.Count == 1 && tryBoard.GetNeighbourGroups().Any(gr => gr.Liberties.Count <= 2)) || (tryBoard.IsAtariMove && captureBoard.MoveGroup.Points.Count == 1))
             {
-                if (DoubleAtariForWeakGroup(captureBoard, c))
+                if (DoubleAtariForWeakGroup(captureBoard))
                     return true;
             }
 
@@ -821,10 +821,11 @@ namespace Go
             IEnumerable<Group> neighbourGroups = tryBoard.GetNeighbourGroups();
             Group weakGroup = neighbourGroups.FirstOrDefault(group => group.Points.Count >= 2 && group.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, group));
             if (weakGroup == null) return false;
-            if (tryBoard.GetNeighbourGroups(weakGroup).Any(g => WallHelper.IsNonKillableGroup(tryBoard, g))) return false;
-            if (DoubleAtariForWeakGroup(captureBoard, c))
-                return true;
-
+            if (tryBoard.GetNeighbourGroups(weakGroup).Any(g => WallHelper.IsNonKillableGroup(tryBoard, g)))
+            {
+                if (DoubleAtariForWeakGroup(captureBoard))
+                    return true;
+            }
             //check multi-point snapback
             if (ImmovableHelper.CheckConnectAndDie(captureBoard, captureBoard.GetGroupAt(weakGroup.Points.First())))
                 return true;
@@ -832,11 +833,12 @@ namespace Go
             return false;
         }
 
-        private static Boolean DoubleAtariForWeakGroup(Board captureBoard, Content c)
+        private static Boolean DoubleAtariForWeakGroup(Board captureBoard)
         {
+            Content c = captureBoard.MoveGroup.Content;
             foreach (Point liberty in captureBoard.MoveGroup.Liberties)
             {
-                Board b = captureBoard.MakeMoveOnNewBoard(liberty, c);
+                Board b = captureBoard.MakeMoveOnNewBoard(liberty, c.Opposite());
                 if (b != null && b.MoveGroupLiberties > 1 && b.AtariTargets.Count >= 2)
                     return true;
             }
