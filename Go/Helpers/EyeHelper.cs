@@ -100,7 +100,11 @@ namespace Go
         public static Boolean FindCoveredEyeByCapture(Board capturedBoard, Group capturedGroup)
         {
             int capturedCount = capturedGroup.Points.Count;
-            return (capturedCount == 1 || capturedCount == 2) && EyeHelper.FindRealEyeWithinEmptySpace(capturedBoard, capturedGroup, EyeType.CoveredEye);
+            if (capturedCount == 1)
+                return EyeHelper.FindCoveredEye(capturedBoard, capturedGroup.Points.First(), capturedBoard.MoveGroup.Content);
+            else if (capturedCount == 2)
+                return EyeHelper.FindRealEyeWithinEmptySpace(capturedBoard, capturedGroup, EyeType.CoveredEye);
+            return false;
         }
 
         public static Boolean FindCoveredEyeByCapture(Board board)
@@ -138,7 +142,8 @@ namespace Go
         }
 
         /// <summary>
-        /// Two-point suicide at covered eye.
+        /// Two-point suicide at covered eye. 
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31469" />
         /// Make move at the other empty point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B57" />
         /// Check for killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16424_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499_2" />

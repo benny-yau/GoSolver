@@ -241,8 +241,12 @@ namespace Go
             Content c = tryMove.MoveContent;
 
             if (!tryBoard.IsAtariMove) return false;
+            //check one liberty non-ko move
             if (tryBoard.MoveGroupLiberties == 1 && !KoHelper.IsKoFight(tryBoard))
-                return false;
+            {
+                Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard);
+                if (b != null && b.MoveGroupLiberties > 1) return false;
+            }
             if (tryBoard.AtariTargets.Count > 1) return true;
             Group atariTarget = tryBoard.AtariTargets.First();
             //check redundant atari

@@ -77,7 +77,7 @@ namespace Go
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q16594" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A41" /> 
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_3" /> 
-        /// Check no eye for survival for opponent <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_A80" /> 
+        /// Check no eye for survival for opponent <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q30332" /> 
         /// Check eye for survival <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q30982" /> 
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_B25" /> 
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q29277" /> 
@@ -161,6 +161,14 @@ namespace Go
             Boolean eyeMove = EyeHelper.CoveredMove(tryBoard, eyePoint, c);
             if (!eyeMove && !WallHelper.NoEyeForSurvivalAtNeighbourPoints(tryBoard))
                 return false;
+
+            //check no eye for survival for opponent
+            if (opponentTryMove != null)
+            {
+                Board opponentBoard = opponentTryMove.TryGame.Board;
+                if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(opponentBoard))
+                    return false;
+            }
 
             //check snapback for two-point move
             if (tryBoard.MoveGroupLiberties == 1 && tryBoard.MoveGroup.Points.Count == 2)
