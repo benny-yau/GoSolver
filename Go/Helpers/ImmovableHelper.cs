@@ -309,7 +309,7 @@ namespace Go
         /// </summary>
         public static Board EscapeByCapture(Board tryBoard, Group group)
         {
-            List<Group> atariTargets = AtariHelper.AtariByGroup(group, tryBoard);
+            List<Group> atariTargets = AtariHelper.AtariByGroup(group, tryBoard, false);
             foreach (Group target in atariTargets)
             {
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalOnCapture(tryBoard, target);
@@ -618,7 +618,7 @@ namespace Go
                 //check if any liberty is suicidal
                 if (targetLiberties.Any(t => ImmovableHelper.IsSuicidalMove(t, c, tryBoard).Item2 == null))
                     continue;
-                if (AtariHelper.AtariByGroup(tryBoard, targetGroup))
+                if (AtariHelper.AtariByGroup(tryBoard, targetGroup, false))
                     continue;
 
                 //check connect and die

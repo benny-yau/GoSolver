@@ -116,6 +116,7 @@ namespace Go
                 List<Point> eyePoints = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindCoveredEye(tryBoard, n, c)).ToList();
                 if (eyePoints.Count != 1) return false;
                 eyePoint = eyePoints.First();
+                if (tryBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()).All(gr => gr.Liberties.Count == 1)) return true;
                 Board b = new Board(tryBoard);
                 b[eyePoint] = c.Opposite();
                 eyeGroup = b.GetGroupAt(eyePoint);
@@ -1130,7 +1131,7 @@ namespace Go
             }
 
             //atari on neighbours then redundant
-            if (currentBoard.GetGroupsFromStoneNeighbours(move, c).Any(group => AtariHelper.AtariByGroup(currentBoard, group)))
+            if (currentBoard.GetGroupsFromStoneNeighbours(move, c).Any(group => AtariHelper.AtariByGroup(currentBoard, group, false)))
                 return true;
 
             //retrieve liberties other than eye liberty
@@ -1348,6 +1349,8 @@ namespace Go
         /// <summary>
         /// Multi point suicide move.
         /// Check for corner kill <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario7kyu25" />
+        /// Check for connect and die <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A36" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2Q71_101Weiqi" />
         /// Eternal life <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_GuanZiPu_Q14971" />
         /// Capture at tryBoard more than recapture <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935_2" />
         /// Captured more than move group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A42" />
@@ -2120,7 +2123,6 @@ namespace Go
                     (_, List<Point> pointsBetweenDiagonals) = LinkHelper.FindDiagonalCut(tryBoard, targetGroup);
                     if (pointsBetweenDiagonals == null) return null;
                     HashSet<Group> neighbourGroups = tryBoard.GetGroupsFromPoints(pointsBetweenDiagonals);
-                    if (neighbourGroups.Any(group => AtariHelper.AtariByGroup(tryBoard, group))) return null;
                     //get the group other than neutral point group
                     Group neighbourGroup = neighbourGroups.FirstOrDefault(group => !group.Equals(tryBoard.MoveGroup) && !WallHelper.IsNonKillableGroup(tryBoard, group));
                     if (neighbourGroup == null) return null;

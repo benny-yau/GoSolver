@@ -129,9 +129,9 @@ namespace Go
                 return false;
 
             //allow two-point group without real eye
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(b, move, c.Opposite());
             if (tryBoard.MoveGroup.Points.Count <= 2)
             {
-                Group killerGroup = GroupHelper.GetKillerGroupFromCache(b, move, c.Opposite());
                 if (killerGroup != null && killerGroup.Points.Count <= 2 && !EyeHelper.FindRealEyeWithinEmptySpace(b, killerGroup))
                     return false;
             }
@@ -144,25 +144,24 @@ namespace Go
             if (CheckCornerKoMoveForRealEye(tryBoard))
                 return false;
 
-            Group moveKillerGroup = GroupHelper.GetKillerGroupFromCache(b, move, c.Opposite());
-            if (moveKillerGroup == null) moveKillerGroup = tryBoard.MoveGroup;
+            if (killerGroup == null) killerGroup = tryBoard.MoveGroup;
 
             //get all killer groups except move killer group
             List<Group> killerGroups = GroupHelper.GetKillerGroups(b, c.Opposite());
-            List<Group> neighbourGroups = b.GetNeighbourGroups(moveKillerGroup);
+            List<Group> neighbourGroups = b.GetNeighbourGroups(killerGroup);
 
             if (neighbourGroups.Any(group => WallHelper.IsNonKillableGroup(b, group)))
                 return true;
 
-            foreach (Group killerGroup in killerGroups.Where(group => group != moveKillerGroup))
+            foreach (Group kgroup in killerGroups.Where(gr => gr != killerGroup))
             {
-                List<Group> neighbourKillerGroups = b.GetNeighbourGroups(killerGroup);
+                List<Group> neighbourKillerGroups = b.GetNeighbourGroups(kgroup);
                 if (!neighbourKillerGroups.Intersect(neighbourGroups).Any()) continue;
                 //real eye with one neighbour group only
                 if (neighbourKillerGroups.Count == 1)
                     return true;
                 //find real eye
-                if (EyeHelper.FindRealEyeWithinEmptySpace(b, killerGroup, EyeType.SemiSolidEye) && WallHelper.StrongNeighbourGroups(b, neighbourKillerGroups))
+                if (EyeHelper.FindRealEyeWithinEmptySpace(b, kgroup, EyeType.SemiSolidEye) && WallHelper.StrongNeighbourGroups(b, neighbourKillerGroups))
                     return true;
             }
             return false;

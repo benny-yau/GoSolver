@@ -237,15 +237,10 @@
             <see cref="!:UnitTestProject.FindAndResolveAtariTest.FindAndResolveAtariTest_Scenario_XuanXuanGo_Q18358" />
             </summary>
         </member>
-        <member name="M:Go.AtariHelper.AtariByGroup(Go.Board,Go.Group)">
+        <member name="M:Go.AtariHelper.AtariByGroup(Go.Board,Go.Group,System.Boolean)">
             <summary>
             Check if any atari on neighbour groups, including ko. 
             Check for ko <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30315" />
-            </summary>
-        </member>
-        <member name="M:Go.AtariHelper.AtariByPreviousGroup(Go.Board,Go.Board)">
-            <summary>
-            Check if any stones within move group atari on current board. 
             </summary>
         </member>
         <member name="M:Go.AtariHelper.KoAtariByNeighbour(Go.Board,System.Collections.Generic.List{Go.Group},System.Nullable{Go.Point})">
@@ -855,6 +850,7 @@
             <summary>
             Check essential atari for ko move.
             Check redundant atari <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_2" />
+            Check one liberty non-ko move <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_2" />
             </summary>
         </member>
         <member name="M:Go.LinkHelper.LinkForGroups(Go.Board,Go.Board)">
@@ -1286,6 +1282,8 @@
             <summary>
             Multi point suicide move.
             Check for corner kill <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario7kyu25" />
+            Check for connect and die <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A36" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2Q71_101Weiqi" />
             Eternal life <see cref="!:UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_GuanZiPu_Q14971" />
             Capture at tryBoard more than recapture <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935_2" />
             Captured more than move group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A42" />

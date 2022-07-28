@@ -27,14 +27,16 @@ namespace Go
         /// Check if any atari on neighbour groups, including ko. 
         /// Check for ko <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30315" />
         /// </summary>
-        public static Boolean AtariByGroup(Board board, Group atariGroup)
+        public static Boolean AtariByGroup(Board board, Group atariGroup, Boolean excludeKo = true)
         {
-            return AtariByGroup(atariGroup, board).Any();
+            return AtariByGroup(atariGroup, board, excludeKo).Any();
         }
 
-        public static List<Group> AtariByGroup(Group atariGroup, Board board, Boolean excludeKo = false)
+        public static List<Group> AtariByGroup(Group atariGroup, Board board, Boolean excludeKo = true)
         {
             List<Group> targetGroups = board.GetNeighbourGroups(atariGroup).Where(gr => gr.Liberties.Count == 1).ToList();
+            if (excludeKo || KoHelper.KoContentEnabled(atariGroup.Content, board.GameInfo))
+                return targetGroups;
             //check for ko
             for (int i = targetGroups.Count - 1; i >= 0; i--)
             {
@@ -42,33 +44,9 @@ namespace Go
                 if (group.Points.Count != 1) continue;
                 Point p = group.Points.First();
                 Board b = KoHelper.IsCaptureKoFight(board, group);
-                if (b == null) continue;
-                if (excludeKo)
-                    targetGroups.Remove(group);
-                else
-                {
-                    if (!KoHelper.KoContentEnabled(atariGroup.Content, board.GameInfo))
-                        targetGroups.Remove(group);
-
-                    if (board.MakeMoveOnNewBoard(b.Move.Value, atariGroup.Content) == null)
-                        targetGroups.Remove(group);
-                }
+                if (b != null) targetGroups.Remove(group);
             }
             return targetGroups;
-        }
-
-        /// <summary>
-        /// Check if any stones within move group atari on current board. 
-        /// </summary>
-        public static HashSet<Group> AtariByPreviousGroup(Board currentBoard, Board tryBoard)
-        {
-            List<Group> moveGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
-            HashSet<Group> groups = new HashSet<Group>();
-            foreach (Group group in moveGroups)
-            {
-                AtariByGroup(group, currentBoard).ForEach(g => groups.Add(g));
-            }
-            return groups;
         }
 
         /// <summary>
