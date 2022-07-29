@@ -443,10 +443,10 @@ namespace Go
         /// <summary>
         /// Create new board and make move on board.
         /// </summary>
-        public Board MakeMoveOnNewBoard(Point p, Content c, Boolean excludeKo = false)
+        public Board MakeMoveOnNewBoard(Point p, Content c, Boolean overrideKo = false)
         {
             Board board = new Board(this);
-            if (board.InternalMakeMove(p, c, excludeKo) == MakeMoveResult.Legal)
+            if (board.InternalMakeMove(p, c, overrideKo) == MakeMoveResult.Legal)
                 return board;
             return null;
         }
@@ -454,7 +454,7 @@ namespace Go
         /// <summary>
         /// Makes move on board internally. Returns result as MakeMoveResult.
         /// </summary>
-        public MakeMoveResult InternalMakeMove(int x, int y, Content content, Boolean excludeKo = false)
+        public MakeMoveResult InternalMakeMove(int x, int y, Content content, Boolean overrideKo = false)
         {
             Move = new Point(x, y);
             this.CapturedList.Clear();
@@ -480,7 +480,7 @@ namespace Go
                     IEnumerable<Point> points = capturedGroups.First().Points;
                     if (points.Count() == 1)
                     {
-                        if (previousPtCapture != null && !excludeKo && Move.Equals(previousPtCapture))  //is ko
+                        if (previousPtCapture != null && !overrideKo && Move.Equals(previousPtCapture))  //is ko
                         {
                             this[x, y] = Content.Empty;
                             singlePointCapture = previousPtCapture;
@@ -503,9 +503,9 @@ namespace Go
         }
 
 
-        public MakeMoveResult InternalMakeMove(Point p, Content content, Boolean excludeKo = false)
+        public MakeMoveResult InternalMakeMove(Point p, Content content, Boolean overrideKo = false)
         {
-            return InternalMakeMove(p.x, p.y, content, excludeKo);
+            return InternalMakeMove(p.x, p.y, content, overrideKo);
         }
 
         /// <summary>

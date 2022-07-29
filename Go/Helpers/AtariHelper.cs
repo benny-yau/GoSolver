@@ -35,16 +35,20 @@ namespace Go
         public static List<Group> AtariByGroup(Group atariGroup, Board board, Boolean excludeKo = true)
         {
             List<Group> targetGroups = board.GetNeighbourGroups(atariGroup).Where(gr => gr.Liberties.Count == 1).ToList();
-            if (excludeKo || KoHelper.KoContentEnabled(atariGroup.Content, board.GameInfo))
+            if (excludeKo)
                 return targetGroups;
             //check for ko
             for (int i = targetGroups.Count - 1; i >= 0; i--)
             {
                 Group group = targetGroups[i];
-                if (group.Points.Count != 1) continue;
+                if (group.Points.Count != 1 || group.Liberties.Count != 1) continue;
                 Point p = group.Points.First();
-                Board b = KoHelper.IsCaptureKoFight(board, group);
-                if (b != null) targetGroups.Remove(group);
+                if (!board.GetStoneNeighbours(p).Any(n => EyeHelper.FindEye(board, n, group.Content))) continue;
+                Board b = ImmovableHelper.CaptureSuicideGroup(board, group);
+                if (b == null)
+                    targetGroups.Remove(group);
+                else if (KoHelper.IsKoFight(b) && !KoHelper.KoContentEnabled(atariGroup.Content, board.GameInfo))
+                    targetGroups.Remove(group);
             }
             return targetGroups;
         }
@@ -54,19 +58,16 @@ namespace Go
         /// </summary>
         public static (Boolean, Board) KoAtariByNeighbour(Board board, List<Group> targetGroups, Point? excludePoint = null)
         {
-            foreach (Group targetGroup in targetGroups)
+            foreach (Group group in targetGroups)
             {
                 //check for ko
-                if (targetGroup.Points.Count != 1) continue;
-                Point p = targetGroup.Points.First();
-
+                if (group.Points.Count != 1) continue;
+                Point p = group.Points.First();
                 if (excludePoint != null && p.Equals(excludePoint)) continue;
-                Board b = ImmovableHelper.CaptureSuicideGroup(p, board, true);
-                if (b != null && KoHelper.IsKoFight(b))
-                {
-                    if (!Board.ResolveAtari(board, b)) continue;
-                    return (true, b);
-                }
+                Board b = KoHelper.IsCaptureKoFight(board, group, true);
+                if (b == null) continue;
+                if (!Board.ResolveAtari(board, b)) continue;
+                return (true, b);
             }
             return (false, null);
         }

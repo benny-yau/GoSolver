@@ -173,10 +173,10 @@ namespace Go
         /// <summary>
         /// Makes move on board internally. Returns result as MakeMoveResult.
         /// </summary>
-        public MakeMoveResult InternalMakeMove(int x, int y, Boolean excludeKo = false)
+        public MakeMoveResult InternalMakeMove(int x, int y, Boolean overrideKo = false)
         {
             Content c = GameHelper.GetContentForNextMove(this.Board);
-            return this.Board.InternalMakeMove(x, y, c, excludeKo);
+            return this.Board.InternalMakeMove(x, y, c, overrideKo);
         }
 
         /// <summary>

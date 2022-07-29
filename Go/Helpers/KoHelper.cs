@@ -90,10 +90,12 @@ namespace Go
         /// <summary>
         /// Is ko fight after capture.
         /// </summary>
-        public static Board IsCaptureKoFight(Board board, Group group)
+        public static Board IsCaptureKoFight(Board board, Group group, Boolean overrideKo = false)
         {
-            if (group.Points.Count != 1) return null;
-            Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(board, group);
+            if (group.Points.Count != 1 || group.Liberties.Count != 1) return null;
+            Point p = group.Points.First();
+            if (!board.GetStoneNeighbours(p).Any(n => EyeHelper.FindEye(board, n, group.Content))) return null;
+            Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(board, group, overrideKo);
             if (capturedBoard == null) return null;
             if (KoHelper.IsKoFight(capturedBoard))
                 return capturedBoard;

@@ -169,12 +169,12 @@ namespace Go
         /// <summary>
         /// Make move at same point as game try move but as opponent instead.
         /// </summary>
-        public GameTryMove MakeMoveWithOpponentAtSamePoint(Boolean excludeKo = true)
+        public GameTryMove MakeMoveWithOpponentAtSamePoint(Boolean overrideKo = true)
         {
             Board opponentTryBoard = new Board(CurrentGame.Board);
             Point p = Move;
             Content c = MoveContent;
-            if (opponentTryBoard.InternalMakeMove(p, c.Opposite(), excludeKo) == MakeMoveResult.Legal)
+            if (opponentTryBoard.InternalMakeMove(p, c.Opposite(), overrideKo) == MakeMoveResult.Legal)
             {
                 GameTryMove move = new GameTryMove(CurrentGame);
                 move.TryGame.Board = opponentTryBoard;
