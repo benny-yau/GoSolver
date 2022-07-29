@@ -586,7 +586,7 @@
         </member>
         <member name="M:Go.ImmovableHelper.IsSuicidalMove(Go.Board,Go.Point,Go.Content)">
             <summary>
-            Is suicide move or only liberty of one.
+            Is suicidal move.
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.IsSuicidalOnCapture(Go.Board,Go.Group)">
@@ -597,7 +597,7 @@
         </member>
         <member name="M:Go.ImmovableHelper.IsEndCrawlingMove(Go.Board,Go.Point,Go.Content)">
             <summary>
-            Move escaping by crawling at edge of board.
+            Escape move by crawling at edge of board.
             <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanQiJing_A36" />
             </summary>
         </member>

@@ -66,7 +66,7 @@ namespace Go
         {
             if (board[p] == Content.Empty) //empty point
             {
-                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board);
+                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board, false);
                 if (!suicidal)
                 {
                     if (GroupHelper.GetKillerGroupFromCache(board, p, c) != null && ImmovableHelper.CheckConnectAndDie(b))
@@ -330,31 +330,32 @@ namespace Go
         }
 
         /// <summary>
-        /// Is suicide move or only liberty of one.
+        /// Is suicidal move.
         /// </summary>
         public static Boolean IsSuicidalMove(Board tryBoard, Point p, Content c)
         {
             return IsSuicidalMove(p, c, tryBoard).Item1;
         }
 
-        public static (Boolean, Board) IsSuicidalMove(Point p, Content c, Board tryBoard)
+        public static (Boolean, Board) IsSuicidalMove(Point p, Content c, Board tryBoard, Boolean excludeKo = true)
         {
             if (tryBoard == null) return (false, null);
             Board board = tryBoard.MakeMoveOnNewBoard(p, c);
             if (board == null) return (true, null);
 
-            if (board.MoveGroupLiberties == 1)
-            {
-                //check ko
-                if (KoHelper.IsKoFight(board))
-                {
-                    Boolean koEnabled = KoHelper.KoContentEnabled(board.MoveGroup.Content, board.GameInfo);
-                    if (!koEnabled) return (true, null);
-                    else return (false, board);
-                }
+            if (board.MoveGroupLiberties != 1) return (false, board);
+
+            if (excludeKo)
                 return (true, board);
+
+            //check ko
+            if (KoHelper.IsKoFight(board))
+            {
+                Boolean koEnabled = KoHelper.KoContentEnabled(c, board.GameInfo);
+                if (!koEnabled) return (true, null);
+                else return (false, board);
             }
-            return (false, board);
+            return (true, board);
         }
 
         /// <summary>
@@ -364,20 +365,19 @@ namespace Go
         public static (Boolean, Board) IsSuicidalOnCapture(Board tryBoard, Group targetGroup = null)
         {
             Board board = ImmovableHelper.CaptureSuicideGroup(tryBoard, targetGroup);
-            if (board == null)
-                return (true, board);
+            if (board == null) return (true, null);
 
-            if (board.MoveGroupLiberties == 1)
-            {
-                //check ko
-                Boolean isKo = (KoHelper.IsKoFight(board) && KoHelper.KoContentEnabled(board.MoveGroup.Content, board.GameInfo));
-                if (!isKo) return (true, board);
-            }
+            if (board.MoveGroupLiberties != 1) return (false, board);
+
+            //check ko
+            Boolean koEnabled = KoHelper.IsKoFight(board) && KoHelper.KoContentEnabled(board.MoveGroup.Content, board.GameInfo);
+            if (!koEnabled) return (true, board);
+
             return (false, board);
         }
 
         /// <summary>
-        /// Move escaping by crawling at edge of board.
+        /// Escape move by crawling at edge of board.
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanQiJing_A36" />
         /// </summary>
         public static Boolean IsEndCrawlingMove(Board board, Point libertyPoint, Content c)
@@ -548,7 +548,7 @@ namespace Go
             foreach (Point liberty in groupLiberties)
             {
                 if (!GameHelper.SetupMoveAvailable(board, liberty)) continue;
-                (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board);
+                (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board, false);
                 if (b == null) continue;
                 int neighbourCount = b.GetStoneNeighbours().Count(n => b[n] != c.Opposite());
                 killBoards.Add(new KeyValuePair<LinkedPoint<Point>, Board>(new LinkedPoint<Point>(liberty, new { isSuicidal, neighbourCount }), b));
