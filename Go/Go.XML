@@ -434,7 +434,7 @@
             Allow opponent to make move within eye space to ensure the space can produce the required eye type. 
             </summary>
         </member>
-        <member name="M:Go.EyeHelper.RealEyeOfDiagonallyConnectedGroups(Go.Board,Go.Group,System.Boolean)">
+        <member name="M:Go.EyeHelper.RealEyeOfDiagonallyConnectedGroups(Go.Board,Go.Group)">
             <summary>
             Real eye of diagonally connected groups.
             Check for covered eye killer group <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16738" /> 

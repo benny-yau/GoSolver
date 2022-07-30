@@ -116,7 +116,7 @@ namespace Go
                 List<Point> eyePoints = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindCoveredEye(tryBoard, n, c)).ToList();
                 if (eyePoints.Count != 1) return false;
                 eyePoint = eyePoints.First();
-                if (tryBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()).All(gr => gr.Liberties.Count == 1)) return true;
+                if (opponentTryMove == null && tryBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()).All(gr => gr.Liberties.Count == 1)) return true;
                 Board b = new Board(tryBoard);
                 b[eyePoint] = c.Opposite();
                 eyeGroup = b.GetGroupAt(eyePoint);
@@ -2490,9 +2490,6 @@ namespace Go
                 }
                 return true;
             }
-
-            if (EyeHelper.RealEyeOfDiagonallyConnectedGroups(killerBoard, eyeGroup))
-                return true;
 
             if (TwoPointDiagonalRedundancy(tryMove, eye, eyeGroup))
                 return true;

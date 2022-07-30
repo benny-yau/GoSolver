@@ -434,21 +434,27 @@ namespace Go
         /// Real eye of diagonally connected groups.
         /// Check for covered eye killer group <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16738" /> 
         /// </summary>
-        public static Boolean RealEyeOfDiagonallyConnectedGroups(Board board, Group killerGroup, Boolean checkConnected = false)
+        public static Boolean RealEyeOfDiagonallyConnectedGroups(Board board, Group killerGroup)
         {
             Content c = killerGroup.Content;
-            if (killerGroup.Points.Count <= 3 || killerGroup.Points.Any(p => board[p] != Content.Empty)) return false;
+            if (killerGroup.Points.Count <= 3) return false;
             //check for covered eye killer group
             if (killerGroup.Points.Any(p => EyeHelper.IsCovered(board, p, c.Opposite()))) return false;
-
-            if (checkConnected)
+            if (killerGroup.Points.Any(p => board[p] != Content.Empty))
             {
-                (Boolean isKillerGroup, List<Group> groups) = GroupHelper.CheckNeighbourGroupsOfKillerGroup(board, killerGroup);
-                if (!isKillerGroup) return false;
+                HashSet<Group> opponentGroups = board.GetGroupsFromPoints(killerGroup.Points.Where(p => board[p] != Content.Empty).ToList());
+                HashSet<Point> opponentLiberties = board.GetLibertiesOfGroups(opponentGroups.ToList());
+                //ensure all opponent liberties have no eye for survival
+                if (opponentLiberties.Any(lib => !board.GetStoneNeighbours(lib).Any(n => board[n] == c.Opposite()))) return false;
 
-                HashSet<Group> connectedGroups = LinkHelper.GetAllDiagonalConnectedGroups(board, groups.First());
-                if (groups.Except(connectedGroups).Any())
+                //check all opponent liberties have at least one stone neighbour within neighbour group of killer group
+                Board filledBoard = new Board(board);
+                killerGroup.Points.ToList().ForEach(p => filledBoard[p] = c);
+                (Boolean isKillerGroup, List<Group> groups) = GroupHelper.CheckNeighbourGroupsOfKillerGroup(filledBoard, filledBoard.GetGroupAt(killerGroup.Points.First()));
+                if (!isKillerGroup)
                     return false;
+                if (opponentLiberties.All(lib => board.GetStoneNeighbours(lib).Any(n => board[n] == c.Opposite() && groups.Any(gr => gr.Points.Contains(n)))))
+                    return true;
             }
             return true;
         }
