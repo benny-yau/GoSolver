@@ -432,7 +432,8 @@ namespace Go
 
         /// <summary>
         /// Real eye of diagonally connected groups.
-        /// Check for covered eye killer group <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16738" /> 
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_GuanZiPu_B3_2" /> 
+        /// Check for covered eye killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_4" /> 
         /// </summary>
         public static Boolean RealEyeOfDiagonallyConnectedGroups(Board board, Group killerGroup)
         {
@@ -442,21 +443,34 @@ namespace Go
             if (killerGroup.Points.Any(p => EyeHelper.IsCovered(board, p, c.Opposite()))) return false;
             if (killerGroup.Points.Any(p => board[p] != Content.Empty))
             {
-                HashSet<Group> opponentGroups = board.GetGroupsFromPoints(killerGroup.Points.Where(p => board[p] != Content.Empty).ToList());
-                HashSet<Point> opponentLiberties = board.GetLibertiesOfGroups(opponentGroups.ToList());
-                //ensure all opponent liberties have no eye for survival
-                if (opponentLiberties.Any(lib => !board.GetStoneNeighbours(lib).Any(n => board[n] == c.Opposite()))) return false;
-
-                //check all opponent liberties have at least one stone neighbour within neighbour group of killer group
-                Board filledBoard = new Board(board);
-                killerGroup.Points.ToList().ForEach(p => filledBoard[p] = c);
-                (Boolean isKillerGroup, List<Group> groups) = GroupHelper.CheckNeighbourGroupsOfKillerGroup(filledBoard, filledBoard.GetGroupAt(killerGroup.Points.First()));
+                (Boolean isKillerGroup, List<Group> connectedGroups) = GroupHelper.CheckNeighbourGroupsOfKillerGroup(board, killerGroup, false);
                 if (!isKillerGroup)
                     return false;
-                if (opponentLiberties.All(lib => board.GetStoneNeighbours(lib).Any(n => board[n] == c.Opposite() && groups.Any(gr => gr.Points.Contains(n)))))
+                //ensure all liberties cannot create eye for opponent
+                if (killerGroup.Points.Where(p => board[p] == Content.Empty).All(lib => NoEyeForOpponentWithinKillerGroup(board, lib, c, connectedGroups)))
                     return true;
             }
             return true;
+        }
+
+        /// <summary>
+        /// No eye for opponent within killer group.
+        /// </summary>
+        public static Boolean NoEyeForOpponentWithinKillerGroup(Board board, Point liberty, Content c, List<Group> connectedGroups)
+        {
+            if (board.GetStoneNeighbours(liberty).Any(n => board[n] == c.Opposite() && connectedGroups.Contains(board.GetGroupAt(n))))
+                return true;
+
+            Boolean eyeInMiddleArea = board.PointWithinMiddleArea(liberty);
+            int diagonalWallCount = 0;
+            foreach (Point q in board.GetDiagonalNeighbours(liberty))
+            {
+                if (board[q] == c.Opposite() && connectedGroups.Contains(board.GetGroupAt(q)))
+                    diagonalWallCount += 1;
+                if (eyeInMiddleArea && diagonalWallCount > 1 || !eyeInMiddleArea && diagonalWallCount > 0)
+                    return true;
+            }
+            return false;
         }
     }
 }

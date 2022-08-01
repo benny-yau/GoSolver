@@ -30,7 +30,7 @@ namespace Go
         public static Boolean CheckForBentFour(Game currentGame, List<GameTryMove> tryMoves = null)
         {
             Board board = currentGame.Board;
-            List<Group> killerGroups = GroupHelper.GetKillerGroups(board, Content.Unknown, true);
+            List<Group> killerGroups = GroupHelper.GetKillerGroups(board);
             if (killerGroups.Count != 1 || killerGroups[0].Points.Count != 5)
                 return false;
 
@@ -82,7 +82,7 @@ namespace Go
         public static Boolean CheckForTenThousandYearKo(Game game)
         {
             Board board = game.Board;
-            List<Group> killerGroups = GroupHelper.GetKillerGroups(board, Content.Unknown, true);
+            List<Group> killerGroups = GroupHelper.GetKillerGroups(board);
             if (killerGroups.Count != 1)
                 return false;
             //check for only one neighbour group

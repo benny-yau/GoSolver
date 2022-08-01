@@ -2027,7 +2027,7 @@ namespace Go
         public static GameTryMove GetSpecificNeutralMove(Game g, List<GameTryMove> neutralPointMoves)
         {
             GameTryMove gameTryMove;
-            List<Group> killerGroups = GroupHelper.GetKillerGroups(g.Board, Content.Unknown, true);
+            List<Group> killerGroups = GroupHelper.GetKillerGroups(g.Board);
             if (IsImmovableKill(g, killerGroups))
                 gameTryMove = SpecificKillWithImmovablePoints(g.Board, neutralPointMoves, killerGroups[0]);
             else
@@ -2189,7 +2189,7 @@ namespace Go
         public static GameTryMove GetGenericNeutralMove(Game g, List<GameTryMove> tryMoves, List<GameTryMove> neutralPointMoves)
         {
             //check for killer group
-            List<Group> killerGroups = GroupHelper.GetKillerGroups(g.Board);
+            List<Group> killerGroups = GroupHelper.GetKillerGroups(g.Board, Content.Unknown, true);
             if (killerGroups.Count == 0) return null;
             Group killerGroup = killerGroups[0];
 

@@ -437,7 +437,13 @@
         <member name="M:Go.EyeHelper.RealEyeOfDiagonallyConnectedGroups(Go.Board,Go.Group)">
             <summary>
             Real eye of diagonally connected groups.
-            Check for covered eye killer group <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16738" /> 
+            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_GuanZiPu_B3_2" /> 
+            Check for covered eye killer group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_4" /> 
+            </summary>
+        </member>
+        <member name="M:Go.EyeHelper.NoEyeForOpponentWithinKillerGroup(Go.Board,Go.Point,Go.Content,System.Collections.Generic.List{Go.Group})">
+            <summary>
+            No eye for opponent within killer group.
             </summary>
         </member>
         <member name="M:Go.GameHelper.GetTryMovesForGame(Go.Game)">
@@ -492,7 +498,7 @@
             Remove where group is covered eye <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30005" />
             </summary>
         </member>
-        <member name="M:Go.GroupHelper.CheckNeighbourGroupsOfKillerGroup(Go.Board,Go.Group)">
+        <member name="M:Go.GroupHelper.CheckNeighbourGroupsOfKillerGroup(Go.Board,Go.Group,System.Boolean)">
             <summary>
             Ensure neighbour groups of killer group are diagonal groups.
             </summary>

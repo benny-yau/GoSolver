@@ -9,7 +9,7 @@ namespace Go
         /// <summary>
         /// Get killer group fully surrounded by survival stones. Content in parameter refer to target content (usually survival). 
         /// </summary>
-        public static List<Group> GetKillerGroups(Board board, Content c = Content.Unknown, Boolean checkLiberties = false)
+        public static List<Group> GetKillerGroups(Board board, Content c = Content.Unknown, Boolean checkCoveredEye = false)
         {
             List<Group> killerGroups = null;
             if (c == Content.Unknown)
@@ -32,11 +32,13 @@ namespace Go
                 killerGroups = board.killerGroup[c];
             }
 
-            if (checkLiberties)
+            if (checkCoveredEye && killerGroups.Any(group => group.Points.Count <= 2))
             {
-                //ensure group contain two liberties
-                if (killerGroups.Count > 0 && !IsLibertyGroup(killerGroups.First(), board))
-                    return new List<Group>();
+                //clear all killer groups with empty points
+                Board clearedBoard = new Board(board);
+                killerGroups.ForEach(group => group.Points.ToList().ForEach(p => clearedBoard[p] = Content.Empty));
+                //remove covered eye
+                return killerGroups.Where(group => group.Points.Count > 2 || EyeHelper.FindRealEyeWithinEmptySpace(clearedBoard, group, EyeType.UnCoveredEye)).ToList();
             }
             return killerGroups;
         }
@@ -72,14 +74,6 @@ namespace Go
                     killerGroups.Add(group);
                 }
             }
-            if (killerGroups.Any(group => group.Points.Count <= 2))
-            {
-                Board clearedBoard = new Board(board);
-                //clear all killer groups with empty points
-                killerGroups.ForEach(group => group.Points.ToList().ForEach(p => clearedBoard[p] = Content.Empty));
-                //remove where group is covered eye (or false eye)
-                killerGroups.RemoveAll(group => group.Points.Count <= 2 && !EyeHelper.FindRealEyeWithinEmptySpace(clearedBoard, group, EyeType.UnCoveredEye));
-            }
             return killerGroups;
         }
 
@@ -87,11 +81,14 @@ namespace Go
         /// <summary>
         /// Ensure neighbour groups of killer group are diagonal groups.
         /// </summary>
-        public static (Boolean, List<Group>) CheckNeighbourGroupsOfKillerGroup(Board board, Group killerGroup)
+        public static (Boolean, List<Group>) CheckNeighbourGroupsOfKillerGroup(Board board, Group killerGroup, Boolean isFilledBoard = true)
         {
             List<Group> neighbourGroups = board.GetNeighbourGroups(killerGroup);
             //remove groups surrounded by killer group
-            neighbourGroups.RemoveAll(group => group.Neighbours.All(n => board[n] == killerGroup.Content && board.GetGroupAt(n) == killerGroup));
+            if (isFilledBoard)
+                neighbourGroups.RemoveAll(group => group.Neighbours.All(n => board[n] == killerGroup.Content && board.GetGroupAt(n) == killerGroup));
+            else
+                neighbourGroups.RemoveAll(group => group.Neighbours.All(n => board[n] == killerGroup.Content && killerGroup.Points.Contains(n)));
             if (neighbourGroups.Count == 0) return (false, null);
             if (neighbourGroups.Count == 1) return (true, neighbourGroups);
             //get all diagonal groups
