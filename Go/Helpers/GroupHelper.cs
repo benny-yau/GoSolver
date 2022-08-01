@@ -88,7 +88,7 @@ namespace Go
             if (isFilledBoard)
                 neighbourGroups.RemoveAll(group => group.Neighbours.All(n => board[n] == killerGroup.Content && board.GetGroupAt(n) == killerGroup));
             else
-                neighbourGroups.RemoveAll(group => group.Neighbours.All(n => board[n] == killerGroup.Content && killerGroup.Points.Contains(n)));
+                neighbourGroups.RemoveAll(group => group.Neighbours.All(n => killerGroup.Points.Contains(n)));
             if (neighbourGroups.Count == 0) return (false, null);
             if (neighbourGroups.Count == 1) return (true, neighbourGroups);
             //get all diagonal groups
