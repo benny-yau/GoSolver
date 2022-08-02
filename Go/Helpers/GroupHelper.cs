@@ -18,13 +18,20 @@ namespace Go
             {
                 //get killer groups
                 killerGroups = GetAllKillerGroups(board, c);
-                if (killerGroups.Count > 0)
+                if (killerGroups.Count == 0) return killerGroups;
+
+                //return liberty group as first group
+                Group libertyGroup = killerGroups.FirstOrDefault(group => IsLibertyGroup(group, board));
+                if (libertyGroup != null)
                 {
-                    //cache groups in board
-                    if (board.killerGroup == null)
-                        board.killerGroup = new Dictionary<Content, List<Group>>();
-                    board.killerGroup.Add(c, killerGroups);
+                    killerGroups.Remove(libertyGroup);
+                    killerGroups.Insert(0, libertyGroup);
                 }
+
+                //cache groups in board
+                if (board.killerGroup == null)
+                    board.killerGroup = new Dictionary<Content, List<Group>>();
+                board.killerGroup.Add(c, killerGroups);
             }
             else
             {
@@ -65,12 +72,6 @@ namespace Go
                 if (group.Liberties.Count == 0)
                 {
                     if (!CheckNeighbourGroupsOfKillerGroup(filledBoard, group).Item1) continue;
-                    if (IsLibertyGroup(group, board))
-                    {
-                        //return as liberty group as first group
-                        killerGroups.Insert(0, group);
-                        continue;
-                    }
                     killerGroups.Add(group);
                 }
             }

@@ -290,16 +290,16 @@ namespace Go
                 Point liberty = liberties.First();
                 if (currentBoard.GetGroupsFromStoneNeighbours(liberty, c).Any(g => WallHelper.IsNonKillableGroup(tryBoard, g))) continue;
 
-                (Boolean suicide, Board b) = ImmovableHelper.IsSuicidalMove(liberty, eyeGroup.Content, currentBoard);
-                if (suicide)
+                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, eyeGroup.Content, currentBoard);
+                if (suicidal)
                     return (true, b);
                 if (ImmovableHelper.CheckConnectAndDie(b))
                     return (true, b);
                 if (b != null && b.MoveGroup.Liberties.Count == 2)
                 {
                     List<Point> moveGroupLiberties = b.MoveGroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
-                    Board b2 = b.MakeMoveOnNewBoard(moveGroupLiberties.First(), eyeGroup.Content.Opposite());
-                    if (b2 == null || b2.MoveGroupLiberties == 1) continue;
+                    (Boolean suicidal2, Board b2) = ImmovableHelper.IsSuicidalMove(moveGroupLiberties.First(), eyeGroup.Content.Opposite(), b);
+                    if (suicidal2) continue;
 
                     //check for opponent survival move
                     if (tryBoard.MoveGroup.Points.Count >= 2)
@@ -426,8 +426,8 @@ namespace Go
 
             //make move at the other liberty
             Point q = atariTarget.Liberties.First();
-            Board board = currentBoard.MakeMoveOnNewBoard(q, c);
-            if (board == null || board.MoveGroupLiberties == 1) return false;
+            (Boolean suicidal, Board board) = ImmovableHelper.IsSuicidalMove(q, c, currentBoard);
+            if (suicidal) return false;
             Group killerGroup2 = GroupHelper.GetKillerGroupFromCache(board, atariPoint, c);
             if (killerGroup2 == null) return false;
             //ensure the other move can capture atari target as well

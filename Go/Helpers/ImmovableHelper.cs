@@ -69,7 +69,7 @@ namespace Go
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board, false);
                 if (!suicidal)
                 {
-                    if (GroupHelper.GetKillerGroupFromCache(board, p, c) != null && ImmovableHelper.CheckConnectAndDie(b))
+                    if (GroupHelper.GetKillerGroupFromCache(board, p, c) != null && ImmovablePointByConnectAndDie(p, c, b))
                         return (true, null);
                     return (false, null);
                 }
@@ -106,6 +106,24 @@ namespace Go
             return (false, null);
         }
 
+        /// <summary>
+        /// Immovable point by connect and die.
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_GuanZiPu_B3_2" />
+        /// Check covered eye <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Phenomena_Q25182" />
+        /// </summary>
+        private static Boolean ImmovablePointByConnectAndDie(Point p, Content c, Board b)
+        {
+            (_, Board b2) = ImmovableHelper.ConnectAndDie(b);
+            if (b2 == null) return false;
+            //check covered eye
+            if (!b.PointWithinMiddleArea(p))
+            {
+                List<Point> coveredEye = b.GetDiagonalNeighbours().Where(n => EyeHelper.FindCoveredEye(b, n, c)).ToList();
+                if (coveredEye.Any(e => !EyeHelper.FindSemiSolidEyes(e, b2, c).Item1))
+                    return false;
+            }
+            return true;
+        }
 
         /// <summary>
         /// Check for ko in immovable point.

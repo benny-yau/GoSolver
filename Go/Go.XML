@@ -534,6 +534,13 @@
             Check for ko possibility <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q30986" />
             </summary>
         </member>
+        <member name="M:Go.ImmovableHelper.ImmovablePointByConnectAndDie(Go.Point,Go.Content,Go.Board)">
+            <summary>
+            Immovable point by connect and die.
+            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_GuanZiPu_B3_2" />
+            Check covered eye <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Phenomena_Q25182" />
+            </summary>
+        </member>
         <member name="M:Go.ImmovableHelper.CheckForKoInImmovablePoint(Go.Board,Go.Group,Go.Point)">
             <summary>
             Check for ko in immovable point.

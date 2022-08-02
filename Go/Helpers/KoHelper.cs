@@ -155,11 +155,11 @@ namespace Go
             Point e = tryBoard.GetDiagonalNeighbours(lib).Intersect(tryBoard.GetStoneNeighbours(lib2)).First();
 
             //make opponent move to capture
-            Board b = tryBoard.MakeMoveOnNewBoard(e, c.Opposite());
-            if (b == null || b.MoveGroupLiberties == 1) return false;
+            (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(e, c.Opposite(), tryBoard);
+            if (suicidal) return false;
             //make survival move to create ko
-            Board b2 = b.MakeMoveOnNewBoard(lib2, c);
-            if (b2 == null || b2.MoveGroupLiberties == 1) return false;
+            (Boolean suicidal2, Board b2) = ImmovableHelper.IsSuicidalMove(lib2, c, b);
+            if (suicidal2) return false;
 
             if (!b2.GetGroupsFromStoneNeighbours(lib, c.Opposite()).All(group => group.Points.Count == 1)) return false;
             if (b2.GetGroupAt(e).Liberties.Count != 1) return false;
