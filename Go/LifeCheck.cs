@@ -151,7 +151,7 @@ namespace Go
                 if (threatGroup != null)
                 {
                     //check for two threat groups
-                    if (LinkHelper.GetPreviousMoveGroup(board, b).Any(t => t.Liberties.Count == 2 && !t.Points.Contains(threatGroup.Points.First()) && t.Liberties.Any(l => ImmovableHelper.FindTigerMouth(board, c, l))))
+                    if (LinkHelper.GetPreviousMoveGroup(board, b).Any(t => t.Liberties.Count == 2 && !t.Equals(threatGroup) && t.Liberties.Any(l => ImmovableHelper.FindTigerMouth(board, c, l))))
                         return true;
                     //check for another tiger mouth at move
                     if (b.GetStoneNeighbours().Any(n => b[n] == Content.Empty && ImmovableHelper.FindTigerMouth(board, c, n)))
@@ -255,7 +255,7 @@ namespace Go
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c, board);
                 if (suicidal) continue;
                 //double atari with any target group
-                if (b.AtariTargets.Count >= 2 && b.AtariTargets.Any(a => targetGroups.Any(t => t.Points.Contains(a.Points.First()))))
+                if (b.AtariTargets.Count >= 2 && b.AtariTargets.Any(a => targetGroups.Any(t => t.Equals(board.GetGroupAt(a.Points.First())))))
                 {
                     if (DoubleAtariEscape(b)) continue;
                     return true;

@@ -702,6 +702,7 @@
         <member name="M:Go.KillerFormationHelper.SuicidalKillerFormations(Go.Board,Go.Board,Go.Board)">
             <summary>
             Suicidal killer formations within survival group without any real eye.
+            Check suicide at eye point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B19" />
             Check if real eye found in neighbour groups <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario5dan27" />
             Check covered eye at non-killable group <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
             </summary>
@@ -1429,6 +1430,7 @@
             Check connect and die for last two try moves <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B35" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_5" />
             Check capture at diagonal <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16490" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B19" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.GetMustHaveNeutralMove(Go.Game,System.Collections.Generic.List{Go.GameTryMove})">
