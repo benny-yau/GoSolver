@@ -363,7 +363,7 @@ namespace Go
             if (!suicide) return false;
 
             //check if atari on other groups
-            if (b != null && b.GetNeighbourGroups().Any(group => group.Liberties.Count == 1))
+            if (b != null && AtariHelper.AtariByGroup(b, b.MoveGroup))
                 return false;
 
             //check two-point covered eye
@@ -601,7 +601,7 @@ namespace Go
             //check snapback
             foreach (Group atariTarget in tryBoard.AtariTargets)
             {
-                foreach (Group neighbourGroup in tryBoard.GetNeighbourGroups(atariTarget).Where(group => group.Liberties.Count == 1))
+                foreach (Group neighbourGroup in AtariHelper.AtariByGroup(atariTarget, tryBoard))
                 {
                     Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, neighbourGroup);
                     if (b == null) continue;
@@ -687,7 +687,7 @@ namespace Go
             if (LifeCheck.GetTargets(tryBoard).All(t => tryBoard.MoveGroup.Equals(tryBoard.GetGroupAt(t)))) return true;
 
             //reverse connect and die
-            if (tryBoard.MoveGroup.Points.Count == 1 && captureBoard.MoveGroup.Points.Count == 1 && !tryBoard.GetNeighbourGroups().Any(gr => gr.Liberties.Count == 1) && ImmovableHelper.CheckConnectAndDie(captureBoard))
+            if (tryBoard.MoveGroup.Points.Count == 1 && captureBoard.MoveGroup.Points.Count == 1 && !AtariHelper.AtariByGroup(tryBoard, tryBoard.MoveGroup) && ImmovableHelper.CheckConnectAndDie(captureBoard))
                 return false;
 
             //check capture moves
@@ -1886,7 +1886,7 @@ namespace Go
             List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
             if (ngroups.Count == 1 && tryBoard.GetGroupLiberties(ngroups.First()) == 2)
             {
-                List<Group> atariTargets = tryBoard.GetNeighbourGroups(ngroups.First()).Where(group => group.Liberties.Count == 1).ToList();
+                List<Group> atariTargets = AtariHelper.AtariByGroup(ngroups.First(), tryBoard);
                 if (atariTargets.Count != 1) return false;
                 Group atariTarget = atariTargets.First();
                 if (!KoHelper.IsKoFight(tryBoard, atariTarget)) return false;

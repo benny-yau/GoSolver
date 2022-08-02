@@ -240,21 +240,22 @@ namespace Go
         public static Boolean EscapeCaptureLink(Board board, Group targetGroup, Point? capturePoint = null)
         {
             //check if absolute link at liberty
+            Point t = targetGroup.Points.First();
             foreach (Point liberty in targetGroup.Liberties)
             {
                 Board b = board.MakeMoveOnNewBoard(liberty, targetGroup.Content);
                 if (b == null || !LinkHelper.IsAbsoluteLinkForGroups(board, b))
                     continue;
-                if (b.GetGroupLiberties(targetGroup.Points.First()) > 2)
+                if (b.GetGroupLiberties(t) > 2)
                     return true;
             }
             //check for atari target group other than capture point
-            List<Group> ngroups = board.GetNeighbourGroups(targetGroup).Where(n => n.Liberties.Count == 1).ToList();
+            List<Group> ngroups = AtariHelper.AtariByGroup(targetGroup, board);
             foreach (Group ngroup in ngroups)
             {
                 if (capturePoint != null && ngroup.Points.Contains(capturePoint.Value)) continue;
                 Board b = ImmovableHelper.CaptureSuicideGroup(board, ngroup);
-                if (b != null && b.GetGroupAt(targetGroup.Points.First()).Liberties.Count > 2)
+                if (b != null && b.GetGroupAt(t).Liberties.Count > 2)
                     return true;
             }
             return false;
@@ -484,7 +485,7 @@ namespace Go
             List<Point> libertyPoints = board.GetGroupLibertyPoints(targetGroup);
             if (libertyPoints.Count != 2) return false;
 
-            List<Group> groups = board.GetNeighbourGroups(targetGroup).Where(gr => gr.Liberties.Count == 1).ToList();
+            List<Group> groups = AtariHelper.AtariByGroup(targetGroup, board);
             if (groups.Count != 1) return false;
             Group moveGroup = groups.First();
             if (moveGroup.Points.Count > 2 || moveGroup.Liberties.Count > 1) return false;
@@ -631,7 +632,7 @@ namespace Go
                 if (targetLiberties.Count != 2) continue;
 
                 //check if any liberty is suicidal
-                if (targetLiberties.Any(t => ImmovableHelper.IsSuicidalMove(t, c, tryBoard).Item2 == null))
+                if (targetLiberties.Any(t => ImmovableHelper.IsSuicidalMove(t, c, tryBoard).Item1 == null))
                     continue;
                 if (AtariHelper.AtariByGroup(tryBoard, targetGroup, false))
                     continue;
