@@ -116,12 +116,9 @@ namespace Go
             (_, Board b2) = ImmovableHelper.ConnectAndDie(b);
             if (b2 == null) return false;
             //check covered eye
-            if (!b.PointWithinMiddleArea(p))
-            {
-                List<Point> coveredEye = b.GetDiagonalNeighbours().Where(n => EyeHelper.FindCoveredEye(b, n, c)).ToList();
-                if (coveredEye.Any(e => !EyeHelper.FindSemiSolidEyes(e, b2, c).Item1))
-                    return false;
-            }
+            List<Point> coveredEye = b.GetDiagonalNeighbours().Where(n => EyeHelper.FindCoveredEye(b, n, c) && b.GetDiagonalNeighbours(n.x, n.y).Any(x => b[x] == Content.Empty && ImmovableHelper.FindTigerMouth(b, c, x))).ToList();
+            if (coveredEye.Any(e => !EyeHelper.FindSemiSolidEyes(e, b2, c).Item1))
+                return false;
             return true;
         }
 
