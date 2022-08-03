@@ -28,9 +28,22 @@ namespace Go
                     killerGroups.Insert(0, libertyGroup);
                 }
 
+                //check covered eye
+                if (killerGroups.Any(group => group.Points.Count <= 2))
+                {
+                    //clear all killer groups with empty points
+                    Board clearedBoard = new Board(board);
+                    killerGroups.ForEach(group => group.Points.ToList().ForEach(p => clearedBoard[p] = Content.Empty));
+                    foreach (Group group in killerGroups)
+                    {
+                        Boolean unCoveredEye = group.Points.Count > 2 || EyeHelper.FindRealEyeWithinEmptySpace(clearedBoard, group, EyeType.UnCoveredEye);
+                        if (!unCoveredEye)
+                            group.IsCoveredEye = true;
+                    }
+                }
+
                 //cache groups in board
-                if (board.killerGroup == null)
-                    board.killerGroup = new Dictionary<Content, List<Group>>();
+                board.killerGroup = new Dictionary<Content, List<Group>>();
                 board.killerGroup.Add(c, killerGroups);
             }
             else
@@ -38,15 +51,9 @@ namespace Go
                 //retrieve from cache
                 killerGroups = board.killerGroup[c];
             }
+            if (checkCoveredEye)
+                return killerGroups.Where(group => !group.IsCoveredEye).ToList();
 
-            if (checkCoveredEye && killerGroups.Any(group => group.Points.Count <= 2))
-            {
-                //clear all killer groups with empty points
-                Board clearedBoard = new Board(board);
-                killerGroups.ForEach(group => group.Points.ToList().ForEach(p => clearedBoard[p] = Content.Empty));
-                //remove covered eye
-                return killerGroups.Where(group => group.Points.Count > 2 || EyeHelper.FindRealEyeWithinEmptySpace(clearedBoard, group, EyeType.UnCoveredEye)).ToList();
-            }
             return killerGroups;
         }
 

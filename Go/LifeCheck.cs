@@ -44,7 +44,7 @@ namespace Go
             if (targetGroup.Liberties.Count == 1) return ConfirmAliveResult.Unknown;
 
             //get at least two possible eyes
-            List<Group> killerGroups = GroupHelper.GetKillerGroups(board, c).OrderBy(gr => gr.Points.Count).ToList();
+            List<Group> killerGroups = GroupHelper.GetKillerGroups(board, c, true).OrderBy(gr => gr.Points.Count).ToList();
             if (killerGroups.Count < 2) return ConfirmAliveResult.Unknown;
             //get extended groups from target group
             HashSet<Group> groups = LinkHelper.GetAllDiagonalConnectedGroups(board, targetGroup);

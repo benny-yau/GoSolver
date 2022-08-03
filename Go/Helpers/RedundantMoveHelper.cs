@@ -116,7 +116,6 @@ namespace Go
                 List<Point> eyePoints = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindCoveredEye(tryBoard, n, c)).ToList();
                 if (eyePoints.Count != 1) return false;
                 eyePoint = eyePoints.First();
-                if (opponentTryMove == null && tryBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()).All(gr => gr.Liberties.Count == 1)) return true;
                 Board b = new Board(tryBoard);
                 b[eyePoint] = c.Opposite();
                 eyeGroup = b.GetGroupAt(eyePoint);
@@ -1442,6 +1441,7 @@ namespace Go
         /// <summary>
         /// Two point atari move 
         /// Check for three groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935" />
+        /// Check snapback <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31469" />
         /// Check for ko fight 
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31672" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31428" />
@@ -1453,12 +1453,13 @@ namespace Go
             if (capturedBoard.CapturedPoints.Count() != 2 || !tryBoard.IsAtariMove) return false;
             //check for three groups
             if (tryBoard.GetGroupsFromStoneNeighbours(move, c).Count > 2) return true;
-            //check for ko fight
-            if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
             (Boolean isAtari, Board board) = AtariHelper.CheckAtariMove(capturedBoard, move, c);
             if (!isAtari || board.AtariTargets.Count == 0) return false;
-            if (ImmovableHelper.IsSuicidalOnCapture(board).Item1)
+            //check snapback
+            if (board.GetDiagonalNeighbours().Any(n => board[n] == board.MoveGroup.Content) && ImmovableHelper.IsSuicidalOnCapture(board).Item1)
                 return true;
+            //check for ko fight
+            if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
             if (board.AtariTargets.Count == 1 && board.AtariTargets.First().Points.Count == 1)
             {
                 Point? libertyPoint = ImmovableHelper.GetLibertyPointOfSuicide(board, board.AtariTargets.First());

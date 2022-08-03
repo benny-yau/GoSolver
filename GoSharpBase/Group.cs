@@ -16,6 +16,7 @@ namespace Go
 
         public Content Content { get; private set; }
         public Boolean? IsNonKillable { get; set; }
+        public Boolean IsCoveredEye { get; set; }
 
         public HashSet<Point> Liberties
         {
