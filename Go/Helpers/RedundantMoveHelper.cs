@@ -1905,6 +1905,7 @@ namespace Go
         /// Remaining move at liberty point <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
         /// Check connect and die for last two try moves <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B35" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_5" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31580" />
         /// Check capture at diagonal <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16490" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B19" />
         /// </summary>
@@ -1961,7 +1962,14 @@ namespace Go
             else if (tryMoves.Count <= 2)
             {
                 //check connect and die for last two try moves
-                if (tryMoves.Count == 1 && !tryMoves.All(t => t.TryGame.Board.GetStoneNeighbours().All(n => t.TryGame.Board[n] == t.MoveContent))) return;
+                if (tryMoves.Count == 1)
+                {
+                    Board tryBoard = tryMoves.First().TryGame.Board;
+                    Board currentBoard = tryMoves.First().CurrentGame.Board;
+                    Content c = tryBoard.MoveGroup.Content;
+                    Boolean suicidalMove = tryBoard.GetStoneNeighbours().All(n => tryBoard[n] == c) || ((tryBoard.MoveGroupLiberties == 1 || LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Any(n => n.Liberties.Count == 1)) && GroupHelper.GetKillerGroupFromCache(tryBoard, tryBoard.Move.Value, c.Opposite()) == null);
+                    if (!suicidalMove) return;
+                }
                 if (tryMoves.Count == 2 && !tryMoves.All(t => GroupHelper.GetKillerGroupFromCache(t.TryGame.Board, t.Move, t.MoveContent.Opposite()) == null)) return;
 
                 if (tryMoves.Select(t => new { tryBoard = t.TryGame.Board }).All(t => ImmovableHelper.CheckConnectAndDie(t.tryBoard) || LinkHelper.GetGroupDiagonals(t.tryBoard, t.tryBoard.MoveGroup).Any(d => t.tryBoard[d.Move] == t.tryBoard.MoveGroup.Content && ImmovableHelper.CheckConnectAndDie(t.tryBoard, t.tryBoard.GetGroupAt(d.Move)))))

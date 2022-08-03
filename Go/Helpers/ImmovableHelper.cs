@@ -124,7 +124,8 @@ namespace Go
 
         /// <summary>
         /// Check for ko in immovable point.
-        /// check for ko by capture neighbour groups <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q30986" />
+        /// Check for ko by capture neighbour groups <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q30986" />
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q29998_2" />
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16446" />
         /// Check for reverse ko fight <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q29998" />
         /// </summary>
@@ -136,8 +137,8 @@ namespace Go
             //check for ko by capture neighbour groups
             if (EyeHelper.FindCoveredEye(board, q, c.Opposite()))
             {
-                List<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(q, c).ToList();
-                if (neighbourGroups.All(n => n.Liberties.Count == 1))
+                List<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(q, c).Where(n => n.Liberties.Count == 1).ToList();
+                if (neighbourGroups.Count > 1)
                 {
                     foreach (Group group in neighbourGroups)
                     {
@@ -146,7 +147,7 @@ namespace Go
                             return true;
                     }
                 }
-                if (KoHelper.IsKoFight(board, targetGroup))
+                else if (KoHelper.IsKoFight(board, targetGroup))
                     return true;
             }
 
@@ -631,9 +632,6 @@ namespace Go
                 HashSet<Point> targetLiberties = targetGroup.Liberties;
                 if (targetLiberties.Count != 2) continue;
 
-                //check if any liberty is suicidal
-                if (targetLiberties.Any(t => ImmovableHelper.IsSuicidalMove(t, c, tryBoard).Item1 == null))
-                    continue;
                 if (AtariHelper.AtariByGroup(tryBoard, targetGroup, false))
                     continue;
 
@@ -655,17 +653,6 @@ namespace Go
                 }
             }
             return false;
-        }
-
-        /// <summary>
-        /// Ensure that liberties within killer group can be cleared.
-        /// </summary>
-        public static Boolean ClearEmptySpace(Board board, Group killerGroup)
-        {
-            Content c = killerGroup.Content.Opposite();
-            List<Point> availablePoints = killerGroup.Points.Where(p => board[p] == Content.Empty && !EyeHelper.FindEye(board, p, c)).ToList();
-            if (availablePoints.Count == 0) return true;
-            return availablePoints.Any(p => !ImmovableHelper.IsSuicidalMove(board, p, c));
         }
     }
 }

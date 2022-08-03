@@ -544,7 +544,8 @@
         <member name="M:Go.ImmovableHelper.CheckForKoInImmovablePoint(Go.Board,Go.Group,Go.Point)">
             <summary>
             Check for ko in immovable point.
-            check for ko by capture neighbour groups <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q30986" />
+            Check for ko by capture neighbour groups <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q30986" />
+            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q29998_2" />
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16446" />
             Check for reverse ko fight <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q29998" />
             </summary>
@@ -682,11 +683,6 @@
             Rare scenario <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_WindAndTime_Q30275" />
             Check unescapable group <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A85" />
             <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_WuQingYuan_Q31154" />
-            </summary>
-        </member>
-        <member name="M:Go.ImmovableHelper.ClearEmptySpace(Go.Board,Go.Group)">
-            <summary>
-            Ensure that liberties within killer group can be cleared.
             </summary>
         </member>
         <member name="M:Go.KillerFormationHelper.DeadFormationInBothAlive(Go.Board,Go.Group,System.Int32,System.Int32)">
@@ -1429,6 +1425,7 @@
             Remaining move at liberty point <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
             Check connect and die for last two try moves <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B35" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_5" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31580" />
             Check capture at diagonal <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16490" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B19" />
             </summary>
