@@ -100,11 +100,8 @@ namespace Go
         public static Boolean FindCoveredEyeByCapture(Board capturedBoard, Group capturedGroup)
         {
             int capturedCount = capturedGroup.Points.Count;
-            if (capturedCount == 1)
-                return EyeHelper.FindCoveredEye(capturedBoard, capturedGroup.Points.First(), capturedBoard.MoveGroup.Content);
-            else if (capturedCount == 2)
-                return EyeHelper.FindRealEyeWithinEmptySpace(capturedBoard, capturedGroup, EyeType.CoveredEye);
-            return false;
+            if (capturedCount != 1 && capturedCount != 2) return false;
+            return EyeHelper.FindRealEyeWithinEmptySpace(capturedBoard, capturedGroup, EyeType.CoveredEye);
         }
 
         public static Boolean FindCoveredEyeByCapture(Board board)

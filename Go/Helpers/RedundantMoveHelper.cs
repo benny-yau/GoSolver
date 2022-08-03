@@ -1456,7 +1456,10 @@ namespace Go
             //check for ko fight
             if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
             (Boolean isAtari, Board board) = AtariHelper.CheckAtariMove(capturedBoard, move, c);
-            if (isAtari && board.AtariTargets.Count == 1 && board.AtariTargets.First().Points.Count == 1)
+            if (!isAtari || board.AtariTargets.Count == 0) return false;
+            if (ImmovableHelper.IsSuicidalOnCapture(board).Item1)
+                return true;
+            if (board.AtariTargets.Count == 1 && board.AtariTargets.First().Points.Count == 1)
             {
                 Point? libertyPoint = ImmovableHelper.GetLibertyPointOfSuicide(board, board.AtariTargets.First());
                 if (libertyPoint == null) return false;
@@ -1967,7 +1970,7 @@ namespace Go
                     Board tryBoard = tryMoves.First().TryGame.Board;
                     Board currentBoard = tryMoves.First().CurrentGame.Board;
                     Content c = tryBoard.MoveGroup.Content;
-                    Boolean suicidalMove = tryBoard.GetStoneNeighbours().All(n => tryBoard[n] == c) || ((tryBoard.MoveGroupLiberties == 1 || LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Any(n => n.Liberties.Count == 1)) && GroupHelper.GetKillerGroupFromCache(tryBoard, tryBoard.Move.Value, c.Opposite()) == null);
+                    Boolean suicidalMove = tryBoard.GetStoneNeighbours().All(n => tryBoard[n] == c) || GroupHelper.GetKillerGroupFromCache(tryBoard, tryBoard.Move.Value, c.Opposite()) == null;
                     if (!suicidalMove) return;
                 }
                 if (tryMoves.Count == 2 && !tryMoves.All(t => GroupHelper.GetKillerGroupFromCache(t.TryGame.Board, t.Move, t.MoveContent.Opposite()) == null)) return;
