@@ -292,6 +292,15 @@ namespace Go
                 if (eyeGroups.Count == 1 || eyeType == EyeType.CoveredEye)
                     return true;
 
+                Content c = killerGroup.Content;
+                List<LinkedPoint<Point>> diagonalPoints = LinkHelper.GetGroupDiagonals(board, killerGroup);
+                /*
+                //check snapback
+                if (diagonalPoints.Any(p => board.GetStoneNeighbours((Point)p.CheckMove).Count(n => board[n] == c.Opposite()) >= 3 && board[p.Move] == c && board[(Point)p.CheckMove] == c && board.GetDiagonalNeighbours((Point)p.CheckMove).Count(n => board[n] == c) > 1 && GroupHelper.GetKillerGroupFromCache(board, p.Move, c.Opposite()) == null && ImmovableHelper.FindTigerMouth(board, c.Opposite(), p.Move)))
+                {
+                    DebugHelper.PrintGameTryMovesToText(board, "FindRealEyeWithinEmptySpace_snapback.txt");
+                    return false;
+                }*/
                 //check snapback
                 if (eyeGroups.Any(group => ImmovableHelper.CheckSnapback(board, group)))
                     return false;
