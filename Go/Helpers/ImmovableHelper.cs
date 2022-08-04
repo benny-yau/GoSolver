@@ -512,10 +512,7 @@ namespace Go
                 if (!b.GetDiagonalNeighbours(r).Any(n => suicideWithinTwoPointGroup.First().Points.Contains(n))) continue;
                 //capture move
                 if (IsSnapback(b, targetGroup, suicideGroupAtTigerMouth))
-                {
-                    DebugHelper.PrintGameTryMovesToText(b, "snapback2.txt");
                     return true;
-                }
             }
             return false;
         }
