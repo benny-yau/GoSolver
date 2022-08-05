@@ -116,7 +116,7 @@ namespace Go
         private static Boolean CheckDoubleLinkage(Board board, LinkedPoint<Point> diagonalLink, Content c)
         {
             List<Point> diagonals = LinkHelper.PointsBetweenDiagonals(diagonalLink);
-            foreach (Point p in diagonals)
+            foreach (Point p in diagonals.Where(d => board[d] == Content.Empty))
             {
                 //ensure three opponent groups
                 List<Point> opponentStones = board.GetStoneNeighbours(p).Where(n => board[n] == c).ToList();
@@ -125,7 +125,18 @@ namespace Go
 
                 //make opponent move at diagonal
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board);
-                if (suicidal) continue;
+                if (suicidal)
+                {
+                    //check double atari at link
+                    Point? liberty = ImmovableHelper.FindTigerMouth(board, p, c);
+                    if (liberty != null && board[liberty.Value] != Content.Empty)
+                    {
+                        Group killerGroup = GroupHelper.GetKillerGroupFromCache(board, p, c);
+                        if (killerGroup != null && LifeCheck.CheckOpponentDoubleAtari(board, new List<Group>() { killerGroup }))
+                            return false;
+                    }
+                    continue;
+                }
 
                 //check if any of the other two diagonals are immovable
                 List<Point> otherDiagonals = board.GetDiagonalNeighbours(p).Where(n => board.GetStoneNeighbours(n).Intersect(opponentStones).Count() >= 2).ToList();

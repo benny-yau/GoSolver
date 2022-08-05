@@ -99,7 +99,6 @@ namespace Go
                 if (libertyPoint == null) continue;
                 if (board[libertyPoint.Value] != Content.Empty)
                     continue;
-
                 if (lifeCheck)
                 {
                     //possible corner three formation
@@ -236,7 +235,7 @@ namespace Go
         /// Check opponent double atari moves.
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_7" />
         /// </summary>
-        private static Boolean CheckOpponentDoubleAtari(Board board, List<Group> eyes, List<LinkedPoint<Point>> tigerMouthList)
+        public static Boolean CheckOpponentDoubleAtari(Board board, List<Group> eyes, List<LinkedPoint<Point>> tigerMouthList = null)
         {
             //get eye groups
             List<Group> targetGroups = new List<Group>();
@@ -244,7 +243,8 @@ namespace Go
 
             //get tiger mouth groups
             Content c = eyes.First().Content;
-            tigerMouthList.ForEach(tigerMouth => targetGroups.AddRange(board.GetGroupsFromStoneNeighbours(tigerMouth.Move, c)));
+            if (tigerMouthList != null)
+                tigerMouthList.ForEach(tigerMouth => targetGroups.AddRange(board.GetGroupsFromStoneNeighbours(tigerMouth.Move, c)));
             targetGroups = targetGroups.Where(t => t.Liberties.Count == 2).Distinct().ToList();
             //get distinct liberties of target groups
             List<Point> liberties = board.GetLibertiesOfGroups(targetGroups).Distinct().ToList();
