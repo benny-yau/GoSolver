@@ -439,6 +439,7 @@
             Real eye of diagonally connected groups.
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_GuanZiPu_B3_2" /> 
             Check for covered eye killer group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_4" /> 
+            Ensure all groups are connected <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_ScenarioHighLevel28" /> 
             </summary>
         </member>
         <member name="M:Go.EyeHelper.NoEyeForOpponentWithinKillerGroup(Go.Board,Go.Point,Go.Content,System.Collections.Generic.List{Go.Group})">
@@ -637,13 +638,16 @@
         </member>
         <member name="M:Go.ImmovableHelper.CheckSnapbackInNeighbourGroups(Go.Board,Go.Group)">
             <summary>
-            Simple snapback with liberty of two in the group.
+            Check snapback in neighbour groups.
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234" />
             <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A55" />
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.CheckSnapback(Go.Board,Go.Group)">
             <summary>
+            Check snapback.
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A26" />
+            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31493" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B31_4" />
             Two point move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234" />
             </summary>
@@ -943,7 +947,7 @@
             Get tiger mouth of links.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.GetAllDiagonalGroups(Go.Board,Go.Group,System.Collections.Generic.List{Go.Group})">
+        <member name="M:Go.LinkHelper.GetAllDiagonalGroups(Go.Board,Go.Group,System.Collections.Generic.List{Go.Group},System.Boolean)">
             <summary>
             Get all diagonal groups for checking neighbour groups of killer group.
             </summary>

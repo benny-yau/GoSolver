@@ -349,7 +349,7 @@ namespace Go
         /// <summary>
         /// Get all diagonal groups for checking neighbour groups of killer group.
         /// </summary>
-        public static List<Group> GetAllDiagonalGroups(Board board, Group group, List<Group> groups = null)
+        public static List<Group> GetAllDiagonalGroups(Board board, Group group, List<Group> groups = null, Boolean recursive = true)
         {
             if (groups == null)
             {
@@ -362,7 +362,8 @@ namespace Go
                 Group g = board.GetGroupAt(diagonalPoint.Move);
                 if (groups.Contains(g)) continue;
                 groups.Add(g);
-                GetAllDiagonalGroups(board, g, groups);
+                if (recursive)
+                    GetAllDiagonalGroups(board, g, groups);
             }
             return groups;
         }

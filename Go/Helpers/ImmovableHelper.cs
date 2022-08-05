@@ -465,7 +465,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Simple snapback with liberty of two in the group.
+        /// Check snapback in neighbour groups.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A55" />
         /// </summary>
@@ -476,6 +476,9 @@ namespace Go
         }
 
         /// <summary>
+        /// Check snapback.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A26" />
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31493" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B31_4" />
         /// Two point move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234" />
         /// </summary>
@@ -484,7 +487,7 @@ namespace Go
             Content c = targetGroup.Content;
             if (targetGroup.Points.Count == 1) return false;
             List<Point> libertyPoints = board.GetGroupLibertyPoints(targetGroup);
-            if (libertyPoints.Count != 2 || libertyPoints.Any(lib => board.PointWithinMiddleArea(lib) && !EyeHelper.IsCovered(board, lib, c))) return false;
+            if (libertyPoints.Count != 2) return false;
 
             List<Group> groups = AtariHelper.AtariByGroup(targetGroup, board);
             if (groups.Count == 0) return false;
@@ -503,7 +506,7 @@ namespace Go
                 if (suicideGroups.Count != 2) continue;
 
                 //one point move within two point group or two point move
-                List<Group> suicideWithinTwoPointGroup = suicideGroups.Where(gr => (gr.Points.Count == 2) || (gr.Points.Count == 1 && EyeHelper.IsCovered(b, gr.Points.First(), c) && board.PointWithinMiddleArea(gr.Points.First()))).ToList();
+                List<Group> suicideWithinTwoPointGroup = suicideGroups.Where(gr => gr.Points.Count == 2 || GroupHelper.GetAllKillerGroups(b, c).Any(kgroup => kgroup.Points.Contains(gr.Points.First()))).ToList();
                 if (suicideWithinTwoPointGroup.Count != 1) continue;
 
                 Group suicideGroupAtTigerMouth = suicideGroups.Where(gr => gr != suicideWithinTwoPointGroup.First() && gr.Points.Count == 1).FirstOrDefault();

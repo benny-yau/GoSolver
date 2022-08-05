@@ -431,6 +431,7 @@ namespace Go
         /// Real eye of diagonally connected groups.
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_GuanZiPu_B3_2" /> 
         /// Check for covered eye killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_4" /> 
+        /// Ensure all groups are connected <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_ScenarioHighLevel28" /> 
         /// </summary>
         public static Boolean RealEyeOfDiagonallyConnectedGroups(Board board, Group killerGroup)
         {
@@ -438,11 +439,21 @@ namespace Go
             if (killerGroup.Points.Count <= 3) return false;
             //check for covered eye killer group
             if (killerGroup.Points.Any(p => EyeHelper.IsCovered(board, p, c.Opposite()))) return false;
+
+            (Boolean isKillerGroup, List<Group> connectedGroups) = GroupHelper.CheckNeighbourGroupsOfKillerGroup(board, killerGroup, false);
+            if (!isKillerGroup)
+                return false;
+
+            //ensure all groups are connected
+            foreach (Group group in connectedGroups)
+            {
+                List<Group> diagonalGroups = LinkHelper.GetAllDiagonalGroups(board, group, null, false).Intersect(connectedGroups).ToList();
+                if (diagonalGroups.Any(d => d != group && !LinkHelper.IsImmediateDiagonallyConnected(board, d, group)))
+                    return false;
+            }
+
             if (killerGroup.Points.Any(p => board[p] != Content.Empty))
             {
-                (Boolean isKillerGroup, List<Group> connectedGroups) = GroupHelper.CheckNeighbourGroupsOfKillerGroup(board, killerGroup, false);
-                if (!isKillerGroup)
-                    return false;
                 //ensure all liberties cannot create eye for opponent
                 if (killerGroup.Points.Where(p => board[p] == Content.Empty).All(lib => NoEyeForOpponentWithinKillerGroup(board, lib, c, connectedGroups)))
                     return true;
