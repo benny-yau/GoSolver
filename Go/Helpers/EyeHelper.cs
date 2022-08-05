@@ -39,41 +39,41 @@ namespace Go
             return (false, c);
         }
 
-        public static Boolean FindEye(Board board, Point p, Content c = Content.Unknown)
+        public static Boolean FindEye(Board board, Point eye, Content c = Content.Unknown)
         {
-            return FindEye(board, p.x, p.y, c);
+            return FindEye(board, eye.x, eye.y, c);
         }
 
         /// <summary>
         /// An uncovered eye is a point where none or only one diagonal point covered by opposite content if point is in the middle area, and no diagonal point covered by opposite content if point is at the side or at the corner.
         /// </summary>
-        public static Boolean FindUncoveredEye(Board currentBoard, Point n, Content c)
+        public static Boolean FindUncoveredEye(Board currentBoard, Point eye, Content c)
         {
-            if (FindEye(currentBoard, n, c))
+            if (FindEye(currentBoard, eye, c))
             {
-                return FindUncoveredPoint(currentBoard, n, c);
+                return FindUncoveredPoint(currentBoard, eye, c);
             }
             return false;
         }
 
-        public static Boolean FindUncoveredPoint(Board currentBoard, Point eyePoint, Content c)
+        public static Boolean FindUncoveredPoint(Board currentBoard, Point eye, Content c)
         {
-            return !IsCovered(currentBoard, eyePoint, c);
+            return !IsCovered(currentBoard, eye, c);
         }
 
-        public static Boolean CoveredMove(Board board, Point eyePoint, Content c)
+        public static Boolean CoveredMove(Board board, Point eye, Content c)
         {
-            List<Point> diagonalPoints = board.GetDiagonalNeighbours(eyePoint);
+            List<Point> diagonalPoints = board.GetDiagonalNeighbours(eye);
             List<Point> stonePoints = board.GetStoneNeighbours();
             diagonalPoints = diagonalPoints.Intersect(stonePoints).ToList();
             if (!diagonalPoints.All(p => board[p] == c.Opposite())) return false;
-            if (!IsCovered(board, eyePoint, c)) return false;
+            if (!IsCovered(board, eye, c)) return false;
             return true;
         }
 
-        public static Boolean IsCovered(Board board, Point p, Content c)
+        public static Boolean IsCovered(Board board, Point eye, Content c)
         {
-            List<Point> diagonalNeighbours = board.GetDiagonalNeighbours(p);
+            List<Point> diagonalNeighbours = board.GetDiagonalNeighbours(eye);
             List<Point> oppositeContent = diagonalNeighbours.Where(q => board[q] == c.Opposite()).ToList();
             if (diagonalNeighbours.Count == 4) // middle area
                 return (oppositeContent.Count >= 2);
@@ -84,11 +84,11 @@ namespace Go
         /// <summary>
         /// Find false eye which has one or more diagonal points covered by opposite content.
         /// </summary>
-        public static Boolean FindCoveredEye(Board tryBoard, Point p, Content c)
+        public static Boolean FindCoveredEye(Board tryBoard, Point eye, Content c)
         {
-            if (FindNonSemiSolidEye(tryBoard, p, c))
+            if (FindNonSemiSolidEye(tryBoard, eye, c))
             {
-                if (IsCovered(tryBoard, p, c))
+                if (IsCovered(tryBoard, eye, c))
                     return true;
             }
             return false;
@@ -133,9 +133,9 @@ namespace Go
         /// <summary>
         /// Find eye that is not semi solid eye.
         /// </summary>
-        public static Boolean FindNonSemiSolidEye(Board board, Point p, Content c)
+        public static Boolean FindNonSemiSolidEye(Board board, Point eye, Content c)
         {
-            return EyeHelper.FindEye(board, p, c) && !EyeHelper.FindSemiSolidEyes(p, board, c).Item1;
+            return EyeHelper.FindEye(board, eye, c) && !EyeHelper.FindSemiSolidEyes(eye, board, c).Item1;
         }
 
         /// <summary>
@@ -177,31 +177,61 @@ namespace Go
         /// <summary>
         /// Semi solid eyes are real eyes that can have diagonals with immovable points.
         /// </summary>
-        public static (Boolean, List<Point>) FindSemiSolidEyes(Point p, Board board, Content c = Content.Unknown)
+        public static (Boolean, List<Point>) FindSemiSolidEyes(Point eye, Board board, Content c = Content.Unknown)
         {
             GameInfo gameInfo = board.GameInfo;
-            (Boolean isEye, Content content) = FindEye(p.x, p.y, board, c);
+            (Boolean isEye, Content content) = FindEye(eye.x, eye.y, board, c);
             if (!isEye)
                 return (false, null);
             if (c == Content.Unknown) c = content;
 
             //ensure all groups have more than one liberty
-            HashSet<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(p, c.Opposite());
+            HashSet<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(eye, c.Opposite());
             if (neighbourGroups.Count > 1 && neighbourGroups.Any(group => group.Liberties.Count == 1))
                 return (false, null);
 
             //get suicide point or tiger's mouth at all diagonals
-            List<Point> immovablePoints = GetImmovablePoints(p, board, c);
+            List<Point> immovablePoints = GetImmovablePoints(eye, board, c);
             Boolean found = false;
-            List<Point> diagonals = board.GetDiagonalNeighbours(p);
+            List<Point> diagonals = board.GetDiagonalNeighbours(eye);
             int stoneCount = diagonals.Count(d => board[d] == c);
             int diagonalCount = diagonals.Count;
             //for eye point in middle, 3 of the diagonals should be immovable
-            if (board.PointWithinMiddleArea(p))
+            if (board.PointWithinMiddleArea(eye))
                 found = (stoneCount + immovablePoints.Count >= diagonalCount - 1);
             else //for eye point at side or corner, all diagonals should be immovable
                 found = (stoneCount + immovablePoints.Count == diagonalCount);
+
+            //check double atari
+            if (found && stoneCount < 2)
+            {
+                if (DoubleAtariOnSemiSolidEye(board, eye, c))
+                    return (false, null);
+            }
             return (found, immovablePoints);
+        }
+
+        /// <summary>
+        /// Double atari on semi solid eye. <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_DoubleAtariOnSemiSolidEye" />
+        /// </summary>
+        private static Boolean DoubleAtariOnSemiSolidEye(Board board, Point eye, Content c)
+        {
+            List<Point> stoneNeighbours = board.GetStoneNeighbours(eye);
+            foreach (Point p in stoneNeighbours)
+            {
+                Group eyeGroup = board.GetGroupAt(p);
+                if (eyeGroup.Points.Count != 1) continue;
+                List<Point> diagonalPoints = LinkHelper.GetGroupLinkedDiagonals(board, eyeGroup).Select(d => d.Move).Except(stoneNeighbours).ToList();
+                if (diagonalPoints.Count < 2 || board.GetGroupsFromPoints(diagonalPoints).Count(n => n.Liberties.Count <= 2) < 2) continue;
+                foreach (Point q in board.GetStoneNeighbours(p).Where(n => !n.Equals(eye)))
+                {
+                    (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(q, c.Opposite(), board);
+                    if (suicidal) continue;
+                    if (b.CapturedList.Count > 0 || b.AtariTargets.Count > 1)
+                        return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>
@@ -223,15 +253,15 @@ namespace Go
         /// <summary>
         /// Find real solid eyes, filled with same content at the diagonals, not immovable points.
         /// </summary>
-        public static Boolean FindRealSolidEyes(Point p, Content c, Board board)
+        public static Boolean FindRealSolidEyes(Point eye, Content c, Board board)
         {
-            if (!FindUncoveredEye(board, p, c))
+            if (!FindUncoveredEye(board, eye, c))
                 return false;
 
-            List<Point> diagonals = board.GetDiagonalNeighbours(p);
+            List<Point> diagonals = board.GetDiagonalNeighbours(eye);
             int stoneCount = diagonals.Count(d => board[d] == c);
             int diagonalCount = diagonals.Count;
-            if (board.PointWithinMiddleArea(p)) //middle area
+            if (board.PointWithinMiddleArea(eye)) //middle area
                 return (stoneCount >= diagonalCount - 1);
             else //side or corner
                 return (stoneCount == diagonalCount);
@@ -289,7 +319,7 @@ namespace Go
             //find real eye
             if (MakeMoveWithinEmptySpace(b, killerGroup, eyeType))
             {
-                if (eyeGroups.Count == 1 || eyeType == EyeType.CoveredEye)
+                if (eyeGroups.Count == 1 || eyeType != EyeType.SemiSolidEye)
                     return true;
 
                 //check snapback

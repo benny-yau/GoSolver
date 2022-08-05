@@ -506,7 +506,7 @@ namespace Go
                 if (suicideGroups.Count != 2) continue;
 
                 //one point move within two point group or two point move
-                List<Group> suicideWithinTwoPointGroup = suicideGroups.Where(gr => gr.Points.Count == 2 || GroupHelper.GetAllKillerGroups(b, c).Any(kgroup => kgroup.Points.Contains(gr.Points.First()))).ToList();
+                List<Group> suicideWithinTwoPointGroup = suicideGroups.Where(gr => gr.Points.Count == 2 || GroupHelper.GetKillerGroupFromCache(b, gr.Points.First(), c) != null).ToList();
                 if (suicideWithinTwoPointGroup.Count != 1) continue;
 
                 Group suicideGroupAtTigerMouth = suicideGroups.Where(gr => gr != suicideWithinTwoPointGroup.First() && gr.Points.Count == 1).FirstOrDefault();

@@ -34,7 +34,7 @@ namespace Go
                     Group groupJ = tryBoard.GetGroupAt(groups[j].Points.First());
                     if (groupI == groupJ && ImmovableHelper.CheckConnectAndDie(tryBoard)) return false;
                     //check if currently linked
-                    Boolean isLinked = (groupI == groupJ) || IsImmediateDiagonallyConnected(tryBoard, groupI, groupJ);
+                    Boolean isLinked = (groupI == groupJ) || IsImmediateDiagonallyConnected(tryBoard, groupI, groupJ, true);
                     if (isLinked)
                     {
                         //check if previously linked
@@ -112,6 +112,7 @@ namespace Go
         /// Check for double linkage.
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_2" />
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_3" />
+        /// Check double atari at link <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_DoubleAtariOnLinkage" />
         /// </summary>
         private static Boolean CheckDoubleLinkage(Board board, LinkedPoint<Point> diagonalLink, Content c)
         {
@@ -152,7 +153,7 @@ namespace Go
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_5" />
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_Nie60" />
         /// </summary>
-        private static Boolean CheckDoubleAtariForLinks(Board board, HashSet<Group> groups, Group group, LinkedPoint<Point> diagonalPoint)
+        private static Boolean CheckDoubleAtariForLinks(Board board, Group group, LinkedPoint<Point> diagonalPoint)
         {
             Content c = group.Content;
             List<Point> diagonals = LinkHelper.PointsBetweenDiagonals(diagonalPoint);
@@ -165,15 +166,9 @@ namespace Go
                 foreach (Point p in board.GetGroupLibertyPoints(tigerMouthGroup))
                 {
                     (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board);
-                    if (suicidal || b.AtariTargets.Count < 2) continue;
-                    (Boolean unEscapable, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(b, b.GetGroupAt(tigerMouthGroup.Points.First()));
-                    if (escapeBoard == null) return true;
-                    if (escapeBoard.CapturedPoints.Contains(p)) continue;
-                    foreach (Group targetGroup in AtariHelper.AtariByGroup(escapeBoard.GetGroupAt(p), escapeBoard))
-                    {
-                        if (groups.Any(g => g.Points.Contains(targetGroup.Points.First())))
-                            return true;
-                    }
+                    if (suicidal) continue;
+                    if (b.AtariTargets.Count >= 2)
+                        return true;
                 }
             }
             return false;
@@ -281,7 +276,7 @@ namespace Go
                     continue;
 
                 //check double atari for links
-                if (CheckDoubleAtariForLinks(board, allConnectedGroups, g, diagonalPoint))
+                if (CheckDoubleAtariForLinks(board, g, diagonalPoint))
                     continue;
 
                 allConnectedGroups.Add(g);
@@ -306,17 +301,21 @@ namespace Go
         /// <summary>
         /// Find if two groups are connected diagonally directly or through move group. 
         /// </summary>
-        public static Boolean IsImmediateDiagonallyConnected(Board board, Group group, Group findGroup)
+        public static Boolean IsImmediateDiagonallyConnected(Board board, Group group, Group findGroup, Boolean checkMoveGroup = false)
         {
             //link between the two groups
             if (GetGroupLinkedDiagonals(board, group).Any(d => board.GetGroupAt(d.Move) == findGroup && CheckIsDiagonalLinked(d, board)))
                 return true;
 
             //link through move group
-            Boolean isLinked = (group == board.MoveGroup || GetGroupLinkedDiagonals(board, group).Any(d => board.GetGroupAt(d.Move) == board.MoveGroup && CheckIsDiagonalLinked(d, board)));
-            Boolean isLinked2 = (findGroup == board.MoveGroup || GetGroupLinkedDiagonals(board, findGroup).Any(d => board.GetGroupAt(d.Move) == board.MoveGroup && CheckIsDiagonalLinked(d, board)));
+            if (checkMoveGroup)
+            {
+                Boolean isLinked = (group == board.MoveGroup || GetGroupLinkedDiagonals(board, group).Any(d => board.GetGroupAt(d.Move) == board.MoveGroup && CheckIsDiagonalLinked(d, board)));
+                Boolean isLinked2 = (findGroup == board.MoveGroup || GetGroupLinkedDiagonals(board, findGroup).Any(d => board.GetGroupAt(d.Move) == board.MoveGroup && CheckIsDiagonalLinked(d, board)));
 
-            return isLinked && isLinked2;
+                return isLinked && isLinked2;
+            }
+            return false;
         }
 
         /// <summary>

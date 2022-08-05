@@ -399,6 +399,11 @@
             Semi solid eyes are real eyes that can have diagonals with immovable points.
             </summary>
         </member>
+        <member name="M:Go.EyeHelper.DoubleAtariOnSemiSolidEye(Go.Board,Go.Point,Go.Content)">
+            <summary>
+            Double atari on semi solid eye. <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_DoubleAtariOnSemiSolidEye" />
+            </summary>
+        </member>
         <member name="M:Go.EyeHelper.GetImmovablePoints(Go.Point,Go.Board,Go.Content)">
             <summary>
             Get all immovable points at eye point diagonals.
@@ -895,9 +900,10 @@
             Check for double linkage.
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_2" />
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_3" />
+            Check double atari at link <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_DoubleAtariOnLinkage" />
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.CheckDoubleAtariForLinks(Go.Board,System.Collections.Generic.HashSet{Go.Group},Go.Group,Go.LinkedPoint{Go.Point})">
+        <member name="M:Go.LinkHelper.CheckDoubleAtariForLinks(Go.Board,Go.Group,Go.LinkedPoint{Go.Point})">
             <summary>
             Check double atari for links.
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_7" />
@@ -930,7 +936,7 @@
             Find if two groups are connected diagonally. If find group parameter is null then look for all connected groups.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.IsImmediateDiagonallyConnected(Go.Board,Go.Group,Go.Group)">
+        <member name="M:Go.LinkHelper.IsImmediateDiagonallyConnected(Go.Board,Go.Group,Go.Group,System.Boolean)">
             <summary>
             Find if two groups are connected diagonally directly or through move group. 
             </summary>
