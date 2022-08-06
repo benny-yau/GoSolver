@@ -1085,6 +1085,7 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18500_3" />
         /// One liberty - suicide for both players <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40_2" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126" />
+        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18_3" />
         /// Crowbar formation <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
         /// Two liberties - suicide for both players <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_A19" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30215" />
@@ -1145,8 +1146,15 @@ namespace Go
             if (liberties.Count == 1)
             {
                 //one liberty - suicide for both players
-                if (ImmovableHelper.IsSuicidalMoveForBothPlayers(capturedBoard, liberties.First()))
-                    return false;
+                Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
+                if (killerGroup != null && killerGroup.Points.Count == 2)
+                {
+                    if (ImmovableHelper.IsSuicidalMoveForBothPlayers(capturedBoard, liberties.First()))
+                        return false;
+
+                    if (ImmovableHelper.IsSuicidalMoveForBothPlayers(currentBoard, liberties.First(), true))
+                        return false;
+                }
 
                 //crowbar formation
                 List<Group> neighbourGroups = tryBoard.GetNeighbourGroups(move);
@@ -1415,6 +1423,11 @@ namespace Go
                 Point moveGroupPoint = tryBoard.MoveGroup.Points.Where(m => !m.Equals(move)).First();
                 if (tryLinkBoard.GetGroupLiberties(moveGroupPoint) > 1 && !ImmovableHelper.IsSuicidalOnCapture(capturedBoard).Item1)
                     return true;
+
+                //suicide for both alive
+                if (SuicideForBothAlive(tryMove))
+                    return false;
+
                 //two-point atari move
                 if (TwoPointAtariMove(tryBoard, capturedBoard))
                     return false;
@@ -1436,6 +1449,34 @@ namespace Go
 
             //no hope of escape
             return true;
+        }
+
+        /// <summary>
+        /// Suicide for both alive.
+        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_2" />
+        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18_4" />
+        /// </summary>
+        private static Boolean SuicideForBothAlive(GameTryMove tryMove)
+        {
+            Board tryBoard = tryMove.TryGame.Board;
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            if (GroupHelper.GetKillerGroups(currentBoard, c, true).Count <= 1) return false;
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
+            if (killerGroup == null || killerGroup.Points.Count != tryBoard.MoveGroup.Points.Count + 1) return false;
+            List<Group> targetGroups = currentBoard.GetNeighbourGroups(killerGroup);
+            List<Point> externalLiberties = currentBoard.GetLibertiesOfGroups(targetGroups).Except(killerGroup.Points).ToList();
+            if (externalLiberties.Count != 1) return false;
+
+            if (targetGroups.Count == 1 && killerGroup.Points.FirstOrDefault(p => currentBoard[p] == Content.Empty).Equals(move))
+            {
+                if (ImmovableHelper.IsSuicidalMoveForBothPlayers(currentBoard, externalLiberties.First(), true))
+                    return true;
+            }
+            else if (targetGroups.Count > 1 && !tryBoard.IsAtariMove)
+                return true;
+            return false;
         }
 
         /// <summary>

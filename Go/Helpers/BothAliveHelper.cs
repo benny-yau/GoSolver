@@ -12,6 +12,7 @@ namespace Go
         /// For simple seki which is usually the case, find one killer group with at least two liberties, and one survival neighbour group with at least two liberties. Simple seki <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_SimpleSeki" />
         /// In most cases, there is only one killer group and one neighbour survival group, but there can also be two neighbour survival groups. Simple seki with two neighbour survival groups <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan16" />
+        /// Get target groups not within killer group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_2" />
         /// Fill eye points with content <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A27" />
         /// Two liberties for content group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_B43" />
         /// More than one content group in simple seki <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31646" />
@@ -41,8 +42,11 @@ namespace Go
                     return false;
             }
 
-            //ensure at least two liberties in survival neighbour group
+            //get target groups not within killer group
             List<Group> targetGroups = board.GetNeighbourGroups(killerGroup);
+            targetGroups.RemoveAll(group => group.Neighbours.All(n => killerGroup.Points.Contains(n)));
+
+            //ensure at least two liberties in survival neighbour group
             if (targetGroups.Any(g => g.Liberties.Count == 1 && GroupHelper.GetKillerGroupFromCache(board, g.Points.First(), g.Content.Opposite()) == null))
                 return false;
 
@@ -222,6 +226,7 @@ namespace Go
         /// Find uncovered eye in omplex seki.
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_ComplexSeki" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan22" />
+        /// Two point uncovered eye <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18_2" />
         /// Clear all killer groups with empty points <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30213" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A123" />
         /// </summary>
@@ -234,9 +239,8 @@ namespace Go
             //check for uncovered eye
             foreach (Group group in killerGroups)
             {
-                if (group.Points.Count != 1) continue;
-                Point p = group.Points.First();
-                if (EyeHelper.FindUncoveredEye(clearedBoard, p, group.Content.Opposite()))
+                if (group.Points.Count > 2) continue;
+                if (EyeHelper.FindRealEyeWithinEmptySpace(clearedBoard, group, EyeType.UnCoveredEye))
                     return true;
             }
             return false;

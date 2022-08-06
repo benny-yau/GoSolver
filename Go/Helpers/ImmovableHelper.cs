@@ -459,9 +459,21 @@ namespace Go
         /// <summary>
         /// Is suicide move for both players.
         /// </summary>
-        public static Boolean IsSuicidalMoveForBothPlayers(Board tryBoard, Point q)
+        public static Boolean IsSuicidalMoveForBothPlayers(Board tryBoard, Point p, Boolean connectAndDie = false)
         {
-            return (ImmovableHelper.IsSuicidalMove(tryBoard, q, Content.Black) && ImmovableHelper.IsSuicidalMove(tryBoard, q, Content.White));
+            (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, Content.Black, tryBoard);
+            (Boolean suicidal2, Board b2) = ImmovableHelper.IsSuicidalMove(p, Content.White, tryBoard);
+            if (!connectAndDie)
+            {
+                if (suicidal && suicidal2)
+                    return true;
+            }
+            else
+            {
+                if ((suicidal || ImmovableHelper.CheckConnectAndDie(b)) && (suicidal2 || ImmovableHelper.CheckConnectAndDie(b2)))
+                    return true;
+            }
+            return false;
         }
 
         /// <summary>
