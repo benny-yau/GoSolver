@@ -1333,8 +1333,9 @@
         <member name="M:Go.RedundantMoveHelper.SuicideForBothAlive(Go.GameTryMove)">
             <summary>
             Suicide for both alive.
-            <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_2" />
-            <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18_4" />
+            One target group <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_2" />
+            <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_3" />
+            Two target group <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18_4" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.TwoPointAtariMove(Go.Board,Go.Board)">

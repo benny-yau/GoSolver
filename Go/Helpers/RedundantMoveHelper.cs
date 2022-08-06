@@ -1149,7 +1149,7 @@ namespace Go
                 Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
                 if (killerGroup != null && killerGroup.Points.Count == 2)
                 {
-                    if (ImmovableHelper.IsSuicidalMoveForBothPlayers(capturedBoard, liberties.First()))
+                    if (ImmovableHelper.IsSuicidalMoveForBothPlayers(tryBoard, liberties.First()))
                         return false;
 
                     if (ImmovableHelper.IsSuicidalMoveForBothPlayers(currentBoard, liberties.First(), true))
@@ -1453,8 +1453,9 @@ namespace Go
 
         /// <summary>
         /// Suicide for both alive.
-        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_2" />
-        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18_4" />
+        /// One target group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_2" />
+        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_3" />
+        /// Two target group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18_4" />
         /// </summary>
         private static Boolean SuicideForBothAlive(GameTryMove tryMove)
         {
@@ -1471,6 +1472,9 @@ namespace Go
 
             if (targetGroups.Count == 1 && killerGroup.Points.FirstOrDefault(p => currentBoard[p] == Content.Empty).Equals(move))
             {
+                if (ImmovableHelper.IsSuicidalMoveForBothPlayers(tryBoard, externalLiberties.First()))
+                    return true;
+
                 if (ImmovableHelper.IsSuicidalMoveForBothPlayers(currentBoard, externalLiberties.First(), true))
                     return true;
             }

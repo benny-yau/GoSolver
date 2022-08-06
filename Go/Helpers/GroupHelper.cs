@@ -31,9 +31,10 @@ namespace Go
                 //check covered eye
                 if (killerGroups.Any(group => group.Points.Count <= 2))
                 {
-                    //clear all killer groups with empty points
+                    //clear immovable groups with empty points
                     Board clearedBoard = new Board(board);
-                    killerGroups.ForEach(group => group.Points.ToList().ForEach(p => clearedBoard[p] = Content.Empty));
+                    List<Group> immovableGroups = killerGroups.Where(kgroup => kgroup.Points.Count(p => board[p] == Content.Empty) == 2 && kgroup.Points.All(p => ImmovableHelper.IsSuicidalMoveForBothPlayers(board, p))).ToList();
+                    immovableGroups.ForEach(group => group.Points.ToList().ForEach(p => clearedBoard[p] = Content.Empty));
                     foreach (Group group in killerGroups)
                     {
                         Boolean unCoveredEye = group.Points.Count > 2 || EyeHelper.FindRealEyeWithinEmptySpace(clearedBoard, group, EyeType.UnCoveredEye);
