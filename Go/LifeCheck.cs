@@ -246,40 +246,7 @@ namespace Go
             if (tigerMouthList != null)
                 tigerMouthList.ForEach(tigerMouth => targetGroups.AddRange(board.GetGroupsFromStoneNeighbours(tigerMouth.Move, c)));
             targetGroups = targetGroups.Where(t => t.Liberties.Count == 2).Distinct().ToList();
-            //get distinct liberties of target groups
-            List<Point> liberties = board.GetLibertiesOfGroups(targetGroups).Distinct().ToList();
-
-            foreach (Point liberty in liberties)
-            {
-                //make atari move
-                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c, board);
-                if (suicidal) continue;
-                //double atari with any target group
-                if (b.AtariTargets.Count >= 2 && b.AtariTargets.Any(a => targetGroups.Any(t => t.Equals(board.GetGroupAt(a.Points.First())))))
-                {
-                    if (DoubleAtariEscape(b)) continue;
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Double atari escape.
-        /// </summary>
-        private static Boolean DoubleAtariEscape(Board board)
-        {
-            if (board.AtariTargets.Count <= 1) return false;
-            foreach (Group targetGroup in board.AtariTargets)
-            {
-                //make escape move for target group
-                (Boolean unEscapable, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(board, targetGroup);
-                if (unEscapable) continue;
-                //check if any atari targets left
-                if (!board.AtariTargets.Any(t => escapeBoard.GetGroupLiberties(t.Points.First()) == 1))
-                    return true;
-            }
-            return false;
+            return AtariHelper.DoubleAtariOnTargetGroups(board, targetGroups);
         }
 
         /// <summary>

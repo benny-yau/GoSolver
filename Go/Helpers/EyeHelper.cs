@@ -223,7 +223,7 @@ namespace Go
                 if (eyeGroup.Points.Count != 1) continue;
                 List<Point> diagonalPoints = LinkHelper.GetGroupLinkedDiagonals(board, eyeGroup).Select(d => d.Move).Except(stoneNeighbours).ToList();
                 if (diagonalPoints.Count < 2 || board.GetGroupsFromPoints(diagonalPoints).Count(n => n.Liberties.Count <= 2) < 2) continue;
-                foreach (Point q in board.GetStoneNeighbours(p).Where(n => !n.Equals(eye)))
+                foreach (Point q in board.GetStoneNeighbours(p).Where(n => !n.Equals(eye) && board[n] == Content.Empty))
                 {
                     (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(q, c.Opposite(), board);
                     if (suicidal) continue;

@@ -161,17 +161,7 @@ namespace Go
             if (diagonals.Count != 1) return false;
             Point d = diagonals.First();
             List<Group> tigerMouthGroups = board.GetGroupsFromStoneNeighbours(d, c.Opposite()).Where(n => n.Liberties.Count == 2).ToList();
-            foreach (Group tigerMouthGroup in tigerMouthGroups)
-            {
-                foreach (Point p in board.GetGroupLibertyPoints(tigerMouthGroup))
-                {
-                    (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board);
-                    if (suicidal) continue;
-                    if (b.AtariTargets.Count >= 2)
-                        return true;
-                }
-            }
-            return false;
+            return AtariHelper.DoubleAtariOnTargetGroups(board, tigerMouthGroups);
         }
 
         /// <summary>

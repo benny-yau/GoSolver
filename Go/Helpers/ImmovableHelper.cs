@@ -69,7 +69,7 @@ namespace Go
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board, false);
                 if (!suicidal)
                 {
-                    if (GroupHelper.GetKillerGroupFromCache(board, p, c) != null && ImmovablePointByConnectAndDie(p, c, b))
+                    if (ImmovablePointByConnectAndDie(p, c, b, board))
                         return (true, null);
                     return (false, null);
                 }
@@ -111,12 +111,14 @@ namespace Go
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_GuanZiPu_B3_2" />
         /// Check covered eye <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Phenomena_Q25182" />
         /// </summary>
-        private static Boolean ImmovablePointByConnectAndDie(Point p, Content c, Board b)
+        private static Boolean ImmovablePointByConnectAndDie(Point p, Content c, Board b, Board board)
         {
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(board, p, c);
+            if (killerGroup == null || board.GetNeighbourGroups(killerGroup).Any(n => n.Liberties.Count <= 2)) return false;
             (_, Board b2) = ImmovableHelper.ConnectAndDie(b);
             if (b2 == null) return false;
             //check covered eye
-            List<Point> coveredEye = b.GetDiagonalNeighbours().Where(n => EyeHelper.FindCoveredEye(b, n, c) && b.GetDiagonalNeighbours(n.x, n.y).Any(x => b[x] == Content.Empty && ImmovableHelper.FindTigerMouth(b, c, x))).ToList();
+            List<Point> coveredEye = b.GetDiagonalNeighbours().Where(n => EyeHelper.FindCoveredEye(b, n, c) && b.GetDiagonalNeighbours(n).Any(x => b[x] == Content.Empty && ImmovableHelper.FindTigerMouth(b, c, x))).ToList();
             if (coveredEye.Any(e => !EyeHelper.FindSemiSolidEyes(e, b2, c).Item1))
                 return false;
             return true;
