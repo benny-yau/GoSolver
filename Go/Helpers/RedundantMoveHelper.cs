@@ -1453,9 +1453,10 @@ namespace Go
 
         /// <summary>
         /// Suicide for both alive.
-        /// One target group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_2" />
+        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_2" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_3" />
-        /// Two target group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18_4" />
+        /// Not both alive <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40_3" />
+        /// Two target groups <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18_4" />
         /// </summary>
         private static Boolean SuicideForBothAlive(GameTryMove tryMove)
         {
@@ -1463,29 +1464,37 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            if (GroupHelper.GetKillerGroups(currentBoard, c, true).Count <= 1) return false;
+            //suicide within killer group
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
             if (killerGroup == null || killerGroup.Points.Count != tryBoard.MoveGroup.Points.Count + 1) return false;
+
+            //get target group and external liberty
             List<Group> targetGroups = currentBoard.GetNeighbourGroups(killerGroup);
             List<Point> externalLiberties = currentBoard.GetLibertiesOfGroups(targetGroups).Except(killerGroup.Points).ToList();
             if (externalLiberties.Count != 1) return false;
+            Point liberty = externalLiberties.First();
+            HashSet<Group> groups = tryBoard.GetGroupsFromStoneNeighbours(liberty, c.Opposite());
+            if (groups.Count != 1 || groups.First().Liberties.Count == 1) return false;
 
-            if (targetGroups.Count == 1 && killerGroup.Points.FirstOrDefault(p => currentBoard[p] == Content.Empty).Equals(move))
-            {
-                if (ImmovableHelper.IsSuicidalMoveForBothPlayers(tryBoard, externalLiberties.First()))
-                    return true;
+            //get only one move within killer group
+            Boolean oneTargetGroup = targetGroups.Count == 1 && killerGroup.Points.FirstOrDefault(p => currentBoard[p] == Content.Empty).Equals(move);
+            Boolean twoTargetGroups = targetGroups.Count > 1 && !tryBoard.IsAtariMove;
+            if (!oneTargetGroup && !twoTargetGroups) return false;
 
-                if (ImmovableHelper.IsSuicidalMoveForBothPlayers(currentBoard, externalLiberties.First(), true))
-                    return true;
-            }
-            else if (targetGroups.Count > 1 && !tryBoard.IsAtariMove)
+            //check suicidal move for both players at external liberty
+            if (ImmovableHelper.IsSuicidalMoveForBothPlayers(tryBoard, liberty))
                 return true;
+
+            if (ImmovableHelper.IsSuicidalMoveForBothPlayers(currentBoard, liberty, true))
+                return true;
+
             return false;
         }
 
         /// <summary>
         /// Two point atari move 
         /// Check for three groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q2757_2" />
         /// Check snapback <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31469" />
         /// Check for ko fight 
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31672" />
@@ -2416,6 +2425,7 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935" />
         /// Check for strong neighbour groups <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario3dan22" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16605" />
+        /// Check for suicide for both alive <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40_3" />
         /// </summary>
         private static Boolean TigerMouthWithoutDiagonalMouth(GameTryMove tryMove, Board capturedBoard)
         {
@@ -2433,10 +2443,14 @@ namespace Go
             //check for three groups
             HashSet<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(move, c);
             if (neighbourGroups.Count >= 3 && (neighbourGroups.Count(g => g.Liberties.Count <= 2) >= 2 || LinkHelper.DiagonalCutMove(tryBoard).Item1 != null)) return false;
+
             //check for strong neighbour groups
-            if (WallHelper.StrongNeighbourGroups(currentBoard, currentBoard.GetGroupsFromStoneNeighbours(move, c), false) && capturedBoard.MoveGroupLiberties > 2)
-                return true;
-            return false;
+            Boolean strongGroups = WallHelper.StrongNeighbourGroups(currentBoard, currentBoard.GetGroupsFromStoneNeighbours(move, c), false) && capturedBoard.MoveGroupLiberties > 2;
+            if (!strongGroups) return false;
+
+            //check for suicide for both alive
+            if (SuicideForBothAlive(tryMove)) return false;
+            return true;
         }
 
         /// <summary>
