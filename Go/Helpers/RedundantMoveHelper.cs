@@ -1456,6 +1456,7 @@ namespace Go
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_2" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_3" />
         /// Not both alive <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40_3" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30215_2" />
         /// Two target groups <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18_4" />
         /// </summary>
         private static Boolean SuicideForBothAlive(GameTryMove tryMove)
@@ -1473,8 +1474,8 @@ namespace Go
             List<Point> externalLiberties = currentBoard.GetLibertiesOfGroups(targetGroups).Except(killerGroup.Points).ToList();
             if (externalLiberties.Count != 1) return false;
             Point liberty = externalLiberties.First();
-            HashSet<Group> groups = tryBoard.GetGroupsFromStoneNeighbours(liberty, c.Opposite());
-            if (groups.Count != 1 || groups.First().Liberties.Count == 1) return false;
+            List<Group> groups = tryBoard.GetGroupsFromStoneNeighbours(liberty, c.Opposite()).ToList();
+            if (groups.Count == 0 || tryBoard.GetLibertiesOfGroups(groups).Count == 1) return false;
 
             //get only one move within killer group
             Boolean oneTargetGroup = targetGroups.Count == 1 && killerGroup.Points.FirstOrDefault(p => currentBoard[p] == Content.Empty).Equals(move);
@@ -1487,7 +1488,6 @@ namespace Go
 
             if (ImmovableHelper.IsSuicidalMoveForBothPlayers(currentBoard, liberty, true))
                 return true;
-
             return false;
         }
 
