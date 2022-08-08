@@ -153,17 +153,6 @@ namespace Go
             if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == Content.Empty && !eyeGroup.Points.Contains(n) && tryBoard.GetStoneNeighbours(n).Any(s => tryBoard[s] == c.Opposite()) && !WallHelper.NoEyeForSurvival(currentBoard, n, c.Opposite())))
                 return false;
 
-            //check snapback for two-point move
-            if (tryBoard.MoveGroupLiberties == 1 && tryBoard.MoveGroup.Points.Count == 2)
-            {
-                Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard);
-                if (b != null && b.MoveGroupLiberties == 1) return false;
-            }
-
-            //check connect and die
-            if (opponentTryMove == null && ImmovableHelper.CheckConnectAndDie(tryBoard))
-                return true;
-
             //check eye for survival
             if (eyeGroup.Points.Any(e => tryBoard.GetDiagonalNeighbours(e).Any(n => !WallHelper.NoEyeForSurvival(tryBoard, n, c) && !RedundantMoveHelper.RealEyeAtDiagonal(tryMove, n))))
                 return false;
@@ -177,8 +166,15 @@ namespace Go
             if (opponentTryMove != null)
             {
                 Board opponentBoard = opponentTryMove.TryGame.Board;
-                if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(opponentBoard) && !ImmovableHelper.CheckConnectAndDie(opponentBoard))
+                if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(opponentBoard))
                     return false;
+            }
+
+            //check snapback for two-point move
+            if (tryBoard.MoveGroupLiberties == 1 && tryBoard.MoveGroup.Points.Count == 2)
+            {
+                Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard);
+                if (b != null && b.MoveGroupLiberties == 1) return false;
             }
 
             //check if link for groups
