@@ -73,12 +73,12 @@ namespace Go
 
         public static Boolean IsCovered(Board board, Point eye, Content c)
         {
-            List<Point> diagonalNeighbours = board.GetDiagonalNeighbours(eye);
-            List<Point> oppositeContent = diagonalNeighbours.Where(q => board[q] == c.Opposite()).ToList();
-            if (diagonalNeighbours.Count == 4) // middle area
-                return (oppositeContent.Count >= 2);
+            List<Point> diagonalNeighbours = board.GetDiagonalNeighbours(eye).Where(q => board[q] == c.Opposite()).ToList();
+            List<Point> stonePoints = board.GetStoneNeighbours(eye).Where(n => board[n] == c).ToList();
+            if (board.PointWithinMiddleArea(eye))
+                return (stonePoints.Count >= 3 && diagonalNeighbours.Count >= 2);
             else //side or corner
-                return (oppositeContent.Count >= 1);
+                return (stonePoints.Count >= 2 && diagonalNeighbours.Count >= 1);
         }
 
         /// <summary>
@@ -474,11 +474,15 @@ namespace Go
             if (!isKillerGroup)
                 return false;
 
-            //ensure all groups are connected
             foreach (Group group in connectedGroups)
             {
+                //ensure all groups are connected
                 List<Group> diagonalGroups = LinkHelper.GetAllDiagonalGroups(board, group, null, false).Intersect(connectedGroups).ToList();
                 if (diagonalGroups.Any(d => d != group && !LinkHelper.IsImmediateDiagonallyConnected(board, d, group)))
+                    return false;
+
+                //check connect and die
+                if (ImmovableHelper.CheckConnectAndDie(board, group))
                     return false;
             }
 
@@ -488,7 +492,7 @@ namespace Go
                 if (killerGroup.Points.Where(p => board[p] == Content.Empty).All(lib => NoEyeForOpponentWithinKillerGroup(board, lib, c, connectedGroups)))
                     return true;
             }
-            return true;
+            return false;
         }
 
         /// <summary>

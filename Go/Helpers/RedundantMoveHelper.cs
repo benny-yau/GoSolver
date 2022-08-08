@@ -153,6 +153,17 @@ namespace Go
             if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == Content.Empty && !eyeGroup.Points.Contains(n) && tryBoard.GetStoneNeighbours(n).Any(s => tryBoard[s] == c.Opposite()) && !WallHelper.NoEyeForSurvival(currentBoard, n, c.Opposite())))
                 return false;
 
+            //check snapback for two-point move
+            if (tryBoard.MoveGroupLiberties == 1 && tryBoard.MoveGroup.Points.Count == 2)
+            {
+                Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard);
+                if (b != null && b.MoveGroupLiberties == 1) return false;
+            }
+
+            //check connect and die
+            if (opponentTryMove == null && ImmovableHelper.CheckConnectAndDie(tryBoard))
+                return true;
+
             //check eye for survival
             if (eyeGroup.Points.Any(e => tryBoard.GetDiagonalNeighbours(e).Any(n => !WallHelper.NoEyeForSurvival(tryBoard, n, c) && !RedundantMoveHelper.RealEyeAtDiagonal(tryMove, n))))
                 return false;
@@ -166,15 +177,8 @@ namespace Go
             if (opponentTryMove != null)
             {
                 Board opponentBoard = opponentTryMove.TryGame.Board;
-                if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(opponentBoard))
+                if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(opponentBoard) && !ImmovableHelper.CheckConnectAndDie(opponentBoard))
                     return false;
-            }
-
-            //check snapback for two-point move
-            if (tryBoard.MoveGroupLiberties == 1 && tryBoard.MoveGroup.Points.Count == 2)
-            {
-                Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard);
-                if (b != null && b.MoveGroupLiberties == 1) return false;
             }
 
             //check if link for groups
@@ -1495,6 +1499,8 @@ namespace Go
         /// Two point atari move 
         /// Check for three groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q2757_2" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q15017" />
         /// Check snapback <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31469" />
         /// Check for ko fight 
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31672" />
@@ -1507,8 +1513,9 @@ namespace Go
             if (capturedBoard.CapturedPoints.Count() != 2 || !tryBoard.IsAtariMove) return false;
             //check for three groups
             if (tryBoard.GetGroupsFromStoneNeighbours(move, c).Count > 2) return true;
-            (Boolean isAtari, Board board) = AtariHelper.CheckAtariMove(capturedBoard, move, c);
-            if (!isAtari || board.AtariTargets.Count == 0) return false;
+
+            Board board = capturedBoard.MakeMoveOnNewBoard(move, c);
+            if (board == null || board.AtariTargets.Count != 1) return false;
             //check snapback
             if (board.GetDiagonalNeighbours().Any(n => board[n] == board.MoveGroup.Content) && ImmovableHelper.IsSuicidalOnCapture(board).Item1)
                 return true;
@@ -1524,8 +1531,9 @@ namespace Go
 
                 List<Point> emptyPoints = board.GetStoneNeighbours(q).Where(n => board[n] == Content.Empty).ToList();
                 if (emptyPoints.Count != 1) return false;
-                Board b = board.MakeMoveOnNewBoard(q, c.Opposite());
-                if (b != null && EyeHelper.FindCoveredEye(b, emptyPoints.First(), c.Opposite()))
+
+                Group killerGroup = GroupHelper.GetKillerGroupFromCache(board, q, c.Opposite());
+                if (killerGroup != null && killerGroup.Points.Count == 2 && EyeHelper.IsCovered(board, emptyPoints.First(), c.Opposite()))
                     return true;
             }
             return false;
@@ -2438,11 +2446,11 @@ namespace Go
             if (tryBoard.MoveGroup.Points.Count == 1 && EyeHelper.FindSemiSolidEyes(tryBoard.MoveGroup.Points.First(), capturedBoard).Item1)
                 return false;
             //check for covered eye
-            if (EyeHelper.FindCoveredEyeByCapture(capturedBoard, tryBoard.MoveGroup))
+            if (EyeHelper.IsCovered(tryBoard, move, c.Opposite()))
                 return false;
             //check for three groups
             HashSet<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(move, c);
-            if (neighbourGroups.Count >= 3 && (neighbourGroups.Count(g => g.Liberties.Count <= 2) >= 2 || LinkHelper.DiagonalCutMove(tryBoard).Item1 != null)) return false;
+            if (neighbourGroups.Count >= 3 && (neighbourGroups.Count(g => g.Liberties.Count <= 2) >= 2 || LinkHelper.DiagonalCutMove(tryBoard).Item1)) return false;
 
             //check for strong neighbour groups
             Boolean strongGroups = WallHelper.StrongNeighbourGroups(currentBoard, currentBoard.GetGroupsFromStoneNeighbours(move, c), false) && capturedBoard.MoveGroupLiberties > 2;

@@ -72,14 +72,6 @@ namespace Go
             return (false, null);
         }
 
-        public static (Boolean, Board) CheckAtariMove(Board b, Point p, Content c)
-        {
-            Board board = b.MakeMoveOnNewBoard(p, c);
-            if (board == null) return (false, null);
-            return (board.IsAtariMove, board);
-        }
-
-
         /// <summary>
         /// Double atari on target groups.
         /// </summary>
