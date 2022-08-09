@@ -86,9 +86,9 @@ namespace Go
         /// </summary>
         public static Boolean FindCoveredEye(Board tryBoard, Point eye, Content c)
         {
-            if (FindNonSemiSolidEye(tryBoard, eye, c))
+            if (FindNonSemiSolidEye(tryBoard, eye, c) && IsCovered(tryBoard, eye, c))
             {
-                if (IsCovered(tryBoard, eye, c))
+                if (!tryBoard.GetGroupsFromStoneNeighbours(eye, c.Opposite()).All(gr => gr.Liberties.Count == 1))
                     return true;
             }
             return false;
@@ -97,7 +97,7 @@ namespace Go
         /// <summary>
         /// Find covered eye within empty space after capture.
         /// </summary>
-        public static Boolean FindCoveredEyeByCapture(Board capturedBoard, Group capturedGroup)
+        public static Boolean FindCoveredEyeAfterCapture(Board capturedBoard, Group capturedGroup)
         {
             int capturedCount = capturedGroup.Points.Count;
             if (capturedCount != 1 && capturedCount != 2) return false;
@@ -107,7 +107,7 @@ namespace Go
         public static Boolean FindCoveredEyeByCapture(Board board)
         {
             Board b = ImmovableHelper.CaptureSuicideGroup(board);
-            if (b != null && FindCoveredEyeByCapture(b, board.MoveGroup))
+            if (b != null && FindCoveredEyeAfterCapture(b, board.MoveGroup))
                 return true;
             return false;
         }
@@ -203,11 +203,9 @@ namespace Go
                 found = (stoneCount + immovablePoints.Count == diagonalCount);
 
             //check double atari
-            if (found && stoneCount < 2)
-            {
-                if (DoubleAtariOnSemiSolidEye(board, eye, c))
-                    return (false, null);
-            }
+            if (found && stoneCount < 2 && DoubleAtariOnSemiSolidEye(board, eye, c))
+                return (false, null);
+
             return (found, immovablePoints);
         }
 
@@ -429,15 +427,12 @@ namespace Go
                 if (b.InternalMakeMove(q, content) != MakeMoveResult.Legal)
                     b.LastMoves.Add(Game.PassMove);
                 //killer move
-                if (content == c)
+                if (content == c && b.CapturedList.Count > 0)
                 {
-                    if (b.CapturedList.Count > 0)
-                    {
-                        //capture of real eye group
-                        if (b.CapturedList.Count == 1 && b.GetNeighbourGroups().Count == 0)
-                            return true;
-                        return false;
-                    }
+                    //capture of real eye group
+                    if (b.CapturedList.Count == 1 && b.GetNeighbourGroups().Count == 0)
+                        return true;
+                    return false;
                 }
                 //make opponent move
                 result = MakeMoveWithinEmptySpace(b, killerGroup, eyeType);

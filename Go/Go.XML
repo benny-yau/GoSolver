@@ -382,7 +382,7 @@
             Find false eye which has one or more diagonal points covered by opposite content.
             </summary>
         </member>
-        <member name="M:Go.EyeHelper.FindCoveredEyeByCapture(Go.Board,Go.Group)">
+        <member name="M:Go.EyeHelper.FindCoveredEyeAfterCapture(Go.Board,Go.Group)">
             <summary>
             Find covered eye within empty space after capture.
             </summary>

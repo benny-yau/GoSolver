@@ -102,7 +102,7 @@ namespace Go
             if (tryMove.AtariResolved) return false;
             Group eyeGroup = null;
             Point eyePoint;
-            if (tryBoard.CapturedList.Count == 1 && tryBoard.CapturedPoints.Count() == 2 && EyeHelper.FindCoveredEyeByCapture(tryBoard, tryBoard.CapturedList.First()))
+            if (tryBoard.CapturedList.Count == 1 && tryBoard.CapturedPoints.Count() == 2 && EyeHelper.FindCoveredEyeAfterCapture(tryBoard, tryBoard.CapturedList.First()))
             {
                 //two-point covered eye
                 eyePoint = tryBoard.CapturedPoints.First(q => tryBoard.GetStoneNeighbours().Contains(q));
@@ -693,7 +693,7 @@ namespace Go
             if (tryBoard.CapturedList.Count > 0)
             {
                 if (tryBoard.CapturedList.Any(g => AtariHelper.AtariByGroup(currentBoard, g))) return false;
-                if (tryBoard.CapturedList.Any(n => EyeHelper.FindCoveredEyeByCapture(tryBoard, n))) return false;
+                if (tryBoard.CapturedList.Any(n => EyeHelper.FindCoveredEyeAfterCapture(tryBoard, n))) return false;
                 if (KillerFormationHelper.TryKillFormation(captureBoard, c, new List<Point> { tryBoard.CapturedList.First().Points.First() }, new List<Func<Board, Group, Boolean>>() { KillerFormationHelper.OneByThreeFormation, KillerFormationHelper.KnifeFiveFormation }))
                     return false;
                 return true;
@@ -1389,10 +1389,11 @@ namespace Go
 
             Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
             if (capturedBoard == null) return false;
+
             //captured more than move group
             if (capturedBoard.CapturedList.Count > 1)
             {
-                Boolean coveredEye = capturedBoard.CapturedList.Any(group => EyeHelper.FindCoveredEyeByCapture(capturedBoard, group));
+                Boolean coveredEye = capturedBoard.CapturedList.Any(group => EyeHelper.FindCoveredEyeAfterCapture(capturedBoard, group));
                 if (!coveredEye)
                     return true;
             }
@@ -1403,7 +1404,7 @@ namespace Go
             if (tryLinkBoard == null) //capture at tryBoard
             {
                 //check for corner kill
-                if (tryBoard.CapturedPoints.Count() == 1 && tryBoard.CornerPoint(tryBoard.CapturedPoints.First()) && (moveCount == 5 && KillerFormationHelper.KnifeFiveFormation(tryBoard, tryBoard.MoveGroup)) || (moveCount == 6 && KillerFormationHelper.FlowerSixFormation(tryBoard, tryBoard.MoveGroup) || (moveCount == 7 && KillerFormationHelper.FlowerSevenSideFormation(tryBoard, tryBoard.MoveGroup))))
+                if (tryBoard.CapturedPoints.Count() == 1 && tryBoard.CornerPoint(tryBoard.CapturedPoints.First()) && (KillerFormationHelper.KnifeFiveFormation(tryBoard, tryBoard.MoveGroup) || KillerFormationHelper.FlowerSixFormation(tryBoard, tryBoard.MoveGroup) || KillerFormationHelper.FlowerSevenSideFormation(tryBoard, tryBoard.MoveGroup)))
                     return false;
                 //check for connect and die
                 if (ImmovableHelper.CheckConnectAndDie(capturedBoard))

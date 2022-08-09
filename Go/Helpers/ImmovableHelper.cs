@@ -116,7 +116,7 @@ namespace Go
             Content c = targetGroup.Content.Opposite();
             if (!KoHelper.KoContentEnabled(c.Opposite(), board.GameInfo)) return false;
             //check for ko by capture neighbour groups
-            if (EyeHelper.FindCoveredEye(board, q, c.Opposite()))
+            if (EyeHelper.IsCovered(board, q, c.Opposite()))
             {
                 List<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(q, c).Where(n => n.Liberties.Count == 1).ToList();
                 if (neighbourGroups.Count > 1)
