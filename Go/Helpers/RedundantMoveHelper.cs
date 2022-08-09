@@ -2333,16 +2333,20 @@ namespace Go
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_TianLongTu_Q16827" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_GuanZiPu_Q18860" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WuQingYuan_Q15126" />
-        /// Check two point atari move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" />
+        /// Check two point atari move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31428" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31672" />
         /// Check corner three formation <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_Q18860" />
         /// Check possible corner three formation <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WuQingYuan_Q31503_2" />
         /// Opponent move at tiger mouth <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A151_101Weiqi" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_Nie67" />
         /// Check for strong neighbour groups <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario3dan22" />
+        /// Check for non killable group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30370" />
         /// Check for suicide at big tiger mouth <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_Corner_A87" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_TianLongTu_Q16470" />
         /// Find real eyes at both spaces <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_Nie4" />
+        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WuQingYuan_Q15126" />
+        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31428" />
         /// </summary>
         private static Boolean RedundantTigerMouth(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
@@ -2373,44 +2377,33 @@ namespace Go
             Group moveKillerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
             foreach (Point eyePoint in eyePoints)
             {
-                Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, eyePoint, c.Opposite());
+                Group eyeKillerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, eyePoint, c.Opposite());
                 //opponent move at tiger mouth
                 if (opponentMove != null)
                 {
-                    if (killerGroup != null || ImmovableHelper.IsImmovablePoint(eyePoint, c.Opposite(), currentBoard).Item1)
-                    {
-                        if (SuicideAtBigTigerMouth(opponentMove).Item1 || BothAliveHelper.EnableCheckForPassMove(opponentMove.TryGame.Board, c.Opposite()))
-                            continue;
+                    if (SuicideAtBigTigerMouth(opponentMove).Item1 || BothAliveHelper.EnableCheckForPassMove(opponentMove.TryGame.Board, c.Opposite()))
+                        continue;
+                    if (eyeKillerGroup != null || ImmovableHelper.IsImmovablePoint(eyePoint, c.Opposite(), currentBoard).Item1)
                         return true;
-                    }
                 }
                 //ensure eye point within killer group
-                if (killerGroup == null) continue;
+                if (eyeKillerGroup == null) continue;
                 if (moveKillerGroup == null)
                 {
                     HashSet<Group> neighbourGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c);
-                    //check for non killable group
-                    if (opponentMove == null && neighbourGroups.Any(n => WallHelper.IsNonKillableGroup(currentBoard, n)))
-                        return true;
+
                     //check for strong neighbour groups
                     if (WallHelper.StrongNeighbourGroups(currentBoard, neighbourGroups) && capturedBoard.MoveGroupLiberties > 2)
-                    {
-                        //check for suicide at big tiger mouth
-                        if (opponentMove != null && SuicideAtBigTigerMouth(opponentMove).Item1)
-                            continue;
                         return true;
-                    }
 
-                    //ensure killer group is empty
-                    List<Point> contentPoints = killerGroup.Points.Where(t => currentBoard[t] == killerGroup.Content).ToList();
-                    if (contentPoints.Count == 0) return true;
                     //find immovable point at diagonal
                     if (ImmovableHelper.IsImmovablePoint(eyePoint, c.Opposite(), currentBoard).Item1) return true;
                 }
                 else
                 {
                     //find real eyes at both spaces
-                    if (EyeHelper.FindRealEyeWithinEmptySpace(currentBoard, killerGroup) && EyeHelper.FindRealEyeWithinEmptySpace(capturedBoard, moveKillerGroup)) return true;
+                    if (EyeHelper.FindRealEyeWithinEmptySpace(currentBoard, eyeKillerGroup) && EyeHelper.FindRealEyeWithinEmptySpace(capturedBoard, moveKillerGroup))
+                        return true;
                 }
             }
 
