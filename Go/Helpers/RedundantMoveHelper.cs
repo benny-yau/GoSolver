@@ -716,7 +716,7 @@ namespace Go
                 return false;
 
             //find bloated eye suicide
-            if (tryBoard.MoveGroup.Liberties.Any(p => FindBloatedEyeSuicide(tryBoard, p, c))) return true;
+            if (tryBoard.GetDiagonalNeighbours().Any(p => FindBloatedEyeSuicide(tryBoard, p, c))) return true;
 
             //check redundant corner point
             if (CheckRedundantCornerPoint(tryMove, captureBoard))
@@ -742,14 +742,12 @@ namespace Go
         /// </summary>
         public static Boolean FindBloatedEyeSuicide(Board board, Point p, Content c)
         {
-            if (EyeHelper.FindEye(board, p, c) && !board.PointWithinMiddleArea(p))
+            if (!EyeHelper.FindEye(board, p, c)) return false;
+            List<Point> diagonalNeighbours = board.GetDiagonalNeighbours(p);
+            if (diagonalNeighbours.Count(q => board[q] == Content.Empty) == 1)
             {
-                List<Point> diagonalNeighbours = board.GetDiagonalNeighbours(p);
-                if (diagonalNeighbours.Count(q => board[q] == c.Opposite()) == 0 && diagonalNeighbours.Count(q => board[q] == Content.Empty) == 1)
-                {
-                    if (board.GetGroupsFromStoneNeighbours(p, c.Opposite()).All(group => group.Liberties.Count <= 2))
-                        return true;
-                }
+                if (board.GetGroupsFromStoneNeighbours(p, c.Opposite()).All(group => group.Liberties.Count <= 2))
+                    return true;
             }
             return false;
         }
@@ -841,7 +839,9 @@ namespace Go
             return false;
         }
 
-
+        /// <summary>
+        /// Double atari for weak group.
+        /// </summary>
         private static Boolean DoubleAtariForWeakGroup(Board captureBoard)
         {
             Content c = captureBoard.MoveGroup.Content;
@@ -939,20 +939,17 @@ namespace Go
             if (killerGroup != null && opponentMove == null) return true;
             //suicide near non killable group
             Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(captureBoard, tryBoard.MoveGroup, c);
-            if (b != null)
+            if (b == null) return false;
+            if (tryBoard.CapturedList.Count > 0) return false;
+            if (opponentMove != null)
             {
-                if (tryBoard.CapturedList.Count > 0) return false;
-                if (opponentMove != null)
-                {
-                    if (b.MoveGroupLiberties == 1 && EyeHelper.FindEye(captureBoard, b.Move.Value, b.MoveGroup.Content)) return false;
-                    Board opponentBoard = opponentMove.TryGame.Board;
-                    if (opponentBoard.CapturedList.Count > 0) return false;
-                    //set neutral point move
-                    if (WallHelper.IsNonKillableGroup(opponentBoard)) opponentMove.IsNeutralPoint = true;
-                }
-                return true;
+                if (b.MoveGroupLiberties == 1 && EyeHelper.FindEye(captureBoard, b.Move.Value, b.MoveGroup.Content)) return false;
+                Board opponentBoard = opponentMove.TryGame.Board;
+                if (opponentBoard.CapturedList.Count > 0) return false;
+                //set neutral point move
+                if (WallHelper.IsNonKillableGroup(opponentBoard)) opponentMove.IsNeutralPoint = true;
             }
-            return false;
+            return true;
         }
 
         /// <summary>
@@ -2563,7 +2560,7 @@ namespace Go
                 return true;
             }
 
-            if (TwoPointDiagonalRedundancy(tryMove, eye, eyeGroup))
+            if (TwoPointDiagonalRedundancy(tryMove, eyeGroup))
                 return true;
 
             return false;
@@ -2571,24 +2568,18 @@ namespace Go
 
         /// <summary>
         /// Redundant eye diagonal move.
-        /// Two point empty group <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_XuanXuanGo_Q18331" />
+        /// <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_XuanXuanGo_Q18331" />
+        /// Ensure covered eye <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_A139_2" />
         /// </summary>
-        private static Boolean TwoPointDiagonalRedundancy(GameTryMove tryMove, Point eye, Group eyeGroup)
+        private static Boolean TwoPointDiagonalRedundancy(GameTryMove tryMove, Group eyeGroup)
         {
             Board currentBoard = tryMove.CurrentGame.Board;
             int eyeGroupCount = eyeGroup.Points.Count;
             GameInfo gameInfo = tryMove.TryGame.GameInfo;
-            Content c = GameHelper.GetContentForSurviveOrKill(gameInfo, SurviveOrKill.Survive);
-            if (eyeGroupCount == 2)
-            {
-                //diagonal eye empty
-                List<Point> oppositeContent = eyeGroup.Points.Where(p => currentBoard[p] == c.Opposite()).ToList();
-                if (oppositeContent.Count == 1 && !oppositeContent.First().Equals(eye))
-                    return true;
-                //two-point empty group
-                if (EyeHelper.FindRealEyesWithinTwoEmptyPoints(currentBoard, eyeGroup, EyeType.SemiSolidEye) != null)
-                    return true;
-            }
+            if (eyeGroupCount != 2 || eyeGroup.IsCoveredEye) return false;
+            //two-point empty group
+            if (EyeHelper.FindRealEyesWithinTwoEmptyPoints(currentBoard, eyeGroup, EyeType.SemiSolidEye) != null)
+                return true;
             return false;
         }
 

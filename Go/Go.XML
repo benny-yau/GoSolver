@@ -1192,6 +1192,11 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18710" />
             </summary>
         </member>
+        <member name="M:Go.RedundantMoveHelper.DoubleAtariForWeakGroup(Go.Board)">
+            <summary>
+            Double atari for weak group.
+            </summary>
+        </member>
         <member name="M:Go.RedundantMoveHelper.CheckOnePointMoveInConnectAndDie(Go.GameTryMove,Go.Board)">
             <summary>
             Check for one point move group in connect and die.
@@ -1593,10 +1598,11 @@
             <see cref="!:UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_WuQingYuan_Q30982" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.TwoPointDiagonalRedundancy(Go.GameTryMove,Go.Point,Go.Group)">
+        <member name="M:Go.RedundantMoveHelper.TwoPointDiagonalRedundancy(Go.GameTryMove,Go.Group)">
             <summary>
             Redundant eye diagonal move.
-            Two point empty group <see cref="!:UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_XuanXuanGo_Q18331" />
+            <see cref="!:UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_XuanXuanGo_Q18331" />
+            Ensure covered eye <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_A139_2" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SurvivalEyeFillerMove(Go.GameTryMove)">
