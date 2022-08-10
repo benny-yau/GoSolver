@@ -695,15 +695,13 @@ namespace Go
         /// </summary>
         public static Boolean FindBloatedEyeSuicide(GameTryMove tryMove)
         {
-            Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
             foreach (Point p in tryBoard.MoveGroup.Liberties)
             {
                 if (!EyeHelper.FindEye(tryBoard, p, c)) continue;
                 if (tryBoard.GetStoneNeighbours().Any(n => n.Equals(p))) continue;
-                List<Point> diagonalNeighbours = tryBoard.GetDiagonalNeighbours(p);
-                if (diagonalNeighbours.Count(q => tryBoard[q] == Content.Empty) == 1)
+                if (tryBoard.GetDiagonalNeighbours(p).Count(q => tryBoard[q] == Content.Empty) == 1)
                 {
                     if (!tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).All(group => group.Liberties.Count <= 2)) continue;
                     return true;
@@ -712,19 +710,6 @@ namespace Go
             return false;
         }
 
-        public static Boolean FindBloatedEyeSuicide2(Board board, Point p, Content c)
-        {
-            if (EyeHelper.FindEye(board, p, c) && !board.PointWithinMiddleArea(p))
-            {
-                List<Point> diagonalNeighbours = board.GetDiagonalNeighbours(p);
-                if (diagonalNeighbours.Count(q => board[q] == c.Opposite()) == 0 && diagonalNeighbours.Count(q => board[q] == Content.Empty) == 1)
-                {
-                    if (board.GetGroupsFromStoneNeighbours(p, c.Opposite()).All(group => group.Liberties.Count <= 2))
-                        return true;
-                }
-            }
-            return false;
-        }
 
         /// <summary>
         /// Check for real eye in neighbour groups.
