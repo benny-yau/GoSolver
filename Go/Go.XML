@@ -1082,10 +1082,6 @@
             <summary>
             Redundant atari move.
             Ensure target group can escape <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_XuanXuanGo_A46_101Weiqi_2" />
-            Check for snapback <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_TianLongTu_Q16919" />
-            Check corner kill formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" />
-            Check two-point covered eye <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_TianLongTu_Q16525" />
-            Check if atari on other groups <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_ScenarioHighLevel18" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.RedundantAtariWithinKillerGroup(Go.GameTryMove)">
@@ -1160,7 +1156,7 @@
             Check for one-by-three kill <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18796_2" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.FindBloatedEyeSuicide(Go.Board,Go.Point,Go.Content)">
+        <member name="M:Go.RedundantMoveHelper.FindBloatedEyeSuicide(Go.GameTryMove)">
             <summary>
             Find bloated eye suicide <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_GuanZiPu_A35" />
             </summary>

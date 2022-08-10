@@ -327,63 +327,15 @@ namespace Go
         /// <summary>
         /// Redundant atari move.
         /// Ensure target group can escape <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_XuanXuanGo_A46_101Weiqi_2" />
-        /// Check for snapback <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_TianLongTu_Q16919" />
-        /// Check corner kill formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" />
-        /// Check two-point covered eye <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_TianLongTu_Q16525" />
-        /// Check if atari on other groups <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_ScenarioHighLevel18" />
         /// </summary>
         public static Boolean AtariRedundantMove(GameTryMove tryMove)
         {
-            Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
-            Content c = tryBoard.MoveGroup.Content;
-            if (!tryBoard.IsAtariMove || tryBoard.AtariTargets.Count > 1 || tryMove.AtariResolved || tryBoard.MoveGroupLiberties == 1 || tryBoard.CapturedList.Count > 0) return false;
+            if (tryBoard.AtariTargets.Count != 1 || tryMove.AtariResolved || tryBoard.MoveGroupLiberties == 1 || tryBoard.CapturedList.Count > 0) return false;
             Group atariTarget = tryBoard.AtariTargets.First();
             //ensure target group can escape
-            if (ImmovableHelper.UnescapableGroup(tryBoard, atariTarget).Item1)
-                return RedundantAtariWithinKillerGroup(tryMove);
-
-            //check if any move can capture target group
-            (Boolean suicidal, Board board) = ImmovableHelper.ConnectAndDie(currentBoard, atariTarget);
-            if (!suicidal) return false;
-
-            //check for snapback
-            Board escapeBoard = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(board, atariTarget, c.Opposite());
-            if (escapeBoard != null)
-            {
-                Board captureBoard = ImmovableHelper.CaptureSuicideGroup(escapeBoard);
-                if (captureBoard != null && captureBoard.MoveGroup.Liberties.Count == 1)
-                    return false;
-            }
-
-            //check if target group move at liberty is suicidal
-            Point liberty = board.GetGroupLibertyPoints(atariTarget).First();
-            (Boolean suicide, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board);
-            if (!suicide) return false;
-
-            //check if atari on other groups
-            if (b != null && AtariHelper.AtariByGroup(b, b.MoveGroup))
-                return false;
-
-            //check two-point covered eye
-            if (b != null && b.MoveGroup.Points.Count == 2)
-            {
-                if (EyeHelper.FindCoveredEyeByCapture(b))
-                    return false;
-            }
-
-            //check corner kill formation
-            if (tryBoard.MoveGroup.Points.Count == 1 && tryBoard.MoveGroupLiberties == 1 && tryBoard.CornerPoint(tryBoard.MoveGroup.Liberties.First()))
-            {
-                if (KillerFormationHelper.PreDeadFormation(currentBoard, atariTarget, atariTarget.Points.ToList(), new List<Point>() { tryBoard.MoveGroup.Points.First() }))
-                    return false;
-            }
-
-            //check killer formation
-            if (LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryBoard) && KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard))
-                return false;
-
-            return true;
+            if (!ImmovableHelper.UnescapableGroup(tryBoard, atariTarget).Item1) return false;
+            return RedundantAtariWithinKillerGroup(tryMove);
         }
 
         /// <summary>
@@ -716,7 +668,8 @@ namespace Go
                 return false;
 
             //find bloated eye suicide
-            if (tryBoard.GetDiagonalNeighbours().Any(p => FindBloatedEyeSuicide(tryBoard, p, c))) return true;
+            if (FindBloatedEyeSuicide(tryMove))
+                return true;
 
             //check redundant corner point
             if (CheckRedundantCornerPoint(tryMove, captureBoard))
@@ -740,14 +693,35 @@ namespace Go
         /// <summary>
         /// Find bloated eye suicide <see cref="UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_GuanZiPu_A35" />
         /// </summary>
-        public static Boolean FindBloatedEyeSuicide(Board board, Point p, Content c)
+        public static Boolean FindBloatedEyeSuicide(GameTryMove tryMove)
         {
-            if (!EyeHelper.FindEye(board, p, c)) return false;
-            List<Point> diagonalNeighbours = board.GetDiagonalNeighbours(p);
-            if (diagonalNeighbours.Count(q => board[q] == Content.Empty) == 1)
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            Content c = tryMove.MoveContent;
+            foreach (Point p in tryBoard.MoveGroup.Liberties)
             {
-                if (board.GetGroupsFromStoneNeighbours(p, c.Opposite()).All(group => group.Liberties.Count <= 2))
+                if (!EyeHelper.FindEye(tryBoard, p, c)) continue;
+                if (tryBoard.GetStoneNeighbours().Any(n => n.Equals(p))) continue;
+                List<Point> diagonalNeighbours = tryBoard.GetDiagonalNeighbours(p);
+                if (diagonalNeighbours.Count(q => tryBoard[q] == Content.Empty) == 1)
+                {
+                    if (!tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).All(group => group.Liberties.Count <= 2)) continue;
                     return true;
+                }
+            }
+            return false;
+        }
+
+        public static Boolean FindBloatedEyeSuicide2(Board board, Point p, Content c)
+        {
+            if (EyeHelper.FindEye(board, p, c) && !board.PointWithinMiddleArea(p))
+            {
+                List<Point> diagonalNeighbours = board.GetDiagonalNeighbours(p);
+                if (diagonalNeighbours.Count(q => board[q] == c.Opposite()) == 0 && diagonalNeighbours.Count(q => board[q] == Content.Empty) == 1)
+                {
+                    if (board.GetGroupsFromStoneNeighbours(p, c.Opposite()).All(group => group.Liberties.Count <= 2))
+                        return true;
+                }
             }
             return false;
         }
