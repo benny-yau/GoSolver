@@ -541,7 +541,7 @@ namespace Go
             if (CrowbarFormation(tryBoard, moveGroup))
             {
                 if (tryBoard.GetNeighbourGroups(moveGroup).Count <= 1) return false;
-                if (!LinkHelper.GetGroupDiagonals(tryBoard, tryBoard.MoveGroup).Any(d => tryBoard[d.Move] == moveGroup.Content)) return false;
+                if (!LinkHelper.GetGroupDiagonals(tryBoard, moveGroup).Any(d => tryBoard[d.Move] == moveGroup.Content)) return false;
                 if (moveGroup.Points.Count(p => !tryBoard.PointWithinMiddleArea(p)) >= 2)
                     return true;
             }
