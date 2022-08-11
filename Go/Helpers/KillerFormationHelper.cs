@@ -450,7 +450,7 @@ namespace Go
             {
                 Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard, moveGroup);
                 if (capturedBoard == null) return false;
-                foreach (Point p in tryBoard.MoveGroup.Points)
+                foreach (Point p in moveGroup.Points)
                 {
                     (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c, capturedBoard);
                     if (isSuicidal) continue;
