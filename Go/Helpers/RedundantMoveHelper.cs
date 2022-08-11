@@ -668,7 +668,7 @@ namespace Go
                 return false;
 
             //find bloated eye suicide
-            if (FindBloatedEyeSuicide(tryMove))
+            if (FindBloatedEyeSuicide(tryMove, captureBoard))
                 return true;
 
             //check redundant corner point
@@ -693,17 +693,18 @@ namespace Go
         /// <summary>
         /// Find bloated eye suicide <see cref="UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_GuanZiPu_A35" />
         /// </summary>
-        public static Boolean FindBloatedEyeSuicide(GameTryMove tryMove)
+        public static Boolean FindBloatedEyeSuicide(GameTryMove tryMove, Board captureBoard)
         {
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
             foreach (Point p in tryBoard.MoveGroup.Liberties)
             {
                 if (!EyeHelper.FindEye(tryBoard, p, c)) continue;
-                if (tryBoard.GetStoneNeighbours().Any(n => n.Equals(p))) continue;
                 if (tryBoard.GetDiagonalNeighbours(p).Count(q => tryBoard[q] == Content.Empty) == 1)
                 {
                     if (!tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).All(group => group.Liberties.Count <= 2)) continue;
+                    Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(captureBoard, captureBoard.GetGroupAt(tryBoard.MoveGroup.Points.First()), c);
+                    if (b != null) continue;
                     return true;
                 }
             }

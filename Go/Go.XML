@@ -1157,7 +1157,7 @@
             Check for one-by-three kill <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18796_2" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.FindBloatedEyeSuicide(Go.GameTryMove)">
+        <member name="M:Go.RedundantMoveHelper.FindBloatedEyeSuicide(Go.GameTryMove,Go.Board)">
             <summary>
             Find bloated eye suicide <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_GuanZiPu_A35" />
             </summary>
