@@ -705,7 +705,7 @@
             Formations that are essentially dead and do not require a pass move to test for both alive.
             </summary>
         </member>
-        <member name="M:Go.KillerFormationHelper.TryKillFormation(Go.Board,Go.Content,System.Collections.Generic.List{Go.Point},System.Collections.Generic.List{System.Func{Go.Board,Go.Group,System.Boolean}},System.Int32)">
+        <member name="M:Go.KillerFormationHelper.TryKillFormation(Go.Board,Go.Content,System.Collections.Generic.List{Go.Point},System.Int32)">
             <summary>
             Make move at each of the empty points to test if formation created.
             </summary>

@@ -33,10 +33,7 @@ namespace Go
             List<Point> emptyPoints = killerGroup.Points.Where(t => board[t] == Content.Empty).ToList();
             if (emptyPoints.Count != libertyCount) return false;
 
-            int contentCount = contentPoints.Count;
-            if (!KillerFormationFuncs.ContainsKey(contentCount + 1)) return false;
-            List<Func<Board, Group, Boolean>> funcs = KillerFormationFuncs[contentCount + 1];
-            if (TryKillFormation(board, c, emptyPoints, funcs, requiredCount))
+            if (TryKillFormation(board, c, emptyPoints, requiredCount))
                 return true;
             return false;
         }
@@ -44,7 +41,7 @@ namespace Go
         /// <summary>
         /// Make move at each of the empty points to test if formation created.
         /// </summary>
-        public static Boolean TryKillFormation(Board board, Content c, List<Point> emptyPoints, List<Func<Board, Group, Boolean>> functions, int requiredCount = 1)
+        public static Boolean TryKillFormation(Board board, Content c, List<Point> emptyPoints, int requiredCount = 1)
         {
             int count = 0;
             foreach (Point emptyPoint in emptyPoints)
@@ -52,7 +49,10 @@ namespace Go
                 Board b = board.MakeMoveOnNewBoard(emptyPoint, c);
                 if (b == null) return false;
                 Group group = b.GetGroupAt(emptyPoint);
-                if (functions.Any(func => func(b, group)))
+                int contentCount = group.Points.Count;
+                if (!KillerFormationFuncs.ContainsKey(contentCount)) return false;
+                List<Func<Board, Group, Boolean>> funcs = KillerFormationFuncs[contentCount];
+                if (funcs.Any(func => func(b, group)))
                 {
                     count++;
                     if (count >= requiredCount)
@@ -540,7 +540,7 @@ namespace Go
         {
             if (CrowbarFormation(tryBoard, moveGroup))
             {
-                if (tryBoard.GetNeighbourGroups().Count <= 1) return false;
+                if (tryBoard.GetNeighbourGroups(moveGroup).Count <= 1) return false;
                 if (!LinkHelper.GetGroupDiagonals(tryBoard, tryBoard.MoveGroup).Any(d => tryBoard[d.Move] == moveGroup.Content)) return false;
                 if (moveGroup.Points.Count(p => !tryBoard.PointWithinMiddleArea(p)) >= 2)
                     return true;

@@ -646,7 +646,7 @@ namespace Go
             {
                 if (tryBoard.CapturedList.Any(g => AtariHelper.AtariByGroup(currentBoard, g))) return false;
                 if (tryBoard.CapturedList.Any(n => EyeHelper.FindCoveredEyeAfterCapture(tryBoard, n))) return false;
-                if (KillerFormationHelper.TryKillFormation(captureBoard, c, new List<Point> { tryBoard.CapturedList.First().Points.First() }, new List<Func<Board, Group, Boolean>>() { KillerFormationHelper.OneByThreeFormation, KillerFormationHelper.KnifeFiveFormation }))
+                if (tryBoard.CapturedList.Any(n => n.Points.Count == 1 && KillerFormationHelper.TryKillFormation(captureBoard, c, new List<Point> { n.Points.First() })))
                     return false;
                 return true;
             }
@@ -1365,7 +1365,7 @@ namespace Go
             if (tryLinkBoard == null) //capture at tryBoard
             {
                 //check for corner kill
-                if (tryBoard.CapturedPoints.Count() == 1 && tryBoard.CornerPoint(tryBoard.CapturedPoints.First()) && (KillerFormationHelper.KnifeFiveFormation(tryBoard, tryBoard.MoveGroup) || KillerFormationHelper.FlowerSixFormation(tryBoard, tryBoard.MoveGroup) || KillerFormationHelper.FlowerSevenSideFormation(tryBoard, tryBoard.MoveGroup)))
+                if (tryBoard.CapturedPoints.Any(p => tryBoard.CornerPoint(p) && tryBoard.MoveGroup.Points.Count >= 5 && KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, capturedBoard)))
                     return false;
                 //check for connect and die
                 if (ImmovableHelper.CheckConnectAndDie(capturedBoard))
