@@ -23,6 +23,16 @@ namespace Go
             }
         }
 
+        public static Boolean IsKillerFormationFromFunc(Board tryBoard, Group group)
+        {
+            int contentCount = group.Points.Count;
+            if (!KillerFormationFuncs.ContainsKey(contentCount)) return false;
+            List<Func<Board, Group, Boolean>> funcs = KillerFormationFuncs[contentCount];
+            if (funcs.Any(func => func(tryBoard, group)))
+                return true;
+            return false;
+        }
+
         /// <summary>
         /// Formations that are essentially dead and do not require a pass move to test for both alive.
         /// </summary>
@@ -49,10 +59,7 @@ namespace Go
                 Board b = board.MakeMoveOnNewBoard(emptyPoint, c);
                 if (b == null) return false;
                 Group group = b.GetGroupAt(emptyPoint);
-                int contentCount = group.Points.Count;
-                if (!KillerFormationFuncs.ContainsKey(contentCount)) return false;
-                List<Func<Board, Group, Boolean>> funcs = KillerFormationFuncs[contentCount];
-                if (funcs.Any(func => func(b, group)))
+                if (IsKillerFormationFromFunc(b, group))
                 {
                     count++;
                     if (count >= requiredCount)
@@ -252,58 +259,10 @@ namespace Go
                     return false;
             }
 
-            if (moveCount == 4)
-            {
-                //one-by-three formation
-                if (KillerFormationHelper.OneByThreeFormation(tryBoard, tryBoard.MoveGroup)) return true;
-                //box formation
-                if (KillerFormationHelper.BoxFormation(tryBoard, tryBoard.MoveGroup)) return true;
-                //crowbar edge formation
-                if (KillerFormationHelper.CrowbarEdgeFormation(tryBoard, tryBoard.MoveGroup)) return true;
-                //two-by-two formation
-                if (KillerFormationHelper.TwoByTwoFormation(tryBoard, tryBoard.MoveGroup)) return true;
-                //bent four corner formation
-                if (KillerFormationHelper.BentFourCornerFormation(tryBoard, tryBoard.MoveGroup)) return true;
-            }
+            //check killer formation from functions
+            if (IsKillerFormationFromFunc(tryBoard, tryBoard.MoveGroup))
+                return true;
 
-            else if (moveCount == 5)
-            {
-                //knife five formation
-                if (KillerFormationHelper.KnifeFiveFormation(tryBoard, tryBoard.MoveGroup))
-                    return true;
-
-                //one-by-four side formation
-                if (KillerFormationHelper.OneByFourSideFormation(tryBoard, tryBoard.MoveGroup))
-                    return true;
-
-                //T side formation
-                if (KillerFormationHelper.TSideFormation(tryBoard, tryBoard.MoveGroup))
-                    return true;
-
-                //three-by-two side formation
-                if (KillerFormationHelper.ThreeByTwoSideFormation(tryBoard, tryBoard.MoveGroup))
-                    return true;
-            }
-            else if (moveCount == 6)
-            {
-                //flower six formation
-                if (KillerFormationHelper.FlowerSixFormation(tryBoard, tryBoard.MoveGroup))
-                    return true;
-
-                //two-by-four side formation
-                if (KillerFormationHelper.TwoByFourSideFormation(tryBoard, tryBoard.MoveGroup))
-                    return true;
-
-                //check for corner six formation
-                if (KillerFormationHelper.CornerSixFormation(tryBoard, tryBoard.MoveGroup))
-                    return true;
-            }
-            else if (moveCount == 7)
-            {
-                //flower seven side formation
-                if (KillerFormationHelper.FlowerSevenSideFormation(tryBoard, tryBoard.MoveGroup))
-                    return true;
-            }
             return false;
         }
 
@@ -635,7 +594,7 @@ namespace Go
         public static Boolean OneByFourSideFormation(Board tryBoard, Group moveGroup)
         {
             Content c = moveGroup.Content;
-            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] != c)) return false;
+            if (tryBoard.Move != null && tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] != c)) return false;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 5) return false;
             if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3) == 1)
@@ -664,7 +623,7 @@ namespace Go
         public static Boolean TSideFormation(Board tryBoard, Group moveGroup)
         {
             Content c = moveGroup.Content;
-            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] != c)) return false;
+            if (tryBoard.Move != null && tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] != c)) return false;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 5) return false;
             if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3) == 1)
@@ -687,7 +646,7 @@ namespace Go
         public static Boolean TwoByFourSideFormation(Board tryBoard, Group moveGroup)
         {
             Content c = moveGroup.Content;
-            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] != c)) return false;
+            if (tryBoard.Move != null && tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] != c)) return false;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 6) return false;
             if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3) == 2)

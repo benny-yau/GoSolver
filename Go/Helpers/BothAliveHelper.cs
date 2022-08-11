@@ -169,8 +169,7 @@ namespace Go
                 int contentCount = contentGroups.First().Points.Count;
                 if (KillerFormationHelper.KillerFormationFuncs.ContainsKey(contentCount))
                 {
-                    List<Func<Board, Group, Boolean>> funcs = KillerFormationHelper.KillerFormationFuncs[contentCount];
-                    if (!funcs.Any(func => func(board, contentGroups.First())))
+                    if (!KillerFormationHelper.IsKillerFormationFromFunc(board, contentGroups.First()))
                         return false;
                 }
             }
