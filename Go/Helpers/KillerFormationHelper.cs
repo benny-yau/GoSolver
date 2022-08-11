@@ -448,7 +448,7 @@ namespace Go
             Content c = moveGroup.Content;
             if (TwoByTwoFormation(tryBoard, moveGroup.Points, c))
             {
-                Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
+                Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard, moveGroup);
                 if (capturedBoard == null) return false;
                 foreach (Point p in tryBoard.MoveGroup.Points)
                 {
