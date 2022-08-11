@@ -284,6 +284,7 @@
             Check killer formation for three or more liberties <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31493_4" />
             Ensure killer group does not have real eye <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_TianLongTu_Q16424_2" />
             Check for increased killer groups <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31445_2" />
+            Check content group connect and die <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_TianLongTu_Q16424_3" />
             </summary>
         </member>
         <member name="M:Go.BothAliveHelper.BothAliveDiagonalEye(Go.Board,Go.Group,Go.Point)">
@@ -1224,7 +1225,7 @@
             Set neutral point move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18410_2" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.CheckDiagonalForSuicidalConnectAndDie(Go.GameTryMove)">
+        <member name="M:Go.RedundantMoveHelper.CheckDiagonalForSuicidalConnectAndDie(Go.GameTryMove,Go.Board)">
             <summary>
             Check for suicidal moves depending on diagonal groups.
             Check liberties are connected <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
@@ -1241,12 +1242,13 @@
             Check for killer formation <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_A26" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.CheckNoDiagonalAndNoLibertyAtMove(Go.GameTryMove)">
+        <member name="M:Go.RedundantMoveHelper.CheckNoDiagonalAndNoLibertyAtMove(Go.GameTryMove,Go.Board)">
             <summary>
             Check for no diagonals and no liberties at move.
             Ensure no diagonals <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
             Check for three neighbour groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30198" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16605" />
+            Check killer formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499_3" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SinglePointSuicidalMove(Go.GameTryMove,Go.GameTryMove)">

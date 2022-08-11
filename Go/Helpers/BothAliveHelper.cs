@@ -122,6 +122,7 @@ namespace Go
         /// Check killer formation for three or more liberties <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31493_4" />
         /// Ensure killer group does not have real eye <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_TianLongTu_Q16424_2" />
         /// Check for increased killer groups <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31445_2" />
+        /// Check content group connect and die <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_TianLongTu_Q16424_3" />
         /// </summary>
         private static Boolean CheckSimpleSeki(Board board, Board filledBoard, List<Group> neighbourGroups, Group killerGroup, List<Point> emptyPoints)
         {
@@ -142,6 +143,8 @@ namespace Go
                 //check killer formation for three or more liberties
                 if (!KillerFormationHelper.DeadFormationInBothAlive(filledBoard, killerGroup, emptyPointCount, 2))
                     return false;
+                if (neighbourGroups.Any(n => ImmovableHelper.CheckConnectAndDie(board, n)))
+                    return false;
             }
             //check killer formation for two liberties
             else if (KillerFormationHelper.DeadFormationInBothAlive(filledBoard, killerGroup, emptyPointCount))
@@ -158,6 +161,20 @@ namespace Go
                 if (b != null && b.MoveGroupLiberties > 1 && GameTryMove.IncreaseKillerGroups(b, board))
                     return false;
             }
+
+            //check content group connect and die
+            HashSet<Group> contentGroups = board.GetGroupsFromPoints(killerGroup.Points.Where(p => board[p] == content).ToList());
+            if (contentGroups.Count == 1 && ImmovableHelper.CheckConnectAndDie(board, contentGroups.First()))
+            {
+                int contentCount = contentGroups.First().Points.Count;
+                if (KillerFormationHelper.KillerFormationFuncs.ContainsKey(contentCount))
+                {
+                    List<Func<Board, Group, Boolean>> funcs = KillerFormationHelper.KillerFormationFuncs[contentCount];
+                    if (!funcs.Any(func => func(board, contentGroups.First())))
+                        return false;
+                }
+            }
+
             return true;
         }
 
@@ -192,7 +209,7 @@ namespace Go
             Boolean sharedLiberty = targetGroups.All(group => group.Liberties.Intersect(killerLiberties).Any());
             if (!sharedLiberty) return false;
             //check suicidal for both players and not ko move at liberty
-            if (!targetGroups.Any(gr => gr.Liberties.Any(liberty => ImmovableHelper.IsSuicidalMoveForBothPlayers(board, liberty) || board.GetStoneNeighbours(liberty).Any(n => board[n] == c && board.GetGroupAt(n).Points.Count == 1 && board.GetGroupAt(n).Liberties.Count > 1))))
+            if (!targetGroups.Any(gr => gr.Liberties.Any(liberty => ImmovableHelper.IsSuicidalMoveForBothPlayers(board, liberty) || board.GetStoneNeighbours(liberty).Any(n => board[n] == c && board.GetGroupAt(n).Points.Count == 1 && board.GetStoneNeighbours(n).Any(s => EyeHelper.FindEye(board, s, c))))))
                 return false;
 
             //ensure at least two liberties within killer group in survival neighbour group

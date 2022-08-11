@@ -6,42 +6,38 @@ namespace Go
 {
     public class KillerFormationHelper
     {
+        static Dictionary<int, List<Func<Board, Group, Boolean>>> killerFormationFuncs;
+        public static Dictionary<int, List<Func<Board, Group, Boolean>>> KillerFormationFuncs
+        {
+            get
+            {
+                if (killerFormationFuncs == null)
+                {
+                    killerFormationFuncs = new Dictionary<int, List<Func<Board, Group, Boolean>>>();
+                    killerFormationFuncs.Add(4, new List<Func<Board, Group, Boolean>>() { OneByThreeFormation, BoxFormation, CrowbarEdgeFormation, TwoByTwoFormation, BentFourCornerFormation });
+                    killerFormationFuncs.Add(5, new List<Func<Board, Group, Boolean>>() { KnifeFiveFormation, OneByFourSideFormation, TSideFormation, ThreeByTwoSideFormation });
+                    killerFormationFuncs.Add(6, new List<Func<Board, Group, Boolean>>() { FlowerSixFormation, TwoByFourSideFormation, CornerSixFormation });
+                    killerFormationFuncs.Add(7, new List<Func<Board, Group, Boolean>>() { FlowerSevenSideFormation });
+                }
+                return killerFormationFuncs;
+            }
+        }
 
         /// <summary>
         /// Formations that are essentially dead and do not require a pass move to test for both alive.
         /// </summary>
         public static Boolean DeadFormationInBothAlive(Board board, Group killerGroup, int libertyCount = 2, int requiredCount = 1)
         {
-            List<Point> contentPoints = killerGroup.Points.Where(t => board[t] == killerGroup.Content).ToList();
+            Content c = killerGroup.Content;
+            List<Point> contentPoints = killerGroup.Points.Where(t => board[t] == c).ToList();
             List<Point> emptyPoints = killerGroup.Points.Where(t => board[t] == Content.Empty).ToList();
             if (emptyPoints.Count != libertyCount) return false;
-            return PreDeadFormation(board, killerGroup, contentPoints, emptyPoints, requiredCount);
-        }
 
-        public static Boolean PreDeadFormation(Board board, Group killerGroup, List<Point> contentPoints, List<Point> emptyPoints, int requiredCount = 1)
-        {
             int contentCount = contentPoints.Count;
-            Content c = killerGroup.Content;
-            if (contentCount == 3)
-            {
-                if (TryKillFormation(board, c, emptyPoints, new List<Func<Board, Group, Boolean>>() { OneByThreeFormation, BoxFormation, CrowbarEdgeFormation, TwoByTwoFormation, BentFourCornerFormation }, requiredCount))
-                    return true;
-            }
-            else if (contentCount == 4)
-            {
-                if (TryKillFormation(board, c, emptyPoints, new List<Func<Board, Group, Boolean>>() { KnifeFiveFormation, OneByFourSideFormation, TSideFormation, ThreeByTwoSideFormation }, requiredCount))
-                    return true;
-            }
-            else if (contentCount == 5)
-            {
-                if (TryKillFormation(board, c, emptyPoints, new List<Func<Board, Group, Boolean>>() { FlowerSixFormation, TwoByFourSideFormation, CornerSixFormation }, requiredCount))
-                    return true;
-            }
-            else if (contentCount == 6)
-            {
-                if (TryKillFormation(board, c, emptyPoints, new List<Func<Board, Group, Boolean>>() { FlowerSevenSideFormation }, requiredCount))
-                    return true;
-            }
+            if (!KillerFormationFuncs.ContainsKey(contentCount + 1)) return false;
+            List<Func<Board, Group, Boolean>> funcs = KillerFormationFuncs[contentCount + 1];
+            if (TryKillFormation(board, c, emptyPoints, funcs, requiredCount))
+                return true;
             return false;
         }
 

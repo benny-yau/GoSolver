@@ -676,7 +676,7 @@ namespace Go
                 return true;
 
             //check diagonals
-            if (CheckDiagonalForSuicidalConnectAndDie(tryMove))
+            if (CheckDiagonalForSuicidalConnectAndDie(tryMove, captureBoard))
                 return true;
 
             if (movePoints.Count <= 4)
@@ -926,14 +926,14 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
         /// Check for killer formation <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_A26" />
         /// </summary>
-        private static Boolean CheckDiagonalForSuicidalConnectAndDie(GameTryMove tryMove)
+        private static Boolean CheckDiagonalForSuicidalConnectAndDie(GameTryMove tryMove, Board captureBoard)
         {
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
 
-            if (CheckNoDiagonalAndNoLibertyAtMove(tryMove))
+            if (CheckNoDiagonalAndNoLibertyAtMove(tryMove, captureBoard))
                 return true;
 
             //ensure no diagonal groups found
@@ -992,8 +992,9 @@ namespace Go
         /// Ensure no diagonals <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
         /// Check for three neighbour groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30198" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16605" />
+        /// Check killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499_3" />
         /// </summary>
-        private static Boolean CheckNoDiagonalAndNoLibertyAtMove(GameTryMove tryMove)
+        private static Boolean CheckNoDiagonalAndNoLibertyAtMove(GameTryMove tryMove, Board captureBoard)
         {
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
@@ -1001,14 +1002,18 @@ namespace Go
             Content c = tryMove.MoveContent;
 
             if (tryBoard.MoveGroup.Points.Count == 1) return false;
+            //ensure no diagonals
             if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty) || LinkHelper.GetMoveDiagonals(tryBoard).Any())
                 return false;
 
-            if (tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c) >= 2) return false;
-
             //check for three neighbour groups
-            Boolean threeGroups = (tryBoard.GetGroupsFromStoneNeighbours(move, c).Count > 2);
+            Boolean threeGroups = tryBoard.GetGroupsFromStoneNeighbours(move, c).Count >= 3;
             if (threeGroups) return false;
+
+            //check killer formation
+            if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, captureBoard))
+                return false;
+
             return true;
         }
 
