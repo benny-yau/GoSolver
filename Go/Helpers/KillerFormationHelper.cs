@@ -28,7 +28,8 @@ namespace Go
             int contentCount = group.Points.Count;
             if (!KillerFormationFuncs.ContainsKey(contentCount)) return false;
             List<Func<Board, Group, Boolean>> funcs = KillerFormationFuncs[contentCount];
-            if (funcs.Any(func => func(tryBoard, group)))
+            Func<Board, Group, Boolean> killerFunc = funcs.FirstOrDefault(func => func(tryBoard, group));
+            if (killerFunc != null)
                 return true;
             return false;
         }
@@ -107,13 +108,8 @@ namespace Go
                 return false;
 
             //check link to external group
-            if (tryBoard.MoveGroupLiberties == 1 && capturedBoard != null)
-            {
-                Point? liberty = capturedBoard.Move;
-                Board tryLinkBoard = currentBoard.MakeMoveOnNewBoard(liberty.Value, c);
-                if (tryLinkBoard != null && IsLinkToExternalGroup(tryBoard, currentBoard, tryLinkBoard))
-                    return false;
-            }
+            if (IsLinkToExternalGroup(tryBoard, currentBoard, capturedBoard))
+                return false;
             return true;
         }
 
@@ -251,17 +247,20 @@ namespace Go
                 if (KillerFormationHelper.CornerThreeFormation(tryBoard, tryBoard.MoveGroup))
                     return true;
             }
-            //check kill group extension
-            else if (CheckRedundantKillGroupExtension(tryBoard, currentBoard, capturedBoard))
+            else
             {
-                if (moveCount == 4) return false;
-                if (KillerFormationHelper.GridDimensionChanged(LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).First().Points, tryBoard.MoveGroup.Points))
-                    return false;
-            }
+                //check kill group extension
+                if (CheckRedundantKillGroupExtension(tryBoard, currentBoard, capturedBoard))
+                {
+                    if (moveCount == 4) return false;
+                    if (KillerFormationHelper.GridDimensionChanged(LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).First().Points, tryBoard.MoveGroup.Points))
+                        return false;
+                }
 
-            //check killer formation from functions
-            if (IsKillerFormationFromFunc(tryBoard, tryBoard.MoveGroup))
-                return true;
+                //check killer formation from functions
+                if (IsKillerFormationFromFunc(tryBoard, tryBoard.MoveGroup))
+                    return true;
+            }
 
             return false;
         }
@@ -320,12 +319,15 @@ namespace Go
         /// Check connect and die <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30403" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi_2" />
         /// </summary>
-        private static Boolean IsLinkToExternalGroup(Board tryBoard, Board currentBoard, Board tryLinkBoard)
+        private static Boolean IsLinkToExternalGroup(Board tryBoard, Board currentBoard, Board capturedBoard)
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            if (tryLinkBoard.MoveGroupLiberties == 1)
-                return false;
+            if (tryBoard.MoveGroupLiberties != 1 || capturedBoard == null) return false;
+            Point? liberty = capturedBoard.Move;
+            Board tryLinkBoard = currentBoard.MakeMoveOnNewBoard(liberty.Value, c);
+            if (tryLinkBoard == null || tryLinkBoard.MoveGroupLiberties == 1) return false;
+
             //get previous move group
             List<Group> groups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
             //connect three or more groups

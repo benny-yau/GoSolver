@@ -140,10 +140,10 @@ namespace Go
             int emptyPointCount = killerGroup.Points.Count(k => filledBoard[k] == Content.Empty);
             if (emptyPointCount >= 3)
             {
+                if (neighbourGroups.Any(n => ImmovableHelper.CheckConnectAndDie(board, n)))
+                    return false;
                 //check killer formation for three or more liberties
                 if (!KillerFormationHelper.DeadFormationInBothAlive(filledBoard, killerGroup, emptyPointCount, 2))
-                    return false;
-                if (neighbourGroups.Any(n => ImmovableHelper.CheckConnectAndDie(board, n)))
                     return false;
             }
             //check killer formation for two liberties
@@ -198,6 +198,11 @@ namespace Go
         /// Without diagonal group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A123" />
         /// Check suicidal for both players and not ko move at liberty <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18" />
+        /// Find uncovered eye <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_ComplexSeki" />
+        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan22" />
+        /// Two point uncovered eye <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18_2" />
+        /// Clear all killer groups with empty points <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30213" />
+        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A123" />
         /// </summary>
         private static Boolean CheckComplexSeki(Board board, List<Group> killerGroups, List<Group> targetGroups)
         {
@@ -215,7 +220,7 @@ namespace Go
             if (targetGroups.Any(n => n.Liberties.Count(p => GroupHelper.GetKillerGroupFromCache(board, p, c.Opposite()) != null) < 2))
                 return false;
             //find uncovered eye
-            if (FindUncoveredEyeInComplexSeki(board, killerGroups))
+            if (killerGroups.Any(group => group.Points.Count <= 2 && !group.IsCoveredEye))
                 return true;
             return false;
         }
@@ -236,30 +241,6 @@ namespace Go
                 eyePoints.ForEach(p => filledBoard[p] = killerGroup.Content);
             }
             return filledBoard;
-        }
-
-        /// <summary>
-        /// Find uncovered eye in omplex seki.
-        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_ComplexSeki" />
-        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan22" />
-        /// Two point uncovered eye <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18_2" />
-        /// Clear all killer groups with empty points <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30213" />
-        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A123" />
-        /// </summary>
-        public static Boolean FindUncoveredEyeInComplexSeki(Board board, List<Group> killerGroups)
-        {
-            //clear all killer groups with empty points
-            Board clearedBoard = new Board(board);
-            killerGroups.ForEach(group => group.Points.ToList().ForEach(p => clearedBoard[p] = Content.Empty));
-
-            //check for uncovered eye
-            foreach (Group group in killerGroups)
-            {
-                if (group.Points.Count > 2) continue;
-                if (EyeHelper.FindRealEyeWithinEmptySpace(clearedBoard, group, EyeType.UnCoveredEye))
-                    return true;
-            }
-            return false;
         }
 
         /// <summary>

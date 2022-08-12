@@ -934,6 +934,10 @@ namespace Go
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
 
+            //ensure no diagonal at move
+            Boolean diagonalAtMove = LinkHelper.GetMoveDiagonals(tryBoard).Any();
+            if (diagonalAtMove) return false;
+
             if (CheckNoDiagonalAndNoLibertyAtMove(tryMove, captureBoard))
                 return true;
 
@@ -977,20 +981,19 @@ namespace Go
                 }
                 return false;
             }
-            //ensure no diagonal at move
-            Boolean diagonalAtMove = LinkHelper.GetMoveDiagonals(tryBoard).Any();
-            if (diagonalAtMove) return false;
 
             //ensure no shared liberty with neighbour group
             List<Group> neighbourGroups = tryBoard.GetNeighbourGroups();
             Boolean sharedLiberty = tryBoard.MoveGroup.Liberties.Any(n => tryBoard.GetGroupsFromStoneNeighbours(n, c).Any(g => neighbourGroups.Contains(g)));
-            if (sharedLiberty) return false;
+            if (sharedLiberty)
+                return false;
+
             return true;
         }
 
         /// <summary>
         /// Check for no diagonals and no liberties at move.
-        /// Ensure no diagonals <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
+        /// Ensure no liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
         /// Check for three neighbour groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30198" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16605" />
         /// Check killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499_3" />
@@ -1003,8 +1006,8 @@ namespace Go
             Content c = tryMove.MoveContent;
 
             if (tryBoard.MoveGroup.Points.Count == 1) return false;
-            //ensure no diagonals
-            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty) || LinkHelper.GetMoveDiagonals(tryBoard).Any())
+            //ensure no liberties
+            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty))
                 return false;
 
             //check for three neighbour groups
@@ -1108,15 +1111,8 @@ namespace Go
             if (liberties.Count == 1)
             {
                 //one liberty - suicide for both players
-                Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
-                if (killerGroup != null && killerGroup.Points.Count == 2)
-                {
-                    if (ImmovableHelper.IsSuicidalMoveForBothPlayers(tryBoard, liberties.First()))
-                        return false;
-
-                    if (ImmovableHelper.IsSuicidalMoveForBothPlayers(currentBoard, liberties.First(), true))
-                        return false;
-                }
+                if (SuicideForBothAlive(tryMove, false))
+                    return false;
 
                 //crowbar formation
                 List<Group> neighbourGroups = tryBoard.GetNeighbourGroups(move);
@@ -1422,7 +1418,7 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30215_2" />
         /// Two target groups <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18_4" />
         /// </summary>
-        private static Boolean SuicideForBothAlive(GameTryMove tryMove)
+        private static Boolean SuicideForBothAlive(GameTryMove tryMove, Boolean removeOnePoint = true)
         {
             Board tryBoard = tryMove.TryGame.Board;
             Board currentBoard = tryMove.CurrentGame.Board;
@@ -1441,9 +1437,12 @@ namespace Go
             if (groups.Count == 0 || tryBoard.GetLibertiesOfGroups(groups).Count == 1) return false;
 
             //get only one move within killer group
-            Boolean oneTargetGroup = targetGroups.Count == 1 && killerGroup.Points.FirstOrDefault(p => currentBoard[p] == Content.Empty).Equals(move);
-            Boolean twoTargetGroups = targetGroups.Count > 1 && !tryBoard.IsAtariMove;
-            if (!oneTargetGroup && !twoTargetGroups) return false;
+            if (removeOnePoint)
+            {
+                Boolean oneTargetGroup = targetGroups.Count == 1 && killerGroup.Points.FirstOrDefault(p => currentBoard[p] == Content.Empty).Equals(move);
+                Boolean twoTargetGroups = targetGroups.Count > 1 && !tryBoard.IsAtariMove;
+                if (!oneTargetGroup && !twoTargetGroups) return false;
+            }
 
             //check suicidal move for both players at external liberty
             if (ImmovableHelper.IsSuicidalMoveForBothPlayers(tryBoard, liberty))
