@@ -97,8 +97,18 @@ namespace Go
                 return true;
             }
             //check any diagonal separated by opposite content
-            if (diagonals.Any(diagonal => ImmovableHelper.IsImmovablePoint(diagonal, c, board).Item1 && (board[diagonal] == Content.Empty || GroupHelper.GetKillerGroupFromCache(board, diagonal, c) != null)))
-                return true;
+            foreach (Point diagonal in diagonals)
+            {
+                if (!ImmovableHelper.IsImmovablePoint(diagonal, c, board).Item1) continue;
+                //empty point
+                if (board[diagonal] == Content.Empty) return true;
+                //filled point
+                Group killerGroup = GroupHelper.GetKillerGroupFromCache(board, diagonal, c);
+                if (killerGroup == null) continue;
+                //ensure only one opponent group within killer group
+                if (board.GetGroupsFromPoints(killerGroup.Points.Where(p => board[p] == c.Opposite()).ToList()).Count == 1)
+                    return true;
+            }
             return false;
         }
 
