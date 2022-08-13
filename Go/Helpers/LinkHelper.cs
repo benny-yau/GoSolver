@@ -329,11 +329,7 @@ namespace Go
 
         public static Boolean IsDiagonallyConnectedGroups(Board board, Group group, Group findGroup)
         {
-            Boolean immediateGroups = GetGroupLinkedDiagonals(board, group).Any(d => board.GetGroupAt(d.Move) == findGroup);
-            if (immediateGroups)
-                return IsImmediateDiagonallyConnected(board, group, findGroup);
-            else
-                return IsDiagonallyConnectedGroups(new HashSet<Group>() { group }, board, group, findGroup);
+            return IsDiagonallyConnectedGroups(new HashSet<Group>() { group }, board, group, findGroup);
         }
 
         /// <summary>
