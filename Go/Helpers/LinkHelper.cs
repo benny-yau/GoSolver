@@ -38,7 +38,7 @@ namespace Go
                     if (isLinked)
                     {
                         //check if previously linked
-                        Boolean previousLinked = IsDiagonallyConnectedGroups(currentBoard, groups[i], groups[j]);
+                        Boolean previousLinked = IsImmediateDiagonallyConnected(currentBoard, groups[i], groups[j]) || IsDiagonallyConnectedGroups(currentBoard, groups[i], groups[j]);
                         if (previousLinked) continue;
                         return true;
                     }
