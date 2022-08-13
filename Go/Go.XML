@@ -896,6 +896,11 @@
             Check any diagonal separated by opposite content <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_5" />
             </summary>
         </member>
+        <member name="M:Go.LinkHelper.CheckIsDiagonalImmediateLinked(Go.Point,Go.Point,Go.Board)">
+            <summary>
+            Check if diagonals are immediately linked.
+            </summary>
+        </member>
         <member name="M:Go.LinkHelper.CheckDoubleLinkage(Go.Board,Go.LinkedPoint{Go.Point},Go.Content)">
             <summary>
             Check for double linkage.
@@ -937,9 +942,9 @@
             Find if two groups are connected diagonally. If find group parameter is null then look for all connected groups.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.IsImmediateDiagonallyConnected(Go.Board,Go.Group,Go.Group,System.Boolean)">
+        <member name="M:Go.LinkHelper.IsImmediateDiagonallyConnected(Go.Board,Go.Group,Go.Group)">
             <summary>
-            Find if two groups are connected diagonally directly or through move group. 
+            Is immediate diagonally connected. 
             </summary>
         </member>
         <member name="M:Go.LinkHelper.PossibleLinkToAnyDiagonalGroup(Go.Board,Go.Group,Go.Group,System.Boolean)">
