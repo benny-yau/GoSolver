@@ -185,7 +185,7 @@ namespace Go
 
         public Boolean LinkForGroups()
         {
-            return LinkHelper.LinkForGroups(TryGame.Board, CurrentGame.Board);
+            return LinkHelper.PossibleLinkForGroups(TryGame.Board, CurrentGame.Board);
         }
 
         public override string ToString()

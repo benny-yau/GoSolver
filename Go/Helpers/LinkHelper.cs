@@ -10,15 +10,15 @@ namespace Go
     {
 
         /// <summary>
-        /// Check if move links two or more groups together which are not previously linked in current board. For neutral point move, covered eye move, and eye diagonal move.
+        /// Possible link for groups. For neutral point move, covered eye move, and eye diagonal move.
         /// <see cref="UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario5dan25" />
         /// <see cref="UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_XuanXuanGo_Q18358" />
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" />
         /// </summary>
-        public static Boolean LinkForGroups(Board tryBoard, Board currentBoard)
+        public static Boolean PossibleLinkForGroups(Board tryBoard, Board currentBoard)
         {
             Point move = tryBoard.Move.Value;
-            Content c = tryBoard[move];
+            Content c = tryBoard.MoveGroup.Content;
 
             List<Point> groupPoints = currentBoard.GetStoneAndDiagonalNeighbours(move).Where(n => currentBoard[n] == c).ToList();
             tryBoard.CapturedList.ForEach(q => groupPoints.AddRange(q.Neighbours.Where(n => currentBoard[n] == c)));
@@ -34,7 +34,7 @@ namespace Go
                     Group groupJ = tryBoard.GetGroupAt(groups[j].Points.First());
                     if (groupI == groupJ && ImmovableHelper.CheckConnectAndDie(tryBoard)) return false;
                     //check if currently linked
-                    Boolean isLinked = (groupI == groupJ) || IsImmediateDiagonallyConnected(tryBoard, groupI, groupJ, true);
+                    Boolean isLinked = (groupI == groupJ) || PossibleLinkToAnyDiagonalGroup(tryBoard, groupI, groupJ, true);
                     if (isLinked)
                     {
                         //check if previously linked
@@ -53,8 +53,8 @@ namespace Go
         public static Boolean IsAbsoluteLinkForGroups(Board currentBoard, Board tryBoard)
         {
             Point move = tryBoard.Move.Value;
-            Content c = tryBoard[move];
-            if (tryBoard.IsSinglePoint()) return false;
+            Content c = tryBoard.MoveGroup.Content;
+            if (tryBoard.MoveGroup.Points.Count == 1) return false;
             List<Group> linkedGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).ToList();
             return (linkedGroups.Count > 1);
         }
@@ -319,6 +319,32 @@ namespace Go
         }
 
         /// <summary>
+        /// Possible link to any diagonal group.
+        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_XuanXuanQiJing_Weiqi101_18497_4" />
+        /// Link for kill <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
+        /// Link through move group <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" /> 
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q16902" /> 
+        /// Captured eye point <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" />
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_Q18340" /> 
+        /// </summary>
+        public static Boolean PossibleLinkToAnyDiagonalGroup(Board board, Group group, Group findGroup, Boolean checkMoveGroup = false)
+        {
+            //link between the two groups
+            if (GetGroupLinkedDiagonals(board, group).Any(d => board.GetGroupAt(d.Move) == findGroup && !ImmovableHelper.CheckConnectAndDie(board, board.GetGroupAt(d.Move))))
+                return true;
+
+            //link through move group
+            if (checkMoveGroup)
+            {
+                Boolean isLinked = (group == board.MoveGroup || GetGroupLinkedDiagonals(board, group).Any(d => board.GetGroupAt(d.Move) == board.MoveGroup && !ImmovableHelper.CheckConnectAndDie(board, board.GetGroupAt(d.Move))));
+                Boolean isLinked2 = (findGroup == board.MoveGroup || GetGroupLinkedDiagonals(board, findGroup).Any(d => board.GetGroupAt(d.Move) == board.MoveGroup && !ImmovableHelper.CheckConnectAndDie(board, board.GetGroupAt(d.Move))));
+
+                return isLinked && isLinked2;
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Check tiger mouth exceptions for links.
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_2" /> 
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_3" /> 
@@ -444,33 +470,6 @@ namespace Go
             Point p = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             return currentBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).ToList();
-        }
-
-
-        /// <summary>
-        /// Link to groups that are not eye groups.
-        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" /> 
-        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q16902" /> 
-        /// Captured eye point <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" />
-        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_Q18340" /> 
-        /// Link for kill <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
-        /// </summary>
-        public static Boolean LinkToNonEyeGroups(Board tryBoard, Board currentBoard, Point eyePoint)
-        {
-            Point move = tryBoard.Move.Value;
-            Content c = tryBoard.MoveGroup.Content;
-            HashSet<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite());
-            //get neighbour groups of move
-            List<Point> groupPoints = currentBoard.GetStoneAndDiagonalNeighbours(move).Where(n => currentBoard[n] == c).ToList();
-            List<Group> groups = currentBoard.GetGroupsFromPoints(groupPoints).ToList();
-            //get non-eye groups
-            groups = groups.Except(eyeGroups).Where(gr => gr.Liberties.Count > 1).ToList();
-
-            //link for kill
-            if (groups.Any() && tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == c.Opposite() && !WallHelper.IsNonKillableGroup(tryBoard, n)))
-                return true;
-
-            return LinkHelper.LinkForGroups(tryBoard, currentBoard);
         }
 
         /// <summary>

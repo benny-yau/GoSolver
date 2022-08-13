@@ -873,9 +873,9 @@
             Check one liberty non-ko move <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_2" />
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.LinkForGroups(Go.Board,Go.Board)">
+        <member name="M:Go.LinkHelper.PossibleLinkForGroups(Go.Board,Go.Board)">
             <summary>
-            Check if move links two or more groups together which are not previously linked in current board. For neutral point move, covered eye move, and eye diagonal move.
+            Possible link for groups. For neutral point move, covered eye move, and eye diagonal move.
             <see cref="!:UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario5dan25" />
             <see cref="!:UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_XuanXuanGo_Q18358" />
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" />
@@ -942,6 +942,17 @@
             Find if two groups are connected diagonally directly or through move group. 
             </summary>
         </member>
+        <member name="M:Go.LinkHelper.PossibleLinkToAnyDiagonalGroup(Go.Board,Go.Group,Go.Group,System.Boolean)">
+            <summary>
+            Possible link to any diagonal group.
+            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_XuanXuanQiJing_Weiqi101_18497_4" />
+            Link for kill <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
+            Link through move group <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" /> 
+            <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q16902" /> 
+            Captured eye point <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" />
+            <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_Q18340" /> 
+            </summary>
+        </member>
         <member name="M:Go.LinkHelper.CheckTigerMouthExceptionsForLinks(Go.Board,Go.Group)">
             <summary>
             Check tiger mouth exceptions for links.
@@ -977,16 +988,6 @@
         <member name="M:Go.LinkHelper.GetPreviousMoveGroup(Go.Board,Go.Board)">
             <summary>
             Get stones within move group on current board.
-            </summary>
-        </member>
-        <member name="M:Go.LinkHelper.LinkToNonEyeGroups(Go.Board,Go.Board,Go.Point)">
-            <summary>
-            Link to groups that are not eye groups.
-            <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" /> 
-            <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q16902" /> 
-            Captured eye point <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" />
-            <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_Q18340" /> 
-            Link for kill <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
             </summary>
         </member>
         <member name="M:Go.LinkHelper.GetNeighboursDiagonallyLinked(Go.Board)">

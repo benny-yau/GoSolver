@@ -176,14 +176,7 @@ namespace Go
                 Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard);
                 if (b != null && b.MoveGroupLiberties == 1) return false;
             }
-
-            //check if link for groups
-            if (eyeMove)
-            {
-                if (LinkHelper.LinkToNonEyeGroups(tryBoard, currentBoard, eyePoint))
-                    return false;
-            }
-            else if (LinkHelper.LinkForGroups(tryBoard, currentBoard))
+            if (LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard))
                 return false;
 
             return true;
@@ -430,7 +423,7 @@ namespace Go
             GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
             if (opponentMove == null) return false;
             Board opponentTryBoard = opponentMove.TryGame.Board;
-            if (opponentTryBoard.MoveGroupLiberties == 1 && opponentTryBoard.IsSinglePoint())
+            if (opponentTryBoard.MoveGroupLiberties == 1 && opponentTryBoard.MoveGroup.Points.Count == 1)
             {
                 if (SinglePointSuicidalMove(opponentMove, tryMove))
                     return true;
@@ -449,7 +442,7 @@ namespace Go
         private static Boolean SuicidalMove(GameTryMove tryMove)
         {
             Board tryBoard = tryMove.TryGame.Board;
-            Boolean singlePoint = (tryBoard.IsSinglePoint());
+            Boolean singlePoint = tryBoard.MoveGroup.Points.Count == 1;
             if (tryBoard.MoveGroupLiberties == 1)
             {
                 if (singlePoint && SinglePointSuicidalMove(tryMove))
@@ -1245,7 +1238,7 @@ namespace Go
                 if (diagonalNeighbours.Any(n => LinkHelper.PointsBetweenDiagonals(move, n).Any(d => tryBoard[d] == Content.Empty)))
                     return true;
                 //check real eye
-                if (capturedBoard.GetDiagonalNeighbours(move.x, move.y).Any(n => capturedBoard[n] == Content.Empty && EyeHelper.FindRealEyeWithinEmptySpace(capturedBoard, n, c.Opposite())) && !ImmovableHelper.AllConnectAndDie(capturedBoard, move, c.Opposite()))
+                if (capturedBoard.GetDiagonalNeighbours(move).Any(n => capturedBoard[n] == Content.Empty && EyeHelper.FindRealEyeWithinEmptySpace(capturedBoard, n, c.Opposite())) && !ImmovableHelper.AllConnectAndDie(capturedBoard, move, c.Opposite()))
                     return true;
             }
             return false;
@@ -1877,12 +1870,13 @@ namespace Go
         /// </summary>
         public static Boolean ValidateNeutralPoint(GameTryMove tryMove)
         {
+            Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             //ensure eye cannot be created at any stone or diagonal neighbours
             if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(tryBoard))
                 return false;
             //check link for groups
-            if (tryMove.LinkForGroups())
+            if (LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard))
                 return false;
 
             //check for double ko
@@ -2474,7 +2468,7 @@ namespace Go
                     return false;
 
                 //check link to groups other than eye groups
-                if (diagonals.Any(d => LinkHelper.LinkToNonEyeGroups(tryBoard, currentBoard, d)))
+                if (LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard))
                     return false;
                 return true;
             }
@@ -2783,7 +2777,7 @@ namespace Go
             if (twoPointKill) return false;
 
             //check for kill formation
-            if (tryBoard.IsSinglePoint() && tryBoard.MoveGroupLiberties == 2)
+            if (tryBoard.MoveGroup.Points.Count == 1 && tryBoard.MoveGroupLiberties == 2)
             {
                 Boolean killFormation = (tryBoard.GetClosestNeighbour(move, 2, c.Opposite()).Count >= 3 && !tryBoard.GetClosestNeighbour(move, 2, c).Any());
                 if (killFormation) return false;
