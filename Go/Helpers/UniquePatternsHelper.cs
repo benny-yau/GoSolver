@@ -31,18 +31,19 @@ namespace Go
         {
             Board board = currentGame.Board;
             List<Group> killerGroups = GroupHelper.GetKillerGroups(board);
-            if (killerGroups.Count != 1 || killerGroups[0].Points.Count != 5)
+            if (killerGroups.Count == 0)
                 return false;
+            Group killerGroup = killerGroups.First();
+            if (killerGroup.Points.Count != 5)
+                return false;
+            List<Point> emptyPoints = killerGroup.Points.Where(p => board[p] == Content.Empty).ToList();
+            if (emptyPoints.Count != 2) return false;
+            if (board.GetNeighbourGroups(killerGroup).Count != 1) return false;
 
-            //all game try moves should be within killer group and not covered eye moves
-            if (tryMoves != null)
-            {
-                IEnumerable<Point> emptyPoints = killerGroups[0].Points.Where(p => board[p] == Content.Empty);
-                List<GameTryMove> externalMoves = tryMoves.Where(p => !(emptyPoints.Contains(p.Move) || p.IsKoFight)).ToList();
-                if (externalMoves.Count > 0) return false;
-            }
+            //all game try moves should be within killer group
+            if (tryMoves != null && tryMoves.Where(p => !emptyPoints.Contains(p.Move)).Any()) return false;
 
-            if (PreCornerBentFourFormation(currentGame.Board, killerGroups[0]))
+            if (PreCornerBentFourFormation(board, killerGroup))
                 return true;
             return false;
         }
