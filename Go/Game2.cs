@@ -148,10 +148,8 @@ namespace Go
             //sort game try moves
             tryMoves = (from tryMove in tryMoves orderby tryMove.AtariResolved descending, tryMove.TryGame.Board.IsAtariWithoutSuicide descending, tryMove.IncreasedKillerGroups descending, tryMove.TryGame.Board.MoveGroupLiberties descending select tryMove).ToList();
 
-            //check for bent four and both alive scenarios
-            if (UniquePatternsHelper.CheckForBentFour(currentGame, tryMoves))
-                tryMoves.Clear();
-            else if (BothAliveHelper.EnableCheckForPassMove(currentGame.Board, content, tryMoves))
+            //check for both alive
+            if (BothAliveHelper.EnableCheckForPassMove(currentGame.Board, content, tryMoves))
                 tryMoves.Add(BothAliveHelper.AddPassMove(currentGame));
             else if (tryMoves.Count == 0 && redundantTryMoves.Any(move => move.IsDiagonalEyeMove))
                 tryMoves.Add(redundantTryMoves.First(move => move.IsDiagonalEyeMove));
@@ -507,7 +505,7 @@ namespace Go
                 Boolean lastMovePass = lastMove == null || lastMove.Value.Equals(Game.PassMove);
                 if (lastMovePass) return;
                 //add move if no more try moves or to fight ko
-                if (tryMoves.Count == 0 || AddPointToFightKo(tryMoves, currentGame, KoCheck.Survive))
+                if (tryMoves.Count == 0 || AddPointToFightKo(tryMoves, currentGame, KoCheck.Survive) || IsBentFourCornerFormation(tryMoves))
                 {
                     Point p = Game.PassMove;
                     for (int i = 3; i < 11; i++)
@@ -543,6 +541,17 @@ namespace Go
         private Boolean AddPointToFightKo(List<GameTryMove> tryMoves, Game currentGame, KoCheck surviveOrKill)
         {
             return (tryMoves.Count == 0 && currentGame.KoGameCheck == surviveOrKill && currentGame.Board.singlePointCapture != null);
+        }
+
+        /// <summary>
+        /// Bent four formation
+        /// <see cref="UnitTestProject.BentFourTest.BentFourTest_Scenario7kyu26_3" />
+        /// </summary>
+        private Boolean IsBentFourCornerFormation(List<GameTryMove> tryMoves)
+        {
+            if (tryMoves.Count != 1) return false;
+            Board tryBoard = tryMoves.First().TryGame.Board;
+            return KillerFormationHelper.BentFourCornerFormation(tryBoard, tryBoard.MoveGroup);
         }
 
         /// <summary>
