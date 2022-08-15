@@ -182,9 +182,6 @@ namespace Go
             move.IsLeapMove = RedundantMoveHelper.SurvivalLeapMove(move);
             if (move.IsLeapMove)
                 return;
-            move.IsSuicidal = RedundantMoveHelper.SuicidalRedundantMove(move);
-            if (move.IsSuicidal)
-                return;
             move.IsNeutralPoint = RedundantMoveHelper.NeutralPointSurvivalMove(move);
             if (move.IsNeutralPoint)
                 return;
@@ -206,6 +203,9 @@ namespace Go
             move.IsAtariRedundant = RedundantMoveHelper.AtariRedundantMove(move);
             if (move.IsAtariRedundant)
                 return;
+            move.IsSuicidal = RedundantMoveHelper.SuicidalRedundantMove(move);
+            if (move.IsSuicidal)
+                return;
         }
 
 
@@ -225,9 +225,6 @@ namespace Go
                 return;
             move.IsLeapMove = RedundantMoveHelper.KillLeapMove(move);
             if (move.IsLeapMove)
-                return;
-            move.IsSuicidal = RedundantMoveHelper.SuicidalRedundantMove(move);
-            if (move.IsSuicidal)
                 return;
             move.IsNeutralPoint = RedundantMoveHelper.NeutralPointKillMove(move);
             if (move.IsNeutralPoint)
@@ -249,6 +246,9 @@ namespace Go
                 return;
             move.IsAtariRedundant = RedundantMoveHelper.AtariRedundantMove(move);
             if (move.IsAtariRedundant)
+                return;
+            move.IsSuicidal = RedundantMoveHelper.SuicidalRedundantMove(move);
+            if (move.IsSuicidal)
                 return;
         }
 

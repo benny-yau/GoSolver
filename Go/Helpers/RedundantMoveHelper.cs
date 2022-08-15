@@ -506,6 +506,7 @@ namespace Go
         /// Check move group liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14916_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A67" />
         /// Check for unescapable group <see cref = "UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q17255" />
+        /// Check for weak group <see cref = "UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16604_3" />
         /// Find eye at move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16850" />
         /// Check for ko or capture move by atari target <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14992" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
@@ -534,17 +535,21 @@ namespace Go
 
             //check move group liberties
             if (tryBoard.MoveGroupLiberties <= 2 && (tryBoard.MoveGroup.Points.Count <= 4 || KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard))) return false;
-            //check for unescapable group
-            if (tryBoard.AtariTargets.Any(t => ImmovableHelper.UnescapableGroup(tryBoard, t).Item1)) return false;
 
             //find eye at move
             if (opponentTryBoard.GetStoneAndDiagonalNeighbours().Any(n => EyeHelper.FindEye(opponentTryBoard, n, c.Opposite())))
                 return false;
 
-            //check for ko or capture move by atari target
-            //check snapback
             foreach (Group atariTarget in tryBoard.AtariTargets)
             {
+                //check for unescapable group
+                (Boolean unEscapable, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(tryBoard, atariTarget);
+                if (unEscapable) return false;
+                //check for weak group
+                if (escapeBoard.CapturedList.Count == 0 && escapeBoard.GetNeighbourGroups().Any(n => n.Points.Count == 2 && ImmovableHelper.CheckConnectAndDie(escapeBoard, n))) return false;
+
+                //check for ko or capture move by atari target
+                //check snapback
                 foreach (Group neighbourGroup in AtariHelper.AtariByGroup(atariTarget, tryBoard))
                 {
                     Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, neighbourGroup);
