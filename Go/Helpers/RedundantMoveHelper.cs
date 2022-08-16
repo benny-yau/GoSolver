@@ -546,7 +546,8 @@ namespace Go
                 (Boolean unEscapable, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(tryBoard, atariTarget);
                 if (unEscapable) return false;
                 //check for weak group
-                if (escapeBoard.CapturedList.Count == 0 && escapeBoard.GetNeighbourGroups().Any(n => n.Points.Count == 2 && ImmovableHelper.CheckConnectAndDie(escapeBoard, n))) return false;
+                if (CheckWeakGroupInOpponentSuicide(tryBoard, atariTarget))
+                    return false;
 
                 //check for ko or capture move by atari target
                 //check snapback
@@ -604,6 +605,30 @@ namespace Go
             else if (tryBoard.GetDiagonalNeighbours().Any(n => EyeHelper.FindEye(tryBoard, n, c))) //set diagonal eye move
                 tryMove.IsDiagonalEyeMove = true;
             return true;
+        }
+
+        /// <summary>
+        /// Check weak group in opponent suicide.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16604_4" />
+        /// </summary>
+        private static Boolean CheckWeakGroupInOpponentSuicide(Board tryBoard, Group atariTarget)
+        {
+            Content c = tryBoard.MoveGroup.Content;
+            Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(tryBoard, atariTarget, c.Opposite());
+            if (b == null || b.MoveGroupLiberties == 1) return false;
+            //check weak group
+            if (b.GetNeighbourGroups().Any(n => n.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(b, n)))
+                return true;
+            //recursion for escape
+            if (b.MoveGroupLiberties != 2) return false;
+            foreach (Point liberty in b.MoveGroup.Liberties)
+            {
+                (Boolean isSuicidal, Board b2) = ImmovableHelper.IsSuicidalMove(liberty, c, b, false);
+                if (isSuicidal) continue;
+                if (CheckWeakGroupInOpponentSuicide(b2, b2.GetGroupAt(atariTarget.Points.First())))
+                    return true;
+            }
+            return false;
         }
 
         /// <summary>

@@ -1148,6 +1148,12 @@
             Set diagonal eye move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29273" />
             </summary>
         </member>
+        <member name="M:Go.RedundantMoveHelper.CheckWeakGroupInOpponentSuicide(Go.Board,Go.Group)">
+            <summary>
+            Check weak group in opponent suicide.
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16604_4" />
+            </summary>
+        </member>
         <member name="M:Go.RedundantMoveHelper.SuicidalConnectAndDie(Go.GameTryMove)">
             <summary>
             Check for connect and die moves. <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738" />
