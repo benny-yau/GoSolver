@@ -2011,17 +2011,7 @@ namespace Go
             else if (tryMoves.Count <= 2)
             {
                 //check connect and die for last two try moves
-                if (tryMoves.Count == 1)
-                {
-                    Board tryBoard = tryMoves.First().TryGame.Board;
-                    Board currentBoard = tryMoves.First().CurrentGame.Board;
-                    Content c = tryBoard.MoveGroup.Content;
-                    Boolean suicidalMove = tryBoard.GetStoneNeighbours().All(n => tryBoard[n] == c) || GroupHelper.GetKillerGroupFromCache(tryBoard, tryBoard.Move.Value, c.Opposite()) == null;
-                    if (!suicidalMove) return;
-                }
-                if (tryMoves.Count == 2 && !tryMoves.All(t => GroupHelper.GetKillerGroupFromCache(t.TryGame.Board, t.Move, t.MoveContent.Opposite()) == null)) return;
-
-                if (tryMoves.Select(t => new { tryBoard = t.TryGame.Board }).All(t => ImmovableHelper.CheckConnectAndDie(t.tryBoard) || LinkHelper.GetGroupDiagonals(t.tryBoard, t.tryBoard.MoveGroup).Any(d => t.tryBoard[d.Move] == t.tryBoard.MoveGroup.Content && ImmovableHelper.CheckConnectAndDie(t.tryBoard, t.tryBoard.GetGroupAt(d.Move)))))
+                if (tryMoves.Select(t => new { tryBoard = t.TryGame.Board }).All(t => (t.tryBoard.MoveGroup.Points.Count > 3 && ImmovableHelper.CheckConnectAndDie(t.tryBoard)) || LinkHelper.GetGroupDiagonals(t.tryBoard, t.tryBoard.MoveGroup).Any(d => t.tryBoard[d.Move] == t.tryBoard.MoveGroup.Content && ImmovableHelper.CheckConnectAndDie(t.tryBoard, t.tryBoard.GetGroupAt(d.Move)))))
                     tryMoves.Add(neutralPointMoves.First());
             }
         }
