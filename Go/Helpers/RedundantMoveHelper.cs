@@ -319,7 +319,6 @@ namespace Go
 
         /// <summary>
         /// Redundant atari move.
-        /// Ensure target group can escape <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_XuanXuanGo_A46_101Weiqi_2" />
         /// </summary>
         public static Boolean AtariRedundantMove(GameTryMove tryMove)
         {
@@ -359,14 +358,8 @@ namespace Go
             if (killerGroup == null) return false;
             //ensure more than one liberty for move group
             if (tryBoard.MoveGroupLiberties == 1) return false;
-            //check for weak groups
-            if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Any(gr => gr.Liberties.Count <= 2) && tryBoard.MoveGroupLiberties > 2) return false;
             //check for increased killer groups
             if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] != c && GroupHelper.GetKillerGroupFromCache(tryBoard, n, c) != killerGroup)) return false;
-            //check for reverse ko fight
-            if (KoHelper.IsReverseKoFight(tryBoard)) return false;
-            //check for diagonal killer group
-            if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] != c && GroupHelper.GetKillerGroupFromCache(tryBoard, n, c) != killerGroup)) return false;
 
             //make move at the other liberty
             Point q = atariTarget.Liberties.First();
@@ -375,38 +368,42 @@ namespace Go
             Group killerGroup2 = GroupHelper.GetKillerGroupFromCache(board, atariPoint, c);
             if (killerGroup2 == null) return false;
             //ensure the other move can capture atari target as well
-            if (ImmovableHelper.UnescapableGroup(board, board.GetGroupAt(atariPoint)).Item1)
+            if (!ImmovableHelper.UnescapableGroup(board, board.GetGroupAt(atariPoint)).Item1) return false;
+            //check for increased killer groups
+            if (board.GetStoneNeighbours().Any(n => board[n] != c && GroupHelper.GetKillerGroupFromCache(board, n, c) != killerGroup2))
+                return true;
+
+            //check for weak groups
+            if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Any(gr => gr.Liberties.Count <= 2) && tryBoard.MoveGroupLiberties > 2) return false;
+            //check for reverse ko fight
+            if (KoHelper.IsReverseKoFight(tryBoard)) return false;
+            //check for diagonal killer group
+            if (tryBoard.GetDiagonalNeighbours().Any(n => EyeHelper.FindNonSemiSolidEye(tryBoard, n, c))) return false;
+            //check escape board for two or more liberties
+            Board escapeBoard = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(tryBoard, atariTarget, c.Opposite());
+            if (escapeBoard != null && escapeBoard.MoveGroupLiberties > 1)
+                return false;
+
+            //check killer formation
+            Board b = tryBoard.MakeMoveOnNewBoard(q, c.Opposite());
+            if (b != null)
             {
-                //check for increased killer groups
-                if (board.GetStoneNeighbours().Any(n => board[n] != c && GroupHelper.GetKillerGroupFromCache(board, n, c) != killerGroup2)) return true;
-
-                //check escape board for two or more liberties
-                Board escapeBoard = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(tryBoard, atariTarget, c.Opposite());
-                if (escapeBoard != null && escapeBoard.MoveGroupLiberties > 1 && escapeBoard.CapturedList.Count == 0 && !LinkHelper.IsAbsoluteLinkForGroups(tryBoard, escapeBoard))
-                    return false;
-
-                //check killer formation
-                Board b = tryBoard.MakeMoveOnNewBoard(q, c.Opposite());
-                if (b != null)
+                Boolean killerFormation = KillerFormationHelper.SuicidalKillerFormations(b, tryBoard);
+                Board b2 = board.MakeMoveOnNewBoard(move, c.Opposite());
+                if (b2 != null)
                 {
-                    Boolean killerFormation = KillerFormationHelper.SuicidalKillerFormations(b, tryBoard);
-                    Board b2 = board.MakeMoveOnNewBoard(move, c.Opposite());
-                    if (b2 != null)
-                    {
-                        Boolean killerFormation2 = KillerFormationHelper.SuicidalKillerFormations(b2, board);
-                        if (killerFormation && !killerFormation2) return true;
-                        if (!killerFormation && killerFormation2) return false;
-                    }
+                    Boolean killerFormation2 = KillerFormationHelper.SuicidalKillerFormations(b2, board);
+                    if (killerFormation && !killerFormation2) return true;
+                    if (!killerFormation && killerFormation2) return false;
                 }
-                //count possible eyes at stone neighbours
-                int qEyeCount = PossibleEyesCreated(currentBoard, q, c);
-                int moveEyeCount = PossibleEyesCreated(currentBoard, move, c);
-                if (qEyeCount > moveEyeCount) return true;
-                else if (qEyeCount < moveEyeCount) return false;
-                //return only one move if both moves valid
-                else return (q.x + q.y * board.SizeX) < (move.x + move.y * board.SizeX);
             }
-            return false;
+            //count possible eyes at stone neighbours
+            int qEyeCount = PossibleEyesCreated(currentBoard, q, c);
+            int moveEyeCount = PossibleEyesCreated(currentBoard, move, c);
+            if (qEyeCount > moveEyeCount) return true;
+            else if (qEyeCount < moveEyeCount) return false;
+            //return only one move if both moves valid
+            else return (q.x + q.y * board.SizeX) < (move.x + move.y * board.SizeX);
         }
         #endregion
 
@@ -506,7 +503,6 @@ namespace Go
         /// Check move group liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14916_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A67" />
         /// Check for unescapable group <see cref = "UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q17255" />
-        /// Check for weak group <see cref = "UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16604_3" />
         /// Find eye at move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16850" />
         /// Check for ko or capture move by atari target <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14992" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
@@ -609,6 +605,7 @@ namespace Go
 
         /// <summary>
         /// Check weak group in opponent suicide.
+        /// <see cref = "UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16604_3" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16604_4" />
         /// </summary>
         private static Boolean CheckWeakGroupInOpponentSuicide(Board tryBoard, Group atariTarget)
@@ -974,7 +971,7 @@ namespace Go
                     //check liberties are connected
                     if (tryBoard.GetStoneNeighbours(p).Any(q => tryBoard.MoveGroup.Liberties.Contains(q)))
                     {
-                        if (tryBoard.MoveGroup.Points.Count >= 3 && KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard))
+                        if (tryBoard.MoveGroup.Points.Count >= 3 && KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, captureBoard))
                             return false;
                         return true;
                     }

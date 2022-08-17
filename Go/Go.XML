@@ -1089,7 +1089,6 @@
         <member name="M:Go.RedundantMoveHelper.AtariRedundantMove(Go.GameTryMove)">
             <summary>
             Redundant atari move.
-            Ensure target group can escape <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_XuanXuanGo_A46_101Weiqi_2" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.RedundantAtariWithinKillerGroup(Go.GameTryMove)">
@@ -1132,7 +1131,6 @@
             Check move group liberties <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14916_2" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A67" />
             Check for unescapable group <see cref = "!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q17255" />
-            Check for weak group <see cref = "!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16604_3" />
             Find eye at move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16850" />
             Check for ko or capture move by atari target <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14992" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
@@ -1151,6 +1149,7 @@
         <member name="M:Go.RedundantMoveHelper.CheckWeakGroupInOpponentSuicide(Go.Board,Go.Group)">
             <summary>
             Check weak group in opponent suicide.
+            <see cref = "!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16604_3" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16604_4" />
             </summary>
         </member>
