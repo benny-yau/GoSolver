@@ -111,6 +111,8 @@ namespace Go
                 Board escapeBoard = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(board, board.GetGroupAt(diagonal), c.Opposite());
                 if (escapeBoard != null && escapeBoard.MoveGroupLiberties > 1)
                     continue;
+                if (AtariHelper.DoubleAtariOnTargetGroups(board, board.GetNeighbourGroups(killerGroup)))
+                    continue;
                 return true;
             }
             return false;

@@ -312,7 +312,7 @@ namespace Go
         /// <summary>
         /// Ensure link is connected to both stones from previous move group and to external group.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16520_2" />
-        /// Lost group not more than three points <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31682" />
+        /// Lost group not more than two points <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31682" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17154" />
         /// Connect three or more groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B3" />
         /// No lost groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18402_2" />
@@ -348,13 +348,10 @@ namespace Go
                 List<Group> lostGroups = groups.Except(savedGroups).ToList();
                 //no lost groups
                 if (lostGroups.Count == 0) return true;
-                //lost group not more than three points
-                if (lostGroups.Count == 1 && lostGroups.First().Points.Count <= 3)
-                {
-                    if (lostGroups.First().Points.Count == 3 && tryLinkBoard.MoveGroupLiberties <= 2)
-                        return false;
+                //lost group not more than two points
+                if (lostGroups.Count == 1 && lostGroups.First().Points.Count <= 2)
+
                     return true;
-                }
             }
             return false;
         }
@@ -503,7 +500,7 @@ namespace Go
             {
                 if (tryBoard.GetNeighbourGroups(moveGroup).Count <= 1) return false;
                 if (!LinkHelper.GetGroupDiagonals(tryBoard, moveGroup).Any(d => tryBoard[d.Move] == moveGroup.Content)) return false;
-                if (moveGroup.Points.Count(p => !tryBoard.PointWithinMiddleArea(p)) >= 2)
+                if (moveGroup.Points.Count(p => !tryBoard.PointWithinMiddleArea(p)) == 3)
                     return true;
             }
             return false;

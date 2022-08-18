@@ -80,7 +80,7 @@ namespace Go
             if (targetGroups.Count == 0) return false;
             Content c = targetGroups.First().Content;
             //get distinct liberties of target groups
-            List<Point> liberties = board.GetLibertiesOfGroups(targetGroups).Distinct().ToList();
+            List<Point> liberties = board.GetLibertiesOfGroups(targetGroups.Where(t => t.Liberties.Count == 2).ToList()).Distinct().ToList();
 
             foreach (Point liberty in liberties)
             {
