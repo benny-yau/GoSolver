@@ -373,10 +373,6 @@ namespace Go
             Board escapeBoard = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(tryBoard, atariTarget, c.Opposite());
             if (escapeBoard != null && escapeBoard.MoveGroupLiberties > 1)
                 return false;
-
-            //check for increased killer groups
-            if (board.GetStoneNeighbours().Any(n => board[n] != c && GroupHelper.GetKillerGroupFromCache(board, n, c) != killerGroup2))
-                return true;
             //check for weak groups
             if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Any(gr => gr.Liberties.Count <= 2) && tryBoard.MoveGroupLiberties > 2) return false;
             //check for reverse ko fight
