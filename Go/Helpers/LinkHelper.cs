@@ -107,10 +107,8 @@ namespace Go
                 if (killerGroup == null) continue;
                 //ensure only one opponent group within killer group
                 if (board.GetGroupsFromPoints(killerGroup.Points.Where(p => board[p] == c.Opposite()).ToList()).Count > 1) continue;
-                //check escape board for more than one liberty
-                Board escapeBoard = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(board, board.GetGroupAt(diagonal), c.Opposite());
-                if (escapeBoard != null && escapeBoard.MoveGroupLiberties > 1)
-                    continue;
+                //check capture secure
+                if (!ImmovableHelper.CheckCaptureSecure(board, board.GetGroupAt(diagonal))) continue;
                 //check double atari
                 List<Group> groups = board.GetNeighbourGroups(killerGroup);
                 if (groups.Any(group => group.Liberties.Count == 1) || AtariHelper.DoubleAtariOnTargetGroups(board, groups))

@@ -567,7 +567,6 @@
             <summary>
             Capture suicide group and check for captured count greater than one or move liberty greater than one to ensure no ko or snapback.
             <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q16827" />
-            Suicidal move at side of board <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_Q18500" />
             Check connect and die on current board <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_2" />
             Check all connect and die on captured board <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario1dan21" />
@@ -590,6 +589,8 @@
         <member name="M:Go.ImmovableHelper.SuicidalAfterMustHaveMove(Go.Board,Go.Board,Go.Point)">
             <summary>
             Suicide move for survival after must-have neutral move at side of the board.
+            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_Q18500" />
+            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario1dan21" />
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.UnescapableGroup(Go.Board,Go.Group)">
@@ -641,6 +642,11 @@
         <member name="M:Go.ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(Go.Board,Go.Group,Go.Content)">
             <summary>
             Make move at liberty point of suicide group.
+            </summary>
+        </member>
+        <member name="M:Go.ImmovableHelper.CheckCaptureSecure(Go.Board,Go.Group)">
+            <summary>
+            Check capture secure.
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.IsSuicidalMoveForBothPlayers(Go.Board,Go.Point,System.Boolean)">
@@ -1102,7 +1108,7 @@
             Ensure more than one liberty for move group <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A68" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16748" />
             Check for weak groups <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WuQingYuan_Q31503" />
-            Check escape board for more than one liberty <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
+            Check capture secure <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
             Check killer formation <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Side_A25" />
             <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Side_A23" />
             Count possible eyes at stone neighbours <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Side_A23" />

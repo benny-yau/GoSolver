@@ -144,7 +144,6 @@ namespace Go
         /// <summary>
         /// Capture suicide group and check for captured count greater than one or move liberty greater than one to ensure no ko or snapback.
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q16827" />
-        /// Suicidal move at side of board <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_Q18500" />
         /// Check connect and die on current board <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_2" />
         /// Check all connect and die on captured board <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario1dan21" />
@@ -156,10 +155,6 @@ namespace Go
 
             Point? libertyPoint = FindTigerMouth(currentBoard, p.Value, c.Opposite());
             if (libertyPoint == null) return null;
-
-            //check suicidal move at side of board
-            if (SuicidalAfterMustHaveMove(currentBoard, tryBoard, libertyPoint.Value))
-                return null;
 
             //check connect and die on current board
             if (currentBoard.GetGroupsFromStoneNeighbours(p.Value, c).Any(n => CheckConnectAndDie(currentBoard, n)))
@@ -173,6 +168,10 @@ namespace Go
 
             //check all connect and die on captured board
             if (AllConnectAndDie(capturedBoard, p.Value))
+                return null;
+
+            //check suicidal move at side of board
+            if (SuicidalAfterMustHaveMove(currentBoard, tryBoard, libertyPoint.Value))
                 return null;
 
             if (ThreeLibertyConnectAndDie(capturedBoard, p.Value))
@@ -245,20 +244,24 @@ namespace Go
 
         /// <summary>
         /// Suicide move for survival after must-have neutral move at side of the board.
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_Q18500" />
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario1dan21" />
         /// </summary>
         private static Boolean SuicidalAfterMustHaveMove(Board currentBoard, Board tryBoard, Point libertyPoint)
         {
             Point p = tryBoard.Move.Value;
-            Content c = tryBoard[p];
-            if (currentBoard[p] != Content.Empty || currentBoard.PointWithinMiddleArea(p)) return false;
+            Content c = tryBoard.MoveGroup.Content;
+            if (currentBoard[p] != Content.Empty) return false;
             Point eyePoint = currentBoard.GetDiagonalNeighbours(p).FirstOrDefault(n => EyeHelper.FindEye(currentBoard, n));
             if (!Convert.ToBoolean(eyePoint.NotEmpty)) return false;
+            if (!currentBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).All(n => n.Liberties.Count <= 2)) return false;
 
             (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(libertyPoint, c, currentBoard);
             if (suicidal) return false;
 
             (Boolean suicidal2, Board b2) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), b);
-            if (EyeHelper.FindRealSolidEyes(eyePoint, c.Opposite(), b2)) return false;
+            if (suicidal2 && EyeHelper.FindRealSolidEyes(eyePoint, c.Opposite(), b2)) return false;
+
             return suicidal2;
         }
 
@@ -435,6 +438,25 @@ namespace Go
             if (libertyPoint == null) return null;
             Board board = tryBoard.MakeMoveOnNewBoard(libertyPoint.Value, c);
             return board;
+        }
+
+        /// <summary>
+        /// Check capture secure.
+        /// </summary>
+        public static Boolean CheckCaptureSecure(Board board, Group group)
+        {
+            Content c = group.Content;
+            Board escapeBoard = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(board, group, c);
+            if (escapeBoard != null && escapeBoard.MoveGroupLiberties > 1)
+                return false;
+
+            foreach (Group gr in AtariHelper.AtariByGroup(group, board, false))
+            {
+                Board b = ImmovableHelper.CaptureSuicideGroup(board, gr);
+                if (b != null && b.GetGroupAt(group.Points.First()).Liberties.Count > 1)
+                    return false;
+            }
+            return true;
         }
 
         /// <summary>

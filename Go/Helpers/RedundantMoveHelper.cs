@@ -340,7 +340,7 @@ namespace Go
         /// Ensure more than one liberty for move group <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A68" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16748" />
         /// Check for weak groups <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WuQingYuan_Q31503" />
-        /// Check escape board for more than one liberty <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
+        /// Check capture secure <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
         /// Check killer formation <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Side_A25" />
         /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Side_A23" />
         /// Count possible eyes at stone neighbours <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Side_A23" />
@@ -369,9 +369,8 @@ namespace Go
             if (killerGroup2 == null) return false;
             //ensure the other move can capture atari target as well
             if (!ImmovableHelper.UnescapableGroup(board, board.GetGroupAt(atariPoint)).Item1) return false;
-            //check escape board for more than one liberty
-            Board escapeBoard = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(tryBoard, atariTarget, c.Opposite());
-            if (escapeBoard != null && escapeBoard.MoveGroupLiberties > 1)
+            //check capture secure
+            if (!ImmovableHelper.CheckCaptureSecure(tryBoard, atariTarget))
                 return false;
             //check for weak groups
             if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Any(gr => gr.Liberties.Count <= 2) && tryBoard.MoveGroupLiberties > 2) return false;
