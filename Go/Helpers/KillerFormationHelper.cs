@@ -15,8 +15,8 @@ namespace Go
                 {
                     killerFormationFuncs = new Dictionary<int, List<Func<Board, Group, Boolean>>>();
                     killerFormationFuncs.Add(4, new List<Func<Board, Group, Boolean>>() { OneByThreeFormation, BoxFormation, CrowbarEdgeFormation, TwoByTwoFormation, BentFourCornerFormation });
-                    killerFormationFuncs.Add(5, new List<Func<Board, Group, Boolean>>() { KnifeFiveFormation, OneByFourSideFormation, TSideFormation, ThreeByTwoSideFormation, BentFiveSideFormation });
-                    killerFormationFuncs.Add(6, new List<Func<Board, Group, Boolean>>() { FlowerSixFormation, TwoByFourSideFormation, KnifeSixSideFormation, CornerSixFormation });
+                    killerFormationFuncs.Add(5, new List<Func<Board, Group, Boolean>>() { KnifeFiveFormation, ThreeByTwoSideFormation, BentFiveSideFormation });
+                    killerFormationFuncs.Add(6, new List<Func<Board, Group, Boolean>>() { FlowerSixFormation, KnifeSixSideFormation, CornerSixFormation });
                     killerFormationFuncs.Add(7, new List<Func<Board, Group, Boolean>>() { FlowerSevenSideFormation });
                 }
                 return killerFormationFuncs;
@@ -205,13 +205,15 @@ namespace Go
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16738_2" />
         /// Bent four corner formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie20" />
         /// Knife five formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113" />
-        /// One-by-four side formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B32" />
-        /// T side formation <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471" />
-        /// Three-by-two formation <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A132" />
-        /// Two-by-four side formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31682" />
+        /// Three-by-two formation (two liberties) <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A132" />
         /// Corner six formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
         /// Flower six formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16859" />
         /// Flower seven side formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B3" />
+        /// Knife six side formation <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31682" />
+        /// - Two-by-four side formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31682" />
+        /// Bent five side formation <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31682_2" />
+        /// - T side formation (two liberties) <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471" />
+        /// - One-by-four side formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B32" />
         /// </summary>
         private static Boolean FindSuicidalKillerFormation(Board tryBoard, Board currentBoard, Board capturedBoard = null)
         {
@@ -406,6 +408,7 @@ namespace Go
             Content c = moveGroup.Content;
             if (TwoByTwoFormation(tryBoard, moveGroup.Points, c))
             {
+                //check for atari after capture
                 Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard, moveGroup);
                 if (capturedBoard == null) return false;
                 foreach (Point p in moveGroup.Points)
@@ -415,8 +418,9 @@ namespace Go
                     if (b != null && b.AtariTargets.Count == 1 && b.AtariTargets.First().Points.Count > 1)
                         return true;
                 }
+                //check end point covered
                 List<Point> contentPoints = moveGroup.Points.Where(t => tryBoard[t] == c).ToList();
-                if (CheckBothSideFormationDiagonal(contentPoints, tryBoard, moveGroup))
+                if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
                     return true;
             }
             return false;
@@ -428,7 +432,7 @@ namespace Go
             if (contentPoints.Count() != 4) return false;
             if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 2) == 2)
             {
-                if (contentPoints.GroupBy(p => p.x).Count() == 2 || contentPoints.GroupBy(p => p.y).Count() == 2)
+                if (contentPoints.GroupBy(p => p.x).Where(gr => gr.Count() == 2).Count() == 2 || contentPoints.GroupBy(p => p.y).Where(gr => gr.Count() == 2).Count() == 2)
                     return true;
             }
             return false;
@@ -462,7 +466,7 @@ namespace Go
             if (contentPoints.Count() != 4) return false;
             if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 2) == 2)
             {
-                if (contentPoints.GroupBy(p => p.x).Count() == 3 || contentPoints.GroupBy(p => p.y).Count() == 3)
+                if (contentPoints.GroupBy(p => p.x).Where(gr => gr.Count() == 3).Count() == 1 || contentPoints.GroupBy(p => p.y).Where(gr => gr.Count() == 3).Count() == 1)
                     return true;
             }
             return false;
@@ -498,9 +502,14 @@ namespace Go
         {
             if (CrowbarFormation(tryBoard, moveGroup))
             {
+                Content c = moveGroup.Content;
                 if (tryBoard.GetNeighbourGroups(moveGroup).Count <= 1) return false;
-                if (!LinkHelper.GetGroupDiagonals(tryBoard, moveGroup).Any(d => tryBoard[d.Move] == moveGroup.Content)) return false;
-                if (moveGroup.Points.Count(p => !tryBoard.PointWithinMiddleArea(p)) == 3)
+                //edge formation
+                if (moveGroup.Points.Count(p => !tryBoard.PointWithinMiddleArea(p)) == 3 && LinkHelper.GetGroupDiagonals(tryBoard, moveGroup).Any(d => tryBoard[d.Move] == c))
+                    return true;
+                //check end point covered
+                List<Point> contentPoints = moveGroup.Points.Where(t => tryBoard[t] == c).ToList();
+                if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
                     return true;
             }
             return false;
@@ -545,9 +554,9 @@ namespace Go
 
 
         /*
- 15 . . . . . . X . . . . . . . . . . . .
- 16 . . . . . X X X . . . . . . . . . . . 
- 17 . . . . . X X . . . . . . . . . . . . 
+ 15 . . . . . . X . . . . . . X . . . . .
+ 16 . . . . . X X X . . . . X X X X . . . 
+ 17 . . . . . X X . . . . . . X . . . . . 
  18 . . . . . . . . . . . . . . . . . . . 
          */
         public static Boolean FlowerSixFormation(Board tryBoard, Group moveGroup)
@@ -559,15 +568,17 @@ namespace Go
             {
                 if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 2) == 3)
                     return true;
+                else if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
+                    return true;
             }
             return false;
         }
 
         /*
- 14 . X . . . . . . . . . . . . . . . . .
- 15 X X X . . . . . . . . . . . . . . . .
- 16 X X . . . . . . . . . . . . . . . . . 
- 17 X . . . . . . . . . . . . . . . . . . 
+ 14 . X . . . . . . . . . X . . . X X . .
+ 15 X X X . . . . . . . X X X . . X X X .
+ 16 X X . . . . . . . . X X . . . . X . . 
+ 17 X . . . . . . . . . . X . . . . X . . 
  18 . . . . . . . . . . . . . . . . . . . 
          */
         public static Boolean FlowerSevenSideFormation(Board tryBoard, Group moveGroup)
@@ -577,82 +588,13 @@ namespace Go
             if (contentPoints.Count() != 7) return false;
             if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 4) == 1)
             {
-                Boolean isEdge = (contentPoints.Count(p => !tryBoard.PointWithinMiddleArea(p)) == 3);
-                if (isEdge && contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3) == 1 && contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 2) == 2)
-                    return true;
-            }
-            return false;
-        }
+                Boolean pattern = (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3) == 1 && contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 2) == 2);
 
-        /*
- 15 . . . . . . . . . . . . . . . . . . .
- 16 . . . . . . . . . . . . . . . . . . . 
- 17 . . . . X . . . . . . . . . . . . . . 
- 18 . . X X X X . . . . . . . . . . . . . 
-         */
-        public static Boolean OneByFourSideFormation(Board tryBoard, Group moveGroup)
-        {
-            Content c = moveGroup.Content;
-            if (tryBoard.Move != null && tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] != c)) return false;
-            HashSet<Point> contentPoints = moveGroup.Points;
-            if (contentPoints.Count() != 5) return false;
-            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3) == 1)
-            {
-                List<Point> middlePoint = contentPoints.Where(p => tryBoard.PointWithinMiddleArea(p)).ToList();
-                if (middlePoint.Count != 1) return false;
-                //get end point at longer end
-                List<Point> endPoints = contentPoints.Except(middlePoint).Where(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 1).ToList();
-                endPoints.RemoveAll(p => tryBoard.GetDiagonalNeighbours(p).Contains(middlePoint.First()));
-                if (endPoints.Any(p => tryBoard.CornerPoint(p))) return false;
-                if (endPoints.Count != 1) return false;
-                //check diagonal for end point at longer end
-                if (CheckSideFormationDiagonal(endPoints.First(), tryBoard, moveGroup))
-                    return true;
-            }
-            return false;
-        }
-
-
-        /*
- 15 . . . . . . . . . . . . . . . . . . .
- 16 . . . . X . . . . . . . . . . . . . . 
- 17 . . . . X . . . . . . . . . . . . . . 
- 18 . . . X X X . . . . . . . . . . . . . 
-         */
-        public static Boolean TSideFormation(Board tryBoard, Group moveGroup)
-        {
-            Content c = moveGroup.Content;
-            if (tryBoard.Move != null && tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] != c)) return false;
-            HashSet<Point> contentPoints = moveGroup.Points;
-            if (contentPoints.Count() != 5) return false;
-            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3) == 1)
-            {
-                List<Point> middlePoint = contentPoints.Where(p => tryBoard.PointWithinMiddleArea(p)).ToList();
-                if (middlePoint.Count != 2) return false;
-
-                if (CheckBothSideFormationDiagonal(contentPoints, tryBoard, moveGroup))
-                    return true;
-            }
-            return false;
-        }
-
-        /*
-    15 . . . . . . . . . . . . . . . . . . .
-    16 . . . . . . . . . . . . . . . . . . . 
-    17 . . . X X . . . . . . . . . . . . . . 
-    18 . . X X X X . . . . . . . . . . . . . 
-            */
-        public static Boolean TwoByFourSideFormation(Board tryBoard, Group moveGroup)
-        {
-            Content c = moveGroup.Content;
-            if (tryBoard.Move != null && tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] != c)) return false;
-            HashSet<Point> contentPoints = moveGroup.Points;
-            if (contentPoints.Count() != 6) return false;
-            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3) == 2)
-            {
-                if (contentPoints.Count(p => !tryBoard.PointWithinMiddleArea(p)) != 4) return false;
-                if (CheckBothSideFormationDiagonal(contentPoints, tryBoard, moveGroup))
-                    return true;
+                if (pattern || contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 2) == 4)
+                {
+                    if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
+                        return true;
+                }
             }
             return false;
         }
@@ -660,19 +602,18 @@ namespace Go
         /*
     15 . . . . . . . . . . . . . . . . . . .
     16 . . . . X . . . . . . . . . . . . . . 
-    17 . . . X X . . . . . . . . . . . . . . 
-    18 . . . X X X . . . . . . . . . . . . . 
+    17 . . . X X . . . . . . . X X . . . . . 
+    18 . . . X X X . . . . . X X X X . . . . 
             */
         public static Boolean KnifeSixSideFormation(Board tryBoard, Group moveGroup)
         {
+            //includes two-by-four formation
             Content c = moveGroup.Content;
-            if (tryBoard.Move != null && tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] != c)) return false;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 6) return false;
-            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3) == 2)
+            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3) >= 1)
             {
-                if (contentPoints.Count(p => !tryBoard.PointWithinMiddleArea(p)) != 3) return false;
-                if (CheckBothSideFormationDiagonal(contentPoints, tryBoard, moveGroup))
+                if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
                     return true;
             }
             return false;
@@ -680,23 +621,21 @@ namespace Go
 
 
         /*
-    15 . . . . . . . . . . . . . . . . . . .
-    16 . . . . X . . . . . . . . . . . . . . 
-    17 . . . X X . . . . . . . . . . . . . . 
-    18 . . . . X X . . . . . . . . . . . . . 
+    15 . . . . . . . . . . . . . . . . . X .
+    16 . . . . X . . . . . . . X . . . X X . 
+    17 . . . X X . . . . . . . X . . . . X . 
+    18 . . . . X X . . . . . X X X . . . X . 
             */
         public static Boolean BentFiveSideFormation(Board tryBoard, Group moveGroup)
         {
+            //includes T formation, one-by-four formation
             Content c = moveGroup.Content;
-            if (tryBoard.Move != null && tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c) != 3) return false;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 5) return false;
-            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3) == 1)
-            {
-                if (contentPoints.Count(p => !tryBoard.PointWithinMiddleArea(p)) != 2) return false;
-                if (CheckBothSideFormationDiagonal(contentPoints, tryBoard, moveGroup))
-                    return true;
-            }
+            List<Point> middlePoint = contentPoints.Where(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() >= 3).ToList();
+            if (middlePoint.Count != 1) return false;
+            if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
+                return true;
             return false;
         }
 
@@ -717,7 +656,7 @@ namespace Go
                 {
                     Boolean edge = (contentPoints.Count(p => p.x == 0) == 2 || contentPoints.Count(p => p.x == tryBoard.SizeX - 1) == 2 || contentPoints.Count(p => p.y == 0) == 2 || contentPoints.Count(p => p.y == tryBoard.SizeY - 1) == 2);
                     if (!edge) return false;
-                    if (CheckBothSideFormationDiagonal(contentPoints, tryBoard, moveGroup))
+                    if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
                         return true;
                 }
             }
@@ -725,19 +664,36 @@ namespace Go
         }
 
         /// <summary>
-        /// Check diagonals for side formations 
+        /// Check any end point covered. 
         /// </summary>
-        private static Boolean CheckBothSideFormationDiagonal(IEnumerable<Point> contentPoints, Board tryBoard, Group moveGroup)
+        private static Boolean CheckAnyEndPointCovered(IEnumerable<Point> contentPoints, Board tryBoard, Group moveGroup)
         {
-            List<Point> endPoints = contentPoints.Where(p => tryBoard.GetStoneNeighbours(p).Where(n => !tryBoard.PointWithinMiddleArea(n)).Intersect(contentPoints).Count() == 1).ToList();
-            return endPoints.Any(q => CheckSideFormationDiagonal(q, tryBoard, moveGroup));
+            Content c = moveGroup.Content;
+            if (moveGroup.Liberties.Count == 1)
+            {
+                //suicide move at eye point or atari resolved or suicide move with one empty space
+                if (tryBoard.Move != null && tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c) < 3 && !tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty)) return false;
+            }
+            else
+            {
+                if (tryBoard.GetNeighbourGroups(moveGroup).Count(n => n.Liberties.Count <= 2) < 2) return false;
+            }
+
+            List<Point> endPoints = contentPoints.Where(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 1).ToList();
+            return endPoints.Any(q => EndPointCovered(q, tryBoard, moveGroup));
         }
 
-        private static Boolean CheckSideFormationDiagonal(Point endPoint, Board tryBoard, Group moveGroup)
+        private static Boolean EndPointCovered(Point endPoint, Board tryBoard, Group moveGroup)
         {
             Content c = moveGroup.Content;
             Boolean oneLiberty = (moveGroup.Liberties.Count == 1);
-            return tryBoard.GetDiagonalNeighbours(endPoint).Where(n => !moveGroup.Points.Contains(n)).Any(n => tryBoard[n] == ((oneLiberty) ? c : Content.Empty));
+            if (!tryBoard.PointWithinMiddleArea(endPoint))
+                return tryBoard.GetDiagonalNeighbours(endPoint).Where(n => !moveGroup.Points.Contains(n)).Any(n => tryBoard[n] == ((oneLiberty) ? c : Content.Empty));
+            else
+            {
+                if (!oneLiberty) return false;
+                return EyeHelper.IsCovered(tryBoard, endPoint, c) && tryBoard.GetNeighbourGroups(moveGroup).All(n => n.Liberties.Count > 1);
+            }
         }
 
 
