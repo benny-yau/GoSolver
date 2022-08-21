@@ -754,7 +754,7 @@
             <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16738_2" />
             Bent four corner formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie20" />
             Knife five formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113" />
-            Three-by-two formation (two liberties) <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A132" />
+            Crowbar five formation --Three-by-two formation (two liberties) <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A132" />
             Corner six formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
             Flower six formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16859" />
             Flower seven side formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B3" />

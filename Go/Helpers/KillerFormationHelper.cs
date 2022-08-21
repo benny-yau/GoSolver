@@ -14,10 +14,11 @@ namespace Go
                 if (killerFormationFuncs == null)
                 {
                     killerFormationFuncs = new Dictionary<int, List<Func<Board, Group, Boolean>>>();
-                    killerFormationFuncs.Add(4, new List<Func<Board, Group, Boolean>>() { OneByThreeFormation, BoxFormation, CrowbarEdgeFormation, TwoByTwoFormation, BentFourCornerFormation });
-                    killerFormationFuncs.Add(5, new List<Func<Board, Group, Boolean>>() { KnifeFiveFormation, ThreeByTwoSideFormation, BentFiveSideFormation });
+                    killerFormationFuncs.Add(4, new List<Func<Board, Group, Boolean>>() { OneByThreeFormation, BoxFormation, CrowbarEdgeFormation, StraightFourFormation, TwoByTwoFormation, BentFourCornerFormation });
+                    killerFormationFuncs.Add(5, new List<Func<Board, Group, Boolean>>() { KnifeFiveFormation, CrowbarFiveFormation, BentFiveSideFormation });
                     killerFormationFuncs.Add(6, new List<Func<Board, Group, Boolean>>() { FlowerSixFormation, KnifeSixSideFormation, CornerSixFormation });
                     killerFormationFuncs.Add(7, new List<Func<Board, Group, Boolean>>() { FlowerSevenSideFormation });
+                    killerFormationFuncs.Add(8, new List<Func<Board, Group, Boolean>>() { FlowerEightSideFormation });
                 }
                 return killerFormationFuncs;
             }
@@ -205,7 +206,7 @@ namespace Go
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16738_2" />
         /// Bent four corner formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie20" />
         /// Knife five formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113" />
-        /// Three-by-two formation (two liberties) <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A132" />
+        /// Crowbar five formation --Three-by-two formation (two liberties) <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A132" />
         /// Corner six formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
         /// Flower six formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16859" />
         /// Flower seven side formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B3" />
@@ -526,7 +527,9 @@ namespace Go
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 4) return false;
             (int xLength, int yLength) = WithinGrid(contentPoints);
-            return (xLength == 0 || yLength == 0);
+            if ((xLength == 0 || yLength == 0))
+                return CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup);
+            return false;
         }
 
         /*
@@ -588,9 +591,12 @@ namespace Go
             if (contentPoints.Count() != 7) return false;
             if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 4) == 1)
             {
+                int threeAdjPoints = contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3);
+                int twoAdjPoints = contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 2);
+
                 Boolean pattern = (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3) == 1 && contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 2) == 2);
 
-                if (pattern || contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 2) == 4)
+                if ((threeAdjPoints == 1 && twoAdjPoints == 2) || (threeAdjPoints == 0 && twoAdjPoints == 4))
                 {
                     if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
                         return true;
@@ -599,6 +605,33 @@ namespace Go
             return false;
         }
 
+        /*
+ 14 X X . . . . . . . . X X . . . X X X .
+ 15 X X X . . . . . . . X X X . . X X X .
+ 16 X X . . . . . . . . X X . . . . X . . 
+ 17 X . . . . . . . . . . X . . . . X . . 
+ 18 . . . . . . . . . . . . . . . . . . . 
+         */
+        public static Boolean FlowerEightSideFormation(Board tryBoard, Group moveGroup)
+        {
+            Content c = moveGroup.Content;
+            HashSet<Point> contentPoints = moveGroup.Points;
+            if (contentPoints.Count() != 8) return false;
+            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 4) == 1)
+            {
+                int threeAdjPoints = contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3);
+                int twoAdjPoints = contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 2);
+
+                Boolean pattern = (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3) == 2 && contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 2) == 2);
+
+                if ((threeAdjPoints == 2 && twoAdjPoints == 2) || (threeAdjPoints == 1 && twoAdjPoints == 5))
+                {
+                    if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
+                        return true;
+                }
+            }
+            return false;
+        }
         /*
     15 . . . . . . . . . . . . . . . . . . .
     16 . . . . X . . . . . . . . . . . . . . 
@@ -641,24 +674,20 @@ namespace Go
 
         /*
     15 . . . . . . . . . . . . . . . . . . .
-    16 . . . . . . . . . . . . . . . . . . . 
-    17 X X X . . . . . . . . . . . . . . . . 
-    18 . . X X . . . . . . . . . . . . . . . 
+    16 . . . . . . . . X . . . . . X . X . . 
+    17 X X X . . . . . X . . . . . X X X . . 
+    18 . . X X . . . . X X X . . . . . . . . 
             */
-        public static Boolean ThreeByTwoSideFormation(Board tryBoard, Group moveGroup)
+        public static Boolean CrowbarFiveFormation(Board tryBoard, Group moveGroup)
         {
+            //includes three-by-two side formation
             Content c = moveGroup.Content;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 5) return false;
-            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 2) == 3)
+            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 2) == 3 && contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 1) == 2)
             {
-                if ((contentPoints.GroupBy(p => p.x).Count() == 4 && contentPoints.GroupBy(p => p.y).Count() == 2) || (contentPoints.GroupBy(p => p.x).Count() == 2 && contentPoints.GroupBy(p => p.y).Count() == 4))
-                {
-                    Boolean edge = (contentPoints.Count(p => p.x == 0) == 2 || contentPoints.Count(p => p.x == tryBoard.SizeX - 1) == 2 || contentPoints.Count(p => p.y == 0) == 2 || contentPoints.Count(p => p.y == tryBoard.SizeY - 1) == 2);
-                    if (!edge) return false;
-                    if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
-                        return true;
-                }
+                if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
+                    return true;
             }
             return false;
         }
