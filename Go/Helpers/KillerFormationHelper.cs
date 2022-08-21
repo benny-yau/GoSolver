@@ -15,10 +15,10 @@ namespace Go
                 {
                     killerFormationFuncs = new Dictionary<int, List<Func<Board, Group, Boolean>>>();
                     killerFormationFuncs.Add(4, new List<Func<Board, Group, Boolean>>() { OneByThreeFormation, BoxFormation, CrowbarEdgeFormation, StraightFourFormation, TwoByTwoFormation, BentFourCornerFormation });
-                    killerFormationFuncs.Add(5, new List<Func<Board, Group, Boolean>>() { KnifeFiveFormation, CrowbarFiveFormation, BentFiveSideFormation });
-                    killerFormationFuncs.Add(6, new List<Func<Board, Group, Boolean>>() { FlowerSixFormation, KnifeSixSideFormation, CornerSixFormation });
-                    killerFormationFuncs.Add(7, new List<Func<Board, Group, Boolean>>() { FlowerSevenSideFormation });
-                    killerFormationFuncs.Add(8, new List<Func<Board, Group, Boolean>>() { FlowerEightSideFormation });
+                    killerFormationFuncs.Add(5, new List<Func<Board, Group, Boolean>>() { KnifeFiveFormation, CrowbarFiveFormation, BentFiveFormation });
+                    killerFormationFuncs.Add(6, new List<Func<Board, Group, Boolean>>() { FlowerSixFormation, KnifeSixFormation, CornerSixFormation });
+                    killerFormationFuncs.Add(7, new List<Func<Board, Group, Boolean>>() { FlowerSevenFormation, SevenSideFormation });
+                    killerFormationFuncs.Add(8, new List<Func<Board, Group, Boolean>>() { FlowerEightFormation });
                 }
                 return killerFormationFuncs;
             }
@@ -204,17 +204,22 @@ namespace Go
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16738" />
         /// Two-by-two formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16738_2" />
+        /// Straight four formation <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_5" />
         /// Bent four corner formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie20" />
         /// Knife five formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113" />
         /// Crowbar five formation --Three-by-two formation (two liberties) <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A132" />
+        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_4" />
         /// Corner six formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
         /// Flower six formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16859" />
-        /// Flower seven side formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B3" />
-        /// Knife six side formation <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31682" />
+        /// Flower seven formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B3" />
+        /// Knife six formation <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31682" />
+        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31682_3" />
         /// - Two-by-four side formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31682" />
-        /// Bent five side formation <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31682_2" />
+        /// Bent five formation <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31682_2" />
         /// - T side formation (two liberties) <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471" />
         /// - One-by-four side formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B32" />
+        /// Seven side formation <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_6" />
+        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_7" />
         /// </summary>
         private static Boolean FindSuicidalKillerFormation(Board tryBoard, Board currentBoard, Board capturedBoard = null)
         {
@@ -578,13 +583,37 @@ namespace Go
         }
 
         /*
+ 14 X . . . . . . . . . . . . . . . . . .
+ 15 X X X . . . . . . . . . . . . . . . .
+ 16 X X . . . . . . . . . . . . . . . . . 
+ 17 X . . . . . . . X X X . . . . . . . . 
+ 18 . . . . . . . . X X X X . . . . . . . 
+         */
+        public static Boolean SevenSideFormation(Board tryBoard, Group moveGroup)
+        {
+            Content c = moveGroup.Content;
+            HashSet<Point> contentPoints = moveGroup.Points;
+            if (contentPoints.Count() != 7) return false;
+            if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
+            int threeAdjPoints = contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3);
+
+            if (threeAdjPoints == 3 && moveGroup.Points.Count(p => !tryBoard.PointWithinMiddleArea(p)) == 4)
+            {
+                if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
+                    return true;
+            }
+            return false;
+        }
+
+
+        /*
  14 . X . . . . . . . . . X . . . X X . .
  15 X X X . . . . . . . X X X . . X X X .
  16 X X . . . . . . . . X X . . . . X . . 
  17 X . . . . . . . . . . X . . . . X . . 
  18 . . . . . . . . . . . . . . . . . . . 
          */
-        public static Boolean FlowerSevenSideFormation(Board tryBoard, Group moveGroup)
+        public static Boolean FlowerSevenFormation(Board tryBoard, Group moveGroup)
         {
             Content c = moveGroup.Content;
             HashSet<Point> contentPoints = moveGroup.Points;
@@ -604,13 +633,13 @@ namespace Go
         }
 
         /*
- 14 X X . . . . . . . . X X . . . X X X .
- 15 X X X . . . . . . . X X X . . X X X .
- 16 X X . . . . . . . . X X . . . . X . . 
- 17 X . . . . . . . . . . X . . . . X . . 
+ 14 X X . . . . . . . . X X . . . . . . .
+ 15 X X X . . . . . . . X X X . . . . . .
+ 16 X X . . . . . . . . X X . . . . . . . 
+ 17 X . . . . . . . . . . X . . . . . . . 
  18 . . . . . . . . . . . . . . . . . . . 
          */
-        public static Boolean FlowerEightSideFormation(Board tryBoard, Group moveGroup)
+        public static Boolean FlowerEightFormation(Board tryBoard, Group moveGroup)
         {
             Content c = moveGroup.Content;
             HashSet<Point> contentPoints = moveGroup.Points;
@@ -620,7 +649,7 @@ namespace Go
                 int threeAdjPoints = contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3);
                 int twoAdjPoints = contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 2);
 
-                if ((threeAdjPoints == 2 && twoAdjPoints == 2) || (threeAdjPoints == 1 && twoAdjPoints == 5))
+                if (threeAdjPoints == 2 && twoAdjPoints == 2)
                 {
                     if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
                         return true;
@@ -628,13 +657,14 @@ namespace Go
             }
             return false;
         }
+
         /*
     15 . . . . . . . . . . . . . . . . . . .
     16 . . . . X . . . . . . . . . . . . . . 
-    17 . . . X X . . . . . . . X X . . . . . 
-    18 . . . X X X . . . . . X X X X . . . . 
+    17 . . . X X . . . . X X . . X X . . . . 
+    18 . . . X X X . . X X X X . X X X X . . 
             */
-        public static Boolean KnifeSixSideFormation(Board tryBoard, Group moveGroup)
+        public static Boolean KnifeSixFormation(Board tryBoard, Group moveGroup)
         {
             //includes two-by-four formation
             Content c = moveGroup.Content;
@@ -655,7 +685,7 @@ namespace Go
     17 . . . X X . . . . . . . X . . . . X . 
     18 . . . . X X . . . . . X X X . . . X . 
             */
-        public static Boolean BentFiveSideFormation(Board tryBoard, Group moveGroup)
+        public static Boolean BentFiveFormation(Board tryBoard, Group moveGroup)
         {
             //includes T formation, one-by-four formation
             Content c = moveGroup.Content;
