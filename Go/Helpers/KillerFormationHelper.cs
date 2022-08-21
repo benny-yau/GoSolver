@@ -18,7 +18,8 @@ namespace Go
                     killerFormationFuncs.Add(5, new List<Func<Board, Group, Boolean>>() { KnifeFiveFormation, CrowbarFiveFormation, BentFiveFormation });
                     killerFormationFuncs.Add(6, new List<Func<Board, Group, Boolean>>() { FlowerSixFormation, KnifeSixFormation, CornerSixFormation });
                     killerFormationFuncs.Add(7, new List<Func<Board, Group, Boolean>>() { FlowerSevenFormation, SevenSideFormation });
-                    killerFormationFuncs.Add(8, new List<Func<Board, Group, Boolean>>() { FlowerEightFormation });
+                    killerFormationFuncs.Add(8, new List<Func<Board, Group, Boolean>>() { FlowerEightFormation, EightSideFormation });
+                    killerFormationFuncs.Add(9, new List<Func<Board, Group, Boolean>>() { NineSideFormation });
                 }
                 return killerFormationFuncs;
             }
@@ -585,9 +586,9 @@ namespace Go
         /*
  14 X . . . . . . . . . . . . . . . . . .
  15 X X X . . . . . . . . . . . . . . . .
- 16 X X . . . . . . . . . . . . . . . . . 
- 17 X . . . . . . . X X X . . . . . . . . 
- 18 . . . . . . . . X X X X . . . . . . . 
+ 16 X X . . . . . . . . . . . . X . . . . 
+ 17 X . . . . . . . X X X . . . X X . . . 
+ 18 . . . . . . . . X X X X . . X X X X . 
          */
         public static Boolean SevenSideFormation(Board tryBoard, Group moveGroup)
         {
@@ -597,7 +598,7 @@ namespace Go
             if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
             int threeAdjPoints = contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3);
 
-            if (threeAdjPoints == 3 && moveGroup.Points.Count(p => !tryBoard.PointWithinMiddleArea(p)) == 4)
+            if (threeAdjPoints >= 2 && moveGroup.Points.Count(p => !tryBoard.PointWithinMiddleArea(p)) == 4)
             {
                 if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
                     return true;
@@ -605,6 +606,53 @@ namespace Go
             return false;
         }
 
+        /*
+ 14 . . . . . . . . . . . . . . . . . . . 
+ 15 . . . . . . . . . . . . . . . . . . . 
+ 16 . . . . X . . . . . . . . . . . . . . 
+ 17 . . . X X X . . . . . . . . . . . . . 
+ 18 . . . . X X X X . . . . . . . . . . . 
+         */
+        public static Boolean EightSideFormation(Board tryBoard, Group moveGroup)
+        {
+            Content c = moveGroup.Content;
+            HashSet<Point> contentPoints = moveGroup.Points;
+            if (contentPoints.Count() != 8) return false;
+            if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
+            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 4) != 1) return false;
+            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3) != 1) return false;
+
+            if (moveGroup.Points.Count(p => !tryBoard.PointWithinMiddleArea(p)) == 4)
+            {
+                if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
+                    return true;
+            }
+            return false;
+        }
+
+        /*
+ 14 . . . . . . . . . . . . . . . . . . . 
+ 15 . . . . . . . . . . . . . . . . . . . 
+ 16 . . . . X . . . . . . . . . . . . . . 
+ 17 . . . X X X . . . . . . . . . . . . . 
+ 18 . . . X X X X X . . . . . . . . . . . 
+         */
+        public static Boolean NineSideFormation(Board tryBoard, Group moveGroup)
+        {
+            Content c = moveGroup.Content;
+            HashSet<Point> contentPoints = moveGroup.Points;
+            if (contentPoints.Count() != 9) return false;
+            if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
+            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 4) != 1) return false;
+            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3) != 2) return false;
+
+            if (moveGroup.Points.Count(p => !tryBoard.PointWithinMiddleArea(p)) == 5)
+            {
+                if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
+                    return true;
+            }
+            return false;
+        }
 
         /*
  14 . X . . . . . . . . . X . . . X X . .
