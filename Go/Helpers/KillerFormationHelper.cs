@@ -730,12 +730,7 @@ namespace Go
             {
                 if (!oneLiberty) return false;
                 if (EyeHelper.IsCovered(tryBoard, endPoint, c.Opposite()))
-                {
-                    List<Point> diagonalNeighbours = tryBoard.GetDiagonalNeighbours(endPoint).Where(q => tryBoard[q] == c).ToList();
-                    List<Point> coveredGroup = tryBoard.MoveGroup.Neighbours.Where(n => tryBoard[n] == c.Opposite() && diagonalNeighbours.All(q => tryBoard.GetStoneNeighbours(n).Contains(q))).ToList();
-                    if (coveredGroup.Count == 1 && tryBoard.GetGroupAt(coveredGroup.First()).Liberties.Count > 1)
-                        return true;
-                }
+                    return true;
                 return false;
             }
         }
