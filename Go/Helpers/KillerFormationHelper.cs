@@ -18,7 +18,6 @@ namespace Go
                     killerFormationFuncs.Add(5, new List<Func<Board, Group, Boolean>>() { KnifeFiveFormation, CrowbarFiveFormation, BentFiveFormation });
                     killerFormationFuncs.Add(6, new List<Func<Board, Group, Boolean>>() { FlowerSixFormation, KnifeSixFormation, CornerSixFormation });
                     killerFormationFuncs.Add(7, new List<Func<Board, Group, Boolean>>() { FlowerSevenFormation, OddSevenFormation });
-                    killerFormationFuncs.Add(8, new List<Func<Board, Group, Boolean>>() { FlowerEightFormation });
                 }
                 return killerFormationFuncs;
             }
@@ -637,37 +636,6 @@ namespace Go
         }
 
         /*
- 14 X X . . . . . . . . . . . . . . . . .
- 15 X X X . . . . . . . . . . . . . . . .
- 16 X X . . . . . . . . . . . . . . . . . 
- 17 X . . . . . . . . . . . . . . . . . . 
- 18 . . . . . . . . . . . . . . . . . . . 
-        
-15 . . . . X . . . . . . . . . . . . . .
-16 . . . X X X X X . . . . . . . . . . . 
-17 . . . X X . . . . . . . . . . . . . . 
-18 . . . . . . . . . . . . . . . . . . . 
-         */
-        public static Boolean FlowerEightFormation(Board tryBoard, Group moveGroup)
-        {
-            Content c = moveGroup.Content;
-            HashSet<Point> contentPoints = moveGroup.Points;
-            if (contentPoints.Count() != 8) return false;
-            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 4) == 1)
-            {
-                int threeAdjPoints = contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3);
-                int twoAdjPoints = contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 2);
-
-                if ((threeAdjPoints == 2 && twoAdjPoints == 3) || (threeAdjPoints == 0 && twoAdjPoints == 5))
-                {
-                    if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
-                        return true;
-                }
-            }
-            return false;
-        }
-
-        /*
     15 . . . . . . . . . . . . . . . . . . .
     16 . . . . X . . . . . . . . . . . . . . 
     17 . . . X X . . . . X X . . X X . . . . 
@@ -761,7 +729,14 @@ namespace Go
             else
             {
                 if (!oneLiberty) return false;
-                return EyeHelper.IsCovered(tryBoard, endPoint, c.Opposite()) && tryBoard.GetNeighbourGroups(moveGroup).All(n => n.Liberties.Count > 1);
+                if (EyeHelper.IsCovered(tryBoard, endPoint, c.Opposite()))
+                {
+                    List<Point> diagonalNeighbours = tryBoard.GetDiagonalNeighbours(endPoint).Where(q => tryBoard[q] == c).ToList();
+                    List<Point> coveredGroup = tryBoard.MoveGroup.Neighbours.Where(n => tryBoard[n] == c.Opposite() && diagonalNeighbours.All(q => tryBoard.GetStoneNeighbours(n).Contains(q))).ToList();
+                    if (coveredGroup.Count == 1 && tryBoard.GetGroupAt(coveredGroup.First()).Liberties.Count > 1)
+                        return true;
+                }
+                return false;
             }
         }
 
