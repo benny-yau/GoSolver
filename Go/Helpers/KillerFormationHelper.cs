@@ -611,6 +611,11 @@ namespace Go
  16 X X . . . . . . . . X X . . . . X . . 
  17 X . . . . . . . . . . X . . . . X . . 
  18 . . . . . . . . . . . . . . . . . . . 
+        
+15 . . . . X . . . . . . . . . . . . . .
+16 . . . X X X X X . . . . . . . . . . . 
+17 . . . . X . . . . . . . . . . . . . . 
+18 . . . . . . . . . . . . . . . . . . . 
          */
         public static Boolean FlowerSevenFormation(Board tryBoard, Group moveGroup)
         {
@@ -622,7 +627,7 @@ namespace Go
                 int threeAdjPoints = contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3);
                 int twoAdjPoints = contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 2);
 
-                if ((threeAdjPoints == 1 && twoAdjPoints == 2) || (threeAdjPoints == 0 && twoAdjPoints == 4))
+                if ((threeAdjPoints == 1 && twoAdjPoints == 2) || (threeAdjPoints == 0 && twoAdjPoints >= 2))
                 {
                     if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
                         return true;
@@ -632,11 +637,16 @@ namespace Go
         }
 
         /*
- 14 X X . . . . . . . . X X . . . . . . .
- 15 X X X . . . . . . . X X X . . . . . .
- 16 X X . . . . . . . . X X . . . . . . . 
- 17 X . . . . . . . . . . X . . . . . . . 
+ 14 X X . . . . . . . . . . . . . . . . .
+ 15 X X X . . . . . . . . . . . . . . . .
+ 16 X X . . . . . . . . . . . . . . . . . 
+ 17 X . . . . . . . . . . . . . . . . . . 
  18 . . . . . . . . . . . . . . . . . . . 
+        
+15 . . . . X . . . . . . . . . . . . . .
+16 . . . X X X X X . . . . . . . . . . . 
+17 . . . X X . . . . . . . . . . . . . . 
+18 . . . . . . . . . . . . . . . . . . . 
          */
         public static Boolean FlowerEightFormation(Board tryBoard, Group moveGroup)
         {
@@ -648,7 +658,7 @@ namespace Go
                 int threeAdjPoints = contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3);
                 int twoAdjPoints = contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 2);
 
-                if (threeAdjPoints == 2 && twoAdjPoints == 2)
+                if ((threeAdjPoints == 2 && twoAdjPoints == 3) || (threeAdjPoints == 0 && twoAdjPoints == 5))
                 {
                     if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
                         return true;
@@ -662,6 +672,11 @@ namespace Go
     16 . . . . X . . . . . . . . . . . . . . 
     17 . . . X X . . . . X X . . X X . . . . 
     18 . . . X X X . . X X X X . X X X X . . 
+
+    15 . . . . X . . . . . . . . . . . . . .
+    16 . . . . X X X X . . . . . . . . . . . 
+    17 . . . . X . . . . . . . . . . . . . . 
+    18 . . . . . . . . . . . . . . . . . . . 
             */
         public static Boolean KnifeSixFormation(Board tryBoard, Group moveGroup)
         {
@@ -746,7 +761,7 @@ namespace Go
             else
             {
                 if (!oneLiberty) return false;
-                return EyeHelper.IsCovered(tryBoard, endPoint, c) && tryBoard.GetNeighbourGroups(moveGroup).All(n => n.Liberties.Count > 1);
+                return EyeHelper.IsCovered(tryBoard, endPoint, c.Opposite()) && tryBoard.GetNeighbourGroups(moveGroup).All(n => n.Liberties.Count > 1);
             }
         }
 
