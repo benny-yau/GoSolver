@@ -65,7 +65,7 @@ namespace Go
                 {
                     //mapping
                     Boolean mapPlayerMove = (tree.Root.State.Game.GameInfo.UserFirst == PlayerOrComputer.Player);
-                    return mappingDepthToVerify + (mapPlayerMove ? 0 : 1);
+                    return mappingDepthToVerify + 1 + (mapPlayerMove ? 0 : 1);
                 }
                 else
                 {
