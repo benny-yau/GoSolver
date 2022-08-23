@@ -53,7 +53,7 @@ namespace Go
                 msg += "(" + g.Move.x + ", " + g.Move.y + ")";
             }
             Debug.WriteLine("Game moves: " + msg);
-            JArray mappedJson = GameMapping.GetMappedJson(game);          
+            JArray mappedJson = GameMapping.GetMappedJson(game);
 
             for (int j = 0; j <= possibleMoves.Count - 1; j++)
             {
@@ -61,17 +61,17 @@ namespace Go
                 Game g = new Game(game);
 
                 //make first move on the board
-                if (MakeMoveAndCheckIfAnswerFound(g, gameTryMove.Move)) 
+                if (MakeMoveAndCheckIfAnswerFound(g, gameTryMove.Move))
                     continue;
 
                 //check if second move mapped already
-                JObject firstLevelMove = (JObject)(mappedJson.Where(m => (int)m["FirstMove"]["x"] == gameTryMove.Move.x && (int)m["FirstMove"]["y"] == gameTryMove.Move.y).FirstOrDefault()); 
+                JObject firstLevelMove = (JObject)(mappedJson.Where(m => (int)m["FirstMove"]["x"] == gameTryMove.Move.x && (int)m["FirstMove"]["y"] == gameTryMove.Move.y).FirstOrDefault());
 
                 if (firstLevelMove != null)
                 {
                     //make second move on the board
                     Point secondMove = new Point((int)firstLevelMove["SecondMove"]["x"], (int)firstLevelMove["SecondMove"]["y"]);
-                    if (MakeMoveAndCheckIfAnswerFound(g, secondMove)) 
+                    if (MakeMoveAndCheckIfAnswerFound(g, secondMove))
                         continue;
 
                     //continue with second level
@@ -88,7 +88,7 @@ namespace Go
                         MonteCarloMapFirstSecondMove(g, gameTryMove.Move, secondMove);
 
                         //make second move on the board
-                        if (MakeMoveAndCheckIfAnswerFound(g, secondMove)) 
+                        if (MakeMoveAndCheckIfAnswerFound(g, secondMove))
                             continue;
 
                         //continue with second level
@@ -118,20 +118,20 @@ namespace Go
                 GameTryMove gameTryMove = possibleMoves[j];
 
                 //make third move on the board
-                if (MakeMoveAndCheckIfAnswerFound(g, gameTryMove.Move)) 
+                if (MakeMoveAndCheckIfAnswerFound(g, gameTryMove.Move))
                     continue;
 
                 JObject secondLevelMove = null;
                 if (move != null && move["SecondLevel"] != null)
                 {
                     //check if fourth move mapped already
-                    secondLevelMove = (JObject)(move["SecondLevel"].Where(m => (int)m["ThirdMove"]["x"] == gameTryMove.Move.x && (int)m["ThirdMove"]["y"] == gameTryMove.Move.y).FirstOrDefault()); 
+                    secondLevelMove = (JObject)(move["SecondLevel"].Where(m => (int)m["ThirdMove"]["x"] == gameTryMove.Move.x && (int)m["ThirdMove"]["y"] == gameTryMove.Move.y).FirstOrDefault());
                     if (secondLevelMove != null)
                     {
                         Point fourthMove = new Point((int)secondLevelMove["FourthMove"]["x"], (int)secondLevelMove["FourthMove"]["y"]);
 
                         //make fourth move on the board
-                        if (MakeMoveAndCheckIfAnswerFound(g, fourthMove)) 
+                        if (MakeMoveAndCheckIfAnswerFound(g, fourthMove))
                             continue;
 
                         //continue with third level
@@ -151,7 +151,7 @@ namespace Go
                         MonteCarloMapThirdFourthMove(g, gameTryMove.Move, fourthMove);
 
                         //make fourth move on the board
-                        if (MakeMoveAndCheckIfAnswerFound(g, fourthMove)) 
+                        if (MakeMoveAndCheckIfAnswerFound(g, fourthMove))
                             continue;
 
                         //continue with third level
@@ -235,7 +235,7 @@ namespace Go
         /// </summary>
         public static JObject MapAnswerNodeToJson(Game g, Point firstMovePt, Node answerNode, Boolean getMappedJson = true)
         {
-            JArray json = new JArray();            
+            JArray json = new JArray();
             if (getMappedJson) json = GameMapping.GetMappedJson(g);
             //first level
             Point answerMove = (answerNode != null && answerNode.State.Game.Board.Move != null) ? answerNode.State.Game.Board.Move.Value : Game.PassMove;
@@ -250,7 +250,7 @@ namespace Go
                 JObject secondLevelMove = JsonHelper.SecondLevelMapping(firstLevelMove, thirdMove, fourthMove);
                 if (move["SecondLevel"] == null) continue;
                 //third level
-                if (GameMapping.OneStopMapping) continue;
+                if (!GameMapping.OneStopMapping) continue;
                 foreach (JObject move2 in move["SecondLevel"])
                 {
                     Point fifthMove = new Point((int)move2["FirstMove"]["x"], (int)move2["FirstMove"]["y"]);
