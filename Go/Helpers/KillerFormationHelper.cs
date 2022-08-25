@@ -248,7 +248,7 @@ namespace Go
                 if (tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c) > 1)
                     return true;
 
-                if (SuicideMoveValidWithOneEmptySpaceLeft(tryBoard, capturedBoard))
+                if (SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                     return true;
 
                 if (KillerFormationHelper.CornerThreeFormation(tryBoard, tryBoard.MoveGroup))
@@ -257,7 +257,7 @@ namespace Go
             else
             {
                 //check kill group extension
-                if (CheckRedundantKillGroupExtension(tryBoard, currentBoard, capturedBoard))
+                if (CheckRedundantKillGroupExtension(tryBoard, currentBoard))
                 {
                     if (moveCount == 4) return false;
                     if (KillerFormationHelper.GridDimensionChanged(LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).First().Points, tryBoard.MoveGroup.Points))
@@ -276,22 +276,22 @@ namespace Go
         /// Redundant extension of kill group.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A8" />
         /// </summary>
-        private static Boolean CheckRedundantKillGroupExtension(Board tryBoard, Board currentBoard, Board capturedBoard = null)
+        private static Boolean CheckRedundantKillGroupExtension(Board tryBoard, Board currentBoard)
         {
             if (tryBoard.MoveGroupLiberties != 1 || tryBoard.AtariTargets.Count > 0) return false;
             if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Count > 1) return false;
-            if (!SuicideMoveValidWithOneEmptySpaceLeft(tryBoard, capturedBoard))
-                return true;
-            return false;
+            if (SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
+                return false;
+            return true;
         }
 
         /// <summary>
         /// Suicide move with one empty space in killer group. If two-point move, ensure is covered eye. If three-point move, ensure move is next to empty point.
-        /// Covered eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31563_2" />
+        /// Whole survival group dying <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A8" />
         /// Move group with three points <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario1kyu29" />
         /// Move group binding <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B19_2" />
         /// </summary>
-        public static Boolean SuicideMoveValidWithOneEmptySpaceLeft(Board tryBoard, Board capturedBoard)
+        public static Boolean SuicideMoveValidWithOneEmptySpaceLeft(Board tryBoard)
         {
             int moveCount = tryBoard.MoveGroup.Points.Count;
             Point move = tryBoard.Move.Value;
@@ -300,17 +300,13 @@ namespace Go
             //killer group contains only one more empty space
             if (killerGroup != null && killerGroup.Points.Count == moveCount + 1)
             {
-                //covered eye
-                if (moveCount == 2 && EyeHelper.TwoPointSuicideAtCoveredEye(capturedBoard, tryBoard))
-                    return true;
-
                 //whole survival group dying
                 if (tryBoard.IsAtariMove && tryBoard.GetNeighbourGroups().Count == 1) return true;
 
                 //get empty point
-                Point p = killerGroup.Points.FirstOrDefault(k => tryBoard[k] == Content.Empty);
+                Point p = killerGroup.Points.First(k => tryBoard[k] == Content.Empty);
                 //move is next to empty point
-                if (tryBoard.GetStoneNeighbours(p).Any(n => n.Equals(move)))
+                if (tryBoard.GetStoneNeighbours(p).Any(n => n.Equals(move)) && tryBoard.GetStoneNeighbours(p).Where(n => !n.Equals(move)).All(n => tryBoard[n] == c.Opposite()))
                     return true;
             }
             return false;
@@ -817,6 +813,8 @@ namespace Go
         */
         public static Boolean BentFourCornerFormation(Board tryBoard, Group moveGroup)
         {
+            Content c = moveGroup.Content;
+            if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 4) return false;
             if (!contentPoints.Any(p => tryBoard.CornerPoint(p)) || contentPoints.Any(p => tryBoard.PointWithinMiddleArea(p))) return false;
