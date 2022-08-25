@@ -198,6 +198,7 @@ namespace Go
         /// Two-point move with empty point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A48" />
         /// Covered eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16424_2" />
         /// Check for snapback <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234" />
+        /// Whole survival group dying <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3" />
         /// One-by-three formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A8" />
         /// Crowbar edge formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q6710" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16738" />
@@ -251,6 +252,10 @@ namespace Go
                 if (SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                     return true;
 
+                //whole survival group dying
+                if (tryBoard.IsAtariMove && tryBoard.GetNeighbourGroups().Count == 1)
+                    return true;
+
                 if (KillerFormationHelper.CornerThreeFormation(tryBoard, tryBoard.MoveGroup))
                     return true;
             }
@@ -275,6 +280,8 @@ namespace Go
         /// <summary>
         /// Redundant extension of kill group.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A8" />
+        /// Atari target <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40" />
+        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A8" />
         /// </summary>
         private static Boolean CheckRedundantKillGroupExtension(Board tryBoard, Board currentBoard)
         {
@@ -287,7 +294,6 @@ namespace Go
 
         /// <summary>
         /// Suicide move with one empty space in killer group. If two-point move, ensure is covered eye. If three-point move, ensure move is next to empty point.
-        /// Whole survival group dying <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A8" />
         /// Move group with three points <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario1kyu29" />
         /// Move group binding <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B19_2" />
         /// </summary>
@@ -295,18 +301,16 @@ namespace Go
         {
             int moveCount = tryBoard.MoveGroup.Points.Count;
             Point move = tryBoard.Move.Value;
-            Content c = tryBoard[move];
+            Content c = tryBoard.MoveGroup.Content;
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
             //killer group contains only one more empty space
             if (killerGroup != null && killerGroup.Points.Count == moveCount + 1)
             {
-                //whole survival group dying
-                if (tryBoard.IsAtariMove && tryBoard.GetNeighbourGroups().Count == 1) return true;
-
                 //get empty point
                 Point p = killerGroup.Points.First(k => tryBoard[k] == Content.Empty);
                 //move is next to empty point
-                if (tryBoard.GetStoneNeighbours(p).Any(n => n.Equals(move)) && tryBoard.GetStoneNeighbours(p).Where(n => !n.Equals(move)).All(n => tryBoard[n] == c.Opposite()))
+                List<Point> stoneNeighbours = tryBoard.GetStoneNeighbours(p);
+                if (stoneNeighbours.Any(n => n.Equals(move)) && stoneNeighbours.Where(n => !n.Equals(move)).All(n => tryBoard[n] == c.Opposite()))
                     return true;
             }
             return false;
@@ -353,7 +357,6 @@ namespace Go
                 if (lostGroups.Count == 0) return true;
                 //lost group not more than two points
                 if (lostGroups.Count == 1 && lostGroups.First().Points.Count <= 2)
-
                     return true;
             }
             return false;
@@ -705,7 +708,7 @@ namespace Go
             if (moveGroup.Liberties.Count == 1)
             {
                 //suicide move at eye point or atari resolved or suicide move with one empty space
-                if (tryBoard.Move != null && tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c) < 3 && !tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty)) return false;
+                if (tryBoard.Move != null && tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c) < 3 && !SuicideMoveValidWithOneEmptySpaceLeft(tryBoard)) return false;
             }
             else
             {

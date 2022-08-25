@@ -747,6 +747,7 @@
             Two-point move with empty point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A48" />
             Covered eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16424_2" />
             Check for snapback <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234" />
+            Whole survival group dying <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3" />
             One-by-three formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A8" />
             Crowbar edge formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q6710" />
             <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16738" />
@@ -770,16 +771,17 @@
             <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_7" />
             </summary>
         </member>
-        <member name="M:Go.KillerFormationHelper.CheckRedundantKillGroupExtension(Go.Board,Go.Board,Go.Board)">
+        <member name="M:Go.KillerFormationHelper.CheckRedundantKillGroupExtension(Go.Board,Go.Board)">
             <summary>
             Redundant extension of kill group.
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A8" />
+            Atari target <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40" />
+            <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A8" />
             </summary>
         </member>
-        <member name="M:Go.KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(Go.Board,Go.Board)">
+        <member name="M:Go.KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(Go.Board)">
             <summary>
             Suicide move with one empty space in killer group. If two-point move, ensure is covered eye. If three-point move, ensure move is next to empty point.
-            Covered eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31563_2" />
             Move group with three points <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario1kyu29" />
             Move group binding <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B19_2" />
             </summary>

@@ -472,21 +472,12 @@ namespace Go
             Point? eyePoint = KoHelper.GetKoEyePoint(tryBoard);
             if (eyePoint == null) return;
             HashSet<Group> groups = currentBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite());
-            if (groups.Count == 1)
-            {
-                //double ko / killer ko within killer group
-                if (groups.First().Liberties.Count != 2) return;
-                if (currentBoard[eyePoint.Value] == c.Opposite() && GroupHelper.GetKillerGroupFromCache(currentBoard, eyePoint.Value, c) != null)
-                    tryMoves.Add(koMove);
-                return;
-            }
-            //end ko
-            //find trapped group within killer group
-            Group trappedGroup = groups.FirstOrDefault(gr => GroupHelper.GetKillerGroupFromCache(currentBoard, gr.Points.First(), c.Opposite()) != null);
-            if (trappedGroup == null) return;
-            Boolean separateGroup = groups.Any(gr => gr != trappedGroup && GroupHelper.GetKillerGroupFromCache(currentBoard, gr.Points.First(), c.Opposite()) != GroupHelper.GetKillerGroupFromCache(currentBoard, trappedGroup.Points.First(), c.Opposite()));
-            if (!separateGroup) return;
-            tryMoves.Add(koMove);
+            if (groups.Count != 1) return;
+            //double ko / killer ko within killer group
+            if (groups.First().Liberties.Count != 2) return;
+            if (currentBoard[eyePoint.Value] == c.Opposite() && GroupHelper.GetKillerGroupFromCache(currentBoard, eyePoint.Value, c) != null)
+                tryMoves.Add(koMove);
+            return;
         }
 
 
