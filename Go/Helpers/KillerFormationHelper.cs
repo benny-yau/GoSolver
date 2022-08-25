@@ -816,8 +816,6 @@ namespace Go
         */
         public static Boolean BentFourCornerFormation(Board tryBoard, Group moveGroup)
         {
-            Content c = moveGroup.Content;
-            if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 4) return false;
             if (!contentPoints.Any(p => tryBoard.CornerPoint(p)) || contentPoints.Any(p => tryBoard.PointWithinMiddleArea(p))) return false;
