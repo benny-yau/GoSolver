@@ -63,10 +63,7 @@ namespace Go
             if (contentGroups.Count > 2 || (contentGroups.Count == 2 && emptyPoints.Count != 2)) return false;
             if (contentGroups.Count == 2 && !LinkHelper.IsImmediateDiagonallyConnected(board, contentGroups[0], contentGroups[1])) return false;
 
-            HashSet<Group> groups = new HashSet<Group>();
-            List<Group> neighbourGroups = board.GetNeighbourGroups(killerGroup);
-            neighbourGroups.ForEach(gp => LinkHelper.GetAllDiagonalConnectedGroups(board, gp, groups));
-            List<Group> associatedKillerGroups = killerGroups.Where(n => board.GetNeighbourGroups(n).Any(gr => groups.Contains(gr))).ToList();
+            List<Group> associatedKillerGroups = killerGroups.Where(n => board.GetNeighbourGroups(n).Any(gr => targetGroups.Contains(gr))).ToList();
 
             if (associatedKillerGroups.Count == 1)  //simple seki
             {
