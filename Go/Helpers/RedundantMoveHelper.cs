@@ -196,7 +196,8 @@ namespace Go
         /// Check for killer formation <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A67" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie20" />
         /// Check weak group in connect and die <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_XuanXuanGo_B6" /> 
-        /// Check suicide at tiger mouth <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_B3" /> 
+        /// Check suicide at tiger mouth <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16867" /> 
+        /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_B3" /> 
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30358" /> 
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q30225" /> 
         /// Check survival eye <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A36" /> 
@@ -249,8 +250,8 @@ namespace Go
                     return false;
             }
             //check suicide at tiger mouth
-            (Boolean suicide, Board suicideBoard) = SuicideAtBigTigerMouth(tryMove);
-            if (suicide && (MustHaveMoveAtBigTigerMouth(suicideBoard, tryBoard) || ImmovableHelper.AllConnectAndDie(currentBoard, move))) return false;
+            if (SuicideAtBigTigerMouth(tryMove).Item1)
+                return false;
 
             //set as neutral point for non killable move group
             if (WallHelper.IsNonKillableGroup(tryBoard))
@@ -2004,7 +2005,7 @@ namespace Go
             else if (tryMoves.Count <= 2)
             {
                 //check connect and die for last two try moves
-                if (tryMoves.Select(t => new { tryBoard = t.TryGame.Board }).All(t => (t.tryBoard.MoveGroup.Points.Count > 3 && ImmovableHelper.CheckConnectAndDie(t.tryBoard)) || LinkHelper.GetGroupDiagonals(t.tryBoard, t.tryBoard.MoveGroup).Any(d => t.tryBoard[d.Move] == t.tryBoard.MoveGroup.Content && ImmovableHelper.CheckConnectAndDie(t.tryBoard, t.tryBoard.GetGroupAt(d.Move)))))
+                if (tryMoves.Select(t => new { tryBoard = t.TryGame.Board }).All(t => (t.tryBoard.MoveGroup.Points.Count >= 3 && ImmovableHelper.CheckConnectAndDie(t.tryBoard)) || LinkHelper.GetGroupDiagonals(t.tryBoard, t.tryBoard.MoveGroup).Any(d => t.tryBoard[d.Move] == t.tryBoard.MoveGroup.Content && ImmovableHelper.CheckConnectAndDie(t.tryBoard, t.tryBoard.GetGroupAt(d.Move)))))
                     tryMoves.Add(neutralPointMoves.First());
             }
         }

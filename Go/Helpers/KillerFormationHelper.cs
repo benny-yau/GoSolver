@@ -40,9 +40,9 @@ namespace Go
         public static Boolean DeadFormationInBothAlive(Board board, Group killerGroup, int libertyCount = 2, int requiredCount = 1)
         {
             Content c = killerGroup.Content;
-            List<Point> contentPoints = killerGroup.Points.Where(t => board[t] == c).ToList();
             List<Point> emptyPoints = killerGroup.Points.Where(t => board[t] == Content.Empty).ToList();
-            if (emptyPoints.Count != libertyCount) return false;
+            if (emptyPoints.Count != libertyCount)
+                return false;
 
             if (TryKillFormation(board, c, emptyPoints, requiredCount))
                 return true;
@@ -398,7 +398,8 @@ namespace Go
         {
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 4) return false;
-            return (contentPoints.Any(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3));
+            IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
+            return pointIntersect.Any(p => p.intersectCount == 3);
         }
 
         /*
@@ -434,7 +435,8 @@ namespace Go
         {
             List<Point> contentPoints = killerPoints.Where(t => tryBoard[t] == c).ToList();
             if (contentPoints.Count() != 4) return false;
-            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 2) == 2)
+            IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
+            if (pointIntersect.Count(p => p.intersectCount == 2) == 2)
             {
                 if (contentPoints.GroupBy(p => p.x).Where(gr => gr.Count() == 2).Count() == 2 || contentPoints.GroupBy(p => p.y).Where(gr => gr.Count() == 2).Count() == 2)
                     return true;
@@ -468,7 +470,8 @@ namespace Go
         {
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 4) return false;
-            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 2) == 2)
+            IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
+            if (pointIntersect.Count(p => p.intersectCount == 2) == 2)
             {
                 if (contentPoints.GroupBy(p => p.x).Where(gr => gr.Count() == 3).Count() == 1 || contentPoints.GroupBy(p => p.y).Where(gr => gr.Count() == 3).Count() == 1)
                     return true;
@@ -547,13 +550,14 @@ namespace Go
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 5) return false;
             //knife five formation
+            IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
             if (WithinThreeByTwoGrid(moveGroup))
             {
-                if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3) == 1)
+                if (pointIntersect.Count(p => p.intersectCount == 3) == 1)
                     return true;
             }
             //star formation
-            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 4) == 1)
+            if (pointIntersect.Count(p => p.intersectCount == 4) == 1)
                 return true;
             return false;
         }
@@ -570,9 +574,10 @@ namespace Go
             Content c = moveGroup.Content;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 6) return false;
-            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 4) == 1)
+            IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
+            if (pointIntersect.Count(p => p.intersectCount == 4) == 1)
             {
-                if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 2) == 3)
+                if (pointIntersect.Count(p => p.intersectCount == 2) == 3)
                     return true;
                 else if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
                     return true;
@@ -592,9 +597,9 @@ namespace Go
             Content c = moveGroup.Content;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 7) return false;
-            int threeAdjPoints = contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3);
 
-            if (threeAdjPoints == 3)
+            IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
+            if (pointIntersect.Count(p => p.intersectCount == 3) == 3)
             {
                 if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
                     return true;
@@ -620,10 +625,11 @@ namespace Go
             Content c = moveGroup.Content;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 7) return false;
-            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 4) == 1)
+            IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
+            if (pointIntersect.Count(p => p.intersectCount == 4) == 1)
             {
-                int threeAdjPoints = contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3);
-                int twoAdjPoints = contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 2);
+                int threeAdjPoints = pointIntersect.Count(p => p.intersectCount == 3);
+                int twoAdjPoints = pointIntersect.Count(p => p.intersectCount == 2);
 
                 if ((threeAdjPoints == 1 && twoAdjPoints == 2) || (threeAdjPoints == 0 && twoAdjPoints >= 2))
                 {
@@ -651,7 +657,8 @@ namespace Go
             Content c = moveGroup.Content;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 6) return false;
-            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3) >= 1)
+            IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
+            if (pointIntersect.Count(p => p.intersectCount == 3) >= 1)
             {
                 if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
                     return true;
@@ -672,7 +679,9 @@ namespace Go
             Content c = moveGroup.Content;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 5) return false;
-            List<Point> middlePoint = contentPoints.Where(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() >= 3).ToList();
+
+            IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
+            List<Point> middlePoint = pointIntersect.Where(p => p.intersectCount >= 3).Select(p => (Point)p.point).ToList();
             if (middlePoint.Count != 1) return false;
             if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
                 return true;
@@ -691,7 +700,9 @@ namespace Go
             Content c = moveGroup.Content;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 5) return false;
-            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 2) == 3 && contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 1) == 2)
+
+            IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
+            if (pointIntersect.Count(p => p.intersectCount == 2) == 3 && pointIntersect.Count(p => p.intersectCount == 1) == 2)
             {
                 if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
                     return true;
@@ -715,7 +726,8 @@ namespace Go
                 if (tryBoard.GetNeighbourGroups(moveGroup).Count(n => n.Liberties.Count <= 2) < 2) return false;
             }
 
-            List<Point> endPoints = contentPoints.Where(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 1).ToList();
+            IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
+            List<Point> endPoints = pointIntersect.Where(p => p.intersectCount == 1).Select(p => (Point)p.point).ToList();
             return endPoints.Any(q => EndPointCovered(q, tryBoard, moveGroup));
         }
 
@@ -786,7 +798,8 @@ namespace Go
             if (contentPoints.Count() != 6) return false;
             if (!contentPoints.Any(p => tryBoard.CornerPoint(p))) return false;
             if (contentPoints.Where(p => tryBoard.PointWithinMiddleArea(p)).Count() != 1) return false;
-            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3) != 2) return false;
+            IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
+            if (pointIntersect.Count(p => p.intersectCount == 3) != 2) return false;
             return (MaxLengthOfGrid(moveGroup.Points) == 2);
         }
 
@@ -804,7 +817,8 @@ namespace Go
             if (contentPoints.Count() != 5) return false;
             if (!contentPoints.Any(p => tryBoard.CornerPoint(p))) return false;
             if (contentPoints.Where(p => tryBoard.PointWithinMiddleArea(p)).Count() != 1) return false;
-            if (contentPoints.Count(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 3) != 1) return false;
+            IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
+            if (pointIntersect.Count(p => p.intersectCount == 3) != 1) return false;
             return (MaxLengthOfGrid(moveGroup.Points) == 2);
         }
 
@@ -821,6 +835,15 @@ namespace Go
             if (!contentPoints.Any(p => tryBoard.CornerPoint(p)) || contentPoints.Any(p => tryBoard.PointWithinMiddleArea(p))) return false;
             if (MaxLengthOfGrid(moveGroup.Points) != 2) return false;
             return true;
+        }
+
+        /// <summary>
+        /// Get point intersect.
+        /// </summary>
+        public static IEnumerable<dynamic> GetPointIntersect(Board tryBoard, IEnumerable<Point> contentPoints)
+        {
+            IEnumerable<dynamic> pointIntersect = contentPoints.Select(p => new { point = p, intersectCount = tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() });
+            return pointIntersect;
         }
 
         /// <summary>
