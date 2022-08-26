@@ -2070,12 +2070,20 @@ namespace Go
         /// </summary>
         public static GameTryMove GetSpecificNeutralMove(Game g, List<GameTryMove> neutralPointMoves)
         {
-            GameTryMove gameTryMove;
+            GameTryMove gameTryMove = null;
             List<Group> killerGroups = GroupHelper.GetKillerGroups(g.Board);
-            if (IsImmovableKill(g, killerGroups))
-                gameTryMove = SpecificKillWithImmovablePoints(g.Board, neutralPointMoves, killerGroups[0]);
+            List<Group> immovableGroups = IsImmovableKill(g, killerGroups).ToList();
+            if (immovableGroups.Any())
+            {
+                foreach (Group immovableGroup in immovableGroups)
+                {
+                    gameTryMove = SpecificKillWithImmovablePoints(g.Board, neutralPointMoves, immovableGroup);
+                    if (gameTryMove != null) break;
+                }
+            }
             else
                 gameTryMove = SpecificKillWithLibertyFight(g.Board, neutralPointMoves, killerGroups);
+
             return gameTryMove;
         }
 
@@ -2083,17 +2091,19 @@ namespace Go
         /// Conditions for specific kill with immovable points. <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_A54" />
         /// Covered eye liberty <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_A54_3" />
         /// </summary>
-        public static Boolean IsImmovableKill(Game g, List<Group> killerGroups)
+        public static IEnumerable<Group> IsImmovableKill(Game g, List<Group> killerGroups)
         {
-            if (killerGroups.Count == 0) return false;
-            Group killerGroup = killerGroups[0];
-            //more than one neighbour group
-            if (g.Board.GetNeighbourGroups(killerGroup).Count == 1) return false;
-            List<Point> killerLiberties = killerGroup.Points.Where(p => g.Board[p] == Content.Empty).ToList();
-            //ensure two killer liberties without covered eye
-            if (killerLiberties.Count(liberty => !EyeHelper.FindCoveredEye(g.Board, liberty, killerGroup.Content)) != 2)
-                return false;
-            return true;
+            foreach (Group killerGroup in killerGroups)
+            {
+                if (!GroupHelper.IsLibertyGroup(killerGroup, g.Board)) continue;
+                //more than one neighbour group
+                if (g.Board.GetNeighbourGroups(killerGroup).Count == 1) continue;
+                List<Point> killerLiberties = killerGroup.Points.Where(p => g.Board[p] == Content.Empty).ToList();
+                //ensure two killer liberties without covered eye
+                if (killerLiberties.Count(liberty => !EyeHelper.FindCoveredEye(g.Board, liberty, killerGroup.Content)) != 2)
+                    continue;
+                yield return killerGroup;
+            }
         }
 
         /// <summary>

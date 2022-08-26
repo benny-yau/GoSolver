@@ -19,15 +19,6 @@ namespace Go
                 //get killer groups
                 killerGroups = GetAllKillerGroups(board, c);
                 if (killerGroups.Count == 0) return killerGroups;
-
-                //return liberty group as first group
-                Group libertyGroup = killerGroups.FirstOrDefault(group => IsLibertyGroup(group, board));
-                if (libertyGroup != null)
-                {
-                    killerGroups.Remove(libertyGroup);
-                    killerGroups.Insert(0, libertyGroup);
-                }
-
                 //check covered eye
                 if (killerGroups.Any(group => group.Points.Count <= 2))
                 {
@@ -122,7 +113,7 @@ namespace Go
         /// <summary>
         /// Liberty group requires at least two content points and two empty points.
         /// </summary>
-        private static Boolean IsLibertyGroup(Group group, Board board)
+        public static Boolean IsLibertyGroup(Group group, Board board)
         {
             if (group.Content == Content.Empty) return false;
             return (group.Points.Count(t => board[t] == group.Content) >= 2 && group.Points.Count(t => board[t] == Content.Empty) >= 2);

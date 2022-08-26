@@ -803,6 +803,11 @@
             Check any end point covered. 
             </summary>
         </member>
+        <member name="M:Go.KillerFormationHelper.GetPointIntersect(Go.Board,System.Collections.Generic.IEnumerable{Go.Point})">
+            <summary>
+            Get point intersect.
+            </summary>
+        </member>
         <member name="M:Go.KillerFormationHelper.WithinThreeByTwoGrid(Go.Group)">
             <summary>
             Killer group within 3 by 2 grid.
