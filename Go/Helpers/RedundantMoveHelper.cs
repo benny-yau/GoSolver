@@ -242,7 +242,7 @@ namespace Go
                     return false;
 
                 //check both alive
-                if (BothAliveHelper.EnableCheckForPassMove(tryBoard, c))
+                if (BothAliveHelper.CheckForBothAliveAtMove(tryBoard))
                     return false;
 
                 //check break link
@@ -591,7 +591,7 @@ namespace Go
             }
 
             //check for both alive
-            if (BothAliveHelper.EnableCheckForPassMove(tryBoard, c)) return false;
+            if (BothAliveHelper.CheckForBothAliveAtMove(tryBoard)) return false;
 
             if (WallHelper.IsNonKillableGroup(tryBoard)) //set neutral point move
                 tryMove.IsNeutralPoint = true;
@@ -883,7 +883,7 @@ namespace Go
         /// <summary>
         /// Suicide within non killable group.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_2" />
-        /// Check atari resolved <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18410_3" />
+        /// Check atari resolved and captured <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B17" />
         /// Ensure more than two liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16925" />
         /// Not opponent <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_2" />
@@ -900,30 +900,34 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
 
             if (tryBoard.MoveGroupLiberties != 2) return false;
-            //check atari resolved
-            if (tryMove.AtariResolved) return false;
+            //check atari resolved and captured
+            if (tryMove.AtariResolved || tryBoard.CapturedList.Count > 0) return false;
             //check connect and die
             (Boolean suicidal, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
             if (!suicidal) return false;
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite());
+
+            //target not within killer group
+            if (killerGroup != null && LifeCheck.GetTargets(captureBoard).Any(t => GroupHelper.GetKillerGroupFromCache(captureBoard, t, c.Opposite()) == killerGroup))
+                return false;
+
             List<Group> groups = captureBoard.GetNeighbourGroups(killerGroup ?? tryBoard.MoveGroup);
             Boolean nonKillable = groups.Any(group => WallHelper.IsNonKillableGroup(captureBoard, group));
             if (!nonKillable) return false;
 
             //ensure more than two liberties
             if (!groups.All(group => group.Liberties.Count > 2)) return false;
+
             //not opponent
             if (killerGroup != null && opponentMove == null) return true;
             //suicide near non killable group
             Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(captureBoard, tryBoard.MoveGroup, c);
             if (b == null) return false;
-            if (tryBoard.CapturedList.Count > 0) return false;
+
+            //set neutral point move
             if (opponentMove != null)
             {
-                if (b.MoveGroupLiberties == 1 && EyeHelper.FindEye(captureBoard, b.Move.Value, b.MoveGroup.Content)) return false;
                 Board opponentBoard = opponentMove.TryGame.Board;
-                if (opponentBoard.CapturedList.Count > 0) return false;
-                //set neutral point move
                 if (WallHelper.IsNonKillableGroup(opponentBoard)) opponentMove.IsNeutralPoint = true;
             }
             return true;
@@ -1238,7 +1242,7 @@ namespace Go
             //opponent suicide
             if (opponentTryMove != null)
             {
-                if (SuicideAtBigTigerMouth(opponentTryMove).Item1 || BothAliveHelper.EnableCheckForPassMove(opponentTryMove.TryGame.Board, c.Opposite()))
+                if (SuicideAtBigTigerMouth(opponentTryMove).Item1 || BothAliveHelper.CheckForBothAliveAtMove(opponentTryMove.TryGame.Board))
                     return false;
             }
 
@@ -2361,7 +2365,7 @@ namespace Go
                 //opponent move at tiger mouth
                 if (opponentMove != null)
                 {
-                    if (SuicideAtBigTigerMouth(opponentMove).Item1 || BothAliveHelper.EnableCheckForPassMove(opponentMove.TryGame.Board, c.Opposite()))
+                    if (SuicideAtBigTigerMouth(opponentMove).Item1 || BothAliveHelper.CheckForBothAliveAtMove(opponentMove.TryGame.Board))
                         continue;
                     if (eyeKillerGroup != null || ImmovableHelper.IsImmovablePoint(eyePoint, c.Opposite(), currentBoard).Item1)
                         return true;

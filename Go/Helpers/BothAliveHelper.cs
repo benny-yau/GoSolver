@@ -7,17 +7,7 @@ namespace Go
     public class BothAliveHelper
     {
         /// <summary>
-        /// Add pass move to survival try moves if enabled, in order to check for both alive. Ensure no other try move present other than those within killer group.
-        /// Enable pass move for ten thousand year ko as well.
-        /// For simple seki which is usually the case, find one killer group with at least two liberties, and one survival neighbour group with at least two liberties. Simple seki <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_SimpleSeki" />
-        /// In most cases, there is only one killer group and one neighbour survival group, but there can also be two neighbour survival groups. Simple seki with two neighbour survival groups <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
-        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan16" />
-        /// Get target groups not within killer group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_2" />
-        /// Fill eye points with content <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A27" />
-        /// Two liberties for content group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_B43" />
-        /// More than one content group in simple seki <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31646" />
-        /// Ensure shared liberty suicidal for killer <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
-        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31445" />
+        /// Add pass move to survival try moves to check for both alive. Ensure no other try move present other than those within killer group.
         /// </summary>
         public static Boolean EnableCheckForPassMove(Board board, Content c = Content.Unknown, List<GameTryMove> tryMoves = null)
         {
@@ -29,15 +19,45 @@ namespace Go
             {
                 if (!GroupHelper.IsLibertyGroup(killerGroup, board)) continue;
                 if (tryMoves != null && tryMoves.Any(p => GroupHelper.GetKillerGroupFromCache(board, p.Move, c) == null)) continue;
-                if (EnableCheckForBothAlive(board, killerGroup, killerGroups))
+                if (EnableCheckForBothAlive(board, killerGroup))
                     return true;
             }
             return false;
         }
 
-        private static Boolean EnableCheckForBothAlive(Board board, Group killerGroup, List<Group> killerGroups)
+        /// <summary>
+        /// Check for both alive at move.
+        /// </summary>
+        public static Boolean CheckForBothAliveAtMove(Board board)
         {
-            Content content = killerGroup.Content;
+            Content c = board.MoveGroup.Content;
+            List<Group> killerGroups = board.GetStoneAndDiagonalNeighbours().Where(n => board[n] != c).Select(n => GroupHelper.GetKillerGroupFromCache(board, n, c)).Distinct().ToList();
+
+            foreach (Group killerGroup in killerGroups)
+            {
+                if (killerGroup == null) continue;
+                if (!GroupHelper.IsLibertyGroup(killerGroup, board)) continue;
+                if (EnableCheckForBothAlive(board, killerGroup))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Enable check for both alive.
+        /// For simple seki which is usually the case, find one killer group with at least two liberties, and one survival neighbour group with at least two liberties. Simple seki <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_SimpleSeki" />
+        /// In most cases, there is only one killer group and one neighbour survival group, but there can also be two neighbour survival groups. Simple seki with two neighbour survival groups <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
+        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan16" />
+        /// Get target groups not within killer group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_2" />
+        /// Fill eye points with content <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A27" />
+        /// Two liberties for content group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_B43" />
+        /// More than one content group in simple seki <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31646" />
+        /// Ensure shared liberty suicidal for killer <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
+        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31445" />
+        /// </summary>
+        private static Boolean EnableCheckForBothAlive(Board board, Group killerGroup)
+        {
+            Content c = killerGroup.Content;
             List<Point> emptyPoints = killerGroup.Points.Where(k => board[k] == Content.Empty).ToList();
             //two to four liberties for both alive
             if (emptyPoints.Count < 2 || emptyPoints.Count > 4) return false;
@@ -57,13 +77,15 @@ namespace Go
             Board filledBoard = FillEyePointsBoard(board, killerGroup);
 
             //check for simple seki and complex seki
-            List<Point> contentPoints = killerGroup.Points.Where(t => board[t] == killerGroup.Content).ToList();
+            List<Point> contentPoints = killerGroup.Points.Where(t => board[t] == c).ToList();
             List<Group> contentGroups = filledBoard.GetGroupsFromPoints(contentPoints).ToList();
             //more than one content group
             if (contentGroups.Count > 2 || (contentGroups.Count == 2 && emptyPoints.Count != 2)) return false;
             if (contentGroups.Count == 2 && !LinkHelper.IsImmediateDiagonallyConnected(board, contentGroups[0], contentGroups[1])) return false;
 
-            List<Group> associatedKillerGroups = killerGroups.Where(n => board.GetNeighbourGroups(n).Any(gr => targetGroups.Contains(gr))).ToList();
+            List<Group> killerGroups = GroupHelper.GetKillerGroups(board, c.Opposite(), true);
+            List<Group> associatedKillerGroups = killerGroups.Where(n => !n.Equals(killerGroup) && board.GetNeighbourGroups(n).Any(gr => targetGroups.Contains(gr))).ToList();
+            associatedKillerGroups.Add(killerGroup);
 
             if (associatedKillerGroups.Count == 1)  //simple seki
             {
@@ -82,7 +104,7 @@ namespace Go
                 if (oneLiberty) return false;
 
                 //ensure shared liberty suicidal for killer
-                if (!emptyPoints.Any(p => board.GetGroupsFromStoneNeighbours(p, content.Opposite()).Any(group => group.Liberties.Count > 1) && ImmovableHelper.IsSuicidalMove(board, p, content)))
+                if (!emptyPoints.Any(p => board.GetGroupsFromStoneNeighbours(p, c.Opposite()).Any(group => group.Liberties.Count > 1) && ImmovableHelper.IsSuicidalMove(board, p, c)))
                     return false;
 
                 //find diagonal cut
@@ -97,7 +119,7 @@ namespace Go
                 List<Group> complexSekiGroups = new List<Group>();
                 foreach (Group diagonalGroup in diagonalGroups)
                 {
-                    Group diagonalKillerGroup = GroupHelper.GetKillerGroupFromCache(board, diagonalGroup.Points.First(), killerGroup.Content);
+                    Group diagonalKillerGroup = GroupHelper.GetKillerGroupFromCache(board, diagonalGroup.Points.First(), c);
                     if (diagonalKillerGroup == null) continue;
                     List<Group> cutKillerGroups = associatedKillerGroups.Where(g => diagonalKillerGroup.Points.Contains(g.Points.First())).ToList();
                     List<Group> cutTargetGroups = targetGroups.Where(group => diagonalKillerGroup.Points.Contains(group.Points.First())).ToList();
@@ -131,14 +153,14 @@ namespace Go
         /// </summary>
         private static Boolean CheckSimpleSeki(Board board, Board filledBoard, List<Group> neighbourGroups, Group killerGroup, List<Point> emptyPoints)
         {
-            Content content = killerGroup.Content;
+            Content c = killerGroup.Content;
 
             //ensure at least two liberties within killer group in survival neighbour group
             if (neighbourGroups.Any(n => n.Liberties.Count(p => killerGroup.Points.Contains(p) || BothAliveDiagonalEye(board, killerGroup, p)) < 2))
                 return false;
 
             //check diagonal at eye point
-            List<Point> eyePoints = emptyPoints.Where(p => EyeHelper.FindEye(board, p, content)).ToList();
+            List<Point> eyePoints = emptyPoints.Where(p => EyeHelper.FindEye(board, p, c)).ToList();
             if (eyePoints.Any(p => board.GetDiagonalNeighbours(p).Any(n => board[n] == Content.Empty && !ImmovableHelper.IsSuicidalMoveForBothPlayers(board, n))))
                 return false;
 
@@ -156,19 +178,19 @@ namespace Go
                 return false;
 
             //ensure killer group does not have real eye
-            if (emptyPoints.Any(p => EyeHelper.FindRealEyeWithinEmptySpace(board, p, content)))
+            if (emptyPoints.Any(p => EyeHelper.FindRealEyeWithinEmptySpace(board, p, c)))
                 return false;
 
             //check for increased killer groups
             foreach (Point emptyPoint in emptyPoints)
             {
-                Board b = board.MakeMoveOnNewBoard(emptyPoint, content.Opposite());
+                Board b = board.MakeMoveOnNewBoard(emptyPoint, c.Opposite());
                 if (b != null && b.MoveGroupLiberties > 1 && GameTryMove.IncreaseKillerGroups(b, board))
                     return false;
             }
 
             //check content group connect and die
-            HashSet<Group> contentGroups = board.GetGroupsFromPoints(killerGroup.Points.Where(p => board[p] == content).ToList());
+            HashSet<Group> contentGroups = board.GetGroupsFromPoints(killerGroup.Points.Where(p => board[p] == c).ToList());
             if (contentGroups.Count == 1 && ImmovableHelper.CheckConnectAndDie(board, contentGroups.First()))
             {
                 int contentCount = contentGroups.First().Points.Count;
