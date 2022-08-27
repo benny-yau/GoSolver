@@ -285,7 +285,8 @@ namespace Go
         /// </summary>
         private static Boolean CheckRedundantKillGroupExtension(Board tryBoard, Board currentBoard)
         {
-            if (tryBoard.MoveGroupLiberties != 1 || tryBoard.AtariTargets.Count > 0) return false;
+            if (tryBoard.MoveGroupLiberties != 1) return false;
+            if (tryBoard.AtariTargets.Count > 0 && !BentFourCornerFormation(tryBoard, tryBoard.MoveGroup)) return false;
             if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Count > 1) return false;
             if (SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                 return false;
@@ -834,6 +835,8 @@ namespace Go
             if (contentPoints.Count() != 4) return false;
             if (!contentPoints.Any(p => tryBoard.CornerPoint(p)) || contentPoints.Any(p => tryBoard.PointWithinMiddleArea(p))) return false;
             if (MaxLengthOfGrid(moveGroup.Points) != 2) return false;
+
+            if (tryBoard.GetNeighbourGroups(moveGroup).Count != 1) return false;
             return true;
         }
 

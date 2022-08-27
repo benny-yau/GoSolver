@@ -186,12 +186,6 @@
             <see cref="!:UnitTestProject.KoTest.KoTest_Scenario_TianLongTu_Q17077" />
             </summary>
         </member>
-        <member name="M:Go.Game.IsBentFourCornerFormation(System.Collections.Generic.List{Go.GameTryMove})">
-            <summary>
-            Bent four formation
-            <see cref="!:UnitTestProject.BentFourTest.BentFourTest_Scenario7kyu26_3" />
-            </summary>
-        </member>
         <member name="M:Go.Game.MakeKillMove(System.Int32,Go.Game)">
             <summary>
             Make all possible kill moves by exhaustive search.

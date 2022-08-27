@@ -2246,42 +2246,37 @@ namespace Go
         /// </summary>
         public static GameTryMove GetGenericNeutralMove(Game g, List<GameTryMove> tryMoves, List<GameTryMove> neutralPointMoves)
         {
-            //check for killer group
             List<Group> killerGroups = GroupHelper.GetKillerGroups(g.Board, Content.Unknown, true);
-            if (killerGroups.Count == 0) return null;
-            Group killerGroup = killerGroups[0];
-
-            //get all extended neighbour groups
-            HashSet<Group> groups = new HashSet<Group>();
-            List<Group> neighbourGroups = g.Board.GetNeighbourGroups(killerGroup);
-            neighbourGroups.ForEach(gp => LinkHelper.GetAllDiagonalConnectedGroups(g.Board, gp, groups));
-
-            //cover all neutral points
-            Board coveredBoard = new Board(g.Board);
-            neutralPointMoves.ForEach(m => coveredBoard[m.Move] = killerGroup.Content);
-
-            //order by inner liberties of neighbour group
-            List<Group> orderedGroups = groups.OrderBy(n => coveredBoard.GetGroupLiberties(n)).ToList();
-
-            //get liberties by order
-            HashSet<Point> libertyPoints = g.Board.GetLibertiesOfGroups(orderedGroups);
-
-            //get neutral points of killer group neighbours
-            neutralPointMoves = neutralPointMoves.Where(n => libertyPoints.Contains(n.Move)).ToList();
-            foreach (Point p in libertyPoints)
+            foreach (Group killerGroup in killerGroups)
             {
-                GameTryMove neutralMove = neutralPointMoves.FirstOrDefault(n => n.Move.Equals(p));
-                if (neutralMove == null) continue;
+                if (!GroupHelper.IsLibertyGroup(killerGroup, g.Board)) continue;
 
-                //ensure target group has two or less liberties
-                Board b = neutralMove.TryGame.Board;
-                HashSet<Group> stoneNeighbours = coveredBoard.GetGroupsFromStoneNeighbours(b.Move.Value, b.MoveGroup.Content);
-                if (WallHelper.StrongNeighbourGroups(coveredBoard, stoneNeighbours))
-                    continue;
+                //cover all neutral points
+                Board coveredBoard = new Board(g.Board);
+                neutralPointMoves.ForEach(m => coveredBoard[m.Move] = killerGroup.Content);
 
-                //restore the first generic neutral move if neighbour group not targeted by other try moves
-                if (CheckIfGroupAlreadyTargeted(neutralMove, tryMoves)) continue;
-                return neutralMove;
+                //order by inner liberties of neighbour group
+                List<Group> orderedGroups = g.Board.GetNeighbourGroups(killerGroup).OrderBy(n => coveredBoard.GetGroupLiberties(n)).ToList();
+
+                //get liberties by order
+                HashSet<Point> libertyPoints = g.Board.GetLibertiesOfGroups(orderedGroups);
+                //get neutral points of killer group neighbours
+                neutralPointMoves = neutralPointMoves.Where(n => libertyPoints.Contains(n.Move)).ToList();
+                foreach (Point p in libertyPoints)
+                {
+                    GameTryMove neutralMove = neutralPointMoves.FirstOrDefault(n => n.Move.Equals(p));
+                    if (neutralMove == null) continue;
+
+                    //ensure target group has two or less liberties
+                    Board b = neutralMove.TryGame.Board;
+                    HashSet<Group> stoneNeighbours = coveredBoard.GetGroupsFromStoneNeighbours(b.Move.Value, b.MoveGroup.Content);
+                    if (WallHelper.StrongNeighbourGroups(coveredBoard, stoneNeighbours))
+                        continue;
+
+                    //restore the first generic neutral move if neighbour group not targeted by other try moves
+                    if (CheckIfGroupAlreadyTargeted(neutralMove, tryMoves)) continue;
+                    return neutralMove;
+                }
             }
             return null;
         }
