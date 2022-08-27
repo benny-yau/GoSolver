@@ -2075,7 +2075,7 @@ namespace Go
         public static GameTryMove GetSpecificNeutralMove(Game g, List<GameTryMove> neutralPointMoves)
         {
             GameTryMove gameTryMove = null;
-            List<Group> killerGroups = GroupHelper.GetKillerGroups(g.Board);
+            List<Group> killerGroups = GroupHelper.GetKillerGroups(g.Board, Content.Unknown, true);
             List<Group> immovableGroups = IsImmovableKill(g, killerGroups).ToList();
             if (immovableGroups.Any())
             {
@@ -2163,10 +2163,6 @@ namespace Go
         /// </summary>
         public static GameTryMove SpecificKillWithLibertyFight(Board board, List<GameTryMove> neutralPointMoves, List<Group> killerGroups)
         {
-            //no killer group or only one neighbour group
-            if (!(killerGroups.Count == 0 || board.GetNeighbourGroups(killerGroups.First()).Where(group => group.Points.Count > 1).Count() <= 1))
-                return null;
-
             Content c = neutralPointMoves.First().MoveContent;
             //all moves are valid if liberty fight
             GameTryMove neutralPointMove = neutralPointMoves.FirstOrDefault(t => t.TryGame.Board.GetGroupsFromStoneNeighbours(t.Move, c).Count > 0);
@@ -2175,7 +2171,9 @@ namespace Go
             foreach (Group targetGroup in tryBoard.GetGroupsFromStoneNeighbours(neutralPointMove.Move, c))
             {
                 List<Point> neighbourLiberties;
-                if (killerGroups.Count == 0) //no killer group
+                List<Group> associatedKillerGroups = killerGroups.Where(group => board.GetNeighbourGroups(group).Contains(board.GetGroupAt(targetGroup.Points.First()))).ToList();
+                if (associatedKillerGroups.Count > 1) continue;
+                if (associatedKillerGroups.Count == 0) //no killer group
                 {
                     //find neighbour groups at diagonal cut
                     (_, List<Point> pointsBetweenDiagonals) = LinkHelper.FindDiagonalCut(tryBoard, targetGroup);
@@ -2193,7 +2191,7 @@ namespace Go
                 else //contains killer group
                 {
                     //include all empty points within killer group
-                    neighbourLiberties = killerGroups.First().Points.Where(p => tryBoard[p] == Content.Empty).ToList();
+                    neighbourLiberties = associatedKillerGroups.First().Points.Where(p => tryBoard[p] == Content.Empty).ToList();
 
                     //compare liberties to see if target group can be killed
                     if (neighbourLiberties.Count == targetGroup.Liberties.Count)

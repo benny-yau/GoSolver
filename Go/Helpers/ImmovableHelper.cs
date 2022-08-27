@@ -7,17 +7,6 @@ namespace Go
     public class ImmovableHelper
     {
         /// <summary>
-        /// Eye point that is immovable to opponent.
-        /// </summary>
-        public static Boolean SinglePointOpponentImmovable(GameTryMove tryMove)
-        {
-            Board currentBoard = tryMove.CurrentGame.Board;
-            Point move = tryMove.Move;
-            Content c = tryMove.MoveContent;
-            return EyeHelper.FindEye(currentBoard, move, c) && !currentBoard.GetGroupsFromStoneNeighbours(move, c).Any(n => n.Liberties.Count == 1);
-        }
-
-        /// <summary>
         /// Find tiger mouth where mouth point is empty or filled. Content in parameter represents content of stones forming the tiger mouth. Snapback or ko not handled (see IsConfirmTigerMouth). 
         /// </summary>
         public static Point? FindTigerMouth(Board board, Point p, Content c)
@@ -260,7 +249,8 @@ namespace Go
             if (suicidal) return false;
 
             (Boolean suicidal2, Board b2) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), b);
-            if (suicidal2 && EyeHelper.FindRealSolidEyes(eyePoint, c.Opposite(), b2)) return false;
+            if (suicidal2 && EyeHelper.FindRealSolidEyes(eyePoint, c.Opposite(), b2))
+                return false;
 
             return suicidal2;
         }

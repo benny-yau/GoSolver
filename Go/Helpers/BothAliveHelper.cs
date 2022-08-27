@@ -85,7 +85,7 @@ namespace Go
 
             List<Group> killerGroups = GroupHelper.GetKillerGroups(board, c.Opposite(), true);
             List<Group> associatedKillerGroups = killerGroups.Where(n => !n.Equals(killerGroup) && board.GetNeighbourGroups(n).Any(gr => targetGroups.Contains(gr))).ToList();
-            associatedKillerGroups.Add(killerGroup);
+            associatedKillerGroups.Insert(0, killerGroup);
 
             if (associatedKillerGroups.Count == 1)  //simple seki
             {
