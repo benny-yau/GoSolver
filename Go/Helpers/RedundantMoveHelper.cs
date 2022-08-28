@@ -222,7 +222,7 @@ namespace Go
                     return false;
 
                 //check weak group in connect and die
-                if (!CheckWeakGroupInConnectAndDie(tryMove, captureBoard))
+                if (!CheckWeakGroupInConnectAndDie(tryBoard, tryBoard.MoveGroup))
                     return true;
             }
 
@@ -611,7 +611,7 @@ namespace Go
             Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(tryBoard, atariTarget, c.Opposite());
             if (b == null || b.MoveGroupLiberties == 1) return false;
             //check weak group
-            if (b.GetNeighbourGroups().Any(n => n.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(b, n)))
+            if (GetWeakGroup(b))
                 return true;
             //recursion for escape
             if (b.MoveGroupLiberties != 2) return false;
@@ -680,8 +680,12 @@ namespace Go
             if (CheckOnePointMoveInConnectAndDie(tryMove, captureBoard))
                 return false;
 
-            //check weak capture group
-            if (CheckWeakGroupInConnectAndDie(tryMove, captureBoard))
+            //check weak group
+            if (CheckWeakGroupInConnectAndDie(tryBoard, tryBoard.MoveGroup))
+                return false;
+
+            //check multi-point snapback
+            if (SnapbackInConnectAndDie(tryMove, captureBoard))
                 return false;
 
             //find bloated eye suicide
@@ -705,6 +709,64 @@ namespace Go
             else if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, captureBoard))
                 return false;
             return true;
+        }
+
+        /// <summary>
+        /// Check for weak group with two or less liberties in connect and die.
+        /// Check for double atari for one-point move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29481" />
+        /// Check killable group with two or less liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B6" />
+        /// Check for weak group capturing atari group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B17" />
+        /// </summary>
+        private static Boolean CheckWeakGroupInConnectAndDie(Board tryBoard, Group atariTarget)
+        {
+            Content c = atariTarget.Content;
+            //check weak group
+            if (GetWeakGroup(tryBoard))
+                return true;
+
+            (_, Board b) = ImmovableHelper.ConnectAndDie(tryBoard);
+            if (b == null) return false;
+
+            if (tryBoard.IsAtariMove && DoubleAtariForWeakGroup(b))
+                return true;
+
+            Board b2 = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(b, atariTarget, c);
+            if (b2 == null || b2.MoveGroupLiberties == 1) return false;
+
+            //recursion for capture
+            if (b2.MoveGroupLiberties != 2) return false;
+            if (CheckWeakGroupInConnectAndDie(b2, b2.GetGroupAt(atariTarget.Points.First())))
+                return true;
+            return false;
+        }
+
+        private static Boolean GetWeakGroup(Board tryBoard)
+        {
+            foreach (Group group in tryBoard.GetNeighbourGroups().Where(n => n.Liberties.Count == 2))
+            {
+                (_, Board b) = ImmovableHelper.ConnectAndDie(tryBoard, group);
+                if (b == null) continue;
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Snapback in connect and die <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario1dan4_2" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31435" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18710" />
+        /// </summary>
+        private static Boolean SnapbackInConnectAndDie(GameTryMove tryMove, Board captureBoard)
+        {
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            Content c = tryMove.MoveContent;
+            IEnumerable<Group> neighbourGroups = tryBoard.GetNeighbourGroups();
+            Group weakGroup = neighbourGroups.FirstOrDefault(group => group.Points.Count >= 2 && group.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, group));
+            if (weakGroup == null) return false;
+            if (ImmovableHelper.CheckConnectAndDie(captureBoard, captureBoard.GetGroupAt(weakGroup.Points.First())))
+                return true;
+            return false;
         }
 
         /// <summary>
@@ -777,44 +839,6 @@ namespace Go
             return KillerFormationHelper.CheckRealEyeInNeighbourGroups(tryBoard, captureBoard);
         }
 
-        /// <summary>
-        /// Check for any weak capture group with two or less liberties in connect and die.
-        /// Check for double atari for one-point move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29481" />
-        /// Check killable group with two or less liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B6" />
-        /// Check for weak group capturing atari group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B17" />
-        /// Check multi-point snapback <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario1dan4_2" />
-        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31435" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18710" />
-        /// </summary>
-        private static Boolean CheckWeakGroupInConnectAndDie(GameTryMove tryMove, Board captureBoard)
-        {
-            Board currentBoard = tryMove.CurrentGame.Board;
-            Board tryBoard = tryMove.TryGame.Board;
-            Content c = tryMove.MoveContent;
-            //check for double atari for one-point move
-            //check for weak group capturing atari group
-            if ((tryBoard.MoveGroup.Points.Count == 1 && tryBoard.GetNeighbourGroups().Any(gr => gr.Liberties.Count <= 2)) || (tryBoard.IsAtariMove && captureBoard.MoveGroup.Points.Count == 1))
-            {
-                if (DoubleAtariForWeakGroup(captureBoard))
-                    return true;
-            }
-
-            //check killable group with two or less liberties
-            if (tryBoard.MoveGroup.Points.Count == 1) return false;
-            IEnumerable<Group> neighbourGroups = tryBoard.GetNeighbourGroups();
-            Group weakGroup = neighbourGroups.FirstOrDefault(group => group.Points.Count >= 2 && group.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, group));
-            if (weakGroup == null) return false;
-            if (!tryBoard.GetNeighbourGroups(weakGroup).Any(g => WallHelper.IsNonKillableGroup(tryBoard, g)))
-            {
-                if (DoubleAtariForWeakGroup(captureBoard))
-                    return true;
-            }
-            //check multi-point snapback
-            if (ImmovableHelper.CheckConnectAndDie(captureBoard, captureBoard.GetGroupAt(weakGroup.Points.First())))
-                return true;
-
-            return false;
-        }
 
         /// <summary>
         /// Double atari for weak group.
@@ -884,7 +908,7 @@ namespace Go
         /// Suicide within non killable group.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_2" />
         /// Check atari resolved and captured <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B17" />
-        /// Ensure more than two liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
+        /// Ensure more than two liberties / check weak group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16925" />
         /// Not opponent <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_2" />
         /// Suicide near non killable group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario3dan22_2" />
@@ -917,6 +941,10 @@ namespace Go
 
             //ensure more than two liberties
             if (!groups.All(group => group.Liberties.Count > 2)) return false;
+
+            //check weak group
+            if (CheckWeakGroupInConnectAndDie(tryBoard, tryBoard.MoveGroup))
+                return false;
 
             //not opponent
             if (killerGroup != null && opponentMove == null) return true;
