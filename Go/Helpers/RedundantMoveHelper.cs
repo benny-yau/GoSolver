@@ -610,19 +610,8 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(tryBoard, atariTarget, c.Opposite());
             if (b == null || b.MoveGroupLiberties == 1) return false;
-            //check weak group
-            if (GetWeakGroup(b))
-                return true;
-            //recursion for escape
-            if (b.MoveGroupLiberties != 2) return false;
-            foreach (Point liberty in b.MoveGroup.Liberties)
-            {
-                (Boolean isSuicidal, Board b2) = ImmovableHelper.IsSuicidalMove(liberty, c, b, false);
-                if (isSuicidal) continue;
-                if (CheckWeakGroupInOpponentSuicide(b2, b2.GetGroupAt(atariTarget.Points.First())))
-                    return true;
-            }
-            return false;
+
+            return CheckWeakGroupInConnectAndDie(b, b.MoveGroup);
         }
 
         /// <summary>
@@ -713,6 +702,7 @@ namespace Go
 
         /// <summary>
         /// Check for weak group with two or less liberties in connect and die.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_x" />
         /// Check for double atari for one-point move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29481" />
         /// Check killable group with two or less liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B6" />
         /// Check for weak group capturing atari group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B17" />
@@ -724,12 +714,15 @@ namespace Go
             if (GetWeakGroup(tryBoard))
                 return true;
 
+            //capture move
             (_, Board b) = ImmovableHelper.ConnectAndDie(tryBoard);
             if (b == null) return false;
 
+            //check atari move
             if (tryBoard.IsAtariMove && DoubleAtariForWeakGroup(b))
                 return true;
 
+            //escape move
             Board b2 = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(b, atariTarget, c);
             if (b2 == null || b2.MoveGroupLiberties == 1) return false;
 
@@ -1978,7 +1971,8 @@ namespace Go
         /// Two pre-atari moves <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A55" />
         /// No try moves left <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Side_A20" />
         /// Remaining move at liberty point <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
-        /// Check connect and die for last two try moves <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B35" />
+        /// Check connect and die for last two try moves <see cref="UnitTestProject.SuicidalRedundantMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_B32" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B35" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_5" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31580" />
         /// Check capture at diagonal <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16490" />
@@ -2037,7 +2031,7 @@ namespace Go
             else if (tryMoves.Count <= 2)
             {
                 //check connect and die for last two try moves
-                if (tryMoves.Select(t => new { tryBoard = t.TryGame.Board }).All(t => (t.tryBoard.MoveGroup.Points.Count >= 3 && ImmovableHelper.CheckConnectAndDie(t.tryBoard)) || LinkHelper.GetGroupDiagonals(t.tryBoard, t.tryBoard.MoveGroup).Any(d => t.tryBoard[d.Move] == t.tryBoard.MoveGroup.Content && ImmovableHelper.CheckConnectAndDie(t.tryBoard, t.tryBoard.GetGroupAt(d.Move)))))
+                if (tryMoves.Select(t => new { tryBoard = t.TryGame.Board }).All(t => (t.tryBoard.MoveGroup.Points.Count >= 2 && ImmovableHelper.CheckConnectAndDie(t.tryBoard)) || LinkHelper.GetGroupDiagonals(t.tryBoard, t.tryBoard.MoveGroup).Any(d => t.tryBoard[d.Move] == t.tryBoard.MoveGroup.Content && ImmovableHelper.CheckConnectAndDie(t.tryBoard, t.tryBoard.GetGroupAt(d.Move)))))
                     tryMoves.Add(neutralPointMoves.First());
             }
         }

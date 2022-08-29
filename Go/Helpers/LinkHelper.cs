@@ -471,7 +471,7 @@ namespace Go
         {
             Content c = group.Content;
             if (board.GetNeighbourGroups(group).Count <= 1) return (null, null);
-            List<LinkedPoint<Point>> diagonals = GetGroupDiagonals(board, group).Where(d => board[d.Move] == c).ToList();
+            List<LinkedPoint<Point>> diagonals = GetGroupDiagonals(board, group).Where(d => board[d.Move] == c && board[(Point)d.CheckMove] == c).ToList();
             foreach (LinkedPoint<Point> diagonal in diagonals)
             {
                 List<Point> pointsBetweenDiagonals = PointsBetweenDiagonals(diagonal);
