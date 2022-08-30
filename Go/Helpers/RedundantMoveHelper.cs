@@ -1692,7 +1692,7 @@ namespace Go
                 }
             }
             middlePoints.RemoveAll(n => !tryBoard.PointWithinBoard(n));
-            if (middlePoints.Any(t => tryBoard[t] == c)) return false;
+            if (middlePoints.Count == 0 || middlePoints.Any(t => tryBoard[t] == c)) return false;
             //check for opposite content at middle points
             foreach (Point midPt in middlePoints)
             {
