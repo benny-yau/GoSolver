@@ -426,7 +426,7 @@ namespace Go
             if (MultiPointOpponentSuicidalMove(tryMove, opponentMove))
                 return true;
 
-            return SuicidalWithinNonKillableGroup(opponentMove, tryMove);
+            return false;
         }
 
 
@@ -451,7 +451,8 @@ namespace Go
             }
             if (ThreeLibertySuicidal(tryMove))
                 return true;
-            return SuicidalWithinNonKillableGroup(tryMove);
+
+            return false;
         }
 
         /// <summary>
@@ -895,63 +896,6 @@ namespace Go
                 return true;
 
             return false;
-        }
-
-        /// <summary>
-        /// Suicide within non killable group.
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_2" />
-        /// Check atari resolved and captured <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B17" />
-        /// Ensure more than two liberties / check weak group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16925" />
-        /// Not opponent <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_2" />
-        /// Suicide near non killable group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario3dan22_2" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3kyu28_2" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B17" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17160_2" />
-        /// Set neutral point move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18410_2" />
-        /// </summary>
-        public static Boolean SuicidalWithinNonKillableGroup(GameTryMove tryMove, GameTryMove opponentMove = null)
-        {
-            Board tryBoard = tryMove.TryGame.Board;
-            Point move = tryBoard.Move.Value;
-            Content c = tryBoard.MoveGroup.Content;
-
-            if (tryBoard.MoveGroupLiberties != 2) return false;
-            //check atari resolved and captured
-            if (tryMove.AtariResolved || tryBoard.CapturedList.Count > 0) return false;
-            //check connect and die
-            (Boolean suicidal, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
-            if (!suicidal) return false;
-            Group killerGroup = GroupHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite());
-
-            //target not within killer group
-            if (killerGroup != null && LifeCheck.GetTargets(captureBoard).Any(t => GroupHelper.GetKillerGroupFromCache(captureBoard, t, c.Opposite()) == killerGroup))
-                return false;
-
-            List<Group> groups = captureBoard.GetNeighbourGroups(killerGroup ?? tryBoard.MoveGroup);
-            Boolean nonKillable = groups.Any(group => WallHelper.IsNonKillableGroup(captureBoard, group));
-            if (!nonKillable) return false;
-
-            //ensure more than two liberties
-            if (!groups.All(group => group.Liberties.Count > 2)) return false;
-
-            //check weak group
-            if (CheckWeakGroupInConnectAndDie(tryBoard, tryBoard.MoveGroup))
-                return false;
-
-            //not opponent
-            if (killerGroup != null && opponentMove == null) return true;
-            //suicide near non killable group
-            Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(captureBoard, tryBoard.MoveGroup, c);
-            if (b == null) return false;
-
-            //set neutral point move
-            if (opponentMove != null)
-            {
-                Board opponentBoard = opponentMove.TryGame.Board;
-                if (WallHelper.IsNonKillableGroup(opponentBoard)) opponentMove.IsNeutralPoint = true;
-            }
-            return true;
         }
 
         /// <summary>
@@ -1692,7 +1636,7 @@ namespace Go
                 }
             }
             middlePoints.RemoveAll(n => !tryBoard.PointWithinBoard(n));
-            if (middlePoints.Count == 0 || middlePoints.Any(t => tryBoard[t] == c)) return false;
+            if (middlePoints.Any(t => tryBoard[t] == c)) return false;
             //check for opposite content at middle points
             foreach (Point midPt in middlePoints)
             {
