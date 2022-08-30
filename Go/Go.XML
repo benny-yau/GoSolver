@@ -905,6 +905,12 @@
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" />
             </summary>
         </member>
+        <member name="M:Go.LinkHelper.GetPossibleLeapGroups(Go.Board,Go.Board,System.Collections.Generic.List{Go.Group})">
+            <summary>
+            Get possible leap groups.
+            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30274" />
+            </summary>
+        </member>
         <member name="M:Go.LinkHelper.IsAbsoluteLinkForGroups(Go.Board,Go.Board)">
             <summary>
             Is absolute link by stone only.
@@ -971,9 +977,9 @@
             Is immediate diagonally connected. 
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.PossibleLinkToAnyDiagonalGroup(Go.Board,Go.Group,Go.Group,System.Boolean)">
+        <member name="M:Go.LinkHelper.PossibleLinkToAnyGroup(Go.Board,Go.Group,Go.Group)">
             <summary>
-            Possible link to any diagonal group.
+            Possible link to any group.
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_XuanXuanQiJing_Weiqi101_18497_4" />
             Link for kill <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
             Link through move group <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" /> 
@@ -1410,7 +1416,7 @@
             <see cref="!:UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_XuanXuanQiJing_A1" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.ValidateLeapMove(Go.Board,Go.Point,Go.Point)">
+        <member name="M:Go.RedundantMoveHelper.ValidateLeapMove(Go.Board,Go.Point,Go.Point,System.Boolean)">
             <summary>
             For leap on same line, check for non killable group between the two points as well as one space above or below the space between the leap.
             For leap on different lines, check for non killable group between the two points from min to max of the lines.

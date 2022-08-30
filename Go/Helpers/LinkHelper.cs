@@ -19,10 +19,17 @@ namespace Go
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
+            if (ImmovableHelper.CheckConnectAndDie(tryBoard))
+                return false;
 
+            //get all possible link groups
             List<Point> groupPoints = currentBoard.GetStoneAndDiagonalNeighbours(move).Where(n => currentBoard[n] == c).ToList();
             tryBoard.CapturedList.ForEach(q => groupPoints.AddRange(q.Neighbours.Where(n => currentBoard[n] == c)));
             List<Group> groups = currentBoard.GetGroupsFromPoints(groupPoints).ToList();
+            //get leap groups
+            GetPossibleLeapGroups(tryBoard, currentBoard, groups);
+
+            //find possible links between all groups
             if (groups.Count <= 1) return false;
             for (int i = 0; i <= groups.Count - 2; i++)
             {
@@ -31,10 +38,12 @@ namespace Go
                     if (groups[i] == groups[j]) continue;
                     if (WallHelper.IsNonKillableGroup(currentBoard, groups[i]) && WallHelper.IsNonKillableGroup(currentBoard, groups[j])) continue;
                     Group groupI = tryBoard.GetGroupAt(groups[i].Points.First());
+                    groupI.LinkedPoint = groups[i].LinkedPoint;
                     Group groupJ = tryBoard.GetGroupAt(groups[j].Points.First());
-                    if (groupI == groupJ && ImmovableHelper.CheckConnectAndDie(tryBoard)) return false;
+                    groupJ.LinkedPoint = groups[j].LinkedPoint;
+
                     //check if currently linked
-                    Boolean isLinked = (groupI == groupJ) || PossibleLinkToAnyDiagonalGroup(tryBoard, groupI, groupJ, true);
+                    Boolean isLinked = (groupI == groupJ) || PossibleLinkToAnyGroup(tryBoard, groupI, groupJ);
                     if (isLinked)
                     {
                         //check if previously linked
@@ -45,6 +54,27 @@ namespace Go
                 }
             }
             return false;
+        }
+
+        /// <summary>
+        /// Get possible leap groups.
+        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30274" />
+        /// </summary>
+        public static void GetPossibleLeapGroups(Board tryBoard, Board currentBoard, List<Group> groups)
+        {
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            List<Point> closestNeighbours = tryBoard.GetClosestNeighbour(move, 2, c);
+            //validate leap move
+            closestNeighbours = closestNeighbours.Where(leapMove => RedundantMoveHelper.ValidateLeapMove(tryBoard, move, leapMove, false)).ToList();
+            //add to groups with linked point
+            foreach (Point p in closestNeighbours)
+            {
+                Group group = currentBoard.GetGroupAt(p);
+                if (groups.Contains(group)) continue;
+                group.LinkedPoint = new LinkedPoint<Point>(move, p);
+                groups.Add(group);
+            }
         }
 
         /// <summary>
@@ -349,7 +379,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Possible link to any diagonal group.
+        /// Possible link to any group.
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_XuanXuanQiJing_Weiqi101_18497_4" />
         /// Link for kill <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
         /// Link through move group <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" /> 
@@ -357,29 +387,31 @@ namespace Go
         /// Captured eye point <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_Q18340" /> 
         /// </summary>
-        public static Boolean PossibleLinkToAnyDiagonalGroup(Board board, Group group, Group findGroup, Boolean checkMoveGroup = false)
+        public static Boolean PossibleLinkToAnyGroup(Board board, Group group, Group findGroup)
         {
             //link between the two groups
-            if (GetGroupDiagonalsForPossibleLink(board, group, findGroup))
+            if (CheckPossibleLink(board, group, findGroup))
                 return true;
 
             //link through move group
-            if (checkMoveGroup)
-            {
-                Boolean isLinked = (group == board.MoveGroup || GetGroupDiagonalsForPossibleLink(board, group, board.MoveGroup));
-                Boolean isLinked2 = (findGroup == board.MoveGroup || GetGroupDiagonalsForPossibleLink(board, findGroup, board.MoveGroup));
+            Boolean isLinked = (group == board.MoveGroup || CheckPossibleLink(board, group, board.MoveGroup));
+            Boolean isLinked2 = (findGroup == board.MoveGroup || CheckPossibleLink(board, findGroup, board.MoveGroup));
 
-                return isLinked && isLinked2;
-            }
-            return false;
+            return isLinked && isLinked2;
         }
 
-        private static Boolean GetGroupDiagonalsForPossibleLink(Board board, Group group, Group findGroup)
+        private static Boolean CheckPossibleLink(Board board, Group group, Group findGroup)
         {
+            //check diagonal links
             LinkedPoint<Point> diagonalLink = GetGroupLinkedDiagonals(board, group).FirstOrDefault(d => board.GetGroupAt(d.Move) == findGroup);
-            if (diagonalLink == null) return false;
-            if (ImmovableHelper.CheckConnectAndDie(board, findGroup)) return false;
-            return true;
+            if (diagonalLink != null) return true;
+
+            //check leap moves
+            if (group.LinkedPoint != null && findGroup.Points.Contains(group.LinkedPoint.Move))
+                return true;
+            if (findGroup.LinkedPoint != null && group.Points.Contains(findGroup.LinkedPoint.Move))
+                return true;
+            return false;
         }
 
         /// <summary>

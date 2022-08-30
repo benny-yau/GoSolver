@@ -1636,7 +1636,7 @@ namespace Go
                     return true;
             }
             //validate if leap move is redundant
-            if (closestNeighbours.All(leapMove => ValidateLeapMove(tryBoard, move, leapMove)))
+            if (closestNeighbours.All(leapMove => !ValidateLeapMove(tryBoard, move, leapMove)))
                 return true;
 
             return false;
@@ -1655,7 +1655,7 @@ namespace Go
         /// For leap on same line, check for non killable group between the two points as well as one space above or below the space between the leap.
         /// For leap on different lines, check for non killable group between the two points from min to max of the lines.
         /// </summary>
-        public static Boolean ValidateLeapMove(Board tryBoard, Point p, Point q)
+        public static Boolean ValidateLeapMove(Board tryBoard, Point p, Point q, Boolean checkNonKillable = true)
         {
             Content c = tryBoard[p];
             Boolean leapOnSameLine = (p.x.Equals(q.x) || p.y.Equals(q.y));
@@ -1691,15 +1691,21 @@ namespace Go
                     middlePoints.Add(new Point(i, middle_y));
                 }
             }
-            //check for non killable groups at middle points
+            middlePoints.RemoveAll(n => !tryBoard.PointWithinBoard(n));
+            if (middlePoints.Any(t => tryBoard[t] == c)) return false;
+            //check for opposite content at middle points
             foreach (Point midPt in middlePoints)
             {
-                if (!tryBoard.PointWithinBoard(midPt) || tryBoard[midPt] == Content.Empty)
+                if (tryBoard[midPt] == Content.Empty)
                     continue;
-                if (tryBoard[midPt] == c.Opposite() && WallHelper.IsNonKillableGroup(tryBoard, midPt))
-                    return true;
+                if (tryBoard[midPt] == c.Opposite())
+                {
+                    if (!checkNonKillable) return false;
+                    if (WallHelper.IsNonKillableGroup(tryBoard, midPt))
+                        return false;
+                }
             }
-            return false;
+            return true;
         }
         #endregion
 
@@ -2199,11 +2205,11 @@ namespace Go
                 {
                     //find neighbour groups at diagonal cut
                     (_, List<Point> pointsBetweenDiagonals) = LinkHelper.FindDiagonalCut(tryBoard, targetGroup);
-                    if (pointsBetweenDiagonals == null) return null;
+                    if (pointsBetweenDiagonals == null) continue;
                     HashSet<Group> neighbourGroups = tryBoard.GetGroupsFromPoints(pointsBetweenDiagonals);
                     //get the group other than neutral point group
                     Group neighbourGroup = neighbourGroups.FirstOrDefault(group => !group.Equals(tryBoard.MoveGroup) && !WallHelper.IsNonKillableGroup(tryBoard, group));
-                    if (neighbourGroup == null) return null;
+                    if (neighbourGroup == null) continue;
                     neighbourLiberties = neighbourGroup.Liberties.ToList();
 
                     //compare liberties to see if target group can be killed

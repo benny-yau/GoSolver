@@ -18,6 +18,8 @@ namespace Go
         public Boolean? IsNonKillable { get; set; }
         public Boolean IsCoveredEye { get; set; }
 
+        public LinkedPoint<Point> LinkedPoint { get; set; }
+
         public HashSet<Point> Liberties
         {
             get
