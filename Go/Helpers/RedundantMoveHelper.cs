@@ -373,7 +373,7 @@ namespace Go
             if (!ImmovableHelper.CheckCaptureSecure(tryBoard, atariTarget))
                 return false;
             //check for weak groups
-            if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Any(gr => gr.Liberties.Count <= 2) && tryBoard.MoveGroupLiberties > 2) return false;
+            if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Any(gr => gr.Liberties.Count <= 2)) return false;
             //check for reverse ko fight
             if (KoHelper.IsReverseKoFight(tryBoard)) return false;
             //check for diagonal killer group
