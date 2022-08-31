@@ -440,12 +440,8 @@ namespace Go
             if (escapeBoard != null && escapeBoard.MoveGroupLiberties > 1)
                 return false;
 
-            foreach (Group gr in AtariHelper.AtariByGroup(group, board, false))
-            {
-                Board b = ImmovableHelper.CaptureSuicideGroup(board, gr);
-                if (b != null && b.GetGroupAt(group.Points.First()).Liberties.Count > 1)
-                    return false;
-            }
+            if (AtariHelper.AtariByGroup(group, board).Any())
+                return false;
             return true;
         }
 
