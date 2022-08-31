@@ -101,24 +101,23 @@ namespace Go
 
             if (tryMove.AtariResolved) return false;
             Group eyeGroup = null;
-            Point eyePoint;
-            if (tryBoard.CapturedList.Count == 1 && tryBoard.CapturedPoints.Count() == 2 && EyeHelper.FindCoveredEyeAfterCapture(tryBoard, tryBoard.CapturedList.First()))
+            Point eyePoint = new Point();
+            List<Point> eyePoints = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindCoveredEye(tryBoard, n, c)).ToList();
+            if (eyePoints.Count == 1)
+            {
+                //one-point covered eye
+                eyePoint = eyePoints.First();
+                Board b = new Board(tryBoard);
+                b[eyePoint] = c.Opposite();
+                eyeGroup = b.GetGroupAt(eyePoint);
+            }
+            else if (tryBoard.CapturedList.Count == 1 && tryBoard.CapturedPoints.Count() == 2 && EyeHelper.FindCoveredEyeAfterCapture(tryBoard, tryBoard.CapturedList.First()))
             {
                 //two-point covered eye
                 eyePoint = tryBoard.CapturedPoints.First(q => tryBoard.GetStoneNeighbours().Contains(q));
                 Boolean unEscapable = EyeHelper.CoveredMove(tryBoard, eyePoint, c) && tryBoard.MoveGroup.Liberties.Any(lib => tryBoard.GameInfo.IsMovablePoint[lib.x, lib.y] == false);
                 if (unEscapable)
                     eyeGroup = tryBoard.CapturedList.First();
-            }
-            else
-            {
-                //one-point covered eye
-                List<Point> eyePoints = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindCoveredEye(tryBoard, n, c)).ToList();
-                if (eyePoints.Count != 1) return false;
-                eyePoint = eyePoints.First();
-                Board b = new Board(tryBoard);
-                b[eyePoint] = c.Opposite();
-                eyeGroup = b.GetGroupAt(eyePoint);
             }
             if (eyeGroup == null) return false;
 
@@ -1557,28 +1556,26 @@ namespace Go
         /// <summary>
         /// Leap moves are moves two spaces away from the closest neighbour stone of same content.
         /// <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_XuanXuanQiJing_A1" />
+        /// Check non killable group <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_XuanXuanGo_A23" />
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_GuanZiPu_B3" />
+        /// Not redundant leap move <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_GuanZiPu_B3" />
         /// </summary>
 
         public static Boolean SurvivalLeapMove(GameTryMove tryMove)
         {
-            if (!tryMove.IsNegligible)
-                return false;
-
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
             Content c = tryBoard.MoveGroup.Content;
+
+            if (!tryMove.IsNegligible)
+                return false;
 
             if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c))
                 return false;
 
             //find closest neighbours within two spaces
             List<Point> closestNeighbours = tryBoard.GetClosestNeighbour(move, 2, c, false);
-            if (closestNeighbours.Count == 0)
-            {
-                Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
-                if (killerGroup == null || tryBoard.GetNeighbourGroups(killerGroup).Any(group => WallHelper.IsNonKillableGroup(tryBoard, group)))
-                    return true;
-            }
+
             //validate if leap move is redundant
             if (closestNeighbours.All(leapMove => !ValidateLeapMove(tryBoard, move, leapMove)))
                 return true;
@@ -1602,14 +1599,14 @@ namespace Go
         public static Boolean ValidateLeapMove(Board tryBoard, Point p, Point q, Boolean checkNonKillable = true)
         {
             Content c = tryBoard[p];
-            Boolean leapOnSameLine = (p.x.Equals(q.x) || p.y.Equals(q.y));
             //get middle points between the leap points
             List<Point> middlePoints = new List<Point>();
             if (Math.Abs(p.x - q.x) == 2)
             {
+                if (Math.Abs(p.y - q.y) > 2) return false;
                 int y_min = Math.Min(p.y, q.y);
                 int y_max = Math.Max(p.y, q.y);
-                if (leapOnSameLine)
+                if (p.y.Equals(q.y)) //leap on same line
                 {
                     y_min -= 1;
                     y_max += 1;
@@ -1622,9 +1619,10 @@ namespace Go
             }
             else if (Math.Abs(p.y - q.y) == 2)
             {
+                if (Math.Abs(p.x - q.x) > 2) return false;
                 int x_min = Math.Min(p.x, q.x);
                 int x_max = Math.Max(p.x, q.x);
-                if (leapOnSameLine)
+                if (p.x.Equals(q.x)) //leap on same line
                 {
                     x_min -= 1;
                     x_max += 1;
@@ -1636,7 +1634,7 @@ namespace Go
                 }
             }
             middlePoints.RemoveAll(n => !tryBoard.PointWithinBoard(n));
-            if (middlePoints.Any(t => tryBoard[t] == c)) return false;
+            if (middlePoints.Count == 0 || middlePoints.Any(t => tryBoard[t] == c)) return false;
             //check for opposite content at middle points
             foreach (Point midPt in middlePoints)
             {

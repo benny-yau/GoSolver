@@ -19,7 +19,7 @@ namespace Go
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            if (ImmovableHelper.CheckConnectAndDie(tryBoard))
+            if (tryBoard.CapturedList.Count == 0 && ImmovableHelper.CheckConnectAndDie(tryBoard))
                 return false;
 
             //get all possible link groups
