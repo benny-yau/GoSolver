@@ -1081,17 +1081,11 @@ namespace Go
                 return false;
             }
 
-            //atari on neighbours then redundant
-            if (currentBoard.GetGroupsFromStoneNeighbours(move, c).Any(group => AtariHelper.AtariByGroup(currentBoard, group, false)))
-                return true;
 
             //retrieve liberties other than eye liberty
             HashSet<Point> liberties = capturedBoard.GetLibertiesOfGroups(capturedBoard.GetNeighbourGroups(tryBoard.MoveGroup));
             liberties.Remove(move);
 
-            //any liberty is eye then redundant
-            if (liberties.Any(liberty => EyeHelper.FindEye(capturedBoard, liberty, c.Opposite())))
-                return true;
 
             if (liberties.Count == 1)
             {
@@ -1152,7 +1146,7 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
             //capture group
-            Point liberty = tryBoard.MoveGroup.Liberties.First(lib => !lib.Equals(move));
+            Point liberty = tryBoard.MoveGroup.Liberties.First();
             if (currentBoard.GetGroupsFromStoneNeighbours(liberty, c).Any(n => n.Liberties.Count == 1))
                 return true;
 
