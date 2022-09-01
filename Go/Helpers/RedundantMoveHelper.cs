@@ -1036,7 +1036,8 @@ namespace Go
         /// One liberty - suicide for both players <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40_2" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18_3" />
-        /// Crowbar formation <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
+        /// Try kill formation <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
+        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16859_2" />
         /// Two liberties - suicide for both players <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_A19" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30215" />
         /// </summary>
@@ -1093,9 +1094,9 @@ namespace Go
                 if (SuicideForBothAlive(tryMove, false))
                     return false;
 
-                //crowbar formation
+                //try kill formation
                 List<Group> neighbourGroups = tryBoard.GetNeighbourGroups(move);
-                if (neighbourGroups.Count == 1 && KillerFormationHelper.CrowbarEyeFormation(currentBoard, neighbourGroups.First()))
+                if (neighbourGroups.Count == 1 && KillerFormationHelper.TryKillFormation(currentBoard, c.Opposite(), new List<Point>() { move }))
                     return false;
             }
             else if (liberties.Count == 2)

@@ -506,8 +506,9 @@ namespace Go
             List<LinkedPoint<Point>> diagonals = GetGroupDiagonals(board, group).Where(d => board[d.Move] == c && board[(Point)d.CheckMove] == c).ToList();
             foreach (LinkedPoint<Point> diagonal in diagonals)
             {
+                if (board.GetGroupAt(diagonal.Move).Liberties.Count == 1) continue;
                 List<Point> pointsBetweenDiagonals = PointsBetweenDiagonals(diagonal);
-                if (pointsBetweenDiagonals.All(d => board[d] == c.Opposite()) && board.GetGroupAt(diagonal.Move).Liberties.Count > 1)
+                if (pointsBetweenDiagonals.All(d => board[d] == c.Opposite() && board.GetGroupAt(d).Liberties.Count > 1))
                     return (diagonal.Move, pointsBetweenDiagonals);
             }
             return (null, null);
@@ -524,8 +525,9 @@ namespace Go
             List<Point> diagonals = board.GetDiagonalNeighbours().Where(d => board[d] == c).ToList();
             foreach (Point diagonal in diagonals)
             {
+                if (board.GetGroupAt(diagonal).Liberties.Count == 1) continue;
                 List<Point> pointsBetweenDiagonals = PointsBetweenDiagonals(diagonal, move);
-                if (pointsBetweenDiagonals.All(d => board[d] == c.Opposite()) && board.GetGroupAt(diagonal).Liberties.Count > 1)
+                if (pointsBetweenDiagonals.All(d => board[d] == c.Opposite()))
                     return (true, pointsBetweenDiagonals);
             }
             return (false, null);
