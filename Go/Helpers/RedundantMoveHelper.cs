@@ -1136,9 +1136,6 @@ namespace Go
             if (diagonals.Count == 0) return true;
             //check killer group
             if (diagonals.Any(d => GroupHelper.GetKillerGroupFromCache(currentBoard, d, c.Opposite()) != null)) return true;
-            //check eye for survival
-            if (diagonals.Any(d => WallHelper.NoEyeForSurvival(tryBoard, d, c.Opposite()) && !WallHelper.IsNonKillableGroup(tryBoard, d)))
-                return true;
             return false;
         }
 
