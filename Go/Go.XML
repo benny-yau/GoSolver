@@ -1629,13 +1629,6 @@
             <see cref="!:UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_WuQingYuan_Q30982" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.TwoPointDiagonalRedundancy(Go.GameTryMove,Go.Group)">
-            <summary>
-            Redundant eye diagonal move.
-            <see cref="!:UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_XuanXuanGo_Q18331" />
-            Ensure covered eye <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_A139_2" />
-            </summary>
-        </member>
         <member name="M:Go.RedundantMoveHelper.SurvivalEyeFillerMove(Go.GameTryMove)">
             <summary>
             Survival eye filler moves. Get specific move for group not more than five points and not filled. 

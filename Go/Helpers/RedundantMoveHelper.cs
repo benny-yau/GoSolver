@@ -2510,27 +2510,6 @@ namespace Go
                 }
                 return true;
             }
-
-            if (TwoPointDiagonalRedundancy(tryMove, eyeGroup))
-                return true;
-
-            return false;
-        }
-
-        /// <summary>
-        /// Redundant eye diagonal move.
-        /// <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_XuanXuanGo_Q18331" />
-        /// Ensure covered eye <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_A139_2" />
-        /// </summary>
-        private static Boolean TwoPointDiagonalRedundancy(GameTryMove tryMove, Group eyeGroup)
-        {
-            Board currentBoard = tryMove.CurrentGame.Board;
-            int eyeGroupCount = eyeGroup.Points.Count;
-            GameInfo gameInfo = tryMove.TryGame.GameInfo;
-            if (eyeGroupCount != 2 || eyeGroup.IsCoveredEye) return false;
-            //two-point empty group
-            if (EyeHelper.FindRealEyesWithinTwoEmptyPoints(currentBoard, eyeGroup, EyeType.SemiSolidEye) != null)
-                return true;
             return false;
         }
 
