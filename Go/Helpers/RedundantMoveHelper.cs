@@ -174,6 +174,8 @@ namespace Go
                 Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard);
                 if (b != null && b.MoveGroupLiberties == 1) return false;
             }
+
+            //check possible links
             if (LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard))
                 return false;
 
@@ -643,7 +645,7 @@ namespace Go
             if (LifeCheck.GetTargets(tryBoard).All(t => tryBoard.MoveGroup.Equals(tryBoard.GetGroupAt(t)))) return true;
 
             //reverse connect and die
-            if (tryBoard.MoveGroup.Points.Count == 1 && captureBoard.MoveGroup.Points.Count == 1 && !AtariHelper.AtariByGroup(tryBoard, tryBoard.MoveGroup) && ImmovableHelper.CheckConnectAndDie(captureBoard))
+            if (tryBoard.MoveGroup.Points.Count == 1 && captureBoard.MoveGroup.Points.Count == 1 && ImmovableHelper.CheckConnectAndDie(captureBoard))
                 return false;
 
             //check capture moves
@@ -718,7 +720,7 @@ namespace Go
             if (b == null) return false;
 
             //check atari move
-            if (tryBoard.IsAtariMove && DoubleAtariForWeakGroup(b))
+            if (DoubleAtariForWeakGroup(b))
                 return true;
 
             //escape move

@@ -225,7 +225,7 @@ namespace Go
             {
                 if (capturePoint != null && ngroup.Points.Contains(capturePoint.Value)) continue;
                 Board b = ImmovableHelper.CaptureSuicideGroup(board, ngroup);
-                if (b != null && b.GetGroupAt(t).Liberties.Count > 2)
+                if (b != null && !ImmovableHelper.CheckConnectAndDie(b, b.GetGroupAt(targetGroup.Points.First())))
                     return true;
             }
             return false;
