@@ -296,7 +296,7 @@ namespace Go
                     if (tryBoard.MoveGroup.Points.Count >= 2)
                     {
                         if (b2.CapturedPoints.Count() >= 3) return (true, b);
-                        if (b2.GetStoneNeighbours().Where(n => b2[n] != c.Opposite()).Select(n => new { kgroup = GroupHelper.GetKillerGroupFromCache(b2, n, c.Opposite()) }).Any(n => n.kgroup != null && KillerFormationHelper.CrowbarFormation(b2, n.kgroup)))
+                        if (b2.GetStoneNeighbours().Where(n => b2[n] != c.Opposite()).Select(n => new { kgroup = GroupHelper.GetKillerGroupFromCache(b2, n, c.Opposite()) }).Any(n => n.kgroup != null && n.kgroup.Points.Count >= 3))
                             return (true, b);
                     }
 
