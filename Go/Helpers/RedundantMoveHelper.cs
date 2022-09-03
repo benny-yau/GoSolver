@@ -586,8 +586,7 @@ namespace Go
             {
                 Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, atariTarget);
                 if (b == null || b.MoveGroupLiberties == 1) continue;
-                Point bMove = b.Move.Value;
-                if (b.GetStoneAndDiagonalNeighbours(bMove).Any(n => b[n] == c && b.GetGroupAt(n).Liberties.Count > 1 && !b.GetNeighbourGroups(atariTarget).Contains(b.GetGroupAt(n))))
+                if (LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard))
                     return false;
             }
 
@@ -1571,7 +1570,7 @@ namespace Go
 
             //check for kill move by survival
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
-            if (killerGroup != null && tryBoard.GetNeighbourGroups(killerGroup).All(n => !WallHelper.IsNonKillableGroup(tryBoard, n)))
+            if (killerGroup != null && tryBoard.GetNeighbourGroups(killerGroup).All(n => !WallHelper.IsNonKillableFromSetupMoves(tryBoard, n)))
                 return false;
 
             //validate if leap move is redundant
