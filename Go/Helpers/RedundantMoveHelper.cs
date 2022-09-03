@@ -1550,7 +1550,7 @@ namespace Go
         /// Leap moves are moves two spaces away from the closest neighbour stone of same content.
         /// <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_XuanXuanQiJing_A1" />
         /// Check non killable group <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_XuanXuanGo_A23" />
-        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_GuanZiPu_B3" />
+        /// Check for kill move by survival <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_GuanZiPu_B3" />
         /// Not redundant leap move <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_GuanZiPu_B3" />
         /// </summary>
 
@@ -1568,6 +1568,11 @@ namespace Go
 
             //find closest neighbours within two spaces
             List<Point> closestNeighbours = tryBoard.GetClosestNeighbour(move, 2, c, false);
+
+            //check for kill move by survival
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
+            if (killerGroup != null && tryBoard.GetNeighbourGroups(killerGroup).All(n => !WallHelper.IsNonKillableGroup(tryBoard, n)))
+                return false;
 
             //validate if leap move is redundant
             if (closestNeighbours.All(leapMove => !ValidateLeapMove(tryBoard, move, leapMove)))
