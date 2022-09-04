@@ -1565,7 +1565,7 @@ namespace Go
                 if (Math.Abs(p.y - q.y) > 2) return false;
                 int y_min = Math.Min(p.y, q.y);
                 int y_max = Math.Max(p.y, q.y);
-                if (p.y.Equals(q.y)) //leap on same line
+                if (p.y.Equals(q.y) && !tryBoard.PointWithinMiddleArea(p) && !tryBoard.PointWithinMiddleArea(q)) //leap on same line
                 {
                     y_min -= 1;
                     y_max += 1;
@@ -1581,7 +1581,7 @@ namespace Go
                 if (Math.Abs(p.x - q.x) > 2) return false;
                 int x_min = Math.Min(p.x, q.x);
                 int x_max = Math.Max(p.x, q.x);
-                if (p.x.Equals(q.x)) //leap on same line
+                if (p.x.Equals(q.x) && !tryBoard.PointWithinMiddleArea(p) && !tryBoard.PointWithinMiddleArea(q)) //leap on same line
                 {
                     x_min -= 1;
                     x_max += 1;
