@@ -1533,11 +1533,7 @@ namespace Go
 
             //find closest neighbours within two spaces
             List<Point> closestNeighbours = tryBoard.GetClosestNeighbour(move, 2, c, false);
-
-            //check for kill move by survival
-            Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
-            if (killerGroup != null && tryBoard.GetNeighbourGroups(killerGroup).All(n => !WallHelper.IsNonKillableFromSetupMoves(tryBoard, n)))
-                return false;
+            if (closestNeighbours.Count == 0) return false;
 
             //validate if leap move is redundant
             if (closestNeighbours.All(leapMove => !ValidateLeapMove(tryBoard, move, leapMove)))
@@ -2496,8 +2492,7 @@ namespace Go
             //check if any move in killer group
             if (killerGroup != null && killerGroup.Points.Count <= 5)
                 return SpecificEyeFillerMove(tryMove);
-            else
-                return FillerMoveWithoutKillerGroup(tryMove);
+            return false;
         }
 
         /// <summary>
@@ -2517,8 +2512,7 @@ namespace Go
             if (opponentMove == null) return false;
             if (killerGroup != null && killerGroup.Points.Count <= 5)
                 return SpecificEyeFillerMove(opponentMove, true);
-            else
-                return FillerMoveWithoutKillerGroup(tryMove, opponentMove);
+            return false;
         }
 
         /// <summary>
