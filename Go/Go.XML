@@ -1234,11 +1234,6 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30403_2" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.DoubleAtariForWeakGroup(Go.Board)">
-            <summary>
-            Double atari for weak group.
-            </summary>
-        </member>
         <member name="M:Go.RedundantMoveHelper.CheckOnePointMoveInConnectAndDie(Go.GameTryMove,Go.Board)">
             <summary>
             Check for one point move group in connect and die.
