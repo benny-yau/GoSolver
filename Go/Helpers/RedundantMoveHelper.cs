@@ -1532,7 +1532,7 @@ namespace Go
                 return false;
 
             //find closest neighbours within two spaces
-            List<Point> closestNeighbours = tryBoard.GetClosestNeighbour(move, 2, c, false);
+            List<Point> closestNeighbours = tryBoard.GetClosestNeighbour(move, 2, c);
             if (closestNeighbours.Count == 0) return false;
 
             //validate if leap move is redundant
