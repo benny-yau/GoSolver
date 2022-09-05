@@ -35,7 +35,7 @@ namespace Go
                 }
 
                 //cache groups in board
-                board.killerGroup = new Dictionary<Content, List<Group>>();
+                if (board.killerGroup == null) board.killerGroup = new Dictionary<Content, List<Group>>();
                 board.killerGroup.Add(c, killerGroups);
             }
             else

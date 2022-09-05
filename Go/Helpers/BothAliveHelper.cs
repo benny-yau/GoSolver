@@ -61,9 +61,6 @@ namespace Go
             List<Point> emptyPoints = killerGroup.Points.Where(k => board[k] == Content.Empty).ToList();
             //two to four liberties for both alive
             if (emptyPoints.Count < 2 || emptyPoints.Count > 4) return false;
-            //single empty point found for more than two empty points
-            if (emptyPoints.Count > 2 && !emptyPoints.Any(p => board.GetStoneNeighbours(p).All(n => board[n] != Content.Empty)))
-                return false;
 
             //get target groups not within killer group
             List<Group> targetGroups = board.GetNeighbourGroups(killerGroup);
@@ -157,11 +154,6 @@ namespace Go
 
             //ensure at least two liberties within killer group in survival neighbour group
             if (neighbourGroups.Any(n => n.Liberties.Count(p => killerGroup.Points.Contains(p) || BothAliveDiagonalEye(board, killerGroup, p)) < 2))
-                return false;
-
-            //check diagonal at eye point
-            List<Point> eyePoints = emptyPoints.Where(p => EyeHelper.FindEye(board, p, c)).ToList();
-            if (eyePoints.Any(p => board.GetDiagonalNeighbours(p).Any(n => board[n] == Content.Empty && !ImmovableHelper.IsSuicidalMoveForBothPlayers(board, n))))
                 return false;
 
             int emptyPointCount = killerGroup.Points.Count(k => filledBoard[k] == Content.Empty);
