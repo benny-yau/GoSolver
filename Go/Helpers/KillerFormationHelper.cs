@@ -914,17 +914,14 @@ namespace Go
             list = list.OrderBy(m => ((dynamic)m.CheckMove).maxLengthOfGrid).OrderByDescending(m => ((dynamic)m.CheckMove).maxIntersect).OrderBy(m => ((dynamic)m.CheckMove).minNeighbourLiberties).OrderBy(m => ((dynamic)m.CheckMove).minNeighbourPointCount).ToList();
 
             //check for dead formation
-            List<Group> killerGroups = GroupHelper.GetKillerGroups(currentBoard, c.Opposite());
-            Group killerGroup = killerGroups.First();
             foreach (LinkedPoint<Point> p in list)
             {
+                //check for suicidal move by survival
+                if (ImmovableHelper.IsSuicidalMove(p.Move, c.Opposite(), currentBoard).Item1) continue;
                 Board killBoard = ((dynamic)p.CheckMove).killBoard;
+                Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, p.Move, c.Opposite());
                 if (DeadFormationInBothAlive(killBoard, killerGroup))
-                {
-                    //check for suicidal move by survival
-                    if (ImmovableHelper.IsSuicidalMove(p.Move, c.Opposite(), currentBoard).Item1) continue;
                     return p;
-                }
             }
             return list.First();
         }

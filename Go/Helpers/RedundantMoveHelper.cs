@@ -348,7 +348,7 @@ namespace Go
         /// Check capture secure <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
         /// Check killer formation <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Side_A25" />
         /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Side_A23" />
-        /// Count possible eyes at stone neighbours <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Side_A23" />
+        /// Count possible eyes at stone neighbours <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
         /// </summary>
         private static Boolean RedundantAtariWithinKillerGroup(GameTryMove tryMove)
         {
@@ -2754,8 +2754,7 @@ namespace Go
         /// Neighbour groups liberty more than one <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A37" />
         /// Check immovable at liberties <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31602" />
         /// Not link for groups <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31537" />
-        /// Prevent survival creating eye <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A61" />
-        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31428" />
+        /// Prevent survival creating eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_4" />
         /// Group binding <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A16" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36" />
         /// No neighbour group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A80" />
@@ -2778,61 +2777,38 @@ namespace Go
             if (AtariHelper.AtariByGroup(currentBoard, killerGroup))
                 return false;
 
-            //check for ko fight
-            if (EyeFillerKo(tryMove))
-                return false;
+            List<Point> emptyPoints = killerGroup.Points.Where(p => currentBoard[p] == Content.Empty).ToList();
 
-            List<Point> emptyNeighbours = killerGroup.Points.Where(p => currentBoard[p] == Content.Empty).ToList();
             //remove move with no neighbour group
             List<Group> neighbourGroups = currentBoard.GetNeighbourGroups(killerGroup);
             if (neighbourGroups.Count > 1)
             {
-                Point noNeighbourPoint = emptyNeighbours.FirstOrDefault(m => currentBoard.GetStoneNeighbours(m).Count(p => currentBoard[p] == c) == 0);
+                Point noNeighbourPoint = emptyPoints.FirstOrDefault(m => currentBoard.GetStoneNeighbours(m).Count(p => currentBoard[p] == c) == 0);
                 if (Convert.ToBoolean(noNeighbourPoint.NotEmpty)) return false;
             }
 
-            //count possible eyes created
-            Dictionary<Point, int> fillerMoves = new Dictionary<Point, int>();
-            emptyNeighbours.ForEach(p => fillerMoves.Add(p, PossibleEyesCreated(currentBoard, p, c)));
-            int maxPossibleEyes = fillerMoves.Max(f => f.Value);
-            List<Point> bestMoves = fillerMoves.Where(m => m.Value == maxPossibleEyes).Select(f => f.Key).ToList();
-
-            Dictionary<Point, Board> killBoards = new Dictionary<Point, Board>();
-            foreach (Point p in emptyNeighbours)
-            {
-                if (!bestMoves.Contains(p)) continue;
-                Board b = currentBoard.MakeMoveOnNewBoard(p, c.Opposite());
-                if (b == null) continue;
-                killBoards.Add(p, b);
-            }
-            //check immovable at liberties
-            KeyValuePair<Point, Board> immovableAtLiberties = killBoards.FirstOrDefault(b => b.Value.MoveGroupLiberties == 2 && b.Value.MoveGroup.Liberties.All(m => ImmovableHelper.IsSuicidalMoveForBothPlayers(b.Value, m)) && LinkHelper.DiagonalCutMove(b.Value).Item1);
-            if (immovableAtLiberties.Value != null)
-                return !tryMove.Move.Equals(immovableAtLiberties.Key);
-
             //ensure not link for groups
             if (EyeFillerLinkForGroups(tryMove))
-            {
                 return false;
-            }
-
-            //select max count only
-            if (bestMoves.Count == 1)
-                return !tryMove.Move.Equals(bestMoves.First());
 
             //select move that prevent survival creating eye
             Boolean eyeCreated = tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindSemiSolidEyes(n, tryBoard, c).Item1);
             if (eyeCreated) return false;
 
-            foreach (Point p in bestMoves)
-            {
-                Board b = currentBoard.MakeMoveOnNewBoard(p, c);
-                if (b == null) continue;
-                if (b.GetStoneNeighbours().Any(n => EyeHelper.FindSemiSolidEyes(n, b, c).Item1))
-                    return !tryMove.Move.Equals(p);
-            }
+            //count possible eyes created
+            Dictionary<Point, int> fillerMoves = new Dictionary<Point, int>();
+            emptyPoints.ForEach(p => fillerMoves.Add(p, PossibleEyesCreated(currentBoard, p, c)));
+            int maxPossibleEyes = fillerMoves.Max(f => f.Value);
+            List<Point> bestMoves = fillerMoves.Where(m => m.Value == maxPossibleEyes).Select(f => f.Key).ToList();
 
             //select move with max binding
+            Dictionary<Point, Board> killBoards = new Dictionary<Point, Board>();
+            foreach (Point p in bestMoves)
+            {
+                Board b = currentBoard.MakeMoveOnNewBoard(p, c.Opposite());
+                if (b == null) continue;
+                killBoards.Add(p, b);
+            }
             Point bestMove = KillerFormationHelper.GetMaxBindingPoint(currentBoard, killBoards.Values).Move;
             return !tryMove.Move.Equals(bestMove);
         }
