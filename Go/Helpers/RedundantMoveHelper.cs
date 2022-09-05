@@ -172,7 +172,7 @@ namespace Go
             //check snapback for two-point move
             foreach (Group group in tryBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()))
             {
-                if (group.Liberties.Count == 1 && group.Points.Count == 2)
+                if (group.Liberties.Count == 1 && group.Points.Count >= 2)
                 {
                     Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, group);
                     if (b != null && b.MoveGroupLiberties == 1) return false;
@@ -250,7 +250,7 @@ namespace Go
                     return false;
 
                 //check break link
-                if (KoHelper.CheckBreakLinkKoMove(tryMove.CurrentGame.Board, move, c))
+                if (KoHelper.CheckBreakLinkKoMove(currentBoard, move, c))
                     return false;
             }
             //check suicide at tiger mouth
@@ -1052,11 +1052,9 @@ namespace Go
                 return false;
             }
 
-
             //retrieve liberties other than eye liberty
             HashSet<Point> liberties = capturedBoard.GetLibertiesOfGroups(capturedBoard.GetNeighbourGroups(tryBoard.MoveGroup));
             liberties.Remove(move);
-
 
             if (liberties.Count == 1)
             {
@@ -1065,8 +1063,7 @@ namespace Go
                     return false;
 
                 //try kill formation
-                List<Group> neighbourGroups = tryBoard.GetNeighbourGroups(move);
-                if (neighbourGroups.Count == 1 && KillerFormationHelper.TryKillFormation(currentBoard, c.Opposite(), new List<Point>() { move }))
+                if (KillerFormationHelper.TryKillFormation(currentBoard, c.Opposite(), new List<Point>() { move }))
                     return false;
             }
             else if (liberties.Count == 2)
