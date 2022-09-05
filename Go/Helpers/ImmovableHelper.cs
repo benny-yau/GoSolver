@@ -328,7 +328,7 @@ namespace Go
             return IsSuicidalMove(p, c, tryBoard).Item1;
         }
 
-        public static (Boolean, Board) IsSuicidalMove(Point p, Content c, Board tryBoard, Boolean excludeKo = true)
+        public static (Boolean, Board) IsSuicidalMove(Point p, Content c, Board tryBoard, Boolean excludeKo = false)
         {
             if (tryBoard == null) return (false, null);
             Board board = tryBoard.MakeMoveOnNewBoard(p, c);

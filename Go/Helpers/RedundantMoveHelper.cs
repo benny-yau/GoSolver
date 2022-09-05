@@ -91,6 +91,7 @@ namespace Go
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
         /// Check liberty count without covered eye <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
         /// Check snapback for two-point move <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31453" />
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A37_101Weiqi" />
         /// Check for double ko <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
         /// Check atari for ko move <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_2" />
         /// </summary>
@@ -169,10 +170,13 @@ namespace Go
             }
 
             //check snapback for two-point move
-            if (tryBoard.MoveGroupLiberties == 1 && tryBoard.MoveGroup.Points.Count == 2)
+            foreach (Group group in tryBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()))
             {
-                Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard);
-                if (b != null && b.MoveGroupLiberties == 1) return false;
+                if (group.Liberties.Count == 1 && group.Points.Count == 2)
+                {
+                    Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, group);
+                    if (b != null && b.MoveGroupLiberties == 1) return false;
+                }
             }
 
             //check possible links
