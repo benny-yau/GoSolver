@@ -905,6 +905,12 @@
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" />
             </summary>
         </member>
+        <member name="M:Go.LinkHelper.CheckForPossibleBigLeap(Go.Board)">
+            <summary>
+            Check for possible big leap.
+            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_XuanXuanQiJing_Weiqi101_18497_5" />
+            </summary>
+        </member>
         <member name="M:Go.LinkHelper.GetPossibleLeapGroups(Go.Board,Go.Board,System.Collections.Generic.List{Go.Group})">
             <summary>
             Get possible leap groups.

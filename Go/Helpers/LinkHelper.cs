@@ -30,31 +30,71 @@ namespace Go
             GetPossibleLeapGroups(tryBoard, currentBoard, groups);
 
             //find possible links between all groups
-            if (groups.Count <= 1) return false;
-            for (int i = 0; i <= groups.Count - 2; i++)
+            if (groups.Count > 1)
             {
-                for (int j = (i + 1); j <= groups.Count - 1; j++)
+                for (int i = 0; i <= groups.Count - 2; i++)
                 {
-                    if (groups[i] == groups[j]) continue;
-                    if (WallHelper.IsNonKillableGroup(currentBoard, groups[i]) && WallHelper.IsNonKillableGroup(currentBoard, groups[j])) continue;
-                    Group groupI = tryBoard.GetGroupAt(groups[i].Points.First());
-                    groupI.LinkedPoint = groups[i].LinkedPoint;
-                    Group groupJ = tryBoard.GetGroupAt(groups[j].Points.First());
-                    groupJ.LinkedPoint = groups[j].LinkedPoint;
-                    if ((groupI.Liberties.Count == 1 && KoHelper.IsCaptureKoFight(tryBoard, groupI) == null) || (groupJ.Liberties.Count == 1 && KoHelper.IsCaptureKoFight(tryBoard, groupJ) == null))
-                        continue;
-                    //check if currently linked
-                    Boolean isLinked = (groupI == groupJ) || PossibleLinkToAnyGroup(tryBoard, groupI, groupJ);
-                    if (isLinked)
+                    for (int j = (i + 1); j <= groups.Count - 1; j++)
                     {
-                        //check if previously linked
-                        Boolean previousLinked = IsImmediateDiagonallyConnected(currentBoard, groups[i], groups[j]) || IsDiagonallyConnectedGroups(currentBoard, groups[i], groups[j]);
-                        if (previousLinked) continue;
-                        return true;
+                        if (groups[i] == groups[j]) continue;
+                        if (WallHelper.IsNonKillableGroup(currentBoard, groups[i]) && WallHelper.IsNonKillableGroup(currentBoard, groups[j])) continue;
+                        Group groupI = tryBoard.GetGroupAt(groups[i].Points.First());
+                        groupI.LinkedPoint = groups[i].LinkedPoint;
+                        Group groupJ = tryBoard.GetGroupAt(groups[j].Points.First());
+                        groupJ.LinkedPoint = groups[j].LinkedPoint;
+                        if ((groupI.Liberties.Count == 1 && KoHelper.IsCaptureKoFight(tryBoard, groupI) == null) || (groupJ.Liberties.Count == 1 && KoHelper.IsCaptureKoFight(tryBoard, groupJ) == null))
+                            continue;
+                        //check if currently linked
+                        Boolean isLinked = (groupI == groupJ) || PossibleLinkToAnyGroup(tryBoard, groupI, groupJ);
+                        if (isLinked)
+                        {
+                            //check if previously linked
+                            Boolean previousLinked = IsImmediateDiagonallyConnected(currentBoard, groups[i], groups[j]) || IsDiagonallyConnectedGroups(currentBoard, groups[i], groups[j]);
+                            if (previousLinked) continue;
+                            return true;
+                        }
                     }
                 }
             }
+
+            //check for possible big leap
+            if (CheckForPossibleBigLeap(tryBoard))
+                return true;
             return false;
+        }
+
+        /// <summary>
+        /// Check for possible big leap.
+        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_XuanXuanQiJing_Weiqi101_18497_5" />
+        /// </summary>
+        private static Boolean CheckForPossibleBigLeap(Board tryBoard)
+        {
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+
+            //ensure base line move
+            if (tryBoard.PointWithinMiddleArea(move)) return false;
+
+            //ensure non killable group at point up
+            List<Point> pointUp = tryBoard.GetStoneNeighbours().Where(n => tryBoard.PointWithinMiddleArea(n) && WallHelper.IsNonKillableGroup(tryBoard, n)).ToList();
+            if (pointUp.Count != 1) return false;
+            List<Point> adjacentPoints = tryBoard.GetStoneAndDiagonalNeighbours().Where(n => tryBoard[n] == c).ToList();
+            if (adjacentPoints.Count == 0) return false;
+            if (adjacentPoints.Count > 1 && !tryBoard.GetStoneNeighbours(adjacentPoints[0]).Contains(adjacentPoints[1])) return false;
+
+            //get diagonal in leap direction
+            List<Point> diagonalInLeapDirection = tryBoard.GetDiagonalNeighbours().Where(n => tryBoard.PointWithinMiddleArea(n) && !adjacentPoints.Contains(n) && !tryBoard.GetStoneNeighbours(n).Any(s => adjacentPoints.Contains(s))).ToList();
+            if (diagonalInLeapDirection.Count != 1) return false;
+            Point d = diagonalInLeapDirection.First();
+
+            //ensure movable point at diagonal
+            if (!tryBoard.GameInfo.IsMovablePoint[d.x, d.y]) return false;
+
+            //make block move
+            Point blockMove = tryBoard.GetStoneNeighbours(d).First(n => !tryBoard.PointWithinMiddleArea(n));
+            Board b = tryBoard.MakeMoveOnNewBoard(blockMove, c.Opposite());
+            if (b == null || !ImmovableHelper.CheckConnectAndDie(b)) return false;
+            return true;
         }
 
         /// <summary>
