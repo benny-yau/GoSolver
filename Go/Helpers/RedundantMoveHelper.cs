@@ -1470,38 +1470,6 @@ namespace Go
                     if (b != null && b.AtariTargets.Count == 0) return true;
                 }
             }
-            if (!tryMove.IsNegligible) return false;
-            //check for non killable group near base line survival move
-            for (int i = 0; i <= dh.DirectionLinkedList.Count - 1; i++)
-            {
-                //start with bottom edge
-                Direction currentDirection = dh.GetNewDirection(Direction.Up, i);
-                if (!dh.IsEdgeInDirection(tryBoard, move, currentDirection.Opposite())) continue;
-
-                //ensure point up is empty
-                Point pointUp = dh.GetPointInDirection(tryBoard, move, currentDirection);
-                if (!tryBoard.PointWithinMiddleArea(pointUp)) return false;
-                if (tryBoard[pointUp] != Content.Empty) continue;
-                //ensure not eye move
-                if (tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindEye(tryBoard, n, c))) continue;
-
-                Point pointUpLeft = dh.GetPointInDirection(tryBoard, pointUp, dh.GetNewDirection(Direction.Left, i));
-                Point pointUpRight = dh.GetPointInDirection(tryBoard, pointUp, dh.GetNewDirection(Direction.Right, i));
-
-                //if diagonal point is non killable group and not next to opponent stone then redundant
-                if (tryBoard[pointUpLeft] == c.Opposite() && WallHelper.IsNonKillableGroup(tryBoard, pointUpLeft))
-                {
-                    Point pointRight = dh.GetPointInDirection(tryBoard, move, dh.GetNewDirection(Direction.Right, i));
-                    if (tryBoard[pointRight] != c.Opposite())
-                        return true;
-                }
-                else if (tryBoard[pointUpRight] == c.Opposite() && WallHelper.IsNonKillableGroup(tryBoard, pointUpRight))
-                {
-                    Point pointLeft = dh.GetPointInDirection(tryBoard, move, dh.GetNewDirection(Direction.Left, i));
-                    if (tryBoard[pointLeft] != c.Opposite())
-                        return true;
-                }
-            }
             return false;
         }
 
