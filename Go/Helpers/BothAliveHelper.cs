@@ -156,6 +156,11 @@ namespace Go
             if (neighbourGroups.Any(n => n.Liberties.Count(p => killerGroup.Points.Contains(p) || BothAliveDiagonalEye(board, killerGroup, p)) < 2))
                 return false;
 
+            //check diagonal at eye point
+            List<Point> eyePoints = emptyPoints.Where(p => EyeHelper.FindUncoveredEye(board, p, c)).ToList();
+            if (eyePoints.Any(p => board.GetDiagonalNeighbours(p).Any(n => board[n] == Content.Empty && !ImmovableHelper.IsSuicidalMoveForBothPlayers(board, n))))
+                return false;
+
             int emptyPointCount = killerGroup.Points.Count(k => filledBoard[k] == Content.Empty);
             if (emptyPointCount >= 3)
             {

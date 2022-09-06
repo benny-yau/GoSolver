@@ -2801,6 +2801,8 @@ namespace Go
             int maxPossibleEyes = fillerMoves.Max(f => f.Value);
             List<Point> bestMoves = fillerMoves.Where(m => m.Value == maxPossibleEyes).Select(f => f.Key).ToList();
 
+            if (bestMoves.Count == 1)
+                return !tryMove.Move.Equals(bestMoves.First());
             //select move with max binding
             Dictionary<Point, Board> killBoards = new Dictionary<Point, Board>();
             foreach (Point p in bestMoves)
