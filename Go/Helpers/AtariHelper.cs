@@ -38,16 +38,14 @@ namespace Go
             if (excludeKo)
                 return targetGroups;
             //check for ko
-            for (int i = targetGroups.Count - 1; i >= 0; i--)
+            List<Group> koFightGroups = targetGroups.Where(n => KoHelper.IsCaptureKoFight(board, n, true) != null).ToList();
+            for (int i = koFightGroups.Count - 1; i >= 0; i--)
             {
-                Group group = targetGroups[i];
-                if (group.Points.Count != 1 || group.Liberties.Count != 1) continue;
-                Point p = group.Points.First();
-                if (!board.GetStoneNeighbours(p).Any(n => EyeHelper.FindEye(board, n, group.Content))) continue;
+                Group group = koFightGroups[i];
                 Board b = ImmovableHelper.CaptureSuicideGroup(board, group);
                 if (b == null)
                     targetGroups.Remove(group);
-                else if (KoHelper.IsKoFight(b) && !KoHelper.KoContentEnabled(atariGroup.Content, board.GameInfo))
+                if (koFightGroups.Count == 1 && !KoHelper.KoContentEnabled(atariGroup.Content, board.GameInfo))
                     targetGroups.Remove(group);
             }
             return targetGroups;
