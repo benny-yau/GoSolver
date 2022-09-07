@@ -273,11 +273,6 @@ namespace Go
             if (captureBoard != null)
                 return (false, null, captureBoard);
 
-            //double ko fight
-            (Boolean doubleKo, Board b) = KoHelper.DoubleKoFight(tryBoard, group);
-            if (doubleKo)
-                return (false, null, b);
-
             //move at liberty is suicidal or end crawling move
             (Boolean isSuicidal, Board escapeBoard) = IsSuicidalMove(libertyPoint.Value, group.Content, tryBoard);
             if (isSuicidal || IsEndCrawlingMove(new Board(tryBoard), libertyPoint.Value, group.Content))
@@ -308,13 +303,6 @@ namespace Go
                 //connect and die
                 if (CheckConnectAndDie(b, b.GetGroupAt(group.Points.First())))
                     continue;
-                //connect and die for move group
-                if (target.Points.Count == 2)
-                {
-                    (_, Board b2) = ConnectAndDie(b, b.MoveGroup);
-                    if (b2 != null && UnescapableGroup(b2, b2.GetGroupAt(group.Points.First())).Item1)
-                        continue;
-                }
                 return b;
             }
             return null;
