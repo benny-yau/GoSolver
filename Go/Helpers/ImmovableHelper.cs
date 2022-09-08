@@ -628,9 +628,6 @@ namespace Go
                 HashSet<Point> targetLiberties = targetGroup.Liberties;
                 if (targetLiberties.Count != 2) continue;
 
-                if (AtariHelper.AtariByGroup(tryBoard, targetGroup, false))
-                    continue;
-
                 //check connect and die
                 (_, Board board) = ConnectAndDie(tryBoard, targetGroup);
                 if (board != null && board.MoveGroup.Points.Count == 1 && board.GetGroupsFromStoneNeighbours(board.Move.Value, c).Count > 1 && EscapeCaptureLink(tryBoard, targetGroup))

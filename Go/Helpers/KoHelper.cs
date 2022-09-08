@@ -107,6 +107,7 @@ namespace Go
         /// </summary>
         public static Board IsCaptureKoFight(Board board, Point eye, Content c, Boolean overrideKo = false)
         {
+            if (!EyeHelper.FindEye(board, eye, c)) return null;
             List<Group> eyeGroups = board.GetGroupsFromStoneNeighbours(eye, c.Opposite()).ToList();
             foreach (Group eyeGroup in eyeGroups.Where(group => group.Points.Count == 1))
             {

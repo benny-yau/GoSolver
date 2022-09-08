@@ -59,7 +59,7 @@ namespace Go
                 if (koFightGroups.Count == 1 && !KoHelper.KoContentEnabled(c, board.GameInfo))
                 {
                     //check for ko liberty
-                    Boolean koLibertyFound = atariGroup.Liberties.Any(n => !n.Equals(group.Points.First()) && EyeHelper.FindEye(b, n, c) && KoHelper.IsCaptureKoFight(b, n, c, true) != null);
+                    Boolean koLibertyFound = atariGroup.Liberties.Any(n => !n.Equals(group.Points.First()) && KoHelper.IsCaptureKoFight(b, n, c, true) != null);
                     if (!koLibertyFound)
                         targetGroups.Remove(group);
                 }
