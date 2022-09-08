@@ -103,6 +103,22 @@ namespace Go
         }
 
         /// <summary>
+        /// Is ko fight at eye point.
+        /// </summary>
+        public static Board IsCaptureKoFight(Board board, Point eye, Content c, Boolean overrideKo = false)
+        {
+            List<Group> eyeGroups = board.GetGroupsFromStoneNeighbours(eye, c.Opposite()).ToList();
+            foreach (Group eyeGroup in eyeGroups.Where(group => group.Points.Count == 1))
+            {
+                Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(board, eyeGroup, overrideKo);
+                if (capturedBoard == null) continue;
+                if (KoHelper.IsKoFight(capturedBoard))
+                    return capturedBoard;
+            }
+            return null;
+        }
+
+        /// <summary>
         /// Double ko fight.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A85_2" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A85" />
