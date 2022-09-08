@@ -292,14 +292,19 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_2282" />
         /// Connect and die <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
         /// Connect and die for move group <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_GuanZiPu_A3" />
+        /// Check for recursion <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_XuanXuanGo_Q18331" />
         /// </summary>
         public static Board EscapeByCapture(Board tryBoard, Group group)
         {
             List<Group> atariTargets = AtariHelper.AtariByGroup(group, tryBoard, false);
             foreach (Group target in atariTargets)
             {
+                //make capture move
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalOnCapture(tryBoard, target);
                 if (b == null) continue;
+                //check for recursion
+                if (GameHelper.CheckForRecursion(b).Any())
+                    continue;
                 //connect and die
                 if (CheckConnectAndDie(b, b.GetGroupAt(group.Points.First())))
                     continue;

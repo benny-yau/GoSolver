@@ -191,13 +191,6 @@
             Make all possible kill moves by exhaustive search.
             </summary>
         </member>
-        <member name="M:Go.Game.CheckForRecursion(Go.GameTryMove)">
-            <summary>
-            Check for recursion or superkos that are 4 spaces to 12 spaces apart.
-            https://senseis.xmp.net/?LongCycleRule
-            <see cref="!:UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_TianLongTu_Q16446" />
-            </summary>
-        </member>
         <member name="T:Go.GameTryMove">
             <summary>
             Possible try move made in board of TryGame with all associated properties of the move.
@@ -504,6 +497,18 @@
             Determine if next move is computer or player, based on count of last moves and initial player.
             </summary>
         </member>
+        <member name="M:Go.GameHelper.CheckForRecursion(Go.GameTryMove)">
+            <summary>
+            Check for recursion or superkos that are 4 spaces to 12 spaces apart.
+            https://senseis.xmp.net/?LongCycleRule
+            <see cref="!:UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_TianLongTu_Q16446" />
+            </summary>
+        </member>
+        <member name="M:Go.GameHelper.CheckForRecursion(Go.Board)">
+            <summary>
+            Check for recursion without comparing board.
+            </summary>
+        </member>
         <member name="M:Go.GameHelper.GetSnapshotBoard(Go.Game,System.Int32)">
             <summary>
             Get specific board from last moves based on moveCount parameter.
@@ -608,6 +613,7 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_2282" />
             Connect and die <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
             Connect and die for move group <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_GuanZiPu_A3" />
+            Check for recursion <see cref="!:UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_XuanXuanGo_Q18331" />
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.IsSuicidalMove(Go.Board,Go.Point,Go.Content)">

@@ -108,7 +108,43 @@ namespace Go
             GameInfo gameInfo = board.GameInfo;
             return (lastMoveMod == 0) ? gameInfo.UserFirst : gameInfo.UserFirst.Opposite();
         }
-        
+
+        /// <summary>
+        /// Check for recursion or superkos that are 4 spaces to 12 spaces apart.
+        /// https://senseis.xmp.net/?LongCycleRule
+        /// <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_TianLongTu_Q16446" />
+        /// </summary>
+        public static Boolean CheckForRecursion(GameTryMove tryMove)
+        {
+            Game tryGame = tryMove.TryGame;
+            foreach (int j in CheckForRecursion(tryGame.Board))
+            {
+                //get snapshot of board from last moves and compare if board is the same
+                int compareLastMoves = tryGame.Board.LastMoves.Count - j;
+                Board compareBoard = GameHelper.GetSnapshotBoard(tryGame, compareLastMoves);
+                if (tryGame.Board.Equals(compareBoard))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Check for recursion without comparing board.
+        /// </summary>
+        public static IEnumerable<int> CheckForRecursion(Board tryBoard)
+        {
+            Point move = tryBoard.Move.Value;
+            for (int j = 4; j <= 12; j++)
+            {
+                List<Point> lastMoves = tryBoard.LastMoves;
+                int lastMoveCount = lastMoves.Count - 1;
+                //find recurrence of last three moves
+                Boolean recur = (lastMoveCount >= j + 2 && move.Equals(lastMoves[lastMoveCount - j]) && lastMoves[lastMoveCount - 1].Equals(lastMoves[lastMoveCount - (j + 1)]) && lastMoves[lastMoveCount - 2].Equals(lastMoves[lastMoveCount - (j + 2)]));
+                if (recur)
+                    yield return j;
+            }
+        }
+
         /// <summary>
         /// Get specific board from last moves based on moveCount parameter.
         /// Requires that the root of the game starts from initial setup.

@@ -126,7 +126,7 @@ namespace Go
                             return (ConfirmAliveResult.Alive, new List<GameTryMove>() { move }, null);
                     }
                     //check recursion and return as alive
-                    if (CheckForRecursion(move))
+                    if (GameHelper.CheckForRecursion(move))
                         return (ConfirmAliveResult.Alive, new List<GameTryMove>() { move }, null);
                     //find redundant moves
                     CheckSurvivalRedundantMoves(move);
@@ -611,33 +611,6 @@ namespace Go
                 this.MakeMove(bestResultMove.Move);
 
             return (bestResult, bestResultMove);
-        }
-
-        /// <summary>
-        /// Check for recursion or superkos that are 4 spaces to 12 spaces apart.
-        /// https://senseis.xmp.net/?LongCycleRule
-        /// <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_TianLongTu_Q16446" />
-        /// </summary>
-        public static Boolean CheckForRecursion(GameTryMove tryMove)
-        {
-            Game tryGame = tryMove.TryGame;
-            for (int j = 4; j <= 12; j++)
-            {
-                List<Point> lastMoves = tryGame.Board.LastMoves;
-                int lastMoveCount = lastMoves.Count - 1;
-                //find recurrence of last three moves
-                Boolean recur = (lastMoveCount >= j + 2 && tryMove.Move.Equals(lastMoves[lastMoveCount - j]) && lastMoves[lastMoveCount - 1].Equals(lastMoves[lastMoveCount - (j + 1)]) && lastMoves[lastMoveCount - 2].Equals(lastMoves[lastMoveCount - (j + 2)]));
-
-                if (recur)
-                {
-                    //get snapshot of board from last moves and compare if board is the same
-                    int compareLastMoves = tryGame.Board.LastMoves.Count - j;
-                    Board compareBoard = GameHelper.GetSnapshotBoard(tryGame, compareLastMoves);
-                    if (tryGame.Board.Equals(compareBoard))
-                        return true;
-                }
-            }
-            return false;
         }
 
     }
