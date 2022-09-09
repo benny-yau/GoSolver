@@ -1303,30 +1303,20 @@ namespace Go
             //make move at liberty instead of suicide
             Point? liberty = capturedBoard.Move;
             Board tryLinkBoard = currentBoard.MakeMoveOnNewBoard(liberty.Value, c);
+
             if (tryLinkBoard == null) //capture at tryBoard
             {
-                //check for corner kill
-                if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, capturedBoard))
-                    return false;
                 //check for connect and die
                 if (ImmovableHelper.CheckConnectAndDie(capturedBoard))
                     return false;
-                //eternal life
-                if (capturedBoard.CapturedPoints.Count() == 2 && moveCount == 2)
-                    return false;
+
                 //capture at tryBoard more than recapture        
                 if (tryBoard.CapturedPoints.Any(p => !capturedBoard.CapturedPoints.Contains(p) && !capturedBoard.Move.Equals(p)))
                     return false;
-                return true;
             }
 
             if (moveCount == 2)
             {
-                //check for recursion
-                Point moveGroupPoint = tryBoard.MoveGroup.Points.Where(m => !m.Equals(move)).First();
-                if (tryLinkBoard.GetGroupLiberties(moveGroupPoint) > 1 && !ImmovableHelper.IsSuicidalOnCapture(capturedBoard).Item1)
-                    return true;
-
                 //suicide for both alive
                 if (SuicideForBothAlive(tryMove))
                     return false;
