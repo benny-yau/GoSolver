@@ -1306,7 +1306,7 @@ namespace Go
             if (tryLinkBoard == null) //capture at tryBoard
             {
                 //check for corner kill
-                if (tryBoard.CapturedPoints.Any(p => tryBoard.CornerPoint(p) && KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, capturedBoard)))
+                if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, capturedBoard))
                     return false;
                 //check for connect and die
                 if (ImmovableHelper.CheckConnectAndDie(capturedBoard))
