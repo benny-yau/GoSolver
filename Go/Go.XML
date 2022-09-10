@@ -732,9 +732,17 @@
             <summary>
             Suicidal killer formations within survival group without any real eye.
             Check suicide at eye point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B19" />
-            Check multipoint snapback <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q15054" />
             Check if real eye found in neighbour groups <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario5dan27" />
             Check covered eye at non-killable group <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.MultipointSnapbackAfterCapture(Go.Board,Go.Board,Go.Board)">
+            <summary>
+            Multipoint snapback after capture
+            One liberty <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q15054" />
+            Two liberties <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario1dan4_2" />
+            <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31435" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18710" />
             </summary>
         </member>
         <member name="M:Go.KillerFormationHelper.CheckRealEyeInNeighbourGroups(Go.Board,Go.Board)">
@@ -1232,13 +1240,6 @@
             Check for weak group capturing atari group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B17" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.SnapbackInConnectAndDie(Go.GameTryMove,Go.Board)">
-            <summary>
-            Snapback in connect and die <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario1dan4_2" />
-            <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31435" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18710" />
-            </summary>
-        </member>
         <member name="M:Go.RedundantMoveHelper.FindBloatedEyeSuicide(Go.GameTryMove,Go.Board)">
             <summary>
             Find bloated eye suicide <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_GuanZiPu_A35" />
@@ -1384,6 +1385,7 @@
             Exclude if corner point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A9_Ext_2" />
             <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16424" />
             Corner three formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18860" />
+            Bent three formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31453" />
             No hope of escape <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17132_2" />
             </summary>
         </member>

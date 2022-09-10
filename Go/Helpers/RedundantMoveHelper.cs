@@ -674,10 +674,6 @@ namespace Go
             if (CheckWeakGroupInConnectAndDie(tryBoard, tryBoard.MoveGroup))
                 return false;
 
-            //check multi-point snapback
-            if (SnapbackInConnectAndDie(tryMove, captureBoard))
-                return false;
-
             //find bloated eye suicide
             if (FindBloatedEyeSuicide(tryMove, captureBoard))
                 return true;
@@ -741,24 +737,6 @@ namespace Go
 
                 return true;
             }
-            return false;
-        }
-
-        /// <summary>
-        /// Snapback in connect and die <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario1dan4_2" />
-        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31435" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18710" />
-        /// </summary>
-        private static Boolean SnapbackInConnectAndDie(GameTryMove tryMove, Board captureBoard)
-        {
-            Board currentBoard = tryMove.CurrentGame.Board;
-            Board tryBoard = tryMove.TryGame.Board;
-            Content c = tryMove.MoveContent;
-            IEnumerable<Group> neighbourGroups = tryBoard.GetNeighbourGroups();
-            Group weakGroup = neighbourGroups.FirstOrDefault(group => group.Points.Count >= 2 && group.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, group));
-            if (weakGroup == null) return false;
-            if (ImmovableHelper.CheckConnectAndDie(captureBoard, captureBoard.GetGroupAt(weakGroup.Points.First())))
-                return true;
             return false;
         }
 
@@ -1278,6 +1256,7 @@ namespace Go
         /// Exclude if corner point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A9_Ext_2" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16424" />
         /// Corner three formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18860" />
+        /// Bent three formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31453" />
         /// No hope of escape <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17132_2" />
         /// </summary>
         public static Boolean MultiPointSuicidalMove(GameTryMove tryMove)
@@ -1317,6 +1296,19 @@ namespace Go
                 //corner three formation
                 if (KillerFormationHelper.CornerThreeFormation(tryBoard, tryBoard.MoveGroup))
                     return false;
+
+                //bent three formation
+                if (capturedBoard.MoveGroupLiberties == 1 && KillerFormationHelper.BentThreeFormation(tryBoard, tryBoard.MoveGroup.Points))
+                {
+                    (_, Board b) = ImmovableHelper.ConnectAndDie(capturedBoard);
+                    if (b != null)
+                    {
+                        IEnumerable<dynamic> pointIntersect = KillerFormationHelper.GetPointIntersect(tryBoard, tryBoard.MoveGroup.Points);
+                        List<Point> endPoints = pointIntersect.Where(p => p.intersectCount == 1).Select(p => (Point)p.point).ToList();
+                        if (endPoints.Any(p => !p.Equals(move) && EyeHelper.IsCovered(b, p, c.Opposite())))
+                            return false;
+                    }
+                }
             }
 
             //killer formations

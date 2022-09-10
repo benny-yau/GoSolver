@@ -73,7 +73,6 @@ namespace Go
         /// <summary>
         /// Suicidal killer formations within survival group without any real eye.
         /// Check suicide at eye point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B19" />
-        /// Check multipoint snapback <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q15054" />
         /// Check if real eye found in neighbour groups <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario5dan27" />
         /// Check covered eye at non-killable group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
         /// </summary>
@@ -93,9 +92,10 @@ namespace Go
                 else if (tryBoard.MoveGroupLiberties == 2)
                     (_, capturedBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
             }
+            if (capturedBoard == null) return false;
 
-            //check multipoint snapback
-            if (tryBoard.MoveGroupLiberties == 1 && capturedBoard.MoveGroup.Points.Count > 1 && ImmovableHelper.CheckConnectAndDie(capturedBoard))
+            //check multipoint snapback after capture
+            if (MultipointSnapbackAfterCapture(tryBoard, currentBoard, capturedBoard))
                 return true;
 
             //check suicide at eye point
@@ -117,6 +117,28 @@ namespace Go
             if (IsLinkToExternalGroup(tryBoard, currentBoard, capturedBoard))
                 return false;
             return true;
+        }
+
+        /// <summary>
+        /// Multipoint snapback after capture
+        /// One liberty <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q15054" />
+        /// Two liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario1dan4_2" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31435" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18710" />
+        /// </summary>
+        private static Boolean MultipointSnapbackAfterCapture(Board tryBoard, Board currentBoard, Board capturedBoard)
+        {
+            Content c = tryBoard.MoveGroup.Content;
+            if (tryBoard.MoveGroupLiberties == 1 && capturedBoard.MoveGroup.Points.Count > 1 && ImmovableHelper.CheckConnectAndDie(capturedBoard))
+                return true;
+
+            if (tryBoard.MoveGroupLiberties != 2) return false;
+            IEnumerable<Group> neighbourGroups = tryBoard.GetNeighbourGroups();
+            Group weakGroup = neighbourGroups.FirstOrDefault(group => group.Points.Count >= 2 && group.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, group));
+            if (weakGroup == null) return false;
+            if (ImmovableHelper.CheckConnectAndDie(capturedBoard, capturedBoard.GetGroupAt(weakGroup.Points.First())))
+                return true;
+            return false;
         }
 
         /// <summary>
@@ -375,7 +397,7 @@ namespace Go
  17 . . . . . X X X . . . . . . . . . . . 
  18 . . . . . . . . . . . . . . . . . . . 
          */
-        public static Boolean StraightThreeFormation(Board tryBoard, List<Point> contentPoints)
+        public static Boolean StraightThreeFormation(Board tryBoard, IEnumerable<Point> contentPoints)
         {
             if (contentPoints.Count() != 3) return false;
             (int xLength, int yLength) = WithinGrid(contentPoints);
@@ -388,7 +410,7 @@ namespace Go
  17 . . . . . . X X . . . . . . . . . . . 
  18 . . . . . . . . . . . . . . . . . . . 
          */
-        public static Boolean BentThreeFormation(Board tryBoard, List<Point> contentPoints)
+        public static Boolean BentThreeFormation(Board tryBoard, IEnumerable<Point> contentPoints)
         {
             if (contentPoints.Count() != 3) return false;
             (int xLength, int yLength) = WithinGrid(contentPoints);
@@ -726,19 +748,18 @@ namespace Go
             if (moveGroup.Liberties.Count == 1)
             {
                 //suicide move at eye point or atari resolved or suicide move with one empty space
-                if (tryBoard.Move != null && tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c) < 3 && !SuicideMoveValidWithOneEmptySpaceLeft(tryBoard)) return false;
+                if (tryBoard.Move != null && tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c) < 3 && !tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty)) return false;
             }
             else
             {
                 if (tryBoard.GetNeighbourGroups(moveGroup).Count(n => n.Liberties.Count <= 2) < 2) return false;
             }
-
             IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
             List<Point> endPoints = pointIntersect.Where(p => p.intersectCount == 1).Select(p => (Point)p.point).ToList();
             return endPoints.Any(q => EndPointCovered(q, tryBoard, moveGroup));
         }
 
-        private static Boolean EndPointCovered(Point endPoint, Board tryBoard, Group moveGroup)
+        public static Boolean EndPointCovered(Point endPoint, Board tryBoard, Group moveGroup)
         {
             Content c = moveGroup.Content;
             Boolean oneLiberty = (moveGroup.Liberties.Count == 1);
