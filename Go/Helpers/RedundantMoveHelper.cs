@@ -527,7 +527,7 @@ namespace Go
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             if (opponentTryBoard.MoveGroup.Points.Count < 2) return false;
-            if (tryBoard.CapturedList.Count != 0) return false;
+            if (tryBoard.CapturedList.Count != 0 || tryMove.AtariResolved) return false;
 
             if (!MultiPointSuicidalMove(opponentMove)) return false;
 
@@ -1271,7 +1271,6 @@ namespace Go
         /// Two-point atari move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" />
         /// Atari on next move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A171_101Weiqi" />
-        /// Check multipoint snapback <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q15054" />
         /// Check atari by previous move group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16424_2" />
         /// Move group binding <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B19_2" />
         /// Two-point atari covered eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A32" />
@@ -1292,19 +1291,7 @@ namespace Go
             Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
             if (capturedBoard == null) return false;
 
-            //captured more than move group
-            if (capturedBoard.CapturedList.Count > 1)
-            {
-                Boolean coveredEye = capturedBoard.CapturedList.Any(group => EyeHelper.FindCoveredEyeAfterCapture(capturedBoard, group));
-                if (!coveredEye)
-                    return true;
-            }
-
-            //make move at liberty instead of suicide
-            Point? liberty = capturedBoard.Move;
-            Board tryLinkBoard = currentBoard.MakeMoveOnNewBoard(liberty.Value, c);
-
-            if (tryLinkBoard == null) //capture at tryBoard
+            if (tryBoard.CapturedList.Count > 0) //capture at tryBoard
             {
                 //check for connect and die
                 if (ImmovableHelper.CheckConnectAndDie(capturedBoard))
@@ -1331,10 +1318,6 @@ namespace Go
                 if (KillerFormationHelper.CornerThreeFormation(tryBoard, tryBoard.MoveGroup))
                     return false;
             }
-
-            //check multipoint snapback
-            if (capturedBoard.MoveGroup.Points.Count > 1 && ImmovableHelper.CheckConnectAndDie(capturedBoard))
-                return false;
 
             //killer formations
             if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, capturedBoard))

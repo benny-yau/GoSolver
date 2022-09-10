@@ -732,6 +732,7 @@
             <summary>
             Suicidal killer formations within survival group without any real eye.
             Check suicide at eye point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B19" />
+            Check multipoint snapback <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q15054" />
             Check if real eye found in neighbour groups <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario5dan27" />
             Check covered eye at non-killable group <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
             </summary>
@@ -1376,7 +1377,6 @@
             Two-point atari move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" />
             Atari on next move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A171_101Weiqi" />
-            Check multipoint snapback <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q15054" />
             Check atari by previous move group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16424_2" />
             Move group binding <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B19_2" />
             Two-point atari covered eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A32" />

@@ -207,9 +207,6 @@ namespace Go
                 HashSet<Point> killerLiberties = tryBoard.GetLibertiesOfGroups(neighbourGroups);
                 if (!killerLiberties.Any(liberty => EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, liberty, c.Opposite())))
                     return false;
-                //double ko fight
-                if (killerLiberties.Any(liberty => EyeHelper.FindCoveredEye(tryBoard, liberty, c.Opposite())))
-                    return true;
 
                 //all strong neighbour groups
                 if (neighbourGroups.All(n => WallHelper.IsStrongNeighbourGroup(tryBoard, n)))

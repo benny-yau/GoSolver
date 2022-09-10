@@ -73,6 +73,7 @@ namespace Go
         /// <summary>
         /// Suicidal killer formations within survival group without any real eye.
         /// Check suicide at eye point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B19" />
+        /// Check multipoint snapback <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q15054" />
         /// Check if real eye found in neighbour groups <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario5dan27" />
         /// Check covered eye at non-killable group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
         /// </summary>
@@ -83,13 +84,6 @@ namespace Go
 
             //check liberties of move group
             if (tryBoard.MoveGroupLiberties > 2) return false;
-            //check suicide at eye point
-            if (tryBoard.MoveGroupLiberties == 2 && tryBoard.GetStoneNeighbours().All(n => tryBoard[n] == c) && LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).All(n => n.Liberties.Count > 1))
-                return false;
-
-            //check if neighbour group is non-killable
-            if (!EyeHelper.CheckCoveredEyeAtSuicideGroup(tryBoard) && tryBoard.GetNeighbourGroups().Any(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
-                return false;
 
             //create captured board
             if (capturedBoard == null)
@@ -99,6 +93,18 @@ namespace Go
                 else if (tryBoard.MoveGroupLiberties == 2)
                     (_, capturedBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
             }
+
+            //check multipoint snapback
+            if (tryBoard.MoveGroupLiberties == 1 && capturedBoard.MoveGroup.Points.Count > 1 && ImmovableHelper.CheckConnectAndDie(capturedBoard))
+                return true;
+
+            //check suicide at eye point
+            if (tryBoard.MoveGroupLiberties == 2 && tryBoard.GetStoneNeighbours().All(n => tryBoard[n] == c) && LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).All(n => n.Liberties.Count > 1))
+                return false;
+
+            //check if neighbour group is non-killable
+            if (!EyeHelper.CheckCoveredEyeAtSuicideGroup(tryBoard) && tryBoard.GetNeighbourGroups().Any(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
+                return false;
 
             //find killer formation
             if (!FindSuicidalKillerFormation(tryBoard, currentBoard, capturedBoard)) return false;
