@@ -2926,23 +2926,15 @@ namespace Go
             Point? eyePoint = KoHelper.GetKoEyePoint(tryBoard);
             if (eyePoint == null) return false;
 
-            //check all eye groups are non killable
-            if (currentBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).All(n => WallHelper.IsNonKillableGroup(currentBoard, n)))
-                return true;
-
             //check ko fight necessary
             List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
             if (ngroups.Count == 1 && tryBoard.GetNeighbourGroups(ngroups.First()).Any(group => group.Liberties.Count <= 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, group) && !ImmovableHelper.EscapeCaptureLink(tryBoard, group, move)))
                 return false;
 
-            //check diagonals opposite of ko move direction
+            //check break link
             List<Point> diagonals = RedundantMoveHelper.TigerMouthEyePoints(tryBoard, eyePoint.Value, move).Where(q => tryBoard[q] != c).ToList();
-            if (diagonals.Count == 0)
-            {
-                //check break link
-                if (KoHelper.CheckBreakLinkKoMove(tryBoard, eyePoint.Value, c))
-                    return false;
-            }
+            if (diagonals.Count == 0 && KoHelper.CheckBreakLinkKoMove(tryBoard, eyePoint.Value, c))
+                return false;
 
             //if all diagonals are real eyes then redundant
             if (!diagonals.All(eye => RedundantMoveHelper.RealEyeAtDiagonal(tryMove, eye)))
