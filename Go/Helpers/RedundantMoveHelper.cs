@@ -250,7 +250,7 @@ namespace Go
                     return false;
 
                 //check break link
-                if (KoHelper.CheckBreakLinkKoMove(currentBoard, move, c))
+                if (KoHelper.CheckBaseLineLeapLink(currentBoard, move, c))
                     return false;
             }
             //check suicide at tiger mouth
@@ -2888,8 +2888,14 @@ namespace Go
                 return true;
 
             //kill double ko
-            HashSet<Group> connectedGroups = LinkHelper.GetAllDiagonalConnectedGroups(currentBoard, currentBoard.GetGroupAt(capturePoint));
-            List<Group> koGroups = connectedGroups.Where(group => KoHelper.IsKoFight(currentBoard, group)).ToList();
+            List<Group> connectedGroups = LinkHelper.GetAllDiagonalConnectedGroups(currentBoard, currentBoard.GetGroupAt(capturePoint)).ToList();
+            List<Group> koGroups = new List<Group>();
+            foreach (Point liberty in currentBoard.GetLibertiesOfGroups(connectedGroups).Where(lib => EyeHelper.FindEye(currentBoard, lib, c.Opposite())))
+            {
+                List<Group> group = currentBoard.GetGroupsFromStoneNeighbours(liberty, c).Where(gr => gr.Points.Count == 1 && gr.Liberties.Count == 1).ToList();
+                if (group.Count != 1 || !KoHelper.IsKoFight(currentBoard, group.First())) continue;
+                koGroups.Add(group.First());
+            }
             if (koGroups.Count < 2) return false;
             Group koGroup = koGroups.First(group => !group.Points.Contains(capturePoint));
             Board b = ImmovableHelper.CaptureSuicideGroup(currentBoard, koGroup, true);
@@ -2914,7 +2920,7 @@ namespace Go
         /// Real eye at diagonal <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WuQingYuan_Q30982" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_2" /> 
-        /// Check break link <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30152" /> 
+        /// Check break link <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30152_2" /> 
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q30152" /> 
         /// </summary>
         public static Boolean CheckRedundantKo(GameTryMove tryMove)
@@ -2926,6 +2932,10 @@ namespace Go
             Point? eyePoint = KoHelper.GetKoEyePoint(tryBoard);
             if (eyePoint == null) return false;
 
+            //check all eye groups are non killable
+            if (currentBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).All(n => WallHelper.IsNonKillableFromSetupMoves(currentBoard, n)))
+                return true;
+
             //check ko fight necessary
             List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
             if (ngroups.Count == 1 && tryBoard.GetNeighbourGroups(ngroups.First()).Any(group => group.Liberties.Count <= 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, group) && !ImmovableHelper.EscapeCaptureLink(tryBoard, group, move)))
@@ -2933,7 +2943,7 @@ namespace Go
 
             //check break link
             List<Point> diagonals = RedundantMoveHelper.TigerMouthEyePoints(tryBoard, eyePoint.Value, move).Where(q => tryBoard[q] != c).ToList();
-            if (diagonals.Count == 0 && KoHelper.CheckBreakLinkKoMove(tryBoard, eyePoint.Value, c))
+            if (diagonals.Count == 0 && KoHelper.CheckBaseLineLeapLink(tryBoard, eyePoint.Value, c))
                 return false;
 
             //if all diagonals are real eyes then redundant

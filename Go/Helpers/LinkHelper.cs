@@ -373,7 +373,7 @@ namespace Go
             foreach (LinkedPoint<Point> diagonalPoint in diagonalPoints)
             {
                 Group g = board.GetGroupAt(diagonalPoint.Move);
-                if (allConnectedGroups.Contains(g)) continue;
+                if (g.Liberties.Count == 1 || allConnectedGroups.Contains(g)) continue;
 
                 //check if diagonally linked
                 if (!CheckIsDiagonalLinked(diagonalPoint, board))

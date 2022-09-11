@@ -230,18 +230,17 @@ namespace Go
         }
 
         /// <summary>
-        /// Check break link for ko move.
+        /// Check base line leap link for redundant ko move and fill ko eye move.
         /// </summary>
-        public static Boolean CheckBreakLinkKoMove(Board currentBoard, Point eyePoint, Content c)
+        public static Boolean CheckBaseLineLeapLink(Board currentBoard, Point eyePoint, Content c)
         {
-            List<Point> stoneNeighbours = currentBoard.GetStoneNeighbours(eyePoint).Where(n => currentBoard[n] == c).ToList();
-            stoneNeighbours = stoneNeighbours.Where(n => currentBoard.GetGroupAt(n).Liberties.Count > 1).ToList();
-            if (stoneNeighbours.Count == 2)
-            {
-                Point firstStone = stoneNeighbours[0];
-                if (!currentBoard.GetDiagonalNeighbours(firstStone).Any(n => n.Equals(stoneNeighbours[1])))
-                    return true;
-            }
+            List<Point> stoneNeighbours = currentBoard.GetStoneNeighbours(eyePoint).Where(n => currentBoard[n] == c && currentBoard.GetGroupAt(n).Liberties.Count > 1).ToList();
+            if (stoneNeighbours.Count != 2) return false;
+            if (stoneNeighbours.Any(n => currentBoard.PointWithinMiddleArea(n))) return false;
+            if (currentBoard.GetGroupsFromPoints(stoneNeighbours).Count != 2) return false;
+            Point firstStone = stoneNeighbours[0];
+            if (!currentBoard.GetDiagonalNeighbours(firstStone).Any(n => n.Equals(stoneNeighbours[1])))
+                return true;
             return false;
         }
 
