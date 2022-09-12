@@ -207,6 +207,7 @@ namespace Go
         /// Check survival eye <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A36" /> 
         /// <see cref="UnitTestProject.KoTest.KoTest_Scenario_Corner_A80" /> 
         /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WuQingYuan_Q30982" /> 
+        /// Check opponent double ko <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" /> 
         /// Set as neutral point for non killable move group <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16490" />
         /// </summary>
         public static Boolean FillKoEyeMove(GameTryMove tryMove)
@@ -255,6 +256,11 @@ namespace Go
             }
             //check suicide at tiger mouth
             if (SuicideAtBigTigerMouth(tryMove).Item1)
+                return false;
+
+            //check opponent double ko
+            Board opponentBoard = currentBoard.MakeMoveOnNewBoard(move, c.Opposite(), true);
+            if (opponentBoard != null && KoHelper.IsKoFight(opponentBoard) && PossibilityOfDoubleKo(opponentBoard, currentBoard))
                 return false;
 
             //set as neutral point for non killable move group
@@ -2875,6 +2881,12 @@ namespace Go
         {
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
+            return PossibilityOfDoubleKo(tryBoard, currentBoard);
+        }
+
+        public static Boolean PossibilityOfDoubleKo(Board tryBoard, Board currentBoard)
+        {
+            Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             //allow pre-ko moves without capture
             if (tryBoard.singlePointCapture == null) return true;
@@ -2888,7 +2900,11 @@ namespace Go
                 return true;
 
             //kill double ko
-            List<Group> connectedGroups = LinkHelper.GetAllDiagonalConnectedGroups(currentBoard, currentBoard.GetGroupAt(capturePoint)).ToList();
+            List<Point> diagonals = currentBoard.GetDiagonalNeighbours(capturePoint).Intersect(currentBoard.GetStoneNeighbours(move)).Where(n => currentBoard[n] == c.Opposite()).ToList();
+            List<Group> connectedGroups = LinkHelper.GetAllDiagonalConnectedGroups(currentBoard, currentBoard.GetGroupAt(diagonals[0])).ToList();
+            if (diagonals.Count == 2 && !connectedGroups.Contains(currentBoard.GetGroupAt(diagonals[1])))
+                connectedGroups = connectedGroups.Union(LinkHelper.GetAllDiagonalConnectedGroups(currentBoard, currentBoard.GetGroupAt(diagonals[1]))).ToList();
+
             List<Group> koGroups = new List<Group>();
             foreach (Point liberty in currentBoard.GetLibertiesOfGroups(connectedGroups).Where(lib => EyeHelper.FindEye(currentBoard, lib, c.Opposite())))
             {

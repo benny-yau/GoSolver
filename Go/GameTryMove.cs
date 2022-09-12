@@ -158,7 +158,7 @@ namespace Go
                     Board tryBoard = this.TryGame.Board;
                     if (AtariResolved) return false;
                     List<Point> targets = LifeCheck.GetTargets(tryBoard);
-                    if (targets.Select(t => new { gr = tryBoard.GetGroupAt(t) }).All(t => t.gr.Liberties.Count == 1 && tryBoard.GetNeighbourGroups(t.gr).All(n => WallHelper.IsNonKillableGroup(tryBoard, n) || KoHelper.IsCaptureKoFight(tryBoard, n) != null)))
+                    if (targets.Select(t => tryBoard.GetGroupAt(t)).All(t => t.Liberties.Count == 1 && tryBoard.GetNeighbourGroups(t).Where(n => !n.Equals(tryBoard.MoveGroup)).All(n => WallHelper.IsNonKillableGroup(tryBoard, n) || KoHelper.IsCaptureKoFight(tryBoard, n) != null)))
                         return true;
                 }
                 return false;

@@ -959,9 +959,25 @@
             Check any diagonal separated by opposite content <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_5" />
             </summary>
         </member>
+        <member name="M:Go.LinkHelper.CheckIsDiagonalLinked(Go.LinkedPoint{Go.Point},Go.Board)">
+            <summary>
+            Check is diagonal linked, including capture ko test.
+            </summary>
+        </member>
+        <member name="M:Go.LinkHelper.CaptureKoToTestDiagonalLink(Go.LinkedPoint{Go.Point},Go.Board,System.Boolean)">
+            <summary>
+            Capture ko to test diagonal link, in case of double ko.
+            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" />
+            </summary>
+        </member>
         <member name="M:Go.LinkHelper.CheckIsDiagonalImmediateLinked(Go.Point,Go.Point,Go.Board)">
             <summary>
             Check if diagonals are immediately linked.
+            </summary>
+        </member>
+        <member name="M:Go.LinkHelper.CheckIsDiagonalImmediateLinked(Go.LinkedPoint{Go.Point},Go.Board)">
+            <summary>
+            Check is diagonal immediate linked, including capture ko test.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.CheckDoubleLinkage(Go.Board,Go.LinkedPoint{Go.Point},Go.Content)">
@@ -1134,6 +1150,7 @@
             Check survival eye <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A36" /> 
             <see cref="!:UnitTestProject.KoTest.KoTest_Scenario_Corner_A80" /> 
             <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WuQingYuan_Q30982" /> 
+            Check opponent double ko <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" /> 
             Set as neutral point for non killable move group <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16490" />
             </summary>
         </member>

@@ -189,9 +189,35 @@ namespace Go
             return false;
         }
 
+        /// <summary>
+        /// Check is diagonal linked, including capture ko test.
+        /// </summary>
         public static Boolean CheckIsDiagonalLinked(LinkedPoint<Point> diagonal, Board board)
         {
-            return CheckIsDiagonalLinked(diagonal.Move, (Point)diagonal.CheckMove, board);
+            if (!CheckIsDiagonalLinked(diagonal.Move, (Point)diagonal.CheckMove, board))
+                return false;
+            if (CaptureKoToTestDiagonalLink(diagonal, board))
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Capture ko to test diagonal link, in case of double ko.
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" />
+        /// </summary>
+        private static Boolean CaptureKoToTestDiagonalLink(LinkedPoint<Point> diagonal, Board board, Boolean immediateLink = false)
+        {
+            Content c = board[diagonal.Move];
+            List<Point> diagonals = LinkHelper.PointsBetweenDiagonals(diagonal);
+            foreach (Point d in diagonals)
+            {
+                Board b = KoHelper.IsCaptureKoFight(board, d, c, true);
+                if (b == null) continue;
+                if (b[diagonal.Move] != c || b[(Point)diagonal.CheckMove] != c) return false;
+                if (immediateLink && !CheckIsDiagonalImmediateLinked(diagonal, b)) return false;
+                if (!immediateLink && !CheckIsDiagonalLinked(diagonal, b)) return false;
+            }
+            return true;
         }
 
         /// <summary>
@@ -229,9 +255,16 @@ namespace Go
             return false;
         }
 
+        /// <summary>
+        /// Check is diagonal immediate linked, including capture ko test.
+        /// </summary>
         public static Boolean CheckIsDiagonalImmediateLinked(LinkedPoint<Point> diagonal, Board board)
         {
-            return CheckIsDiagonalImmediateLinked(diagonal.Move, (Point)diagonal.CheckMove, board);
+            if (!CheckIsDiagonalImmediateLinked(diagonal.Move, (Point)diagonal.CheckMove, board))
+                return false;
+            if (CaptureKoToTestDiagonalLink(diagonal, board, true))
+                return true;
+            return false;
         }
 
         /// <summary>
