@@ -207,7 +207,8 @@ namespace Go
         /// Check survival eye <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A36" /> 
         /// <see cref="UnitTestProject.KoTest.KoTest_Scenario_Corner_A80" /> 
         /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WuQingYuan_Q30982" /> 
-        /// Check opponent double ko <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" /> 
+        /// Check opponent double ko <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_2" /> 
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" /> 
         /// Set as neutral point for non killable move group <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16490" />
         /// </summary>
         public static Boolean FillKoEyeMove(GameTryMove tryMove)
@@ -2874,8 +2875,10 @@ namespace Go
         /// Check for possibility of double ko, for both survival and kill. Check for end ko moves as well.
         /// Survival double ko <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_TianLongTu_Q16446" />
         /// <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_TianLongTu_Q16975" />
+        /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_3" /> 
         /// Kill double ko <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A23" />
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q16446" />
+        /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_2" /> 
         /// </summary>
         public static Boolean PossibilityOfDoubleKo(GameTryMove tryMove)
         {
@@ -2891,20 +2894,17 @@ namespace Go
             //allow pre-ko moves without capture
             if (tryBoard.singlePointCapture == null) return true;
             Point capturePoint = tryBoard.singlePointCapture.Value;
-            List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(capturePoint, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
+            //survival double ko
+            List<Group> ngroups = currentBoard.GetGroupsFromStoneNeighbours(capturePoint, c.Opposite()).ToList();
+            ngroups = LinkHelper.GetAllDiagonalGroups(currentBoard, ngroups.First()).ToList();
             List<Group> targetGroups = new List<Group>();
             ngroups.ForEach(atariGroup => targetGroups.AddRange(currentBoard.GetNeighbourGroups(atariGroup.Points.First()).Where(gr => KoHelper.IsKoFight(currentBoard, gr))));
             targetGroups = targetGroups.Distinct().ToList();
-            //survival double ko
-            if (targetGroups.Count >= 2 && AtariHelper.KoAtariByNeighbour(currentBoard, targetGroups, capturePoint).Item1)
+            if (targetGroups.Count >= 2)
                 return true;
 
             //kill double ko
-            List<Point> diagonals = currentBoard.GetDiagonalNeighbours(capturePoint).Intersect(currentBoard.GetStoneNeighbours(move)).Where(n => currentBoard[n] == c.Opposite()).ToList();
-            List<Group> connectedGroups = LinkHelper.GetAllDiagonalConnectedGroups(currentBoard, currentBoard.GetGroupAt(diagonals[0])).ToList();
-            if (diagonals.Count == 2 && !connectedGroups.Contains(currentBoard.GetGroupAt(diagonals[1])))
-                connectedGroups = connectedGroups.Union(LinkHelper.GetAllDiagonalConnectedGroups(currentBoard, currentBoard.GetGroupAt(diagonals[1]))).ToList();
-
+            List<Group> connectedGroups = LinkHelper.GetAllDiagonalGroups(currentBoard, currentBoard.GetGroupAt(capturePoint));
             List<Group> koGroups = new List<Group>();
             foreach (Point liberty in currentBoard.GetLibertiesOfGroups(connectedGroups).Where(lib => EyeHelper.FindEye(currentBoard, lib, c.Opposite())))
             {
@@ -2912,17 +2912,8 @@ namespace Go
                 if (group.Count != 1 || !KoHelper.IsKoFight(currentBoard, group.First())) continue;
                 koGroups.Add(group.First());
             }
-            if (koGroups.Count < 2) return false;
-            Group koGroup = koGroups.First(group => !group.Points.Contains(capturePoint));
-            Board b = ImmovableHelper.CaptureSuicideGroup(currentBoard, koGroup, true);
-            if (b == null) return false;
-            foreach (Group target in b.AtariTargets)
-            {
-                if (b.GetNeighbourGroups(target).Any(group => group != b.MoveGroup && group.Liberties.Count == 1)) continue;
-                Board b2 = ImmovableHelper.CaptureSuicideGroup(b, target, true);
-                if (b2 != null && b2.CapturedPoints.Contains(capturePoint))
-                    return true;
-            }
+            if (koGroups.Count >= 2)
+                return true;
             return false;
         }
 
