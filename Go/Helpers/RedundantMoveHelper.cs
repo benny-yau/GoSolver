@@ -209,7 +209,7 @@ namespace Go
         /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WuQingYuan_Q30982" /> 
         /// Check opponent double ko <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_2" /> 
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" /> 
-        /// Set as neutral point for non killable move group <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16490" />
+        /// Set as neutral point <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16490" />
         /// </summary>
         public static Boolean FillKoEyeMove(GameTryMove tryMove)
         {
@@ -264,10 +264,8 @@ namespace Go
             if (opponentBoard != null && KoHelper.IsKoFight(opponentBoard) && PossibilityOfDoubleKo(opponentBoard, currentBoard))
                 return false;
 
-            //set as neutral point for non killable move group
-            if (WallHelper.IsNonKillableGroup(tryBoard))
-                tryMove.IsNeutralPoint = true;
-
+            //set as neutral point
+            tryMove.IsNeutralPoint = true;
             return true;
         }
 
@@ -299,28 +297,26 @@ namespace Go
                     return (true, b);
                 if (ImmovableHelper.CheckConnectAndDie(b))
                     return (true, b);
-                if (b != null && b.MoveGroup.Liberties.Count == 2)
+                if (b == null || b.MoveGroup.Liberties.Count != 2) continue;
+                List<Point> moveGroupLiberties = b.MoveGroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
+                (Boolean suicidal2, Board b2) = ImmovableHelper.IsSuicidalMove(moveGroupLiberties.First(), eyeGroup.Content.Opposite(), b);
+                if (suicidal2) continue;
+
+                //check for opponent survival move
+                if (tryBoard.MoveGroup.Points.Count >= 2)
                 {
-                    List<Point> moveGroupLiberties = b.MoveGroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
-                    (Boolean suicidal2, Board b2) = ImmovableHelper.IsSuicidalMove(moveGroupLiberties.First(), eyeGroup.Content.Opposite(), b);
-                    if (suicidal2) continue;
-
-                    //check for opponent survival move
-                    if (tryBoard.MoveGroup.Points.Count >= 2)
-                    {
-                        if (b2.CapturedPoints.Count() >= 3) return (true, b);
-                        if (b2.GetStoneNeighbours().Where(n => b2[n] != c.Opposite()).Select(n => new { kgroup = GroupHelper.GetKillerGroupFromCache(b2, n, c.Opposite()) }).Any(n => n.kgroup != null && n.kgroup.Points.Count >= 3))
-                            return (true, b);
-                    }
-
-                    b[move] = b2[move] = c;
-                    //unstoppable group
-                    if (ImmovableHelper.CheckConnectAndDie(b2))
-                    {
-                        HashSet<Group> neighbourGroups = b2.GetGroupsFromStoneNeighbours(liberty, c);
-                        if (neighbourGroups.Count == 1 || neighbourGroups.Any(n => n.Liberties.Count == 1) || WallHelper.StrongNeighbourGroups(b2, neighbourGroups)) continue;
+                    if (b2.CapturedPoints.Count() >= 3) return (true, b);
+                    if (b2.GetStoneNeighbours().Where(n => b2[n] != c.Opposite()).Select(n => new { kgroup = GroupHelper.GetKillerGroupFromCache(b2, n, c.Opposite()) }).Any(n => n.kgroup != null && n.kgroup.Points.Count >= 3))
                         return (true, b);
-                    }
+                }
+
+                b[move] = b2[move] = c;
+                //unstoppable group
+                if (ImmovableHelper.CheckConnectAndDie(b2))
+                {
+                    HashSet<Group> neighbourGroups = b2.GetGroupsFromStoneNeighbours(liberty, c);
+                    if (neighbourGroups.Count == 1 || neighbourGroups.Any(n => n.Liberties.Count == 1) || WallHelper.StrongNeighbourGroups(b2, neighbourGroups)) continue;
+                    return (true, b);
                 }
             }
             return (false, null);
@@ -890,43 +886,39 @@ namespace Go
 
             //ensure no diagonal groups found
             Boolean diagonalGroups = LinkHelper.GetGroupLinkedDiagonals(tryBoard).Any();
-            if (!diagonalGroups)
-            {
-                if (tryBoard.MoveGroup.Points.Count > 1)
-                {
-                    Point p = tryBoard.MoveGroup.Liberties.First();
-                    //check liberties are connected
-                    if (tryBoard.GetStoneNeighbours(p).Any(q => tryBoard.MoveGroup.Liberties.Contains(q)))
-                    {
-                        if (tryBoard.MoveGroup.Points.Count >= 3 && KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, captureBoard))
-                            return false;
-                        return true;
-                    }
-                }
-                else
-                {
-                    //stone neighbours at diagonal of each other
-                    List<Point> stoneNeighbours = LinkHelper.GetNeighboursDiagonallyLinked(tryBoard);
-                    if (stoneNeighbours.Any())
-                    {
-                        //check diagonal at opposite corner of stone neighbours
-                        List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(d => tryBoard[d] == c.Opposite()).ToList();
-                        if (diagonals.Any(d => !tryBoard.GetStoneNeighbours(d).Intersect(stoneNeighbours).Any()))
-                            return false;
+            if (diagonalGroups) return false;
 
-                        //cut diagonal and kill
-                        if (stoneNeighbours.Count == 2)
-                        {
-                            List<Point> cutDiagonal = LinkHelper.PointsBetweenDiagonals(stoneNeighbours[0], stoneNeighbours[1]);
-                            cutDiagonal.Remove(move);
-                            Board b = tryBoard.MakeMoveOnNewBoard(cutDiagonal.First(), c);
-                            if (b != null && stoneNeighbours.Any(n => ImmovableHelper.CheckConnectAndDie(b, b.GetGroupAt(n))))
-                                return false;
-                        }
-                        return true;
-                    }
+            if (tryBoard.MoveGroup.Points.Count > 1)
+            {
+                Point p = tryBoard.MoveGroup.Liberties.First();
+                //check liberties are connected
+                if (tryBoard.GetStoneNeighbours(p).Any(q => tryBoard.MoveGroup.Liberties.Contains(q)))
+                {
+                    if (tryBoard.MoveGroup.Points.Count >= 3 && KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, captureBoard))
+                        return false;
+                    return true;
                 }
-                return false;
+            }
+            else
+            {
+                //stone neighbours at diagonal of each other
+                List<Point> stoneNeighbours = LinkHelper.GetNeighboursDiagonallyLinked(tryBoard);
+                if (!stoneNeighbours.Any()) return false;
+                //check diagonal at opposite corner of stone neighbours
+                List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(d => tryBoard[d] == c.Opposite()).ToList();
+                if (diagonals.Any(d => !tryBoard.GetStoneNeighbours(d).Intersect(stoneNeighbours).Any()))
+                    return false;
+
+                //cut diagonal and kill
+                if (stoneNeighbours.Count == 2)
+                {
+                    List<Point> cutDiagonal = LinkHelper.PointsBetweenDiagonals(stoneNeighbours[0], stoneNeighbours[1]);
+                    cutDiagonal.Remove(move);
+                    Board b = tryBoard.MakeMoveOnNewBoard(cutDiagonal.First(), c);
+                    if (b != null && stoneNeighbours.Any(n => ImmovableHelper.CheckConnectAndDie(b, b.GetGroupAt(n))))
+                        return false;
+                }
+                return true;
             }
             return false;
         }
@@ -1875,7 +1867,7 @@ namespace Go
             else if (tryMoves.Count <= 2)
             {
                 //check connect and die for last two try moves
-                if (tryMoves.Select(t => new { tryBoard = t.TryGame.Board }).All(t => (t.tryBoard.MoveGroup.Points.Count >= 2 && ImmovableHelper.CheckConnectAndDie(t.tryBoard)) || LinkHelper.GetGroupDiagonals(t.tryBoard, t.tryBoard.MoveGroup).Any(d => t.tryBoard[d.Move] == t.tryBoard.MoveGroup.Content && ImmovableHelper.CheckConnectAndDie(t.tryBoard, t.tryBoard.GetGroupAt(d.Move)))))
+                if (tryMoves.Select(t => t.TryGame.Board).All(t => (t.MoveGroup.Points.Count >= 2 && ImmovableHelper.CheckConnectAndDie(t)) || LinkHelper.GetGroupDiagonals(t, t.MoveGroup).Any(d => t[d.Move] == t.MoveGroup.Content && ImmovableHelper.CheckConnectAndDie(t, t.GetGroupAt(d.Move)))))
                     tryMoves.Add(neutralPointMoves.First());
             }
         }
