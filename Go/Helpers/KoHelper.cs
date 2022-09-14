@@ -188,6 +188,7 @@ namespace Go
         /// Check killer ko within killer group.
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B39" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A85" /> 
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_4" /> 
         /// </summary>
         public static Boolean CheckKillerKoWithinKillerGroup(GameTryMove tryMove)
         {
@@ -208,8 +209,7 @@ namespace Go
                 if (!killerLiberties.Any(liberty => EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, liberty, c.Opposite())))
                     return false;
 
-                //all strong neighbour groups
-                if (neighbourGroups.All(n => WallHelper.IsStrongNeighbourGroup(tryBoard, n)))
+                if (neighbourGroups.All(n => !ImmovableHelper.CheckConnectAndDie(tryBoard, n)))
                     return true;
             }
             return false;

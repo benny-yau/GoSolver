@@ -1778,6 +1778,8 @@ namespace Go
         /// <summary>
         /// Double ko for neutral point. Similar to CheckKillerKoWithinKillerGroup.
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
+        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_4" />
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B41_2" />
         /// </summary>
         private static Boolean NeutralPointDoubleKo(Board tryBoard)
         {
@@ -1787,16 +1789,13 @@ namespace Go
             List<Point> stoneNeighbours = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindCoveredEye(tryBoard, n, c)).ToList();
             if (stoneNeighbours.Count != 1) return false;
             Point eyePoint = stoneNeighbours.First();
-            List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
-            if (ngroups.Count == 1 && tryBoard.GetGroupLiberties(ngroups.First()) == 2)
-            {
-                List<Group> atariTargets = AtariHelper.AtariByGroup(ngroups.First(), tryBoard);
-                if (atariTargets.Count != 1) return false;
-                Group atariTarget = atariTargets.First();
-                if (!KoHelper.IsKoFight(tryBoard, atariTarget)) return false;
-                if (GroupHelper.GetKillerGroupFromCache(tryBoard, atariTarget.Points.First(), c) == null) return false;
+            List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()).ToList();
+            ngroups = LinkHelper.GetAllDiagonalGroups(tryBoard, ngroups.First()).ToList();
+            List<Group> targetGroups = new List<Group>();
+            ngroups.ForEach(ngroup => targetGroups.AddRange(tryBoard.GetNeighbourGroups(ngroup.Points.First()).Where(gr => KoHelper.IsKoFight(tryBoard, gr))));
+            targetGroups = targetGroups.Distinct().ToList();
+            if (targetGroups.Count >= 1 && targetGroups.Any(t => GroupHelper.GetKillerGroupFromCache(tryBoard, t.Points.First(), c) != null))
                 return true;
-            }
             return false;
         }
         #endregion
@@ -2826,7 +2825,12 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryBoard.MoveGroup.Content;
             Boolean koEnabled = KoHelper.KoContentEnabled(c, tryBoard.GameInfo);
-            if (!koEnabled) return !PossibilityOfDoubleKo(tryMove);
+            if (!koEnabled)
+            {
+                //check pre-ko moves
+                if (tryBoard.singlePointCapture == null) return false;
+                return !PossibilityOfDoubleKo(tryMove);
+            }
             if (KoHelper.CheckKillerKoWithinKillerGroup(tryMove))
                 return true;
 
@@ -2883,8 +2887,7 @@ namespace Go
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            //allow pre-ko moves without capture
-            if (tryBoard.singlePointCapture == null) return true;
+            if (tryBoard.singlePointCapture == null) return false;
             Point capturePoint = tryBoard.singlePointCapture.Value;
             //survival double ko
             List<Group> ngroups = currentBoard.GetGroupsFromStoneNeighbours(capturePoint, c.Opposite()).ToList();
