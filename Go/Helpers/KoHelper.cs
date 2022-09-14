@@ -188,7 +188,7 @@ namespace Go
         /// Check killer ko within killer group.
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B39" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A85" /> 
-        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_4" /> 
+        /// Check for double ko <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_4" /> 
         /// </summary>
         public static Boolean CheckKillerKoWithinKillerGroup(GameTryMove tryMove)
         {
@@ -209,10 +209,22 @@ namespace Go
                 if (!killerLiberties.Any(liberty => EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, liberty, c.Opposite())))
                     return false;
 
+                //check for double ko
+                if (neighbourGroups.Any(n => GetKoTargetGroups(tryBoard, n, tryBoard.MoveGroup).Any()))
+                    return true;
+
                 if (neighbourGroups.All(n => !ImmovableHelper.CheckConnectAndDie(tryBoard, n)))
                     return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// Get ko atari groups.
+        /// </summary>
+        public static IEnumerable<Group> GetKoTargetGroups(Board currentBoard, Group group, Group excludeGroup = null)
+        {
+            return currentBoard.GetNeighbourGroups(group).Where(gr => gr != excludeGroup && KoHelper.IsKoFight(currentBoard, gr));
         }
 
         public static Point? GetKoEyePoint(Board tryBoard)

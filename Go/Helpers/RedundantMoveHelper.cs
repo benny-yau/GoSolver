@@ -1792,7 +1792,7 @@ namespace Go
             List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()).ToList();
             ngroups = LinkHelper.GetAllDiagonalGroups(tryBoard, ngroups.First()).ToList();
             List<Group> targetGroups = new List<Group>();
-            ngroups.ForEach(ngroup => targetGroups.AddRange(tryBoard.GetNeighbourGroups(ngroup.Points.First()).Where(gr => KoHelper.IsKoFight(tryBoard, gr))));
+            ngroups.ForEach(ngroup => targetGroups.AddRange(KoHelper.GetKoTargetGroups(tryBoard, ngroup)));
             targetGroups = targetGroups.Distinct().ToList();
             if (targetGroups.Count >= 1 && targetGroups.Any(t => GroupHelper.GetKillerGroupFromCache(tryBoard, t.Points.First(), c) != null))
                 return true;
@@ -2893,7 +2893,7 @@ namespace Go
             List<Group> ngroups = currentBoard.GetGroupsFromStoneNeighbours(capturePoint, c.Opposite()).ToList();
             ngroups = LinkHelper.GetAllDiagonalGroups(currentBoard, ngroups.First()).ToList();
             List<Group> targetGroups = new List<Group>();
-            ngroups.ForEach(atariGroup => targetGroups.AddRange(currentBoard.GetNeighbourGroups(atariGroup.Points.First()).Where(gr => KoHelper.IsKoFight(currentBoard, gr))));
+            ngroups.ForEach(ngroup => targetGroups.AddRange(KoHelper.GetKoTargetGroups(currentBoard, ngroup)));
             targetGroups = targetGroups.Distinct().ToList();
             if (targetGroups.Count >= 2)
                 return true;
