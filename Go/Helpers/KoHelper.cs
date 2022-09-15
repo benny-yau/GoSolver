@@ -36,11 +36,21 @@ namespace Go
         public static Boolean IsKoFight(Board board, Group group = null)
         {
             if (group == null) group = board.MoveGroup;
-            if (group.Points.Count != 1) return false;
+            if (group.Points.Count != 1 || group.Liberties.Count != 1) return false;
             Content c = group.Content;
             Point move = group.Points.First();
             Point eyePoint = board.GetStoneNeighbours(move).FirstOrDefault(n => EyeHelper.FindEye(board, n, c));
-            return (Convert.ToBoolean(eyePoint.NotEmpty) && group.Points.Count == 1 && group.Liberties.Count == 1 && !board.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()).Any(g => g != group && g.Liberties.Count == 1));
+            return (Convert.ToBoolean(eyePoint.NotEmpty) && !board.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()).Any(g => g != group && g.Liberties.Count == 1));
+        }
+
+        public static (Boolean, Group) IsKoFight(Board board, Point eye, Content c)
+        {
+            if (!EyeHelper.FindEye(board, eye, c)) return (false, null);
+            List<Group> eyeGroups = board.GetGroupsFromStoneNeighbours(eye, c.Opposite()).ToList();
+            List<Group> groups = eyeGroups.Where(group => group.Points.Count == 1 && group.Liberties.Count == 1).ToList();
+            if (groups.Count != 1) return (false, null);
+            if (eyeGroups.Any(g => g != groups.First() && g.Liberties.Count == 1)) return (false, null);
+            return (true, groups.First());
         }
 
         /// <summary>
@@ -48,20 +58,10 @@ namespace Go
         /// </summary>
         public static Boolean IsReverseKoFight(Board tryBoard, Boolean checkKoEnabled = true)
         {
-            Point p = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             if (checkKoEnabled && !KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
             List<Point> eyePoints = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindEye(tryBoard, n, c)).ToList();
-            foreach (Point eyePoint in eyePoints)
-            {
-                List<Group> eyeGroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()).ToList();
-                if (eyeGroups.Any(n => n.Points.Count == 1 && n.Liberties.Count == 1))
-                {
-                    if (eyeGroups.Count(g => g.Liberties.Count == 1) != 1) continue;
-                    return true;
-                }
-            }
-            return false;
+            return eyePoints.Any(p => KoHelper.IsKoFight(tryBoard, p, c).Item1);
         }
 
         public static Boolean IsReverseKoFight(Board tryBoard, Point p, Content c, Boolean checkKoEnabled = true)
@@ -71,35 +71,14 @@ namespace Go
             return IsReverseKoFight(board, checkKoEnabled);
         }
 
-
-        /// <summary>
-        /// Check if ko fight for try move.
-        /// <see cref="UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario_TianLongTu_Q17160" />
-        /// </summary>
-        public static Boolean CheckIsKoFight(GameTryMove tryMove)
-        {
-            Board board = tryMove.TryGame.Board;
-            if (IsKoFight(board))
-            {
-                tryMove.IsKoFight = true;
-                return true;
-            }
-            return false;
-        }
-
         /// <summary>
         /// Is ko fight after capture.
         /// </summary>
         public static Board IsCaptureKoFight(Board board, Group group, Boolean overrideKo = false)
         {
-            if (group.Points.Count != 1 || group.Liberties.Count != 1) return null;
-            Point p = group.Points.First();
-            if (!board.GetStoneNeighbours(p).Any(n => EyeHelper.FindEye(board, n, group.Content))) return null;
+            if (!KoHelper.IsKoFight(board, group)) return null;
             Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(board, group, overrideKo);
-            if (capturedBoard == null) return null;
-            if (KoHelper.IsKoFight(capturedBoard))
-                return capturedBoard;
-            return null;
+            return capturedBoard;
         }
 
         /// <summary>
@@ -107,16 +86,10 @@ namespace Go
         /// </summary>
         public static Board IsCaptureKoFight(Board board, Point eye, Content c, Boolean overrideKo = false)
         {
-            if (!EyeHelper.FindEye(board, eye, c)) return null;
-            List<Group> eyeGroups = board.GetGroupsFromStoneNeighbours(eye, c.Opposite()).ToList();
-            foreach (Group eyeGroup in eyeGroups.Where(group => group.Points.Count == 1))
-            {
-                Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(board, eyeGroup, overrideKo);
-                if (capturedBoard == null) continue;
-                if (KoHelper.IsKoFight(capturedBoard))
-                    return capturedBoard;
-            }
-            return null;
+            (Boolean isKoFight, Group koGroup) = KoHelper.IsKoFight(board, eye, c);
+            if (!isKoFight) return null;
+            Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(board, koGroup, overrideKo);
+            return capturedBoard;
         }
 
         /// <summary>

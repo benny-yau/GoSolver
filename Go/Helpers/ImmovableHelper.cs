@@ -275,10 +275,9 @@ namespace Go
 
             //move at liberty is suicidal or end crawling move
             (Boolean isSuicidal, Board escapeBoard) = IsSuicidalMove(libertyPoint.Value, group.Content, tryBoard);
-            if (isSuicidal || IsEndCrawlingMove(new Board(tryBoard), libertyPoint.Value, group.Content))
-            {
+            if (isSuicidal)
                 return (true, libertyPoint, escapeBoard);
-            }
+
             //recursive connect and die
             if (CheckConnectAndDie(escapeBoard, escapeBoard.GetGroupAt(group.Points.First())))
                 return (true, libertyPoint, escapeBoard);
@@ -358,28 +357,6 @@ namespace Go
             if (!koEnabled) return (true, board);
 
             return (false, board);
-        }
-
-        /// <summary>
-        /// Escape move by crawling at edge of board.
-        /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanQiJing_A36" />
-        /// </summary>
-        public static Boolean IsEndCrawlingMove(Board board, Point libertyPoint, Content c)
-        {
-            if (board.PointWithinMiddleArea(libertyPoint)) return false;
-            if (board.InternalMakeMove(libertyPoint, c) != MakeMoveResult.Legal) return false;
-            HashSet<Point> liberties = board.GetGroupAt(libertyPoint).Liberties;
-            if (liberties.Count == 1) return true;
-            if (liberties.Count != 2) return false;
-            List<Point> capturePoint = liberties.Where(q => board.PointWithinMiddleArea(q)).ToList();
-            if (capturePoint.Count == 1)
-            {
-                if (board.InternalMakeMove(capturePoint.First(), c.Opposite()) != MakeMoveResult.Legal) return false;
-                if (board.MoveGroupLiberties == 1) return false;
-                Point escapePoint = liberties.Except(capturePoint).First();
-                return IsEndCrawlingMove(board, escapePoint, c);
-            }
-            return false;
         }
 
         /// <summary>

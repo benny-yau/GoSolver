@@ -243,11 +243,6 @@
             Check for ko liberty <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_A85_2" />
             </summary>
         </member>
-        <member name="M:Go.AtariHelper.KoAtariByNeighbour(Go.Board,System.Collections.Generic.List{Go.Group},System.Nullable{Go.Point})">
-            <summary>
-            Check if any ko atari by neighbour groups. Exclude point for double ko check to find other ko.
-            </summary>
-        </member>
         <member name="M:Go.AtariHelper.DoubleAtariOnTargetGroups(Go.Board,System.Collections.Generic.List{Go.Group})">
             <summary>
             Double atari on target groups.
@@ -634,12 +629,6 @@
             Check ko <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WuQingYuan_Q31503" />
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.IsEndCrawlingMove(Go.Board,Go.Point,Go.Content)">
-            <summary>
-            Escape move by crawling at edge of board.
-            <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanQiJing_A36" />
-            </summary>
-        </member>
         <member name="M:Go.ImmovableHelper.CaptureSuicideGroup(Go.Point,Go.Board,System.Boolean)">
             <summary>
             Capture group that has liberty of one only and return the board.
@@ -872,12 +861,6 @@
         <member name="M:Go.KoHelper.IsReverseKoFight(Go.Board,System.Boolean)">
             <summary>
             Reverse ko fight.
-            </summary>
-        </member>
-        <member name="M:Go.KoHelper.CheckIsKoFight(Go.GameTryMove)">
-            <summary>
-            Check if ko fight for try move.
-            <see cref="!:UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario_TianLongTu_Q17160" />
             </summary>
         </member>
         <member name="M:Go.KoHelper.IsCaptureKoFight(Go.Board,Go.Group,System.Boolean)">
@@ -1198,11 +1181,6 @@
             Suicidal moves are moves that have liberty of one only.
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.SuicidalMove(Go.GameTryMove)">
-            <summary>
-            Separate suicidal moves into single point or multi point suicide. 
-            </summary>
-        </member>
         <member name="M:Go.RedundantMoveHelper.ThreeLibertySuicidal(Go.GameTryMove)">
             <summary>
             Three liberty suicidal.
@@ -1370,7 +1348,7 @@
             Connect and die <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
             Liberty more than two required to prevent snapback <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680" />
             Diagonal neighbours that are non killable groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17160" />
-            Opponent suicide <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_A25" />
+            Opponent suicide <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16490" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A55" />
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_Nie67" />
             Check real eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17132_3" />

@@ -44,7 +44,7 @@ namespace Go
             if (excludeKo)
                 return targetGroups;
             //check for ko
-            List<Group> koFightGroups = targetGroups.Where(n => KoHelper.IsCaptureKoFight(board, n, true) != null).ToList();
+            List<Group> koFightGroups = targetGroups.Where(n => KoHelper.IsKoFight(board, n)).ToList();
 
             for (int i = koFightGroups.Count - 1; i >= 0; i--)
             {
@@ -59,31 +59,12 @@ namespace Go
                 if (koFightGroups.Count == 1 && !KoHelper.KoContentEnabled(c, board.GameInfo))
                 {
                     //check for ko liberty
-                    Boolean koLibertyFound = atariGroup.Liberties.Any(n => !n.Equals(group.Points.First()) && KoHelper.IsCaptureKoFight(b, n, c, true) != null);
+                    Boolean koLibertyFound = atariGroup.Liberties.Any(n => !n.Equals(group.Points.First()) && KoHelper.IsKoFight(b, n, c).Item1);
                     if (!koLibertyFound)
                         targetGroups.Remove(group);
                 }
             }
             return targetGroups;
-        }
-
-        /// <summary>
-        /// Check if any ko atari by neighbour groups. Exclude point for double ko check to find other ko.
-        /// </summary>
-        public static (Boolean, Board) KoAtariByNeighbour(Board board, List<Group> targetGroups, Point? excludePoint = null)
-        {
-            foreach (Group group in targetGroups)
-            {
-                //check for ko
-                if (group.Points.Count != 1) continue;
-                Point p = group.Points.First();
-                if (excludePoint != null && p.Equals(excludePoint)) continue;
-                Board b = KoHelper.IsCaptureKoFight(board, group, true);
-                if (b == null) continue;
-                if (!Board.ResolveAtari(board, b)) continue;
-                return (true, b);
-            }
-            return (false, null);
         }
 
         /// <summary>
