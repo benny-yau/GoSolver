@@ -306,7 +306,7 @@ namespace Go
                 if (tryBoard.MoveGroup.Points.Count >= 2)
                 {
                     if (b2.CapturedPoints.Count() >= 3) return (true, b);
-                    if (b2.GetStoneNeighbours().Where(n => b2[n] != c.Opposite()).Select(n => new { kgroup = GroupHelper.GetKillerGroupFromCache(b2, n, c.Opposite()) }).Any(n => n.kgroup != null && n.kgroup.Points.Count >= 3))
+                    if (b2.GetStoneNeighbours().Where(n => b2[n] != c.Opposite()).Select(n => GroupHelper.GetKillerGroupFromCache(b2, n, c.Opposite())).Any(n => n != null && n.Points.Count >= 3))
                         return (true, b);
                 }
 
@@ -562,7 +562,7 @@ namespace Go
             if (EyeHelper.FindCoveredEye(currentBoard, libertyPoint, c.Opposite()))
             {
                 List<Point> diagonals = currentBoard.GetDiagonalNeighbours(libertyPoint).Where(n => currentBoard[n] == c).ToList();
-                if (diagonals.Select(d => new { dgroup = currentBoard.GetGroupAt(d) }).Any(n => ImmovableHelper.CheckConnectAndDie(currentBoard, n.dgroup)))
+                if (diagonals.Select(d => currentBoard.GetGroupAt(d)).Any(n => ImmovableHelper.CheckConnectAndDie(currentBoard, n)))
                     return false;
             }
 
@@ -635,7 +635,7 @@ namespace Go
             (Boolean suicidal, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
             if (!suicidal) return false;
 
-            if (LifeCheck.GetTargets(tryBoard).All(t => tryBoard.MoveGroup.Equals(tryBoard.GetGroupAt(t)))) return true;
+            if (LifeCheck.GetTargets(tryBoard).All(t => tryBoard.MoveGroup.Equals(t))) return true;
 
             //reverse connect and die
             if (tryBoard.MoveGroup.Points.Count == 1 && captureBoard.MoveGroup.Points.Count == 1 && ImmovableHelper.CheckConnectAndDie(captureBoard))
@@ -783,7 +783,7 @@ namespace Go
                 }
 
                 //check for split killer group
-                Boolean splitKillerGroup = captureBoard.GetStoneNeighbours().Where(n => tryBoard[n] != c && !n.Equals(move)).Select(n => new { kGroup = GroupHelper.GetKillerGroupFromCache(captureBoard, n, c.Opposite()) }).Any(n => n.kGroup != null && n.kGroup != killerGroup);
+                Boolean splitKillerGroup = captureBoard.GetStoneNeighbours().Where(n => tryBoard[n] != c && !n.Equals(move)).Select(n => GroupHelper.GetKillerGroupFromCache(captureBoard, n, c.Opposite())).Any(n => n != null && n != killerGroup);
                 if (!splitKillerGroup && !EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, killerGroup)) return false;
 
                 //check for corner six formation
@@ -1562,7 +1562,7 @@ namespace Go
                 return false;
 
             //check killer group for captured points
-            if (tryBoard.GetStoneAndDiagonalNeighbours().Where(n => tryBoard[n] != c).Select(n => new { kgroup = GroupHelper.GetKillerGroupFromCache(tryBoard, n, c) }).Any(n => n.kgroup != null && n.kgroup.Points.Any(q => tryBoard[q] == c.Opposite())))
+            if (tryBoard.GetStoneAndDiagonalNeighbours().Where(n => tryBoard[n] != c).Select(n => GroupHelper.GetKillerGroupFromCache(tryBoard, n, c)).Any(n => n != null && n.Points.Any(q => tryBoard[q] == c.Opposite())))
                 return false;
 
             //check eye or tiger mouth at stone and diagonal

@@ -179,7 +179,7 @@ namespace Go
             {
                 //ensure real eye within neighbour groups
                 HashSet<Point> killerLiberties = tryBoard.GetLibertiesOfGroups(neighbourGroups);
-                if (!killerLiberties.Any(liberty => EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, liberty, c.Opposite())))
+                if (!killerLiberties.Any(liberty => EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, liberty, c.Opposite(), EyeType.UnCoveredEye)))
                     return false;
 
                 //check for double ko

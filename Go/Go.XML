@@ -165,10 +165,10 @@
             For kill only, replace neutral points where necessary. Add random move for kill where no move is available.
             </summary>
         </member>
-        <member name="M:Go.Game.RestoreRedundantKo(System.Collections.Generic.List{Go.GameTryMove},System.Collections.Generic.List{Go.GameTryMove})">
+        <member name="M:Go.Game.RestoreRedundantPreKo(System.Collections.Generic.List{Go.GameTryMove},System.Collections.Generic.List{Go.GameTryMove})">
             <summary>
-            Restore redundant ko that are atari moves but not ko enabled.
-            Double ko <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B41" />
+            Restore redundant pre ko moves for double ko.
+            Double ko <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_5" />
             Killer ko within killer group <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A79" />
             End ko <see cref="!:UnitTestProject.KoTest.KoTest_Scenario_TianLongTu_Q17077" />
             </summary>
@@ -2039,7 +2039,7 @@
             Partial alive <see cref="!:UnitTestProject.PartiallyAliveTest.PartiallyAliveTest_Scenario_WindAndTime_Q30215" />
             </summary>
         </member>
-        <member name="M:Go.LifeCheck.ConfirmAlive(Go.Board,Go.Point)">
+        <member name="M:Go.LifeCheck.ConfirmAlive(Go.Board,Go.Group)">
             <summary>
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16860" />
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A28" />
@@ -2099,11 +2099,6 @@
             Specify another target <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_GuanZiPu_B3" />
             </summary>
         </member>
-        <member name="M:Go.LifeCheck.GetTargetConnectedGroups(Go.Board,System.Collections.Generic.List{Go.Point})">
-            <summary>
-            Get target group and all diagonally connected groups.
-            </summary>
-        </member>
         <member name="M:Go.LifeCheck.CheckIfTargetGroupKilled(Go.Board,System.Collections.Generic.List{Go.Point},Go.Content)">
             <summary>
             Check if target points are killed when converted to empty points or kill content points.
@@ -2127,6 +2122,11 @@
         <member name="M:Go.MonteCarloGame.MonteCarloRealTimeMove(Go.Game)">
             <summary>
             Start mcts search for real-time move. Not used in mapping.
+            </summary>
+        </member>
+        <member name="M:Go.MonteCarloGame.ResultBothAlive(Go.Game)">
+            <summary>
+            Return both alive only if no more external liberties.
             </summary>
         </member>
         <member name="M:Go.MonteCarloGame.SetupLeelazGame(Go.Game)">

@@ -12,10 +12,10 @@ namespace Go
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_ScenarioTestConfirmAlive1" />
         /// Partial alive <see cref="UnitTestProject.PartiallyAliveTest.PartiallyAliveTest_Scenario_WindAndTime_Q30215" />
         /// </summary>
-        public static ConfirmAliveResult ConfirmAlive(Board board, List<Point> target = null)
+        public static ConfirmAliveResult ConfirmAlive(Board board, List<Point> targetPoints = null)
         {
-            target = LifeCheck.GetTargets(board, target);
-            if (target == null || target.Count == 0) return ConfirmAliveResult.Unknown;
+            List<Group> target = LifeCheck.GetTargets(board, targetPoints);
+            if (target.Count == 0) return ConfirmAliveResult.Unknown;
 
             if (target.Count > 1) //partial alive
             {
@@ -33,14 +33,13 @@ namespace Go
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16860" />
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A28" />
         /// </summary>
-        public static ConfirmAliveResult ConfirmAlive(Board board, Point target)
+        public static ConfirmAliveResult ConfirmAlive(Board board, Group targetGroup)
         {
             List<Group> eyes = new List<Group>();
             List<LinkedPoint<Point>> tigerMouthList = new List<LinkedPoint<Point>>();
 
-            Content c = board[target];
+            Content c = targetGroup.Content;
             //ensure at least two liberties
-            Group targetGroup = board.GetGroupAt(target);
             if (targetGroup.Liberties.Count == 1) return ConfirmAliveResult.Unknown;
 
             //get at least two possible eyes
@@ -253,40 +252,20 @@ namespace Go
         /// Get targets of survival group. Can specify other targets than specified in game info.
         /// Specify another target <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_GuanZiPu_B3" />
         /// </summary>
-        public static List<Point> GetTargets(Board board, List<Point> target = null)
+        public static List<Group> GetTargets(Board board, List<Point> target = null)
         {
             Content content = Content.Unknown;
             if (target == null)
             {
                 //get target from game info
-                target = new List<Point>(board.GameInfo.targetPoints);
+                target = board.GameInfo.targetPoints;
                 content = GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive);
-                return target.Where(t => board[t] == content).ToList(); //get the target that is still alive
+                return target.Where(t => board[t] == content).Select(t => board.GetGroupAt(t)).Distinct().ToList(); //get the target that is still alive
             }
             else //can specify another target
             {
-                target = new List<Point>(target);
-                Point? p = target.Where(t => board[t] != Content.Empty).FirstOrDefault();
-                if (!Convert.ToBoolean(p.Value.NotEmpty)) return new List<Point>();
-                else return new List<Point>() { p.Value };
+                return target.Where(t => board[t] != Content.Empty).Select(t => board.GetGroupAt(t)).Distinct().ToList();
             }
-        }
-
-        /// <summary>
-        /// Get target group and all diagonally connected groups.
-        /// </summary>
-        public static HashSet<Group> GetTargetConnectedGroups(Board board, List<Point> target = null)
-        {
-            HashSet<Group> groups = new HashSet<Group>();
-            if (target == null)
-            {
-                target = LifeCheck.GetTargets(board);
-                if (target.Count == 0) return groups;
-            }
-            foreach (Group targetGroup in board.GetGroupsFromPoints(target))
-                LinkHelper.GetAllDiagonalConnectedGroups(board, targetGroup, groups);
-
-            return groups;
         }
 
         /// <summary>

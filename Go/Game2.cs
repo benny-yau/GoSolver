@@ -154,11 +154,12 @@ namespace Go
             else if (tryMoves.Count == 0 && redundantTryMoves.Any(move => move.IsDiagonalEyeMove))
                 tryMoves.Add(redundantTryMoves.First(move => move.IsDiagonalEyeMove));
 
-            //restore redundant ko
-            RestoreRedundantKo(tryMoves, redundantTryMoves);
 
             //create random move
             CreateRandomMove(tryMoves, currentGame, SurviveOrKill.Survive);
+
+            //restore redundant pre-ko move
+            RestoreRedundantPreKo(tryMoves, redundantTryMoves);
 
             PrintGameMoveList(tryMoves, redundantTryMoves, currentGame);
 
@@ -443,11 +444,12 @@ namespace Go
             //sort game try moves
             tryMoves = (from tryMove in tryMoves orderby tryMove.AtariResolved descending, tryMove.TryGame.Board.IsAtariWithoutSuicide descending, tryMove.TryGame.Board.MoveGroupLiberties descending select tryMove).ToList();
 
-            //restore redundant ko
-            RestoreRedundantKo(tryMoves, redundantTryMoves);
 
             //create random move
             CreateRandomMove(tryMoves, currentGame, SurviveOrKill.Kill);
+
+            //restore redundant pre-ko move
+            RestoreRedundantPreKo(tryMoves, redundantTryMoves);
 
             PrintGameMoveList(tryMoves, redundantTryMoves, currentGame);
 
@@ -455,29 +457,30 @@ namespace Go
         }
 
         /// <summary>
-        /// Restore redundant ko that are atari moves but not ko enabled.
-        /// Double ko <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B41" />
+        /// Restore redundant pre ko moves for double ko.
+        /// Double ko <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_5" />
         /// Killer ko within killer group <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A79" />
         /// End ko <see cref="UnitTestProject.KoTest.KoTest_Scenario_TianLongTu_Q17077" />
         /// </summary>
-        private void RestoreRedundantKo(List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves)
+        private void RestoreRedundantPreKo(List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves)
         {
             //no more try moves
             if (tryMoves.Count > 0) return;
-            GameTryMove koMove = redundantTryMoves.FirstOrDefault(t => t.IsRedundantKo && t.TryGame.Board.IsAtariMove);
-            if (koMove == null) return;
-            Board currentBoard = koMove.CurrentGame.Board;
-            Board tryBoard = koMove.TryGame.Board;
-            Content c = tryBoard.MoveGroup.Content;
-            Point? eyePoint = KoHelper.GetKoEyePoint(tryBoard);
-            if (eyePoint == null) return;
-            HashSet<Group> groups = currentBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite());
-            if (groups.Count != 1) return;
-            //double ko / killer ko within killer group
-            if (groups.First().Liberties.Count != 2) return;
-            if (currentBoard[eyePoint.Value] == c.Opposite() && GroupHelper.GetKillerGroupFromCache(currentBoard, eyePoint.Value, c) != null)
-                tryMoves.Add(koMove);
-            return;
+            foreach (GameTryMove koMove in redundantTryMoves.Where(t => t.IsRedundantKo))
+            {
+                Board currentBoard = koMove.CurrentGame.Board;
+                Board tryBoard = koMove.TryGame.Board;
+                Content c = tryBoard.MoveGroup.Content;
+
+                //ensure pre-ko move
+                if (currentBoard.singlePointCapture != null) continue;
+
+                if (tryBoard.AtariTargets.Any(t => GroupHelper.GetKillerGroupFromCache(currentBoard, t.Points.First(), c) != null))
+                {
+                    tryMoves.Add(koMove);
+                    break;
+                }
+            }
         }
 
 
