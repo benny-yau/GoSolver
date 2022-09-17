@@ -97,6 +97,7 @@ namespace Go
             GameInfo gameInfo = currentGame.GameInfo;
             Content c = GameHelper.GetContentForSurviveOrKill(currentGame.GameInfo, SurviveOrKill.Survive);
             List<GameTryMove> tryMoves = new List<GameTryMove>();
+            List<GameTryMove> redundantTryMoves = new List<GameTryMove>();
             GameTryMove koBlockedMove = null;
             Boolean mappingRange = MonteCarloMapping.MappingRange(currentGame.Board);
 
@@ -109,11 +110,10 @@ namespace Go
                 if (move.MakeMoveResult == MakeMoveResult.KoBlocked)
                 {
                     //ko moves
-                    Boolean koEnabled = KoHelper.KoSurvivalEnabled(SurviveOrKill.Survive, gameInfo);
-                    if (!koEnabled) continue;
                     move.MakeKoMove(p, SurviveOrKill.Survive);
                     move.IsRedundantKo = RedundantMoveHelper.RedundantSurvivalKoMove(move);
-                    if (mappingRange || (!move.IsRedundantKo))
+                    if (move.IsRedundantKo) redundantTryMoves.Add(move);
+                    if (!move.IsRedundantKo || mappingRange)
                         koBlockedMove = move;
                 }
                 else if (move.MakeMoveResult == MakeMoveResult.Legal)
@@ -133,7 +133,6 @@ namespace Go
                     tryMoves.Add(move);
                 }
             }
-            List<GameTryMove> redundantTryMoves = null;
             if (!mappingRange)
             {
                 //filter game try moves with runtime script
@@ -141,7 +140,7 @@ namespace Go
                     tryMoves = gameInfo.RuntimeScript_SurvivalMove.ScriptReducedList(tryMoves, currentGame, g);
 
                 //remove redundant moves
-                redundantTryMoves = tryMoves.Where(e => e.IsRedundantMove).ToList();
+                redundantTryMoves.AddRange(tryMoves.Where(e => e.IsRedundantMove));
                 redundantTryMoves.ForEach(e => tryMoves.Remove(e));
             }
 
@@ -158,8 +157,8 @@ namespace Go
             //create random move
             CreateRandomMove(tryMoves, currentGame, SurviveOrKill.Survive);
 
-            //restore redundant pre-ko move
-            RestoreRedundantPreKo(tryMoves, redundantTryMoves);
+            //restore redundant ko move
+            RestoreRedundantKo(tryMoves, redundantTryMoves);
 
             PrintGameMoveList(tryMoves, redundantTryMoves, currentGame);
 
@@ -395,6 +394,7 @@ namespace Go
 
             Boolean mappingRange = MonteCarloMapping.MappingRange(currentGame.Board);
             List<GameTryMove> tryMoves = new List<GameTryMove>();
+            List<GameTryMove> redundantTryMoves = new List<GameTryMove>();
             GameTryMove koBlockedMove = null;
 
             for (int i = 0; i <= gameInfo.killMovablePoints.Count - 1; i++)
@@ -406,11 +406,10 @@ namespace Go
                 if (move.MakeMoveResult == MakeMoveResult.KoBlocked)
                 {
                     //ko moves
-                    Boolean koEnabled = KoHelper.KoSurvivalEnabled(SurviveOrKill.Kill, gameInfo);
-                    if (!koEnabled) continue;
                     move.MakeKoMove(p, SurviveOrKill.Kill);
                     move.IsRedundantKo = RedundantMoveHelper.RedundantKillerKoMove(move);
-                    if (mappingRange || (!move.IsRedundantKo))
+                    if (move.IsRedundantKo) redundantTryMoves.Add(move);
+                    if (!move.IsRedundantKo || mappingRange)
                         koBlockedMove = move;
                 }
                 else if (move.MakeMoveResult == MakeMoveResult.Legal)
@@ -425,7 +424,6 @@ namespace Go
                 }
             }
 
-            List<GameTryMove> redundantTryMoves = null;
             if (!mappingRange)
             {
                 //filter game try moves with runtime script
@@ -433,12 +431,11 @@ namespace Go
                     tryMoves = gameInfo.RuntimeScript_KillMove.ScriptReducedList(tryMoves, currentGame, g);
 
                 //remove all redundant moves
-                List<GameTryMove> neutralPointMoves = tryMoves.Where(e => e.IsNeutralPoint).ToList();
-                redundantTryMoves = tryMoves.Where(e => e.IsRedundantMove).ToList();
+                redundantTryMoves.AddRange(tryMoves.Where(e => e.IsRedundantMove));
                 redundantTryMoves.ForEach(e => tryMoves.Remove(e));
 
                 //restore neutral move where necessary
-                RedundantMoveHelper.RestoreNeutralMove(currentGame, tryMoves, neutralPointMoves);
+                RedundantMoveHelper.RestoreNeutralMove(currentGame, tryMoves, redundantTryMoves.Where(e => e.IsNeutralPoint).ToList());
             }
 
             //sort game try moves
@@ -448,8 +445,8 @@ namespace Go
             //create random move
             CreateRandomMove(tryMoves, currentGame, SurviveOrKill.Kill);
 
-            //restore redundant pre-ko move
-            RestoreRedundantPreKo(tryMoves, redundantTryMoves);
+            //restore redundant ko move
+            RestoreRedundantKo(tryMoves, redundantTryMoves);
 
             PrintGameMoveList(tryMoves, redundantTryMoves, currentGame);
 
@@ -457,12 +454,12 @@ namespace Go
         }
 
         /// <summary>
-        /// Restore redundant pre ko moves for double ko.
+        /// Restore redundant ko moves for double ko.
         /// Double ko <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_5" />
         /// Killer ko within killer group <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A79" />
         /// End ko <see cref="UnitTestProject.KoTest.KoTest_Scenario_TianLongTu_Q17077" />
         /// </summary>
-        private void RestoreRedundantPreKo(List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves)
+        private void RestoreRedundantKo(List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves)
         {
             //no more try moves
             if (tryMoves.Count > 0) return;
@@ -471,9 +468,6 @@ namespace Go
                 Board currentBoard = koMove.CurrentGame.Board;
                 Board tryBoard = koMove.TryGame.Board;
                 Content c = tryBoard.MoveGroup.Content;
-
-                //ensure pre-ko move
-                if (currentBoard.singlePointCapture != null) continue;
 
                 if (tryBoard.AtariTargets.Any(t => GroupHelper.GetKillerGroupFromCache(currentBoard, t.Points.First(), c) != null))
                 {
@@ -499,7 +493,7 @@ namespace Go
                 Boolean lastMovePass = lastMove == null || lastMove.Value.Equals(Game.PassMove);
                 if (lastMovePass) return;
                 //add move if no more try moves or to fight ko
-                if (tryMoves.Count == 0 || AddPointToFightKo(tryMoves, currentGame, KoCheck.Survive))
+                if (AddPointToFightKo(tryMoves, currentGame, surviveOrKill))
                 {
                     Point p = Game.PassMove;
                     for (int i = 3; i < 11; i++)
@@ -523,7 +517,7 @@ namespace Go
             }
             else if (surviveOrKill == SurviveOrKill.Survive)
             {
-                if (AddPointToFightKo(tryMoves, currentGame, KoCheck.Kill))
+                if (AddPointToFightKo(tryMoves, currentGame, surviveOrKill))
                     tryMoves.Add(BothAliveHelper.AddPassMove(currentGame));
             }
         }
@@ -531,10 +525,25 @@ namespace Go
         /// <summary>
         /// Add random move to fight ko.
         /// <see cref="UnitTestProject.KoTest.KoTest_Scenario_TianLongTu_Q17077" />
+        /// Check killer ko within killer group <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B39" /> 
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A85" /> 
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_4" /> 
         /// </summary>
-        private Boolean AddPointToFightKo(List<GameTryMove> tryMoves, Game currentGame, KoCheck surviveOrKill)
+        private Boolean AddPointToFightKo(List<GameTryMove> tryMoves, Game currentGame, SurviveOrKill surviveOrKill)
         {
-            return (tryMoves.Count == 0 && currentGame.KoGameCheck == surviveOrKill && currentGame.Board.singlePointCapture != null);
+            KoCheck koGameCheck = (surviveOrKill == SurviveOrKill.Kill) ? KoCheck.Survive : KoCheck.Kill;
+            Boolean isRemainingKoFight = (tryMoves.Count == 0 && currentGame.KoGameCheck == koGameCheck && currentGame.Board.singlePointCapture != null);
+            if (isRemainingKoFight)
+            {
+                //check killer ko within killer group
+                Board b = KoHelper.IsCaptureKoFight(currentGame.Board, currentGame.Board.MoveGroup, true);
+                if (b != null && b.AtariTargets.Any(t => KoHelper.GetKoTargetGroups(b, t, b.MoveGroup).Any()))
+                    return false;
+                return true;
+            }
+            if (surviveOrKill == SurviveOrKill.Kill && tryMoves.Count == 0)
+                return true;
+            return false;
         }
 
         /// <summary>

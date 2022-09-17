@@ -165,9 +165,9 @@
             For kill only, replace neutral points where necessary. Add random move for kill where no move is available.
             </summary>
         </member>
-        <member name="M:Go.Game.RestoreRedundantPreKo(System.Collections.Generic.List{Go.GameTryMove},System.Collections.Generic.List{Go.GameTryMove})">
+        <member name="M:Go.Game.RestoreRedundantKo(System.Collections.Generic.List{Go.GameTryMove},System.Collections.Generic.List{Go.GameTryMove})">
             <summary>
-            Restore redundant pre ko moves for double ko.
+            Restore redundant ko moves for double ko.
             Double ko <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_5" />
             Killer ko within killer group <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A79" />
             End ko <see cref="!:UnitTestProject.KoTest.KoTest_Scenario_TianLongTu_Q17077" />
@@ -180,10 +180,13 @@
             Last move is pass move <see cref="!:UnitTestProject.MonteCarloRuntimeTest.MonteCarloRuntimeTest_Scenario_Corner_A68" />
             </summary>
         </member>
-        <member name="M:Go.Game.AddPointToFightKo(System.Collections.Generic.List{Go.GameTryMove},Go.Game,Go.KoCheck)">
+        <member name="M:Go.Game.AddPointToFightKo(System.Collections.Generic.List{Go.GameTryMove},Go.Game,Go.SurviveOrKill)">
             <summary>
             Add random move to fight ko.
             <see cref="!:UnitTestProject.KoTest.KoTest_Scenario_TianLongTu_Q17077" />
+            Check killer ko within killer group <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B39" /> 
+            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A85" /> 
+            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_4" /> 
             </summary>
         </member>
         <member name="M:Go.Game.MakeKillMove(System.Int32,Go.Game)">

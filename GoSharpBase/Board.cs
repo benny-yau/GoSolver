@@ -63,9 +63,12 @@ namespace Go
         {
             content = new Content[fromBoard.SizeX, fromBoard.SizeY];
             Array.Copy(fromBoard.content, content, content.Length);
-            this.LastMoves.AddRange(fromBoard.LastMoves);
-            this.singlePointCapture = fromBoard.singlePointCapture;
+
             this.GameInfo = fromBoard.GameInfo;
+            this.MoveGroup = fromBoard.MoveGroup;
+            this.Move = fromBoard.Move;
+            this.singlePointCapture = fromBoard.singlePointCapture;
+            this.LastMoves.AddRange(fromBoard.LastMoves);
 
             this.GroupCache.AddRange(fromBoard.GroupCache);
             if (fromBoard.GroupCacheFromPoint != null)

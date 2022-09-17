@@ -2802,8 +2802,6 @@ namespace Go
                 if (tryBoard.singlePointCapture == null) return false;
                 return !PossibilityOfDoubleKo(tryMove);
             }
-            if (KoHelper.CheckKillerKoWithinKillerGroup(tryMove))
-                return true;
 
             //check redundant ko
             if (!tryMove.IsNegligibleForKo())
