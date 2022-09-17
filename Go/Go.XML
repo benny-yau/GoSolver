@@ -168,16 +168,17 @@
         <member name="M:Go.Game.RestoreRedundantKo(System.Collections.Generic.List{Go.GameTryMove},System.Collections.Generic.List{Go.GameTryMove})">
             <summary>
             Restore redundant ko moves for double ko.
-            Double ko <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_5" />
-            Killer ko within killer group <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A79" />
-            End ko <see cref="!:UnitTestProject.KoTest.KoTest_Scenario_TianLongTu_Q17077" />
+            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B39" />
+            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_5" />
+            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A79" />
             </summary>
         </member>
         <member name="M:Go.Game.CreateRandomMove(System.Collections.Generic.List{Go.GameTryMove},Go.Game,Go.SurviveOrKill)">
             <summary>
             Make random move to wait a turn where no other move is available or on ko move from opponent.
-            Double ko recursion for survive <see cref="!:UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_Corner_B41" />
-            Last move is pass move <see cref="!:UnitTestProject.MonteCarloRuntimeTest.MonteCarloRuntimeTest_Scenario_Corner_A68" />
+            Random point for survive <see cref="!:UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_Corner_B41" />
+            Random point for kill <see cref="!:UnitTestProject.KoTest.KoTest_Scenario_WuQingYuan_Q31498" />
+            <see cref="!:UnitTestProject.KoTest.KoTest_Scenario_TianLongTu_Q17077" />
             </summary>
         </member>
         <member name="M:Go.Game.AddPointToFightKo(System.Collections.Generic.List{Go.GameTryMove},Go.Game,Go.SurviveOrKill)">
@@ -185,7 +186,6 @@
             Add random move to fight ko.
             <see cref="!:UnitTestProject.KoTest.KoTest_Scenario_TianLongTu_Q17077" />
             Check killer ko within killer group <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B39" /> 
-            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A85" /> 
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_4" /> 
             </summary>
         </member>
@@ -1120,6 +1120,9 @@
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A37_101Weiqi" />
             Check for double ko <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
             Check atari for ko move <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_2" />
+            Check possible links <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" />
+            <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
+            <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_A40" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.FillKoEyeMove(Go.GameTryMove)">

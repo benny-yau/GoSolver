@@ -42,7 +42,7 @@ namespace Go
                         groupI.LinkedPoint = groups[i].LinkedPoint;
                         Group groupJ = tryBoard.GetGroupAt(groups[j].Points.First());
                         groupJ.LinkedPoint = groups[j].LinkedPoint;
-                        if (groupI.Liberties.Count == 1 || groupJ.Liberties.Count == 1)
+                        if ((groupI.Liberties.Count == 1 && !KoHelper.IsKoFight(tryBoard, groupI)) || (groupJ.Liberties.Count == 1 && !KoHelper.IsKoFight(tryBoard, groupJ)))
                             continue;
                         //check if currently linked
                         Boolean isLinked = (groupI == groupJ) || PossibleLinkToAnyGroup(tryBoard, groupI, groupJ);

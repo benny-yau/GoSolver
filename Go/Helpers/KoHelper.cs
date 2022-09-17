@@ -208,7 +208,7 @@ namespace Go
             else
             {
                 //pre ko moves
-                List<Point> eyePoints = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindEye(tryBoard, n, c)).ToList();
+                List<Point> eyePoints = tryBoard.GetStoneNeighbours().Where(n => IsKoFight(tryBoard, n, c).Item1).ToList();
                 if (eyePoints.Count != 1) return null;
                 return eyePoints.First();
             }

@@ -455,9 +455,9 @@ namespace Go
 
         /// <summary>
         /// Restore redundant ko moves for double ko.
-        /// Double ko <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_5" />
-        /// Killer ko within killer group <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A79" />
-        /// End ko <see cref="UnitTestProject.KoTest.KoTest_Scenario_TianLongTu_Q17077" />
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B39" />
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_5" />
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A79" />
         /// </summary>
         private void RestoreRedundantKo(List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves)
         {
@@ -480,8 +480,9 @@ namespace Go
 
         /// <summary>
         /// Make random move to wait a turn where no other move is available or on ko move from opponent.
-        /// Double ko recursion for survive <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_Corner_B41" />
-        /// Last move is pass move <see cref="UnitTestProject.MonteCarloRuntimeTest.MonteCarloRuntimeTest_Scenario_Corner_A68" />
+        /// Random point for survive <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_Corner_B41" />
+        /// Random point for kill <see cref="UnitTestProject.KoTest.KoTest_Scenario_WuQingYuan_Q31498" />
+        /// <see cref="UnitTestProject.KoTest.KoTest_Scenario_TianLongTu_Q17077" />
         /// </summary>
         private void CreateRandomMove(List<GameTryMove> tryMoves, Game currentGame, SurviveOrKill surviveOrKill)
         {
@@ -526,7 +527,6 @@ namespace Go
         /// Add random move to fight ko.
         /// <see cref="UnitTestProject.KoTest.KoTest_Scenario_TianLongTu_Q17077" />
         /// Check killer ko within killer group <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B39" /> 
-        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A85" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_4" /> 
         /// </summary>
         private Boolean AddPointToFightKo(List<GameTryMove> tryMoves, Game currentGame, SurviveOrKill surviveOrKill)
