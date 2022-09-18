@@ -574,7 +574,7 @@ namespace Go
             if (tigerMouthLiberty != null)
             {
                 Board b = currentBoard.MakeMoveOnNewBoard(tigerMouthLiberty.Value, c.Opposite());
-                if (b != null && EyeHelper.FindSemiSolidEyes(libertyPoint, b, c.Opposite()).Item1)
+                if (b != null && EyeHelper.FindSemiSolidEye(libertyPoint, b, c.Opposite()).Item1)
                     return false;
             }
 
@@ -713,7 +713,7 @@ namespace Go
             if (b2 == null || b2.MoveGroupLiberties != 2) return false;
 
             //recursion for capture
-            if (CheckWeakGroupInConnectAndDie(b2, b2.GetGroupAt(atariTarget.Points.First())))
+            if (CheckWeakGroupInConnectAndDie(b2, b2.GetCurrentGroup(atariTarget)))
                 return true;
             return false;
         }
@@ -746,7 +746,7 @@ namespace Go
                 if (tryBoard.GetDiagonalNeighbours(p).Count(q => tryBoard[q] == Content.Empty) == 1)
                 {
                     if (!tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).All(group => group.Liberties.Count <= 2)) continue;
-                    Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(captureBoard, captureBoard.GetGroupAt(tryBoard.MoveGroup.Points.First()), c);
+                    Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(captureBoard, captureBoard.GetCurrentGroup(tryBoard.MoveGroup), c);
                     if (b != null) continue;
                     return true;
                 }
@@ -986,7 +986,7 @@ namespace Go
             Content c = tryMove.MoveContent;
 
             //ensure semi-solid eye
-            if (!EyeHelper.FindSemiSolidEyes(move, capturedBoard, c.Opposite()).Item1)
+            if (!EyeHelper.FindSemiSolidEye(move, capturedBoard, c.Opposite()).Item1)
                 return false;
 
             //remove one point from two-point empty group
@@ -1192,7 +1192,7 @@ namespace Go
             else if (tryBoard.AtariTargets.Count == 1)
             {
                 Group atariTarget = tryBoard.AtariTargets.First();
-                if (WallHelper.IsNonKillableGroup(currentBoard, currentBoard.GetGroupAt(atariTarget.Points.First())))
+                if (WallHelper.IsNonKillableGroup(currentBoard, currentBoard.GetCurrentGroup(atariTarget)))
                 {
                     Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(tryBoard, atariTarget, c.Opposite());
                     if (b != null && b.MoveGroupLiberties > 1)
@@ -1434,8 +1434,8 @@ namespace Go
             if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c))
                 return false;
 
-            //find closest neighbours within two spaces
-            List<Point> closestNeighbours = tryBoard.GetClosestNeighbour(move, 2, c);
+            //find closest points within two spaces
+            List<Point> closestNeighbours = tryBoard.GetClosestPoints(move, c);
             if (closestNeighbours.Count == 0) return false;
 
             //validate if leap move is redundant
@@ -1634,10 +1634,9 @@ namespace Go
 
             Group atariTarget = tryBoard.AtariTargets.First();
             if (atariTarget.Points.Count != 1) return false;
-            Point p = atariTarget.Points.First();
 
             //check for ko fight
-            Board b = KoHelper.IsCaptureKoFight(tryBoard, tryBoard.GetGroupAt(p));
+            Board b = KoHelper.IsCaptureKoFight(tryBoard, atariTarget);
             if (b == null) return false;
 
             //check for ko enabled
@@ -2002,7 +2001,7 @@ namespace Go
             foreach (Group targetGroup in tryBoard.GetGroupsFromStoneNeighbours(neutralPointMove.Move, c))
             {
                 List<Point> neighbourLiberties;
-                List<Group> associatedKillerGroups = killerGroups.Where(group => board.GetNeighbourGroups(group).Contains(board.GetGroupAt(targetGroup.Points.First()))).ToList();
+                List<Group> associatedKillerGroups = killerGroups.Where(group => board.GetNeighbourGroups(group).Contains(board.GetCurrentGroup(targetGroup))).ToList();
                 if (associatedKillerGroups.Count > 1) continue;
                 if (associatedKillerGroups.Count == 0) //no killer group
                 {
@@ -2242,7 +2241,7 @@ namespace Go
             Content c = tryMove.MoveContent;
 
             //suicide within real eye at suicidal redundant move
-            if (tryBoard.MoveGroup.Points.Count == 1 && EyeHelper.FindSemiSolidEyes(tryBoard.MoveGroup.Points.First(), capturedBoard).Item1)
+            if (tryBoard.MoveGroup.Points.Count == 1 && EyeHelper.FindSemiSolidEye(tryBoard.MoveGroup.Points.First(), capturedBoard).Item1)
                 return false;
             //check for covered eye
             if (EyeHelper.IsCovered(tryBoard, move, c.Opposite()))
@@ -2448,9 +2447,9 @@ namespace Go
                 if (singlePoint)
                 {
                     //check survival move
-                    if (SiegedScenario(tryBoard, tryBoard.GetClosestNeighbour(move, 2), 1)) return false;
+                    if (SiegedScenario(tryBoard, tryBoard.GetClosestPoints(move), 1)) return false;
                     //check kill move
-                    List<Point> oppositeStones = tryBoard.GetClosestNeighbour(move, 2, c.Opposite());
+                    List<Point> oppositeStones = tryBoard.GetClosestPoints(move, c.Opposite());
                     if (SiegedScenario(tryBoard, oppositeStones))
                         return false;
                 }
@@ -2459,7 +2458,7 @@ namespace Go
             //check two-point group
             if (tryBoard.MoveGroup.Points.Count == 2 && LinkHelper.GetGroupLinkedDiagonals(tryBoard).Count == 0)
             {
-                List<Point> neighbours = tryBoard.GetClosestNeighbour(move, 2).Except(tryBoard.MoveGroup.Points).ToList();
+                List<Point> neighbours = tryBoard.GetClosestPoints(move).Except(tryBoard.MoveGroup.Points).ToList();
                 if (SiegedScenario(tryBoard, neighbours))
                     return false;
             }
@@ -2537,7 +2536,7 @@ namespace Go
             List<Point> emptyNeighbours = tryBoard.GetStoneNeighbours().Where(p => tryBoard[p] == Content.Empty).ToList();
 
             //eye created by try move
-            if (emptyNeighbours.Any(n => EyeHelper.FindSemiSolidEyes(n, tryBoard, c).Item1))
+            if (emptyNeighbours.Any(n => EyeHelper.FindSemiSolidEye(n, tryBoard, c).Item1))
                 return false;
 
             //count eyes created at move
@@ -2610,7 +2609,7 @@ namespace Go
             //check for kill formation
             if (tryBoard.MoveGroup.Points.Count == 1 && tryBoard.MoveGroupLiberties == 2)
             {
-                Boolean killFormation = (tryBoard.GetClosestNeighbour(move, 2, c.Opposite()).Count >= 3 && !tryBoard.GetClosestNeighbour(move, 2, c).Any());
+                Boolean killFormation = (tryBoard.GetClosestPoints(move, c.Opposite()).Count >= 3 && !tryBoard.GetClosestPoints(move, c).Any());
                 if (killFormation) return false;
 
                 //multipoint snapback
@@ -2693,7 +2692,7 @@ namespace Go
                 return false;
 
             //select move that prevent survival creating eye
-            Boolean eyeCreated = tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindSemiSolidEyes(n, tryBoard, c).Item1);
+            Boolean eyeCreated = tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindSemiSolidEye(n, tryBoard, c).Item1);
             if (eyeCreated) return false;
 
             //count possible eyes created

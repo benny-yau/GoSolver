@@ -113,7 +113,7 @@ namespace Go
                     foreach (Group group in neighbourGroups)
                     {
                         (Boolean unEscapable, _, Board b) = ImmovableHelper.UnescapableGroup(board, group);
-                        if (!unEscapable && KoHelper.IsKoFight(b, b.GetGroupAt(targetGroup.Points.First())))
+                        if (!unEscapable && KoHelper.IsKoFight(b, b.GetCurrentGroup(targetGroup)))
                             return true;
                     }
                 }
@@ -199,7 +199,7 @@ namespace Go
             Point e = b2.MoveGroup.Liberties.First(lib => !lib.Equals(p));
             if (!ImmovableHelper.IsSuicidalMove(b2, e, c))
                 return false;
-            if (CheckConnectAndDie(b2, b2.GetGroupAt(targetGroup.Points.First())))
+            if (CheckConnectAndDie(b2, b2.GetCurrentGroup(targetGroup)))
                 return true;
             return false;
         }
@@ -248,7 +248,7 @@ namespace Go
             if (suicidal) return false;
 
             (Boolean suicidal2, Board b2) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), b);
-            if (suicidal2 && EyeHelper.FindRealSolidEyes(eyePoint, c.Opposite(), b2))
+            if (suicidal2 && EyeHelper.FindRealSolidEye(eyePoint, c.Opposite(), b2))
                 return false;
 
             return suicidal2;
@@ -278,7 +278,7 @@ namespace Go
                 return (true, libertyPoint, escapeBoard);
 
             //recursive connect and die
-            if (CheckConnectAndDie(escapeBoard, escapeBoard.GetGroupAt(group.Points.First())))
+            if (CheckConnectAndDie(escapeBoard, escapeBoard.GetCurrentGroup(group)))
                 return (true, libertyPoint, escapeBoard);
 
             return (false, null, escapeBoard);
@@ -304,7 +304,7 @@ namespace Go
                 if (GameHelper.CheckForRecursion(b).Any())
                     continue;
                 //connect and die
-                if (CheckConnectAndDie(b, b.GetGroupAt(group.Points.First())))
+                if (CheckConnectAndDie(b, b.GetCurrentGroup(group)))
                     continue;
                 return b;
             }
@@ -469,7 +469,7 @@ namespace Go
                 //make move at suicide point
                 Board b = board.MakeMoveOnNewBoard(libertyPoint, c.Opposite());
                 if (b == null || !b.IsAtariMove) continue;
-                Board b2 = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(b, b.GetGroupAt(targetGroup.Points.First()), c);
+                Board b2 = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(b, b.GetCurrentGroup(targetGroup), c);
                 if (b2 == null || b2.MoveGroupLiberties != 1) continue;
 
                 List<Group> suicideGroups = b.GetNeighbourGroups(targetGroup).Where(gr => gr.Points.Count <= 2 && gr.Liberties.Count == 1).ToList();

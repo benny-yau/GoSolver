@@ -136,7 +136,7 @@ namespace Go
             IEnumerable<Group> neighbourGroups = tryBoard.GetNeighbourGroups();
             Group weakGroup = neighbourGroups.FirstOrDefault(group => group.Points.Count >= 2 && group.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, group));
             if (weakGroup == null) return false;
-            if (ImmovableHelper.CheckConnectAndDie(capturedBoard, capturedBoard.GetGroupAt(weakGroup.Points.First())))
+            if (ImmovableHelper.CheckConnectAndDie(capturedBoard, capturedBoard.GetCurrentGroup(weakGroup)))
                 return true;
             return false;
         }
@@ -800,7 +800,7 @@ namespace Go
             Point corner = currentBoard.GetStoneNeighbours(p).FirstOrDefault(n => currentBoard.CornerPoint(n));
             if (!Convert.ToBoolean(corner.NotEmpty)) return false;
             if (currentBoard.GetStoneNeighbours(corner).Any(n => currentBoard[n] != Content.Empty)) return false;
-            if (currentBoard.GetDiagonalNeighbours(p).Any(n => currentBoard.PointWithinMiddleArea(n) && EyeHelper.FindSemiSolidEyes(n, currentBoard, c).Item1))
+            if (currentBoard.GetDiagonalNeighbours(p).Any(n => currentBoard.PointWithinMiddleArea(n) && EyeHelper.FindSemiSolidEye(n, currentBoard, c).Item1))
             {
                 foreach (Point q in currentBoard.GetStoneNeighbours(corner))
                 {

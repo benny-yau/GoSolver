@@ -409,7 +409,7 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499_2" />
             </summary>
         </member>
-        <member name="M:Go.EyeHelper.FindSemiSolidEyes(Go.Point,Go.Board,Go.Content)">
+        <member name="M:Go.EyeHelper.FindSemiSolidEye(Go.Point,Go.Board,Go.Content)">
             <summary>
             Semi solid eyes are real eyes that can have diagonals with immovable points.
             </summary>
@@ -424,7 +424,7 @@
             Get all immovable points at eye point diagonals.
             </summary>
         </member>
-        <member name="M:Go.EyeHelper.FindRealSolidEyes(Go.Point,Go.Content,Go.Board)">
+        <member name="M:Go.EyeHelper.FindRealSolidEye(Go.Point,Go.Content,Go.Board)">
             <summary>
             Find real solid eyes, filled with same content at the diagonals, not immovable points.
             </summary>

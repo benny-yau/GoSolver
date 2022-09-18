@@ -82,7 +82,7 @@ namespace Go
                 //make atari move
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board, false);
                 if (suicidal) continue;
-                Boolean atariOnTargetGroup = b.AtariTargets.Any(a => targetGroups.Any(t => t.Equals(board.GetGroupAt(a.Points.First()))));
+                Boolean atariOnTargetGroup = b.AtariTargets.Any(a => targetGroups.Any(t => t.Equals(board.GetCurrentGroup(a))));
                 if (!atariOnTargetGroup) continue;
                 if (board.CapturedList.Count > 0) return true;
                 //double atari with any target group

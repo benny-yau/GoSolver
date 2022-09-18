@@ -226,7 +226,7 @@ namespace Go
         /// </summary>
         public List<Point> GetGroupLiberties(Group group)
         {
-            return this.GetGroupAt(group.Points.First()).Liberties.ToList();
+            return this.GetCurrentGroup(group).Liberties.ToList();
         }
 
         public HashSet<Point> GetLibertiesOfGroups(List<Group> targetGroups)
@@ -248,7 +248,7 @@ namespace Go
             {
                 if (this[n] != c.Opposite()) continue;
                 Group ngroup = GetGroupAt(n);
-                if (GetGroupLiberties(ngroup).Count == 0)
+                if (ngroup.Liberties.Count == 0)
                     captures.Add(ngroup);
             }
             return captures;
@@ -306,9 +306,9 @@ namespace Go
         }
 
         /// <summary>
-        /// Get closest neighbour points to specific point by going in circles with increasing distance.
+        /// Get closest points to specific point by going in circles with increasing distance.
         /// </summary>
-        public List<Point> GetClosestNeighbour(Point p, int maxDistance = 2, Content c = Content.Unknown)
+        public List<Point> GetClosestPoints(Point p, Content c = Content.Unknown, int maxDistance = 2)
         {
             int x = p.x;
             int y = p.y;

@@ -38,9 +38,9 @@ namespace Go
                     {
                         if (groups[i] == groups[j]) continue;
                         if (WallHelper.IsNonKillableGroup(currentBoard, groups[i]) && WallHelper.IsNonKillableGroup(currentBoard, groups[j])) continue;
-                        Group groupI = tryBoard.GetGroupAt(groups[i].Points.First());
+                        Group groupI = tryBoard.GetCurrentGroup(groups[i]);
                         groupI.LinkedPoint = groups[i].LinkedPoint;
-                        Group groupJ = tryBoard.GetGroupAt(groups[j].Points.First());
+                        Group groupJ = tryBoard.GetCurrentGroup(groups[j]);
                         groupJ.LinkedPoint = groups[j].LinkedPoint;
                         if ((groupI.Liberties.Count == 1 && !KoHelper.IsKoFight(tryBoard, groupI)) || (groupJ.Liberties.Count == 1 && !KoHelper.IsKoFight(tryBoard, groupJ)))
                             continue;
@@ -105,7 +105,7 @@ namespace Go
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            List<Point> closestNeighbours = tryBoard.GetClosestNeighbour(move, 2, c);
+            List<Point> closestNeighbours = tryBoard.GetClosestPoints(move, c);
             //validate leap move
             closestNeighbours = closestNeighbours.Where(leapMove => RedundantMoveHelper.ValidateLeapMove(tryBoard, move, leapMove, false)).ToList();
             //add to groups with linked point

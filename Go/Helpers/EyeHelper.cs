@@ -135,7 +135,7 @@ namespace Go
         /// </summary>
         public static Boolean FindNonSemiSolidEye(Board board, Point eye, Content c)
         {
-            return EyeHelper.FindEye(board, eye, c) && !EyeHelper.FindSemiSolidEyes(eye, board, c).Item1;
+            return EyeHelper.FindEye(board, eye, c) && !EyeHelper.FindSemiSolidEye(eye, board, c).Item1;
         }
 
         /// <summary>
@@ -177,7 +177,7 @@ namespace Go
         /// <summary>
         /// Semi solid eyes are real eyes that can have diagonals with immovable points.
         /// </summary>
-        public static (Boolean, List<Point>) FindSemiSolidEyes(Point eye, Board board, Content c = Content.Unknown)
+        public static (Boolean, List<Point>) FindSemiSolidEye(Point eye, Board board, Content c = Content.Unknown)
         {
             GameInfo gameInfo = board.GameInfo;
             (Boolean isEye, Content content) = FindEye(eye.x, eye.y, board, c);
@@ -251,7 +251,7 @@ namespace Go
         /// <summary>
         /// Find real solid eyes, filled with same content at the diagonals, not immovable points.
         /// </summary>
-        public static Boolean FindRealSolidEyes(Point eye, Content c, Board board)
+        public static Boolean FindRealSolidEye(Point eye, Content c, Board board)
         {
             if (!FindUncoveredEye(board, eye, c))
                 return false;
@@ -279,17 +279,17 @@ namespace Go
             Board b = board.MakeMoveOnNewBoard(eye, c);
             if (b != null)
             {
-                if (eyeType == EyeType.SemiSolidEye && EyeHelper.FindSemiSolidEyes(otherEye, b, c).Item1)
+                if (eyeType == EyeType.SemiSolidEye && EyeHelper.FindSemiSolidEye(otherEye, b, c).Item1)
                     return b;
-                if (eyeType == EyeType.RealSolidEye && EyeHelper.FindRealSolidEyes(otherEye, c, b))
+                if (eyeType == EyeType.RealSolidEye && EyeHelper.FindRealSolidEye(otherEye, c, b))
                     return b;
             }
             Board b2 = board.MakeMoveOnNewBoard(otherEye, c);
             if (b2 != null)
             {
-                if (eyeType == EyeType.SemiSolidEye && EyeHelper.FindSemiSolidEyes(eye, b2, c).Item1)
+                if (eyeType == EyeType.SemiSolidEye && EyeHelper.FindSemiSolidEye(eye, b2, c).Item1)
                     return b2;
-                if (eyeType == EyeType.RealSolidEye && EyeHelper.FindRealSolidEyes(eye, c, b2))
+                if (eyeType == EyeType.RealSolidEye && EyeHelper.FindRealSolidEye(eye, c, b2))
                     return b2;
             }
             return null;
@@ -408,13 +408,13 @@ namespace Go
             if (availablePoints.Count == 0)
             {
                 if (eyeType == EyeType.SemiSolidEye)
-                    return killerGroup.Points.Any(k => board[k] == Content.Empty && FindSemiSolidEyes(k, board, c.Opposite()).Item1);
+                    return killerGroup.Points.Any(k => board[k] == Content.Empty && FindSemiSolidEye(k, board, c.Opposite()).Item1);
                 else if (eyeType == EyeType.UnCoveredEye)
                     return killerGroup.Points.Any(k => board[k] == Content.Empty && FindUncoveredEye(board, k, c.Opposite()));
                 else if (eyeType == EyeType.CoveredEye)
                     return killerGroup.Points.Any(k => board[k] == Content.Empty && FindCoveredEye(board, k, c.Opposite()));
                 else if (eyeType == EyeType.RealSolidEye)
-                    return killerGroup.Points.Any(k => board[k] == Content.Empty && FindRealSolidEyes(k, c.Opposite(), board));
+                    return killerGroup.Points.Any(k => board[k] == Content.Empty && FindRealSolidEye(k, c.Opposite(), board));
             }
             //alternate the player content
             Content content = (board.LastMoves.Count % 2 == 0) ? c : c.Opposite();
