@@ -513,7 +513,7 @@ namespace Go
                 Boolean capture = escapeBoard.CapturedList.Count == 1 && capturedPoints >= 1 && capturedPoints <= 2 && escapeBoard.CapturedList.First().Points.Any(p => EyeHelper.IsCovered(escapeBoard, p, targetGroup.Content));
                 if (!capture) return false;
                 //check if kill move can escape
-                if (UnescapableGroup(escapeBoard, suicideGroup).Item1)
+                if (escapeBoard.IsCapturedGroup(suicideGroup) || UnescapableGroup(escapeBoard, suicideGroup).Item1)
                     return false;
                 return true;
             }
