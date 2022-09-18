@@ -150,6 +150,14 @@ namespace Go
         }
 
         /// <summary>
+        /// Is captured group.
+        /// </summary>
+        public Boolean IsCapturedGroup(Group group)
+        {
+            return this.CapturedPoints.Any(t => t.Equals(group.Points.First()));
+        }
+
+        /// <summary>
         /// Create group and obtain group points by recursively adding direct connected points.
         /// Store group in cache and retrieve from cache on the next call.
         /// </summary>
@@ -194,6 +202,14 @@ namespace Go
         }
 
         /// <summary>
+        /// Get current group from previous group.
+        /// </summary>
+        public Group GetCurrentGroup(Group group)
+        {
+            return this.GetGroupAt(group.Points.First());
+        }
+
+        /// <summary>
         /// Get total count of liberties of move group.
         /// </summary>
         public int MoveGroupLiberties
@@ -206,42 +222,17 @@ namespace Go
         }
 
         /// <summary>
-        /// Get total count of liberties of group.
-        /// </summary>
-        public int GetGroupLiberties(Group group)
-        {
-            int libs = 0;
-            foreach (Point n in group.Neighbours)
-            {
-                if (this[n] == Content.Empty) libs++;
-            }
-            return libs;
-        }
-
-        public int GetGroupLiberties(Point p)
-        {
-            Group group = this.GetGroupAt(p);
-            return group.Liberties.Count;
-        }
-
-        /// <summary>
         /// Get liberty points of group.
         /// </summary>
-        public List<Point> GetGroupLibertyPoints(Group group)
+        public List<Point> GetGroupLiberties(Group group)
         {
-            List<Point> libertyPoints = new List<Point>();
-            foreach (Point n in group.Neighbours)
-            {
-                if (this[n] == Content.Empty)
-                    libertyPoints.Add(n);
-            }
-            return libertyPoints;
+            return this.GetGroupAt(group.Points.First()).Liberties.ToList();
         }
 
         public HashSet<Point> GetLibertiesOfGroups(List<Group> targetGroups)
         {
             HashSet<Point> libertyPoints = new HashSet<Point>();
-            targetGroups.ForEach(group => GetGroupLibertyPoints(group).ForEach(p => libertyPoints.Add(p)));
+            targetGroups.ForEach(group => GetGroupLiberties(group).ForEach(p => libertyPoints.Add(p)));
             return libertyPoints;
         }
 
@@ -255,12 +246,10 @@ namespace Go
             Content c = this[x, y];
             foreach (Point n in stoneNeighbours)
             {
-                if (this[n] == c.Opposite())
-                {
-                    Group ngroup = GetGroupAt(n);
-                    if (GetGroupLiberties(ngroup) == 0)
-                        captures.Add(ngroup);
-                }
+                if (this[n] != c.Opposite()) continue;
+                Group ngroup = GetGroupAt(n);
+                if (GetGroupLiberties(ngroup).Count == 0)
+                    captures.Add(ngroup);
             }
             return captures;
         }
@@ -319,7 +308,7 @@ namespace Go
         /// <summary>
         /// Get closest neighbour points to specific point by going in circles with increasing distance.
         /// </summary>
-        public List<Point> GetClosestNeighbour(Point p, int maxDistance = 2, Content c = Content.Unknown, Boolean excludeCorner = true)
+        public List<Point> GetClosestNeighbour(Point p, int maxDistance = 2, Content c = Content.Unknown)
         {
             int x = p.x;
             int y = p.y;
@@ -339,8 +328,8 @@ namespace Go
                         result.Add(new Point(x - j, y + i)); //bottom
                 }
             }
-            if (excludeCorner)
-                result.RemoveAll(r => Math.Abs(r.x - x) >= Math.Max(2, maxDistance) && Math.Abs(r.x - x) == Math.Abs(r.y - y));
+            //exclude all corners
+            result.RemoveAll(r => Math.Abs(r.x - x) >= Math.Max(2, maxDistance) && Math.Abs(r.x - x) == Math.Abs(r.y - y));
             return result;
         }
 
@@ -457,7 +446,7 @@ namespace Go
         /// <summary>
         /// Makes move on board internally. Returns result as MakeMoveResult.
         /// </summary>
-        public MakeMoveResult InternalMakeMove(int x, int y, Content content, Boolean overrideKo = false)
+        public MakeMoveResult InternalMakeMove(int x, int y, Content c, Boolean overrideKo = false)
         {
             Move = new Point(x, y);
             this.CapturedList.Clear();
@@ -469,34 +458,29 @@ namespace Go
                 LastMoves.Add(Move.Value);
                 return MakeMoveResult.Pass;
             }
-            else if (this[x, y] != Content.Empty) // move occupied
+            else if (this[x, y] != Content.Empty)
                 return MakeMoveResult.NotEmpty;
 
-            this[x, y] = content; // make new move
-
+            //make new move
+            this[x, y] = c;
             HashSet<Group> capturedGroups = GetCapturedGroups(x, y);
-            if (capturedGroups.Count > 0)
+
+            //check for ko move
+            if (capturedGroups.Count == 1 && capturedGroups.First().Points.Count == 1 && this.GetStoneNeighbours().All(n => this[n] == c.Opposite()))
             {
-                if (capturedGroups.Count == 1)
+                if (previousPtCapture != null && !overrideKo && Move.Equals(previousPtCapture))
                 {
-                    // check for ko move
-                    IEnumerable<Point> points = capturedGroups.First().Points;
-                    if (points.Count() == 1)
-                    {
-                        if (previousPtCapture != null && !overrideKo && Move.Equals(previousPtCapture))  //is ko
-                        {
-                            this[x, y] = Content.Empty;
-                            singlePointCapture = previousPtCapture;
-                            return MakeMoveResult.KoBlocked;
-                        }
-                        singlePointCapture = points.First();
-                    }
+                    this[x, y] = Content.Empty;
+                    singlePointCapture = previousPtCapture;
+                    return MakeMoveResult.KoBlocked;
                 }
+                singlePointCapture = capturedGroups.First().Points.First();
             }
             this.CapturedList = Capture(capturedGroups);
             MoveGroup = GetGroupAt(x, y);
 
-            if (capturedGroups.Count == 0 && MoveGroupLiberties == 0) // suicide move
+            //suicide move
+            if (capturedGroups.Count == 0 && MoveGroupLiberties == 0)
             {
                 this[x, y] = Content.Empty;
                 return MakeMoveResult.Suicide;

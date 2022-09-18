@@ -107,7 +107,7 @@ namespace Go
                 (Boolean unEscapable, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(board, targetGroup);
                 if (unEscapable) continue;
                 //check if any atari targets left
-                if (!board.AtariTargets.Any(t => escapeBoard.GetGroupLiberties(t.Points.First()) == 1))
+                if (!board.AtariTargets.Any(t => escapeBoard.GetGroupLiberties(t).Count == 1))
                     return true;
             }
             return false;

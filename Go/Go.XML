@@ -891,14 +891,6 @@
             Rare scenario where neutral point required for ko <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A80" />
             </summary>
         </member>
-        <member name="M:Go.KoHelper.CheckKillerKoWithinKillerGroup(Go.GameTryMove)">
-            <summary>
-            Check killer ko within killer group.
-            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B39" /> 
-            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A85" /> 
-            Check for double ko <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_4" /> 
-            </summary>
-        </member>
         <member name="M:Go.KoHelper.GetKoTargetGroups(Go.Board,Go.Group,Go.Group)">
             <summary>
             Get ko atari groups.

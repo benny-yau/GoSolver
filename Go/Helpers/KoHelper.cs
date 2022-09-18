@@ -156,42 +156,6 @@ namespace Go
             return true;
         }
 
-
-        /// <summary>
-        /// Check killer ko within killer group.
-        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B39" /> 
-        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A85" /> 
-        /// Check for double ko <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_4" /> 
-        /// </summary>
-        public static Boolean CheckKillerKoWithinKillerGroup(GameTryMove tryMove)
-        {
-            Board currentBoard = tryMove.CurrentGame.Board;
-            Board tryBoard = tryMove.TryGame.Board;
-            if (tryBoard.singlePointCapture == null) return false;
-            Point move = tryBoard.Move.Value;
-            Content c = tryBoard.MoveGroup.Content;
-            Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
-            if (killerGroup == null) return false;
-            List<Group> neighbourGroups = tryBoard.GetNeighbourGroups(killerGroup);
-            //ensure all neighbour groups within killer group
-            List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(tryBoard.singlePointCapture.Value, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
-            if (ngroups.Count == 1 && currentBoard.GetGroupLiberties(ngroups.First().Points.First()) == 1)
-            {
-                //ensure real eye within neighbour groups
-                HashSet<Point> killerLiberties = tryBoard.GetLibertiesOfGroups(neighbourGroups);
-                if (!killerLiberties.Any(liberty => EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, liberty, c.Opposite(), EyeType.UnCoveredEye)))
-                    return false;
-
-                //check for double ko
-                if (neighbourGroups.Any(n => GetKoTargetGroups(tryBoard, n, tryBoard.MoveGroup).Any()))
-                    return true;
-
-                if (neighbourGroups.All(n => !ImmovableHelper.CheckConnectAndDie(tryBoard, n)))
-                    return true;
-            }
-            return false;
-        }
-
         /// <summary>
         /// Get ko atari groups.
         /// </summary>

@@ -706,7 +706,7 @@ namespace Go
 
             //capture move
             (_, Board b) = ImmovableHelper.ConnectAndDie(tryBoard);
-            if (b == null) return false;
+            if (b == null || b.IsCapturedGroup(atariTarget)) return false;
 
             //escape move
             Board b2 = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(b, atariTarget, c);
@@ -2085,7 +2085,7 @@ namespace Go
                 neutralPointMoves.ForEach(m => coveredBoard[m.Move] = killerGroup.Content);
 
                 //order by inner liberties of neighbour group
-                List<Group> orderedGroups = g.Board.GetNeighbourGroups(killerGroup).OrderBy(n => coveredBoard.GetGroupLiberties(n)).ToList();
+                List<Group> orderedGroups = g.Board.GetNeighbourGroups(killerGroup).OrderBy(n => coveredBoard.GetGroupLiberties(n).Count).ToList();
 
                 //get liberties by order
                 HashSet<Point> libertyPoints = g.Board.GetLibertiesOfGroups(orderedGroups);
@@ -2758,7 +2758,7 @@ namespace Go
 
                 Board coveredBoard = BothAliveHelper.FillEyePointsBoard(opponentBoard, killerGroup);
                 //group has one or no liberties
-                if (coveredBoard.GetGroupLiberties(move) <= 1)
+                if (coveredBoard.GetGroupLiberties(tryBoard.MoveGroup).Count <= 1)
                     return true;
             }
             return false;

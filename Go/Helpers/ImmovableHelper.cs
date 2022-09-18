@@ -210,13 +210,12 @@ namespace Go
         public static Boolean EscapeCaptureLink(Board board, Group targetGroup, Point? capturePoint = null)
         {
             //check if absolute link at liberty
-            Point t = targetGroup.Points.First();
             foreach (Point liberty in targetGroup.Liberties)
             {
                 Board b = board.MakeMoveOnNewBoard(liberty, targetGroup.Content);
                 if (b == null || !LinkHelper.IsAbsoluteLinkForGroups(board, b))
                     continue;
-                if (b.GetGroupLiberties(t) > 2)
+                if (b.GetGroupLiberties(targetGroup).Count > 2)
                     return true;
             }
             //check for atari target group other than capture point
@@ -225,7 +224,7 @@ namespace Go
             {
                 if (capturePoint != null && ngroup.Points.Contains(capturePoint.Value)) continue;
                 Board b = ImmovableHelper.CaptureSuicideGroup(board, ngroup);
-                if (b != null && b.GetGroupAt(t).Liberties.Count > 2)
+                if (b != null && b.GetGroupLiberties(targetGroup).Count > 2)
                     return true;
             }
             return false;
@@ -383,7 +382,7 @@ namespace Go
         public static Point? GetLibertyPointOfSuicide(Board tryBoard, Group group = null)
         {
             if (group == null) group = tryBoard.MoveGroup;
-            List<Point> liberties = tryBoard.GetGroupLibertyPoints(group);
+            List<Point> liberties = tryBoard.GetGroupLiberties(group);
             if (liberties.Count == 1)
                 return liberties.First();
             return null;
@@ -457,7 +456,7 @@ namespace Go
         {
             Content c = targetGroup.Content;
             if (targetGroup.Points.Count == 1) return false;
-            List<Point> libertyPoints = board.GetGroupLibertyPoints(targetGroup);
+            List<Point> libertyPoints = board.GetGroupLiberties(targetGroup);
             if (libertyPoints.Count != 2) return false;
 
             List<Group> groups = AtariHelper.AtariByGroup(targetGroup, board);
@@ -531,7 +530,7 @@ namespace Go
         {
             targetGroup = (targetGroup) ?? board.MoveGroup;
             Content c = targetGroup.Content;
-            List<Point> groupLiberties = board.GetGroupLibertyPoints(targetGroup);
+            List<Point> groupLiberties = board.GetGroupLiberties(targetGroup);
             if (groupLiberties.Count > 2) return (false, null);
 
             List<KeyValuePair<LinkedPoint<Point>, Board>> killBoards = new List<KeyValuePair<LinkedPoint<Point>, Board>>();
@@ -549,7 +548,7 @@ namespace Go
                 Board b = kvp.Value;
                 LinkedPoint<Point> key = kvp.Key;
                 //check if captured
-                if (b.CapturedPoints.Contains(targetGroup.Points.First()))
+                if (b.IsCapturedGroup(targetGroup))
                     return (true, b);
 
                 //check if connect and die
@@ -611,7 +610,7 @@ namespace Go
                     return true;
 
                 //check unescapable group                
-                foreach (Point liberty in currentBoard.GetGroupLibertyPoints(targetGroup))
+                foreach (Point liberty in currentBoard.GetGroupLiberties(targetGroup))
                 {
                     Board b = currentBoard.MakeMoveOnNewBoard(liberty, c.Opposite());
                     if (b == null || b.AtariTargets.Count == 0) continue;
