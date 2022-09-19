@@ -1767,7 +1767,7 @@ namespace Go
             List<Group> targetGroups = new List<Group>();
             ngroups.ForEach(ngroup => targetGroups.AddRange(KoHelper.GetKoTargetGroups(tryBoard, ngroup)));
             targetGroups = targetGroups.Distinct().ToList();
-            if (targetGroups.Count >= 1 && targetGroups.Any(t => GroupHelper.GetKillerGroupFromCache(tryBoard, t.Points.First(), c) != null))
+            if (targetGroups.Count >= 1)
                 return true;
             return false;
         }
