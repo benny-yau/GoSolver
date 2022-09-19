@@ -175,10 +175,17 @@ namespace Go
             //check snapback for two-point move
             foreach (Group group in tryBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()))
             {
-                if (group.Liberties.Count == 1 && group.Points.Count >= 2)
+                if (group.Liberties.Count <= 2 && group.Points.Count >= 2)
                 {
-                    Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, group);
-                    if (b != null && b.MoveGroupLiberties == 1) return false;
+                    (_, Board b) = ImmovableHelper.ConnectAndDie(tryBoard);
+                    if (b == null) continue;
+                    Boolean captured = b.IsCapturedGroup(group);
+                    if (captured && b.MoveGroupLiberties == 1) return false;
+                    if (!captured)
+                    {
+                        Board b2 = ImmovableHelper.CaptureSuicideGroup(b, b.GetCurrentGroup(group));
+                        if (b2 != null && b2.MoveGroupLiberties == 1) return false;
+                    }
                 }
             }
 
