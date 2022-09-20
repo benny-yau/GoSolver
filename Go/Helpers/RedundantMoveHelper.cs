@@ -177,7 +177,7 @@ namespace Go
             {
                 if (group.Liberties.Count <= 2 && group.Points.Count >= 2)
                 {
-                    (_, Board b) = ImmovableHelper.ConnectAndDie(tryBoard);
+                    (_, Board b) = ImmovableHelper.ConnectAndDie(tryBoard, group);
                     if (b == null) continue;
                     Boolean captured = b.IsCapturedGroup(group);
                     if (captured && b.MoveGroupLiberties == 1) return false;

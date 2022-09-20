@@ -156,16 +156,13 @@ namespace Go
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             //check for covered eye
-            if (EyeHelper.CheckCoveredEyeAtSuicideGroup(b, tryBoard.MoveGroup))
+            if (EyeHelper.CheckCoveredEyeAtSuicideGroup(tryBoard))
                 return false;
 
             //allow two-point group without real eye
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(b, move, c.Opposite());
-            if (tryBoard.MoveGroup.Points.Count <= 2)
-            {
-                if (killerGroup != null && killerGroup.Points.Count <= 2 && !EyeHelper.FindRealEyeWithinEmptySpace(b, killerGroup))
-                    return false;
-            }
+            if (killerGroup != null && killerGroup.Points.Count <= 2 && !EyeHelper.FindRealEyeWithinEmptySpace(b, killerGroup))
+                return false;
 
             //check for corner six
             if (KillerFormationHelper.CornerSixFormation(tryBoard, tryBoard.MoveGroup))
