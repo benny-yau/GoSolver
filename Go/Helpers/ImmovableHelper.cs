@@ -79,7 +79,7 @@ namespace Go
                     return (false, null);
 
                 //check filled point connect and die
-                if (targetGroup.Points.Count <= 2 && board.GetNeighbourGroups(targetGroup).Any(n => CheckConnectAndDie(board, n)))
+                if (board.GetNeighbourGroups(targetGroup).Any(n => CheckConnectAndDie(board, n)))
                     return (false, null);
 
                 //check for ko possibility

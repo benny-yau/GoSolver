@@ -798,7 +798,7 @@
             Move group binding <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B19_2" />
             </summary>
         </member>
-        <member name="M:Go.KillerFormationHelper.IsLinkToExternalGroup(Go.Board,Go.Board,Go.Board)">
+        <member name="M:Go.KillerFormationHelper.IsLinkToExternalGroup(Go.Board,Go.Board)">
             <summary>
             Ensure link is connected to both stones from previous move group and to external group.
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16520_2" />

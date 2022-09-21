@@ -103,7 +103,7 @@ namespace Go
                 return false;
 
             //check if neighbour group is non-killable
-            if (!EyeHelper.CheckCoveredEyeAtSuicideGroup(tryBoard) && tryBoard.GetNeighbourGroups().Any(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
+            if (tryBoard.GetNeighbourGroups().Any(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
                 return false;
 
             //find killer formation
@@ -114,7 +114,7 @@ namespace Go
                 return false;
 
             //check link to external group
-            if (IsLinkToExternalGroup(tryBoard, currentBoard, capturedBoard))
+            if (IsLinkToExternalGroup(tryBoard, currentBoard))
                 return false;
             return true;
         }
@@ -150,9 +150,8 @@ namespace Go
         /// Check for corner six <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
         /// Find real eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18796_2" />
         /// </summary>
-        public static Boolean CheckRealEyeInNeighbourGroups(Board tryBoard, Board captureBoard = null)
+        public static Boolean CheckRealEyeInNeighbourGroups(Board tryBoard, Board captureBoard)
         {
-            Board b = captureBoard ?? tryBoard;
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             //check for covered eye
@@ -160,8 +159,8 @@ namespace Go
                 return false;
 
             //allow two-point group without real eye
-            Group killerGroup = GroupHelper.GetKillerGroupFromCache(b, move, c.Opposite());
-            if (killerGroup != null && killerGroup.Points.Count <= 2 && !EyeHelper.FindRealEyeWithinEmptySpace(b, killerGroup))
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite());
+            if (killerGroup != null && killerGroup.Points.Count <= 2 && !EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, killerGroup))
                 return false;
 
             //check for corner six
@@ -175,21 +174,21 @@ namespace Go
             if (killerGroup == null) killerGroup = tryBoard.MoveGroup;
 
             //get all killer groups except move killer group
-            List<Group> killerGroups = GroupHelper.GetKillerGroups(b, c.Opposite());
-            List<Group> neighbourGroups = b.GetNeighbourGroups(killerGroup);
+            List<Group> killerGroups = GroupHelper.GetKillerGroups(captureBoard, c.Opposite());
+            List<Group> neighbourGroups = captureBoard.GetNeighbourGroups(killerGroup);
 
-            if (neighbourGroups.Any(group => WallHelper.IsNonKillableGroup(b, group)))
+            if (neighbourGroups.Any(group => WallHelper.IsNonKillableGroup(captureBoard, group)))
                 return true;
 
             foreach (Group kgroup in killerGroups.Where(gr => gr != killerGroup))
             {
-                List<Group> neighbourKillerGroups = b.GetNeighbourGroups(kgroup);
+                List<Group> neighbourKillerGroups = captureBoard.GetNeighbourGroups(kgroup);
                 if (!neighbourKillerGroups.Intersect(neighbourGroups).Any()) continue;
                 //real eye with one neighbour group only
                 if (neighbourKillerGroups.Count == 1)
                     return true;
                 //find real eye
-                if (EyeHelper.FindRealEyeWithinEmptySpace(b, kgroup, EyeType.SemiSolidEye) && WallHelper.StrongNeighbourGroups(b, neighbourKillerGroups))
+                if (EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, kgroup) && WallHelper.StrongNeighbourGroups(captureBoard, neighbourKillerGroups))
                     return true;
             }
             return false;
@@ -352,12 +351,12 @@ namespace Go
         /// Check connect and die <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30403" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi_2" />
         /// </summary>
-        private static Boolean IsLinkToExternalGroup(Board tryBoard, Board currentBoard, Board capturedBoard)
+        private static Boolean IsLinkToExternalGroup(Board tryBoard, Board currentBoard)
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.MoveGroupLiberties != 1 || capturedBoard == null) return false;
-            Point? liberty = capturedBoard.Move;
+            if (tryBoard.MoveGroupLiberties != 1) return false;
+            Point? liberty = ImmovableHelper.GetLibertyPointOfSuicide(tryBoard);
             Board tryLinkBoard = currentBoard.MakeMoveOnNewBoard(liberty.Value, c);
             if (tryLinkBoard == null || tryLinkBoard.MoveGroupLiberties == 1) return false;
 
