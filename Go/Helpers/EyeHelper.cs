@@ -300,6 +300,8 @@ namespace Go
         /// Check snapback <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Scenario_XuanXuanGo_B31" /> 
         /// Ensure all groups have more than one liberty <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31469" /> 
         /// Ensure survival can make move at empty spaces <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18796_2" /> 
+        /// Check group for two opponent stones <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A139_3" /> 
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WuQingYuan_Q30982" />
         /// </summary>
         public static Boolean FindRealEyeWithinEmptySpace(Board board, Group killerGroup, EyeType eyeType = EyeType.SemiSolidEye)
         {
@@ -319,6 +321,10 @@ namespace Go
             {
                 if (eyeGroups.Count == 1 || eyeType != EyeType.SemiSolidEye)
                     return true;
+
+                //check group for two opponent stones
+                if (killerGroup.Points.Count == 3 && killerGroup.Points.Count(p => board[p] == killerGroup.Content) == 2)
+                    return false;
 
                 //check snapback
                 if (eyeGroups.Any(group => ImmovableHelper.CheckSnapback(board, group)))

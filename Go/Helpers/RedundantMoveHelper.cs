@@ -2355,28 +2355,15 @@ namespace Go
         /// </summary>
         public static Boolean RealEyeAtDiagonal(GameTryMove tryMove, Point eye)
         {
-            GameInfo gameInfo = tryMove.TryGame.GameInfo;
             GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
             if (opponentMove == null) return false;
-            Board currentBoard = tryMove.CurrentGame.Board;
             Board killerBoard = opponentMove.TryGame.Board;
             Content c = tryMove.MoveContent;
 
-            //check if eye is within enclosed killer group
-            Group eyeGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, eye, c);
-            if (eyeGroup == null) return false;
-
             //find real eye
-            if (EyeHelper.FindRealEyeWithinEmptySpace(killerBoard, eyeGroup, EyeType.SemiSolidEye))
-            {
-                //check for double capture
-                if (eyeGroup.Points.Count == 3)
-                {
-                    List<Point> capturedStones = eyeGroup.Points.Where(p => killerBoard[p] == eyeGroup.Content).ToList();
-                    if (capturedStones.Count == 2 && killerBoard.GetGroupsFromPoints(capturedStones).Count == 2) return false;
-                }
+            if (EyeHelper.FindRealEyeWithinEmptySpace(killerBoard, eye, c))
                 return true;
-            }
+
             return false;
         }
 

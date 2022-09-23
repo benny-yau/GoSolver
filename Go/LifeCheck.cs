@@ -103,9 +103,6 @@ namespace Go
                     //possible corner three formation
                     if (KillerFormationHelper.PossibleCornerThreeFormation(board, tigerMouth, c))
                         return true;
-                    //suicidal at tiger mouth
-                    if (board.GetDiagonalNeighbours(tigerMouth).Any(n => EyeHelper.FindUncoveredEye(board, n, c) && board.GetGroupsFromStoneNeighbours(n, c.Opposite()).All(e => e.Liberties.Count <= 2)) && ImmovableHelper.IsSuicidalMove(board, tigerMouth, c))
-                        return true;
                 }
 
                 if (CommonTigerMouthExceptions(board, c, tigerMouth, libertyPoint.Value))
