@@ -564,7 +564,7 @@ namespace Go
                 return false;
 
             //check for bloated eye move
-            if (tryBoard.GetDiagonalNeighbours().Any(d => tryBoard[d] == Content.Empty && tryBoard.GetStoneNeighbours(d).Any(n => tryBoard[n] == Content.Empty && tryBoard.CornerPoint(n) && KoHelper.IsReverseKoFight(currentBoard, n, c, false))))
+            if (tryBoard.GetDiagonalNeighbours().Any(d => tryBoard[d] == Content.Empty && tryBoard.GetStoneNeighbours(d).Any(n => tryBoard[n] == Content.Empty && tryBoard.CornerPoint(n) && KoHelper.IsReverseKoFight(currentBoard, n, c))))
                 return false;
 
             //check for eye at liberty point
@@ -1368,7 +1368,6 @@ namespace Go
             if (board.GetDiagonalNeighbours().Any(n => board[n] == c) && ImmovableHelper.IsSuicidalOnCapture(board).Item1)
                 return true;
             //check for ko fight
-            if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
             if (board.AtariTargets.Count == 1 && board.AtariTargets.First().Points.Count == 1)
             {
                 Point? libertyPoint = ImmovableHelper.GetLibertyPointOfSuicide(board, board.AtariTargets.First());
@@ -1645,10 +1644,6 @@ namespace Go
             //check for ko fight
             Board b = KoHelper.IsCaptureKoFight(tryBoard, atariTarget);
             if (b == null) return false;
-
-            //check for ko enabled
-            if (!KoHelper.KoContentEnabled(c, currentBoard.GameInfo))
-                return true;
 
             //check for connect and die
             List<Group> neighbourGroups = b.GetNeighbourGroups();

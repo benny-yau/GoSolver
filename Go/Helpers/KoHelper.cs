@@ -56,19 +56,18 @@ namespace Go
         /// <summary>
         /// Reverse ko fight.
         /// </summary>
-        public static Boolean IsReverseKoFight(Board tryBoard, Boolean checkKoEnabled = true)
+        public static Boolean IsReverseKoFight(Board tryBoard)
         {
             Content c = tryBoard.MoveGroup.Content;
-            if (checkKoEnabled && !KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
             List<Point> eyePoints = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindEye(tryBoard, n, c)).ToList();
             return eyePoints.Any(p => KoHelper.IsKoFight(tryBoard, p, c).Item1);
         }
 
-        public static Boolean IsReverseKoFight(Board tryBoard, Point p, Content c, Boolean checkKoEnabled = true)
+        public static Boolean IsReverseKoFight(Board tryBoard, Point p, Content c)
         {
             Board board = tryBoard.MakeMoveOnNewBoard(p, c);
             if (board == null) return false;
-            return IsReverseKoFight(board, checkKoEnabled);
+            return IsReverseKoFight(board);
         }
 
         /// <summary>
@@ -127,7 +126,6 @@ namespace Go
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
             if (tryBoard.PointWithinMiddleArea(move)) return false;
             if (tryBoard.MoveGroup.Points.Count != 1 || tryBoard.MoveGroupLiberties != 2) return false;
             List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] == c).ToList();

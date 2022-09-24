@@ -354,8 +354,6 @@ namespace Go
         private static Boolean CheckUniqueCornerConnectAndDie(Board board, Group killerGroup)
         {
             Content c = killerGroup.Content;
-            if (!KoHelper.KoContentEnabled(c, board.GameInfo)) return false;
-
             if (killerGroup.Points.Count == 1)
             {
                 //ensure corner point

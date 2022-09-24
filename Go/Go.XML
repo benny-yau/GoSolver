@@ -863,7 +863,7 @@
             Is Ko fight, including both pre-ko and ko.
             </summary>
         </member>
-        <member name="M:Go.KoHelper.IsReverseKoFight(Go.Board,System.Boolean)">
+        <member name="M:Go.KoHelper.IsReverseKoFight(Go.Board)">
             <summary>
             Reverse ko fight.
             </summary>

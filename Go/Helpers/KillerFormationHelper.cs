@@ -205,8 +205,6 @@ namespace Go
             if (corner.Count != 1) return false;
             if (tryBoard.MoveGroup.Liberties.Count != 2 || tryBoard.MoveGroup.Points.Count > 3) return false;
             if (tryBoard.GetNeighbourGroups().Count <= 1) return false;
-            Boolean koEnabled = KoHelper.KoContentEnabled(c, tryBoard.GameInfo);
-            if (!koEnabled) return false;
             Point? tigerMouth = ImmovableHelper.FindTigerMouth(tryBoard, corner.First(), c);
             if (tigerMouth == null) return false;
 
@@ -780,7 +778,6 @@ namespace Go
         public static Boolean CornerThreeFormation(Board tryBoard, Group moveGroup)
         {
             Content c = moveGroup.Content;
-            if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 3) return false;
             if (!contentPoints.Any(p => tryBoard.CornerPoint(p)) || contentPoints.Any(p => tryBoard.PointWithinMiddleArea(p))) return false;
@@ -792,7 +789,6 @@ namespace Go
 
         public static Boolean PossibleCornerThreeFormation(Board currentBoard, Point p, Content c)
         {
-            if (!KoHelper.KoContentEnabled(c.Opposite(), currentBoard.GameInfo)) return false;
             Point corner = currentBoard.GetStoneNeighbours(p).FirstOrDefault(n => currentBoard.CornerPoint(n));
             if (!Convert.ToBoolean(corner.NotEmpty)) return false;
             if (currentBoard.GetStoneNeighbours(corner).Any(n => currentBoard[n] != Content.Empty)) return false;
@@ -817,7 +813,6 @@ namespace Go
         public static Boolean CornerSixFormation(Board tryBoard, Group moveGroup)
         {
             Content c = moveGroup.Content;
-            if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 6) return false;
             if (!contentPoints.Any(p => tryBoard.CornerPoint(p))) return false;
@@ -836,7 +831,6 @@ namespace Go
         public static Boolean CornerFiveFormation(Board tryBoard, Group moveGroup)
         {
             Content c = moveGroup.Content;
-            if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo)) return false;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 5) return false;
             if (!contentPoints.Any(p => tryBoard.CornerPoint(p))) return false;
