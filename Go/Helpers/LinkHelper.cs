@@ -153,7 +153,7 @@ namespace Go
                 foreach (Point p in diagonals)
                 {
                     //make opponent move at diagonal
-                    (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board, false);
+                    (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board);
                     if (suicidal) return true;
                     //check not negligible
                     Boolean isNegligible = !b.AtariTargets.Any(t => !t.Points.Contains(pointA) && !t.Points.Contains(pointB)) && b.CapturedList.Count == 0 && !Board.ResolveAtari(board, b);
@@ -237,7 +237,7 @@ namespace Go
                 foreach (Point p in diagonals)
                 {
                     //make opponent move at diagonal
-                    (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board, false);
+                    (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board);
                     if (suicidal) return true;
 
                     Point q = diagonals.First(d => !d.Equals(p));

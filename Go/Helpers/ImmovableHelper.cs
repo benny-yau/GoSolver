@@ -55,7 +55,7 @@ namespace Go
         {
             if (board[p] == Content.Empty) //empty point
             {
-                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board, false);
+                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board);
                 if (!suicidal)
                     return (false, null);
 
@@ -318,25 +318,21 @@ namespace Go
             return IsSuicidalMove(p, c, tryBoard).Item1;
         }
 
-        public static (Boolean, Board) IsSuicidalMove(Point p, Content c, Board tryBoard, Boolean excludeKo = false)
+        public static (Boolean, Board) IsSuicidalMove(Point p, Content c, Board tryBoard, Boolean checkKo = false)
         {
             if (tryBoard == null) return (false, null);
             Board board = tryBoard.MakeMoveOnNewBoard(p, c);
             if (board == null) return (true, null);
-
-            if (board.MoveGroupLiberties != 1) return (false, board);
-
-            if (excludeKo)
-                return (true, board);
-
-            //check ko
-            if (KoHelper.IsKoFight(board))
+            if (board.MoveGroupLiberties == 1)
             {
-                Boolean koEnabled = KoHelper.KoContentEnabled(c, board.GameInfo);
-                if (!koEnabled) return (true, null);
-                else return (false, board);
+                if (checkKo && KoHelper.IsKoFight(board))
+                {
+                    Boolean koEnabled = KoHelper.KoContentEnabled(c, board.GameInfo);
+                    if (!koEnabled) return (false, null);
+                }
+                return (true, board);
             }
-            return (true, board);
+            return (false, board);
         }
 
         /// <summary>
@@ -348,11 +344,7 @@ namespace Go
             Board board = ImmovableHelper.CaptureSuicideGroup(tryBoard, targetGroup);
             if (board == null) return (true, null);
 
-            if (board.MoveGroupLiberties != 1) return (false, board);
-
-            //check ko
-            Boolean koEnabled = KoHelper.IsKoFight(board) && KoHelper.KoContentEnabled(board.MoveGroup.Content, board.GameInfo);
-            if (!koEnabled) return (true, board);
+            if (board.MoveGroupLiberties == 1) return (true, board);
 
             return (false, board);
         }
@@ -521,6 +513,7 @@ namespace Go
 
         /// <summary>
         /// Check for connect and die on board with captured suicide stone.
+        /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_A80" />
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
         /// Suicidal capture <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B25" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A55" />
@@ -536,7 +529,7 @@ namespace Go
             foreach (Point liberty in groupLiberties)
             {
                 if (!GameHelper.SetupMoveAvailable(board, liberty)) continue;
-                (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board, false);
+                (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board, true);
                 if (b == null) continue;
                 int neighbourCount = b.GetStoneNeighbours().Count(n => b[n] != c.Opposite());
                 killBoards.Add(new KeyValuePair<LinkedPoint<Point>, Board>(new LinkedPoint<Point>(liberty, new { isSuicidal, neighbourCount }), b));

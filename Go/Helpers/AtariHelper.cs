@@ -80,7 +80,7 @@ namespace Go
             foreach (Point liberty in liberties)
             {
                 //make atari move
-                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board, false);
+                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board);
                 if (suicidal) continue;
                 Boolean atariOnTargetGroup = b.AtariTargets.Any(a => targetGroups.Any(t => t.Equals(board.GetCurrentGroup(a))));
                 if (!atariOnTargetGroup) continue;

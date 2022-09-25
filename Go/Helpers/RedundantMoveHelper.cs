@@ -732,7 +732,7 @@ namespace Go
                 if (WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.MoveGroup))
                     continue;
 
-                if (group.Liberties.All(lib => ImmovableHelper.IsSuicidalMove(lib, group.Content.Opposite(), tryBoard, false).Item1))
+                if (group.Liberties.All(lib => ImmovableHelper.IsSuicidalMove(lib, group.Content.Opposite(), tryBoard).Item1))
                     continue;
 
                 return true;

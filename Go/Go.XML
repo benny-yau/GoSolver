@@ -689,6 +689,7 @@
         <member name="M:Go.ImmovableHelper.ConnectAndDie(Go.Board,Go.Group)">
             <summary>
             Check for connect and die on board with captured suicide stone.
+            <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_A80" />
             <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
             Suicidal capture <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B25" />
             <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A55" />
