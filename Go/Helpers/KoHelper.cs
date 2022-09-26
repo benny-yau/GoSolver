@@ -194,7 +194,6 @@ namespace Go
         /// <summary>
         /// Check essential atari for ko move.
         /// Check redundant atari <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_2" />
-        /// Check one liberty non-ko move <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_2" />
         /// </summary>
         public static Boolean EssentialAtariForKoMove(GameTryMove tryMove)
         {
@@ -204,13 +203,6 @@ namespace Go
             Content c = tryMove.MoveContent;
 
             if (!tryBoard.IsAtariMove) return false;
-            //check one liberty non-ko move
-            if (tryBoard.MoveGroupLiberties == 1 && !KoHelper.IsKoFight(tryBoard))
-            {
-                Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard);
-                if (b != null && !ImmovableHelper.CheckConnectAndDie(b))
-                    return false;
-            }
             if (tryBoard.AtariTargets.Count > 1) return true;
             Group atariTarget = tryBoard.AtariTargets.First();
             //check redundant atari

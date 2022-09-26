@@ -261,23 +261,23 @@ namespace Go
         /// Recursive connect and die <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A44_101Weiqi" />
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q17255" />
         /// </summary>
-        public static (Boolean, Point?, Board) UnescapableGroup(Board tryBoard, Group group)
+        public static (Boolean, Point?, Board) UnescapableGroup(Board tryBoard, Group group, Boolean koEnabled = true)
         {
             Point? libertyPoint = ImmovableHelper.GetLibertyPointOfSuicide(tryBoard, group);
             if (libertyPoint == null) return (false, null, null);
 
             //check if atari any neighbour groups
-            Board captureBoard = EscapeByCapture(tryBoard, group);
+            Board captureBoard = EscapeByCapture(tryBoard, group, koEnabled);
             if (captureBoard != null)
                 return (false, null, captureBoard);
 
-            //move at liberty is suicidal or end crawling move
+            //move at liberty is suicidal
             (Boolean isSuicidal, Board escapeBoard) = IsSuicidalMove(libertyPoint.Value, group.Content, tryBoard);
             if (isSuicidal)
                 return (true, libertyPoint, escapeBoard);
 
             //recursive connect and die
-            if (CheckConnectAndDie(escapeBoard, escapeBoard.GetCurrentGroup(group)))
+            if (CheckConnectAndDie(escapeBoard, escapeBoard.GetCurrentGroup(group), koEnabled))
                 return (true, libertyPoint, escapeBoard);
 
             return (false, null, escapeBoard);
@@ -291,19 +291,19 @@ namespace Go
         /// Connect and die for move group <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_GuanZiPu_A3" />
         /// Check for recursion <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_XuanXuanGo_Q18331" />
         /// </summary>
-        public static Board EscapeByCapture(Board tryBoard, Group group)
+        public static Board EscapeByCapture(Board tryBoard, Group group, Boolean koEnabled = true)
         {
             List<Group> atariTargets = AtariHelper.AtariByGroup(group, tryBoard, false);
             foreach (Group target in atariTargets)
             {
                 //make capture move
-                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalOnCapture(tryBoard, target);
+                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalOnCapture(tryBoard, target, !koEnabled);
                 if (b == null) continue;
                 //check for recursion
                 if (GameHelper.CheckForRecursion(b).Any())
                     continue;
                 //connect and die
-                if (CheckConnectAndDie(b, b.GetCurrentGroup(group)))
+                if (CheckConnectAndDie(b, b.GetCurrentGroup(group), !koEnabled))
                     continue;
                 return b;
             }
@@ -318,18 +318,25 @@ namespace Go
             return IsSuicidalMove(p, c, tryBoard).Item1;
         }
 
-        public static (Boolean, Board) IsSuicidalMove(Point p, Content c, Board tryBoard, Boolean checkKo = false)
+        public static (Boolean, Board) IsSuicidalMove(Point p, Content c, Board tryBoard)
         {
             if (tryBoard == null) return (false, null);
             Board board = tryBoard.MakeMoveOnNewBoard(p, c);
             if (board == null) return (true, null);
             if (board.MoveGroupLiberties == 1)
+                return (true, board);
+            return (false, board);
+        }
+
+        public static (Boolean, Board) IsSuicidalMoveForConnectAndDie(Point p, Content c, Board tryBoard, Boolean koEnabled = false)
+        {
+            if (tryBoard == null) return (false, null);
+            Board board = tryBoard.MakeMoveOnNewBoard(p, c, koEnabled);
+            if (board == null) return (true, null);
+            if (board.MoveGroupLiberties == 1)
             {
-                if (checkKo && KoHelper.IsKoFight(board))
-                {
-                    Boolean koEnabled = KoHelper.KoContentEnabled(c, board.GameInfo);
-                    if (!koEnabled) return (false, null);
-                }
+                if (!koEnabled && KoHelper.IsKoFight(board))
+                    return (true, null);
                 return (true, board);
             }
             return (false, board);
@@ -339,13 +346,17 @@ namespace Go
         /// Is suicide move on capture.
         /// Check ko <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WuQingYuan_Q31503" />
         /// </summary>
-        public static (Boolean, Board) IsSuicidalOnCapture(Board tryBoard, Group targetGroup = null)
+        public static (Boolean, Board) IsSuicidalOnCapture(Board tryBoard, Group targetGroup = null, Boolean checkKo = false)
         {
             Board board = ImmovableHelper.CaptureSuicideGroup(tryBoard, targetGroup);
             if (board == null) return (true, null);
 
-            if (board.MoveGroupLiberties == 1) return (true, board);
-
+            if (board.MoveGroupLiberties == 1)
+            {
+                if (checkKo && KoHelper.IsKoFight(board))
+                    return (false, null);
+                return (true, board);
+            }
             return (false, board);
         }
 
@@ -518,7 +529,7 @@ namespace Go
         /// Suicidal capture <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B25" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A55" />
         /// </summary>
-        public static (Boolean, Board) ConnectAndDie(Board board, Group targetGroup = null)
+        public static (Boolean, Board) ConnectAndDie(Board board, Group targetGroup = null, Boolean koEnabled = true)
         {
             targetGroup = (targetGroup) ?? board.MoveGroup;
             Content c = targetGroup.Content;
@@ -529,7 +540,7 @@ namespace Go
             foreach (Point liberty in groupLiberties)
             {
                 if (!GameHelper.SetupMoveAvailable(board, liberty)) continue;
-                (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board, true);
+                (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMoveForConnectAndDie(liberty, c.Opposite(), board, koEnabled);
                 if (b == null) continue;
                 int neighbourCount = b.GetStoneNeighbours().Count(n => b[n] != c.Opposite());
                 killBoards.Add(new KeyValuePair<LinkedPoint<Point>, Board>(new LinkedPoint<Point>(liberty, new { isSuicidal, neighbourCount }), b));
@@ -544,15 +555,15 @@ namespace Go
                     return (true, b);
 
                 //check if connect and die
-                if (UnescapableGroup(b, targetGroup).Item1)
+                if (UnescapableGroup(b, targetGroup, !koEnabled).Item1)
                     return (true, b);
             }
             return (false, null);
         }
 
-        public static Boolean CheckConnectAndDie(Board board, Group targetGroup = null)
+        public static Boolean CheckConnectAndDie(Board board, Group targetGroup = null, Boolean koEnabled = true)
         {
-            return ConnectAndDie(board, targetGroup).Item1;
+            return ConnectAndDie(board, targetGroup, koEnabled).Item1;
         }
 
 

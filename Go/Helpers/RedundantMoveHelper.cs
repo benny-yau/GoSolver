@@ -308,6 +308,8 @@ namespace Go
                 if (ImmovableHelper.CheckConnectAndDie(b))
                     return (true, b);
                 if (b == null || b.MoveGroup.Liberties.Count != 2) continue;
+
+                //make block move
                 List<Point> moveGroupLiberties = b.MoveGroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
                 (Boolean suicidal2, Board b2) = ImmovableHelper.IsSuicidalMove(moveGroupLiberties.First(), eyeGroup.Content.Opposite(), b);
                 if (suicidal2) continue;
@@ -322,7 +324,7 @@ namespace Go
 
                 b[move] = b2[move] = c;
                 //unstoppable group
-                if (ImmovableHelper.CheckConnectAndDie(b2))
+                if (ImmovableHelper.CheckConnectAndDie(b2, b2.MoveGroup, false))
                 {
                     HashSet<Group> neighbourGroups = b2.GetGroupsFromStoneNeighbours(liberty, c);
                     if (neighbourGroups.Count == 1 || neighbourGroups.Any(n => n.Liberties.Count == 1) || WallHelper.StrongNeighbourGroups(b2, neighbourGroups)) continue;
@@ -642,7 +644,7 @@ namespace Go
             HashSet<Point> movePoints = tryBoard.MoveGroup.Points;
 
             //check connect and die
-            (Boolean suicidal, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
+            (Boolean suicidal, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard, tryBoard.MoveGroup, false);
             if (!suicidal) return false;
 
             if (LifeCheck.GetTargets(tryBoard).All(t => tryBoard.MoveGroup.Equals(t))) return true;
@@ -1585,7 +1587,7 @@ namespace Go
                 Point? q = ImmovableHelper.FindTigerMouth(tryBoard, p, c);
                 if (q == null) continue;
                 if (tryBoard.GetStoneNeighbours(q.Value).Any(n => tryBoard[n] == c.Opposite() && WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.GetGroupAt(n)))) continue;
-                if (tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Any(gr => ImmovableHelper.CheckConnectAndDie(tryBoard, gr))) continue;
+                if (tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Any(gr => ImmovableHelper.CheckConnectAndDie(tryBoard, gr, false))) continue;
                 return false;
             }
             return true;
@@ -1611,7 +1613,7 @@ namespace Go
             Boolean isNeutralPoint = NeutralPointSurvivalMove(opponentMove, tryMove);
             if (isNeutralPoint)
             {
-                if (ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.MoveGroup)) return isNeutralPoint;
+                if (ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.MoveGroup, false)) return isNeutralPoint;
                 //must have neutral point
                 (Boolean mustHave, Point? linkPoint) = MustHaveNeutralPoint(tryMove, opponentMove);
                 if (mustHave)
@@ -2602,7 +2604,7 @@ namespace Go
                 if (killFormation) return false;
 
                 //multipoint snapback
-                if (captureBoard.GetNeighbourGroups(tryBoard.MoveGroup).Any(gr => gr.Points.Count > 1 && ImmovableHelper.CheckConnectAndDie(captureBoard, gr)))
+                if (captureBoard.GetNeighbourGroups(tryBoard.MoveGroup).Any(gr => gr.Points.Count > 1 && ImmovableHelper.CheckConnectAndDie(captureBoard, gr, false)))
                     return false;
 
                 return true;

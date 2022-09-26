@@ -129,14 +129,14 @@ namespace Go
         private static Boolean MultipointSnapbackAfterCapture(Board tryBoard, Board currentBoard, Board capturedBoard)
         {
             Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.MoveGroupLiberties == 1 && capturedBoard.MoveGroup.Points.Count > 1 && ImmovableHelper.CheckConnectAndDie(capturedBoard))
+            if (tryBoard.MoveGroupLiberties == 1 && capturedBoard.MoveGroup.Points.Count > 1 && ImmovableHelper.CheckConnectAndDie(capturedBoard, capturedBoard.MoveGroup, false))
                 return true;
 
             if (tryBoard.MoveGroupLiberties != 2) return false;
             IEnumerable<Group> neighbourGroups = tryBoard.GetNeighbourGroups();
             Group weakGroup = neighbourGroups.FirstOrDefault(group => group.Points.Count >= 2 && group.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, group));
             if (weakGroup == null) return false;
-            if (ImmovableHelper.CheckConnectAndDie(capturedBoard, capturedBoard.GetCurrentGroup(weakGroup)))
+            if (ImmovableHelper.CheckConnectAndDie(capturedBoard, capturedBoard.GetCurrentGroup(weakGroup), false))
                 return true;
             return false;
         }
@@ -797,7 +797,7 @@ namespace Go
                 foreach (Point q in currentBoard.GetStoneNeighbours(corner))
                 {
                     Board b = currentBoard.MakeMoveOnNewBoard(q, c.Opposite());
-                    if (b != null && !ImmovableHelper.CheckConnectAndDie(b)) return true;
+                    if (b != null && !ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false)) return true;
                 }
             }
             return false;

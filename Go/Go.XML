@@ -603,7 +603,7 @@
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario1dan21" />
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.UnescapableGroup(Go.Board,Go.Group)">
+        <member name="M:Go.ImmovableHelper.UnescapableGroup(Go.Board,Go.Group,System.Boolean)">
             <summary>
             Ensure group cannot escape by moving at liberty point.       
             <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A85" />
@@ -613,7 +613,7 @@
             <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q17255" />
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.EscapeByCapture(Go.Board,Go.Group)">
+        <member name="M:Go.ImmovableHelper.EscapeByCapture(Go.Board,Go.Group,System.Boolean)">
             <summary>
             Check if can escape by capturing neighbour group.
             Check snapback <see cref="!:UnitTestProject.AtariResponseMoveTest.AtariResponseMoveTest_Scenario_TianLongTu_Q16605" />
@@ -628,7 +628,7 @@
             Is suicidal move.
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.IsSuicidalOnCapture(Go.Board,Go.Group)">
+        <member name="M:Go.ImmovableHelper.IsSuicidalOnCapture(Go.Board,Go.Group,System.Boolean)">
             <summary>
             Is suicide move on capture.
             Check ko <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WuQingYuan_Q31503" />
@@ -686,7 +686,7 @@
             Check if kill move can escape <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_B28" />
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.ConnectAndDie(Go.Board,Go.Group)">
+        <member name="M:Go.ImmovableHelper.ConnectAndDie(Go.Board,Go.Group,System.Boolean)">
             <summary>
             Check for connect and die on board with captured suicide stone.
             <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_A80" />
@@ -908,7 +908,6 @@
             <summary>
             Check essential atari for ko move.
             Check redundant atari <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_2" />
-            Check one liberty non-ko move <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_2" />
             </summary>
         </member>
         <member name="M:Go.LinkHelper.PossibleLinkForGroups(Go.Board,Go.Board)">

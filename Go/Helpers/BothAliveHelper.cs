@@ -101,7 +101,7 @@ namespace Go
                 if (oneLiberty) return false;
 
                 //ensure shared liberty suicidal for killer
-                if (!emptyPoints.Any(p => board.GetGroupsFromStoneNeighbours(p, c.Opposite()).Any(group => group.Liberties.Count > 1) && ImmovableHelper.IsSuicidalMove(board, p, c)))
+                if (!emptyPoints.Any(p => ImmovableHelper.IsSuicidalMove(board, p, c)))
                     return false;
 
                 //find diagonal cut
