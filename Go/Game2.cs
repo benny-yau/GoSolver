@@ -461,8 +461,7 @@ namespace Go
         /// </summary>
         private void RestoreRedundantKo(List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves)
         {
-            //no more try moves
-            if (tryMoves.Count > 0) return;
+            if (tryMoves.Count(t => !KoHelper.IsKoFight(t.CurrentGame.Board, t.Move, t.MoveContent).Item1) > 0) return;
             foreach (GameTryMove koMove in redundantTryMoves.Where(t => t.IsRedundantKo))
             {
                 Board currentBoard = koMove.CurrentGame.Board;
@@ -532,7 +531,7 @@ namespace Go
         private Boolean AddPointToFightKo(List<GameTryMove> tryMoves, Game currentGame, SurviveOrKill surviveOrKill)
         {
             KoCheck koGameCheck = (surviveOrKill == SurviveOrKill.Kill) ? KoCheck.Survive : KoCheck.Kill;
-            Boolean isRemainingKoFight = (tryMoves.Count == 0 && currentGame.KoGameCheck == koGameCheck && currentGame.Board.singlePointCapture != null);
+            Boolean isRemainingKoFight = (tryMoves.Count(t => !KoHelper.IsKoFight(t.CurrentGame.Board, t.Move, t.MoveContent).Item1) == 0 && currentGame.KoGameCheck == koGameCheck && currentGame.Board.singlePointCapture != null);
             if (isRemainingKoFight)
             {
                 //check killer ko within killer group

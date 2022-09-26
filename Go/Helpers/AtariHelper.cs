@@ -27,9 +27,9 @@ namespace Go
         /// Check if any atari on neighbour groups, including ko. 
         /// Check for ko <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30315" />
         /// </summary>
-        public static Boolean AtariByGroup(Board board, Group atariGroup, Boolean excludeKo = true)
+        public static Boolean AtariByGroup(Board board, Group atariGroup, Boolean koEnabled = true)
         {
-            return AtariByGroup(atariGroup, board, excludeKo).Any();
+            return AtariByGroup(atariGroup, board, koEnabled).Any();
         }
 
         /// <summary>
@@ -37,33 +37,14 @@ namespace Go
         /// Ensure only one ko fight group <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_A85" />
         /// Check for ko liberty <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_A85_2" />
         /// </summary>
-        public static List<Group> AtariByGroup(Group atariGroup, Board board, Boolean excludeKo = true)
+        public static List<Group> AtariByGroup(Group atariGroup, Board board, Boolean koEnabled = true)
         {
             Content c = atariGroup.Content;
             List<Group> targetGroups = board.GetNeighbourGroups(atariGroup).Where(gr => gr.Liberties.Count == 1).ToList();
-            if (excludeKo)
+            if (koEnabled)
                 return targetGroups;
             //check for ko
-            List<Group> koFightGroups = targetGroups.Where(n => KoHelper.IsKoFight(board, n)).ToList();
-
-            for (int i = koFightGroups.Count - 1; i >= 0; i--)
-            {
-                Group group = koFightGroups[i];
-                Board b = ImmovableHelper.CaptureSuicideGroup(board, group);
-                if (b == null)
-                {
-                    targetGroups.Remove(group);
-                    continue;
-                }
-                //ensure only one ko fight group
-                if (koFightGroups.Count == 1 && !KoHelper.KoContentEnabled(c, board.GameInfo))
-                {
-                    //check for ko liberty
-                    Boolean koLibertyFound = atariGroup.Liberties.Any(n => !n.Equals(group.Points.First()) && KoHelper.IsKoFight(b, n, c).Item1);
-                    if (!koLibertyFound)
-                        targetGroups.Remove(group);
-                }
-            }
+            targetGroups.RemoveAll(t => KoHelper.IsKoFight(board, t));
             return targetGroups;
         }
 

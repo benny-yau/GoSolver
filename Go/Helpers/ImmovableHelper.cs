@@ -293,7 +293,7 @@ namespace Go
         /// </summary>
         public static Board EscapeByCapture(Board tryBoard, Group group, Boolean koEnabled = true)
         {
-            List<Group> atariTargets = AtariHelper.AtariByGroup(group, tryBoard, false);
+            List<Group> atariTargets = AtariHelper.AtariByGroup(group, tryBoard, koEnabled);
             foreach (Group target in atariTargets)
             {
                 //make capture move
