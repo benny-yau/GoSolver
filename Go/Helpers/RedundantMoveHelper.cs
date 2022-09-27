@@ -543,7 +543,7 @@ namespace Go
             foreach (Group atariTarget in tryBoard.AtariTargets)
             {
                 //check for unescapable group
-                (Boolean unEscapable, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(tryBoard, atariTarget);
+                (Boolean unEscapable, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(tryBoard, atariTarget, false);
                 if (unEscapable) return false;
                 //check for weak group
                 if (CheckWeakGroupInOpponentSuicide(tryBoard, atariTarget))

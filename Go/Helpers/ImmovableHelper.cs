@@ -508,7 +508,7 @@ namespace Go
             if (suicidal && b != null && b.MoveGroup.Points.Count > 1)
             {
                 //check if target group is escapable
-                (Boolean unEscapable, _, Board escapeBoard) = UnescapableGroup(tryBoard, targetGroup);
+                (Boolean unEscapable, _, Board escapeBoard) = UnescapableGroup(tryBoard, targetGroup, false);
                 if (unEscapable) return true;
                 //check not more than two stones captured
                 int capturedPoints = escapeBoard.CapturedPoints.Count();
@@ -617,7 +617,7 @@ namespace Go
                 {
                     Board b = currentBoard.MakeMoveOnNewBoard(liberty, c.Opposite());
                     if (b == null || b.AtariTargets.Count == 0) continue;
-                    if (b.AtariTargets.Any(t => ImmovableHelper.UnescapableGroup(b, t).Item1))
+                    if (b.AtariTargets.Any(t => ImmovableHelper.UnescapableGroup(b, t, false).Item1))
                     {
                         if (ImmovableHelper.IsSuicidalMoveForBothPlayers(tryBoard, liberty))
                             return true;

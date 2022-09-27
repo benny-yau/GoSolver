@@ -205,10 +205,18 @@ namespace Go
             if (!tryBoard.IsAtariMove) return false;
             if (tryBoard.AtariTargets.Count > 1) return true;
             Group atariTarget = tryBoard.AtariTargets.First();
+
+            //check one liberty non-ko move
+            if (tryBoard.MoveGroupLiberties == 1 && !KoHelper.IsKoFight(tryBoard))
+            {
+                Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard);
+                if (b != null && !ImmovableHelper.CheckConnectAndDie(b))
+                    return false;
+            }
             //check redundant atari
             if (tryBoard.GetGroupsFromStoneNeighbours(move, c).Count == 1 && WallHelper.IsNonKillableGroup(currentBoard, currentBoard.GetCurrentGroup(atariTarget)))
             {
-                (Boolean unEscapable, _, Board b) = ImmovableHelper.UnescapableGroup(tryBoard, atariTarget);
+                (Boolean unEscapable, _, Board b) = ImmovableHelper.UnescapableGroup(tryBoard, atariTarget, false);
                 if (!unEscapable && b != null && b.MoveGroupLiberties > 1)
                 {
                     atariTarget.IsNonKillable = true;
