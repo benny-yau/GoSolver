@@ -139,9 +139,8 @@ namespace Go
             {
                 //check for atari at tiger mouth
                 HashSet<Group> tmGroups = b.GetGroupsFromStoneNeighbours(tigerMouth, c.Opposite());
-
                 //check is negligible
-                Boolean notNegligible = b.CapturedList.Count > 0 || Board.ResolveAtari(board, b) || (b.AtariTargets.Any(t => !tmGroups.Contains(t) && !ImmovableHelper.UnescapableGroup(b, t).Item1));
+                Boolean notNegligible = b.CapturedList.Count > 0 || Board.ResolveAtari(board, b) || b.AtariTargets.Any(t => !tmGroups.Contains(t));
                 if (notNegligible)
                     return true;
 
