@@ -2884,6 +2884,7 @@ namespace Go
         /// Real eye at diagonal <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WuQingYuan_Q30982" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_2" /> 
+        /// Suicide group ko fight <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q16693_2" /> 
         /// Check break link <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30152_2" /> 
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q30152" /> 
         /// </summary>
@@ -2897,12 +2898,17 @@ namespace Go
             if (eyePoint == null) return false;
 
             //check all eye groups are non killable
-            if (currentBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).All(n => WallHelper.IsNonKillableFromSetupMoves(currentBoard, n)))
+            List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).ToList();
+            if (eyeGroups.All(n => WallHelper.IsNonKillableFromSetupMoves(currentBoard, n)))
                 return true;
 
             //check ko fight necessary
             List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
             if (ngroups.Count == 1 && tryBoard.GetNeighbourGroups(ngroups.First()).Any(group => group.Liberties.Count <= 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, group) && !ImmovableHelper.EscapeCaptureLink(tryBoard, group, move)))
+                return false;
+
+            //suicide group ko fight
+            if (!eyeGroups.Any(e => WallHelper.IsNonKillableGroup(currentBoard, e)) && ngroups.Any(n => LinkHelper.FindDiagonalCut(tryBoard, n).Item1 == null && tryBoard.GetNeighbourGroups(n).Any() && !tryBoard.GetNeighbourGroups(n).Any(gr => WallHelper.IsNonKillableFromSetupMoves(tryBoard, gr))))
                 return false;
 
             //check break link
