@@ -2903,11 +2903,11 @@ namespace Go
                 return true;
 
             //check ko fight necessary
-            List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
-            if (ngroups.Count == 1 && tryBoard.GetNeighbourGroups(ngroups.First()).Any(group => group.Liberties.Count <= 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, group) && !ImmovableHelper.EscapeCaptureLink(tryBoard, group, move)))
+            if (tryBoard.GetNeighbourGroups().Any(group => group.Liberties.Count <= 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, group)))
                 return false;
 
             //suicide group ko fight
+            List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
             if (!eyeGroups.Any(e => WallHelper.IsNonKillableGroup(currentBoard, e)) && ngroups.Any(n => LinkHelper.FindDiagonalCut(tryBoard, n).Item1 == null && tryBoard.GetNeighbourGroups(n).Any() && !tryBoard.GetNeighbourGroups(n).Any(gr => WallHelper.IsNonKillableFromSetupMoves(tryBoard, gr))))
                 return false;
 
