@@ -122,6 +122,7 @@ namespace Go
         /// <summary>
         /// Multipoint snapback after capture
         /// One liberty <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q15054" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3_4" />
         /// Two liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario1dan4_2" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31435" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18710" />
@@ -129,14 +130,13 @@ namespace Go
         private static Boolean MultipointSnapbackAfterCapture(Board tryBoard, Board currentBoard, Board capturedBoard)
         {
             Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.MoveGroupLiberties == 1 && capturedBoard.MoveGroup.Points.Count > 1 && ImmovableHelper.CheckConnectAndDie(capturedBoard, capturedBoard.MoveGroup, false))
+            if (tryBoard.MoveGroupLiberties == 1 && capturedBoard.MoveGroup.Points.Count > 1 && ImmovableHelper.CheckConnectAndDie(capturedBoard, capturedBoard.MoveGroup))
                 return true;
 
             if (tryBoard.MoveGroupLiberties != 2) return false;
-            IEnumerable<Group> neighbourGroups = tryBoard.GetNeighbourGroups();
-            Group weakGroup = neighbourGroups.FirstOrDefault(group => group.Points.Count >= 2 && group.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, group));
+            Group weakGroup = tryBoard.GetNeighbourGroups().FirstOrDefault(group => group.Points.Count >= 2 && group.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, group));
             if (weakGroup == null) return false;
-            if (ImmovableHelper.CheckConnectAndDie(capturedBoard, capturedBoard.GetCurrentGroup(weakGroup), false))
+            if (ImmovableHelper.CheckConnectAndDie(capturedBoard, capturedBoard.GetCurrentGroup(weakGroup)))
                 return true;
             return false;
         }

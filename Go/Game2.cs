@@ -458,10 +458,11 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B39" />
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_5" />
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A79" />
+        /// Check covered eye <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_6" />
         /// </summary>
         private void RestoreRedundantKo(List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves)
         {
-            if (tryMoves.Count > 1 || tryMoves.Any(t => !KoHelper.IsKoFight(t.CurrentGame.Board, t.Move, t.MoveContent).Item1)) return;
+            if (tryMoves.Count > 1 || tryMoves.Any(t => !EyeHelper.FindCoveredEye(t.CurrentGame.Board, t.Move, t.MoveContent))) return;
             foreach (GameTryMove koMove in redundantTryMoves.Where(t => t.IsRedundantKo))
             {
                 Board currentBoard = koMove.CurrentGame.Board;
@@ -526,12 +527,12 @@ namespace Go
         /// Add random move to fight ko.
         /// <see cref="UnitTestProject.KoTest.KoTest_Scenario_TianLongTu_Q17077" />
         /// Check killer ko within killer group <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B39" /> 
-        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_4" /> 
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_5" /> 
         /// </summary>
         private Boolean AddPointToFightKo(List<GameTryMove> tryMoves, Game currentGame, SurviveOrKill surviveOrKill)
         {
             KoCheck koGameCheck = (surviveOrKill == SurviveOrKill.Kill) ? KoCheck.Survive : KoCheck.Kill;
-            Boolean isRemainingKoFight = tryMoves.Count <= 1 && !tryMoves.Any(t => !KoHelper.IsKoFight(t.CurrentGame.Board, t.Move, t.MoveContent).Item1) && currentGame.KoGameCheck == koGameCheck && currentGame.Board.singlePointCapture != null;
+            Boolean isRemainingKoFight = tryMoves.Count <= 1 && !tryMoves.Any(t => !EyeHelper.FindCoveredEye(t.CurrentGame.Board, t.Move, t.MoveContent)) && currentGame.KoGameCheck == koGameCheck && currentGame.Board.singlePointCapture != null;
             if (isRemainingKoFight)
             {
                 //check killer ko within killer group
