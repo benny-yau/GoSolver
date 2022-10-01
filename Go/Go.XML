@@ -1466,9 +1466,9 @@
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_Q18500_2" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.RedundantAtariAtCoveredEye(Go.GameTryMove)">
+        <member name="M:Go.RedundantMoveHelper.EssentialAtariAtCoveredEye(Go.GameTryMove)">
             <summary>
-            Redundant atari at covered eye.
+            Essential atari at covered eye.
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario4dan17" />
             Check for ko fight <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_A36" />
             Check for connect and die <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Phenomena_B7" />

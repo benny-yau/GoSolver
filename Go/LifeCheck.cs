@@ -135,7 +135,7 @@ namespace Go
 
             //make move at liberty
             Board b = board.MakeMoveOnNewBoard(libertyPoint, c.Opposite());
-            if (b != null && !ImmovableHelper.CheckConnectAndDie(b))
+            if (b != null && !ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false))
             {
                 //check for atari at tiger mouth
                 HashSet<Group> tmGroups = b.GetGroupsFromStoneNeighbours(tigerMouth, c.Opposite());

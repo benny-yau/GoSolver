@@ -277,7 +277,7 @@ namespace Go
                 return (true, libertyPoint, escapeBoard);
 
             //recursive connect and die
-            if (CheckConnectAndDie(escapeBoard, escapeBoard.GetCurrentGroup(group), koEnabled))
+            if (CheckConnectAndDie(escapeBoard, escapeBoard.GetCurrentGroup(group), !koEnabled))
                 return (true, libertyPoint, escapeBoard);
 
             return (false, null, escapeBoard);

@@ -1209,7 +1209,7 @@ namespace Go
                 }
             }
             //check connect and die
-            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c && ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.GetGroupAt(n))))
+            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c && ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.GetGroupAt(n), false)))
                 return true;
 
             return false;
@@ -1528,11 +1528,8 @@ namespace Go
         /// </summary>
         public static Boolean NeutralPointSurvivalMove(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
-            if (opponentMove == null && !tryMove.IsNegligible)
-            {
-                if (!RedundantAtariAtCoveredEye(tryMove))
-                    return false;
-            }
+            if (opponentMove == null && !tryMove.IsNegligible && EssentialAtariAtCoveredEye(tryMove))
+                return false;
             //validate neutral point
             Boolean isNeutralPoint = ValidateNeutralPoint(tryMove);
             if (!isNeutralPoint && opponentMove == null)
@@ -1601,11 +1598,8 @@ namespace Go
         public static Boolean NeutralPointKillMove(GameTryMove tryMove)
         {
             Board tryBoard = tryMove.TryGame.Board;
-            if (!tryMove.IsNegligible)
-            {
-                if (!RedundantAtariAtCoveredEye(tryMove))
-                    return false;
-            }
+            if (!tryMove.IsNegligible && EssentialAtariAtCoveredEye(tryMove))
+                return false;
             //make move from perspective of survival
             GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
             if (opponentMove == null) return false;
@@ -1626,33 +1620,33 @@ namespace Go
         }
 
         /// <summary>
-        /// Redundant atari at covered eye.
+        /// Essential atari at covered eye.
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario4dan17" />
         /// Check for ko fight <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_A36" />
         /// Check for connect and die <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Phenomena_B7" />
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_3" />
         /// </summary>
-        private static Boolean RedundantAtariAtCoveredEye(GameTryMove tryMove)
+        private static Boolean EssentialAtariAtCoveredEye(GameTryMove tryMove)
         {
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryBoard.MoveGroup.Content;
-            if (tryMove.AtariResolved || tryBoard.CapturedList.Count > 0 || tryBoard.MoveGroupLiberties == 1) return false;
-            if (tryBoard.AtariTargets.Count != 1) return false;
+            if (tryMove.AtariResolved || tryBoard.CapturedList.Count > 0 || tryBoard.MoveGroupLiberties == 1) return true;
+            if (tryBoard.AtariTargets.Count != 1) return true;
 
             Group atariTarget = tryBoard.AtariTargets.First();
-            if (atariTarget.Points.Count != 1) return false;
+            if (atariTarget.Points.Count != 1) return true;
 
             //check for ko fight
             Board b = KoHelper.IsCaptureKoFight(tryBoard, atariTarget);
-            if (b == null) return false;
+            if (b == null) return true;
 
             //check for connect and die
             List<Group> neighbourGroups = b.GetNeighbourGroups();
             if (neighbourGroups.Any(gr => ImmovableHelper.CheckConnectAndDie(b, gr)))
-                return false;
+                return true;
 
-            return true;
+            return false;
         }
 
         /// <summary>
@@ -2604,7 +2598,7 @@ namespace Go
                 if (killFormation) return false;
 
                 //multipoint snapback
-                if (captureBoard.GetNeighbourGroups(tryBoard.MoveGroup).Any(gr => gr.Points.Count > 1 && ImmovableHelper.CheckConnectAndDie(captureBoard, gr, false)))
+                if (captureBoard.GetNeighbourGroups(tryBoard.MoveGroup).Any(gr => gr.Points.Count > 1 && ImmovableHelper.CheckConnectAndDie(captureBoard, gr)))
                     return false;
 
                 return true;
