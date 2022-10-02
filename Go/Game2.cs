@@ -491,7 +491,7 @@ namespace Go
             {
                 //do not add move if last move is pass move
                 Point? lastMove = board.LastMove;
-                Boolean lastMovePass = lastMove == null || lastMove.Value.Equals(Game.PassMove);
+                Boolean lastMovePass = lastMove != null && lastMove.Value.Equals(Game.PassMove);
                 if (lastMovePass) return;
                 //add move if no more try moves or to fight ko
                 if (AddPointToFightKo(tryMoves, currentGame, surviveOrKill))

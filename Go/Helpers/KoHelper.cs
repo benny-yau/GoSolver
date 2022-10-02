@@ -225,28 +225,5 @@ namespace Go
             }
             return true;
         }
-
-
-        /// <summary>
-        /// Ko fight at two point eye.
-        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q16693_4" />
-        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
-        /// </summary>
-        public static Boolean KoFightAtTwoPointEye(Board tryBoard)
-        {
-            Content c = tryBoard.MoveGroup.Content;
-            foreach (Group ngroup in tryBoard.GetNeighbourGroups())
-            {
-                List<Point> liberties = ngroup.Liberties.ToList();
-                if (liberties.Count != 2) continue;
-                if (!tryBoard.GetStoneNeighbours(liberties[0]).Any(n => n.Equals(liberties[1]))) continue;
-                Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, liberties[0], c.Opposite());
-                if (killerGroup == null || killerGroup.Points.Count != 2) continue;
-                if (!KoHelper.IsKoFight(tryBoard)) continue;
-                if (ImmovableHelper.CheckConnectAndDie(tryBoard, ngroup))
-                    return true;
-            }
-            return false;
-        }
     }
 }

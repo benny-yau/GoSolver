@@ -912,13 +912,6 @@
             Check redundant atari <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_2" />
             </summary>
         </member>
-        <member name="M:Go.KoHelper.KoFightAtTwoPointEye(Go.Board)">
-            <summary>
-            Ko fight at two point eye.
-            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q16693_4" />
-            <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
-            </summary>
-        </member>
         <member name="M:Go.LinkHelper.PossibleLinkForGroups(Go.Board,Go.Board)">
             <summary>
             Possible link for groups. For neutral point move, covered eye move, and eye diagonal move.
