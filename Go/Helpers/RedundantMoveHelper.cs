@@ -190,6 +190,10 @@ namespace Go
                 }
             }
 
+            //ko fight at two point eye
+            if (KoHelper.KoFightAtTwoPointEye(tryBoard))
+                return false;
+
             //check break link
             List<Group> neighbourGroups = tryBoard.GetNeighbourGroups();
             if (neighbourGroups.Count >= 2 && neighbourGroups.Any(n => !WallHelper.IsNonKillableGroup(tryBoard, n)))
@@ -1605,6 +1609,7 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             if (!tryMove.IsNegligible && EssentialAtariAtCoveredEye(tryMove))
                 return false;
+            if (KoHelper.KoFightAtTwoPointEye(tryBoard)) return false;
             //make move from perspective of survival
             GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
             if (opponentMove == null) return false;
@@ -2896,10 +2901,6 @@ namespace Go
             if (eyeGroups.All(n => WallHelper.IsNonKillableFromSetupMoves(currentBoard, n)))
                 return true;
 
-            //check ko fight necessary
-            if (tryBoard.GetNeighbourGroups().Any(group => ImmovableHelper.CheckConnectAndDie(tryBoard, group)))
-                return false;
-
             //suicide group ko fight
             List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
             if (!eyeGroups.Any(e => WallHelper.IsNonKillableGroup(currentBoard, e)) && ngroups.Any(n => tryBoard.GetNeighbourGroups(n).Any() && !tryBoard.GetNeighbourGroups(n).Any(gr => WallHelper.IsNonKillableFromSetupMoves(tryBoard, gr))))
@@ -2912,6 +2913,10 @@ namespace Go
 
             //if all diagonals are real eyes then redundant
             if (!diagonals.All(eye => RedundantMoveHelper.RealEyeAtDiagonal(tryMove, eye)))
+                return false;
+
+            //ko fight at two point eye
+            if (KoHelper.KoFightAtTwoPointEye(tryBoard))
                 return false;
 
             return true;
