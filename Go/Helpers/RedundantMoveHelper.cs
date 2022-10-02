@@ -940,7 +940,6 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
-            Content c = tryMove.MoveContent;
 
             if (tryBoard.MoveGroup.Points.Count == 1) return false;
             //ensure no liberties
@@ -948,7 +947,7 @@ namespace Go
                 return false;
 
             //check for three neighbour groups
-            Boolean threeGroups = tryBoard.GetGroupsFromStoneNeighbours(move, c).Count >= 3;
+            Boolean threeGroups = tryBoard.GetGroupsFromStoneNeighbours(move).Count >= 3;
             if (threeGroups) return false;
 
             //check killer formation
@@ -1368,7 +1367,7 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             if (capturedBoard.CapturedPoints.Count() != 2 || !tryBoard.IsAtariMove) return false;
             //check for three groups
-            if (tryBoard.GetGroupsFromStoneNeighbours(move, c).Count > 2) return true;
+            if (tryBoard.GetGroupsFromStoneNeighbours(move).Count > 2) return true;
 
             Board board = capturedBoard.MakeMoveOnNewBoard(move, c);
             if (board == null || board.AtariTargets.Count != 1) return false;
@@ -1665,12 +1664,8 @@ namespace Go
         /// </summary>
         private static (Boolean, Point?) MustHaveNeutralPoint(GameTryMove tryMove, GameTryMove opponentMove)
         {
-            Point move = tryMove.Move;
             Board tryBoard = tryMove.TryGame.Board;
-            Board currentBoard = tryMove.CurrentGame.Board;
             Board opponentBoard = opponentMove.TryGame.Board;
-            Content c = tryBoard.MoveGroup.Content;
-            Point p = tryBoard.Move.Value;
 
             //neutral point at small tiger mouth
             Point tigerMouth = opponentBoard.GetStoneNeighbours().FirstOrDefault(n => EyeHelper.FindEye(opponentBoard, n));
@@ -1686,9 +1681,9 @@ namespace Go
             (Boolean suicide, Board suicideBoard) = SuicideAtBigTigerMouth(tryMove);
             if (suicide)
             {
-                Point liberty = suicideBoard.Move.Value;
+                Point suicideMove = suicideBoard.Move.Value;
                 if (MustHaveMoveAtBigTigerMouth(suicideBoard, tryBoard))
-                    return (true, liberty);
+                    return (true, suicideMove);
             }
 
             return (false, null);
@@ -1701,12 +1696,12 @@ namespace Go
         /// </summary>
         private static Boolean MustHaveMoveAtBigTigerMouth(Board suicideBoard, Board tryBoard)
         {
-            Point liberty = suicideBoard.Move.Value;
+            Point suicideMove = suicideBoard.Move.Value;
             //must have move for liberties more than one
             if (suicideBoard.MoveGroup.Liberties.Count > 1)
                 return true;
             //redundant suicidal at tiger mouth
-            if (StrongGroupsAtMustHaveMove(tryBoard, liberty))
+            if (StrongGroupsAtMustHaveMove(tryBoard, suicideMove))
                 return false;
             return true;
         }
@@ -1964,8 +1959,7 @@ namespace Go
                 Board tryBoard = neutralPointMove.TryGame.Board;
                 Point move = neutralPointMove.Move;
                 if (tryBoard.MoveGroupLiberties == 1) continue;
-                Content c = neutralPointMove.MoveContent;
-                IEnumerable<Group> targetGroups = tryBoard.GetGroupsFromStoneNeighbours(move, c);
+                IEnumerable<Group> targetGroups = tryBoard.GetGroupsFromStoneNeighbours(move);
                 //ensure target group has two liberties and share at least one liberty with killer group
                 foreach (Group group in targetGroups)
                 {
@@ -1999,10 +1993,10 @@ namespace Go
         {
             Content c = neutralPointMoves.First().MoveContent;
             //all moves are valid if liberty fight
-            GameTryMove neutralPointMove = neutralPointMoves.FirstOrDefault(t => t.TryGame.Board.GetGroupsFromStoneNeighbours(t.Move, c).Count > 0);
+            GameTryMove neutralPointMove = neutralPointMoves.FirstOrDefault(t => t.TryGame.Board.GetGroupsFromStoneNeighbours(t.Move).Count > 0);
             if (neutralPointMove == null) return null;
             Board tryBoard = neutralPointMove.TryGame.Board;
-            foreach (Group targetGroup in tryBoard.GetGroupsFromStoneNeighbours(neutralPointMove.Move, c))
+            foreach (Group targetGroup in tryBoard.GetGroupsFromStoneNeighbours(neutralPointMove.Move))
             {
                 List<Point> neighbourLiberties;
                 List<Group> associatedKillerGroups = killerGroups.Where(group => board.GetNeighbourGroups(group).Contains(board.GetCurrentGroup(targetGroup))).ToList();
@@ -2047,21 +2041,21 @@ namespace Go
         public static Boolean CheckIfGroupAlreadyTargeted(GameTryMove neutralMove, List<GameTryMove> tryMoves)
         {
             if (tryMoves == null) return false;
-            Board tryBoard = neutralMove.TryGame.Board;
+            Board neutralMoveBoard = neutralMove.TryGame.Board;
             Content c = neutralMove.MoveContent;
             //get target groups of neutral move
-            HashSet<Group> groups = tryBoard.GetGroupsFromStoneNeighbours(neutralMove.Move, c);
+            List<Group> groups = neutralMoveBoard.GetGroupsFromStoneNeighbours(neutralMove.Move);
 
             foreach (GameTryMove tryMove in tryMoves)
             {
                 //ensure more than one liberty
                 if (tryMove.TryGame.Board.MoveGroupLiberties == 1) continue;
                 //exclude try moves within killer group
-                if (GroupHelper.GetKillerGroupFromCache(tryBoard, tryMove.Move, c.Opposite()) != null)
+                if (GroupHelper.GetKillerGroupFromCache(neutralMoveBoard, tryMove.Move, c.Opposite()) != null)
                     continue;
 
                 //target group already targeted by other try moves
-                HashSet<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(tryMove.Move, c);
+                HashSet<Group> neighbourGroups = neutralMoveBoard.GetGroupsFromStoneNeighbours(tryMove.Move, c);
                 if (neighbourGroups.Intersect(groups).Any())
                     return true;
             }
@@ -2251,7 +2245,7 @@ namespace Go
             if (EyeHelper.IsCovered(tryBoard, move, c.Opposite()))
                 return false;
             //check for three groups
-            HashSet<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(move, c);
+            List<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(move);
             if (neighbourGroups.Count >= 3 && (neighbourGroups.Count(g => g.Liberties.Count <= 2) >= 2 || LinkHelper.DiagonalCutMove(tryBoard).Item1)) return false;
 
             //check for strong neighbour groups
@@ -2903,12 +2897,12 @@ namespace Go
                 return true;
 
             //check ko fight necessary
-            if (tryBoard.GetNeighbourGroups().Any(group => group.Liberties.Count <= 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, group)))
+            if (tryBoard.GetNeighbourGroups().Any(group => ImmovableHelper.CheckConnectAndDie(tryBoard, group)))
                 return false;
 
             //suicide group ko fight
             List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
-            if (!eyeGroups.Any(e => WallHelper.IsNonKillableGroup(currentBoard, e)) && ngroups.Any(n => LinkHelper.FindDiagonalCut(tryBoard, n).Item1 == null && tryBoard.GetNeighbourGroups(n).Any() && !tryBoard.GetNeighbourGroups(n).Any(gr => WallHelper.IsNonKillableFromSetupMoves(tryBoard, gr))))
+            if (!eyeGroups.Any(e => WallHelper.IsNonKillableGroup(currentBoard, e)) && ngroups.Any(n => tryBoard.GetNeighbourGroups(n).Any() && !tryBoard.GetNeighbourGroups(n).Any(gr => WallHelper.IsNonKillableFromSetupMoves(tryBoard, gr))))
                 return false;
 
             //check break link
