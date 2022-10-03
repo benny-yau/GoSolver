@@ -113,7 +113,7 @@ namespace Go
                     move.MakeKoMove(p, SurviveOrKill.Survive);
                     move.IsRedundantKo = RedundantMoveHelper.RedundantSurvivalKoMove(move);
                     if (move.IsRedundantKo) redundantTryMoves.Add(move);
-                    if (!move.IsRedundantKo || mappingRange)
+                    if (KoHelper.KoContentEnabled(c, gameInfo) && (!move.IsRedundantKo || mappingRange))
                         koBlockedMove = move;
                 }
                 else if (move.MakeMoveResult == MakeMoveResult.Legal)
@@ -409,7 +409,7 @@ namespace Go
                     move.MakeKoMove(p, SurviveOrKill.Kill);
                     move.IsRedundantKo = RedundantMoveHelper.RedundantKillerKoMove(move);
                     if (move.IsRedundantKo) redundantTryMoves.Add(move);
-                    if (!move.IsRedundantKo || mappingRange)
+                    if (KoHelper.KoContentEnabled(c, gameInfo) && (!move.IsRedundantKo || mappingRange))
                         koBlockedMove = move;
                 }
                 else if (move.MakeMoveResult == MakeMoveResult.Legal)
