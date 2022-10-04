@@ -958,7 +958,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Single point suicide, either suicide within real eye or near non killable group. Suicide at tiger mouth handled by redundant tiger mouth move.
+        /// Single point suicide.
         /// </summary>
         public static Boolean SinglePointSuicidalMove(GameTryMove tryMove, GameTryMove opponentTryMove = null)
         {
@@ -972,15 +972,15 @@ namespace Go
             if (capturedBoard.CapturedPoints.Count() > 1) return true;
             if (SuicideWithinRealEye(tryMove, capturedBoard))
                 return true;
-            if (RedundantSuicideNearNonKillableGroup(tryMove, capturedBoard, opponentTryMove))
+            if (MiscSinglePointSuicide(tryMove, capturedBoard, opponentTryMove))
                 return true;
 
             return false;
         }
 
         /// <summary>
-        /// Suicide move creates semi solid eye.
-        /// Suicide within real eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_ScenarioHighLevel28" />
+        /// Suicide within real eye. 
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_ScenarioHighLevel28" />
         /// Check for snapback  <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B31" />
         /// Atari move required <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q2757" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18500_3" />
@@ -1121,7 +1121,10 @@ namespace Go
 
 
         /// <summary>
-        /// Redundant suicide move next to non killable group.
+        /// Miscellaneous single point suicide.
+        /// Check connect and die at diagonal group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_6" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_7" />
+        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_B18" />
         /// Suicidal move next to non killable group for survive <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A27_2" />
         /// Connect and die <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
         /// Liberty more than two required to prevent snapback <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680" />
@@ -1131,7 +1134,7 @@ namespace Go
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_Nie67" />
         /// Check real eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17132_3" />
         /// </summary>
-        private static Boolean RedundantSuicideNearNonKillableGroup(GameTryMove tryMove, Board capturedBoard, GameTryMove opponentTryMove = null)
+        private static Boolean MiscSinglePointSuicide(GameTryMove tryMove, Board capturedBoard, GameTryMove opponentTryMove = null)
         {
             Point move = tryMove.Move;
             Board currentBoard = tryMove.CurrentGame.Board;
@@ -1139,13 +1142,18 @@ namespace Go
             Content c = tryMove.MoveContent;
             if (capturedBoard.MoveGroupLiberties == 1) return false;
 
-            //check corner point
+            //check corner point suicide
             if (CornerPointSuicide(tryMove, capturedBoard))
                 return true;
 
-            //opponent suicide
+            //check connect and die at diagonal group
+            if (opponentTryMove == null && tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c && ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.GetGroupAt(n)) && !ImmovableHelper.CheckConnectAndDie(currentBoard, currentBoard.GetGroupAt(n))))
+                return true;
+
+            //suicide near non killable group
             if (opponentTryMove != null)
             {
+                //opponent suicide
                 if (SuicideAtBigTigerMouth(opponentTryMove).Item1 || BothAliveHelper.CheckForBothAliveAtMove(opponentTryMove.TryGame.Board))
                     return false;
             }
@@ -1190,7 +1198,6 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
-
             if (!tryBoard.CornerPoint(move)) return false;
 
             //specific filler move
@@ -1198,7 +1205,6 @@ namespace Go
             Boolean specificFillerMove = (killerGroup != null && killerGroup.Points.Count <= 5);
             if (specificFillerMove)
                 return false;
-
 
             //one point target
             if (!tryBoard.AtariTargets.Any())
@@ -1213,10 +1219,6 @@ namespace Go
                         return true;
                 }
             }
-            //check connect and die
-            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c && ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.GetGroupAt(n), false)))
-                return true;
-
             return false;
         }
 
