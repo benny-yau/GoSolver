@@ -90,7 +90,7 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q29998" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
         /// Check liberty count without covered eye <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
-        /// Check snapback for two-point move <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31453" />
+        /// Check one-point snapback <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31453" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A37_101Weiqi" />
         /// Check for double ko <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
         /// Check atari for ko move <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_2" />
@@ -143,6 +143,9 @@ namespace Go
                     //check eye for suicidal move
                     if (b != null && EyeHelper.FindEye(b, liberty2, c))
                         return false;
+                    //check connect and die for opponent groups
+                    if (!tryBoard.GetGroupsFromStoneNeighbours(liberty, c).Any(n => ImmovableHelper.CheckConnectAndDie(tryBoard, n)))
+                        continue;
                     //check escape capture link
                     if (ImmovableHelper.EscapeCaptureLink(currentBoard, group, eyePoint))
                         continue;
@@ -166,14 +169,10 @@ namespace Go
                 return false;
 
             //check no eye for survival for opponent
-            if (opponentTryMove != null)
-            {
-                Board opponentBoard = opponentTryMove.TryGame.Board;
-                if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(opponentBoard))
-                    return false;
-            }
+            if (opponentTryMove != null && !WallHelper.NoEyeForSurvivalAtNeighbourPoints(opponentTryMove.TryGame.Board))
+                return false;
 
-            //check snapback for two-point move
+            //check one-point snapback
             foreach (Group group in tryBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()))
             {
                 if (group.Liberties.Count <= 2 && group.Points.Count >= 2)
@@ -647,7 +646,6 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
-            HashSet<Point> movePoints = tryBoard.MoveGroup.Points;
 
             //check connect and die
             (Boolean suicidal, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard, tryBoard.MoveGroup, false);
@@ -660,11 +658,7 @@ namespace Go
                 return false;
 
             //check capture moves
-            if (tryBoard.CapturedList.Count > 0)
-            {
-                if (tryBoard.CapturedList.Any(g => AtariHelper.AtariByGroup(currentBoard, g))) return false;
-                if (tryBoard.CapturedList.Any(n => EyeHelper.FindCoveredEyeAfterCapture(tryBoard, n))) return false;
-            }
+            if (tryBoard.CapturedList.Any(g => AtariHelper.AtariByGroup(currentBoard, g))) return false;
 
             //check atari moves
             foreach (Group atariTarget in tryBoard.AtariTargets)
@@ -694,7 +688,7 @@ namespace Go
             if (CheckDiagonalForSuicidalConnectAndDie(tryMove, captureBoard))
                 return true;
 
-            if (movePoints.Count <= 4)
+            if (tryBoard.MoveGroup.Points.Count <= 4)
             {
                 //check for real eye in neighbour groups
                 return CheckAnyRealEyeInSuicidalConnectAndDie(tryBoard, captureBoard);
@@ -1420,7 +1414,8 @@ namespace Go
                 if (atariTarget != null && !EyeHelper.FindEye(tryBoard, atariTarget.Liberties.First(), c.Opposite()))
                 {
                     Board b = tryBoard.MakeMoveOnNewBoard(atariTarget.Liberties.First(), c);
-                    if (b != null && b.AtariTargets.Count == 0) return true;
+                    if (b != null && b.AtariTargets.Count == 0)
+                        return true;
                 }
             }
             return false;
