@@ -597,7 +597,7 @@ namespace Go
             {
                 Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, atariTarget);
                 if (b == null || b.MoveGroupLiberties == 1) continue;
-                if (LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard))
+                if (LinkHelper.PossibleLinkForGroups(b, tryBoard))
                     return false;
             }
 
@@ -734,10 +734,13 @@ namespace Go
                 if (WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.MoveGroup))
                     continue;
 
-                if (group.Liberties.All(lib => ImmovableHelper.IsSuicidalMove(lib, group.Content.Opposite(), tryBoard).Item1))
-                    continue;
-
-                return true;
+                foreach (Point liberty in group.Liberties)
+                {
+                    (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, group.Content.Opposite(), tryBoard);
+                    if (suicidal) continue;
+                    if (WallHelper.IsNonKillableFromSetupMoves(b, b.MoveGroup)) continue;
+                    return true;
+                }
             }
             return false;
         }
