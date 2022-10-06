@@ -708,23 +708,28 @@ namespace Go
         /// </summary>
         private static Boolean CheckWeakGroupInConnectAndDie(Board tryBoard, Group atariTarget)
         {
+            Content c = atariTarget.Content;
             //check weak group
             if (GetWeakGroup(tryBoard))
                 return true;
 
             //capture move
-            (_, Board b) = ImmovableHelper.ConnectAndDie(tryBoard);
+            (_, Board b) = ImmovableHelper.ConnectAndDie(tryBoard, tryBoard.MoveGroup, false);
             if (b == null || b.IsCapturedGroup(atariTarget)) return false;
 
             //escape move
-            (_, _, Board b2) = ImmovableHelper.UnescapableGroup(b, b.GetCurrentGroup(atariTarget), false, false);
-            if (b2 == null) return false;
-            Group targetGroup = b2.GetCurrentGroup(atariTarget);
-            if (targetGroup.Liberties.Count != 2) return false;
-
-            //recursion for capture
-            if (CheckWeakGroupInConnectAndDie(b2, targetGroup))
+            Board b2 = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(b, atariTarget, c);
+            if (b2 != null && b2.MoveGroupLiberties == 2 && CheckWeakGroupInConnectAndDie(b2, b2.GetCurrentGroup(atariTarget)))
                 return true;
+
+            foreach (Group gr in AtariHelper.AtariByGroup(b.GetCurrentGroup(atariTarget), b))
+            {
+                Board b3 = ImmovableHelper.CaptureSuicideGroup(b, gr);
+                if (b3 == null) continue;
+                Group target = b3.GetCurrentGroup(atariTarget);
+                if (b3 != null && target.Liberties.Count == 2 && CheckWeakGroupInConnectAndDie(b3, target))
+                    return true;
+            }
             return false;
         }
 

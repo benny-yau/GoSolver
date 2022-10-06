@@ -261,7 +261,7 @@ namespace Go
         /// Recursive connect and die <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A44_101Weiqi" />
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q17255" />
         /// </summary>
-        public static (Boolean, Point?, Board) UnescapableGroup(Board tryBoard, Group group, Boolean koEnabled = true, Boolean recursive = true)
+        public static (Boolean, Point?, Board) UnescapableGroup(Board tryBoard, Group group, Boolean koEnabled = true)
         {
             Point? libertyPoint = ImmovableHelper.GetLibertyPointOfSuicide(tryBoard, group);
             if (libertyPoint == null) return (false, null, null);
@@ -277,7 +277,7 @@ namespace Go
                 return (true, libertyPoint, escapeBoard);
 
             //recursive connect and die
-            if (recursive && CheckConnectAndDie(escapeBoard, escapeBoard.GetCurrentGroup(group), !koEnabled))
+            if (CheckConnectAndDie(escapeBoard, escapeBoard.GetCurrentGroup(group), !koEnabled))
                 return (true, libertyPoint, escapeBoard);
 
             return (false, null, escapeBoard);
