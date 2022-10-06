@@ -622,7 +622,7 @@ namespace Go
             Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(tryBoard, atariTarget, c.Opposite());
             if (b == null || b.MoveGroupLiberties == 1) return false;
 
-            return CheckWeakGroupInConnectAndDie(b, b.MoveGroup);
+            return GetWeakGroup(b);
         }
 
         /// <summary>
@@ -708,7 +708,6 @@ namespace Go
         /// </summary>
         private static Boolean CheckWeakGroupInConnectAndDie(Board tryBoard, Group atariTarget)
         {
-            Content c = atariTarget.Content;
             //check weak group
             if (GetWeakGroup(tryBoard))
                 return true;
@@ -718,21 +717,24 @@ namespace Go
             if (b == null || b.IsCapturedGroup(atariTarget)) return false;
 
             //escape move
-            Board b2 = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(b, atariTarget, c);
-            if (b2 == null || b2.MoveGroupLiberties != 2) return false;
+            (_, _, Board b2) = ImmovableHelper.UnescapableGroup(b, b.GetCurrentGroup(atariTarget), false, false);
+            if (b2 == null) return false;
+            Group targetGroup = b2.GetCurrentGroup(atariTarget);
+            if (targetGroup.Liberties.Count != 2) return false;
 
             //recursion for capture
-            if (CheckWeakGroupInConnectAndDie(b2, b2.GetCurrentGroup(atariTarget)))
+            if (CheckWeakGroupInConnectAndDie(b2, targetGroup))
                 return true;
             return false;
         }
 
         private static Boolean GetWeakGroup(Board tryBoard)
         {
+            if (WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.MoveGroup))
+                return false;
+
             foreach (Group group in tryBoard.GetNeighbourGroups().Where(n => n.Liberties.Count <= 2))
             {
-                if (WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.MoveGroup))
-                    continue;
 
                 foreach (Point liberty in group.Liberties)
                 {
