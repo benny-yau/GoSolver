@@ -1215,9 +1215,6 @@ namespace Go
                 return true;
             else if (tryBoard.AtariTargets.Count == 1)
             {
-                if (EyeHelper.FindRealSolidEye(move, c.Opposite(), captureBoard))
-                    return true;
-
                 Group atariTarget = tryBoard.AtariTargets.First();
                 if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c) || WallHelper.IsNonKillableGroup(currentBoard, currentBoard.GetCurrentGroup(atariTarget)))
                 {
