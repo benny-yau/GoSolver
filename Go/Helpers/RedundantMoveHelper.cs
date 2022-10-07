@@ -1194,8 +1194,8 @@ namespace Go
         /// Specific filler move <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A17_2" />
         /// One point target <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A26_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A84_2" />
-        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A95" />
         /// <see cref="UnitTestProject.KoTest.KoTest_Scenario_WuQingYuan_Q31680" />
+        /// Not suicidal for semi-solid eye <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A95" />
         private static Boolean CornerPointSuicide(GameTryMove tryMove, Board captureBoard)
         {
             Point move = tryMove.Move;
@@ -1215,8 +1215,11 @@ namespace Go
                 return true;
             else if (tryBoard.AtariTargets.Count == 1)
             {
+                if (EyeHelper.FindRealSolidEye(move, c.Opposite(), captureBoard))
+                    return true;
+
                 Group atariTarget = tryBoard.AtariTargets.First();
-                if (WallHelper.IsNonKillableGroup(currentBoard, currentBoard.GetCurrentGroup(atariTarget)))
+                if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c) || WallHelper.IsNonKillableGroup(currentBoard, currentBoard.GetCurrentGroup(atariTarget)))
                 {
                     Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(tryBoard, atariTarget, c.Opposite());
                     if (b != null && b.MoveGroupLiberties > 1)
@@ -2582,11 +2585,10 @@ namespace Go
 
         /// <summary>
         /// Check redundant corner point.
-        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A95" />
-        /// Two point kill <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q16508" />
-        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A6" />
         /// Check for kill formation <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
         /// Multipoint snapback <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_B43" />
+        /// Two point kill <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q16508" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A6" />
         /// </summary>
         private static Boolean CheckRedundantCornerPoint(GameTryMove tryMove, Board captureBoard)
         {
@@ -2594,23 +2596,16 @@ namespace Go
             Point move = tryBoard.Move.Value;
             Content c = tryBoard[move];
             if (!tryBoard.CornerPoint(move) || tryBoard.IsAtariMove || !tryMove.IsNegligible) return false;
-            //Two point kill
-            Boolean twoPointKill = (tryBoard.MoveGroup.Points.Count == 2 && tryBoard.MoveGroupLiberties <= 2 && tryBoard.GetStoneNeighbours().Any(q => tryBoard[q] == Content.Empty));
-            if (twoPointKill) return false;
 
+            if (tryBoard.MoveGroup.Points.Count != 1) return false;
             //check for kill formation
-            if (tryBoard.MoveGroup.Points.Count == 1 && tryBoard.MoveGroupLiberties == 2)
-            {
-                Boolean killFormation = (tryBoard.GetClosestPoints(move, c.Opposite()).Count >= 3 && !tryBoard.GetClosestPoints(move, c).Any());
-                if (killFormation) return false;
+            Boolean killFormation = (tryBoard.GetClosestPoints(move, c.Opposite()).Count >= 3 && !tryBoard.GetClosestPoints(move, c).Any());
+            if (killFormation) return false;
 
-                //multipoint snapback
-                if (captureBoard.GetNeighbourGroups(tryBoard.MoveGroup).Any(gr => gr.Points.Count > 1 && ImmovableHelper.CheckConnectAndDie(captureBoard, gr)))
-                    return false;
-
-                return true;
-            }
-            return false;
+            //multipoint snapback
+            if (captureBoard.GetNeighbourGroups(tryBoard.MoveGroup).Any(gr => gr.Points.Count > 1 && ImmovableHelper.CheckConnectAndDie(captureBoard, gr)))
+                return false;
+            return true;
         }
 
         /// <summary>

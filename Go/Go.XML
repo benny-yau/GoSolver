@@ -629,10 +629,18 @@
             Is suicidal move.
             </summary>
         </member>
+        <member name="M:Go.ImmovableHelper.IsSuicidalMoveForConnectAndDie(Go.Point,Go.Content,Go.Board,System.Boolean)">
+            <summary>
+            Suicidal move for connect and die.
+            <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_A80" />
+            <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_A80_2" />
+            <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WuQingYuan_Q31503" />
+            </summary>
+        </member>
         <member name="M:Go.ImmovableHelper.IsSuicidalOnCapture(Go.Board,Go.Group,System.Boolean)">
             <summary>
             Is suicide move on capture.
-            Check ko <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WuQingYuan_Q31503" />
+            <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_B28_2" />
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.CaptureSuicideGroup(Go.Point,Go.Board,System.Boolean)">
@@ -1366,8 +1374,8 @@
             Specific filler move <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A17_2" />
             One point target <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A26_2" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A84_2" />
-            <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A95" />
             <see cref="!:UnitTestProject.KoTest.KoTest_Scenario_WuQingYuan_Q31680" />
+            Not suicidal for semi-solid eye <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A95" />
         </member>
         <member name="M:Go.RedundantMoveHelper.MultiPointSuicidalMove(Go.GameTryMove)">
             <summary>
@@ -1728,11 +1736,10 @@
         <member name="M:Go.RedundantMoveHelper.CheckRedundantCornerPoint(Go.GameTryMove,Go.Board)">
             <summary>
             Check redundant corner point.
-            <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A95" />
-            Two point kill <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q16508" />
-            <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A6" />
             Check for kill formation <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
             Multipoint snapback <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_B43" />
+            Two point kill <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q16508" />
+            <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A6" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.EyeFillerLinkForGroups(Go.GameTryMove)">

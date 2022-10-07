@@ -328,6 +328,12 @@ namespace Go
             return (false, board);
         }
 
+        /// <summary>
+        /// Suicidal move for connect and die.
+        /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_A80" />
+        /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_A80_2" />
+        /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WuQingYuan_Q31503" />
+        /// </summary>
         public static (Boolean, Board) IsSuicidalMoveForConnectAndDie(Point p, Content c, Board tryBoard, Boolean koEnabled = false)
         {
             if (tryBoard == null) return (false, null);
@@ -344,11 +350,11 @@ namespace Go
 
         /// <summary>
         /// Is suicide move on capture.
-        /// Check ko <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WuQingYuan_Q31503" />
+        /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_B28_2" />
         /// </summary>
         public static (Boolean, Board) IsSuicidalOnCapture(Board tryBoard, Group targetGroup = null, Boolean checkKo = false)
         {
-            Board board = ImmovableHelper.CaptureSuicideGroup(tryBoard, targetGroup);
+            Board board = ImmovableHelper.CaptureSuicideGroup(tryBoard, targetGroup, checkKo);
             if (board == null) return (true, null);
 
             if (board.MoveGroupLiberties == 1)
