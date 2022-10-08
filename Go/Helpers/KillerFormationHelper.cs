@@ -95,7 +95,7 @@ namespace Go
             if (capturedBoard == null) return false;
 
             //check multipoint snapback after capture
-            if (MultipointSnapbackAfterCapture(tryBoard, currentBoard, capturedBoard))
+            if (MultipointSnapbackAfterCapture(tryBoard, capturedBoard))
                 return true;
 
             //check suicide at eye point
@@ -127,7 +127,7 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31435" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18710" />
         /// </summary>
-        private static Boolean MultipointSnapbackAfterCapture(Board tryBoard, Board currentBoard, Board capturedBoard)
+        public static Boolean MultipointSnapbackAfterCapture(Board tryBoard, Board capturedBoard)
         {
             Content c = tryBoard.MoveGroup.Content;
             if (tryBoard.MoveGroupLiberties == 1 && capturedBoard.MoveGroup.Points.Count > 1 && ImmovableHelper.CheckConnectAndDie(capturedBoard, capturedBoard.MoveGroup))

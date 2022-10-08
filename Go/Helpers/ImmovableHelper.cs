@@ -297,7 +297,7 @@ namespace Go
             foreach (Group target in atariTargets)
             {
                 //make capture move
-                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalOnCapture(tryBoard, target, !koEnabled);
+                (_, Board b) = ImmovableHelper.IsSuicidalOnCapture(tryBoard, target, koEnabled);
                 if (b == null) continue;
                 //check for recursion
                 if (GameHelper.CheckForRecursion(b).Any())
@@ -352,14 +352,14 @@ namespace Go
         /// Is suicide move on capture.
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_B28_2" />
         /// </summary>
-        public static (Boolean, Board) IsSuicidalOnCapture(Board tryBoard, Group targetGroup = null, Boolean checkKo = false)
+        public static (Boolean, Board) IsSuicidalOnCapture(Board tryBoard, Group targetGroup = null, Boolean koEnabled = false)
         {
-            Board board = ImmovableHelper.CaptureSuicideGroup(tryBoard, targetGroup, checkKo);
+            Board board = ImmovableHelper.CaptureSuicideGroup(tryBoard, targetGroup, koEnabled);
             if (board == null) return (true, null);
 
             if (board.MoveGroupLiberties == 1)
             {
-                if (checkKo && KoHelper.IsKoFight(board))
+                if (!koEnabled && KoHelper.IsKoFight(board))
                     return (false, null);
                 return (true, board);
             }
@@ -546,13 +546,13 @@ namespace Go
             foreach (Point liberty in groupLiberties)
             {
                 if (!GameHelper.SetupMoveAvailable(board, liberty)) continue;
-                (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMoveForConnectAndDie(liberty, c.Opposite(), board, koEnabled);
+                (_, Board b) = ImmovableHelper.IsSuicidalMoveForConnectAndDie(liberty, c.Opposite(), board, koEnabled);
                 if (b == null) continue;
                 int neighbourCount = b.GetStoneNeighbours().Count(n => b[n] != c.Opposite());
-                killBoards.Add(new KeyValuePair<LinkedPoint<Point>, Board>(new LinkedPoint<Point>(liberty, new { isSuicidal, neighbourCount }), b));
+                killBoards.Add(new KeyValuePair<LinkedPoint<Point>, Board>(new LinkedPoint<Point>(liberty, neighbourCount), b));
             }
 
-            foreach (KeyValuePair<LinkedPoint<Point>, Board> kvp in killBoards.OrderByDescending(b => ((dynamic)b.Key.CheckMove).neighbourCount))
+            foreach (KeyValuePair<LinkedPoint<Point>, Board> kvp in killBoards.OrderByDescending(b => (int)b.Key.CheckMove))
             {
                 Board b = kvp.Value;
                 LinkedPoint<Point> key = kvp.Key;

@@ -740,7 +740,7 @@
             Check covered eye at non-killable group <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
             </summary>
         </member>
-        <member name="M:Go.KillerFormationHelper.MultipointSnapbackAfterCapture(Go.Board,Go.Board,Go.Board)">
+        <member name="M:Go.KillerFormationHelper.MultipointSnapbackAfterCapture(Go.Board,Go.Board)">
             <summary>
             Multipoint snapback after capture
             One liberty <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q15054" />
