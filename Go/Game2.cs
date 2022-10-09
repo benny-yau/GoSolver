@@ -459,6 +459,7 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_5" />
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A79" />
         /// Check covered eye <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_6" />
+        /// Check atari resolved <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q17078_2" />
         /// </summary>
         private void RestoreRedundantKo(List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves)
         {
@@ -468,7 +469,7 @@ namespace Go
                 Board currentBoard = koMove.CurrentGame.Board;
                 Board tryBoard = koMove.TryGame.Board;
                 Content c = tryBoard.MoveGroup.Content;
-
+                if (koMove.AtariResolved) continue;
                 if (tryBoard.AtariTargets.Any(t => GroupHelper.GetKillerGroupFromCache(currentBoard, t.Points.First(), c) != null))
                 {
                     tryMoves.Add(koMove);

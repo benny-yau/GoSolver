@@ -1139,6 +1139,7 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A55" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_Nie67" />
         /// Check real eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17132_3" />
+        /// Set neutral point for opponent move <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16738_2" />
         /// </summary>
         private static Boolean MiscSinglePointSuicide(GameTryMove tryMove, Board capturedBoard, GameTryMove opponentTryMove = null)
         {
@@ -1172,6 +1173,9 @@ namespace Go
                 {
                     //check connect and die
                     Boolean connectAndDie = ImmovableHelper.AllConnectAndDie(capturedBoard, move);
+                    //set neutral point for opponent move
+                    if (opponentTryMove != null && !connectAndDie && EyeHelper.IsCovered(tryBoard, move, c.Opposite()))
+                        opponentTryMove.IsNeutralPoint = true;
                     return !connectAndDie;
                 }
             }
