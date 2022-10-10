@@ -225,5 +225,74 @@ namespace Go
             }
             return true;
         }
+
+        /// <summary>
+        /// Check for possibility of double ko, for both survival and kill. Check for end ko moves as well.
+        /// Survival double ko <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_TianLongTu_Q16446" />
+        /// <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_TianLongTu_Q16975" />
+        /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_3" /> 
+        /// Kill double ko <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A23" />
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q16446" />
+        /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_2" /> 
+        /// </summary>
+        public static Boolean PossibilityOfDoubleKo(GameTryMove tryMove)
+        {
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            return PossibilityOfDoubleKo(tryBoard, currentBoard);
+        }
+
+        public static Boolean PossibilityOfDoubleKo(Board tryBoard, Board currentBoard)
+        {
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            if (tryBoard.singlePointCapture == null) return false;
+            Point capturePoint = tryBoard.singlePointCapture.Value;
+            //survival double ko
+            List<Group> ngroups = currentBoard.GetGroupsFromStoneNeighbours(capturePoint, c.Opposite()).ToList();
+            ngroups = LinkHelper.GetAllDiagonalGroups(currentBoard, ngroups.First()).ToList();
+            List<Group> targetGroups = new List<Group>();
+            ngroups.ForEach(ngroup => targetGroups.AddRange(KoHelper.GetKoTargetGroups(currentBoard, ngroup)));
+            targetGroups = targetGroups.Distinct().ToList();
+            if (targetGroups.Count >= 2)
+                return true;
+
+            //kill double ko
+            List<Group> connectedGroups = LinkHelper.GetAllDiagonalGroups(currentBoard, currentBoard.GetGroupAt(capturePoint));
+            List<Group> koGroups = new List<Group>();
+            foreach (Point liberty in currentBoard.GetLibertiesOfGroups(connectedGroups))
+            {
+                (Boolean isKoFight, Group group) = KoHelper.IsKoFight(currentBoard, liberty, c.Opposite());
+                if (isKoFight)
+                    koGroups.Add(group);
+            }
+            if (koGroups.Count >= 2)
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Double ko for neutral point.
+        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
+        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_4" />
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B41_2" />
+        /// </summary>
+        public static Boolean NeutralPointDoubleKo(Board tryBoard)
+        {
+            Content c = tryBoard.MoveGroup.Content;
+            Boolean koEnabled = KoHelper.KoContentEnabled(c, tryBoard.GameInfo);
+            if (koEnabled) return false;
+            List<Point> stoneNeighbours = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindCoveredEye(tryBoard, n, c)).ToList();
+            if (stoneNeighbours.Count != 1) return false;
+            Point eyePoint = stoneNeighbours.First();
+            List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()).ToList();
+            ngroups = LinkHelper.GetAllDiagonalGroups(tryBoard, ngroups.First()).ToList();
+            List<Group> targetGroups = new List<Group>();
+            ngroups.ForEach(ngroup => targetGroups.AddRange(KoHelper.GetKoTargetGroups(tryBoard, ngroup)));
+            targetGroups = targetGroups.Distinct().ToList();
+            if (targetGroups.Count >= 1)
+                return true;
+            return false;
+        }
     }
 }

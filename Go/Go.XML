@@ -922,6 +922,25 @@
             Check redundant atari <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_2" />
             </summary>
         </member>
+        <member name="M:Go.KoHelper.PossibilityOfDoubleKo(Go.GameTryMove)">
+            <summary>
+            Check for possibility of double ko, for both survival and kill. Check for end ko moves as well.
+            Survival double ko <see cref="!:UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_TianLongTu_Q16446" />
+            <see cref="!:UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_TianLongTu_Q16975" />
+            <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_3" /> 
+            Kill double ko <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A23" />
+            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q16446" />
+            <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_2" /> 
+            </summary>
+        </member>
+        <member name="M:Go.KoHelper.NeutralPointDoubleKo(Go.Board)">
+            <summary>
+            Double ko for neutral point.
+            <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
+            <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_4" />
+            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B41_2" />
+            </summary>
+        </member>
         <member name="M:Go.LinkHelper.PossibleLinkForGroups(Go.Board,Go.Board)">
             <summary>
             Possible link for groups. For neutral point move, covered eye move, and eye diagonal move.
@@ -1520,14 +1539,6 @@
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.NeutralPointDoubleKo(Go.Board)">
-            <summary>
-            Double ko for neutral point. Similar to CheckKillerKoWithinKillerGroup.
-            <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
-            <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_4" />
-            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B41_2" />
-            </summary>
-        </member>
         <member name="M:Go.RedundantMoveHelper.RestoreNeutralMove(Go.Game,System.Collections.Generic.List{Go.GameTryMove},System.Collections.Generic.List{Go.GameTryMove})">
             <summary>
             Neutral points for kill moves have to be restored on end game one at a time to surround external liberties of target group in order to kill it
@@ -1813,17 +1824,6 @@
         <member name="M:Go.RedundantMoveHelper.RedundantKillerKoMove(Go.GameTryMove)">
             <summary>
             Redundant killer ko moves <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKillerKoMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
-            </summary>
-        </member>
-        <member name="M:Go.RedundantMoveHelper.PossibilityOfDoubleKo(Go.GameTryMove)">
-            <summary>
-            Check for possibility of double ko, for both survival and kill. Check for end ko moves as well.
-            Survival double ko <see cref="!:UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_TianLongTu_Q16446" />
-            <see cref="!:UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_TianLongTu_Q16975" />
-            <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_3" /> 
-            Kill double ko <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A23" />
-            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q16446" />
-            <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_2" /> 
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckRedundantKo(Go.GameTryMove)">
