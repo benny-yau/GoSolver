@@ -173,6 +173,7 @@
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A79" />
             Check covered eye <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_6" />
             Check atari resolved <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q17078_2" />
+            Check unescapable group <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q17078_3" />
             </summary>
         </member>
         <member name="M:Go.Game.CreateRandomMove(System.Collections.Generic.List{Go.GameTryMove},Go.Game,Go.SurviveOrKill)">
@@ -1262,7 +1263,6 @@
         <member name="M:Go.RedundantMoveHelper.CheckAnyRealEyeInSuicidalConnectAndDie(Go.Board,Go.Board)">
             <summary>
             Check for real eye in neighbour groups.
-            Check move in real eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17132_4" />
             Check for split killer group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3_3" />
             Check for corner six formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" /> 
             Check for one-point eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A30" />
@@ -1306,6 +1306,7 @@
             Ensure no shared liberty with neighbour group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A55" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
             Check for killer formation <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_A26" />
+            Check move next to covered point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17132_4" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckNoDiagonalAndNoLibertyAtMove(Go.GameTryMove,Go.Board)">

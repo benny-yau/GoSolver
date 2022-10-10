@@ -720,16 +720,20 @@ namespace Go
             if (GetWeakGroup(b, b.GetCurrentGroup(moveGroup)))
                 return true;
 
-            //escape move
+            //escape move at liberty
             Board b2 = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(b, moveGroup, c);
             if (b2 != null && b2.MoveGroupLiberties == 2 && CheckWeakGroupInConnectAndDie(b2, b2.GetCurrentGroup(moveGroup)))
                 return true;
+
+            //escape by capture
             foreach (Group gr in AtariHelper.AtariByGroup(b.GetCurrentGroup(moveGroup), b))
             {
                 Board b3 = ImmovableHelper.CaptureSuicideGroup(b, gr);
                 if (b3 == null) continue;
                 Group target = b3.GetCurrentGroup(moveGroup);
                 if (b3 != null && target.Liberties.Count == 2 && CheckWeakGroupInConnectAndDie(b3, target))
+                    return true;
+                if (!b3.MoveGroup.Equals(target) && GetWeakGroup(b, b3.MoveGroup))
                     return true;
             }
             return false;
@@ -778,7 +782,6 @@ namespace Go
 
         /// <summary>
         /// Check for real eye in neighbour groups.
-        /// Check move in real eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17132_4" />
         /// Check for split killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3_3" />
         /// Check for corner six formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" /> 
         /// Check for one-point eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A30" />
@@ -796,21 +799,15 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             if (tryBoard.MoveGroup.Points.Count == 1)
             {
-                //check move in real eye
                 Group killerGroup = GroupHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite());
                 if (killerGroup == null) return false;
-                Group tryKillerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
-                if (EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, killerGroup) && !ImmovableHelper.CheckConnectAndDie(captureBoard))
-                {
-                    if (tryKillerGroup != null && tryKillerGroup.Points.Count == 3 && !EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, tryKillerGroup) && tryKillerGroup.Points.Any(p => EyeHelper.IsCovered(tryBoard, p, c.Opposite())))
-                        return true;
-                }
 
                 //check for split killer group
                 Boolean splitKillerGroup = captureBoard.GetStoneNeighbours().Where(n => tryBoard[n] != c && !n.Equals(move)).Select(n => GroupHelper.GetKillerGroupFromCache(captureBoard, n, c.Opposite())).Any(n => n != null && n != killerGroup);
                 if (!splitKillerGroup && !EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, killerGroup)) return false;
 
                 //check for corner six formation
+                Group tryKillerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
                 if (tryKillerGroup != null && KillerFormationHelper.CornerSixFormation(tryBoard, tryKillerGroup))
                     return false;
             }
@@ -880,6 +877,7 @@ namespace Go
         /// Ensure no shared liberty with neighbour group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A55" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
         /// Check for killer formation <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_A26" />
+        /// Check move next to covered point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17132_4" />
         /// </summary>
         private static Boolean CheckDiagonalForSuicidalConnectAndDie(GameTryMove tryMove, Board captureBoard)
         {
@@ -912,6 +910,11 @@ namespace Go
             }
             else
             {
+                //check move next to covered point
+                Group tryKillerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
+                if (tryKillerGroup != null && tryBoard.GetStoneNeighbours().Any(p => tryBoard[p] == Content.Empty && EyeHelper.IsCovered(tryBoard, p, c.Opposite())))
+                    return true;
+
                 //stone neighbours at diagonal of each other
                 List<Point> stoneNeighbours = LinkHelper.GetNeighboursDiagonallyLinked(tryBoard);
                 if (!stoneNeighbours.Any()) return false;
