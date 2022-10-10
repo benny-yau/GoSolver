@@ -264,10 +264,12 @@ namespace Go
             {
                 (Boolean isKoFight, Group group) = KoHelper.IsKoFight(currentBoard, liberty, c.Opposite());
                 if (isKoFight)
+                {
                     koGroups.Add(group);
+                    if (koGroups.Count >= 2)
+                        return true;
+                }
             }
-            if (koGroups.Count >= 2)
-                return true;
             return false;
         }
 

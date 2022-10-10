@@ -173,7 +173,7 @@
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A79" />
             Check covered eye <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_6" />
             Check atari resolved <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q17078_2" />
-            Check unescapable group <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q17078_3" />
+            Check base line leap link <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q17078_3" />
             </summary>
         </member>
         <member name="M:Go.Game.CreateRandomMove(System.Collections.Generic.List{Go.GameTryMove},Go.Game,Go.SurviveOrKill)">
