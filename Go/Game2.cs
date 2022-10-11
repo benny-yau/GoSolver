@@ -454,10 +454,10 @@ namespace Go
         }
 
         /// <summary>
-        /// Restore redundant ko moves for double ko.
+        /// Restore redundant ko moves for killer ko within killer group.
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A79" />
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B39" />
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_5" />
-        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A79" />
         /// Check covered eye <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_6" />
         /// Check atari resolved <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q17078_2" />
         /// Check base line leap link <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q17078_3" />
@@ -473,10 +473,8 @@ namespace Go
                 if (koMove.AtariResolved) continue;
                 if (tryBoard.AtariTargets.Any(t => GroupHelper.GetKillerGroupFromCache(currentBoard, t.Points.First(), c) != null))
                 {
-                    Point? eyePoint = KoHelper.GetKoEyePoint(tryBoard);
-                    if (eyePoint == null) continue;
-                    if (KoHelper.CheckBaseLineLeapLink(tryBoard, eyePoint.Value, c)) continue;
-                    tryMoves.Add(koMove);
+                    GameTryMove move = GetRandomMove(koMove.CurrentGame);
+                    if (move != null) tryMoves.Add(move);
                     break;
                 }
             }
@@ -492,40 +490,40 @@ namespace Go
         private void CreateRandomMove(List<GameTryMove> tryMoves, Game currentGame, SurviveOrKill surviveOrKill)
         {
             Board board = currentGame.Board;
-            if (surviveOrKill == SurviveOrKill.Kill)
+            //do not add move if last move is random or pass move
+            Point? lastMove = board.LastMove;
+            if (lastMove != null && (board.IsRandomMove || lastMove.Value.Equals(Game.PassMove))) return;
+
+            //add move if no more try moves or to fight ko
+            if (AddPointToFightKo(tryMoves, currentGame, surviveOrKill))
             {
-                //do not add move if last move is pass move
-                Point? lastMove = board.LastMove;
-                Boolean lastMovePass = lastMove != null && lastMove.Value.Equals(Game.PassMove);
-                if (lastMovePass) return;
-                //add move if no more try moves or to fight ko
-                if (AddPointToFightKo(tryMoves, currentGame, surviveOrKill))
+                GameTryMove move = GetRandomMove(currentGame);
+                if (move != null) tryMoves.Add(move);
+            }
+        }
+
+        private GameTryMove GetRandomMove(Game currentGame)
+        {
+            Board board = currentGame.Board;
+            Point p = Game.PassMove;
+            for (int i = 3; i < 11; i++)
+            {
+                for (int j = 3; j < 8; j++)
                 {
-                    Point p = Game.PassMove;
-                    for (int i = 3; i < 11; i++)
+                    if (board[i, j] == Content.Empty)
                     {
-                        for (int j = 3; j < 8; j++)
-                        {
-                            if (board[i, j] == Content.Empty)
-                            {
-                                p = new Point(i, j);
-                                break;
-                            }
-                        }
-                        if (!p.Equals(Game.PassMove)) break;
+                        p = new Point(i, j);
+                        break;
                     }
-                    if (p.Equals(Game.PassMove))
-                        return;
-                    GameTryMove move = new GameTryMove(currentGame);
-                    move.MakeMoveResult = move.TryGame.InternalMakeMove(p.x, p.y);
-                    tryMoves.Add(move);
                 }
+                if (!p.Equals(Game.PassMove)) break;
             }
-            else if (surviveOrKill == SurviveOrKill.Survive)
-            {
-                if (AddPointToFightKo(tryMoves, currentGame, surviveOrKill))
-                    tryMoves.Add(BothAliveHelper.AddPassMove(currentGame));
-            }
+            if (p.Equals(Game.PassMove))
+                return null;
+            GameTryMove move = new GameTryMove(currentGame);
+            move.MakeMoveResult = move.TryGame.InternalMakeMove(p.x, p.y);
+            move.TryGame.Board.IsRandomMove = true;
+            return move;
         }
 
         /// <summary>

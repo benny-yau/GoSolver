@@ -21,6 +21,7 @@ namespace Go
         public Point? Move { get; set; }
         public Group MoveGroup { get; set; }
         public Point? singlePointCapture;
+        public Boolean IsRandomMove { get; set; }
         public List<Group> CapturedList = new List<Group>();
         public List<Point> LastMoves = new List<Point>();
 
@@ -68,6 +69,7 @@ namespace Go
             this.MoveGroup = fromBoard.MoveGroup;
             this.Move = fromBoard.Move;
             this.singlePointCapture = fromBoard.singlePointCapture;
+            this.IsRandomMove = fromBoard.IsRandomMove;
             this.LastMoves.AddRange(fromBoard.LastMoves);
 
             this.GroupCache.AddRange(fromBoard.GroupCache);
@@ -239,11 +241,11 @@ namespace Go
         /// <summary>
         /// Get all groups that are captured by current move.
         /// </summary>
-        public HashSet<Group> GetCapturedGroups(int x, int y)
+        public HashSet<Group> GetCapturedGroups(Point p)
         {
             HashSet<Group> captures = new HashSet<Group>();
-            List<Point> stoneNeighbours = GetStoneNeighbours(x, y);
-            Content c = this[x, y];
+            List<Point> stoneNeighbours = GetStoneNeighbours(p);
+            Content c = this[p];
             foreach (Point n in stoneNeighbours)
             {
                 if (this[n] != c.Opposite()) continue;
@@ -446,43 +448,44 @@ namespace Go
         /// <summary>
         /// Makes move on board internally. Returns result as MakeMoveResult.
         /// </summary>
-        public MakeMoveResult InternalMakeMove(int x, int y, Content c, Boolean overrideKo = false)
+        public MakeMoveResult InternalMakeMove(Point p, Content c, Boolean overrideKo = false)
         {
-            Move = new Point(x, y);
+            Move = p;
             this.CapturedList.Clear();
             Point? previousPtCapture = singlePointCapture;
             singlePointCapture = null;
+            IsRandomMove = false;
 
             if (Move.Equals(PassMove))
             {
                 LastMoves.Add(Move.Value);
                 return MakeMoveResult.Pass;
             }
-            else if (this[x, y] != Content.Empty)
+            else if (this[p] != Content.Empty)
                 return MakeMoveResult.NotEmpty;
 
             //make new move
-            this[x, y] = c;
-            HashSet<Group> capturedGroups = GetCapturedGroups(x, y);
+            this[p] = c;
+            HashSet<Group> capturedGroups = GetCapturedGroups(p);
 
             //check for ko move
             if (capturedGroups.Count == 1 && capturedGroups.First().Points.Count == 1 && this.GetStoneNeighbours().All(n => this[n] == c.Opposite()))
             {
                 if (previousPtCapture != null && !overrideKo && Move.Equals(previousPtCapture))
                 {
-                    this[x, y] = Content.Empty;
+                    this[p] = Content.Empty;
                     singlePointCapture = previousPtCapture;
                     return MakeMoveResult.KoBlocked;
                 }
                 singlePointCapture = capturedGroups.First().Points.First();
             }
             this.CapturedList = Capture(capturedGroups);
-            MoveGroup = GetGroupAt(x, y);
+            MoveGroup = GetGroupAt(p);
 
             //suicide move
             if (capturedGroups.Count == 0 && MoveGroupLiberties == 0)
             {
-                this[x, y] = Content.Empty;
+                this[p] = Content.Empty;
                 return MakeMoveResult.Suicide;
             }
             LastMoves.Add(Move.Value);
@@ -490,9 +493,10 @@ namespace Go
         }
 
 
-        public MakeMoveResult InternalMakeMove(Point p, Content content, Boolean overrideKo = false)
+        public MakeMoveResult InternalMakeMove(int x, int y, Content content, Boolean overrideKo = false)
         {
-            return InternalMakeMove(p.x, p.y, content, overrideKo);
+            Point p = new Point(x, y);
+            return InternalMakeMove(p, content, overrideKo);
         }
 
         /// <summary>
