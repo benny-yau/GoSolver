@@ -164,7 +164,7 @@ namespace ConsoleGoSolver
             Game.UseSolutionPoints = Game.UseMapMoves = false;
             MonteCarloMapping.mapMoves = true;
             MonteCarloMapping.useMappingRange = false;
-            (ConfirmAliveResult moveResult, Node answerNode) = MonteCarloGame.MonteCarloRealTimeMove(g);
+            (ConfirmAliveResult moveResult, Node answerNode, long? elapsedTime) = MonteCarloGame.MonteCarloRealTimeMove(g);
 
             Game.UseSolutionPoints = Game.UseMapMoves = true;
             MonteCarloMapping.mapMoves = false;
@@ -178,7 +178,8 @@ namespace ConsoleGoSolver
                 if (solutionCorrect)
                     Console.WriteLine("Correct.");
                 else
-                    Console.WriteLine("Incorrect.");
+                    Console.WriteLine("Incorrect. Answer: " + g.GameInfo.solutionPoints.First().First());
+                if (elapsedTime != null) Console.WriteLine(DebugHelper.PrintTimeTaken(elapsedTime.Value));
             }
         }
 

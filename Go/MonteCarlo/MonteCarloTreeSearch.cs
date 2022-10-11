@@ -12,11 +12,12 @@ namespace Go
         public Tree tree;
         public const int winScore = 1;
         public int mctsDepth = 0;
+        public int maxIterations = MonteCarloMapping.mapMoves ? Int32.MaxValue : 6000;
+        public long? elapsedTime;
+
         public static int mappingDepthToVerify = Convert.ToInt32(ConfigurationSettings.AppSettings["MAPPING_DEPTH_TO_VERIFY"]);
         public static int realTimeDepthToVerify = Convert.ToInt32(ConfigurationSettings.AppSettings["REALTIME_DEPTH_TO_VERIFY"]);
-        public int maxIterations = MonteCarloMapping.mapMoves ? Int32.MaxValue : 6000;
         public static Boolean debugMonteCarlo = false;
-
         /// <summary>
         /// Set the visit count to reach per node before moving down the tree to the child node.
         /// </summary>
@@ -166,10 +167,11 @@ namespace Go
             {
                 DebugHelper.DebugWriteWithTab("End of mcts: " + tree.Root.GetLastMoves(), mctsDepth);
                 long timeTaken = watch.ElapsedMilliseconds;
+                elapsedTime = timeTaken;
                 if (tree.Root == tree.AbsoluteRoot)
                 {
                     DebugHelper.DebugWriteWithTab("Root: " + tree.AbsoluteRoot.GetLastMoves(), mctsDepth);
-                    PrintTimeTaken(timeTaken);
+                    DebugHelper.DebugWriteWithTab(DebugHelper.PrintTimeTaken(timeTaken), mctsDepth);
                     DebugHelper.DebugWriteWithTab("Total time taken (mcts): " + timeTaken + Environment.NewLine + Environment.NewLine, mctsDepth);
                 }
                 else
@@ -581,17 +583,6 @@ namespace Go
                 }
             }
             return bestResult;
-        }
-
-
-        private static void PrintTimeTaken(long timeTaken)
-        {
-            int msPerMinute = 60000;
-            if (timeTaken > msPerMinute)
-            {
-                int timeTakenInMinutes = (int)Math.Floor((double)(timeTaken / msPerMinute));
-                Debug.WriteLine("Over " + timeTakenInMinutes + " minute(s)");
-            }
         }
 
     }

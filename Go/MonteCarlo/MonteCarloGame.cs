@@ -43,7 +43,7 @@ namespace Go
         /// <summary>
         /// Start mcts search for real-time move. Not used in mapping.
         /// </summary>
-        public static (ConfirmAliveResult, Node) MonteCarloRealTimeMove(Game game)
+        public static (ConfirmAliveResult, Node, long?) MonteCarloRealTimeMove(Game game)
         {
             MonteCarloTreeSearch mcts = InitializeMonteCarloComputerMove(game);
             State state = mcts.tree.Root.State;
@@ -60,12 +60,12 @@ namespace Go
                 if (mcts.AnswerNode.State.SurviveOrKill == SurviveOrKill.Survive && answerMove.Equals(Game.PassMove))
                 {
                     if (ResultBothAlive(g))
-                        return (ConfirmAliveResult.BothAlive, mcts.AnswerNode);
+                        return (ConfirmAliveResult.BothAlive, mcts.AnswerNode, mcts.elapsedTime);
                 }
 
                 //check if ko alive
                 if (game.Board.Move.Equals(Game.PassMove) && game.Board.singlePointCapture != null && answerMove.Equals(game.Board.singlePointCapture.Value))
-                    return (ConfirmAliveResult.KoAlive, mcts.AnswerNode);
+                    return (ConfirmAliveResult.KoAlive, mcts.AnswerNode, mcts.elapsedTime);
             }
 
             //return result as dead or alive
@@ -79,7 +79,7 @@ namespace Go
             confirmAlive = LifeCheck.CheckIfTargetSurvivedOrKilled(confirmAlive, state.SurviveOrKill, state.Game);
 
             Node answerNode = (mcts.AnswerNode != null) ? mcts.AnswerNode : mcts.tree.Root;
-            return (confirmAlive, answerNode);
+            return (confirmAlive, answerNode, mcts.elapsedTime);
         }
 
         /// <summary>

@@ -79,16 +79,10 @@ namespace Go
             return script;
         }
 
-        public static String ShowMovablePoints(Game game, List<State> states)
+        public static String ShowMovablePoints(Game game)
         {
             List<Point> points = new List<Point>();
-            states.ForEach(t => points.Add(t.Game.Board.Move.Value));
-            return ShowMovablePoints(game, points);
-        }
-
-        public static String ShowMovablePoints(Game game, List<GameTryMove> gameTryMoves)
-        {
-            List<Point> points = new List<Point>();
+            List<GameTryMove> gameTryMoves = GameHelper.GetTryMovesForGame(game);
             gameTryMoves.ForEach(t => points.Add(t.TryGame.Board.Move.Value));
             return ShowMovablePoints(game, points);
         }
@@ -129,5 +123,22 @@ namespace Go
             Debug.WriteLine("Total count: " + totalCount);
         }
 
+        public static String PrintTimeTaken(long timeTaken)
+        {
+            int msPerMinute = 60000;
+            if (timeTaken > msPerMinute)
+            {
+                int timeTakenInMinutes = (int)Math.Floor((double)(timeTaken / msPerMinute));
+                long millisecondsRemaining = timeTaken - (timeTakenInMinutes * msPerMinute);
+
+                int timeTakenInSeconds = (int)Math.Floor((double)(millisecondsRemaining / 1000));
+                return timeTakenInMinutes + " minute" + ((timeTakenInMinutes <= 1) ? "" : "s") + " and " + timeTakenInSeconds + " second" + ((timeTakenInSeconds <= 1) ? "" : "s");
+            }
+            else
+            {
+                int timeTakenInSeconds = (int)Math.Floor((double)(timeTaken / 1000));
+                return timeTakenInSeconds + " second" + ((timeTakenInSeconds <= 1) ? "" : "s");
+            }
+        }
     }
 }
