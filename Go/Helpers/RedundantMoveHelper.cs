@@ -1568,7 +1568,8 @@ namespace Go
         /// Check killer group for captured points <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_ScenarioHighLevel18" />
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_TianLongTu_Q17132" />
         /// <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_SiHuoDaQuan_CornerA29_2" />
-        /// Check eye or tiger mouth at stone and diagonal <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario3kyu28" />
+        /// Check eye or tiger mouth at stone and diagonal <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A26_2" />
+        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario3kyu28" />
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_TianLongTu_Q17132_3" />
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_TianLongTu_Q16466" />
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
@@ -1602,11 +1603,8 @@ namespace Go
                     return false;
 
                 //check tiger mouth
-                Point? q = ImmovableHelper.FindTigerMouth(tryBoard, p, c);
-                if (q == null) continue;
-                if (tryBoard.GetStoneNeighbours(q.Value).Any(n => tryBoard[n] == c.Opposite() && WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.GetGroupAt(n)))) continue;
-                if (tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Any(gr => ImmovableHelper.CheckConnectAndDie(tryBoard, gr, false))) continue;
-                return false;
+                if (ImmovableHelper.FindTigerMouth(tryBoard, c, p))
+                    return false;
             }
             return true;
         }

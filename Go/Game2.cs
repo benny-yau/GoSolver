@@ -154,9 +154,6 @@ namespace Go
                 tryMoves.Add(redundantTryMoves.First(move => move.IsDiagonalEyeMove));
 
 
-            //create random move
-            CreateRandomMove(tryMoves, currentGame, SurviveOrKill.Survive);
-
             //restore redundant ko move
             RestoreRedundantKo(tryMoves, redundantTryMoves);
 
@@ -443,7 +440,7 @@ namespace Go
 
 
             //create random move
-            CreateRandomMove(tryMoves, currentGame, SurviveOrKill.Kill);
+            CreateRandomMoveForKill(tryMoves, currentGame);
 
             //restore redundant ko move
             RestoreRedundantKo(tryMoves, redundantTryMoves);
@@ -471,7 +468,7 @@ namespace Go
                 Board tryBoard = koMove.TryGame.Board;
                 Content c = tryBoard.MoveGroup.Content;
                 if (koMove.AtariResolved) continue;
-                if (tryBoard.AtariTargets.Any(t => GroupHelper.GetKillerGroupFromCache(currentBoard, t.Points.First(), c) != null))
+                if (tryBoard.AtariTargets.Any(t => GroupHelper.GetKillerGroupFromCache(tryBoard, t.Points.First(), c) != null))
                 {
                     GameTryMove move = GetRandomMove(koMove.CurrentGame);
                     if (move != null) tryMoves.Add(move);
@@ -482,20 +479,19 @@ namespace Go
 
 
         /// <summary>
-        /// Make random move to wait a turn where no other move is available or on ko move from opponent.
-        /// Random point for survive <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_Corner_B41" />
-        /// Random point for kill <see cref="UnitTestProject.KoTest.KoTest_Scenario_WuQingYuan_Q31498" />
+        /// Create random move if no more try moves for kill.
+        /// <see cref="UnitTestProject.KoTest.KoTest_Scenario_WuQingYuan_Q31498" />
         /// <see cref="UnitTestProject.KoTest.KoTest_Scenario_TianLongTu_Q17077" />
         /// </summary>
-        private void CreateRandomMove(List<GameTryMove> tryMoves, Game currentGame, SurviveOrKill surviveOrKill)
+        private void CreateRandomMoveForKill(List<GameTryMove> tryMoves, Game currentGame)
         {
             Board board = currentGame.Board;
             //do not add move if last move is random or pass move
             Point? lastMove = board.LastMove;
             if (lastMove != null && (board.IsRandomMove || lastMove.Value.Equals(Game.PassMove))) return;
 
-            //add move if no more try moves or to fight ko
-            if (AddPointToFightKo(tryMoves, currentGame, surviveOrKill))
+            //add move if no more try moves
+            if (tryMoves.Count == 0)
             {
                 GameTryMove move = GetRandomMove(currentGame);
                 if (move != null) tryMoves.Add(move);
@@ -524,29 +520,6 @@ namespace Go
             move.MakeMoveResult = move.TryGame.InternalMakeMove(p.x, p.y);
             move.TryGame.Board.IsRandomMove = true;
             return move;
-        }
-
-        /// <summary>
-        /// Add random move to fight ko.
-        /// <see cref="UnitTestProject.KoTest.KoTest_Scenario_TianLongTu_Q17077" />
-        /// Check killer ko within killer group <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B39" /> 
-        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_5" /> 
-        /// </summary>
-        private Boolean AddPointToFightKo(List<GameTryMove> tryMoves, Game currentGame, SurviveOrKill surviveOrKill)
-        {
-            KoCheck koGameCheck = (surviveOrKill == SurviveOrKill.Kill) ? KoCheck.Survive : KoCheck.Kill;
-            Boolean isRemainingKoFight = tryMoves.Count <= 1 && !tryMoves.Any(t => !EyeHelper.FindCoveredEye(t.CurrentGame.Board, t.Move, t.MoveContent)) && currentGame.KoGameCheck == koGameCheck && currentGame.Board.singlePointCapture != null;
-            if (isRemainingKoFight)
-            {
-                //check killer ko within killer group
-                Board b = KoHelper.IsCaptureKoFight(currentGame.Board, currentGame.Board.MoveGroup, true);
-                if (b != null && b.AtariTargets.Any(t => KoHelper.GetKoTargetGroups(b, t, b.MoveGroup).Any()))
-                    return false;
-                return true;
-            }
-            if (surviveOrKill == SurviveOrKill.Kill && tryMoves.Count == 0)
-                return true;
-            return false;
         }
 
         /// <summary>
