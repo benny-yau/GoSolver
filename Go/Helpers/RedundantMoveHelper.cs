@@ -746,12 +746,11 @@ namespace Go
 
             foreach (Group group in tryBoard.GetNeighbourGroups(moveGroup).Where(n => n.Liberties.Count <= 2))
             {
-
                 foreach (Point liberty in group.Liberties)
                 {
                     (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, group.Content.Opposite(), tryBoard);
                     if (suicidal) continue;
-                    if (WallHelper.IsNonKillableFromSetupMoves(b, b.MoveGroup)) continue;
+                    if (WallHelper.IsNonKillableGroup(b)) continue;
                     return true;
                 }
             }
@@ -792,6 +791,7 @@ namespace Go
         /// Check for covered eye group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q6150" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A17" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30403_2" />
+        /// /// Check for covered eye move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_8" />
         /// </summary>
         private static Boolean CheckAnyRealEyeInSuicidalConnectAndDie(Board tryBoard, Board captureBoard)
         {
@@ -816,6 +816,12 @@ namespace Go
                 Group killerGroup = GroupHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite());
                 if (killerGroup == null) return false;
                 if (!EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, killerGroup)) return false;
+            }
+            else
+            {
+                //check for covered eye move
+                if (EyeHelper.IsCovered(captureBoard, move, c.Opposite()))
+                    return false;
             }
 
             return KillerFormationHelper.CheckRealEyeInNeighbourGroups(tryBoard, captureBoard);
@@ -897,6 +903,10 @@ namespace Go
             Boolean diagonalGroups = LinkHelper.GetGroupLinkedDiagonals(tryBoard).Any();
             if (diagonalGroups) return false;
 
+            if (captureBoard.GetNeighbourGroups(move).All(n => WallHelper.IsNonKillableGroup(captureBoard, n)))
+                return true;
+
+            Group tryKillerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
             if (tryBoard.MoveGroup.Points.Count > 1)
             {
                 Point p = tryBoard.MoveGroup.Liberties.First();
@@ -911,28 +921,26 @@ namespace Go
             else
             {
                 //check move next to covered point
-                Group tryKillerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
                 if (tryKillerGroup != null && tryMove.IsNegligible && tryBoard.GetStoneNeighbours().Any(p => tryBoard[p] == Content.Empty && EyeHelper.IsCovered(tryBoard, p, c.Opposite())))
                     return true;
 
                 //stone neighbours at diagonal of each other
                 List<Point> stoneNeighbours = LinkHelper.GetNeighboursDiagonallyLinked(tryBoard);
-                if (!stoneNeighbours.Any()) return false;
-                //check diagonal at opposite corner of stone neighbours
-                List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(d => tryBoard[d] == c.Opposite()).ToList();
-                if (diagonals.Any(d => !tryBoard.GetStoneNeighbours(d).Intersect(stoneNeighbours).Any()))
-                    return false;
-
-                //cut diagonal and kill
                 if (stoneNeighbours.Count == 2)
                 {
+                    //check diagonal at opposite corner of stone neighbours
+                    List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(d => tryBoard[d] == c.Opposite()).ToList();
+                    if (diagonals.Any(d => !tryBoard.GetStoneNeighbours(d).Intersect(stoneNeighbours).Any()))
+                        return false;
+
+                    //cut diagonal and kill
                     List<Point> cutDiagonal = LinkHelper.PointsBetweenDiagonals(stoneNeighbours[0], stoneNeighbours[1]);
                     cutDiagonal.Remove(move);
                     Board b = tryBoard.MakeMoveOnNewBoard(cutDiagonal.First(), c);
                     if (b != null && stoneNeighbours.Any(n => ImmovableHelper.CheckConnectAndDie(b, b.GetGroupAt(n))))
                         return false;
+                    return true;
                 }
-                return true;
             }
             return false;
         }
@@ -1568,8 +1576,7 @@ namespace Go
         /// Check killer group for captured points <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_ScenarioHighLevel18" />
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_TianLongTu_Q17132" />
         /// <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_SiHuoDaQuan_CornerA29_2" />
-        /// Check eye or tiger mouth at stone and diagonal <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A26_2" />
-        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario3kyu28" />
+        /// Check eye or tiger mouth at stone and diagonal <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario3kyu28" />
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_TianLongTu_Q17132_3" />
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_TianLongTu_Q16466" />
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
@@ -1603,8 +1610,11 @@ namespace Go
                     return false;
 
                 //check tiger mouth
-                if (ImmovableHelper.FindTigerMouth(tryBoard, c, p))
-                    return false;
+                Point? q = ImmovableHelper.FindTigerMouth(tryBoard, p, c);
+                if (q == null) continue;
+                if (tryBoard.GetStoneNeighbours(q.Value).Any(n => tryBoard[n] == c.Opposite() && WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.GetGroupAt(n)))) continue;
+                if (tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Any(gr => ImmovableHelper.CheckConnectAndDie(tryBoard, gr, false))) continue;
+                return false;
             }
             return true;
         }

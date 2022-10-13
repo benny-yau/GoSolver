@@ -74,6 +74,7 @@ namespace Go
         public static Boolean IsCovered(Board board, Point eye, Content c)
         {
             List<Point> diagonalNeighbours = board.GetDiagonalNeighbours(eye).Where(q => board[q] == c.Opposite()).ToList();
+            if (board[eye] == c.Opposite()) diagonalNeighbours.RemoveAll(n => board.GetGroupAt(eye) == board.GetGroupAt(n));
             List<Point> stonePoints = board.GetStoneNeighbours(eye).Where(n => board[n] == c).ToList();
             if (board.PointWithinMiddleArea(eye))
                 return (stonePoints.Count >= 3 && diagonalNeighbours.Count >= 2);
@@ -300,8 +301,6 @@ namespace Go
         /// Check snapback <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Scenario_XuanXuanGo_B31" /> 
         /// Ensure all groups have more than one liberty <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31469" /> 
         /// Ensure survival can make move at empty spaces <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18796_2" /> 
-        /// Check group for two opponent stones <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A139_3" /> 
-        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WuQingYuan_Q30982" />
         /// </summary>
         public static Boolean FindRealEyeWithinEmptySpace(Board board, Group killerGroup, EyeType eyeType = EyeType.SemiSolidEye)
         {
@@ -322,8 +321,8 @@ namespace Go
                 if (eyeGroups.Count == 1 || eyeType != EyeType.SemiSolidEye)
                     return true;
 
-                //check group for two opponent stones
-                if (killerGroup.Points.Count == 3 && killerGroup.Points.Count(p => board[p] == killerGroup.Content) == 2)
+                //check two opponent stones
+                if (CheckTwoOpponentStonesInRealEye(board, killerGroup))
                     return false;
 
                 //check snapback
@@ -337,6 +336,21 @@ namespace Go
                 return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// Check two opponent stones in real eye.
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A139_3" /> 
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WuQingYuan_Q30982" />
+        /// </summary>
+        private static Boolean CheckTwoOpponentStonesInRealEye(Board board, Group killerGroup)
+        {
+            if (killerGroup.Points.Count != 3) return false;
+            List<Point> opponentStones = killerGroup.Points.Where(p => board[p] == killerGroup.Content).ToList();
+            if (opponentStones.Count != 2) return false;
+            List<Group> opponentGroups = opponentStones.Select(n => board.GetGroupAt(n)).Distinct().ToList();
+            Boolean diagonalGroups = opponentGroups.Any(n => LinkHelper.GetGroupLinkedDiagonals(board, n).Any());
+            return diagonalGroups;
         }
 
         public static Boolean FindRealEyeWithinEmptySpace(Board board, Point p, Content c, EyeType eyeType = EyeType.SemiSolidEye)
