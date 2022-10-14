@@ -499,8 +499,11 @@ namespace Go
                     return false;
             }
 
-            if (killerGroup.Points.Any(p => board[p] != Content.Empty))
+            //ensure all opponent stones are dead
+            List<Point> opponentStones = killerGroup.Points.Where(p => board[p] == c).ToList();
+            if (opponentStones.Any())
             {
+                if (board.GetGroupsFromPoints(opponentStones).Any(n => !connectedGroups.Contains(n))) return false;
                 //ensure all liberties cannot create eye for opponent
                 if (killerGroup.Points.Where(p => board[p] == Content.Empty).All(lib => NoEyeForOpponentWithinKillerGroup(board, lib, c, connectedGroups)))
                     return true;

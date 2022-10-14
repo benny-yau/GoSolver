@@ -797,33 +797,16 @@ namespace Go
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.MoveGroup.Points.Count == 1)
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite());
+            if (killerGroup == null) return false;
+            if (tryBoard.MoveGroup.Points.Count <= 2)
             {
-                Group killerGroup = GroupHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite());
-                if (killerGroup == null) return false;
-
-                //check for split killer group
-                Boolean splitKillerGroup = captureBoard.GetStoneNeighbours().Where(n => tryBoard[n] != c && !n.Equals(move)).Select(n => GroupHelper.GetKillerGroupFromCache(captureBoard, n, c.Opposite())).Any(n => n != null && n != killerGroup);
-                if (!splitKillerGroup && !EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, killerGroup)) return false;
-
-                //check for corner six formation
-                Group tryKillerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
-                if (tryKillerGroup != null && KillerFormationHelper.CornerSixFormation(tryBoard, tryKillerGroup))
-                    return false;
-            }
-            else if (tryBoard.MoveGroup.Points.Count == 2)
-            {
-                Group killerGroup = GroupHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite());
-                if (killerGroup == null) return false;
-                if (!EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, killerGroup)) return false;
+                if (!EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, killerGroup) && !EyeHelper.RealEyeOfDiagonallyConnectedGroups(captureBoard, killerGroup)) return false;
             }
             else
             {
-                //check for covered eye move
-                if (EyeHelper.IsCovered(captureBoard, move, c.Opposite()))
-                    return false;
+                if (!EyeHelper.RealEyeOfDiagonallyConnectedGroups(captureBoard, killerGroup)) return false;
             }
-
             return KillerFormationHelper.CheckRealEyeInNeighbourGroups(tryBoard, captureBoard);
         }
 
