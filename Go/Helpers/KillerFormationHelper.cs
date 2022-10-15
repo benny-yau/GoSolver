@@ -190,6 +190,8 @@ namespace Go
                 //find real eye
                 if (EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, kgroup) && WallHelper.StrongNeighbourGroups(captureBoard, neighbourKillerGroups))
                     return true;
+                if (EyeHelper.RealEyeOfDiagonallyConnectedGroups(captureBoard, kgroup))
+                    return true;
             }
             return false;
         }

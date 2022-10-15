@@ -480,18 +480,21 @@ namespace Go
         {
             Content c = killerGroup.Content;
             if (killerGroup.Points.Count <= 3) return false;
-            //check for covered eye killer group
-            if (killerGroup.Points.Any(p => EyeHelper.IsCovered(board, p, c.Opposite()))) return false;
 
-            (Boolean isKillerGroup, List<Group> connectedGroups) = GroupHelper.CheckNeighbourGroupsOfKillerGroup(board, killerGroup, false);
+            //ensure killer group is surrounded by diagonal groups
+            (Boolean isKillerGroup, List<Group> diagonalGroups) = GroupHelper.CheckNeighbourGroupsOfKillerGroup(board, killerGroup, false);
             if (!isKillerGroup)
                 return false;
 
-            foreach (Group group in connectedGroups)
+            //ensure killer group neighbours are not disconnected
+            if (board.GetNeighbourGroups(killerGroup).Any(n => !diagonalGroups.Contains(n)))
+                return false;
+
+            foreach (Group group in diagonalGroups)
             {
                 //ensure all groups are connected
-                List<Group> diagonalGroups = LinkHelper.GetAllDiagonalGroups(board, group, null, false).Intersect(connectedGroups).ToList();
-                if (diagonalGroups.Any(d => d != group && !LinkHelper.IsImmediateDiagonallyConnected(board, d, group)))
+                List<Group> connectedGroups = LinkHelper.GetAllDiagonalGroups(board, group, null, false).Intersect(diagonalGroups).ToList();
+                if (connectedGroups.Any(d => d != group && !LinkHelper.IsImmediateDiagonallyConnected(board, d, group)))
                     return false;
 
                 //check connect and die
@@ -499,35 +502,70 @@ namespace Go
                     return false;
             }
 
+            //check for covered eye killer group
+            if (killerGroup.Points.Any(p => EyeHelper.IsCovered(board, p, c.Opposite()))) return false;
+
             //ensure all opponent stones are dead
             List<Point> opponentStones = killerGroup.Points.Where(p => board[p] == c).ToList();
             if (opponentStones.Any())
             {
-                if (board.GetGroupsFromPoints(opponentStones).Any(n => !connectedGroups.Contains(n))) return false;
                 //ensure all liberties cannot create eye for opponent
-                if (killerGroup.Points.Where(p => board[p] == Content.Empty).All(lib => NoEyeForOpponentWithinKillerGroup(board, lib, c, connectedGroups)))
+                if (killerGroup.Points.Where(p => board[p] == Content.Empty).All(lib => NoEyeForOpponentWithinKillerGroup(board, lib, c)))
                     return true;
             }
+            else
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Find real eye for any killer group. Within three points at FindRealEyeWithinEmptySpace and more than three points at FindRealEyeWithinEmptySpace.
+        /// </summary>
+        public static Boolean FindRealEyeOfAnyKillerGroup(Board board, Group killerGroup)
+        {
+            if (EyeHelper.FindRealEyeWithinEmptySpace(board, killerGroup) || EyeHelper.RealEyeOfDiagonallyConnectedGroups(board, killerGroup))
+                return true;
             return false;
         }
 
         /// <summary>
         /// No eye for opponent within killer group.
         /// </summary>
-        public static Boolean NoEyeForOpponentWithinKillerGroup(Board board, Point liberty, Content c, List<Group> connectedGroups)
+        public static Boolean NoEyeForOpponentWithinKillerGroup(Board board, Point liberty, Content c)
         {
-            if (board.GetStoneNeighbours(liberty).Any(n => board[n] == c.Opposite() && connectedGroups.Contains(board.GetGroupAt(n))))
+            if (board.GetStoneNeighbours(liberty).Any(n => board[n] == c.Opposite()))
                 return true;
 
             Boolean eyeInMiddleArea = board.PointWithinMiddleArea(liberty);
             int diagonalWallCount = 0;
             foreach (Point q in board.GetDiagonalNeighbours(liberty))
             {
-                if (board[q] == c.Opposite() && connectedGroups.Contains(board.GetGroupAt(q)))
+                if (board[q] == c.Opposite())
                     diagonalWallCount += 1;
                 if (eyeInMiddleArea && diagonalWallCount > 1 || !eyeInMiddleArea && diagonalWallCount > 0)
                     return true;
             }
+            return false;
+        }
+
+        /// <summary>
+        /// Real eye at diagonal with empty point should be semi solid eye or within enclosed killer group. If eye is filled then check if possible to create real eye.
+        /// Eye filled <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTestScenario_XuanXuanGo_A46_101Weiqi" />
+        /// Check if covered eye <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_GuanZiPu_A2Q29_101Weiqi" />
+        /// Check for double capture <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WuQingYuan_Q30982" />
+        /// <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_WuQingYuan_Q30982" />
+        /// </summary>
+        public static Boolean RealEyeAtDiagonal(GameTryMove tryMove, Point eye)
+        {
+            GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
+            if (opponentMove == null) return false;
+            Board killerBoard = opponentMove.TryGame.Board;
+            Content c = tryMove.MoveContent;
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(killerBoard, eye, c);
+            if (killerGroup == null) return false;
+            //find real eye
+            if (FindRealEyeWithinEmptySpace(killerBoard, killerGroup))
+                return true;
             return false;
         }
     }

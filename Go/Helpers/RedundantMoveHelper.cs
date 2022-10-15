@@ -161,7 +161,7 @@ namespace Go
                 return false;
 
             //check eye for survival
-            if (eyeGroup.Points.Any(e => tryBoard.GetDiagonalNeighbours(e).Any(n => !WallHelper.NoEyeForSurvival(tryBoard, n, c) && !RedundantMoveHelper.RealEyeAtDiagonal(tryMove, n))))
+            if (eyeGroup.Points.Any(e => tryBoard.GetDiagonalNeighbours(e).Any(n => !WallHelper.NoEyeForSurvival(tryBoard, n, c) && !EyeHelper.RealEyeAtDiagonal(tryMove, n))))
                 return false;
 
             //check no eye for survival
@@ -799,14 +799,7 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite());
             if (killerGroup == null) return false;
-            if (tryBoard.MoveGroup.Points.Count <= 2)
-            {
-                if (!EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, killerGroup) && !EyeHelper.RealEyeOfDiagonallyConnectedGroups(captureBoard, killerGroup)) return false;
-            }
-            else
-            {
-                if (!EyeHelper.RealEyeOfDiagonallyConnectedGroups(captureBoard, killerGroup)) return false;
-            }
+            if (!EyeHelper.FindRealEyeOfAnyKillerGroup(captureBoard, killerGroup)) return false;
             return KillerFormationHelper.CheckRealEyeInNeighbourGroups(tryBoard, captureBoard);
         }
 
@@ -2189,7 +2182,7 @@ namespace Go
                 else
                 {
                     //find real eyes at both spaces
-                    if (EyeHelper.FindRealEyeWithinEmptySpace(currentBoard, eyeKillerGroup) && EyeHelper.FindRealEyeWithinEmptySpace(capturedBoard, moveKillerGroup))
+                    if (EyeHelper.FindRealEyeOfAnyKillerGroup(currentBoard, eyeKillerGroup) && EyeHelper.FindRealEyeOfAnyKillerGroup(capturedBoard, moveKillerGroup))
                         return true;
                 }
             }
@@ -2293,7 +2286,7 @@ namespace Go
             diagonals.RemoveAll(d => GroupHelper.GetKillerGroupFromCache(currentBoard, d, c) == null);
             if (diagonals.Count == 0) return false;
             //check diagonals are real eyes
-            if (diagonals.All(eye => RealEyeAtDiagonal(tryMove, eye)))
+            if (diagonals.All(eye => EyeHelper.RealEyeAtDiagonal(tryMove, eye)))
             {
                 //check other surrounding points are not possible eyes
                 IEnumerable<Point> neighbourPts = tryBoard.GetStoneAndDiagonalNeighbours().Except(diagonals);
@@ -2319,26 +2312,6 @@ namespace Go
             return false;
         }
 
-        /// <summary>
-        /// Real eye at diagonal with empty point should be semi solid eye or within enclosed killer group. If eye is filled then check if possible to create real eye.
-        /// Eye filled <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTestScenario_XuanXuanGo_A46_101Weiqi" />
-        /// Check if covered eye <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_GuanZiPu_A2Q29_101Weiqi" />
-        /// Check for double capture <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WuQingYuan_Q30982" />
-        /// <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_WuQingYuan_Q30982" />
-        /// </summary>
-        public static Boolean RealEyeAtDiagonal(GameTryMove tryMove, Point eye)
-        {
-            GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
-            if (opponentMove == null) return false;
-            Board killerBoard = opponentMove.TryGame.Board;
-            Content c = tryMove.MoveContent;
-
-            //find real eye
-            if (EyeHelper.FindRealEyeWithinEmptySpace(killerBoard, eye, c))
-                return true;
-
-            return false;
-        }
 
         #endregion
 
@@ -2841,7 +2814,7 @@ namespace Go
                 return false;
 
             //if all diagonals are real eyes then redundant
-            if (!diagonals.All(eye => RedundantMoveHelper.RealEyeAtDiagonal(tryMove, eye)))
+            if (!diagonals.All(eye => EyeHelper.RealEyeAtDiagonal(tryMove, eye)))
                 return false;
 
             return true;

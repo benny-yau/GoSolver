@@ -55,16 +55,8 @@ namespace Go
             for (int i = 0; i <= killerGroups.Count - 1; i++)
             {
                 Group group = killerGroups[i];
-                if (group.Points.Count <= 3)
-                {
-                    if (EyeHelper.FindRealEyeWithinEmptySpace(board, group, EyeType.SemiSolidEye))
-                        eyes.Add(group);
-                }
-                else
-                {
-                    if (EyeHelper.RealEyeOfDiagonallyConnectedGroups(board, group))
-                        eyes.Add(group);
-                }
+                if (EyeHelper.FindRealEyeOfAnyKillerGroup(board, group))
+                    eyes.Add(group);
                 //get tiger mouths of eye groups
                 GetTigerMouthsOfEyeGroups(board, group, tigerMouthList);
                 if (eyes.Count + killerGroups.Count - 1 - i < 2)

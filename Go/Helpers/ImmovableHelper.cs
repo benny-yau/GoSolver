@@ -205,6 +205,8 @@ namespace Go
 
         /// <summary>
         /// Check if escapable for target group with two liberties.
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_3" />
+        /// Check for atari target <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q17154" />
         /// </summary>
         public static Boolean EscapeCaptureLink(Board board, Group targetGroup, Point? capturePoint = null)
         {
@@ -223,7 +225,7 @@ namespace Go
             {
                 if (capturePoint != null && ngroup.Points.Contains(capturePoint.Value)) continue;
                 Board b = ImmovableHelper.CaptureSuicideGroup(board, ngroup);
-                if (b != null && b.GetGroupLiberties(targetGroup).Count > 2)
+                if (b != null && b.GetGroupLiberties(targetGroup).Count > 2 && !KoHelper.IsKoFight(b))
                     return true;
             }
             return false;

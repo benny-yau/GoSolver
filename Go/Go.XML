@@ -463,9 +463,23 @@
             Ensure all groups are connected <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_ScenarioHighLevel28" /> 
             </summary>
         </member>
-        <member name="M:Go.EyeHelper.NoEyeForOpponentWithinKillerGroup(Go.Board,Go.Point,Go.Content,System.Collections.Generic.List{Go.Group})">
+        <member name="M:Go.EyeHelper.FindRealEyeOfAnyKillerGroup(Go.Board,Go.Group)">
+            <summary>
+            Find real eye for any killer group. Within three points at FindRealEyeWithinEmptySpace and more than three points at FindRealEyeWithinEmptySpace.
+            </summary>
+        </member>
+        <member name="M:Go.EyeHelper.NoEyeForOpponentWithinKillerGroup(Go.Board,Go.Point,Go.Content)">
             <summary>
             No eye for opponent within killer group.
+            </summary>
+        </member>
+        <member name="M:Go.EyeHelper.RealEyeAtDiagonal(Go.GameTryMove,Go.Point)">
+            <summary>
+            Real eye at diagonal with empty point should be semi solid eye or within enclosed killer group. If eye is filled then check if possible to create real eye.
+            Eye filled <see cref="!:UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTestScenario_XuanXuanGo_A46_101Weiqi" />
+            Check if covered eye <see cref="!:UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_GuanZiPu_A2Q29_101Weiqi" />
+            Check for double capture <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WuQingYuan_Q30982" />
+            <see cref="!:UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_WuQingYuan_Q30982" />
             </summary>
         </member>
         <member name="M:Go.GameHelper.GetTryMovesForGame(Go.Game)">
@@ -593,6 +607,8 @@
         <member name="M:Go.ImmovableHelper.EscapeCaptureLink(Go.Board,Go.Group,System.Nullable{Go.Point})">
             <summary>
             Check if escapable for target group with two liberties.
+            <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_3" />
+            Check for atari target <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q17154" />
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.SuicidalAfterMustHaveMove(Go.Board,Go.Board,Go.Point)">
@@ -1673,15 +1689,6 @@
             Ensure diagonal not required for both alive. 
             <see cref="!:UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_SiHuoDaQuan_CornerA29_2" />
             Check link to groups <see cref="!:UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_WuQingYuan_Q31154" />
-            </summary>
-        </member>
-        <member name="M:Go.RedundantMoveHelper.RealEyeAtDiagonal(Go.GameTryMove,Go.Point)">
-            <summary>
-            Real eye at diagonal with empty point should be semi solid eye or within enclosed killer group. If eye is filled then check if possible to create real eye.
-            Eye filled <see cref="!:UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTestScenario_XuanXuanGo_A46_101Weiqi" />
-            Check if covered eye <see cref="!:UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_GuanZiPu_A2Q29_101Weiqi" />
-            Check for double capture <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WuQingYuan_Q30982" />
-            <see cref="!:UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_WuQingYuan_Q30982" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SurvivalEyeFillerMove(Go.GameTryMove)">
