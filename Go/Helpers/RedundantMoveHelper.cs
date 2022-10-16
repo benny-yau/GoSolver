@@ -534,37 +534,23 @@ namespace Go
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             if (opponentTryBoard.MoveGroup.Points.Count < 2) return false;
-            if (tryBoard.CapturedList.Count != 0 || tryMove.AtariResolved) return false;
+            if (tryBoard.CapturedList.Count != 0 || tryMove.AtariResolved || tryBoard.AtariTargets.Count != 1) return false;
 
             if (!MultiPointSuicidalMove(opponentMove)) return false;
 
             //check move group liberties
             if (tryBoard.MoveGroupLiberties <= 2 && (tryBoard.MoveGroup.Points.Count <= 4 || KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard))) return false;
 
-            //find eye at move
-            if (opponentTryBoard.GetStoneAndDiagonalNeighbours().Any(n => EyeHelper.FindEye(opponentTryBoard, n, c.Opposite())))
+            Group atariTarget = tryBoard.AtariTargets.First();
+
+            //check for unescapable group
+            if (!ImmovableHelper.EscapeCaptureLink(tryBoard, atariTarget))
                 return false;
 
-            foreach (Group atariTarget in tryBoard.AtariTargets)
-            {
-                //check for unescapable group
-                (Boolean unEscapable, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(tryBoard, atariTarget, false);
-                if (unEscapable) return false;
-                //check for weak group
-                if (CheckWeakGroupInOpponentSuicide(tryBoard, atariTarget))
-                    return false;
+            //check for weak group
+            if (CheckWeakGroupInOpponentSuicide(tryBoard, atariTarget))
+                return false;
 
-                //check for ko or capture move by atari target
-                //check snapback
-                foreach (Group neighbourGroup in AtariHelper.AtariByGroup(atariTarget, tryBoard))
-                {
-                    Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, neighbourGroup);
-                    if (b == null) continue;
-                    if (b.MoveGroupLiberties == 1 || b.CapturedPoints.Count() >= 3) return false;
-                    if (ImmovableHelper.CheckConnectAndDie(b)) return false;
-                    if (ImmovableHelper.CheckSnapbackInNeighbourGroups(b, b.CapturedList.First())) return false;
-                }
-            }
 
             //check for suicide at big tiger mouth
             if (SuicideAtBigTigerMouth(tryMove).Item1)
@@ -573,33 +559,10 @@ namespace Go
             //check for bloated eye move
             if (tryBoard.GetDiagonalNeighbours().Any(d => tryBoard[d] == Content.Empty && tryBoard.GetStoneNeighbours(d).Any(n => tryBoard[n] == Content.Empty && tryBoard.CornerPoint(n) && KoHelper.IsReverseKoFight(currentBoard, n, c))))
                 return false;
-
-            //check for eye at liberty point
-            Point libertyPoint = opponentTryBoard.MoveGroup.Liberties.First();
-            if (EyeHelper.FindCoveredEye(currentBoard, libertyPoint, c.Opposite()))
-            {
-                List<Point> diagonals = currentBoard.GetDiagonalNeighbours(libertyPoint).Where(n => currentBoard[n] == c).ToList();
-                if (diagonals.Select(d => currentBoard.GetGroupAt(d)).Any(n => ImmovableHelper.CheckConnectAndDie(currentBoard, n)))
-                    return false;
-            }
-
-            //check for tiger mouth at liberty point
-            Point? tigerMouthLiberty = ImmovableHelper.FindTigerMouth(currentBoard, libertyPoint, c.Opposite());
-            if (tigerMouthLiberty != null)
-            {
-                Board b = currentBoard.MakeMoveOnNewBoard(tigerMouthLiberty.Value, c.Opposite());
-                if (b != null && EyeHelper.FindSemiSolidEye(libertyPoint, b, c.Opposite()).Item1)
-                    return false;
-            }
-
             //check if link for groups
-            foreach (Group atariTarget in tryBoard.AtariTargets)
-            {
-                Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, atariTarget);
-                if (b == null || b.MoveGroupLiberties == 1) continue;
-                if (LinkHelper.PossibleLinkForGroups(b, tryBoard))
-                    return false;
-            }
+            Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, atariTarget);
+            if (b != null && LinkHelper.PossibleLinkForGroups(b, tryBoard))
+                return false;
 
             //check for both alive
             if (BothAliveHelper.CheckForBothAliveAtMove(tryBoard)) return false;
@@ -621,7 +584,6 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(tryBoard, atariTarget, c.Opposite());
             if (b == null || b.MoveGroupLiberties == 1) return false;
-
             return GetWeakGroup(b, b.MoveGroup);
         }
 
