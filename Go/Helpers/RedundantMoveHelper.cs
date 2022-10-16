@@ -1311,7 +1311,8 @@ namespace Go
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_3" />
         /// Not both alive <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40_3" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30215_2" />
-        /// Two target groups <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18_4" />
+        /// Two target groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30215_3" />
+        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18_4" />
         /// </summary>
         private static Boolean SuicideForBothAlive(GameTryMove tryMove, Boolean removeOnePoint = true)
         {
@@ -1325,27 +1326,29 @@ namespace Go
 
             List<Group> targetGroups = currentBoard.GetNeighbourGroups(killerGroup);
             //get only one move within killer group
-            if (removeOnePoint)
+            if (removeOnePoint && targetGroups.Count == 1)
             {
-                Boolean oneTargetGroup = targetGroups.Count == 1 && killerGroup.Points.FirstOrDefault(p => currentBoard[p] == Content.Empty).Equals(move);
-                Boolean twoTargetGroups = targetGroups.Count > 1 && !tryBoard.IsAtariMove;
-                if (!oneTargetGroup && !twoTargetGroups) return false;
+                Boolean firstPoint = killerGroup.Points.FirstOrDefault(p => currentBoard[p] == Content.Empty).Equals(move);
+                if (!firstPoint) return false;
             }
 
             //get external liberty
-            List<Point> externalLiberties = currentBoard.GetLibertiesOfGroups(targetGroups).Except(killerGroup.Points).ToList();
-            if (externalLiberties.Count != 1) return false;
-            Point liberty = externalLiberties.First();
-            List<Group> groups = tryBoard.GetGroupsFromStoneNeighbours(liberty, c.Opposite()).ToList();
-            if (groups.Count == 0 || tryBoard.GetLibertiesOfGroups(groups).Count == 1) return false;
+            foreach (Group targetGroup in targetGroups)
+            {
+                List<Point> externalLiberties = targetGroup.Liberties.Except(killerGroup.Points).ToList();
+                if (externalLiberties.Count != 1) return false;
+                Point liberty = externalLiberties.First();
+                List<Group> groups = tryBoard.GetGroupsFromStoneNeighbours(liberty, c.Opposite()).ToList();
+                if (groups.Count == 0 || tryBoard.GetLibertiesOfGroups(groups).Count == 1) return false;
 
 
-            //check suicidal move for both players at external liberty
-            if (ImmovableHelper.IsSuicidalMoveForBothPlayers(tryBoard, liberty))
-                return true;
+                //check suicidal move for both players at external liberty
+                if (ImmovableHelper.IsSuicidalMoveForBothPlayers(tryBoard, liberty))
+                    return true;
 
-            if (ImmovableHelper.IsSuicidalMoveForBothPlayers(currentBoard, liberty, true))
-                return true;
+                if (ImmovableHelper.IsSuicidalMoveForBothPlayers(currentBoard, liberty, true))
+                    return true;
+            }
             return false;
         }
 
