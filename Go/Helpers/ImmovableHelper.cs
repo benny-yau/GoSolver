@@ -204,7 +204,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Check if escapable for target group with two liberties.
+        /// Check if escapable for target group to obtain more than two liberties or become non killable.
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_3" />
         /// Check for atari target <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q17154" />
         /// </summary>
@@ -216,7 +216,10 @@ namespace Go
                 Board b = board.MakeMoveOnNewBoard(liberty, targetGroup.Content);
                 if (b == null || !LinkHelper.IsAbsoluteLinkForGroups(board, b))
                     continue;
-                if (b.GetGroupLiberties(targetGroup).Count > 2)
+                Group target = b.GetCurrentGroup(targetGroup);
+                if (target.Liberties.Count > 2)
+                    return true;
+                if (WallHelper.IsNonKillableGroup(b, target))
                     return true;
             }
             //check for atari target group other than capture point
@@ -225,7 +228,11 @@ namespace Go
             {
                 if (capturePoint != null && ngroup.Points.Contains(capturePoint.Value)) continue;
                 Board b = ImmovableHelper.CaptureSuicideGroup(board, ngroup);
-                if (b != null && b.GetGroupLiberties(targetGroup).Count > 2 && !KoHelper.IsKoFight(b))
+                if (b == null) continue;
+                Group target = b.GetCurrentGroup(targetGroup);
+                if (target.Liberties.Count > 2 && !KoHelper.IsKoFight(b))
+                    return true;
+                if (WallHelper.IsNonKillableGroup(b, target))
                     return true;
             }
             return false;

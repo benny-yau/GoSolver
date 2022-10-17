@@ -51,8 +51,18 @@ namespace Go
             if (move["ThirdLevel"] == null)
             {
                 //check if solution move available
-                if (SolutionHelper.GetSolutionMove(game) != null)
+                Point? p = SolutionHelper.GetSolutionMove(game);
+                if (p != null)
+                {
+                    if (game.GameInfo.UserFirst == PlayerOrComputer.Player)
+                    {
+                        Game g = new Game(game);
+                        if (MakeMoveAndCheckIfAnswerFound(g, p.Value))
+                            return;
+                        FinalVerification(g);
+                    }
                     return;
+                }
 
                 //verify second level if third level not mapped on json
                 FinalVerification(game);
@@ -66,12 +76,16 @@ namespace Go
                 GameTryMove gameTryMove = possibleMoves[j];
 
                 //make fifth move on the board
-                if (MakeMoveAndCheckIfAnswerFound(g, gameTryMove.Move)) 
+                if (MakeMoveAndCheckIfAnswerFound(g, gameTryMove.Move))
                     continue;
 
                 //check if solution move available
                 if (SolutionHelper.GetSolutionMove(g) != null)
+                {
+                    if (game.GameInfo.UserFirst == PlayerOrComputer.Player)
+                        FinalVerification(g);
                     continue;
+                }
 
                 if (move != null && move["ThirdLevel"] != null)
                 {
@@ -97,6 +111,8 @@ namespace Go
         /// </summary>
         protected override Boolean MakeMoveAndCheckIfAnswerFound(Game g, Point p)
         {
+            if (!g.Board.PointWithinBoard(p.x, p.y))
+                return true;
             SurviveOrKill surviveOrKill = GameHelper.KillOrSurvivalForNextMove(g.Board);
 
             MakeMoveResult result = g.MakeMove(p);
@@ -109,11 +125,11 @@ namespace Go
                 return true;
             }
 
-            ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(surviveOrKill, g);
+            ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(surviveOrKill, g, true);
             if (confirmAlive == ConfirmAliveResult.Alive || confirmAlive == ConfirmAliveResult.Dead)
                 return true;
 
-            return (SolutionHelper.AnswerFound(g));
+            return false;
         }
 
         /// <summary>

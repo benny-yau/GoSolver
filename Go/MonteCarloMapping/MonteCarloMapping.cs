@@ -214,7 +214,7 @@ namespace Go
         /// </summary>
         protected virtual Boolean MakeMoveAndCheckIfAnswerFound(Game g, Point p)
         {
-            if (p.Equals(Game.PassMove) && GameHelper.GetComputerOrPlayerForNextMove(g.Board) == PlayerOrComputer.Player)
+            if (!g.Board.PointWithinBoard(p.x, p.y))
                 return true;
 
             //make move on the board
@@ -224,12 +224,11 @@ namespace Go
 
             //check if game ended
             SurviveOrKill surviveOrKill = GameHelper.KillOrSurvivalForNextMove(g.Board);
-            ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(surviveOrKill, g);
+            ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(surviveOrKill, g, true);
             if (confirmAlive == ConfirmAliveResult.Alive || confirmAlive == ConfirmAliveResult.Dead)
                 return true;
 
-            //check if answer found
-            return (SolutionHelper.AnswerFound(g));
+            return false;
         }
 
         /// <summary>
@@ -283,7 +282,7 @@ namespace Go
             JObject secondLevelMove = JsonHelper.SecondLevelMapping(firstLevelMove, thirdMovePt, fourthMovePt);
             if (answerNode == null) return;
 
-            if (GameMapping.OneStopMapping) return;
+            if (!GameMapping.OneStopMapping) return;
             //third level
             foreach (JObject move in answerNode.PrunedJson)
             {

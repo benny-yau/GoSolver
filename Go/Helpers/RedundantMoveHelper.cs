@@ -551,7 +551,6 @@ namespace Go
             if (CheckWeakGroupInOpponentSuicide(tryBoard, atariTarget))
                 return false;
 
-
             //check for suicide at big tiger mouth
             if (SuicideAtBigTigerMouth(tryMove).Item1)
                 return false;
@@ -559,6 +558,7 @@ namespace Go
             //check for bloated eye move
             if (tryBoard.GetDiagonalNeighbours().Any(d => tryBoard[d] == Content.Empty && tryBoard.GetStoneNeighbours(d).Any(n => tryBoard[n] == Content.Empty && tryBoard.CornerPoint(n) && KoHelper.IsReverseKoFight(currentBoard, n, c))))
                 return false;
+
             //check if link for groups
             Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, atariTarget);
             if (b != null && LinkHelper.PossibleLinkForGroups(b, tryBoard))
@@ -569,7 +569,7 @@ namespace Go
 
             if (WallHelper.IsNonKillableGroup(tryBoard)) //set neutral point move
                 tryMove.IsNeutralPoint = true;
-            else if (tryBoard.GetDiagonalNeighbours().Any(n => EyeHelper.FindEye(tryBoard, n, c))) //set diagonal eye move
+            if (tryBoard.GetDiagonalNeighbours().Any(n => GroupHelper.GetKillerGroupFromCache(tryBoard, n, c) != null)) //set diagonal eye move
                 tryMove.IsDiagonalEyeMove = true;
             return true;
         }

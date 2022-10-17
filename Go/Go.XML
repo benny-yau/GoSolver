@@ -606,7 +606,7 @@
         </member>
         <member name="M:Go.ImmovableHelper.EscapeCaptureLink(Go.Board,Go.Group,System.Nullable{Go.Point})">
             <summary>
-            Check if escapable for target group with two liberties.
+            Check if escapable for target group to obtain more than two liberties or become non killable.
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_3" />
             Check for atari target <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q17154" />
             </summary>

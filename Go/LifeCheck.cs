@@ -307,7 +307,7 @@ namespace Go
                 if (confirmAlive == ConfirmAliveResult.Alive)
                 {
                     //check for ko alive
-                    if (ignoreKoCheck || g.KoGameCheck == KoCheck.None || g.KoGameCheck == KoCheck.Kill)
+                    if (ignoreKoCheck || g.KoGameCheck != KoCheck.Survive)
                         return confirmAlive;
                     else
                         return ConfirmAliveResult.KoAlive;
@@ -320,7 +320,7 @@ namespace Go
                 if (confirmAlive == ConfirmAliveResult.Dead)
                 {
                     //check for ko alive
-                    if (ignoreKoCheck || g.KoGameCheck == KoCheck.None || g.KoGameCheck == KoCheck.Survive)
+                    if (ignoreKoCheck || g.KoGameCheck != KoCheck.Kill)
                         return confirmAlive;
                     else
                         return ConfirmAliveResult.KoAlive;
