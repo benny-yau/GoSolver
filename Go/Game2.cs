@@ -91,7 +91,7 @@ namespace Go
         /// Reorder try moves by priority. Check and remove redundant moves. 
         /// For survive only, add pass move to check for both alive where necessary.
         /// </summary>
-        public (ConfirmAliveResult, List<GameTryMove>, GameTryMove) GetSurvivalMoves(Game g = null, Boolean getAll = false)
+        public (ConfirmAliveResult, List<GameTryMove>, GameTryMove) GetSurvivalMoves(Game g = null)
         {
             Game currentGame = g ?? this;
             GameInfo gameInfo = currentGame.GameInfo;
@@ -122,7 +122,7 @@ namespace Go
                     if (move.TryGame.Board.MoveGroupLiberties > 1)
                     {
                         ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Survive, move.TryGame, true);
-                        if (!getAll && confirmAlive == ConfirmAliveResult.Alive)
+                        if (confirmAlive == ConfirmAliveResult.Alive)
                             return (ConfirmAliveResult.Alive, new List<GameTryMove>() { move }, null);
                     }
                     //check recursion and return as alive
@@ -383,7 +383,7 @@ namespace Go
         /// Reorder try moves by priority. Check and remove redundant moves. 
         /// For kill only, replace neutral points where necessary. Add random move for kill where no move is available.
         /// </summary>
-        public (ConfirmAliveResult, List<GameTryMove>, GameTryMove) GetKillMoves(Game g = null, Boolean getAll = false)
+        public (ConfirmAliveResult, List<GameTryMove>, GameTryMove) GetKillMoves(Game g = null)
         {
             Game currentGame = g ?? this;
             GameInfo gameInfo = currentGame.GameInfo;
@@ -413,7 +413,7 @@ namespace Go
                 {
                     //check if game ended - target group or survival points killed
                     ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Kill, move.TryGame, true);
-                    if (!getAll && confirmAlive == ConfirmAliveResult.Dead)
+                    if (confirmAlive == ConfirmAliveResult.Dead)
                         return (ConfirmAliveResult.Dead, new List<GameTryMove>() { move }, null);
                     //find redundant moves
                     CheckKillRedundantMoves(move);

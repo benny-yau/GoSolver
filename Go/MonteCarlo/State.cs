@@ -202,21 +202,18 @@ namespace Go
         /// <summary>
         /// Get all possible moves for mcts, including ko moves.
         /// </summary>
-        public static List<GameTryMove> GetAllPossibleMoves(Game g, Boolean includeKo = true, Boolean getAll = false)
+        public static List<GameTryMove> GetAllPossibleMoves(Game g)
         {
             SurviveOrKill stateSurvivalOrKill = GameHelper.KillOrSurvivalForNextMove(g.Board);
             List<GameTryMove> tryMoves;
             GameTryMove koBlockedMove;
             if (stateSurvivalOrKill == SurviveOrKill.Kill)
-                (_, tryMoves, koBlockedMove) = g.GetKillMoves(null, getAll);
+                (_, tryMoves, koBlockedMove) = g.GetKillMoves();
             else
-                (_, tryMoves, koBlockedMove) = g.GetSurvivalMoves(null, getAll);
+                (_, tryMoves, koBlockedMove) = g.GetSurvivalMoves();
 
             if (tryMoves != null)
-            {
-                if (includeKo)
-                    MonteCarloTreeSearch.MonteCarloIncludeKoMoves(g, tryMoves, koBlockedMove, stateSurvivalOrKill);
-            }
+                MonteCarloTreeSearch.MonteCarloIncludeKoMoves(g, tryMoves, koBlockedMove, stateSurvivalOrKill);
             return tryMoves;
         }
 

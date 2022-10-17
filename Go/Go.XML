@@ -131,7 +131,7 @@
             Start exhaustive search.
             </summary>
         </member>
-        <member name="M:Go.Game.GetSurvivalMoves(Go.Game,System.Boolean)">
+        <member name="M:Go.Game.GetSurvivalMoves(Go.Game)">
             <summary>
             Get all possible survival moves. Check if the game has ended with any of the possible moves.
             Reorder try moves by priority. Check and remove redundant moves. 
@@ -158,7 +158,7 @@
             Makes ko move and returns result as KoAlive if ko move wins.
             </summary>
         </member>
-        <member name="M:Go.Game.GetKillMoves(Go.Game,System.Boolean)">
+        <member name="M:Go.Game.GetKillMoves(Go.Game)">
             <summary>
             Get all possible kill moves. Check if the game has ended with any of the possible moves.
             Reorder try moves by priority. Check and remove redundant moves. 
@@ -2282,7 +2282,7 @@
             Backfill stats in node based on winrate.
             </summary>
         </member>
-        <member name="M:Go.State.GetAllPossibleMoves(Go.Game,System.Boolean,System.Boolean)">
+        <member name="M:Go.State.GetAllPossibleMoves(Go.Game)">
             <summary>
             Get all possible moves for mcts, including ko moves.
             </summary>

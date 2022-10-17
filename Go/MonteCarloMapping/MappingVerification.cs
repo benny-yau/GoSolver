@@ -69,7 +69,7 @@ namespace Go
                 return;
             }
 
-            List<GameTryMove> possibleMoves = State.GetAllPossibleMoves(game, false);
+            List<GameTryMove> possibleMoves = State.GetAllPossibleMoves(game);
             for (int j = 0; j <= possibleMoves.Count - 1; j++)
             {
                 Game g = new Game(game);
@@ -129,7 +129,7 @@ namespace Go
             if (confirmAlive == ConfirmAliveResult.Alive || confirmAlive == ConfirmAliveResult.Dead)
                 return true;
 
-            return false;
+            return SolutionHelper.AnswerFound(g);
         }
 
         /// <summary>
