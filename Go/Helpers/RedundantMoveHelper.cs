@@ -541,7 +541,7 @@ namespace Go
 
             Group atariTarget = tryBoard.AtariTargets.First();
             //check for unescapable group
-            (Boolean unEscapable, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(tryBoard, atariTarget, false);
+            (Boolean unEscapable, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(tryBoard, atariTarget);
             if (unEscapable) return false;
             if (escapeBoard != null && ImmovableHelper.CheckConnectAndDie(escapeBoard, escapeBoard.GetCurrentGroup(tryBoard.MoveGroup)))
                 return false;
