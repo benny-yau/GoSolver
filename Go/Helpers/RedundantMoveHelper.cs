@@ -944,6 +944,7 @@ namespace Go
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16859_2" />
         /// Two liberties - suicide for both players <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_A19" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30215" />
+        /// Three liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_20221019_6" />
         /// </summary>
         public static Boolean SuicideWithinRealEye(GameTryMove tryMove, Board capturedBoard)
         {
@@ -987,7 +988,8 @@ namespace Go
             }
 
             //retrieve liberties other than eye liberty
-            HashSet<Point> liberties = capturedBoard.GetLibertiesOfGroups(capturedBoard.GetNeighbourGroups(tryBoard.MoveGroup));
+            List<Group> ngroups = capturedBoard.GetNeighbourGroups(tryBoard.MoveGroup);
+            HashSet<Point> liberties = capturedBoard.GetLibertiesOfGroups(ngroups);
             liberties.Remove(move);
 
             if (liberties.Count == 1)
@@ -1011,6 +1013,27 @@ namespace Go
                     Point q = liberties.First(liberty => !liberty.Equals(p));
                     if (GroupHelper.GetKillerGroupFromCache(tryBoard, q, c.Opposite()) != null && ImmovableHelper.IsSuicidalMoveForBothPlayers(b, q))
                         return false;
+                }
+            }
+            else if (liberties.Count == 3)
+            {
+                if (ngroups.Any(n => GroupHelper.GetKillerGroupFromCache(capturedBoard, n.Points.First(), c) == null))
+                    return true;
+                foreach (Group ngroup in ngroups)
+                {
+                    List<Point> nLiberties = ngroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
+                    if (nLiberties.Count != 2) continue;
+                    foreach (Point p in nLiberties)
+                    {
+                        (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c, capturedBoard);
+                        if (isSuicidal) continue;
+                        //both players are suicidal at the liberty
+                        Point q = nLiberties.First(liberty => !liberty.Equals(p));
+                        if (!ImmovableHelper.IsSuicidalMove(b, q, c)) continue;
+                        Board b2 = ImmovableHelper.IsSuicidalMove(q, c.Opposite(), b).Item2;
+                        if (b2 != null && b2.MoveGroupLiberties <= 2)
+                            return false;
+                    }
                 }
             }
             return true;
