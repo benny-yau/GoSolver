@@ -90,6 +90,7 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q29998" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
         /// Check liberty count without covered eye <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
+        /// Check must-have move <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_20221019_7" />
         /// Check one-point snapback <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31453" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A37_101Weiqi" />
         /// Check for double ko <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
@@ -152,6 +153,7 @@ namespace Go
                     return false;
                 }
             }
+
             //check for double ko
             if (KoHelper.NeutralPointDoubleKo(tryBoard))
                 return false;
@@ -168,9 +170,22 @@ namespace Go
             if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(tryBoard))
                 return false;
 
-            //check no eye for survival for opponent
-            if (opponentTryMove != null && !WallHelper.NoEyeForSurvivalAtNeighbourPoints(opponentTryMove.TryGame.Board))
-                return false;
+            if (opponentTryMove != null)
+            {
+                Board opponentBoard = opponentTryMove.TryGame.Board;
+                //check no eye for survival for opponent
+                if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(opponentBoard))
+                    return false;
+
+            }
+
+            //check must-have move
+            foreach (Group ngroup in currentBoard.GetNeighbourGroups(eyeGroup).Where(gr => gr.Liberties.Count == 2 && gr.Liberties.All(lib => ImmovableHelper.IsSuicidalMove(currentBoard, lib, c.Opposite()))))
+            {
+                Board b = currentBoard.MakeMoveOnNewBoard(move, c.Opposite());
+                if (b != null && ImmovableHelper.CheckConnectAndDie(b, b.GetCurrentGroup(ngroup)))
+                    return false;
+            }
 
             //check one-point snapback
             foreach (Group group in tryBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()))
