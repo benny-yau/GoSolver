@@ -17,7 +17,7 @@ namespace Go
 
         public static int mappingDepthToVerify = Convert.ToInt32(ConfigurationSettings.AppSettings["MAPPING_DEPTH_TO_VERIFY"]);
         public static int realTimeDepthToVerify = Convert.ToInt32(ConfigurationSettings.AppSettings["REALTIME_DEPTH_TO_VERIFY"]);
-        public static Boolean debugMonteCarlo = false;
+
         /// <summary>
         /// Set the visit count to reach per node before moving down the tree to the child node.
         /// </summary>
@@ -119,15 +119,6 @@ namespace Go
                         else
                             promisingNode = RandomChildNode(promisingNode);
                     }
-                }
-                //all nodes pruned
-                if (promisingNode.ChildArray.Count == 0 && (promisingNode.Expanded || promisingNode.State.Depth == 0))
-                {
-                    if (promisingNode.CurrentDepth == this.tree.Root.CurrentDepth) break;
-                    if (CheckAllChildNodesPruned(promisingNode, true))
-                        break;
-                    else
-                        continue;
                 }
 
                 //verify on depth reached or confirmed alive or no possible states to expand)
@@ -251,12 +242,6 @@ namespace Go
                 //return after hitting the top of tree
                 DebugHelper.DebugWriteWithTab("Hit top at level: " + pruneNode.CurrentDepth + " WinResult: " + winResult + " Recursion: " + recursion, mctsDepth);
                 return true;
-            }
-            else if (pruneNode.CurrentDepth == this.tree.AbsoluteRoot.CurrentDepth + 2)
-            {
-                //change win result to allow recursive search through siblings of pruned node
-                DebugHelper.DebugWriteWithTab("Incorrect answer - hit top at level: " + pruneNode.CurrentDepth + " WinResult: " + winResult + " Recursion: " + recursion, mctsDepth);
-                winResult = true;
             }
 
             //recursive search through siblings of pruned node to check if parent node is correct
