@@ -1005,7 +1005,7 @@ namespace Go
             if (liberties.Count == 1)
             {
                 //one liberty - suicide for both players
-                if (SuicideForBothAlive(tryMove, false))
+                if (SuicideForLibertyFight(tryMove, false))
                     return false;
 
                 //try kill formation
@@ -1263,7 +1263,7 @@ namespace Go
             if (moveCount == 2)
             {
                 //suicide for both alive
-                if (SuicideForBothAlive(tryMove))
+                if (SuicideForLibertyFight(tryMove))
                     return false;
 
                 //two-point atari move
@@ -1299,15 +1299,16 @@ namespace Go
         }
 
         /// <summary>
-        /// Suicide for both alive.
-        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_2" />
+        /// Suicide for liberty fight.
+        /// Both alive <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_2" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_3" />
         /// Not both alive <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40_3" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30215_2" />
         /// Two target groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30215_3" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18_4" />
+        /// Check killer ko within killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_2" />
         /// </summary>
-        private static Boolean SuicideForBothAlive(GameTryMove tryMove, Boolean removeOnePoint = true)
+        private static Boolean SuicideForLibertyFight(GameTryMove tryMove, Boolean removeOnePoint = true)
         {
             Board tryBoard = tryMove.TryGame.Board;
             Board currentBoard = tryMove.CurrentGame.Board;
@@ -1329,11 +1330,19 @@ namespace Go
             foreach (Group targetGroup in targetGroups)
             {
                 List<Point> externalLiberties = targetGroup.Liberties.Except(killerGroup.Points).ToList();
-                if (externalLiberties.Count != 1) return false;
+                if (externalLiberties.Count != 1) continue;
                 Point liberty = externalLiberties.First();
-                List<Group> groups = tryBoard.GetGroupsFromStoneNeighbours(liberty, c.Opposite()).ToList();
-                if (groups.Count == 0 || tryBoard.GetLibertiesOfGroups(groups).Count == 1) return false;
-
+                if (KoHelper.IsKoFight(tryBoard, liberty, c.Opposite()).Item1)
+                {
+                    //check killer ko within killer group
+                    if (GroupHelper.GetKillerGroupFromCache(tryBoard, targetGroup.Points.First(), c) == null) continue;
+                    if (tryBoard.GetNeighbourGroups(targetGroup).Any(n => WallHelper.IsNonKillableGroup(tryBoard, n))) continue;
+                }
+                else
+                {
+                    List<Group> groups = tryBoard.GetGroupsFromStoneNeighbours(liberty, c.Opposite()).ToList();
+                    if (groups.Count == 0 || tryBoard.GetLibertiesOfGroups(groups).Count == 1) continue;
+                }
 
                 //check suicidal move for both players at external liberty
                 if (ImmovableHelper.IsSuicidalMoveForBothPlayers(tryBoard, liberty))
@@ -1596,7 +1605,6 @@ namespace Go
         /// </summary>
         public static Boolean NeutralPointKillMove(GameTryMove tryMove)
         {
-            Board tryBoard = tryMove.TryGame.Board;
             if (!tryMove.IsNegligible && EssentialAtariAtCoveredEye(tryMove))
                 return false;
             //make move from perspective of survival
@@ -1606,7 +1614,6 @@ namespace Go
             Boolean isNeutralPoint = NeutralPointSurvivalMove(opponentMove, tryMove);
             if (isNeutralPoint)
             {
-                if (ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.MoveGroup, false)) return isNeutralPoint;
                 //must have neutral point
                 (Boolean mustHave, Point? linkPoint) = MustHaveNeutralPoint(tryMove, opponentMove);
                 if (mustHave)
@@ -1649,12 +1656,25 @@ namespace Go
         }
 
         /// <summary>
-        /// Must have neutral point allows move to be made to prevent suicidal move at generic neutral points.
+        /// Must have neutral point.
         /// Neutral point at tiger mouth <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario5dan27_3" />
         /// Neutral point at bigger tiger mouth <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario5dan27_Variation" />
         /// Negative example <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A27" />
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23" />
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_GuanZiPu_Weiqi101_19138" />
+        /// 
+        /// Check if atari <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23" />
+        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_TianLongTu_Q17136" />
+        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_Q18500_4" />
+        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Corner_A68" />
+        /// Check if link for groups <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Corner_A84" />
+        /// Check for tiger mouth <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Corner_A27" />
+        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Phenomena_Q25182" />
+        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_TianLongTu_Q16827" />
+        /// Connect and die <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
+        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Corner_A67" />
+        /// Two must have neutral moves <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_GuanZiPu_Weiqi101_19138" />
+        /// Generic neutral move with must have neutral move <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Corner_A68_2" />
         /// </summary>
         private static (Boolean, Point?) MustHaveNeutralPoint(GameTryMove tryMove, GameTryMove opponentMove)
         {
@@ -1818,59 +1838,6 @@ namespace Go
         }
 
         /// <summary>
-        /// Get must have neutral move.
-        /// Check if atari <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23" />
-        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_TianLongTu_Q17136" />
-        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_Q18500_4" />
-        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Corner_A68" />
-        /// Check if link for groups <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Corner_A84" />
-        /// Check for tiger mouth <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Corner_A27" />
-        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Phenomena_Q25182" />
-        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_TianLongTu_Q16827" />
-        /// Connect and die <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
-        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Corner_A67" />
-        /// Two must have neutral moves <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_GuanZiPu_Weiqi101_19138" />
-        /// Generic neutral move with must have neutral move <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Corner_A68_2" />
-        /// </summary>
-        public static List<GameTryMove> GetMustHaveNeutralMove(Game currentGame, List<GameTryMove> neutralPointMoves)
-        {
-            Content c = GameHelper.GetContentForSurviveOrKill(currentGame.GameInfo, SurviveOrKill.Survive);
-            List<GameTryMove> mustHaveNeutralMoves = neutralPointMoves.Where(n => n.MustHaveNeutralPoint).ToList();
-            List<GameTryMove> result = new List<GameTryMove>();
-            foreach (GameTryMove mustHaveNeutralMove in mustHaveNeutralMoves)
-            {
-                Board tryBoard = mustHaveNeutralMove.TryGame.Board;
-                if (mustHaveNeutralMove.LinkPoint == null) continue;
-                Point liberty = mustHaveNeutralMove.LinkPoint.Move;
-
-                //check if atari / link for groups
-                Board b = tryBoard.MakeMoveOnNewBoard(liberty, c.Opposite());
-                if (b != null && (AtariHelper.AtariByGroup(b, b.MoveGroup) || LinkHelper.IsAbsoluteLinkForGroups(tryBoard, b)))
-                {
-                    result.Add(mustHaveNeutralMove);
-                    continue;
-                }
-
-                //check for tiger mouth
-                Point tigerMouth = tryBoard.GetDiagonalNeighbours(liberty).FirstOrDefault(n => EyeHelper.FindEye(tryBoard, n, c) || ImmovableHelper.FindTigerMouth(tryBoard, c, n));
-                if (Convert.ToBoolean(tigerMouth.NotEmpty))
-                {
-                    result.Add(mustHaveNeutralMove);
-                    continue;
-                }
-
-                //connect and die
-                HashSet<Group> groups = b.GetGroupsFromStoneNeighbours(b.Move.Value, c.Opposite());
-                if (!b.IsAtariMove && groups.Count() == 2 && groups.All(group => group.Liberties.Count <= 2))
-                {
-                    if (groups.Any(group => ImmovableHelper.CheckConnectAndDie(b, group)))
-                        result.Add(mustHaveNeutralMove);
-                }
-            }
-            return result;
-        }
-
-        /// <summary>
         /// Get specific neutral move to target survival groups with limited liberties.
         /// Two specific moves <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B51" />
         /// Check snapback <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_ScenarioHighLevel18" />
@@ -1914,7 +1881,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Specific kill with immovable points with at least two neighbour groups.
+        /// Specific kill with immovable points.
         /// Survival group has liberty less or equals to two <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario5dan27" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16735" />
         /// At least one liberty shared with killer group <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_A54_2" />
@@ -1955,7 +1922,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Specific kill with liberty fight. No killer group or only one neighbour group.
+        /// Specific kill with liberty fight.
         /// Find neighbour groups at diagonal cut <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_20221017_5" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario3kyu24_3" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario3kyu24_5" />
@@ -2228,7 +2195,7 @@ namespace Go
             if (!strongGroups) return false;
 
             //check for suicide for both alive
-            if (SuicideForBothAlive(tryMove)) return false;
+            if (SuicideForLibertyFight(tryMove)) return false;
             return true;
         }
 
