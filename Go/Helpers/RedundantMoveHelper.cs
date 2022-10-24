@@ -91,6 +91,7 @@ namespace Go
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
         /// Check liberty count without covered eye <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
         /// Check must-have move <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_20221019_7" />
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_20221024_4" />
         /// Check one-point snapback <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31453" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A37_101Weiqi" />
         /// Check for double ko <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
@@ -177,16 +178,10 @@ namespace Go
                 if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(opponentBoard))
                     return false;
 
-            }
-
-            //check must-have move
-            foreach (Group ngroup in currentBoard.GetNeighbourGroups(eyeGroup).Where(gr => gr.Liberties.Count == 2 && gr.Liberties.All(lib => ImmovableHelper.IsSuicidalMove(currentBoard, lib, c.Opposite()))))
-            {
-                Board b = currentBoard.MakeMoveOnNewBoard(move, c.Opposite());
-                if (b != null && ImmovableHelper.CheckConnectAndDie(b, b.GetCurrentGroup(ngroup)))
+                //check must-have move
+                if (!StrongGroupsAtMustHaveMove(opponentBoard, eyePoint))
                     return false;
             }
-
             //check one-point snapback
             foreach (Group group in tryBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()))
             {
@@ -1708,14 +1703,17 @@ namespace Go
         /// <summary>
         /// Strong neighbour groups at tiger mouth for must-have move.
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario5dan27_3" />
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_20221024_4" />
         /// </summary>
         private static Boolean StrongGroupsAtMustHaveMove(Board tryBoard, Point tigerMouth)
         {
             Content c = tryBoard.MoveGroup.Content;
             Board board = tryBoard.MakeMoveOnNewBoard(tigerMouth, c);
-            if (board == null) return false;
+            if (board == null) board = tryBoard;
             HashSet<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(tigerMouth, c);
             if (WallHelper.StrongNeighbourGroups(board, neighbourGroups))
+                return true;
+            if (tryBoard.GetGroupsFromStoneNeighbours(tigerMouth, c).All(gr => gr.Liberties.All(lib => ImmovableHelper.IsSuicidalMove(tryBoard, lib, c))))
                 return true;
             return false;
         }
@@ -1958,9 +1956,10 @@ namespace Go
 
         /// <summary>
         /// Specific kill with liberty fight. No killer group or only one neighbour group.
+        /// Find neighbour groups at diagonal cut <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_20221017_5" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario3kyu24_3" />
-        /// Find neighbour groups at diagonal cut <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario3kyu24_5" />
-        /// Contains killer group <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q2413" />
+        /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario3kyu24_5" />
+        /// Target group contains killer group <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q2413" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
         /// Real solid eye found <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_B7" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario3kyu24" />
