@@ -111,7 +111,7 @@ namespace Go
             rc += " VisitCount: " + this.State.VisitCount;
             rc += " UCT:" + UCT.uctValue(this);
             rc += " Move:" + GetLastMoves();
-            rc += " Stats (N: " + this.State.Stats["N"] + ", W: " + this.State.Stats["W"] + ", Q: " + this.State.Stats["Q"] + ", P: " + this.State.Stats["P"] + ")";
+            if (MonteCarloGame.useLeelaZero) rc += " Stats (N: " + this.State.Stats["N"] + ", W: " + this.State.Stats["W"] + ", Q: " + this.State.Stats["Q"] + ", P: " + this.State.Stats["P"] + ")";
             rc += " Depth:" + this.State.Depth;
             return rc;
         }

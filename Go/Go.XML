@@ -2183,6 +2183,8 @@
         <member name="M:Go.MonteCarloTreeSearch.FindNextMove(Go.Node)">
             <summary>
             Start the mcts until answer is found or all nodes are pruned (or max iterations reached).
+            <see cref="!:UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario_GuanZiPu_A3" />
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221025_2" />
             </summary>
         </member>
         <member name="M:Go.MonteCarloTreeSearch.PruneBasedOnWinResult(Go.Node,System.Boolean)">

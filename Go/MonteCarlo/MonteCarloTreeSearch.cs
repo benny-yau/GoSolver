@@ -84,6 +84,8 @@ namespace Go
 
         /// <summary>
         /// Start the mcts until answer is found or all nodes are pruned (or max iterations reached).
+        /// <see cref="UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario_GuanZiPu_A3" />
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20221025_2" />
         /// </summary>
         public virtual Tree FindNextMove(Node node)
         {
@@ -120,8 +122,7 @@ namespace Go
                             promisingNode = RandomChildNode(promisingNode);
                     }
                 }
-
-                //verify on depth reached or confirmed alive or no possible states to expand)
+                //verify on depth reached or no possible states to expand
                 Boolean pruned = false;
                 if (ReachedDepthToVerify(promisingNode) || noPossibleStates)
                 {
@@ -142,6 +143,10 @@ namespace Go
 
                 if (Game.debugMode && (count % 60 == 0 || MonteCarloGame.useLeelaZero))
                     DebugHelper.DebugWriteWithTab("Count: " + count + " | Depth: " + promisingNode.CurrentDepth + " | Last moves: " + promisingNode.GetLastMoves(), mctsDepth);
+
+                //all nodes pruned
+                if (promisingNode.ChildArray.Count == 0 && (promisingNode.Expanded || promisingNode.State.Depth == 0))
+                    CheckAllChildNodesPruned(promisingNode, true);
 
                 //break on answer found or no answer
                 if (AnswerNode != null || tree.Root.ChildArray.Count == 0)
@@ -372,13 +377,6 @@ namespace Go
                 node.ChildArray.Add(childNode);
                 childNode.State.Depth = node.State.Depth - 1;
 
-                if (node.State.HeatMap != null)
-                {
-                    Point move = state.Game.Board.Move.Value;
-                    if (!move.Equals(Game.PassMove))
-                        childNode.State.Stats["P"] = node.State.HeatMap[move.x, move.y];
-                }
-
                 //check if game ended by confirm alive
                 ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(childNode.State.SurviveOrKill, childNode.State.Game);
                 childNode.State.ConfirmAlive = confirmAlive;
@@ -387,6 +385,13 @@ namespace Go
                     Boolean winOrLose = GameHelper.WinOrLose(childNode.State.SurviveOrKill, confirmAlive, childNode.State.Game);
                     if (winOrLose)
                         childNode.State.WinOrLose = true;
+                }
+
+                if (MonteCarloGame.useLeelaZero && node.State.HeatMap != null)
+                {
+                    Point move = state.Game.Board.Move.Value;
+                    if (!move.Equals(Game.PassMove))
+                        childNode.State.Stats["P"] = node.State.HeatMap[move.x, move.y];
                 }
             }
             node.Expanded = true;
