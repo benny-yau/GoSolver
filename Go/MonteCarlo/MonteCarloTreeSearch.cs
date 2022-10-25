@@ -122,6 +122,14 @@ namespace Go
                             promisingNode = RandomChildNode(promisingNode);
                     }
                 }
+                //all nodes pruned
+                if (promisingNode.ChildArray.Count == 0 && (promisingNode.Expanded || promisingNode.State.Depth == 0))
+                {
+                    if (promisingNode.CurrentDepth == this.tree.Root.CurrentDepth) break;
+                    if (CheckAllChildNodesPruned(promisingNode, true)) break;
+                    continue;
+                }
+
                 //verify on depth reached or no possible states to expand
                 Boolean pruned = false;
                 if (ReachedDepthToVerify(promisingNode) || noPossibleStates)
@@ -143,10 +151,6 @@ namespace Go
 
                 if (Game.debugMode && (count % 60 == 0 || MonteCarloGame.useLeelaZero))
                     DebugHelper.DebugWriteWithTab("Count: " + count + " | Depth: " + promisingNode.CurrentDepth + " | Last moves: " + promisingNode.GetLastMoves(), mctsDepth);
-
-                //all nodes pruned
-                if (promisingNode.ChildArray.Count == 0 && (promisingNode.Expanded || promisingNode.State.Depth == 0))
-                    CheckAllChildNodesPruned(promisingNode, true);
 
                 //break on answer found or no answer
                 if (AnswerNode != null || tree.Root.ChildArray.Count == 0)
