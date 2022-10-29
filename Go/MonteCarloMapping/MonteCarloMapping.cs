@@ -218,12 +218,12 @@ namespace Go
                 return true;
 
             //make move on the board
+            SurviveOrKill surviveOrKill = GameHelper.KillOrSurvivalForNextMove(g.Board);
             MakeMoveResult result = g.MakeMove(p);
             if (result == MakeMoveResult.KoBlocked)
                 return true;
 
             //check if game ended
-            SurviveOrKill surviveOrKill = GameHelper.KillOrSurvivalForNextMove(g.Board);
             ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(surviveOrKill, g, true);
             if (confirmAlive == ConfirmAliveResult.Alive || confirmAlive == ConfirmAliveResult.Dead)
                 return true;

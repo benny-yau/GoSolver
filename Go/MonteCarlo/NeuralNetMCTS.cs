@@ -49,6 +49,22 @@ namespace Go
             return;
         }
 
+        internal override Boolean ExpandNode(Node node, List<State> possibleStates)
+        {
+            if (!base.ExpandNode(node, possibleStates)) return false;
+
+            if (node.State.HeatMap != null)
+            {
+                foreach (Node childNode in node.ChildArray)
+                {
+                    Point move = childNode.State.Game.Board.Move.Value;
+                    if (!move.Equals(Game.PassMove))
+                        childNode.State.Stats["P"] = node.State.HeatMap[move.x, move.y];
+                }
+            }
+            return true;
+        }
+
         /// <summary>
         /// Make move to leaf node based on stats value.
         /// </summary>

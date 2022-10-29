@@ -371,7 +371,7 @@ namespace Go
         /// Expansion phase - to expand all possible states as child nodes.
         /// Confirm alive for each possible state to check if game ended with objective reached already.
         /// </summary>
-        private Boolean ExpandNode(Node node, List<State> possibleStates)
+        internal virtual Boolean ExpandNode(Node node, List<State> possibleStates)
         {
             for (int i = 0; i <= possibleStates.Count - 1; i++)
             {
@@ -389,13 +389,6 @@ namespace Go
                     Boolean winOrLose = GameHelper.WinOrLose(childNode.State.SurviveOrKill, confirmAlive, childNode.State.Game);
                     if (winOrLose)
                         childNode.State.WinOrLose = true;
-                }
-
-                if (MonteCarloGame.useLeelaZero && node.State.HeatMap != null)
-                {
-                    Point move = state.Game.Board.Move.Value;
-                    if (!move.Equals(Game.PassMove))
-                        childNode.State.Stats["P"] = node.State.HeatMap[move.x, move.y];
                 }
             }
             node.Expanded = true;
