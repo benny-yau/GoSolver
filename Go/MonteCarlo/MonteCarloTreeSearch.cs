@@ -86,6 +86,7 @@ namespace Go
         /// Start the mcts until answer is found or all nodes are pruned (or max iterations reached).
         /// <see cref="UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario2dan15" />
         /// <see cref="UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario_GuanZiPu_A3" />
+        /// <see cref="UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario3dan17" />
         /// </summary>
         public virtual Tree FindNextMove(Node node)
         {
@@ -125,6 +126,7 @@ namespace Go
                 //all nodes pruned
                 if (promisingNode.ChildArray.Count == 0 && (promisingNode.Expanded || promisingNode.State.Depth == 0))
                 {
+                    if (promisingNode.CurrentDepth == this.tree.Root.CurrentDepth) break;
                     if (CheckAllChildNodesPruned(promisingNode, true)) break;
                 }
 
