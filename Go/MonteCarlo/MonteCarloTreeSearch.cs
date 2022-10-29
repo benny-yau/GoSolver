@@ -19,7 +19,7 @@ namespace Go
         public static int realTimeDepthToVerify = Convert.ToInt32(ConfigurationSettings.AppSettings["REALTIME_DEPTH_TO_VERIFY"]);
 
         /// <summary>
-        /// Set the visit count to reach per node before moving down the tree to the child node.
+        /// Set the visit count required to reach before moving down the tree to the child node. Reduce required count after hitting depth to verify.
         /// </summary>
         int? visitCount;
         public virtual int VisitCountMinReq
@@ -84,8 +84,8 @@ namespace Go
 
         /// <summary>
         /// Start the mcts until answer is found or all nodes are pruned (or max iterations reached).
+        /// <see cref="UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario2dan15" />
         /// <see cref="UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario_GuanZiPu_A3" />
-        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20221025_2" />
         /// </summary>
         public virtual Tree FindNextMove(Node node)
         {
@@ -125,9 +125,7 @@ namespace Go
                 //all nodes pruned
                 if (promisingNode.ChildArray.Count == 0 && (promisingNode.Expanded || promisingNode.State.Depth == 0))
                 {
-                    if (promisingNode.CurrentDepth == this.tree.Root.CurrentDepth) break;
                     if (CheckAllChildNodesPruned(promisingNode, true)) break;
-                    continue;
                 }
 
                 //verify on depth reached or no possible states to expand

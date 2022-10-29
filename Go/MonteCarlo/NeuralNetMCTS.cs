@@ -39,11 +39,6 @@ namespace Go
             return node;
         }
 
-        internal override Boolean ReachedDepthToVerify(Node node)
-        {
-            return node.Parent != null && node.Parent.CurrentDepth >= DepthToVerify && node.Parent.State.Stats["N"] >= 3;
-        }
-
         public override void SimulateRandomPlayout(Node node)
         {
             return;
