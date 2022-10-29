@@ -1234,7 +1234,6 @@ namespace Go
         /// Suicide at covered eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499_2" />
         /// Exclude if corner point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A9_Ext_2" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16424" />
-        /// Corner three formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18860" />
         /// Bent three formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31453" />
         /// No hope of escape <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17132_2" />
         /// </summary>
@@ -1272,10 +1271,6 @@ namespace Go
             }
             else if (moveCount == 3)
             {
-                //corner three formation
-                if (KillerFormationHelper.CornerThreeFormation(tryBoard, tryBoard.MoveGroup))
-                    return false;
-
                 //bent three formation
                 if (capturedBoard.MoveGroupLiberties == 1 && KillerFormationHelper.BentThreeFormation(tryBoard, tryBoard.MoveGroup.Points))
                 {

@@ -223,6 +223,7 @@ namespace Go
         /// Covered eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16424_2" />
         /// Check for snapback <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234" />
         /// Whole survival group dying <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3" />
+        /// Corner three formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18860" />
         /// One-by-three formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A8" />
         /// Crowbar edge formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q6710" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16738" />
@@ -277,9 +278,10 @@ namespace Go
                     return true;
 
                 //whole survival group dying
-                if (tryBoard.IsAtariMove && tryBoard.GetNeighbourGroups().Count == 1)
+                if (tryBoard.MoveGroupLiberties == 1 && tryBoard.IsAtariMove && tryBoard.GetNeighbourGroups().Count == 1)
                     return true;
 
+                //corner three formation
                 if (KillerFormationHelper.CornerThreeFormation(tryBoard, tryBoard.MoveGroup))
                     return true;
             }
@@ -327,6 +329,7 @@ namespace Go
             int moveCount = tryBoard.MoveGroup.Points.Count;
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
+            if (tryBoard.MoveGroupLiberties != 1) return false;
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
             //killer group contains only one more empty space
             if (killerGroup != null && killerGroup.Points.Count == moveCount + 1)
@@ -364,6 +367,7 @@ namespace Go
             List<Group> groups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
             //connect three or more groups
             if (groups.Count >= 3) return false;
+            if (KillerFormationHelper.CornerThreeFormation(tryBoard, tryBoard.MoveGroup)) return false;
             //connected to previous move group
             Boolean moveConnected = tryLinkBoard.GetStoneNeighbours().Any(p => groups.Any(group => group.Points.Contains(p)));
             if (moveConnected && LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryLinkBoard))
@@ -781,7 +785,7 @@ namespace Go
         {
             Content c = moveGroup.Content;
             HashSet<Point> contentPoints = moveGroup.Points;
-            if (contentPoints.Count() != 3) return false;
+            if (contentPoints.Count() != 3 || tryBoard.MoveGroupLiberties != 1) return false;
             if (!contentPoints.Any(p => tryBoard.CornerPoint(p)) || contentPoints.Any(p => tryBoard.PointWithinMiddleArea(p))) return false;
             if (MaxLengthOfGrid(moveGroup.Points) != 1) return false;
             //ensure at least two atari targets
@@ -794,12 +798,13 @@ namespace Go
             Point corner = currentBoard.GetStoneNeighbours(p).FirstOrDefault(n => currentBoard.CornerPoint(n));
             if (!Convert.ToBoolean(corner.NotEmpty)) return false;
             if (currentBoard.GetStoneNeighbours(corner).Any(n => currentBoard[n] != Content.Empty)) return false;
-            if (currentBoard.GetDiagonalNeighbours(p).Any(n => currentBoard.PointWithinMiddleArea(n) && EyeHelper.FindSemiSolidEye(n, currentBoard, c).Item1))
+            if (currentBoard.GetDiagonalNeighbours(p).Any(n => currentBoard.PointWithinMiddleArea(n) && EyeHelper.FindRealEyeWithinEmptySpace(currentBoard, n, c)))
             {
                 foreach (Point q in currentBoard.GetStoneNeighbours(corner))
                 {
                     Board b = currentBoard.MakeMoveOnNewBoard(q, c.Opposite());
-                    if (b != null && !ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false)) return true;
+                    if (b != null && !ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false))
+                        return true;
                 }
             }
             return false;
