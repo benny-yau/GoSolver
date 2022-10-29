@@ -2001,11 +2001,6 @@
             Overrides function to provide verification for third level.
             </summary>
         </member>
-        <member name="M:Go.MappingVerification.MakeMoveAndCheckIfAnswerFound(Go.Game,Go.Point)">
-            <summary>
-            Override function to verify ko blocked moves.
-            </summary>
-        </member>
         <member name="M:Go.MappingVerification.FinalVerification(Go.Game)">
             <summary>
             Verify with mcts (default) or exhaustive search. If answer is returned then error is found.

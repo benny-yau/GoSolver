@@ -107,32 +107,6 @@ namespace Go
         }
 
         /// <summary>
-        /// Override function to verify ko blocked moves.
-        /// </summary>
-        protected override Boolean MakeMoveAndCheckIfAnswerFound(Game g, Point p)
-        {
-            if (!g.Board.PointWithinBoard(p.x, p.y))
-                return true;
-            SurviveOrKill surviveOrKill = GameHelper.KillOrSurvivalForNextMove(g.Board);
-
-            MakeMoveResult result = g.MakeMove(p);
-            if (result == MakeMoveResult.KoBlocked)
-            {
-                if (g.Board.LastMoves[g.Board.LastMoves.Count - 1].Equals(Game.PassMove))
-                    g.Board.LastMoves.RemoveAt(g.Board.LastMoves.Count - 1);
-                g.InternalMakeMove(p.x, p.y, true);
-                FinalVerification(g);
-                return true;
-            }
-
-            ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(surviveOrKill, g, true);
-            if (confirmAlive == ConfirmAliveResult.Alive || confirmAlive == ConfirmAliveResult.Dead)
-                return true;
-
-            return SolutionHelper.AnswerFound(g);
-        }
-
-        /// <summary>
         /// Verify with mcts (default) or exhaustive search. If answer is returned then error is found.
         /// </summary>
         private void FinalVerification(Game g)
