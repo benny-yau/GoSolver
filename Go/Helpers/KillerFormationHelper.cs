@@ -312,7 +312,7 @@ namespace Go
         private static Boolean CheckRedundantKillGroupExtension(Board tryBoard, Board currentBoard)
         {
             if (tryBoard.MoveGroupLiberties != 1) return false;
-            if (tryBoard.AtariTargets.Count > 0 && !BentFourCornerFormation(tryBoard, tryBoard.MoveGroup)) return false;
+            if (AtariHelper.AtariByGroup(tryBoard, tryBoard.MoveGroup) && !BentFourCornerFormation(tryBoard, tryBoard.MoveGroup)) return false;
             if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Count > 1) return false;
             if (SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                 return false;
@@ -449,7 +449,7 @@ namespace Go
                 {
                     (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c, capturedBoard);
                     if (isSuicidal) continue;
-                    if (b != null && b.AtariTargets.Count == 1 && b.AtariTargets.First().Points.Count > 1)
+                    if (b != null && b.AtariTargets.Count > 0)
                         return true;
                 }
                 //check end point covered
