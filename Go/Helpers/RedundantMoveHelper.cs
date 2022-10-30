@@ -107,7 +107,7 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Point move = tryBoard.Move.Value;
             Content c = tryMove.MoveContent;
-
+            if (GameHelper.GetContentForSurviveOrKill(tryBoard.GameInfo, SurviveOrKill.Kill) == c) return false;
             if (tryMove.AtariResolved) return false;
             Group eyeGroup = null;
             Point eyePoint = new Point();
