@@ -116,6 +116,7 @@ namespace Go
             {
                 //one-point covered eye
                 eyePoint = eyePoints.First();
+                if (!EyeHelper.CoveredMove(tryBoard, eyePoint, c)) return false;
                 Board b = new Board(tryBoard);
                 b[eyePoint] = c.Opposite();
                 eyeGroup = b.GetGroupAt(eyePoint);
@@ -124,7 +125,8 @@ namespace Go
             {
                 //two-point covered eye
                 eyePoint = tryBoard.CapturedPoints.First(q => tryBoard.GetStoneNeighbours().Contains(q));
-                Boolean unEscapable = EyeHelper.CoveredMove(tryBoard, eyePoint, c) && tryBoard.MoveGroup.Liberties.Any(lib => tryBoard.GameInfo.IsMovablePoint[lib.x, lib.y] == false);
+                if (!EyeHelper.CoveredMove(tryBoard, eyePoint, c)) return false;
+                Boolean unEscapable = tryBoard.MoveGroup.Liberties.Any(lib => tryBoard.GameInfo.IsMovablePoint[lib.x, lib.y] == false);
                 if (unEscapable)
                     eyeGroup = tryBoard.CapturedList.First();
             }
