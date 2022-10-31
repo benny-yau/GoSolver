@@ -224,8 +224,8 @@ namespace Go
                 if (diagonalPoints.Count < 2 || board.GetGroupsFromPoints(diagonalPoints).Count(n => n.Liberties.Count <= 2) < 2) continue;
                 foreach (Point q in board.GetStoneNeighbours(p).Where(n => !n.Equals(eye) && board[n] == Content.Empty))
                 {
-                    (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(q, c.Opposite(), board);
-                    if (suicidal) continue;
+                    Board b = board.MakeMoveOnNewBoard(q, c.Opposite(), true);
+                    if (b == null) continue;
                     if (b.CapturedList.Count > 0 || b.AtariTargets.Count > 1)
                         return true;
                 }
