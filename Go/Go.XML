@@ -212,7 +212,7 @@
         <member name="M:Go.GameTryMove.IsNegligibleForKo(System.Boolean)">
             <summary>
             Ko moves only - Check for atari moves. Return false if not redundant.
-            Check if all target points captured <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi" />
+            End game redundant ko <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi" />
             </summary>
         </member>
         <member name="M:Go.GameTryMove.MakeMoveWithOpponentAtSamePoint(System.Boolean)">
@@ -887,6 +887,13 @@
         <member name="M:Go.KoHelper.IsKoFight(Go.Board,Go.Group)">
             <summary>
             Is Ko fight, including both pre-ko and ko.
+            </summary>
+        </member>
+        <member name="M:Go.KoHelper.IsKoFightAtNonKillableGroup(Go.Board,Go.Group)">
+            <summary>
+            Is Ko fight at non killable group.
+            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi" />
+            <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
             </summary>
         </member>
         <member name="M:Go.KoHelper.IsReverseKoFight(Go.Board)">
@@ -1846,6 +1853,7 @@
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" /> 
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_2" /> 
             Suicide group ko fight <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q16693_2" /> 
+            End game redundant ko <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
             Check break link <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30152_2" /> 
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q30152" /> 
             </summary>

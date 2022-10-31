@@ -54,6 +54,22 @@ namespace Go
         }
 
         /// <summary>
+        /// Is Ko fight at non killable group.
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi" />
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
+        /// </summary>
+        public static Boolean IsKoFightAtNonKillableGroup(Board tryBoard, Group koGroup)
+        {
+            Content c = tryBoard.MoveGroup.Content;
+            if (!IsKoFight(tryBoard, koGroup)) return false;
+            Point eye = tryBoard.GetStoneNeighbours(koGroup.Points.First()).First(n => tryBoard[n] == Content.Empty);
+            List<Group> eyeGroups = tryBoard.GetGroupsFromStoneNeighbours(eye, c.Opposite()).ToList();
+            if (eyeGroups.Where(n => !n.Equals(koGroup)).All(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
+                return true;
+            return false;
+        }
+
+        /// <summary>
         /// Reverse ko fight.
         /// </summary>
         public static Boolean IsReverseKoFight(Board tryBoard)

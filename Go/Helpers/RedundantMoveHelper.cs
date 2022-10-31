@@ -2746,6 +2746,7 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_2" /> 
         /// Suicide group ko fight <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q16693_2" /> 
+        /// End game redundant ko <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
         /// Check break link <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30152_2" /> 
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q30152" /> 
         /// </summary>
@@ -2759,8 +2760,8 @@ namespace Go
             if (eyePoint == null) return false;
 
             //check all eye groups are non killable
-            List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).ToList();
-            if (eyeGroups.All(n => WallHelper.IsNonKillableFromSetupMoves(currentBoard, n)))
+            List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
+            if (ngroups.All(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
                 return true;
 
             //check ko fight necessary
@@ -2768,8 +2769,7 @@ namespace Go
                 return false;
 
             //suicide group ko fight
-            List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
-            if (!eyeGroups.Any(e => WallHelper.IsNonKillableGroup(currentBoard, e)) && ngroups.Any(n => tryBoard.GetNeighbourGroups(n).Any() && !tryBoard.GetNeighbourGroups(n).Any(gr => WallHelper.IsNonKillableFromSetupMoves(tryBoard, gr))))
+            if (ngroups.Any(n => GroupHelper.GetKillerGroupFromCache(tryBoard, n.Points.First(), c.Opposite()) != null && tryBoard.GetNeighbourGroups(n).Any(gr => !WallHelper.IsNonKillableGroup(tryBoard, gr) && !KoHelper.IsKoFightAtNonKillableGroup(tryBoard, gr))))
                 return false;
 
             //check break link

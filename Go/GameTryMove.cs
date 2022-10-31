@@ -146,19 +146,19 @@ namespace Go
 
         /// <summary>
         /// Ko moves only - Check for atari moves. Return false if not redundant.
-        /// Check if all target points captured <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi" />
+        /// End game redundant ko <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi" />
         /// </summary>
         public bool IsNegligibleForKo(Boolean opponentMove = false)
         {
+            Board tryBoard = this.TryGame.Board;
             if (KoHelper.EssentialAtariForKoMove(this))
             {
-                //check if all target points captured
+                //end game redundant ko
                 if (opponentMove)
                 {
-                    Board tryBoard = this.TryGame.Board;
                     if (AtariResolved) return false;
                     List<Group> targets = LifeCheck.GetTargets(tryBoard);
-                    if (targets.All(t => t.Liberties.Count == 1 && tryBoard.GetNeighbourGroups(t).Where(n => !n.Equals(tryBoard.MoveGroup)).All(n => WallHelper.IsNonKillableGroup(tryBoard, n) || KoHelper.IsKoFight(tryBoard, n))))
+                    if (targets.All(t => tryBoard.GetNeighbourGroups(t).All(n => WallHelper.IsNonKillableGroup(tryBoard, n) || KoHelper.IsKoFightAtNonKillableGroup(tryBoard, n))))
                         return true;
                 }
                 return false;
