@@ -343,11 +343,7 @@ namespace Go
                 b2[move] = c;
                 //unstoppable group
                 if (ImmovableHelper.CheckConnectAndDie(b2))
-                {
-                    HashSet<Group> neighbourGroups = b2.GetGroupsFromStoneNeighbours(liberty, c);
-                    if (neighbourGroups.Count == 1 || WallHelper.StrongNeighbourGroups(b2, neighbourGroups)) continue;
                     return (true, b);
-                }
             }
             return (false, null);
         }
