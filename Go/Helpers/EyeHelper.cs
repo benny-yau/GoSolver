@@ -226,7 +226,7 @@ namespace Go
                 {
                     Board b = board.MakeMoveOnNewBoard(q, c.Opposite(), true);
                     if (b == null) continue;
-                    if (b.CapturedList.Count > 0 || b.AtariTargets.Count > 1)
+                    if (b.AtariTargets.Count > 1)
                         return true;
                 }
             }

@@ -93,8 +93,8 @@ namespace Go
             //make block move
             Point blockMove = tryBoard.GetStoneNeighbours(d).First(n => !tryBoard.PointWithinMiddleArea(n));
             Board b = tryBoard.MakeMoveOnNewBoard(blockMove, c.Opposite());
-            if (b == null || !ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false)) return false;
-            return true;
+            if (b == null) return false;
+            return ImmovableHelper.CheckConnectAndDie(b);
         }
 
         /// <summary>

@@ -300,8 +300,11 @@ namespace Go
         /// Suicide at big tiger mouth.
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_B3" /> 
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A85" /> 
-        /// Check for opponent survival move <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q29475" /> 
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario6kyu13" />
+        /// Opponent capture three or more points <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23" />
+        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_TianLongTu_Q16827_2" />
+        /// Check for opponent survival move <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q29475" /> 
         /// Unstoppable group <see cref="UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_XuanXuanQiJing_A53" /> 
         /// </summary>
         private static (Boolean, Board) SuicideAtBigTigerMouth(GameTryMove tryMove)
@@ -317,7 +320,6 @@ namespace Go
                 List<Point> liberties = eyeGroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
                 if (liberties.Count != 1) continue;
                 Point liberty = liberties.First();
-                if (currentBoard.GetGroupsFromStoneNeighbours(liberty, c).Any(g => WallHelper.IsNonKillableGroup(tryBoard, g))) continue;
 
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, eyeGroup.Content, currentBoard);
                 if (suicidal)
@@ -331,20 +333,19 @@ namespace Go
                 (Boolean suicidal2, Board b2) = ImmovableHelper.IsSuicidalMove(moveGroupLiberties.First(), eyeGroup.Content.Opposite(), b);
                 if (suicidal2) continue;
 
-                //check for opponent survival move
-                if (tryBoard.MoveGroup.Points.Count >= 2)
-                {
-                    if (b2.CapturedPoints.Count() >= 3) return (true, b);
-                    if (b2.GetStoneNeighbours().Where(n => b2[n] != c.Opposite()).Select(n => GroupHelper.GetKillerGroupFromCache(b2, n, c.Opposite())).Any(n => n != null && n.Points.Count >= 3))
-                        return (true, b);
-                }
+                //opponent capture three or more points
+                if (b2.CapturedPoints.Count() >= 3) return (true, b);
 
-                b[move] = b2[move] = c;
+                //check for opponent survival move
+                if (b2.GetStoneNeighbours().Where(n => b2[n] != c.Opposite()).Select(n => GroupHelper.GetKillerGroupFromCache(b2, n, c.Opposite())).Any(n => n != null && n.Points.Count >= 3))
+                    return (true, b);
+
+                b2[move] = c;
                 //unstoppable group
-                if (ImmovableHelper.CheckConnectAndDie(b2, b2.MoveGroup, false))
+                if (ImmovableHelper.CheckConnectAndDie(b2))
                 {
                     HashSet<Group> neighbourGroups = b2.GetGroupsFromStoneNeighbours(liberty, c);
-                    if (neighbourGroups.Count == 1 || neighbourGroups.Any(n => n.Liberties.Count == 1) || WallHelper.StrongNeighbourGroups(b2, neighbourGroups)) continue;
+                    if (neighbourGroups.Count == 1 || WallHelper.StrongNeighbourGroups(b2, neighbourGroups)) continue;
                     return (true, b);
                 }
             }

@@ -65,7 +65,6 @@ namespace Go
                 if (b == null) continue;
                 Boolean atariOnTargetGroup = b.AtariTargets.Any(a => targetGroups.Any(t => t.Equals(board.GetCurrentGroup(a))));
                 if (!atariOnTargetGroup) continue;
-                if (b.CapturedList.Count > 0) return true;
                 //double atari with any target group
                 if (b.AtariTargets.Count >= 2)
                 {
