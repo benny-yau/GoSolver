@@ -131,6 +131,7 @@ namespace Go
                     eyeGroup = tryBoard.CapturedList.First();
             }
             if (eyeGroup == null) return false;
+            if (tryBoard.CapturedList.Any(gr => !eyeGroup.Points.Contains(gr.Points.First()))) return false;
 
             //check atari for ko move
             if (KoHelper.EssentialAtariForKoMove(tryMove))
@@ -553,13 +554,9 @@ namespace Go
 
             Group atariTarget = tryBoard.AtariTargets.First();
             //check for unescapable group
-            (Boolean unEscapable, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(tryBoard, atariTarget);
+            (Boolean unEscapable, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(tryBoard, atariTarget, false);
             if (unEscapable) return false;
-            if (escapeBoard != null && ImmovableHelper.CheckConnectAndDie(escapeBoard, escapeBoard.GetCurrentGroup(tryBoard.MoveGroup)))
-                return false;
 
-            if (!ImmovableHelper.EscapeCaptureLink(tryBoard, atariTarget))
-                return false;
 
             //check for weak group
             if (CheckWeakGroupInOpponentSuicide(tryBoard, atariTarget))

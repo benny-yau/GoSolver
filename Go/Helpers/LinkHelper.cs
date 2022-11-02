@@ -14,6 +14,7 @@ namespace Go
         /// <see cref="UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario5dan25" />
         /// <see cref="UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_XuanXuanGo_Q18358" />
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" />
+        /// Check ko link <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16738" />
         /// </summary>
         public static Boolean PossibleLinkForGroups(Board tryBoard, Board currentBoard)
         {
@@ -42,6 +43,7 @@ namespace Go
                         groupI.LinkedPoint = groups[i].LinkedPoint;
                         Group groupJ = tryBoard.GetCurrentGroup(groups[j]);
                         groupJ.LinkedPoint = groups[j].LinkedPoint;
+                        //check ko link
                         if ((groupI.Liberties.Count == 1 && !KoHelper.IsKoFight(tryBoard, groupI)) || (groupJ.Liberties.Count == 1 && !KoHelper.IsKoFight(tryBoard, groupJ)))
                             continue;
                         //check if currently linked

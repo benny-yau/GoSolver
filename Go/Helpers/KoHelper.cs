@@ -108,33 +108,6 @@ namespace Go
         }
 
         /// <summary>
-        /// Double ko fight.
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A85_2" />
-        /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A85" />
-        /// <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_XuanXuanGo_A28_101Weiqi" />
-        /// Not double ko <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A82_101Weiqi_2" />
-        /// </summary>
-        public static (Boolean, Board) DoubleKoFight(Board board, Group targetGroup)
-        {
-            List<Group> koGroups = board.GetNeighbourGroups(targetGroup).Where(group => KoHelper.IsKoFight(board, group)).ToList();
-            if (koGroups.Count < 2) return (false, null);
-            foreach (Group koGroup in koGroups)
-            {
-                Board b = ImmovableHelper.CaptureSuicideGroup(board, koGroup);
-                if (b == null) continue;
-                foreach (Group target in b.AtariTargets)
-                {
-                    if (!ImmovableHelper.UnescapableGroup(b, target).Item1) continue;
-                    Board b2 = ImmovableHelper.CaptureSuicideGroup(b, target);
-                    if (b2 == null) continue;
-                    if (b2.CapturedList.Any(captured => koGroups.Any(g => !g.Equals(koGroup) && g.Points.Contains(captured.Points.First()))))
-                        return (true, b);
-                }
-            }
-            return (false, null);
-        }
-
-        /// <summary>
         /// Reverse ko for neutral point move.
         /// Rare scenario where neutral point required for ko <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A80" />
         /// </summary>
