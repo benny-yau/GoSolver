@@ -238,6 +238,7 @@ namespace Go
         /// Check opponent double ko <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_2" /> 
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" /> 
         /// Set as neutral point <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16490" />
+        /// Two covered eyes <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18" />
         /// </summary>
         public static Boolean FillKoEyeMove(GameTryMove tryMove)
         {
@@ -292,8 +293,10 @@ namespace Go
             if (opponentBoard != null && KoHelper.IsKoFight(opponentBoard) && KoHelper.PossibilityOfDoubleKo(opponentBoard, currentBoard))
                 return false;
 
-            //set as neutral point
-            tryMove.IsNeutralPoint = true;
+            //two covered eyes
+            if (eyeGroups.Any(e => e.Liberties.Count == 2 && e.Liberties.All(lib => EyeHelper.FindCoveredEye(currentBoard, lib, c))))
+                return false;
+
             return true;
         }
 
