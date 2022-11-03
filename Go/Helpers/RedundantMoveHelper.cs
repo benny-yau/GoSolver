@@ -1093,7 +1093,7 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A55" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_Nie67" />
         /// Check real eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17132_3" />
-        /// check connect end move <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16738_2" />
+        /// Check connect end move <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16738_2" />
         /// </summary>
         private static Boolean MiscSinglePointSuicide(GameTryMove tryMove, Board capturedBoard, GameTryMove opponentTryMove = null)
         {
@@ -1121,15 +1121,15 @@ namespace Go
 
             if (GameHelper.GetContentForSurviveOrKill(tryBoard.GameInfo, SurviveOrKill.Survive) == c)
             {
-                //check connect end move
-                if (opponentTryMove != null && ConnectEndMoveAtNonKillableGroup(tryBoard, currentBoard))
-                    return false;
                 //for survive, any suicidal move next to non killable group is redundant
                 List<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(move);
                 if (neighbourGroups.Any(group => WallHelper.IsNonKillableGroup(tryBoard, group)))
                 {
                     //check connect and die
                     Boolean connectAndDie = ImmovableHelper.AllConnectAndDie(capturedBoard, move);
+                    //check connect end move
+                    if (opponentTryMove != null && !connectAndDie && EyeHelper.IsCovered(tryBoard, move, c.Opposite()))
+                        return false;
                     return !connectAndDie;
                 }
             }
@@ -1143,24 +1143,6 @@ namespace Go
                     return true;
                 //check real eye
                 if (capturedBoard.GetDiagonalNeighbours(move).Any(n => capturedBoard[n] == Content.Empty && EyeHelper.FindRealEyeWithinEmptySpace(capturedBoard, n, c.Opposite())) && !ImmovableHelper.AllConnectAndDie(capturedBoard, move, c.Opposite()))
-                    return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Connect end move at non killable group.
-        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16738_2" />
-        /// <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario5dan18" />
-        /// <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_GuanZiPu_A2Q29_101Weiqi" />
-        /// </summary>
-        private static Boolean ConnectEndMoveAtNonKillableGroup(Board tryBoard, Board currentBoard)
-        {
-            Point move = tryBoard.Move.Value;
-            Content c = tryBoard.MoveGroup.Content;
-            if (currentBoard.GetGroupsFromStoneNeighbours(move, c).Any(group => WallHelper.IsNonKillableGroup(currentBoard, group)))
-            {
-                if (EyeHelper.IsCovered(tryBoard, move, c.Opposite()))
                     return true;
             }
             return false;
@@ -2109,9 +2091,6 @@ namespace Go
             //check corner three and possible corner three formation
             if (KillerFormationHelper.CornerThreeFormation(tryBoard, tryBoard.MoveGroup) || KillerFormationHelper.PossibleCornerThreeFormation(currentBoard, move, c.Opposite())) return false;
 
-            //check connect end move
-            if (opponentMove != null && ConnectEndMoveAtNonKillableGroup(tryBoard, currentBoard))
-                return false;
 
             Group moveKillerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
             foreach (Point eyePoint in eyePoints)
@@ -2122,7 +2101,7 @@ namespace Go
                 {
                     if (SuicideAtBigTigerMouth(opponentMove).Item1 || BothAliveHelper.CheckForBothAliveAtMove(opponentMove.TryGame.Board))
                         continue;
-                    if (eyeKillerGroup != null || ImmovableHelper.IsImmovablePoint(eyePoint, c.Opposite(), currentBoard).Item1)
+                    if (ImmovableHelper.IsImmovablePoint(eyePoint, c.Opposite(), currentBoard).Item1)
                         return true;
                 }
                 //ensure eye point within killer group
