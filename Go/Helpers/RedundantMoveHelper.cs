@@ -339,12 +339,10 @@ namespace Go
                 if (liberties.Count != 1) continue;
                 Point liberty = liberties.First();
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, eyeGroup.Content, currentBoard);
+                if (b == null || b.GetNeighbourGroups().All(n => WallHelper.IsNonKillableGroup(b, n))) continue;
                 if (suicidal || ImmovableHelper.CheckConnectAndDie(b))
-                {
-                    if (b != null && b.GetNeighbourGroups().All(n => WallHelper.IsNonKillableGroup(b, n)))
-                        continue;
                     return (true, b);
-                }
+
                 if (b == null || b.MoveGroup.Liberties.Count != 2) continue;
 
                 //make block move
