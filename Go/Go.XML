@@ -1458,6 +1458,7 @@
             Two target groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30215_3" />
             <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18_4" />
             Check killer ko within killer group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_2" />
+            Ko move on external liberty (optional) <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221024_5" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.TwoPointAtariMove(Go.Board,Go.Board)">
