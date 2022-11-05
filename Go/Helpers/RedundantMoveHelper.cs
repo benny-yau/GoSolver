@@ -239,6 +239,7 @@ namespace Go
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" /> 
         /// Set as neutral point <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16490" />
         /// Two covered eyes <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18" />
+        /// Three liberty eye group <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18_2" />
         /// </summary>
         public static Boolean FillKoEyeMove(GameTryMove tryMove)
         {
@@ -297,6 +298,19 @@ namespace Go
             if (eyeGroups.Any(e => e.Liberties.Count == 2 && e.Liberties.All(lib => EyeHelper.FindCoveredEye(currentBoard, lib, c))))
                 return false;
 
+            //three liberty eye group
+            foreach (Group eyeGroup in eyeGroups)
+            {
+                if (eyeGroup.Liberties.Count != 3) continue;
+                foreach (Point liberty in eyeGroup.Liberties)
+                {
+                    Board b = currentBoard.MakeMoveOnNewBoard(liberty, c.Opposite());
+                    if (b == null || !b.CapturedList.Any(p => p.Points.Count > 1)) continue;
+                    if (WallHelper.IsNonKillableGroup(b)) continue;
+                    if (ImmovableHelper.CheckConnectAndDie(b, b.GetCurrentGroup(eyeGroup)))
+                        return false;
+                }
+            }
             return true;
         }
 
@@ -305,7 +319,7 @@ namespace Go
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_B3" /> 
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A85" /> 
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario6kyu13" />
-        /// Opponent capture three or more points <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23" />
+        /// Opponent capture two or more points <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23" />
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_TianLongTu_Q16827_2" />
         /// Check for opponent survival move <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q29475" /> 
@@ -324,12 +338,13 @@ namespace Go
                 List<Point> liberties = eyeGroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
                 if (liberties.Count != 1) continue;
                 Point liberty = liberties.First();
-
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, eyeGroup.Content, currentBoard);
-                if (suicidal)
+                if (suicidal || ImmovableHelper.CheckConnectAndDie(b))
+                {
+                    if (b != null && b.GetNeighbourGroups().All(n => WallHelper.IsNonKillableGroup(b, n)))
+                        continue;
                     return (true, b);
-                if (ImmovableHelper.CheckConnectAndDie(b))
-                    return (true, b);
+                }
                 if (b == null || b.MoveGroup.Liberties.Count != 2) continue;
 
                 //make block move
@@ -337,9 +352,9 @@ namespace Go
                 (Boolean suicidal2, Board b2) = ImmovableHelper.IsSuicidalMove(moveGroupLiberties.First(), eyeGroup.Content.Opposite(), b);
                 if (suicidal2) continue;
 
-                //opponent capture three or more points
-                if (b2.CapturedPoints.Count() >= 3) return (true, b);
-
+                //opponent capture two or more points
+                if (b2.CapturedList.Any(gr => gr.Points.Count >= 2))
+                    return (true, b);
                 //check for opponent survival move
                 if (b2.GetStoneNeighbours().Where(n => b2[n] != c.Opposite()).Select(n => GroupHelper.GetKillerGroupFromCache(b2, n, c.Opposite())).Any(n => n != null && n.Points.Count >= 3))
                     return (true, b);
@@ -1341,7 +1356,7 @@ namespace Go
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            if (capturedBoard.CapturedPoints.Count() != 2 || !tryBoard.IsAtariMove) return false;
+            if (!capturedBoard.CapturedList.Any(gr => gr.Points.Count == 2) || !tryBoard.IsAtariMove) return false;
             //check for three groups
             if (tryBoard.GetGroupsFromStoneNeighbours(move).Count > 2) return true;
 
