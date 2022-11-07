@@ -993,7 +993,7 @@ namespace Go
             //try kill formation
             if (KillerFormationHelper.TryKillFormation(currentBoard, c.Opposite(), new List<Point>() { move }))
             {
-                if (capturedBoard.GetGroupsFromStoneNeighbours(move, c).Any(n => n.Points.Count >= 4))
+                if (tryBoard.GetStoneAndDiagonalNeighbours().Count(n => tryBoard[n] == c.Opposite()) >= 4)
                     return false;
             }
 
