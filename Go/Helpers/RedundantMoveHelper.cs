@@ -967,6 +967,9 @@ namespace Go
             }
             if (capturedBoard.MoveGroupLiberties == 1) return false;
 
+            //check non killable neighbour group
+            if (tryBoard.GetNeighbourGroups().Any(n => WallHelper.IsNonKillableGroup(tryBoard, n))) return true;
+
             //check for snapback
             if (ImmovableHelper.CheckSnapbackInNeighbourGroups(tryBoard, tryBoard.MoveGroup))
                 return false;
@@ -989,7 +992,10 @@ namespace Go
 
             //try kill formation
             if (KillerFormationHelper.TryKillFormation(currentBoard, c.Opposite(), new List<Point>() { move }))
-                return false;
+            {
+                if (capturedBoard.GetGroupsFromStoneNeighbours(move, c).Any(n => n.Points.Count >= 4))
+                    return false;
+            }
 
             //retrieve liberties other than eye liberty
             List<Group> ngroups = capturedBoard.GetNeighbourGroups(tryBoard.MoveGroup);
