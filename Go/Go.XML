@@ -1192,6 +1192,11 @@
             Three liberty eye group <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18_2" />
             </summary>
         </member>
+        <member name="M:Go.RedundantMoveHelper.ThreeLibertyGroupNearCapture(Go.Board,Go.Group)">
+            <summary>
+            Three liberty group near capture.
+            </summary>
+        </member>
         <member name="M:Go.RedundantMoveHelper.SuicideAtBigTigerMouth(Go.GameTryMove)">
             <summary>
             Suicide at big tiger mouth.
@@ -1588,8 +1593,7 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B35" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_5" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31580" />
-            Check capture at diagonal <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16490" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B19" />
+            Three liberty group near capture <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16490" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.GetSpecificNeutralMove(Go.Game,System.Collections.Generic.List{Go.GameTryMove})">

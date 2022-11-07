@@ -299,19 +299,27 @@ namespace Go
                 return false;
 
             //three liberty eye group
-            foreach (Group eyeGroup in eyeGroups)
-            {
-                if (eyeGroup.Liberties.Count != 3) continue;
-                foreach (Point liberty in eyeGroup.Liberties)
-                {
-                    Board b = currentBoard.MakeMoveOnNewBoard(liberty, c.Opposite());
-                    if (b == null || !b.CapturedList.Any(p => p.Points.Count > 1)) continue;
-                    if (WallHelper.IsNonKillableGroup(b)) continue;
-                    if (ImmovableHelper.CheckConnectAndDie(b, b.GetCurrentGroup(eyeGroup)))
-                        return false;
-                }
-            }
+            if (eyeGroups.Any(e => ThreeLibertyGroupNearCapture(currentBoard, e)))
+                return false;
+
             return true;
+        }
+
+        /// <summary>
+        /// Three liberty group near capture.
+        /// </summary>
+        private static Boolean ThreeLibertyGroupNearCapture(Board board, Group eyeGroup)
+        {
+            if (eyeGroup.Liberties.Count != 3) return false;
+            foreach (Point liberty in eyeGroup.Liberties)
+            {
+                Board b = board.MakeMoveOnNewBoard(liberty, eyeGroup.Content.Opposite());
+                if (b == null || !b.CapturedList.Any(p => p.Points.Count > 1)) continue;
+                if (WallHelper.IsNonKillableGroup(b)) continue;
+                if (ImmovableHelper.CheckConnectAndDie(b, b.GetCurrentGroup(eyeGroup)))
+                    return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -1784,8 +1792,7 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B35" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_5" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31580" />
-        /// Check capture at diagonal <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16490" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B19" />
+        /// Three liberty group near capture <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16490" />
         /// </summary>
         public static void RestoreNeutralMove(Game currentGame, List<GameTryMove> tryMoves, List<GameTryMove> neutralPointMoves)
         {
@@ -1840,7 +1847,8 @@ namespace Go
             else if (tryMoves.Count <= 2)
             {
                 //check connect and die for last two try moves
-                if (tryMoves.Select(t => t.TryGame.Board).All(t => (t.MoveGroup.Points.Count >= 2 && ImmovableHelper.CheckConnectAndDie(t)) || LinkHelper.GetGroupDiagonals(t, t.MoveGroup).Any(d => t[d.Move] == t.MoveGroup.Content && t.GetGroupAt(d.Move).Liberties.Count == 1)))
+                IEnumerable<Board> tryBoards = tryMoves.Select(t => t.TryGame.Board);
+                if (tryBoards.All(t => (t.MoveGroup.Points.Count >= 2 && ImmovableHelper.CheckConnectAndDie(t))) || tryBoards.Any(t => ThreeLibertyGroupNearCapture(t, t.MoveGroup)))
                     tryMoves.Add(neutralPointMoves.First());
             }
         }
