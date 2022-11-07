@@ -1370,7 +1370,7 @@
             Check for snapback  <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B31" />
             Atari move required <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q2757" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18500_3" />
-            One liberty - suicide for both players <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40_2" />
+            Suicide for liberty fight <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40_2" />
             <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126" />
             <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18_3" />
             Try kill formation <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
@@ -1683,7 +1683,7 @@
             Check for strong neighbour groups <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario3dan22" />
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16605" />
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A28" />
-            Check for suicide for both alive <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40_3" />
+            Suicide for liberty fight <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40_3" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.TigerMouthEyePoints(Go.Board,Go.Point,Go.Point)">

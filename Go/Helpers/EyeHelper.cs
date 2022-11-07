@@ -368,50 +368,25 @@ namespace Go
         private static Boolean CheckUniqueCornerConnectAndDie(Board board, Group killerGroup)
         {
             Content c = killerGroup.Content;
-            if (killerGroup.Points.Count == 1)
-            {
-                //ensure corner point
-                Point k = killerGroup.Points.First();
-                if (!board.GetStoneNeighbours(k).Any(p => board[p] == c.Opposite() && board.CornerPoint(p) && board.GetGroupAt(p).Points.Count == 1)) return false;
-
-            }
-            else
-            {
-                //two-point capture
-                if (killerGroup.Points.Count != 3) return false;
-                List<Point> contentPoints = killerGroup.Points.Where(t => board[t] == c).ToList();
-                if (contentPoints.Count != 2) return false;
-
-                //ensure corner point
-                if (!killerGroup.Points.Any(p => board.CornerPoint(p))) return false;
-            }
+            if (killerGroup.Points.Count != 1) return false;
+            //ensure corner point
+            Point k = killerGroup.Points.First();
+            if (!board.GetStoneNeighbours(k).Any(p => board[p] == c.Opposite() && board.CornerPoint(p) && board.GetGroupAt(p).Points.Count == 1)) return false;
 
             List<LinkedPoint<Point>> diagonalPoints = LinkHelper.GetGroupDiagonals(board, killerGroup);
             List<Point> eyeDiagonals = diagonalPoints.Select(p => p.Move).Where(p => board[p] == Content.Empty).ToList();
             if (eyeDiagonals.Count != 1) return false;
 
-            Board b = board;
-            if (killerGroup.Points.Count > 1)
-            {
-                //tiger mouth at diagonal
-                Point? libertyPoint = ImmovableHelper.FindTigerMouth(board, eyeDiagonals.First(), c.Opposite());
-                if (libertyPoint != null && board[libertyPoint.Value] == Content.Empty)
-                {
-                    (_, b) = ImmovableHelper.IsSuicidalMove(libertyPoint.Value, c.Opposite(), b);
-                    if (b == null) return false;
-                }
-            }
-
             //eye at diagonal
             Point eye = eyeDiagonals.First();
-            if (!EyeHelper.FindEye(b, eye) || board.PointWithinMiddleArea(eye)) return false;
+            if (!EyeHelper.FindEye(board, eye) || board.PointWithinMiddleArea(eye)) return false;
 
-            List<Group> eyeGroups = b.GetGroupsFromStoneNeighbours(eye, c).ToList();
+            List<Group> eyeGroups = board.GetGroupsFromStoneNeighbours(eye, c).ToList();
             if (!eyeGroups.All(group => group.Liberties.Count > 1)) return false;
 
             //check connect and die at target group
-            Group targetGroup = eyeGroups.Except(b.GetNeighbourGroups(killerGroup)).FirstOrDefault();
-            if (targetGroup != null && ImmovableHelper.CheckConnectAndDie(b, targetGroup))
+            Group targetGroup = eyeGroups.Except(board.GetNeighbourGroups(killerGroup)).FirstOrDefault();
+            if (targetGroup != null && ImmovableHelper.CheckConnectAndDie(board, targetGroup))
                 return true;
             return false;
         }
