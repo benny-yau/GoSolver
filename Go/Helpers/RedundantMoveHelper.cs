@@ -1063,7 +1063,7 @@ namespace Go
             Content c = tryMove.MoveContent;
             if (tryBoard.GetGroupsFromStoneNeighbours(move, c).Any(n => n.Points.Count >= 3) && KillerFormationHelper.TryKillFormation(currentBoard, c.Opposite(), new List<Point>() { move }))
             {
-                if (tryBoard.CornerPoint(move) || tryBoard.GetStoneAndDiagonalNeighbours().Count(n => tryBoard[n] == c.Opposite()) >= 4)
+                if (tryBoard.GetStoneAndDiagonalNeighbours().Count(n => tryBoard[n] == c.Opposite()) >= 4)
                     return true;
             }
             return false;

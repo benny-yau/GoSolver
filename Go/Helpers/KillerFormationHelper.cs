@@ -312,7 +312,7 @@ namespace Go
                 return false;
             if (SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                 return false;
-            if (AtariHelper.AtariByGroup(tryBoard, tryBoard.MoveGroup) && !BentFourCornerFormation(tryBoard, tryBoard.MoveGroup))
+            if (tryBoard.AtariTargets.Any() && !BentFourCornerFormation(tryBoard, tryBoard.MoveGroup))
                 return false;
             if (KillerFormationHelper.GridDimensionChanged(LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).First().Points, tryBoard.MoveGroup.Points))
                 return true;
@@ -323,7 +323,6 @@ namespace Go
         /// Suicide move with one empty space in killer group. If two-point move, ensure is covered eye. If three-point move, ensure move is next to empty point.
         /// Move group with three points <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario1kyu29" />
         /// Move group binding <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B19_2" />
-        /// Check corner point <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A113" />
         /// </summary>
         public static Boolean SuicideMoveValidWithOneEmptySpaceLeft(Board tryBoard)
         {
@@ -340,8 +339,6 @@ namespace Go
                 //move is next to empty point
                 List<Point> stoneNeighbours = tryBoard.GetStoneNeighbours(p);
                 if (!stoneNeighbours.Any(n => n.Equals(move))) return false;
-                //check corner point
-                if (tryBoard.CornerPoint(move) && tryBoard.MoveGroup.Points.Count > 3) return true;
                 //all other stone neighbours are opponent
                 if (stoneNeighbours.Where(n => !n.Equals(move)).All(n => tryBoard[n] == c.Opposite()))
                     return true;
@@ -454,7 +451,7 @@ namespace Go
                 {
                     (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c, capturedBoard);
                     if (isSuicidal) continue;
-                    if (b != null && b.AtariTargets.Count > 0)
+                    if (b != null && b.AtariTargets.Any(t => t.Points.Count > 1))
                         return true;
                 }
                 //check end point covered
