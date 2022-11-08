@@ -1053,7 +1053,6 @@ namespace Go
         /// Opponent break kill formation.
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16859_2" />
-        /// Corner point <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A113" />
         /// </summary>
         private static Boolean OpponentBreakKillFormation(GameTryMove tryMove)
         {
@@ -1061,11 +1060,9 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Board currentBoard = tryMove.CurrentGame.Board;
             Content c = tryMove.MoveContent;
-            if (tryBoard.GetGroupsFromStoneNeighbours(move, c).Any(n => n.Points.Count >= 3) && KillerFormationHelper.TryKillFormation(currentBoard, c.Opposite(), new List<Point>() { move }))
-            {
-                if (tryBoard.GetStoneAndDiagonalNeighbours().Count(n => tryBoard[n] == c.Opposite()) >= 4)
-                    return true;
-            }
+            if (tryBoard.GetStoneAndDiagonalNeighbours().Count(n => tryBoard[n] == c.Opposite()) < 4) return false;
+            if (KillerFormationHelper.TryKillFormation(currentBoard, c.Opposite(), new List<Point>() { move }))
+                return true;
             return false;
         }
 
