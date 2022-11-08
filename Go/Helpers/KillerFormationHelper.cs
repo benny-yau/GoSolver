@@ -289,11 +289,7 @@ namespace Go
             {
                 //check kill group extension
                 if (CheckRedundantKillGroupExtension(tryBoard, currentBoard))
-                {
-                    if (moveCount == 4) return false;
-                    if (KillerFormationHelper.GridDimensionChanged(LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).First().Points, tryBoard.MoveGroup.Points))
-                        return false;
-                }
+                    return false;
 
                 //check killer formation from functions
                 if (IsKillerFormationFromFunc(tryBoard, tryBoard.MoveGroup))
@@ -306,23 +302,28 @@ namespace Go
         /// <summary>
         /// Redundant extension of kill group.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A8" />
+        /// Not redundant <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A113" />
         /// Atari target <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40" />
-        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A8" />
+        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_8" />
         /// </summary>
         private static Boolean CheckRedundantKillGroupExtension(Board tryBoard, Board currentBoard)
         {
-            if (tryBoard.MoveGroupLiberties != 1) return false;
-            if (AtariHelper.AtariByGroup(tryBoard, tryBoard.MoveGroup) && !BentFourCornerFormation(tryBoard, tryBoard.MoveGroup)) return false;
-            if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Count > 1) return false;
+            if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Count > 1)
+                return false;
             if (SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                 return false;
-            return true;
+            if (AtariHelper.AtariByGroup(tryBoard, tryBoard.MoveGroup) && !BentFourCornerFormation(tryBoard, tryBoard.MoveGroup))
+                return false;
+            if (KillerFormationHelper.GridDimensionChanged(LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).First().Points, tryBoard.MoveGroup.Points))
+                return true;
+            return false;
         }
 
         /// <summary>
         /// Suicide move with one empty space in killer group. If two-point move, ensure is covered eye. If three-point move, ensure move is next to empty point.
         /// Move group with three points <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario1kyu29" />
         /// Move group binding <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B19_2" />
+        /// Check corner point <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A113" />
         /// </summary>
         public static Boolean SuicideMoveValidWithOneEmptySpaceLeft(Board tryBoard)
         {
@@ -338,7 +339,11 @@ namespace Go
                 Point p = killerGroup.Points.First(k => tryBoard[k] == Content.Empty);
                 //move is next to empty point
                 List<Point> stoneNeighbours = tryBoard.GetStoneNeighbours(p);
-                if (stoneNeighbours.Any(n => n.Equals(move)) && stoneNeighbours.Where(n => !n.Equals(move)).All(n => tryBoard[n] == c.Opposite()))
+                if (!stoneNeighbours.Any(n => n.Equals(move))) return false;
+                //check corner point
+                if (tryBoard.CornerPoint(move) && tryBoard.MoveGroup.Points.Count > 3) return true;
+                //all other stone neighbours are opponent
+                if (stoneNeighbours.Where(n => !n.Equals(move)).All(n => tryBoard[n] == c.Opposite()))
                     return true;
             }
             return false;

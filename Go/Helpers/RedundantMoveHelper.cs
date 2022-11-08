@@ -948,8 +948,6 @@ namespace Go
         /// Suicide for liberty fight <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40_2" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18_3" />
-        /// Try kill formation <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
-        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16859_2" />
         /// Two liberties - suicide for both players <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_A19" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30215" />
         /// Three liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_20221019_6" />
@@ -998,12 +996,9 @@ namespace Go
                 return false;
             }
 
-            //try kill formation
-            if (KillerFormationHelper.TryKillFormation(currentBoard, c.Opposite(), new List<Point>() { move }))
-            {
-                if (tryBoard.GetStoneAndDiagonalNeighbours().Count(n => tryBoard[n] == c.Opposite()) >= 4)
-                    return false;
-            }
+            //opponent break kill formation
+            if (OpponentBreakKillFormation(tryMove))
+                return false;
 
             //retrieve liberties other than eye liberty
             List<Group> ngroups = capturedBoard.GetNeighbourGroups(tryBoard.MoveGroup);
@@ -1052,6 +1047,26 @@ namespace Go
                 }
             }
             return true;
+        }
+
+        /// <summary>
+        /// Opponent break kill formation.
+        /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
+        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16859_2" />
+        /// Corner point <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A113" />
+        /// </summary>
+        private static Boolean OpponentBreakKillFormation(GameTryMove tryMove)
+        {
+            Point move = tryMove.Move;
+            Board tryBoard = tryMove.TryGame.Board;
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Content c = tryMove.MoveContent;
+            if (tryBoard.GetGroupsFromStoneNeighbours(move, c).Any(n => n.Points.Count >= 3) && KillerFormationHelper.TryKillFormation(currentBoard, c.Opposite(), new List<Point>() { move }))
+            {
+                if (tryBoard.CornerPoint(move) || tryBoard.GetStoneAndDiagonalNeighbours().Count(n => tryBoard[n] == c.Opposite()) >= 4)
+                    return true;
+            }
+            return false;
         }
 
         /// <summary>
