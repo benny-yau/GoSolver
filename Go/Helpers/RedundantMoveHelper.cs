@@ -1860,7 +1860,7 @@ namespace Go
             {
                 //check connect and die for last two try moves
                 IEnumerable<Board> tryBoards = tryMoves.Select(t => t.TryGame.Board);
-                if (tryBoards.All(t => (t.MoveGroup.Points.Count >= 2 && ImmovableHelper.CheckConnectAndDie(t))) || tryBoards.Any(t => ThreeLibertyGroupNearCapture(t, t.MoveGroup)))
+                if (tryBoards.All(t => ImmovableHelper.CheckConnectAndDie(t)) || tryBoards.Any(t => ThreeLibertyGroupNearCapture(t, t.MoveGroup)))
                     tryMoves.Add(neutralPointMoves.First());
             }
         }
