@@ -2603,7 +2603,8 @@ namespace Go
             List<Point> emptyPoints = killerGroup.Points.Where(p => currentBoard[p] == Content.Empty).ToList();
 
             //no neighbour group
-            if (emptyPoints.Any(p => !currentBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Any(gr => GroupHelper.GetNeighbourGroupsOfKillerGroup(currentBoard, killerGroup).Contains(gr))))
+            List<Group> neighbourGroups = GroupHelper.GetNeighbourGroupsOfKillerGroup(currentBoard, killerGroup);
+            if (emptyPoints.Any(p => !currentBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Any(gr => neighbourGroups.Contains(gr))))
                 return false;
 
             //ensure not link for groups
