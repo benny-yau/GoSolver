@@ -1207,12 +1207,6 @@ namespace Go
             Content c = tryMove.MoveContent;
             if (!tryBoard.CornerPoint(move)) return false;
 
-            //specific filler move
-            Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c);
-            Boolean specificFillerMove = (killerGroup != null && killerGroup.Points.Count <= 5);
-            if (specificFillerMove)
-                return false;
-
             //one point target
             if (!tryBoard.AtariTargets.Any())
                 return true;
@@ -2608,13 +2602,9 @@ namespace Go
 
             List<Point> emptyPoints = killerGroup.Points.Where(p => currentBoard[p] == Content.Empty).ToList();
 
-            //remove move with no neighbour group
-            List<Group> neighbourGroups = currentBoard.GetNeighbourGroups(killerGroup);
-            if (neighbourGroups.Count > 1)
-            {
-                Point noNeighbourPoint = emptyPoints.FirstOrDefault(m => currentBoard.GetStoneNeighbours(m).Count(p => currentBoard[p] == c) == 0);
-                if (Convert.ToBoolean(noNeighbourPoint.NotEmpty)) return false;
-            }
+            //no neighbour group
+            if (emptyPoints.Any(p => !currentBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Any(gr => GroupHelper.GetNeighbourGroupsOfKillerGroup(currentBoard, killerGroup).Contains(gr))))
+                return false;
 
             //ensure not link for groups
             if (EyeFillerLinkForGroups(tryMove))

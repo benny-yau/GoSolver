@@ -70,7 +70,7 @@ namespace Go
                 //find killer groups with no liberties left
                 if (group.Liberties.Count == 0)
                 {
-                    if (!CheckNeighbourGroupsOfKillerGroup(filledBoard, group).Item1) continue;
+                    if (!CheckNeighbourGroupsOfKillerGroup(filledBoard, group, true).Item1) continue;
                     killerGroups.Add(group);
                 }
             }
@@ -79,23 +79,30 @@ namespace Go
 
 
         /// <summary>
-        /// Ensure neighbour groups of killer group are diagonal groups.
+        /// Ensure neighbour groups of killer group are diagonal groups, not separated from one another.
         /// </summary>
-        public static (Boolean, List<Group>) CheckNeighbourGroupsOfKillerGroup(Board board, Group killerGroup, Boolean isFilledBoard = true)
+        public static (Boolean, List<Group>) CheckNeighbourGroupsOfKillerGroup(Board board, Group killerGroup, Boolean isFilledBoard = false)
         {
-            List<Group> neighbourGroups = board.GetNeighbourGroups(killerGroup);
-            //remove groups surrounded by killer group
-            if (isFilledBoard)
-                neighbourGroups.RemoveAll(group => group.Neighbours.All(n => board[n] == killerGroup.Content && board.GetGroupAt(n) == killerGroup));
-            else
-                neighbourGroups.RemoveAll(group => group.Neighbours.All(n => killerGroup.Points.Contains(n)));
+            List<Group> neighbourGroups = GetNeighbourGroupsOfKillerGroup(board, killerGroup, isFilledBoard);
             if (neighbourGroups.Count == 0) return (false, null);
             if (neighbourGroups.Count == 1) return (true, neighbourGroups);
-            //get all diagonal groups
             List<Group> diagonalGroups = LinkHelper.GetAllDiagonalGroups(board, neighbourGroups.First());
             if (neighbourGroups.Except(diagonalGroups).Any())
                 return (false, null);
             return (true, neighbourGroups);
+        }
+
+        /// <summary>
+        /// Get neighbour groups of killer group that are not surrounded within the killer group.
+        /// </summary>
+        public static List<Group> GetNeighbourGroupsOfKillerGroup(Board board, Group killerGroup, Boolean isFilledBoard = false)
+        {
+            List<Group> neighbourGroups = board.GetNeighbourGroups(killerGroup);
+            if (isFilledBoard)
+                neighbourGroups.RemoveAll(group => group.Neighbours.All(n => board[n] == killerGroup.Content && board.GetGroupAt(n) == killerGroup));
+            else
+                neighbourGroups.RemoveAll(group => group.Neighbours.All(n => killerGroup.Points.Contains(n)));
+            return neighbourGroups;
         }
 
         /// <summary>

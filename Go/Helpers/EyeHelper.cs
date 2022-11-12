@@ -457,7 +457,7 @@ namespace Go
             if (killerGroup.Points.Count <= 3) return false;
 
             //ensure killer group is surrounded by diagonal groups
-            (Boolean isKillerGroup, List<Group> diagonalGroups) = GroupHelper.CheckNeighbourGroupsOfKillerGroup(board, killerGroup, false);
+            (Boolean isKillerGroup, List<Group> diagonalGroups) = GroupHelper.CheckNeighbourGroupsOfKillerGroup(board, killerGroup);
             if (!isKillerGroup)
                 return false;
 

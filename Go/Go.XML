@@ -548,7 +548,12 @@
         </member>
         <member name="M:Go.GroupHelper.CheckNeighbourGroupsOfKillerGroup(Go.Board,Go.Group,System.Boolean)">
             <summary>
-            Ensure neighbour groups of killer group are diagonal groups.
+            Ensure neighbour groups of killer group are diagonal groups, not separated from one another.
+            </summary>
+        </member>
+        <member name="M:Go.GroupHelper.GetNeighbourGroupsOfKillerGroup(Go.Board,Go.Group,System.Boolean)">
+            <summary>
+            Get neighbour groups of killer group that are not surrounded within the killer group.
             </summary>
         </member>
         <member name="M:Go.GroupHelper.GetKillerGroupFromCache(Go.Board,Go.Point,Go.Content)">

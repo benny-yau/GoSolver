@@ -103,7 +103,7 @@ namespace ScenarioCollection
                 scenarioList.Add(x => x.Scenario1dan10());
                 scenarioList.Add(x => x.Scenario1dan31());
                 scenarioList.Add(x => x.Scenario1dan21());
-                scenarioList.Add(x => x.Scenario1dan29()); 
+                scenarioList.Add(x => x.Scenario1dan29());
             }
             else if (level == "Level 2")
             {
@@ -131,7 +131,7 @@ namespace ScenarioCollection
                 scenarioList.Add(x => x.Scenario_Nie67());
                 scenarioList.Add(x => x.Scenario_Nie73());
                 scenarioList.Add(x => x.Scenario3dan17());
-                scenarioList.Add(x => x.Scenario_Nie50()); 
+                scenarioList.Add(x => x.Scenario_Nie50());
             }
             else if (level == "Level 3")
             {

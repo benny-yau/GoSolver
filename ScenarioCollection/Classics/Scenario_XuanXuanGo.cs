@@ -617,6 +617,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanGo_A26()
         {
+            //https://www.101weiqi.com/q/2601/
             var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 22);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
@@ -647,6 +648,7 @@ namespace ScenarioCollection
             gi.killMovablePoints.Add(new Point(4, 18));
 
             gi.solutionPoints.Add(new List<Point>() { new Point(2, 18), new Point(1, 18), new Point(0, 17), new Point(1, 15), new Point(0, 16), new Point(3, 16), new Point(0, 13) });
+            gi.solutionPoints.Add(new List<Point>() { new Point(2, 18), new Point(1, 18), new Point(0, 17), new Point(1, 15), new Point(0, 16), new Point(3, 16), new Point(0, 15) });
             gi.solutionPoints.Add(new List<Point>() { new Point(2, 18), new Point(1, 18), new Point(0, 17), new Point(1, 15), new Point(0, 16), new Point(3, 16), new Point(1, 16), new Point(0, 13), new Point(1, 14) });
 
             gi.PlayerMoveJson = gi.PlayerMoveJsonExtension = ResourceHelper.GetXuanXuanQiJingMappedJsonExtensionString("Scenario_XuanXuanGo_A26_PlayerMoveExtension");
@@ -3417,6 +3419,7 @@ namespace ScenarioCollection
             gi.movablePoints.Add(new Point(7, 15));
             gi.movablePoints.Add(new Point(8, 15));
             gi.movablePoints.Add(new Point(9, 15));
+            gi.movablePoints.Add(new Point(2, 18));
             gi.killMovablePoints.AddRange(gi.movablePoints);
             gi.killMovablePoints.Add(new Point(1, 18));
             gi.solutionPoints.Add(new List<Point>() { new Point(3, 18), new Point(4, 18), new Point(10, 18), new Point(9, 18), new Point(6, 18), new Point(7, 18), new Point(8, 17), new Point(8, 16), new Point(9, 16) });
@@ -4148,7 +4151,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanGo_Q18500()
         {
-            //https://www.101weiqi.com/book/1349/3037/18500/
+            //https://www.101weiqi.cn/q/18500/
             var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.White, 24);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
