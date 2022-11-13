@@ -1204,6 +1204,11 @@
             Three liberty group near capture.
             </summary>
         </member>
+        <member name="M:Go.RedundantMoveHelper.SuicideGroupNearCapture(Go.Board)">
+            <summary>
+            Suicide group near capture.
+            </summary>
+        </member>
         <member name="M:Go.RedundantMoveHelper.SuicideAtBigTigerMouth(Go.GameTryMove)">
             <summary>
             Suicide at big tiger mouth.
@@ -1605,6 +1610,7 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B35" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_5" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31580" />
+            Suicide group near capture <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WuQingYuan_Q6150" />
             Three liberty group near capture <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16490" />
             </summary>
         </member>

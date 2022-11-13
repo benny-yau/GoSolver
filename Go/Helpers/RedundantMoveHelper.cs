@@ -323,6 +323,26 @@ namespace Go
         }
 
         /// <summary>
+        /// Suicide group near capture.
+        /// </summary>
+        private static Boolean SuicideGroupNearCapture(Board board)
+        {
+            if (board.MoveGroupLiberties < 2 || board.MoveGroupLiberties > 3) return false;
+            if (ImmovableHelper.CheckConnectAndDie(board)) return false;
+            foreach (Group ngroup in board.GetNeighbourGroups())
+            {
+                if (ngroup.Liberties.Count != 2 || WallHelper.IsNonKillableGroup(board, ngroup)) continue;
+                List<Group> targetGroups = AtariHelper.AtariByGroup(ngroup, board);
+                if (targetGroups.Count == 0) continue;
+                Board b = ImmovableHelper.CaptureSuicideGroup(board, targetGroups.First(), true);
+                if (b == null) continue;
+                if (ImmovableHelper.CheckConnectAndDie(b, b.GetCurrentGroup(board.MoveGroup)))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Suicide at big tiger mouth.
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_B3" /> 
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A85" /> 
@@ -1798,6 +1818,7 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B35" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_5" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31580" />
+        /// Suicide group near capture <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WuQingYuan_Q6150" />
         /// Three liberty group near capture <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16490" />
         /// </summary>
         public static void RestoreNeutralMove(Game currentGame, List<GameTryMove> tryMoves, List<GameTryMove> neutralPointMoves)
@@ -1854,7 +1875,7 @@ namespace Go
             {
                 //check connect and die for last two try moves
                 IEnumerable<Board> tryBoards = tryMoves.Select(t => t.TryGame.Board);
-                if (tryBoards.All(t => ImmovableHelper.CheckConnectAndDie(t)) || tryBoards.Any(t => ThreeLibertyGroupNearCapture(t, t.MoveGroup)))
+                if (tryBoards.All(t => ImmovableHelper.CheckConnectAndDie(t) || SuicideGroupNearCapture(t)) || tryBoards.Any(t => ThreeLibertyGroupNearCapture(t, t.MoveGroup)))
                     tryMoves.Add(neutralPointMoves.First());
             }
         }
