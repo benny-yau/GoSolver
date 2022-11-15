@@ -359,9 +359,8 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Board currentBoard = tryMove.CurrentGame.Board;
             Content c = tryMove.MoveContent;
-            List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).ToList();
-            List<Group> suicidalEyeGroups = eyeGroups.Where(e => e.Liberties.Count == 2).ToList();
-            foreach (Group eyeGroup in suicidalEyeGroups)
+            List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).Where(e => e.Liberties.Count == 2).ToList();
+            foreach (Group eyeGroup in eyeGroups)
             {
                 List<Point> liberties = eyeGroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
                 if (liberties.Count != 1) continue;
@@ -836,9 +835,10 @@ namespace Go
         /// <summary>
         /// Check for suicidal moves depending on diagonal groups.
         /// Check liberties are connected <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
-        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi_2" />
+        /// Check for killer formation <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi_2" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q15082" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16748" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" />
         /// Stone neighbours at diagonal of each other <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q2757" />
         /// Check diagonal at opposite corner of stone neighbours <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31493" />
         /// Cut diagonal and kill <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_3" />
@@ -846,7 +846,6 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A61" />
         /// Ensure no shared liberty with neighbour group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A55" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
-        /// Check for killer formation <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_A26" />
         /// Check move next to covered point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17132_4" />
         /// </summary>
         private static Boolean CheckDiagonalForSuicidalConnectAndDie(GameTryMove tryMove, Board captureBoard)
@@ -876,6 +875,7 @@ namespace Go
                 //check liberties are connected
                 if (tryBoard.GetStoneNeighbours(p).Any(q => tryBoard.MoveGroup.Liberties.Contains(q)))
                 {
+                    //check for killer formation
                     if (tryBoard.MoveGroup.Points.Count >= 3 && KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, captureBoard))
                         return false;
                     return true;
@@ -1738,7 +1738,7 @@ namespace Go
             if (suicide)
             {
                 Point suicideMove = suicideBoard.Move.Value;
-                if (MustHaveMoveAtBigTigerMouth(suicideBoard, tryBoard))
+                if (MustHaveMoveAtBigTigerMouth(suicideBoard, tryMove))
                     return (true, suicideMove);
             }
 
@@ -1747,19 +1747,41 @@ namespace Go
 
         /// <summary>
         /// Must have move at big tiger mouth.        
-        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
+        /// Liberties more than one <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23" />
+        /// Strong groups at tiger mouth <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Corner_A68" />
+        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_TianLongTu_Q17136" />
+        /// Capture at liberty <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_TianLongTu_Q17132" />
         /// </summary>
-        private static Boolean MustHaveMoveAtBigTigerMouth(Board suicideBoard, Board tryBoard)
+        private static Boolean MustHaveMoveAtBigTigerMouth(Board suicideBoard, GameTryMove tryMove)
         {
+            Point move = tryMove.Move;
+            Board tryBoard = tryMove.TryGame.Board;
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Content c = tryMove.MoveContent;
+
             Point suicideMove = suicideBoard.Move.Value;
-            //must have move for liberties more than one
+            //liberties more than one
             if (suicideBoard.MoveGroup.Liberties.Count > 1)
                 return true;
-            //redundant suicidal at tiger mouth
-            if (StrongGroupsAtMustHaveMove(tryBoard, suicideMove))
-                return false;
-            return true;
+
+            //strong groups at tiger mouth
+            if (!StrongGroupsAtMustHaveMove(tryBoard, suicideMove))
+                return true;
+
+            //capture at liberty
+            List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).Where(e => e.Points.Count >= 2 && e.Liberties.Count == 2).ToList();
+            foreach (Group eyeGroup in eyeGroups)
+            {
+                List<Point> liberties = eyeGroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
+                if (liberties.Count != 1) continue;
+                Point liberty = liberties.First();
+                Board b = currentBoard.MakeMoveOnNewBoard(liberty, c.Opposite());
+                if (b != null && b.CapturedList.Any(gr => gr.Points.Count >= 2))
+                    return true;
+            }
+
+            return false;
         }
 
         /// <summary>
