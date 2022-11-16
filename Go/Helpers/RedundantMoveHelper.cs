@@ -211,6 +211,8 @@ namespace Go
             if (LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard))
                 return false;
 
+            if (opponentTryMove != null && WallHelper.IsNonKillableGroup(opponentTryMove.TryGame.Board))
+                opponentTryMove.IsNeutralPoint = true;
             return true;
         }
         #endregion
