@@ -1866,7 +1866,6 @@ namespace Go
                 {
                     GameTryMove tryMove = preAtariMoves[i];
                     preAtariMoves.Remove(tryMove);
-                    if (CheckIfGroupAlreadyTargeted(tryMove, preAtariMoves)) continue;
                     tryMoves.Add(tryMove);
                     neutralPointMoves.Remove(tryMove);
                     preAtariAdded = true;
@@ -2041,36 +2040,6 @@ namespace Go
         }
 
         /// <summary>
-        /// Ensure target group of neutral move is not already targeted by other try moves not within killer group.
-        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A54" />
-        /// Ensure more than one liberty <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A54" />
-        /// </summary>
-        public static Boolean CheckIfGroupAlreadyTargeted(GameTryMove neutralMove, List<GameTryMove> tryMoves)
-        {
-            if (tryMoves == null) return false;
-            Board neutralMoveBoard = neutralMove.TryGame.Board;
-            Content c = neutralMove.MoveContent;
-            //get target groups of neutral move
-            List<Group> groups = neutralMoveBoard.GetGroupsFromStoneNeighbours(neutralMove.Move);
-
-            foreach (GameTryMove tryMove in tryMoves)
-            {
-                //ensure more than one liberty
-                if (tryMove.TryGame.Board.MoveGroupLiberties == 1) continue;
-                //exclude try moves within killer group
-                if (GroupHelper.GetKillerGroupFromCache(neutralMoveBoard, tryMove.Move, c.Opposite()) != null)
-                    continue;
-
-                //target group already targeted by other try moves
-                HashSet<Group> neighbourGroups = neutralMoveBoard.GetGroupsFromStoneNeighbours(tryMove.Move, c);
-                if (neighbourGroups.Intersect(groups).Any())
-                    return true;
-            }
-            return false;
-        }
-
-
-        /// <summary>
         /// Get generic neutral moves that are not specific and target group not targeted by other try moves. Killer group required.
         /// One neighbour group <see cref="UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_XuanXuanGo_Q18500" />
         /// More than one neighbour group <see cref="UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario5dan27_2" />
@@ -2105,9 +2074,6 @@ namespace Go
                     HashSet<Group> stoneNeighbours = coveredBoard.GetGroupsFromStoneNeighbours(b.Move.Value, b.MoveGroup.Content);
                     if (WallHelper.StrongNeighbourGroups(coveredBoard, stoneNeighbours))
                         continue;
-
-                    //restore the first generic neutral move if neighbour group not targeted by other try moves
-                    if (CheckIfGroupAlreadyTargeted(neutralMove, tryMoves)) continue;
                     return neutralMove;
                 }
             }

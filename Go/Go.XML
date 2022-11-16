@@ -609,9 +609,14 @@
             Check if escapable <see cref="!:UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_Corner_A86" />
             </summary>
         </member>
+        <member name="M:Go.ImmovableHelper.EscapeLink(Go.Board,Go.Group)">
+            <summary>
+            Escape link.
+            </summary>
+        </member>
         <member name="M:Go.ImmovableHelper.EscapeCaptureLink(Go.Board,Go.Group,System.Nullable{Go.Point})">
             <summary>
-            Check if escapable for target group to obtain more than two liberties or become non killable.
+            Escape capture link. Check if escapable for target group to obtain more than two liberties or become non killable.
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_3" />
             Check for atari target <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q17154" />
             </summary>
@@ -1649,13 +1654,6 @@
             <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
             Real solid eye found <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_B7" />
             <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario3kyu24" />
-            </summary>
-        </member>
-        <member name="M:Go.RedundantMoveHelper.CheckIfGroupAlreadyTargeted(Go.GameTryMove,System.Collections.Generic.List{Go.GameTryMove})">
-            <summary>
-            Ensure target group of neutral move is not already targeted by other try moves not within killer group.
-            <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A54" />
-            Ensure more than one liberty <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A54" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.GetGenericNeutralMove(Go.Game,System.Collections.Generic.List{Go.GameTryMove},System.Collections.Generic.List{Go.GameTryMove})">

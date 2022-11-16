@@ -204,7 +204,23 @@ namespace Go
         }
 
         /// <summary>
-        /// Check if escapable for target group to obtain more than two liberties or become non killable.
+        /// Escape link.
+        /// </summary>
+        public static Boolean EscapeLink(Board board, Group targetGroup)
+        {
+            foreach (Point liberty in targetGroup.Liberties)
+            {
+                Board b = board.MakeMoveOnNewBoard(liberty, targetGroup.Content);
+                if (b == null || !LinkHelper.IsAbsoluteLinkForGroups(board, b))
+                    continue;
+                if (!ImmovableHelper.CheckConnectAndDie(b, b.GetCurrentGroup(targetGroup)))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Escape capture link. Check if escapable for target group to obtain more than two liberties or become non killable.
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_3" />
         /// Check for atari target <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q17154" />
         /// </summary>
@@ -624,7 +640,7 @@ namespace Go
 
                 //check connect and die
                 (_, Board board) = ConnectAndDie(tryBoard, targetGroup);
-                if (board != null && board.MoveGroup.Points.Count == 1 && board.GetGroupsFromStoneNeighbours(board.Move.Value, c).Count > 1 && EscapeCaptureLink(tryBoard, targetGroup))
+                if (board != null && board.MoveGroup.Points.Count == 1 && board.GetGroupsFromStoneNeighbours(board.Move.Value, c).Count > 1 && EscapeLink(tryBoard, targetGroup))
                     return true;
 
                 //check unescapable group                
