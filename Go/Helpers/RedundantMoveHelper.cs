@@ -100,6 +100,7 @@ namespace Go
         /// Check possible links <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_A40" />
+        /// Set neutral point for opponent <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_B21" />
         /// </summary>
         public static Boolean FindCoveredEyeMove(GameTryMove tryMove, GameTryMove opponentTryMove = null)
         {
@@ -211,6 +212,7 @@ namespace Go
             if (LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard))
                 return false;
 
+            //set neutral point for opponent
             if (opponentTryMove != null && WallHelper.IsNonKillableGroup(opponentTryMove.TryGame.Board))
                 opponentTryMove.IsNeutralPoint = true;
             return true;
@@ -1799,8 +1801,6 @@ namespace Go
             HashSet<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(tigerMouth, c);
             if (WallHelper.StrongNeighbourGroups(board, neighbourGroups))
                 return true;
-            if (tryBoard.GetGroupsFromStoneNeighbours(tigerMouth, c).All(gr => gr.Liberties.All(lib => ImmovableHelper.IsSuicidalMove(tryBoard, lib, c))))
-                return true;
             return false;
         }
 
@@ -2226,7 +2226,7 @@ namespace Go
             if (neighbourGroups.Count >= 3 && (neighbourGroups.Count(g => g.Liberties.Count <= 2) >= 2 || LinkHelper.DiagonalCutMove(tryBoard).Item1)) return false;
 
             //check for strong neighbour groups
-            Boolean strongGroups = WallHelper.StrongNeighbourGroups(currentBoard, currentBoard.GetGroupsFromStoneNeighbours(move, c), false) && capturedBoard.MoveGroupLiberties > 2;
+            Boolean strongGroups = WallHelper.StrongNeighbourGroups(currentBoard, currentBoard.GetGroupsFromStoneNeighbours(move, c), true) && capturedBoard.MoveGroupLiberties > 2;
             if (!strongGroups) return false;
 
             //suicide for liberty fight

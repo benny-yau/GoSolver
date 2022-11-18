@@ -77,7 +77,7 @@ namespace Go
                 group.IsNonKillable = false;
                 return false;
             }
-            
+
             //check if group is non killable
             group.IsNonKillable = IsNonKillableFromSetupMoves(board, group);
             if (group.IsNonKillable.Value)
@@ -104,7 +104,7 @@ namespace Go
         /// <summary>
         /// Strong neighbour groups with more than two liberties or two liberties that are suicidal to opponent.
         /// </summary>
-        public static Boolean StrongNeighbourGroups(Board board, IEnumerable<Group> neighbourGroups, Boolean checkSuicidal = true)
+        public static Boolean StrongNeighbourGroups(Board board, IEnumerable<Group> neighbourGroups, Boolean checkSuicidal = false)
         {
             if (!neighbourGroups.Any()) return true;
             if (neighbourGroups.Any(group => !IsStrongNeighbourGroup(board, group, checkSuicidal)))
@@ -112,13 +112,13 @@ namespace Go
             return true;
         }
 
-        public static Boolean IsStrongNeighbourGroup(Board board, Group group, Boolean checkSuicidal = true)
+        public static Boolean IsStrongNeighbourGroup(Board board, Group group, Boolean checkSuicidal = false)
         {
             Content c = group.Content;
             int liberties = group.Liberties.Count;
             if (liberties < 2) return false;
 
-            if (!checkSuicidal && group.Liberties.Count == 2)
+            if (checkSuicidal && group.Liberties.Count == 2)
             {
                 Boolean opponentMovable = group.Liberties.All(liberty => ImmovableHelper.IsSuicidalMove(board, liberty, c.Opposite()));
                 if (opponentMovable) return true;
