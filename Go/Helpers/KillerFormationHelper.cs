@@ -303,18 +303,30 @@ namespace Go
         /// Redundant extension of kill group.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A8" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A113" />
+        /// Empty point neighbour <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_8" />
         /// Atari target <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40" />
-        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_8" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499_3" />
         /// Bent four corner formation <see cref="UnitTestProject.BentFourTest.BentFourTest_Scenario7kyu26_3" />
         /// </summary>
         private static Boolean CheckRedundantKillGroupExtension(Board tryBoard, Board currentBoard)
         {
+            Content c = tryBoard.MoveGroup.Content;
+            //move group binding
             if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Count > 1)
                 return false;
-            if (SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
-                return false;
+            //empty point neighbour
+            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty))
+            {
+                if (SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
+                    return false;
+                if (tryBoard.MoveGroupLiberties == 2 || tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c && tryBoard.GetGroupAt(n) != tryBoard.MoveGroup))
+                    return false;
+            }
+            //atari target
             if (tryBoard.AtariTargets.Any() && !BentFourCornerFormation(tryBoard, tryBoard.MoveGroup))
                 return false;
+            //grid dimension changed
             if (KillerFormationHelper.GridDimensionChanged(LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).First().Points, tryBoard.MoveGroup.Points))
                 return true;
             return false;
