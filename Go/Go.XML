@@ -561,6 +561,11 @@
             Get killer group cached in board for single point.
             </summary>
         </member>
+        <member name="M:Go.GroupHelper.IsKillerGroupOfNeighbourGroups(Go.Board,Go.Point,Go.Content)">
+            <summary>
+            Is killer group of neighbour groups.
+            </summary>
+        </member>
         <member name="M:Go.GroupHelper.IsSingleGroupWithinKillerGroup(Go.Board,Go.Board)">
             <summary>
             Is single group within killer group.
@@ -1427,7 +1432,11 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckNonTwoPointGroupInSuicideRealEye(Go.GameTryMove)">
             <summary>
-            Check for non two-point group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31536" />
+            Check for non two-point group.
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B31_3" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario4dan17_2" />
+            Not redundant <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31536" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A139" />
             Redundant if no diagonals <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario1dan4_3" />
             Check killer group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario4dan17_2" />
             </summary>
@@ -1453,10 +1462,10 @@
             Opponent suicide <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16490" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A55" />
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_Nie67" />
-            Check real eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17132_3" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B4" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B25_2" />
             Check connect end move <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16738_2" />
+            Check real eye at diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17132_3" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B25_2" />
+            Without opposite content <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B4" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CornerPointSuicide(Go.GameTryMove,Go.Board)">
@@ -1678,7 +1687,7 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.GetGenericNeutralMove(Go.Game,System.Collections.Generic.List{Go.GameTryMove},System.Collections.Generic.List{Go.GameTryMove})">
             <summary>
-            Get generic neutral moves that are not specific and target group not targeted by other try moves. Killer group required.
+            Get generic neutral moves that are not specific. Killer group required.
             One neighbour group <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_XuanXuanGo_Q18500" />
             More than one neighbour group <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario5dan27_2" />
             Get all extended groups <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_XuanXuanGo_Q18340" />
