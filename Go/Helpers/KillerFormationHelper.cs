@@ -220,6 +220,7 @@ namespace Go
 
         /// <summary>
         /// Two-point move with empty point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A48" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2" />
         /// Covered eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16424_2" />
         /// Check for snapback <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234" />
         /// Whole survival group dying <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3" />
@@ -262,7 +263,12 @@ namespace Go
 
                 //two-point move with empty point
                 if (tryBoard.GetStoneNeighbours().Any(p => tryBoard[p] == Content.Empty))
-                    return true;
+                {
+                    if (SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
+                        return true;
+                    if (!GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard, currentBoard))
+                        return true;
+                }
 
                 //check for snapback
                 if (ImmovableHelper.CheckSnapbackInNeighbourGroups(tryBoard, tryBoard.MoveGroup))
@@ -303,30 +309,18 @@ namespace Go
         /// Redundant extension of kill group.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A8" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A113" />
-        /// Empty point neighbour <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_8" />
         /// Atari target <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40" />
-        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499_3" />
+        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_8" />
         /// Bent four corner formation <see cref="UnitTestProject.BentFourTest.BentFourTest_Scenario7kyu26_3" />
         /// </summary>
         private static Boolean CheckRedundantKillGroupExtension(Board tryBoard, Board currentBoard)
         {
-            Content c = tryBoard.MoveGroup.Content;
-            //move group binding
             if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Count > 1)
                 return false;
-            //empty point neighbour
-            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty))
-            {
-                if (SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
-                    return false;
-                if (tryBoard.MoveGroupLiberties == 2 || tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c && tryBoard.GetGroupAt(n) != tryBoard.MoveGroup))
-                    return false;
-            }
-            //atari target
+            if (SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
+                return false;
             if (tryBoard.AtariTargets.Any() && !BentFourCornerFormation(tryBoard, tryBoard.MoveGroup))
                 return false;
-            //grid dimension changed
             if (KillerFormationHelper.GridDimensionChanged(LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).First().Points, tryBoard.MoveGroup.Points))
                 return true;
             return false;

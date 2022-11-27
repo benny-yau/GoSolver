@@ -693,6 +693,36 @@ namespace Go
         }
 
         /// <summary>
+        /// Redundant one point move in connect and die.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_4" />
+        /// Ensure killer group contains only try move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16594" />
+        /// Ensure all strong neighbour groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_7" />
+        /// </summary>
+        private static Boolean RedundantOnePointMoveInConnectAndDie(GameTryMove tryMove, Board captureBoard)
+        {
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryMove.Move;
+            Content c = tryMove.MoveContent;
+
+            if (tryBoard.MoveGroup.Points.Count != 1 || !tryMove.IsNegligible) return false;
+            //ensure killer group contains only try move
+            if (!GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard, currentBoard))
+                return false;
+
+            //check liberty surrounded by opponent
+            if (tryBoard.MoveGroup.Liberties.Any(n => tryBoard.GetStoneNeighbours(n).Where(q => !q.Equals(move)).All(q => tryBoard[q] == c.Opposite())))
+                return false;
+
+            //ensure all strong neighbour groups
+            HashSet<Group> neighbourGroups = captureBoard.GetGroupsFromStoneNeighbours(move, c);
+            if (WallHelper.StrongNeighbourGroups(captureBoard, neighbourGroups))
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
         /// Check for weak group with two or less liberties in connect and die.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_x" />
         /// Check for double atari for one-point move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29481" />
@@ -832,7 +862,6 @@ namespace Go
             Group escapeGroup = b2.GetGroupAt(b.Move.Value);
             if (escapeGroup.Liberties.Count > 1 || !ImmovableHelper.UnescapableGroup(b2, escapeGroup).Item1)
                 return true;
-
             return false;
         }
 
@@ -909,6 +938,10 @@ namespace Go
                         return false;
                     return true;
                 }
+
+                //redundant one point move
+                if (RedundantOnePointMoveInConnectAndDie(tryMove, captureBoard))
+                    return true;
             }
             return false;
         }
@@ -966,6 +999,7 @@ namespace Go
         /// <summary>
         /// Suicide within real eye. 
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_ScenarioHighLevel28" />
+        /// Check corner point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A80" />
         /// Check for snapback  <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B31" />
         /// Atari move required <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q2757" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18500_3" />
@@ -1160,6 +1194,8 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A55" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_Nie67" />
         /// Check real eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17132_3" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B4" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B25_2" />
         /// Check connect end move <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16738_2" />
         /// </summary>
         private static Boolean MiscSinglePointSuicide(GameTryMove tryMove, Board capturedBoard, GameTryMove opponentTryMove = null)
@@ -1209,7 +1245,8 @@ namespace Go
                 if (diagonalNeighbours.Any(n => LinkHelper.PointsBetweenDiagonals(move, n).Any(d => tryBoard[d] == Content.Empty)))
                     return true;
                 //check real eye
-                if (capturedBoard.GetDiagonalNeighbours(move).Any(n => capturedBoard[n] == Content.Empty && EyeHelper.FindRealEyeWithinEmptySpace(capturedBoard, n, c.Opposite())) && !ImmovableHelper.AllConnectAndDie(capturedBoard, move, c.Opposite()))
+                if (ImmovableHelper.AllConnectAndDie(capturedBoard, move, c.Opposite())) return false;
+                if (capturedBoard.GetDiagonalNeighbours(move).Any(n => capturedBoard[n] == Content.Empty && EyeHelper.FindRealEyeWithinEmptySpace(capturedBoard, n, c.Opposite()) && !GroupHelper.GetKillerGroupFromCache(capturedBoard, n, c.Opposite()).Points.Any(p => capturedBoard[p] == c)))
                     return true;
             }
             return false;

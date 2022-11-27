@@ -118,6 +118,19 @@ namespace Go
         }
 
         /// <summary>
+        /// Is single group within killer group.
+        /// </summary>
+        public static Boolean IsSingleGroupWithinKillerGroup(Board tryBoard, Board currentBoard)
+        {
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
+            if (killerGroup == null || killerGroup.Points.Any(p => !tryBoard.MoveGroup.Points.Contains(p) && tryBoard[p] == c)) return false;
+            if (currentBoard.GetNeighbourGroups(killerGroup).Any(gr => gr.Liberties.Count == 1)) return false;
+            return true;
+        }
+
+        /// <summary>
         /// Liberty group requires at least two content points and two empty points.
         /// </summary>
         public static Boolean IsLibertyGroup(Group group, Board board)
