@@ -16,6 +16,7 @@ namespace Go
     public class MappingVerification : MonteCarloMapping
     {
         public int errorCount = 0;
+        public long elapsedTimeToLog = 30000;
 
         public static int VerifyScenario(Game game)
         {
@@ -107,29 +108,21 @@ namespace Go
         }
 
         /// <summary>
-        /// Verify with mcts (default) or exhaustive search. If answer is returned then error is found.
+        /// Verify mapped move with mcts. If answer is returned then error is found.
         /// </summary>
         private void FinalVerification(Game g)
         {
-            if (Game.useMonteCarloRuntime)
+            //verify with mcts
+            MonteCarloTreeSearch mcts = MonteCarloGame.InitializeMonteCarloComputerMove(g);
+            if (mcts.AnswerNode != null)
             {
-                MonteCarloTreeSearch mcts = MonteCarloGame.InitializeMonteCarloComputerMove(g);
-                if (mcts.AnswerNode != null)
-                {
-                    errorCount += 1;
-                    WriteToFile(mcts.AnswerNode.GetLastMoves() + Environment.NewLine);
-                }
+                errorCount += 1;
+                WriteToFile("Incorrect: " + mcts.AnswerNode.GetLastMoves() + Environment.NewLine);
             }
-            else
-            {
-                Game m = new Game(g);
-                m.MakeExhaustiveSearch();
-                if (m.Board.Move != null)
-                {
-                    errorCount += 1;
-                    WriteToFile(m.Board.GetLastMoves() + Environment.NewLine);
-                }
-            }
+
+            //log if time exceeded
+            if (mcts.elapsedTime.Value > elapsedTimeToLog)
+                WriteToFile("Elapsed time: " + mcts.elapsedTime.Value + " - " + g.Board.GetLastMoves() + Environment.NewLine);
         }
 
         public static void WriteToFile(String contents)

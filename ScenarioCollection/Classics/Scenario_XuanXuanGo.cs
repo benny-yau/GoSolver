@@ -2308,7 +2308,6 @@ namespace ScenarioCollection
             gi.solutionPoints.Add(new List<Point>() { new Point(3, 17), new Point(5, 18), new Point(7, 18), new Point(4, 17), new Point(6, 17), new Point(6, 18), new Point(6, 16) });
             gi.correctedSolutions.Add(new CorrectedList(new List<Point>() { new Point(6, 15), new Point(6, 16), new Point(6, 18), new Point(7, 18), new Point(5, 18), new Point(4, 17) }));
             gi.correctedSolutions.Add(new CorrectedList(new List<Point>() { new Point(6, 15), new Point(6, 16), new Point(6, 18), new Point(7, 18), new Point(3, 18), new Point(4, 17) }));
-            gi.correctedSolutions.Add(new CorrectedList(new List<Point>() { new Point(6, 15), new Point(6, 16), new Point(3, 18), new Point(5, 18), new Point(6, 18), new Point(7, 18) }));
 
             gi.PlayerMoveJson = gi.PlayerMoveJsonExtension = ResourceHelper.GetXuanXuanQiJingMappedJsonExtensionString("Scenario_XuanXuanGo_A59_PlayerMoveExtension");
             gi.ChallengeMoveJson = gi.ChallengeMoveJsonExtension = ResourceHelper.GetXuanXuanQiJingMappedJsonExtensionString("Scenario_XuanXuanGo_A59_ChallengeMoveExtension");
