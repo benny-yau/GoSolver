@@ -711,7 +711,7 @@ namespace Go
                 return false;
 
             //check liberty surrounded by opponent
-            if (tryBoard.MoveGroup.Liberties.Any(n => tryBoard.GetStoneNeighbours(n).Where(q => !q.Equals(move)).All(q => tryBoard[q] == c.Opposite())))
+            if (KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                 return false;
 
             //ensure all strong neighbour groups
@@ -1143,7 +1143,7 @@ namespace Go
             //redundant if no diagonals
             if (diagonals.Count == 0) return true;
             //check killer group
-            if (diagonals.Any(d => GroupHelper.IsKillerGroupOfNeighbourGroups(currentBoard, d, c.Opposite())))
+            if (diagonals.Any(d => tryBoard.GetGroupsFromStoneNeighbours(d, c).Intersect(tryBoard.AtariTargets).Any() && GroupHelper.IsKillerGroupOfNeighbourGroups(tryBoard, d, c.Opposite())))
                 return true;
             return false;
         }
@@ -2034,6 +2034,7 @@ namespace Go
         /// Find neighbour groups at diagonal cut <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_20221017_5" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario3kyu24_3" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario3kyu24_5" />
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20221017_5" />
         /// Target group contains killer group <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q2413" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
         /// Real solid eye found <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_B7" />

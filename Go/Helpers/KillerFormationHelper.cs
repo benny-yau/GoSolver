@@ -339,7 +339,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Suicide move with one empty space in killer group. If two-point move, ensure is covered eye. If three-point move, ensure move is next to empty point.
+        /// Suicide move with one empty space surrounded by opponent stones.
         /// Move group with three points <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario1kyu29" />
         /// Move group binding <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B19_2" />
         /// </summary>
@@ -348,20 +348,9 @@ namespace Go
             int moveCount = tryBoard.MoveGroup.Points.Count;
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.MoveGroupLiberties != 1) return false;
-            Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
-            //killer group contains only one more empty space
-            if (killerGroup != null && killerGroup.Points.Count == moveCount + 1)
-            {
-                //get empty point
-                Point p = killerGroup.Points.First(k => tryBoard[k] == Content.Empty);
-                //move is next to empty point
-                List<Point> stoneNeighbours = tryBoard.GetStoneNeighbours(p);
-                if (!stoneNeighbours.Any(n => n.Equals(move))) return false;
-                //all other stone neighbours are opponent
-                if (stoneNeighbours.Where(n => !n.Equals(move)).All(n => tryBoard[n] == c.Opposite()))
-                    return true;
-            }
+            List<Point> stoneNeighbours = tryBoard.GetStoneNeighbours().Where(p => tryBoard[p] == Content.Empty).ToList();
+            if (stoneNeighbours.Any(n => tryBoard.GetStoneNeighbours(n).Where(q => !q.Equals(move)).All(q => tryBoard[q] == c.Opposite())))
+                return true;
             return false;
         }
 
