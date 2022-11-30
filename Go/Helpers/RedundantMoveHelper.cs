@@ -1834,16 +1834,29 @@ namespace Go
         /// Strong neighbour groups at tiger mouth for must-have move.
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario5dan27_3" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_20221024_4" />
+        /// Check liberty fight <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_20221128_2" />
         /// </summary>
         private static Boolean StrongGroupsAtMustHaveMove(Board tryBoard, Point tigerMouth)
         {
             Content c = tryBoard.MoveGroup.Content;
             Board board = tryBoard.MakeMoveOnNewBoard(tigerMouth, c);
             if (board == null) board = tryBoard;
-            HashSet<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(tigerMouth, c);
-            if (WallHelper.StrongNeighbourGroups(board, neighbourGroups))
-                return true;
-            return false;
+            List<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(tigerMouth, c).ToList();
+            if (!WallHelper.StrongNeighbourGroups(board, neighbourGroups))
+                return false;
+
+            //check liberty fight
+            if (board.GetLibertiesOfGroups(neighbourGroups).Count == 3)
+            {
+                foreach (Group ngroup in neighbourGroups)
+                {
+                    (_, List<Point> pointsBetweenDiagonals) = LinkHelper.FindDiagonalCut(tryBoard, ngroup);
+                    if (pointsBetweenDiagonals == null) continue;
+                    if (ngroup.Liberties.Select(lib => GroupHelper.GetKillerGroupFromCache(board, lib, c.Opposite())).Any(kgroup => kgroup != null && kgroup.Points.Count > 1 && EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, kgroup)))
+                        return false;
+                }
+            }
+            return true;
         }
 
         /// <summary>
@@ -1927,11 +1940,7 @@ namespace Go
             }
             //must have neutral point
             List<GameTryMove> mustHaveNeutralMoves = neutralPointMoves.Where(n => n.MustHaveNeutralPoint).ToList();
-            foreach (GameTryMove tryMove in mustHaveNeutralMoves)
-            {
-                tryMoves.Add(tryMove);
-                neutralPointMoves.Remove(tryMove);
-            }
+            mustHaveNeutralMoves.ForEach(n => { tryMoves.Add(n); neutralPointMoves.Remove(n); });
             if (neutralPointMoves.Count == 0) return;
             //no try moves left
             if (tryMoves.Count == 0)
@@ -2202,7 +2211,6 @@ namespace Go
             Group moveKillerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
             foreach (Point eyePoint in eyePoints)
             {
-                Group eyeKillerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, eyePoint, c.Opposite());
                 //opponent move at tiger mouth
                 if (opponentMove != null)
                 {
@@ -2212,6 +2220,7 @@ namespace Go
                         return true;
                 }
                 //ensure eye point within killer group
+                Group eyeKillerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, eyePoint, c.Opposite());
                 if (eyeKillerGroup == null) continue;
                 if (moveKillerGroup == null)
                 {

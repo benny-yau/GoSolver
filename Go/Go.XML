@@ -1628,6 +1628,7 @@
             Strong neighbour groups at tiger mouth for must-have move.
             <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario5dan27_3" />
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_20221024_4" />
+            Check liberty fight <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_20221128_2" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.ValidateNeutralPoint(Go.GameTryMove)">
@@ -2064,7 +2065,7 @@
         </member>
         <member name="M:Go.MappingVerification.FinalVerification(Go.Game)">
             <summary>
-            Verify with mcts (default) or exhaustive search. If answer is returned then error is found.
+            Verify mapped move with mcts. If answer is returned then error is found.
             </summary>
         </member>
         <member name="T:Go.MonteCarloMapping">
