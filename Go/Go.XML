@@ -1430,14 +1430,14 @@
             <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16859_2" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.CheckNonTwoPointGroupInSuicideRealEye(Go.GameTryMove)">
+        <member name="M:Go.RedundantMoveHelper.CheckNonTwoPointGroupInSuicideRealEye(Go.GameTryMove,Go.Board)">
             <summary>
             Check for non two-point group.
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B31_3" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario4dan17_2" />
             Not redundant <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31536" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A139" />
-            Redundant if no diagonals <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario1dan4_3" />
+            Real solid eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario1dan4_3" />
             Check killer group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario4dan17_2" />
             </summary>
         </member>
@@ -1530,14 +1530,6 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31428" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.BaseLineSurvivalMove(Go.GameTryMove)">
-            <summary>
-            Base line moves are redundant moves on the edge of the board.        
-            Base line survival move, directly below or diagonal to non killable group <see cref="!:UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest__Scenario_XuanXuanGo_A23" />
-            If next to opponent stone then not redundant <see cref="!:UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18473" />
-            </summary>
-            Boundary base line move <see cref="!:UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_Corner_A84" />
-        </member>
         <member name="M:Go.RedundantMoveHelper.SurvivalLeapMove(Go.GameTryMove)">
             <summary>
             Leap moves are moves two spaces away from the closest neighbour stone of same content.
@@ -1585,9 +1577,11 @@
             <summary>
             Essential atari at covered eye.
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario4dan17" />
+            <see cref="!:UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_Corner_A84" />
             Check for ko fight <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_A36" />
             Check for connect and die <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Phenomena_B7" />
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_3" />
+            <see cref="!:UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_TianLongTu_Q16456" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.MustHaveNeutralPoint(Go.GameTryMove,Go.GameTryMove)">

@@ -1042,9 +1042,8 @@ namespace Go
             if (tryBoard.IsAtariMove)
             {
                 //check for non two-point group
-                Point liberty = tryBoard.MoveGroup.Liberties.First();
-                Boolean twoPointGroup = tryBoard.GetStoneNeighbours(liberty).Where(n => !n.Equals(move)).All(n => tryBoard[n] == c.Opposite());
-                if (!twoPointGroup && CheckNonTwoPointGroupInSuicideRealEye(tryMove))
+                Boolean twoPointGroup = KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard);
+                if (!twoPointGroup && CheckNonTwoPointGroupInSuicideRealEye(tryMove, capturedBoard))
                     return true;
 
                 //check two point group
@@ -1130,18 +1129,18 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario4dan17_2" />
         /// Not redundant <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31536" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A139" />
-        /// Redundant if no diagonals <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario1dan4_3" />
+        /// Real solid eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario1dan4_3" />
         /// Check killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario4dan17_2" />
         /// </summary>
-        private static Boolean CheckNonTwoPointGroupInSuicideRealEye(GameTryMove tryMove)
+        private static Boolean CheckNonTwoPointGroupInSuicideRealEye(GameTryMove tryMove, Board captureBoard)
         {
             Point move = tryMove.Move;
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
             List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] != c.Opposite()).ToList();
-            //redundant if no diagonals
-            if (diagonals.Count == 0) return true;
+            //real solid eye
+            if (EyeHelper.FindRealSolidEye(move, c.Opposite(), captureBoard)) return true;
             //check killer group
             if (diagonals.Any(d => tryBoard.GetGroupsFromStoneNeighbours(d, c).Intersect(tryBoard.AtariTargets).Any() && GroupHelper.IsKillerGroupOfNeighbourGroups(tryBoard, d, c.Opposite())))
                 return true;
@@ -1486,38 +1485,6 @@ namespace Go
         }
         #endregion
 
-        #region base line
-        /// <summary>
-        /// Base line moves are redundant moves on the edge of the board.        
-        /// Base line survival move, directly below or diagonal to non killable group <see cref="UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest__Scenario_XuanXuanGo_A23" />
-        /// If next to opponent stone then not redundant <see cref="UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18473" />
-        /// </summary>
-        /// Boundary base line move <see cref="UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_Corner_A84" />
-        public static Boolean BaseLineSurvivalMove(GameTryMove tryMove)
-        {
-            Board currentBoard = tryMove.CurrentGame.Board;
-            Board tryBoard = tryMove.TryGame.Board;
-            Point move = tryMove.Move;
-            Content c = tryMove.MoveContent;
-
-            if (tryBoard.PointWithinMiddleArea(move))
-                return false;
-
-            //boundary base line move
-            if (tryBoard.GameInfo.IsMovablePoint[move.x, move.y] == false)
-            {
-                Group atariTarget = tryBoard.AtariTargets.FirstOrDefault(t => t.Points.Count == 1);
-                if (atariTarget != null && !EyeHelper.FindEye(tryBoard, atariTarget.Liberties.First(), c.Opposite()))
-                {
-                    Board b = tryBoard.MakeMoveOnNewBoard(atariTarget.Liberties.First(), c);
-                    if (b != null && b.AtariTargets.Count == 0)
-                        return true;
-                }
-            }
-            return false;
-        }
-
-        #endregion
 
         #region leap move
         /// <summary>
@@ -1716,9 +1683,11 @@ namespace Go
         /// <summary>
         /// Essential atari at covered eye.
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario4dan17" />
+        /// <see cref="UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_Corner_A84" />
         /// Check for ko fight <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_A36" />
         /// Check for connect and die <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Phenomena_B7" />
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_3" />
+        /// <see cref="UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_TianLongTu_Q16456" />
         /// </summary>
         private static Boolean EssentialAtariAtCoveredEye(GameTryMove tryMove)
         {
@@ -1731,13 +1700,9 @@ namespace Go
             Group atariTarget = tryBoard.AtariTargets.First();
             if (atariTarget.Points.Count != 1) return true;
 
-            //check for ko fight
-            Board b = KoHelper.IsCaptureKoFight(tryBoard, atariTarget);
-            if (b == null) return true;
-
             //check for connect and die
-            List<Group> neighbourGroups = b.GetNeighbourGroups();
-            if (neighbourGroups.Any(gr => ImmovableHelper.CheckConnectAndDie(b, gr)))
+            Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, atariTarget, true);
+            if (b != null && b.GetNeighbourGroups().Any(gr => ImmovableHelper.CheckConnectAndDie(b, gr)))
                 return true;
 
             return false;
