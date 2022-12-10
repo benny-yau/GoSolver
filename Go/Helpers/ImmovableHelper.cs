@@ -79,7 +79,7 @@ namespace Go
                     return (false, null);
 
                 //check filled point connect and die
-                if (board.GetNeighbourGroups(targetGroup).Any(n => CheckConnectAndDie(board, n)))
+                if (!WallHelper.StrongNeighbourGroups(board, targetGroup))
                     return (false, null);
 
                 //check for ko possibility
@@ -145,7 +145,7 @@ namespace Go
             if (libertyPoint == null) return null;
 
             //check connect and die on current board
-            if (currentBoard.GetGroupsFromStoneNeighbours(p.Value, c).Any(n => CheckConnectAndDie(currentBoard, n)))
+            if (!WallHelper.StrongNeighbourGroups(currentBoard, p.Value, c))
                 return null;
 
             Board capturedBoard = CaptureSuicideGroup(p.Value, tryBoard);

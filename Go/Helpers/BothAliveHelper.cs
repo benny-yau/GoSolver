@@ -164,7 +164,7 @@ namespace Go
             int emptyPointCount = killerGroup.Points.Count(k => filledBoard[k] == Content.Empty);
             if (emptyPointCount >= 3)
             {
-                if (neighbourGroups.Any(n => ImmovableHelper.CheckConnectAndDie(board, n)))
+                if (!WallHelper.StrongNeighbourGroups(board, neighbourGroups))
                     return false;
                 //check killer formation for three or more liberties
                 if (!KillerFormationHelper.DeadFormationInBothAlive(filledBoard, killerGroup, emptyPointCount, 2))
@@ -254,15 +254,16 @@ namespace Go
         /// </summary>
         public static Board FillEyePointsBoard(Board board, Group killerGroup)
         {
+            Content c = killerGroup.Content;
             IEnumerable<Point> killerLiberties = killerGroup.Points.Where(p => board[p] == Content.Empty);
             //ensure only one killer group with or without eye
-            List<Point> eyePoints = killerLiberties.Where(t => EyeHelper.FindEye(board, t, killerGroup.Content)).ToList();
+            List<Point> eyePoints = killerLiberties.Where(t => EyeHelper.FindEye(board, t, c)).ToList();
             Board filledBoard = board;
             if (eyePoints.Count > 0)
             {
                 //fill eye point with stone
                 filledBoard = new Board(board);
-                eyePoints.ForEach(p => filledBoard[p] = killerGroup.Content);
+                eyePoints.ForEach(p => filledBoard[p] = c);
             }
             return filledBoard;
         }
@@ -272,8 +273,7 @@ namespace Go
         /// </summary>
         public static GameTryMove AddPassMove(Game currentGame)
         {
-            Game passGame = new Game(currentGame);
-            GameTryMove move = new GameTryMove(passGame);
+            GameTryMove move = new GameTryMove(currentGame);
             move.TryGame.Board.Move = Game.PassMove;
             move.MakeMoveResult = MakeMoveResult.Legal;
             move.TryGame.Board.LastMoves.Add(Game.PassMove);

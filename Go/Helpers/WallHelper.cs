@@ -112,6 +112,19 @@ namespace Go
             return true;
         }
 
+        public static Boolean StrongNeighbourGroups(Board board, Point move, Content c, Boolean checkSuicidal = false)
+        {
+            HashSet<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(move, c);
+            return StrongNeighbourGroups(board, neighbourGroups, checkSuicidal);
+        }
+
+        public static Boolean StrongNeighbourGroups(Board board, Group group, Boolean checkSuicidal = false)
+        {
+            List<Group> neighbourGroups = board.GetNeighbourGroups(group);
+            return StrongNeighbourGroups(board, neighbourGroups, checkSuicidal);
+        }
+
+
         public static Boolean IsStrongNeighbourGroup(Board board, Group group, Boolean checkSuicidal = false)
         {
             Content c = group.Content;
