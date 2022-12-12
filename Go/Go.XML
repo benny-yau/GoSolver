@@ -561,9 +561,9 @@
             Get killer group cached in board for single point.
             </summary>
         </member>
-        <member name="M:Go.GroupHelper.IsKillerGroupOfNeighbourGroups(Go.Board,Go.Point,Go.Content)">
+        <member name="M:Go.GroupHelper.GetKillerGroupOfNeighbourGroups(Go.Board,Go.Point,Go.Content)">
             <summary>
-            Is killer group of neighbour groups.
+            Get killer group of neighbour groups.
             </summary>
         </member>
         <member name="M:Go.GroupHelper.IsSingleGroupWithinKillerGroup(Go.Board,Go.Board)">

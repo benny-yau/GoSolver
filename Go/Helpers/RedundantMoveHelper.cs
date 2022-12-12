@@ -385,7 +385,7 @@ namespace Go
                 if (b2.CapturedList.Any(gr => gr.Points.Count >= 2))
                     return (true, b);
                 //check for opponent survival move
-                if (b2.GetStoneNeighbours().Where(n => b2[n] != c.Opposite()).Select(n => GroupHelper.GetKillerGroupFromCache(b2, n, c.Opposite())).Any(n => n != null && n.Points.Count >= 3))
+                if (b2.GetStoneNeighbours().Where(n => b2[n] != c.Opposite()).Select(n => GroupHelper.GetKillerGroupOfNeighbourGroups(b2, n, c.Opposite())).Any(n => n != null && n.Points.Count >= 3))
                     return (true, b);
 
                 b2[move] = c;
@@ -1137,11 +1137,12 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
-            List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] != c.Opposite()).ToList();
             //real solid eye
             if (EyeHelper.FindRealSolidEye(move, c.Opposite(), captureBoard)) return true;
+            //get diagonals next to atari target
+            List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] != c.Opposite() && tryBoard.GetGroupsFromStoneNeighbours(n, c).Intersect(tryBoard.AtariTargets).Any()).ToList();
             //check killer group
-            if (diagonals.Any(d => tryBoard.GetGroupsFromStoneNeighbours(d, c).Intersect(tryBoard.AtariTargets).Any() && GroupHelper.IsKillerGroupOfNeighbourGroups(tryBoard, d, c.Opposite())))
+            if (diagonals.Any(d => GroupHelper.GetKillerGroupOfNeighbourGroups(tryBoard, d, c.Opposite()) != null))
                 return true;
             return false;
         }
@@ -2192,7 +2193,7 @@ namespace Go
                 //check move and diagonal space
                 if (ImmovableHelper.IsConfirmTigerMouth(currentBoard, tryBoard) == null) continue;
 
-                if (EyeHelper.FindRealEyeOfAnyKillerGroup(currentBoard, diagonalKillerGroup))
+                if (EyeHelper.FindRealEyeWithinEmptySpace(currentBoard, diagonalKillerGroup))
                     return true;
 
                 Group moveKillerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());

@@ -118,16 +118,16 @@ namespace Go
         }
 
         /// <summary>
-        /// Is killer group of neighbour groups.
+        /// Get killer group of neighbour groups.
         /// </summary>
-        public static Boolean IsKillerGroupOfNeighbourGroups(Board board, Point p, Content c)
+        public static Group GetKillerGroupOfNeighbourGroups(Board board, Point p, Content c)
         {
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(board, p, c);
-            if (killerGroup == null) return false;
+            if (killerGroup == null) return null;
             HashSet<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(p, c.Opposite());
             if (GroupHelper.GetNeighbourGroupsOfKillerGroup(board, killerGroup).Any(n => neighbourGroups.Contains(n)))
-                return true;
-            return false;
+                return killerGroup;
+            return null;
         }
 
         /// <summary>
