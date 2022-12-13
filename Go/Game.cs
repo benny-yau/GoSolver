@@ -65,7 +65,7 @@ namespace Go
         {
             get
             {
-                return breakRealTime && !MonteCarloMapping.mapMoves;
+                return breakRealTime && !MonteCarloMapping.mapMovesOrSearchAnswer;
             }
             set
             {

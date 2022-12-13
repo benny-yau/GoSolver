@@ -283,11 +283,13 @@ namespace Go
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A85" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q14981" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A12" />
+        /// Check ko fight <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_A28_101Weiqi" />
         /// Recursive connect and die <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A44_101Weiqi" />
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q17255" />
         /// </summary>
         public static (Boolean, Point?, Board) UnescapableGroup(Board tryBoard, Group group, Boolean koEnabled = true)
         {
+            Content c = group.Content;
             Point? libertyPoint = ImmovableHelper.GetLibertyPointOfSuicide(tryBoard, group);
             if (libertyPoint == null) return (false, null, null);
 
@@ -297,9 +299,14 @@ namespace Go
                 return (false, null, captureBoard);
 
             //move at liberty is suicidal
-            (Boolean isSuicidal, Board escapeBoard) = IsSuicidalMove(libertyPoint.Value, group.Content, tryBoard);
+            (Boolean isSuicidal, Board escapeBoard) = IsSuicidalMove(libertyPoint.Value, c, tryBoard);
             if (isSuicidal)
+            {
+                //check ko fight
+                if (koEnabled && KoHelper.IsKoFight(tryBoard, tryBoard.GetCurrentGroup(group)) && escapeBoard.MoveGroup.Liberties.Any(lib => KoHelper.IsKoFight(tryBoard, lib, c).Item1 || EyeHelper.FindRealEyeWithinEmptySpace(escapeBoard, lib, c)))
+                    return (false, null, escapeBoard);
                 return (true, libertyPoint, escapeBoard);
+            }
 
             //recursive connect and die
             if (CheckConnectAndDie(escapeBoard, escapeBoard.GetCurrentGroup(group), !koEnabled))

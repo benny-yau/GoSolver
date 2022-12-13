@@ -478,17 +478,21 @@ namespace Go
             }
 
             //check for covered eye killer group
-            if (killerGroup.Points.Any(p => EyeHelper.IsCovered(board, p, c.Opposite()))) return false;
+            if (killerGroup.Points.Count <= 4 && killerGroup.Points.Any(p => EyeHelper.IsCovered(board, p, c.Opposite()))) return false;
 
-            //ensure all opponent stones are dead
+            //check opponent stones within killer group
             List<Point> opponentStones = killerGroup.Points.Where(p => board[p] == c).ToList();
-            if (opponentStones.Any())
-            {
-                //ensure all liberties cannot create eye for opponent
-                if (killerGroup.Points.Where(p => board[p] == Content.Empty).All(lib => NoEyeForOpponentWithinKillerGroup(board, lib, c)))
-                    return true;
-            }
-            else
+            if (!opponentStones.Any()) return true;
+
+            HashSet<Group> opponentGroups = board.GetGroupsFromPoints(opponentStones);
+            if (opponentGroups.Count == 1 && ImmovableHelper.CheckConnectAndDie(board, opponentGroups.First(), false))
+                return true;
+
+            //ensure all liberties cannot create eye for opponent
+            if (killerGroup.Points.Where(p => board[p] == Content.Empty).All(lib => NoEyeForOpponentWithinKillerGroup(board, lib, c)))
+                return true;
+
+            if (board.GetNeighbourGroups(killerGroup).Any(n => WallHelper.IsNonKillableGroup(board, n)))
                 return true;
             return false;
         }

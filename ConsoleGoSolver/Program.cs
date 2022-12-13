@@ -162,13 +162,11 @@ namespace ConsoleGoSolver
 
             Console.WriteLine("Calculating...");
             Game.UseSolutionPoints = Game.UseMapMoves = false;
-            MonteCarloMapping.mapMoves = true;
-            MonteCarloMapping.useMappingRange = false;
+            MonteCarloMapping.searchAnswer = true;
             (ConfirmAliveResult moveResult, Node answerNode, long? elapsedTime) = MonteCarloGame.MonteCarloRealTimeMove(g);
 
             Game.UseSolutionPoints = Game.UseMapMoves = true;
-            MonteCarloMapping.mapMoves = false;
-            MonteCarloMapping.useMappingRange = true;
+            MonteCarloMapping.searchAnswer = false;
 
             Console.WriteLine("{0}", g.Board);
             if (g.Board.Move != null)

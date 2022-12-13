@@ -12,7 +12,7 @@ namespace Go
         public Tree tree;
         public const int winScore = 1;
         public int mctsDepth = 0;
-        public int maxIterations = MonteCarloMapping.mapMoves ? Int32.MaxValue : 6000;
+        public int maxIterations = MonteCarloMapping.mapMovesOrSearchAnswer ? Int32.MaxValue : 6000;
         public long? elapsedTime;
 
         public static int mappingDepthToVerify = Convert.ToInt32(ConfigurationSettings.AppSettings["MAPPING_DEPTH_TO_VERIFY"]);
@@ -27,7 +27,7 @@ namespace Go
             get
             {
                 if (visitCount != null) return visitCount.Value;
-                if (MonteCarloMapping.mapMoves)
+                if (MonteCarloMapping.mapMovesOrSearchAnswer)
                 {
                     if (mappingDepthToVerify <= 5)
                         return this.tree.HitDepthToVerify ? 5 : 10;
@@ -62,9 +62,9 @@ namespace Go
         {
             get
             {
-                if (MonteCarloMapping.mapMoves)
+                if (MonteCarloMapping.mapMovesOrSearchAnswer)
                 {
-                    //mapping
+                    //mapping or search answer
                     Boolean mapPlayerMove = (tree.Root.State.Game.GameInfo.UserFirst == PlayerOrComputer.Player);
                     return mappingDepthToVerify + 1 + (mapPlayerMove ? 0 : 1);
                 }
@@ -331,7 +331,7 @@ namespace Go
         private void Pruning(Node pruneNode, Node verifyNode)
         {
             if (pruneNode == null || pruneNode.Parent == null) return;
-            if (MonteCarloMapping.mapMoves && verifyNode != null)
+            if (MonteCarloMapping.mapMovesOrSearchAnswer && verifyNode != null)
             {
                 //set move of pruned node with corresponding answer from verifyNode in PrunedJson of parent node
                 Game verifyGame = verifyNode.State.Game;

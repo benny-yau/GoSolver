@@ -15,8 +15,25 @@ namespace Go
     public class MonteCarloMapping
     {
         public static Boolean mapMoves = false;
-        public static Boolean useMappingRange = Convert.ToBoolean(ConfigurationSettings.AppSettings["USE_MAPPING_RANGE"]);
+        public static Boolean searchAnswer = false;
+
         public long? elapsedTime;
+
+        public static Boolean mapMovesOrSearchAnswer
+        {
+            get
+            {
+                return mapMoves || searchAnswer;
+            }
+        }
+
+        public static Boolean useMappingRange
+        {
+            get
+            {
+                return mapMoves;
+            }
+        }
 
         public static void MapScenario(Game game)
         {
@@ -311,7 +328,7 @@ namespace Go
         /// </summary>
         public static Boolean MappingRange(Board board)
         {
-            if (!MonteCarloMapping.mapMoves || !MonteCarloMapping.useMappingRange)
+            if (!MonteCarloMapping.useMappingRange)
                 return false;
 
             if (GameHelper.GetComputerOrPlayerForNextMove(board) == PlayerOrComputer.Computer)
