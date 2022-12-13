@@ -27,14 +27,6 @@ namespace Go
             }
         }
 
-        public static Boolean useMappingRange
-        {
-            get
-            {
-                return mapMoves;
-            }
-        }
-
         public static void MapScenario(Game game)
         {
             mapMoves = true;
@@ -328,7 +320,7 @@ namespace Go
         /// </summary>
         public static Boolean MappingRange(Board board)
         {
-            if (!MonteCarloMapping.useMappingRange)
+            if (!MonteCarloMapping.mapMoves)
                 return false;
 
             if (GameHelper.GetComputerOrPlayerForNextMove(board) == PlayerOrComputer.Computer)

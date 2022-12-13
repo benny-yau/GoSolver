@@ -33,9 +33,10 @@ namespace Go
         /// <summary>
         /// Is Ko fight, including both pre-ko and ko.
         /// </summary>
-        public static Boolean IsKoFight(Board board, Group group = null)
+        public static Boolean IsKoFight(Board board, Group targetGroup = null)
         {
-            if (group == null) group = board.MoveGroup;
+            if (targetGroup == null) targetGroup = board.MoveGroup;
+            Group group = board.GetCurrentGroup(targetGroup);
             if (group.Points.Count != 1 || group.Liberties.Count != 1) return false;
             Content c = group.Content;
             Point move = group.Points.First();
@@ -203,7 +204,7 @@ namespace Go
                     return false;
             }
             //check redundant atari
-            if (tryBoard.GetGroupsFromStoneNeighbours(move, c).Count == 1 && WallHelper.IsNonKillableGroup(currentBoard, currentBoard.GetCurrentGroup(atariTarget)))
+            if (tryBoard.GetGroupsFromStoneNeighbours(move, c).Count == 1 && WallHelper.IsNonKillableGroup(currentBoard, atariTarget))
             {
                 (Boolean unEscapable, _, Board b) = ImmovableHelper.UnescapableGroup(tryBoard, atariTarget, false);
                 if (!unEscapable && b != null && b.MoveGroupLiberties > 1)

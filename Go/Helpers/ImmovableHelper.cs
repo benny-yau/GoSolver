@@ -112,7 +112,7 @@ namespace Go
                     foreach (Group group in neighbourGroups)
                     {
                         (Boolean unEscapable, _, Board b) = ImmovableHelper.UnescapableGroup(board, group);
-                        if (!unEscapable && KoHelper.IsKoFight(b, b.GetCurrentGroup(targetGroup)))
+                        if (!unEscapable && KoHelper.IsKoFight(b, targetGroup))
                             return true;
                     }
                 }
@@ -198,7 +198,7 @@ namespace Go
             Point e = b2.MoveGroup.Liberties.First(lib => !lib.Equals(p));
             if (!ImmovableHelper.IsSuicidalMove(b2, e, c))
                 return false;
-            if (CheckConnectAndDie(b2, b2.GetCurrentGroup(targetGroup)))
+            if (CheckConnectAndDie(b2, targetGroup))
                 return true;
             return false;
         }
@@ -213,7 +213,7 @@ namespace Go
                 Board b = board.MakeMoveOnNewBoard(liberty, targetGroup.Content);
                 if (b == null || !LinkHelper.IsAbsoluteLinkForGroups(board, b))
                     continue;
-                if (!ImmovableHelper.CheckConnectAndDie(b, b.GetCurrentGroup(targetGroup)))
+                if (!ImmovableHelper.CheckConnectAndDie(b, targetGroup))
                     return true;
             }
             return false;
@@ -287,9 +287,10 @@ namespace Go
         /// Recursive connect and die <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A44_101Weiqi" />
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q17255" />
         /// </summary>
-        public static (Boolean, Point?, Board) UnescapableGroup(Board tryBoard, Group group, Boolean koEnabled = true)
+        public static (Boolean, Point?, Board) UnescapableGroup(Board tryBoard, Group targetGroup, Boolean koEnabled = true)
         {
-            Content c = group.Content;
+            Content c = targetGroup.Content;
+            Group group = tryBoard.GetCurrentGroup(targetGroup);
             Point? libertyPoint = ImmovableHelper.GetLibertyPointOfSuicide(tryBoard, group);
             if (libertyPoint == null) return (false, null, null);
 
@@ -303,13 +304,13 @@ namespace Go
             if (isSuicidal)
             {
                 //check ko fight
-                if (koEnabled && KoHelper.IsKoFight(tryBoard, tryBoard.GetCurrentGroup(group)) && escapeBoard.MoveGroup.Liberties.Any(lib => KoHelper.IsKoFight(tryBoard, lib, c).Item1 || EyeHelper.FindRealEyeWithinEmptySpace(escapeBoard, lib, c)))
+                if (koEnabled && KoHelper.IsKoFight(tryBoard, group) && tryBoard.GetGroupsFromStoneNeighbours(group.Liberties.First(), c.Opposite()).Where(gr => !gr.Equals(group)).Any(n => !ImmovableHelper.CheckConnectAndDie(tryBoard, n, !koEnabled)))
                     return (false, null, escapeBoard);
                 return (true, libertyPoint, escapeBoard);
             }
 
             //recursive connect and die
-            if (CheckConnectAndDie(escapeBoard, escapeBoard.GetCurrentGroup(group), !koEnabled))
+            if (CheckConnectAndDie(escapeBoard, group, !koEnabled))
                 return (true, libertyPoint, escapeBoard);
 
             return (false, null, escapeBoard);
@@ -335,7 +336,7 @@ namespace Go
                 if (GameHelper.CheckForRecursion(b).Any())
                     continue;
                 //connect and die
-                if (CheckConnectAndDie(b, b.GetCurrentGroup(group), !koEnabled))
+                if (CheckConnectAndDie(b, group, !koEnabled))
                     continue;
                 return b;
             }
@@ -509,7 +510,7 @@ namespace Go
                 //make move at suicide point
                 Board b = board.MakeMoveOnNewBoard(libertyPoint, c.Opposite());
                 if (b == null || !b.IsAtariMove) continue;
-                Board b2 = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(b, b.GetCurrentGroup(targetGroup), c);
+                Board b2 = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(b, targetGroup, c);
                 if (b2 == null || b2.MoveGroupLiberties != 1) continue;
 
                 List<Group> suicideGroups = b.GetNeighbourGroups(targetGroup).Where(gr => gr.Points.Count <= 2 && gr.Liberties.Count == 1).ToList();
@@ -571,7 +572,8 @@ namespace Go
         {
             targetGroup = (targetGroup) ?? board.MoveGroup;
             Content c = targetGroup.Content;
-            List<Point> groupLiberties = board.GetGroupLiberties(targetGroup);
+            Group group = board.GetCurrentGroup(targetGroup);
+            List<Point> groupLiberties = board.GetGroupLiberties(group);
             if (groupLiberties.Count > 2) return (false, null);
 
             List<KeyValuePair<LinkedPoint<Point>, Board>> killBoards = new List<KeyValuePair<LinkedPoint<Point>, Board>>();
@@ -589,11 +591,11 @@ namespace Go
                 Board b = kvp.Value;
                 LinkedPoint<Point> key = kvp.Key;
                 //check if captured
-                if (b.IsCapturedGroup(targetGroup))
+                if (b.IsCapturedGroup(group))
                     return (true, b);
 
                 //check if connect and die
-                if (UnescapableGroup(b, targetGroup, !koEnabled).Item1)
+                if (UnescapableGroup(b, group, !koEnabled).Item1)
                     return (true, b);
             }
             return (false, null);

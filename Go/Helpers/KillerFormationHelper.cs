@@ -136,7 +136,7 @@ namespace Go
             if (tryBoard.MoveGroupLiberties != 2) return false;
             Group weakGroup = tryBoard.GetNeighbourGroups().FirstOrDefault(group => group.Points.Count >= 2 && group.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, group));
             if (weakGroup == null) return false;
-            if (ImmovableHelper.CheckConnectAndDie(capturedBoard, capturedBoard.GetCurrentGroup(weakGroup)))
+            if (ImmovableHelper.CheckConnectAndDie(capturedBoard, weakGroup))
                 return true;
             return false;
         }

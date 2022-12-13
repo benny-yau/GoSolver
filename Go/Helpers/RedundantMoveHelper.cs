@@ -197,7 +197,7 @@ namespace Go
                     if (captured && b.MoveGroupLiberties == 1) return false;
                     if (!captured)
                     {
-                        Board b2 = ImmovableHelper.CaptureSuicideGroup(b, b.GetCurrentGroup(group));
+                        Board b2 = ImmovableHelper.CaptureSuicideGroup(b, group);
                         if (b2 != null && b2.MoveGroupLiberties == 1) return false;
                     }
                 }
@@ -320,7 +320,7 @@ namespace Go
                 Board b = board.MakeMoveOnNewBoard(liberty, eyeGroup.Content.Opposite());
                 if (b == null || !b.CapturedList.Any(p => p.Points.Count > 1)) continue;
                 if (WallHelper.IsNonKillableGroup(b)) continue;
-                if (ImmovableHelper.CheckConnectAndDie(b, b.GetCurrentGroup(eyeGroup)))
+                if (ImmovableHelper.CheckConnectAndDie(b, eyeGroup))
                     return true;
             }
             return false;
@@ -340,7 +340,7 @@ namespace Go
                 if (targetGroups.Count == 0) continue;
                 Board b = ImmovableHelper.CaptureSuicideGroup(board, targetGroups.First(), true);
                 if (b == null) continue;
-                if (ImmovableHelper.CheckConnectAndDie(b, b.GetCurrentGroup(board.MoveGroup)))
+                if (ImmovableHelper.CheckConnectAndDie(b, board.MoveGroup))
                     return true;
             }
             return false;
@@ -728,29 +728,30 @@ namespace Go
         /// Check killable group with two or less liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B6" />
         /// Check for weak group capturing atari group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B17" />
         /// </summary>
-        private static Boolean CheckWeakGroupInConnectAndDie(Board tryBoard, Group moveGroup)
+        private static Boolean CheckWeakGroupInConnectAndDie(Board tryBoard, Group targetGroup)
         {
-            Content c = moveGroup.Content;
+            Content c = targetGroup.Content;
+            Group group = tryBoard.GetCurrentGroup(targetGroup);
 
             //capture move
-            (_, Board b) = ImmovableHelper.ConnectAndDie(tryBoard, moveGroup, false);
-            if (b == null || b.IsCapturedGroup(moveGroup)) return false;
+            (_, Board b) = ImmovableHelper.ConnectAndDie(tryBoard, group, false);
+            if (b == null || b.IsCapturedGroup(group)) return false;
 
             //check weak group
-            if (GetWeakGroup(b, b.GetCurrentGroup(moveGroup)))
+            if (GetWeakGroup(b, b.GetCurrentGroup(group)))
                 return true;
 
             //escape move at liberty
-            Board b2 = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(b, moveGroup, c);
-            if (b2 != null && b2.MoveGroupLiberties == 2 && CheckWeakGroupInConnectAndDie(b2, b2.GetCurrentGroup(moveGroup)))
+            Board b2 = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(b, group, c);
+            if (b2 != null && b2.MoveGroupLiberties == 2 && CheckWeakGroupInConnectAndDie(b2, group))
                 return true;
 
             //escape by capture
-            foreach (Group gr in AtariHelper.AtariByGroup(b.GetCurrentGroup(moveGroup), b))
+            foreach (Group gr in AtariHelper.AtariByGroup(group, b))
             {
                 Board b3 = ImmovableHelper.CaptureSuicideGroup(b, gr);
                 if (b3 == null) continue;
-                Group target = b3.GetCurrentGroup(moveGroup);
+                Group target = b3.GetCurrentGroup(group);
                 if (b3 != null && target.Liberties.Count == 2 && CheckWeakGroupInConnectAndDie(b3, target))
                     return true;
                 if (!b3.MoveGroup.Equals(target) && GetWeakGroup(b, b3.MoveGroup))
@@ -790,7 +791,7 @@ namespace Go
                 if (tryBoard.GetDiagonalNeighbours(p).Count(q => tryBoard[q] == Content.Empty) == 1)
                 {
                     if (!tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).All(group => group.Liberties.Count <= 2)) continue;
-                    Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(captureBoard, captureBoard.GetCurrentGroup(tryBoard.MoveGroup), c);
+                    Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(captureBoard, tryBoard.MoveGroup, c);
                     if (b != null) continue;
                     return true;
                 }

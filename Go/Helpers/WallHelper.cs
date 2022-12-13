@@ -67,9 +67,10 @@ namespace Go
             return IsNonKillableGroup(board, group);
         }
 
-        public static Boolean IsNonKillableGroup(Board board, Group group = null)
+        public static Boolean IsNonKillableGroup(Board board, Group targetGroup = null)
         {
-            if (group == null) group = board.MoveGroup;
+            if (targetGroup == null) targetGroup = board.MoveGroup;
+            Group group = board.GetCurrentGroup(targetGroup);
             if (group.IsNonKillable != null) return group.IsNonKillable.Value;
 
             if (GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Kill) != group.Content)
