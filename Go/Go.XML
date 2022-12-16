@@ -1051,9 +1051,9 @@
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_Nie60" />
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.GetAllDiagonalConnectedGroups(Go.Board,Go.Group,System.Collections.Generic.HashSet{Go.Group})">
+        <member name="M:Go.LinkHelper.GetAllDiagonalConnectedGroups(Go.Board,Go.Group,System.Func{Go.Group,System.Boolean})">
             <summary>
-            Get all diagonal connected groups. Ensure connected parameter to check if is immovable for opponent at any of the two points between the diagonals.
+            Get all diagonal connected groups.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.GetGroupLinkedDiagonals(Go.Board,Go.Group,System.Boolean)">
@@ -1071,9 +1071,14 @@
             Get diagonals of move of same content that are not part of the move group.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.IsDiagonallyConnectedGroups(System.Collections.Generic.HashSet{Go.Group},Go.Board,Go.Group,Go.Group)">
+        <member name="M:Go.LinkHelper.IsDiagonallyConnectedGroups(System.Collections.Generic.HashSet{Go.Group},Go.Board,Go.Group,System.Func{Go.Group,System.Boolean})">
             <summary>
-            Find if two groups are connected diagonally. If find group parameter is null then look for all connected groups.
+            Is diagonally connected groups.  Use func to find specific group else look for all connected groups.
+            </summary>
+        </member>
+        <member name="M:Go.LinkHelper.IsDiagonallyConnectedGroups(Go.Board,Go.Group,Go.Group)">
+            <summary>
+            Is diagonally connected groups. 
             </summary>
         </member>
         <member name="M:Go.LinkHelper.IsImmediateDiagonallyConnected(Go.Board,Go.Group,Go.Group)">
@@ -1267,6 +1272,15 @@
         <member name="M:Go.RedundantMoveHelper.SuicidalRedundantMove(Go.GameTryMove)">
             <summary>
             Suicidal moves are moves that have liberty of one only.
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.SuicidalMoveWithinNonKillableGroup(Go.GameTryMove,Go.GameTryMove)">
+            <summary>
+            Suicidal move within non killable group.
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3dan17" />
+            Check for negligible in opponent move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" />
+            Check any is non killable <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30370" />
+            Check for covered eye <see cref="!:UnitTestProject.RedundantTigerMouthMove.RedundantTigerMouthMove_Scenario_TianLongTu_Q16738_2" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.ThreeLibertySuicidal(Go.GameTryMove)">

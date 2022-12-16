@@ -326,18 +326,12 @@ namespace Go
         }
 
         /// <summary>
-        /// Get all diagonal connected groups. Ensure connected parameter to check if is immovable for opponent at any of the two points between the diagonals.
+        /// Get all diagonal connected groups.
         /// </summary>
-        public static void GetAllDiagonalConnectedGroups(Board board, Group group, HashSet<Group> groups)
-        {
-            HashSet<Group> allConnectedGroups = GetAllDiagonalConnectedGroups(board, group);
-            groups.UnionWith(allConnectedGroups);
-        }
-
-        public static HashSet<Group> GetAllDiagonalConnectedGroups(Board board, Group group)
+        public static HashSet<Group> GetAllDiagonalConnectedGroups(Board board, Group group, Func<Group, Boolean> func = null)
         {
             HashSet<Group> allConnectedGroups = new HashSet<Group>() { group };
-            IsDiagonallyConnectedGroups(allConnectedGroups, board, group);
+            IsDiagonallyConnectedGroups(allConnectedGroups, board, group, func);
             return allConnectedGroups;
         }
 
@@ -393,16 +387,16 @@ namespace Go
         }
 
         /// <summary>
-        /// Find if two groups are connected diagonally. If find group parameter is null then look for all connected groups.
+        /// Is diagonally connected groups.  Use func to find specific group else look for all connected groups.
         /// </summary>
-        public static Boolean IsDiagonallyConnectedGroups(HashSet<Group> allConnectedGroups, Board board, Group group, Group findGroup = null)
+        public static Boolean IsDiagonallyConnectedGroups(HashSet<Group> allConnectedGroups, Board board, Group group, Func<Group, Boolean> func = null)
         {
             //find group diagonals of same content
             List<LinkedPoint<Point>> diagonalPoints = GetGroupLinkedDiagonals(board, group).OrderBy(d => board.GetGroupAt(d.Move).Liberties.Count).ToList();
-            if (findGroup != null)
+            if (func != null)
             {
                 //diagonal with find group
-                List<LinkedPoint<Point>> diagonalWithFindGroup = diagonalPoints.Where(d => board.GetGroupAt(d.Move) == findGroup).ToList();
+                List<LinkedPoint<Point>> diagonalWithFindGroup = diagonalPoints.Where(d => func(board.GetGroupAt(d.Move))).ToList();
                 if (diagonalWithFindGroup.Count > 0) diagonalPoints = diagonalWithFindGroup;
             }
             foreach (LinkedPoint<Point> diagonalPoint in diagonalPoints)
@@ -429,19 +423,22 @@ namespace Go
                 allConnectedGroups.Add(g);
 
                 //check if group found
-                if (findGroup != null && findGroup == g)
+                if (func != null && func(g))
                     return true;
 
                 //get diagonal connected groups recursively
-                Boolean connected = IsDiagonallyConnectedGroups(allConnectedGroups, board, g, findGroup);
+                Boolean connected = IsDiagonallyConnectedGroups(allConnectedGroups, board, g, func);
                 if (connected) return true;
             }
             return false;
         }
 
+        /// <summary>
+        /// Is diagonally connected groups. 
+        /// </summary>
         public static Boolean IsDiagonallyConnectedGroups(Board board, Group group, Group findGroup)
         {
-            return IsDiagonallyConnectedGroups(new HashSet<Group>() { group }, board, group, findGroup);
+            return IsDiagonallyConnectedGroups(new HashSet<Group>() { group }, board, group, s => s == findGroup);
         }
 
         /// <summary>

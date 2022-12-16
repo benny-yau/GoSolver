@@ -71,13 +71,8 @@ namespace Go
         {
             if (targetGroup == null) targetGroup = board.MoveGroup;
             Group group = board.GetCurrentGroup(targetGroup);
+            if (GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Kill) != group.Content) return false;
             if (group.IsNonKillable != null) return group.IsNonKillable.Value;
-
-            if (GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Kill) != group.Content)
-            {
-                group.IsNonKillable = false;
-                return false;
-            }
 
             //check if group is non killable
             group.IsNonKillable = IsNonKillableFromSetupMoves(board, group);
@@ -85,12 +80,12 @@ namespace Go
                 return true;
 
             //search all connected groups if non killable
-            HashSet<Group> groups = LinkHelper.GetAllDiagonalConnectedGroups(board, group);
+            Func<Group, Boolean> func = s => (s.IsNonKillable != null) ? s.IsNonKillable.Value : false || IsNonKillableFromSetupMoves(board, s);
+            HashSet<Group> groups = LinkHelper.GetAllDiagonalConnectedGroups(board, group, func);
             groups.Remove(group);
-            Boolean nonKillable = groups.Any(g => IsNonKillableFromSetupMoves(board, g));
+            Boolean nonKillable = groups.Any(s => func(s));
             group.IsNonKillable = nonKillable;
             groups.ToList().ForEach(g => g.IsNonKillable = nonKillable);
-
             return nonKillable;
         }
 

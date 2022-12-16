@@ -510,6 +510,8 @@ namespace Go
             }
             if (ThreeLibertySuicidal(tryMove))
                 return true;
+            if (SuicidalMoveWithinNonKillableGroup(tryMove))
+                return true;
 
             //test if opponent move at same point is suicidal
             GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
@@ -522,6 +524,70 @@ namespace Go
                     return true;
                 if (!singlePoint && MultiPointOpponentSuicidalMove(tryMove, opponentMove))
                     return true;
+            }
+            if (SuicidalMoveWithinNonKillableGroup(opponentMove, tryMove))
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Suicidal move within non killable group.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3dan17" />
+        /// Check for negligible in opponent move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" />
+        /// Check any is non killable <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30370" />
+        /// Check for covered eye <see cref="UnitTestProject.RedundantTigerMouthMove.RedundantTigerMouthMove_Scenario_TianLongTu_Q16738_2" />
+        /// </summary>
+        private static Boolean SuicidalMoveWithinNonKillableGroup(GameTryMove tryMove, GameTryMove opponentTryMove = null)
+        {
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            if (GameHelper.GetContentForSurviveOrKill(tryBoard.GameInfo, SurviveOrKill.Survive) != c) return false;
+            //check for negligible in opponent move
+            if (opponentTryMove != null && !opponentTryMove.IsNegligible) return false;
+
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
+            if (killerGroup == null) return false;
+
+            if (LifeCheck.GetTargets(tryBoard).Any(t => GroupHelper.GetKillerGroupFromCache(tryBoard, t.Points.First(), c.Opposite()) == killerGroup)) return false;
+
+            //all neighbour groups are non-killable
+            List<Group> neighbourGroups = tryBoard.GetNeighbourGroups(killerGroup);
+            if (neighbourGroups.All(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
+                return true;
+
+            //check any is non killable
+            if (!neighbourGroups.Any(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
+                return false;
+
+            foreach (Group ngroup in neighbourGroups)
+            {
+                List<LinkedPoint<Point>> diagonalPoints = LinkHelper.GetGroupLinkedDiagonals(tryBoard, ngroup);
+                foreach (LinkedPoint<Point> p in diagonalPoints)
+                {
+                    if (LinkHelper.CheckIsDiagonalLinked(p, tryBoard)) continue;
+                    List<Point> diagonals = LinkHelper.PointsBetweenDiagonals(p.Move, (Point)p.CheckMove);
+                    diagonals = diagonals.Where(q => GroupHelper.GetKillerGroupFromCache(tryBoard, q, c.Opposite()) == killerGroup).ToList();
+                    if (diagonals.Count == 0) continue;
+                    Point d = diagonals.First();
+                    if (GroupHelper.GetKillerGroupFromCache(tryBoard, d, c.Opposite()) != killerGroup) continue;
+                    Board b = null;
+                    if (tryBoard[d] == Content.Empty) //connect at diagonal
+                        b = tryBoard.MakeMoveOnNewBoard(d, c.Opposite());
+                    else //capture opponent at diagonal
+                        b = ImmovableHelper.CaptureSuicideGroup(d, tryBoard);
+                    //check if all changed to non killable groups
+                    if (b == null || !diagonalPoints.All(n => LinkHelper.CheckIsDiagonalLinked(n, b))) continue;
+                    Group kgroup = GroupHelper.GetKillerGroupFromCache(b, move, c.Opposite());
+                    if (kgroup != null && b.GetNeighbourGroups(kgroup).All(n => WallHelper.IsNonKillableGroup(b, n)))
+                    {
+                        //check for covered eye
+                        if (opponentTryMove != null && b.CapturedPoints.Any(n => EyeHelper.IsCovered(b, n, c.Opposite())))
+                            continue;
+                        return true;
+                    }
+                }
             }
             return false;
         }
