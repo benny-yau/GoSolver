@@ -1,114 +1,27 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Linq;
 
 namespace Go
 {
-    /// <summary>
-    /// AlphaZero methodology adapted for GoSolver.
-    /// </summary>
     public class NeuralNetMCTS : MonteCarloTreeSearch
     {
-        public override int VisitCountMinReq
-        {
-            get
-            {
-                return -1;
-            }
-        }
-
-        /// <summary>
-        /// MCTS for neural network.
-        /// </summary>
-        internal override Node SelectPromisingNode(Node rootNode)
-        {
-            Node node = rootNode;
-            node = moveToLeaf(node);
-            double winrate = evaluateLeaf(node);
-            backFill(node, winrate);
-            return node;
-        }
-
         public NeuralNetMCTS(int mctsDepth = 0)
         {
             this.mctsDepth = mctsDepth;
-        }
-
-        internal override Node RandomChildNode(Node node)
-        {
-            return node;
-        }
-
-        public override void SimulateRandomPlayout(Node node)
-        {
-            return;
         }
 
         internal override Boolean ExpandNode(Node node, List<State> possibleStates)
         {
             if (!base.ExpandNode(node, possibleStates)) return false;
 
-            if (node.State.HeatMap != null)
-            {
-                foreach (Node childNode in node.ChildArray)
-                {
-                    Point move = childNode.State.Game.Board.Move.Value;
-                    if (!move.Equals(Game.PassMove))
-                        childNode.State.Stats["P"] = node.State.HeatMap[move.x, move.y];
-                }
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// Make move to leaf node based on stats value.
-        /// </summary>
-        internal Node moveToLeaf(Node node)
-        {
-            double maxQU, Nb, Pb;
-            Node currentNode = node;
-            while (currentNode.ChildArray.Count > 0)
-            {
-                maxQU = -99999;
-                Nb = 0;
-                Pb = 0;
-                foreach (Node childNode in currentNode.ChildArray)
-                {
-                    Nb += childNode.State.Stats["N"];
-                    Pb += childNode.State.Stats["P"];
-                }
-                if (Pb == 0) Pb = 1;
-
-                int idx = 0;
-                Node bestNode = null;
-                foreach (Node childNode in currentNode.ChildArray)
-                {
-                    double U = (childNode.State.Stats["P"] / Pb) * Math.Sqrt(Nb) / (1 + childNode.State.Stats["N"]);
-                    double Q = childNode.State.Stats["Q"];
-                    if (Q + U > maxQU)
-                    {
-                        maxQU = Q + U;
-                        bestNode = childNode;
-                    }
-                    idx += 1;
-                }
-                currentNode = bestNode;
-            }
-            return currentNode;
-        }
-
-
-        /// <summary>
-        /// Get neural network value from leelaz.
-        /// </summary>
-        internal double evaluateLeaf(Node leafNode)
-        {
-            if (leafNode.State.HeatMap == null)
+            if (node.State.HeatMap == null)
             {
                 MonteCarloGame.isCheckHeatmap = true;
-                UCT.node = leafNode;
+                UCT.node = node;
                 //make setup moves
-                Game g = leafNode.State.Game;
+                Game g = node.State.Game;
                 MonteCarloGame.SetupLeelazGame(g);
                 //make last moves in game
                 List<Point> lastMoves = g.Board.LastMoves;
@@ -128,25 +41,20 @@ namespace Go
 
                 MonteCarloGame.isCheckHeatmap = false;
             }
-            return leafNode.State.Winrate;
-        }
 
-        /// <summary>
-        /// Backfill stats in node based on winrate.
-        /// </summary>
-        internal void backFill(Node leafNode, double winrate)
-        {
-            Node node = leafNode;
-            while (node.Parent != null)
+            foreach (Node childNode in node.ChildArray)
             {
-                winrate = 1 - winrate;
-                Dictionary<String, double> stats = node.State.Stats;
-                stats["N"] += 1;
-                stats["W"] += winrate;
-                stats["Q"] += stats["W"] / stats["N"];
-                node = node.Parent;
+                Point move = childNode.State.Game.Board.Move.Value;
+                childNode.State.WinScore = node.State.HeatMap[move.x, move.y];
             }
+            return true;
         }
-
+        internal override Node RandomChildNode(Node node)
+        {
+            if (node.ChildArray.Any(n => n.State.WinScore > 0))
+                return node.ChildArray.MaxObject(n => n.State.WinScore);
+            else
+                return base.RandomChildNode(node);
+        }
     }
 }

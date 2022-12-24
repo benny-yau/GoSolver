@@ -459,6 +459,7 @@
             <summary>
             Real eye of diagonally connected groups.
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_GuanZiPu_B3_2" /> 
+            Check connect and die <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126" /> 
             Check for covered eye killer group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_4" /> 
             Ensure all groups are connected <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_ScenarioHighLevel28" /> 
             </summary>
@@ -2255,6 +2256,11 @@
             <see cref="!:UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario3dan17" />
             </summary>
         </member>
+        <member name="M:Go.MonteCarloTreeSearch.RandomChildNode(Go.Node)">
+            <summary>
+            Get random child from expanded node.
+            </summary>
+        </member>
         <member name="M:Go.MonteCarloTreeSearch.PruneBasedOnWinResult(Go.Node,System.Boolean)">
             <summary>
             To prune node based on exhaustive search result or confirm alive result.
@@ -2312,6 +2318,11 @@
             Confirmed cases represent possible game state where the game has ended with confirm alive already.
             </summary>
         </member>
+        <member name="M:Go.MonteCarloTreeSearch.InitializeMonteCarloPlayout(Go.Game,Go.SurviveOrKill)">
+            <summary>
+            Initialize monte carlo playout.
+            </summary>
+        </member>
         <member name="M:Go.MonteCarloTreeSearch.MonteCarloIncludeKoMoves(Go.Game,System.Collections.Generic.List{Go.GameTryMove},Go.GameTryMove,Go.SurviveOrKill)">
             <summary>
             Ko blocked moves added to game try moves in mcts simulation phase. Only in mcts, ko blocked moves run concurrently with other moves, while in exhaustive search, ko blocked moves run only after all other moves have completed.
@@ -2327,31 +2338,6 @@
             <summary>
             Make survival move in mcts simulation phase by selecting from all possible moves by randomization.
             Include ko moves and set result as KoAlive if ko wins.
-            </summary>
-        </member>
-        <member name="T:Go.NeuralNetMCTS">
-            <summary>
-            AlphaZero methodology adapted for GoSolver.
-            </summary>
-        </member>
-        <member name="M:Go.NeuralNetMCTS.SelectPromisingNode(Go.Node)">
-            <summary>
-            MCTS for neural network.
-            </summary>
-        </member>
-        <member name="M:Go.NeuralNetMCTS.moveToLeaf(Go.Node)">
-            <summary>
-            Make move to leaf node based on stats value.
-            </summary>
-        </member>
-        <member name="M:Go.NeuralNetMCTS.evaluateLeaf(Go.Node)">
-            <summary>
-            Get neural network value from leelaz.
-            </summary>
-        </member>
-        <member name="M:Go.NeuralNetMCTS.backFill(Go.Node,System.Double)">
-            <summary>
-            Backfill stats in node based on winrate.
             </summary>
         </member>
         <member name="M:Go.State.GetAllPossibleMoves(Go.Game)">

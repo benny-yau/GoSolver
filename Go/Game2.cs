@@ -176,9 +176,6 @@ namespace Go
             move.IsFillKoEyeMove = RedundantMoveHelper.FillKoEyeMove(move);
             if (move.IsFillKoEyeMove)
                 return;
-            move.IsLeapMove = RedundantMoveHelper.SurvivalLeapMove(move);
-            if (move.IsLeapMove)
-                return;
             move.IsSuicidal = RedundantMoveHelper.SuicidalRedundantMove(move);
             if (move.IsSuicidal)
                 return;
@@ -216,9 +213,6 @@ namespace Go
                 return;
             move.IsFillKoEyeMove = RedundantMoveHelper.FillKoEyeMove(move);
             if (move.IsFillKoEyeMove)
-                return;
-            move.IsLeapMove = RedundantMoveHelper.KillLeapMove(move);
-            if (move.IsLeapMove)
                 return;
             move.IsSuicidal = RedundantMoveHelper.SuicidalRedundantMove(move);
             if (move.IsSuicidal)

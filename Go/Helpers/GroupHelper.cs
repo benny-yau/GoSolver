@@ -71,7 +71,7 @@ namespace Go
                 if (group.Liberties.Count == 0 || (!isKill && group.Liberties.All(n => gameInfo.IsMovablePoint[n.x, n.y] == false)))
                 {
                     (Boolean isKillerGroup, List<Group> neighbourGroups) = CheckNeighbourGroupsOfKillerGroup(filledBoard, group, true);
-                    if (!isKillerGroup || neighbourGroups.Count == 0) continue;
+                    if (!isKillerGroup) continue;
                     killerGroups.Add(group);
                 }
             }

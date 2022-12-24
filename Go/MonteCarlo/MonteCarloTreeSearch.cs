@@ -149,7 +149,7 @@ namespace Go
                 if (!pruned)
                     SimulateRandomPlayout(promisingNode);
 
-                if (Game.debugMode && (count % 60 == 0 || MonteCarloGame.useLeelaZero))
+                if (Game.debugMode && count % 60 == 0)
                     DebugHelper.DebugWriteWithTab("Count: " + count + " | Depth: " + promisingNode.CurrentDepth + " | Last moves: " + promisingNode.GetLastMoves(), mctsDepth);
 
                 //break on answer found or no answer
@@ -180,6 +180,9 @@ namespace Go
             return tree;
         }
 
+        /// <summary>
+        /// Get random child from expanded node.
+        /// </summary>
         internal virtual Node RandomChildNode(Node node)
         {
             int noOfPossibleMoves = node.ChildArray.Count;
@@ -451,16 +454,17 @@ namespace Go
             return confirmAlive;
         }
 
+        /// <summary>
+        /// Initialize monte carlo playout.
+        /// </summary>
         public ConfirmAliveResult InitializeMonteCarloPlayout(Game g, SurviveOrKill surviveOrKill)
         {
             int depth = g.GetStartingDepth();
             ConfirmAliveResult confirmAlive = ConfirmAliveResult.Unknown;
-            Game game = new Game(g);
             if (surviveOrKill == SurviveOrKill.Kill)
                 confirmAlive = MonteCarloMakeSurvivalMove(depth, g);
             else
                 confirmAlive = MonteCarloMakeKillMove(depth, g);
-
             return confirmAlive;
         }
 
