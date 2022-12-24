@@ -163,20 +163,6 @@ namespace Go
                 this.winrate = value;
             }
         }
-
-        public Dictionary<String, double> Stats
-        {
-            get
-            {
-                if (stats == null)
-                    stats = new Dictionary<string, double>() { { "N", 0 }, { "W", 0 }, { "Q", 0 }, { "P", 0 } };
-                return stats;
-            }
-            set
-            {
-                this.stats = value;
-            }
-        }
         #endregion
 
         public virtual List<State> AllPossibleStates
