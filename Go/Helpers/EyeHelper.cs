@@ -449,7 +449,8 @@ namespace Go
         /// Real eye of diagonally connected groups.
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_GuanZiPu_B3_2" /> 
         /// Check connect and die <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126" /> 
-        /// Check for covered eye killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_4" /> 
+        /// Check for covered eye killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_4" />
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30315" /> 
         /// Ensure all groups are connected <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_ScenarioHighLevel28" /> 
         /// </summary>
         public static Boolean RealEyeOfDiagonallyConnectedGroups(Board board, Group killerGroup)
@@ -479,7 +480,7 @@ namespace Go
             }
 
             //check for covered eye killer group
-            if (killerGroup.Points.Count <= 4 && killerGroup.Points.Any(p => EyeHelper.IsCovered(board, p, c.Opposite()))) return false;
+            if (killerGroup.Points.Any(p => EyeHelper.IsCovered(board, p, c.Opposite()))) return false;
 
             //check opponent stones within killer group
             List<Point> opponentStones = killerGroup.Points.Where(p => board[p] == c).ToList();
