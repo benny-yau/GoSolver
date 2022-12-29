@@ -2,6 +2,7 @@
 using ScenarioCollection;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -177,6 +178,8 @@ namespace ConsoleGoSolver
                     Console.WriteLine("Correct.");
                 else
                     Console.WriteLine("Incorrect. Answer: " + g.GameInfo.solutionPoints.First().First());
+
+                Debug.WriteLine(MonteCarloGame.GetAnswerJson(g, answerNode));
                 if (elapsedTime != null) Console.WriteLine(DebugHelper.PrintTimeTaken(elapsedTime.Value));
             }
         }

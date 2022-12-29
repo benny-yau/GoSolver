@@ -331,7 +331,7 @@ namespace Go
         public static HashSet<Group> GetAllDiagonalConnectedGroups(Board board, Group group, Func<Group, Boolean> func = null)
         {
             HashSet<Group> allConnectedGroups = new HashSet<Group>() { group };
-            IsDiagonallyConnectedGroups(allConnectedGroups, board, group, func);
+            IsDiagonallyConnectedGroups(allConnectedGroups, board, func);
             return allConnectedGroups;
         }
 
@@ -389,16 +389,18 @@ namespace Go
         /// <summary>
         /// Is diagonally connected groups.  Use func to find specific group else look for all connected groups.
         /// </summary>
-        public static Boolean IsDiagonallyConnectedGroups(HashSet<Group> allConnectedGroups, Board board, Group group, Func<Group, Boolean> func = null)
+        public static Boolean IsDiagonallyConnectedGroups(HashSet<Group> allConnectedGroups, Board board, Func<Group, Boolean> func = null)
         {
+            Group group = allConnectedGroups.Last();
             //find group diagonals of same content
             List<LinkedPoint<Point>> diagonalPoints = GetGroupLinkedDiagonals(board, group).OrderBy(d => board.GetGroupAt(d.Move).Liberties.Count).ToList();
             if (func != null)
             {
-                //diagonal with find group
+                //set priority for diagonal with find group
                 List<LinkedPoint<Point>> diagonalWithFindGroup = diagonalPoints.Where(d => func(board.GetGroupAt(d.Move))).ToList();
-                if (diagonalWithFindGroup.Count > 0) diagonalPoints = diagonalWithFindGroup;
+                diagonalWithFindGroup.ForEach(d => { diagonalPoints.Remove(d); diagonalPoints.Insert(0, d); });
             }
+
             foreach (LinkedPoint<Point> diagonalPoint in diagonalPoints)
             {
                 Group g = board.GetGroupAt(diagonalPoint.Move);
@@ -427,7 +429,7 @@ namespace Go
                     return true;
 
                 //get diagonal connected groups recursively
-                Boolean connected = IsDiagonallyConnectedGroups(allConnectedGroups, board, g, func);
+                Boolean connected = IsDiagonallyConnectedGroups(allConnectedGroups, board, func);
                 if (connected) return true;
             }
             return false;
@@ -438,7 +440,7 @@ namespace Go
         /// </summary>
         public static Boolean IsDiagonallyConnectedGroups(Board board, Group group, Group findGroup)
         {
-            return IsDiagonallyConnectedGroups(new HashSet<Group>() { group }, board, group, s => s == findGroup);
+            return IsDiagonallyConnectedGroups(new HashSet<Group>() { group }, board, s => s == findGroup);
         }
 
         /// <summary>

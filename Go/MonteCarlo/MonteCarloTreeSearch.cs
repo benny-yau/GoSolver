@@ -131,7 +131,6 @@ namespace Go
                 }
 
                 //verify on depth reached or no possible states to expand
-                Boolean pruned = false;
                 if (ReachedDepthToVerify(promisingNode) || noPossibleStates)
                 {
                     tree.HitDepthToVerify = true;
@@ -141,13 +140,12 @@ namespace Go
                         break;
 
                     //prune node based on result from exhaustive search
-                    pruned = PruneBasedOnWinResult(verifyNode, winOrLose);
-
+                    Boolean pruned = PruneBasedOnWinResult(verifyNode, winOrLose);
+                    if (pruned) continue;
                 }
 
                 //simulate random playout
-                if (!pruned)
-                    SimulateRandomPlayout(promisingNode);
+                SimulateRandomPlayout(promisingNode);
 
                 if (Game.debugMode && count % 60 == 0)
                     DebugHelper.DebugWriteWithTab("Count: " + count + " | Depth: " + promisingNode.CurrentDepth + " | Last moves: " + promisingNode.GetLastMoves(), mctsDepth);
@@ -180,9 +178,6 @@ namespace Go
             return tree;
         }
 
-        /// <summary>
-        /// Get random child from expanded node.
-        /// </summary>
         internal virtual Node RandomChildNode(Node node)
         {
             int noOfPossibleMoves = node.ChildArray.Count;
@@ -454,9 +449,6 @@ namespace Go
             return confirmAlive;
         }
 
-        /// <summary>
-        /// Initialize monte carlo playout.
-        /// </summary>
         public ConfirmAliveResult InitializeMonteCarloPlayout(Game g, SurviveOrKill surviveOrKill)
         {
             int depth = g.GetStartingDepth();

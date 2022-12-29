@@ -1073,7 +1073,7 @@
             Get diagonals of move of same content that are not part of the move group.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.IsDiagonallyConnectedGroups(System.Collections.Generic.HashSet{Go.Group},Go.Board,Go.Group,System.Func{Go.Group,System.Boolean})">
+        <member name="M:Go.LinkHelper.IsDiagonallyConnectedGroups(System.Collections.Generic.HashSet{Go.Group},Go.Board,System.Func{Go.Group,System.Boolean})">
             <summary>
             Is diagonally connected groups.  Use func to find specific group else look for all connected groups.
             </summary>
@@ -2203,11 +2203,20 @@
             Return both alive only if no more external liberties.
             </summary>
         </member>
+        <member name="M:Go.MonteCarloGame.GetAnswerJson(Go.Game,Go.Node)">
+            <summary>
+            Json for search answer.
+            </summary>
+        </member>
         <member name="M:Go.MonteCarloGame.SetupLeelazGame(Go.Game)">
             <summary>
             Make setup moves in leela board.
             </summary>
-            <param name="g"></param>
+        </member>
+        <member name="M:Go.MonteCarloGame.ConvertAndMakeMoveInLeelaBoard(Go.Point,Go.Content)">
+            <summary>
+            Convert coordinates and make move in leela board.
+            </summary>
         </member>
         <member name="M:Go.MonteCarloGame.MyProcess_OutputDataReceived(System.Object,System.Diagnostics.DataReceivedEventArgs)">
             <summary>
@@ -2235,11 +2244,6 @@
             <see cref="!:UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario2dan15" />
             <see cref="!:UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario_GuanZiPu_A3" />
             <see cref="!:UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario3dan17" />
-            </summary>
-        </member>
-        <member name="M:Go.MonteCarloTreeSearch.RandomChildNode(Go.Node)">
-            <summary>
-            Get random child from expanded node.
             </summary>
         </member>
         <member name="M:Go.MonteCarloTreeSearch.PruneBasedOnWinResult(Go.Node,System.Boolean)">
@@ -2297,11 +2301,6 @@
         <member name="M:Go.MonteCarloTreeSearch.HandleConfirmedCases(Go.Node)">
             <summary>
             Confirmed cases represent possible game state where the game has ended with confirm alive already.
-            </summary>
-        </member>
-        <member name="M:Go.MonteCarloTreeSearch.InitializeMonteCarloPlayout(Go.Game,Go.SurviveOrKill)">
-            <summary>
-            Initialize monte carlo playout.
             </summary>
         </member>
         <member name="M:Go.MonteCarloTreeSearch.MonteCarloIncludeKoMoves(Go.Game,System.Collections.Generic.List{Go.GameTryMove},Go.GameTryMove,Go.SurviveOrKill)">

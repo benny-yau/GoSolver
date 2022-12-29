@@ -93,11 +93,19 @@ namespace Go
             return false;
         }
 
+        /// <summary>
+        /// Json for search answer.
+        /// </summary>
+        public static String GetAnswerJson(Game game, Node answerNode)
+        {
+            JObject json = MonteCarloMapping.MapAnswerNodeToJson(game, Game.PassMove, answerNode, false);
+            return JsonConvert.SerializeObject(json);
+        }
+
         #region neural network
         /// <summary>
         /// Make setup moves in leela board.
         /// </summary>
-        /// <param name="g"></param>
         public static void SetupLeelazGame(Game g)
         {
             MonteCarloGame.inputWriter.WriteLine("clear_board");
@@ -121,6 +129,9 @@ namespace Go
             }
         }
 
+        /// <summary>
+        /// Convert coordinates and make move in leela board.
+        /// </summary>
         public static void ConvertAndMakeMoveInLeelaBoard(Point point, Content c)
         {
             String x = alphabets.Substring(point.x, 1);
