@@ -163,43 +163,38 @@ namespace Go
         /// Create group and obtain group points by recursively adding direct connected points.
         /// Store group in cache and retrieve from cache on the next call.
         /// </summary>
-        public Group GetGroupAt(int x, int y)
+        public Group GetGroupAt(Point p)
         {
             if (GroupCacheFromPoint == null) GroupCacheFromPoint = new Group[SizeX, SizeY];
-            Group group = GroupCacheFromPoint[x, y];
+            Group group = GroupCacheFromPoint[p.x, p.y];
             if (group == null)
             {
-                group = new Group(content[x, y]);
+                group = new Group(content[p.x, p.y]);
                 if (group.Content == Content.Empty)
                     throw new Exception("Group content cannot be empty.");
-                RecursiveAddPoint(group, x, y);
+                RecursiveAddPoint(group, p);
                 GroupCache.Add(group);
             }
             return group;
-        }
-
-        public Group GetGroupAt(Point n)
-        {
-            return GetGroupAt(n.x, n.y);
         }
 
         /// <summary>
         /// Add direct connected point recursively to form the group.
         /// If point is not of same content then add to neighbour.
         /// </summary>
-        public void RecursiveAddPoint(Group group, int x, int y)
+        public void RecursiveAddPoint(Group group, Point p)
         {
-            if (this[x, y] == group.Content)
+            if (this[p] == group.Content)
             {
-                if (group.ContainsPoint(x, y)) return;
-                group.AddPoint(x, y);
-                GroupCacheFromPoint[x, y] = group;
-                List<Point> stoneNeighbours = GetStoneNeighbours(x, y);
-                stoneNeighbours.ForEach(n => RecursiveAddPoint(group, n.x, n.y));
+                if (group.Points.Contains(p)) return;
+                group.Points.Add(p);
+                GroupCacheFromPoint[p.x, p.y] = group;
+                List<Point> stoneNeighbours = GetStoneNeighbours(p);
+                stoneNeighbours.ForEach(n => RecursiveAddPoint(group, n));
             }
             else
             {
-                group.AddNeighbour(x, y, this[x, y] == Content.Empty);
+                group.AddNeighbour(p, this[p] == Content.Empty);
             }
         }
 

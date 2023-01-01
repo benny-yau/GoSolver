@@ -49,19 +49,8 @@ namespace Go
             Content = c;
         }
 
-        public void AddPoint(int x, int y)
+        public void AddNeighbour(Point p, Boolean liberty = false)
         {
-            points.Add(new Point(x, y));
-        }
-
-        public bool ContainsPoint(int x, int y)
-        {
-            return points.Contains(new Point(x, y));
-        }
-
-        public void AddNeighbour(int x, int y, Boolean liberty = false)
-        {
-            Point p = new Point(x, y);
             if (liberty)
                 liberties.Add(p);
 
