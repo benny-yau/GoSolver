@@ -68,7 +68,7 @@ namespace Go
             foreach (Group group in groups)
             {
                 //find killer groups with no liberties left or surrounded by non movable points
-                if (group.Liberties.Count == 0 || (!isKill && group.Liberties.All(n => gameInfo.IsMovablePoint[n.x, n.y] == false)))
+                if (group.Liberties.Count == 0 || (!isKill && group.Liberties.All(n => gameInfo.IsMovablePoint[n.x, n.y] == false) && !LifeCheck.GetTargets(board).Any(t => group.Points.Contains(t.Points.First()))))
                 {
                     (Boolean isKillerGroup, List<Group> neighbourGroups) = CheckNeighbourGroupsOfKillerGroup(filledBoard, group, true);
                     if (!isKillerGroup) continue;

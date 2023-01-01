@@ -2463,8 +2463,6 @@ namespace Go
             Point move = tryBoard.Move.Value;
 
             //check for opposite content
-            if (CheckOppositeContentForFillerMove(tryMove))
-                return false;
             if (!GenericEyeFillerMove(tryMove, opponentMove)) return false;
 
             if (WallHelper.IsNonKillableGroup(tryBoard))
@@ -2486,25 +2484,6 @@ namespace Go
         }
 
         /// <summary>
-        /// Check opposite content for filler move.
-        /// Ensure no opposite content at diagonal <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q29998_2" />
-        /// Ensure no opposite content at stone neighbour points for killer group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q15017" />
-        /// Closest neighbour within killer group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31537_2" />
-        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31445" />
-        /// </summary>
-        private static Boolean CheckOppositeContentForFillerMove(GameTryMove tryMove)
-        {
-            Board tryBoard = tryMove.TryGame.Board;
-            Point move = tryBoard.Move.Value;
-            Content c = tryMove.MoveContent;
-            if (tryBoard.CornerPoint(move)) return false;
-            //ensure no opposite content at stone and diagonal
-            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite()))
-                return true;
-            return false;
-        }
-
-        /// <summary>
         /// Siege scenario. At least one closest group targeted by neighbour group.
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30278" />
         /// </summary>
@@ -2521,7 +2500,8 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_B3_2" />
         /// Ensure not link for groups <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q5971" />
         /// Get stone neighbours only for killer group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q15017" />
-        /// Check any opponent stone at stone points <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_Q18500" />
+        /// Check any opponent stone at stone and diagonal points <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_Q18500" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A56_3" />
         /// Check any opponent stone at neighbour points <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q16827" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q16827_2" />
         /// Check corner point <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_A26" />
@@ -2537,8 +2517,8 @@ namespace Go
             if (!tryMove.IsNegligible) return false;
             List<Point> emptyNeighbours = tryBoard.GetStoneNeighbours().Where(p => tryBoard[p] == Content.Empty).ToList();
 
-            //check any opponent stone at stone points
-            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == c.Opposite()))
+            //check any opponent stone at stone and diagonal points
+            if (!tryBoard.CornerPoint(move) && tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite()))
                 return false;
 
             //one opponent group only within killer group
