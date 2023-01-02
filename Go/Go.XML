@@ -1591,6 +1591,12 @@
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_Q18500_2" />
             </summary>
         </member>
+        <member name="M:Go.RedundantMoveHelper.NeutralPointSuicidalMove(Go.GameTryMove)">
+            <summary>
+            Neutral point suicidal move.
+            <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221214_5" />
+            </summary>
+        </member>
         <member name="M:Go.RedundantMoveHelper.EssentialAtariAtCoveredEye(Go.GameTryMove)">
             <summary>
             Essential atari at covered eye.

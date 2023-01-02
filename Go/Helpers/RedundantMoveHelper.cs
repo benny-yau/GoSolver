@@ -1313,8 +1313,12 @@ namespace Go
                 List<Point> diagonalNeighbours = tryBoard.GetDiagonalNeighbours().Where(n => WallHelper.IsNonKillableGroup(tryBoard, n)).ToList();
                 Boolean nonKillableSuicide = tryBoard.PointWithinMiddleArea(move) ? diagonalNeighbours.Count >= 2 : diagonalNeighbours.Count >= 1;
                 if (!nonKillableSuicide) return false;
+
+                if (NeutralPointSuicidalMove(tryMove)) return false;
+
                 if (diagonalNeighbours.Any(n => LinkHelper.PointsBetweenDiagonals(move, n).Any(d => tryBoard[d] == Content.Empty)))
                     return true;
+
                 //check real eye at diagonal without opposite content
                 if (ImmovableHelper.AllConnectAndDie(capturedBoard, move, c.Opposite())) return false;
                 if (capturedBoard.GetDiagonalNeighbours(move).Any(n => capturedBoard[n] == Content.Empty && EyeHelper.FindRealEyeWithinEmptySpace(capturedBoard, n, c.Opposite()) && !GroupHelper.GetKillerGroupFromCache(capturedBoard, n, c.Opposite()).Points.Any(p => capturedBoard[p] == c)))
@@ -1729,6 +1733,8 @@ namespace Go
         {
             if (!tryMove.IsNegligible && EssentialAtariAtCoveredEye(tryMove))
                 return false;
+            if (NeutralPointSuicidalMove(tryMove))
+                return false;
             //make move from perspective of survival
             GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
             if (opponentMove == null) return false;
@@ -1741,6 +1747,23 @@ namespace Go
                     tryMove.MustHaveNeutralPoint = true;
             }
             return isNeutralPoint;
+        }
+
+        /// <summary>
+        /// Neutral point suicidal move.
+        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221214_5" />
+        /// </summary>
+        public static Boolean NeutralPointSuicidalMove(GameTryMove tryMove)
+        {
+            Board tryBoard = tryMove.TryGame.Board;
+            Content c = tryBoard.MoveGroup.Content;
+            if (tryBoard.MoveGroupLiberties == 1 && EyeHelper.IsCovered(tryBoard, tryBoard.Move.Value, c.Opposite()))
+            {
+                Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, tryBoard.MoveGroup, true);
+                if (b != null && b.MoveGroup.Points.Count > 1)
+                    return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -2268,16 +2291,15 @@ namespace Go
                 Group diagonalKillerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, d, c.Opposite());
                 if (diagonalKillerGroup == null) continue;
 
-                //real eye at diagonal point
-                if (EyeHelper.FindRealEyeOfAnyKillerGroup(tryBoard, diagonalKillerGroup))
-                    return true;
-
                 //check move and diagonal space
                 if (ImmovableHelper.IsConfirmTigerMouth(currentBoard, tryBoard) == null) continue;
 
                 Group moveKillerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
                 if (moveKillerGroup == null)
                 {
+                    if (NeutralPointSuicidalMove(tryMove))
+                        continue;
+
                     //check for strong neighbour groups
                     if (WallHelper.StrongNeighbourGroups(currentBoard, move, c) && capturedBoard.MoveGroupLiberties > 2)
                         return true;
@@ -2423,7 +2445,7 @@ namespace Go
 
         public static Boolean KillEyeDiagonalMove(GameTryMove tryMove)
         {
-            if (!tryMove.IsNegligible)
+            if (!tryMove.IsNegligible || NeutralPointSuicidalMove(tryMove))
                 return false;
             GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
             if (opponentMove != null)
