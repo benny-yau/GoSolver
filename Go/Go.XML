@@ -1625,6 +1625,12 @@
             Generic neutral move with must have neutral move <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Corner_A68_2" />
             </summary>
         </member>
+        <member name="M:Go.RedundantMoveHelper.MustHaveMoveAtKoFight(Go.GameTryMove)">
+            <summary>
+            Must have move at ko fight.
+            <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Corner_A68_2" />
+            </summary>
+        </member>
         <member name="M:Go.RedundantMoveHelper.MustHaveMoveAtBigTigerMouth(Go.Board,Go.GameTryMove)">
             <summary>
             Must have move at big tiger mouth.        
@@ -1752,6 +1758,7 @@
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16605" />
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A28" />
             Suicide for liberty fight <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40_3" />
+            Check for uncovered eye <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221220_7" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.TigerMouthEyePoints(Go.Board,Go.Point,Go.Point)">
@@ -1810,16 +1817,10 @@
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A56_3" />
             Check any opponent stone at neighbour points <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q16827" />
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q16827_2" />
+            <see cref="!:UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_TianLongTu_Q16520" />
             Check corner point <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_A26" />
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_B8" />
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
-            </summary>
-        </member>
-        <member name="M:Go.RedundantMoveHelper.CheckOpponentStoneAtFillerMove(Go.GameTryMove,Go.Point)">
-            <summary>
-            Check opponent stone at filler move. 
-            <see cref="!:UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_TianLongTu_Q16520" />
-            Check for opponent stone at try move <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q16827_2" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckRedundantCornerPoint(Go.GameTryMove,Go.Board)">

@@ -31,7 +31,6 @@ namespace Go
         public bool IsLeapMove { get; set; }
         public bool IsAtariRedundant { get; set; }
         public bool MustHaveNeutralPoint { get; set; }
-        public LinkedPoint<Point> LinkPoint { get; set; }
 
         private bool? isKoFight = null;
         public bool IsKoFight

@@ -1737,12 +1737,8 @@ namespace Go
             if (isNeutralPoint)
             {
                 //must have neutral point
-                (Boolean mustHave, Point? linkPoint) = MustHaveNeutralPoint(tryMove, opponentMove);
-                if (mustHave)
-                {
+                if (MustHaveNeutralPoint(tryMove, opponentMove))
                     tryMove.MustHaveNeutralPoint = true;
-                    tryMove.LinkPoint = new LinkedPoint<Point>(linkPoint.Value, tryMove.Move);
-                }
             }
             return isNeutralPoint;
         }
@@ -1796,7 +1792,7 @@ namespace Go
         /// Two must have neutral moves <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_GuanZiPu_Weiqi101_19138" />
         /// Generic neutral move with must have neutral move <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Corner_A68_2" />
         /// </summary>
-        private static (Boolean, Point?) MustHaveNeutralPoint(GameTryMove tryMove, GameTryMove opponentMove)
+        private static Boolean MustHaveNeutralPoint(GameTryMove tryMove, GameTryMove opponentMove)
         {
             Board tryBoard = tryMove.TryGame.Board;
             Board opponentBoard = opponentMove.TryGame.Board;
@@ -1807,8 +1803,8 @@ namespace Go
             {
                 //redundant suicidal at tiger mouth
                 if (StrongGroupsAtMustHaveMove(tryBoard, tigerMouth))
-                    return (false, null);
-                return (true, tigerMouth);
+                    return false;
+                return true;
             }
 
             //neutral point at big tiger mouth
@@ -1817,10 +1813,28 @@ namespace Go
             {
                 Point suicideMove = suicideBoard.Move.Value;
                 if (MustHaveMoveAtBigTigerMouth(suicideBoard, tryMove))
-                    return (true, suicideMove);
+                    return true;
             }
 
-            return (false, null);
+            //ko fight
+            if (MustHaveMoveAtKoFight(tryMove))
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Must have move at ko fight.
+        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Corner_A68_2" />
+        /// </summary>
+        private static Boolean MustHaveMoveAtKoFight(GameTryMove tryMove)
+        {
+            Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            if (tryBoard.PointWithinMiddleArea(move)) return false;
+            if (tryBoard.GetDiagonalNeighbours().Any(d => tryBoard[d] == c.Opposite() && tryBoard.IsSinglePoint(d) && tryBoard.GetStoneNeighbours(d).Any(n => tryBoard[n] == Content.Empty && ImmovableHelper.FindTigerMouth(tryBoard, c.Opposite(), n))))
+                return true;
+            return false;
         }
 
         /// <summary>
@@ -2293,6 +2307,7 @@ namespace Go
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16605" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A28" />
         /// Suicide for liberty fight <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40_3" />
+        /// Check for uncovered eye <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221220_7" />
         /// </summary>
         private static Boolean TigerMouthWithoutDiagonalMouth(GameTryMove tryMove, Board capturedBoard)
         {
@@ -2307,6 +2322,7 @@ namespace Go
             //check for covered eye
             if (EyeHelper.IsCovered(tryBoard, move, c.Opposite()))
                 return false;
+
             //check for three groups
             List<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(move);
             if (neighbourGroups.Count >= 3 && (neighbourGroups.Count(g => g.Liberties.Count <= 2) >= 2 || LinkHelper.DiagonalCutMove(tryBoard).Item1)) return false;
@@ -2317,6 +2333,21 @@ namespace Go
 
             //suicide for liberty fight
             if (SuicideForLibertyFight(tryMove)) return false;
+
+            //check for uncovered eye
+            if (EyeHelper.FindUncoveredEye(capturedBoard, move, c.Opposite()))
+            {
+                foreach (Point d in capturedBoard.GetDiagonalNeighbours(move).Where(n => capturedBoard[n] == Content.Empty))
+                {
+                    Board b = capturedBoard.MakeMoveOnNewBoard(d, c);
+                    if (b != null && b.MoveGroupLiberties > 1 && EyeHelper.FindCoveredEye(b, move, c.Opposite()))
+                    {
+                        Board b2 = tryBoard.MakeMoveOnNewBoard(d, c.Opposite());
+                        if (b2 == null || b2.MoveGroupLiberties > 3 || ImmovableHelper.UnescapableGroup(b2, tryBoard.MoveGroup).Item1) continue;
+                        return false;
+                    }
+                }
+            }
             return true;
         }
 
@@ -2462,7 +2493,7 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryBoard.Move.Value;
 
-            //check for opposite content
+            //check generic eye filler move
             if (!GenericEyeFillerMove(tryMove, opponentMove)) return false;
 
             if (WallHelper.IsNonKillableGroup(tryBoard))
@@ -2470,6 +2501,7 @@ namespace Go
 
             if (opponentMove == null)
             {
+                //check for one point leap move
                 if (SiegeScenario(tryBoard, tryBoard.GetClosestPoints(move)))
                     return false;
             }
@@ -2504,6 +2536,7 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A56_3" />
         /// Check any opponent stone at neighbour points <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q16827" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q16827_2" />
+        /// <see cref="UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_TianLongTu_Q16520" />
         /// Check corner point <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_A26" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_B8" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
@@ -2536,7 +2569,7 @@ namespace Go
             foreach (Point p in emptyNeighbours)
             {
                 //check any opponent stone at neighbour points
-                if (CheckOpponentStoneAtFillerMove(tryMove, p))
+                if (currentBoard.GetStoneNeighbours(p).Any(n => currentBoard[n] == c.Opposite()))
                     continue;
                 //count eyes created at empty neighbour points
                 int possibleEyesAtNeighbourPt = PossibleEyesCreated(currentBoard, p, c);
@@ -2544,25 +2577,6 @@ namespace Go
                 if (possibleEyesAtNeighbourPt > possibleEyes)
                     return true;
             }
-            return false;
-        }
-
-        /// <summary>
-        /// Check opponent stone at filler move. 
-        /// <see cref="UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_TianLongTu_Q16520" />
-        /// Check for opponent stone at try move <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q16827_2" />
-        /// </summary>
-        private static Boolean CheckOpponentStoneAtFillerMove(GameTryMove tryMove, Point p)
-        {
-            Board tryBoard = tryMove.TryGame.Board;
-            Point move = tryMove.TryGame.Board.Move.Value;
-            Board currentBoard = tryMove.CurrentGame.Board;
-            Content c = tryMove.MoveContent;
-
-            List<Point> stoneNeighbours = currentBoard.GetStoneNeighbours(p).Where(n => currentBoard[n] == c.Opposite()).ToList();
-            if (stoneNeighbours.Count > 0)
-                return true;
-
             return false;
         }
 
