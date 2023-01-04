@@ -221,6 +221,7 @@ namespace Go
         /// <summary>
         /// Two-point move with empty point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A48" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17250" />
         /// Covered eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16424_2" />
         /// Check for snapback <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234" />
         /// Whole survival group dying <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3" />
@@ -266,7 +267,7 @@ namespace Go
                 {
                     if (SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                         return true;
-                    if (!GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard, currentBoard))
+                    if (tryBoard.IsAtariMove || !GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard, currentBoard))
                         return true;
                 }
 

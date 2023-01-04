@@ -1756,14 +1756,15 @@ namespace Go
         public static Boolean NeutralPointSuicidalMove(GameTryMove tryMove)
         {
             Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.MoveGroupLiberties == 1 && EyeHelper.IsCovered(tryBoard, tryBoard.Move.Value, c.Opposite()))
-            {
-                Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, tryBoard.MoveGroup, true);
-                if (b != null && b.MoveGroup.Points.Count > 1)
-                    return true;
-            }
-            return false;
+            if (tryBoard.MoveGroupLiberties != 1 || tryBoard.MoveGroup.Points.Count != 1) return false;
+            if (!tryBoard.PointWithinMiddleArea(move)) return false;
+            if (!EyeHelper.IsCovered(tryBoard, move, c.Opposite())) return false;
+            Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, tryBoard.MoveGroup, true);
+            if (b == null || b.MoveGroup.Points.Count == 1) return false;
+            if (b.GetStoneNeighbours().Any(n => !n.Equals(move) && b[n] == Content.Empty)) return false;
+            return true;
         }
 
         /// <summary>
@@ -2574,11 +2575,6 @@ namespace Go
 
             //check any opponent stone at stone and diagonal points
             if (!tryBoard.CornerPoint(move) && tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite()))
-                return false;
-
-            //one opponent group only within killer group
-            Group kgroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c);
-            if (kgroup != null && currentBoard.GetGroupsFromPoints(kgroup.Points.Where(n => currentBoard[n] == c.Opposite()).ToList()).Count > 1)
                 return false;
 
             //ensure not link for groups
