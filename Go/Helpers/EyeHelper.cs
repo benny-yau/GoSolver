@@ -467,15 +467,21 @@ namespace Go
             if (board.GetNeighbourGroups(killerGroup).Any(n => !diagonalGroups.Contains(n)))
                 return false;
 
-            foreach (Group group in diagonalGroups)
+            List<LinkedPoint<Point>> checkedDiagonals = new List<LinkedPoint<Point>>();
+            foreach (Group diagonalGroup in diagonalGroups)
             {
                 //ensure all groups are connected
-                List<Group> connectedGroups = LinkHelper.GetAllDiagonalGroups(board, group, null, false).Intersect(diagonalGroups).ToList();
-                if (connectedGroups.Any(d => d != group && !LinkHelper.IsImmediateDiagonallyConnected(board, d, group)))
-                    return false;
-
+                foreach (LinkedPoint<Point> diagonal in LinkHelper.GetGroupLinkedDiagonals(board, diagonalGroup))
+                {
+                    Group group = board.GetGroupAt(diagonal.Move);
+                    if (!diagonalGroups.Contains(group)) continue;
+                    if (checkedDiagonals.Any(n => n.EqualLink(diagonal))) continue;
+                    if (!LinkHelper.IsImmediateDiagonallyConnected(board, diagonalGroup, group))
+                        return false;
+                    checkedDiagonals.Add(diagonal);
+                }
                 //check connect and die
-                if (ImmovableHelper.CheckConnectAndDie(board, group))
+                if (ImmovableHelper.CheckConnectAndDie(board, diagonalGroup))
                     return false;
             }
 

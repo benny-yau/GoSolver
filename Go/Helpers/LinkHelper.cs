@@ -110,6 +110,7 @@ namespace Go
             List<Point> closestNeighbours = tryBoard.GetClosestPoints(move, c);
             //validate leap move
             closestNeighbours = closestNeighbours.Where(leapMove => RedundantMoveHelper.ValidateLeapMove(tryBoard, move, leapMove, false)).ToList();
+
             //add to groups with linked point
             foreach (Point p in closestNeighbours)
             {
@@ -462,29 +463,29 @@ namespace Go
         /// Captured eye point <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_Q18340" /> 
         /// </summary>
-        public static Boolean PossibleLinkToAnyGroup(Board board, Group group, Group findGroup)
+        public static Boolean PossibleLinkToAnyGroup(Board tryBoard, Group group, Group findGroup)
         {
             //link between the two groups
-            if (CheckPossibleLink(board, group, findGroup))
+            if (CheckPossibleLink(tryBoard, group, findGroup))
                 return true;
 
             //link through move group
-            Boolean isLinked = (group == board.MoveGroup || CheckPossibleLink(board, group, board.MoveGroup));
-            Boolean isLinked2 = (findGroup == board.MoveGroup || CheckPossibleLink(board, findGroup, board.MoveGroup));
+            Boolean isLinked = (group == tryBoard.MoveGroup || CheckPossibleLink(tryBoard, group, tryBoard.MoveGroup));
+            Boolean isLinked2 = (findGroup == tryBoard.MoveGroup || CheckPossibleLink(tryBoard, findGroup, tryBoard.MoveGroup));
 
             return isLinked && isLinked2;
         }
 
-        private static Boolean CheckPossibleLink(Board board, Group group, Group findGroup)
+        private static Boolean CheckPossibleLink(Board tryBoard, Group group, Group findGroup)
         {
+            Point move = tryBoard.Move.Value;
             //check diagonal links
-            LinkedPoint<Point> diagonalLink = GetGroupLinkedDiagonals(board, group).FirstOrDefault(d => board.GetGroupAt(d.Move) == findGroup);
+            LinkedPoint<Point> diagonalLink = GetGroupLinkedDiagonals(tryBoard, group).FirstOrDefault(d => tryBoard.GetGroupAt(d.Move) == findGroup);
             if (diagonalLink != null) return true;
-
             //check leap moves
-            if (group.LinkedPoint != null && findGroup.Points.Contains(group.LinkedPoint.Move))
+            if (group.LinkedPoint != null && group.LinkedPoint.Move.Equals(move) && tryBoard.GetGroupAt(group.LinkedPoint.Move) == findGroup)
                 return true;
-            if (findGroup.LinkedPoint != null && group.Points.Contains(findGroup.LinkedPoint.Move))
+            if (findGroup.LinkedPoint != null && findGroup.LinkedPoint.Move.Equals(move) && tryBoard.GetGroupAt(findGroup.LinkedPoint.Move) == group)
                 return true;
             return false;
         }
@@ -528,23 +529,25 @@ namespace Go
         }
 
         /// <summary>
-        /// Get all diagonal groups for checking neighbour groups of killer group.
+        /// Get all diagonal groups by recursion.
         /// </summary>
-        public static List<Group> GetAllDiagonalGroups(Board board, Group group, List<Group> groups = null, Boolean recursive = true)
+        public static List<Group> GetAllDiagonalGroups(Board board, Group group, Func<Group, Boolean> func = null, List<Group> groups = null)
         {
             if (groups == null)
             {
                 groups = new List<Group>();
                 groups.Add(group);
             }
+            //get all diagonal points
             List<LinkedPoint<Point>> diagonalPoints = GetGroupLinkedDiagonals(board, group);
             foreach (LinkedPoint<Point> diagonalPoint in diagonalPoints)
             {
                 Group g = board.GetGroupAt(diagonalPoint.Move);
                 if (groups.Contains(g)) continue;
+                if (func != null && func(g)) continue;
                 groups.Add(g);
-                if (recursive)
-                    GetAllDiagonalGroups(board, g, groups);
+                //get all diagonal groups by recursion
+                GetAllDiagonalGroups(board, g, func, groups);
             }
             return groups;
         }

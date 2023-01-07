@@ -87,7 +87,8 @@ namespace Go
             List<Group> neighbourGroups = GetNeighbourGroupsOfKillerGroup(board, killerGroup, isFilledBoard);
             if (neighbourGroups.Count == 0) return (false, null);
             if (neighbourGroups.Count == 1) return (true, neighbourGroups);
-            List<Group> diagonalGroups = LinkHelper.GetAllDiagonalGroups(board, neighbourGroups.First());
+
+            List<Group> diagonalGroups = LinkHelper.GetAllDiagonalGroups(board, neighbourGroups.First(), s => !neighbourGroups.Contains(s));
             if (neighbourGroups.Except(diagonalGroups).Any())
                 return (false, null);
             return (true, neighbourGroups);

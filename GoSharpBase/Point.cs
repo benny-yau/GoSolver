@@ -64,6 +64,13 @@ namespace Go
             this.CheckMove = checkMove;
         }
 
+        public Boolean EqualLink(LinkedPoint<T> linkedPoint)
+        {
+            if (linkedPoint.Move.Equals((T)CheckMove) && ((T)linkedPoint.CheckMove).Equals(Move))
+                return true;
+            return false;
+        }
+
         public override string ToString()
         {
             return "Move: " + Move.ToString() + " CheckMove: " + CheckMove;
