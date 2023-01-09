@@ -8,42 +8,39 @@ namespace Go
     public class GameHelper
     {
         /// <summary>
-        /// Get all try moves for next move.
+        /// Determine if win or lose based on result.
         /// </summary>
-        public static List<GameTryMove> GetTryMovesForGame(Game game)
-        {
-            ConfirmAliveResult result;
-            GameTryMove koBlockedMove;
-            List<GameTryMove> tryMoves;
-            SurviveOrKill surviveOrKill = GameHelper.KillOrSurvivalForNextMove(game.Board);
-            if (surviveOrKill == SurviveOrKill.Kill)
-                (result, tryMoves, koBlockedMove) = game.GetKillMoves(game);
-            else
-                (result, tryMoves, koBlockedMove) = game.GetSurvivalMoves(game);
-
-            return tryMoves;
-        }
-
-
-
-        /// <summary>
-        /// Determine if win or lose based on result in mcts.
-        /// </summary>
-        public static Boolean WinOrLose(SurviveOrKill surviveOrKill, ConfirmAliveResult playoutResult, Game currentGame)
+        public static Boolean WinOrLose(SurviveOrKill surviveOrKill, ConfirmAliveResult result, GameInfo gameInfo)
         {
             if (surviveOrKill == SurviveOrKill.Survive)
             {
-                if (playoutResult.HasFlag(ConfirmAliveResult.Alive) || playoutResult.HasFlag(ConfirmAliveResult.BothAlive))
+                if (result.HasFlag(ConfirmAliveResult.Alive) || result.HasFlag(ConfirmAliveResult.BothAlive))
                     return true;
-                else if (playoutResult.HasFlag(ConfirmAliveResult.KoAlive))
-                    return KoHelper.KoSurvivalEnabled(surviveOrKill, currentGame.GameInfo);
             }
             else if (surviveOrKill == SurviveOrKill.Kill)
             {
-                if (playoutResult.HasFlag(ConfirmAliveResult.Dead))
+                if (result.HasFlag(ConfirmAliveResult.Dead))
                     return true;
-                else if (playoutResult.HasFlag(ConfirmAliveResult.KoAlive))
-                    return KoHelper.KoSurvivalEnabled(surviveOrKill, currentGame.GameInfo);
+            }
+            if (result.HasFlag(ConfirmAliveResult.KoAlive))
+                return KoHelper.KoSurvivalEnabled(surviveOrKill, gameInfo);
+            return false;
+        }
+
+        /// <summary>
+        /// Determine if win or lose for ko.
+        /// </summary>
+        public static Boolean KoWinOrLose(SurviveOrKill surviveOrKill, ConfirmAliveResult result, GameInfo gameInfo)
+        {
+            if (surviveOrKill == SurviveOrKill.Survive)
+            {
+                if (result.HasFlag(ConfirmAliveResult.Alive) || result.HasFlag(ConfirmAliveResult.BothAlive))
+                    return true;
+            }
+            else if (surviveOrKill == SurviveOrKill.Kill)
+            {
+                if (result.HasFlag(ConfirmAliveResult.Dead))
+                    return true;
             }
             return false;
         }
@@ -161,6 +158,23 @@ namespace Go
                 rootBoard.InternalMakeMove(p, c, true);
             }
             return rootBoard;
+        }
+
+        /// <summary>
+        /// Get all try moves for next move.
+        /// </summary>
+        public static List<GameTryMove> GetTryMovesForGame(Game game)
+        {
+            ConfirmAliveResult result;
+            GameTryMove koBlockedMove;
+            List<GameTryMove> tryMoves;
+            SurviveOrKill surviveOrKill = GameHelper.KillOrSurvivalForNextMove(game.Board);
+            if (surviveOrKill == SurviveOrKill.Kill)
+                (result, tryMoves, koBlockedMove) = game.GetKillMoves();
+            else
+                (result, tryMoves, koBlockedMove) = game.GetSurvivalMoves();
+
+            return tryMoves;
         }
     }
 }

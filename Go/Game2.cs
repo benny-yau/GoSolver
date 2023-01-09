@@ -2,10 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace Go
 {
@@ -294,7 +291,7 @@ namespace Go
                 {
                     bestResult = gameTryMove.ConfirmAlive;
                     bestResultMove = gameTryMove;
-                    if (bestResult == ConfirmAliveResult.Alive || bestResult == ConfirmAliveResult.BothAlive || (koEnabled && bestResult == ConfirmAliveResult.KoAlive))
+                    if (GameHelper.WinOrLose(SurviveOrKill.Survive, bestResult, currentGame.GameInfo))
                     {
                         if (gameTryMove.Move.Equals(Game.PassMove) && gameTryMove.TryGame.KoGameCheck == KoCheck.None) bestResult = ConfirmAliveResult.BothAlive;
                         survivalWin = true;
@@ -564,7 +561,7 @@ namespace Go
                 {
                     bestResult = gameTryMove.ConfirmAlive;
                     bestResultMove = gameTryMove;
-                    if (bestResult == ConfirmAliveResult.Dead || (koEnabled && gameTryMove.ConfirmAlive == ConfirmAliveResult.KoAlive))
+                    if (GameHelper.WinOrLose(SurviveOrKill.Kill, bestResult, currentGame.GameInfo))
                     {
                         killWin = true;
                         break;

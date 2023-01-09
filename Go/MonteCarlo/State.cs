@@ -19,7 +19,6 @@ namespace Go
 
         private int[,] heatMap;
         private double winrate;
-        private Dictionary<String, double> stats;
 
         public State()
         {
@@ -169,14 +168,14 @@ namespace Go
         {
             get
             {
-                SurviveOrKill stateSurvivalOrKill = GameHelper.KillOrSurvivalForNextMove(this.Game.Board);
+                SurviveOrKill survivalOrKill = GameHelper.KillOrSurvivalForNextMove(this.Game.Board);
                 List<GameTryMove> tryMoves = GetAllPossibleMoves(this.Game);
 
                 List<State> possibleStates = new List<State>();
                 foreach (GameTryMove gameTryMove in tryMoves)
                 {
                     State state = new State(gameTryMove.TryGame);
-                    state.SurviveOrKill = stateSurvivalOrKill;
+                    state.SurviveOrKill = survivalOrKill;
                     state.IsKoBlocked = (gameTryMove.MakeMoveResult == MakeMoveResult.KoBlocked);
                     possibleStates.Add(state);
                 }
@@ -190,16 +189,14 @@ namespace Go
         /// </summary>
         public static List<GameTryMove> GetAllPossibleMoves(Game g)
         {
-            SurviveOrKill stateSurvivalOrKill = GameHelper.KillOrSurvivalForNextMove(g.Board);
+            SurviveOrKill survivalOrKill = GameHelper.KillOrSurvivalForNextMove(g.Board);
             List<GameTryMove> tryMoves;
             GameTryMove koBlockedMove;
-            if (stateSurvivalOrKill == SurviveOrKill.Kill)
+            if (survivalOrKill == SurviveOrKill.Kill)
                 (_, tryMoves, koBlockedMove) = g.GetKillMoves();
             else
                 (_, tryMoves, koBlockedMove) = g.GetSurvivalMoves();
-
-            if (tryMoves != null)
-                MonteCarloTreeSearch.MonteCarloIncludeKoMoves(g, tryMoves, koBlockedMove, stateSurvivalOrKill);
+            if (koBlockedMove != null) tryMoves.Add(koBlockedMove);
             return tryMoves;
         }
 

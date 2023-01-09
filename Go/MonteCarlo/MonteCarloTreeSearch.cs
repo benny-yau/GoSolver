@@ -107,8 +107,7 @@ namespace Go
                 if (!promisingNode.Expanded && promisingNode.State.Depth > 0 && (promisingNode == tree.Root || promisingNode.State.VisitCount >= VisitCountMinReq))
                 {
                     //expand possible states
-                    List<State> possibleStates = promisingNode.State.AllPossibleStates;
-                    noPossibleStates = !ExpandNode(promisingNode, possibleStates);
+                    noPossibleStates = !ExpandNode(promisingNode);
 
                     if (promisingNode.ChildArray.Count > 0)
                     {
@@ -218,7 +217,7 @@ namespace Go
             //exhaustive search to find definite result
             ConfirmAliveResult verifyResult = verifyGame.MakeExhaustiveSearch();
 
-            if (GameHelper.WinOrLose(verifyNode.State.SurviveOrKill, verifyResult, verifyGame))
+            if (GameHelper.WinOrLose(verifyNode.State.SurviveOrKill, verifyResult, verifyGame.GameInfo))
             {
                 if (Game.debugMode)
                     DebugHelper.DebugWriteWithTab("Verified: " + verifyNode.GetLastMoves(), mctsDepth);
@@ -369,8 +368,9 @@ namespace Go
         /// Expansion phase - to expand all possible states as child nodes.
         /// Confirm alive for each possible state to check if game ended with objective reached already.
         /// </summary>
-        internal virtual Boolean ExpandNode(Node node, List<State> possibleStates)
+        internal virtual Boolean ExpandNode(Node node)
         {
+            List<State> possibleStates = node.State.AllPossibleStates;
             for (int i = 0; i <= possibleStates.Count - 1; i++)
             {
                 State state = possibleStates[i];
@@ -380,11 +380,13 @@ namespace Go
                 childNode.State.Depth = node.State.Depth - 1;
 
                 //check if game ended by confirm alive
-                ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(childNode.State.SurviveOrKill, childNode.State.Game);
+                SurviveOrKill surviveOrKill = childNode.State.SurviveOrKill;
+                Game g = childNode.State.Game;
+                ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(surviveOrKill, g);
                 childNode.State.ConfirmAlive = confirmAlive;
                 if (confirmAlive != ConfirmAliveResult.Unknown)
                 {
-                    Boolean winOrLose = GameHelper.WinOrLose(childNode.State.SurviveOrKill, confirmAlive, childNode.State.Game);
+                    Boolean winOrLose = GameHelper.WinOrLose(surviveOrKill, confirmAlive, g.GameInfo);
                     if (winOrLose)
                         childNode.State.WinOrLose = true;
                 }
@@ -418,8 +420,8 @@ namespace Go
         public virtual void SimulateRandomPlayout(Node node)
         {
             //Monte Carlo random playout
-            ConfirmAliveResult result = InitializeMonteCarloPlayout(node.State.Game, node.State.SurviveOrKill);
-            Boolean winLose = (GameHelper.WinOrLose(node.State.SurviveOrKill, result, node.State.Game));
+            ConfirmAliveResult result = InitializeMonteCarloPlayout(node);
+            Boolean winLose = GameHelper.WinOrLose(node.State.SurviveOrKill, result, node.State.Game.GameInfo);
             BackPropagation(node, winLose);
         }
 
@@ -449,8 +451,11 @@ namespace Go
             return confirmAlive;
         }
 
-        public ConfirmAliveResult InitializeMonteCarloPlayout(Game g, SurviveOrKill surviveOrKill)
+        public ConfirmAliveResult InitializeMonteCarloPlayout(Node node)
         {
+            Game g = node.State.Game;
+            SurviveOrKill surviveOrKill = node.State.SurviveOrKill;
+
             int depth = g.GetStartingDepth();
             ConfirmAliveResult confirmAlive = ConfirmAliveResult.Unknown;
             if (surviveOrKill == SurviveOrKill.Kill)
@@ -461,38 +466,17 @@ namespace Go
         }
 
         /// <summary>
-        /// Ko blocked moves added to game try moves in mcts simulation phase. Only in mcts, ko blocked moves run concurrently with other moves, while in exhaustive search, ko blocked moves run only after all other moves have completed.
-        /// </summary>
-        public static void MonteCarloIncludeKoMoves(Game currentGame, List<GameTryMove> tryMoves, GameTryMove koBlockedMove, SurviveOrKill surviveOrKill)
-        {
-            KoCheck koCheck = (surviveOrKill == SurviveOrKill.Kill) ? KoCheck.Kill : KoCheck.Survive;
-            Boolean includeKoMoves = currentGame.KoGameCheck != koCheck.Opposite();
-            if (includeKoMoves && koBlockedMove != null && KoHelper.KoSurvivalEnabled(surviveOrKill, currentGame.GameInfo))
-                tryMoves.Add(koBlockedMove);
-        }
-
-        /// <summary>
         /// Make kill move in mcts simulation phase by selecting from all possible moves by randomization.
         /// Include ko moves and set result as KoAlive if ko wins.
         /// </summary>
-        private ConfirmAliveResult MonteCarloMakeKillMove(int depth, Game m)
+        private ConfirmAliveResult MonteCarloMakeKillMove(int depth, Game g)
         {
-            (ConfirmAliveResult result, List<GameTryMove> tryMoves, GameTryMove koBlockedMove) = m.GetKillMoves(m);
+            (ConfirmAliveResult result, List<GameTryMove> tryMoves, GameTryMove koBlockedMove) = g.GetKillMoves();
+            if (koBlockedMove != null) tryMoves.Add(koBlockedMove);
             if (result != ConfirmAliveResult.Unknown)
                 return result;
 
-            MonteCarloIncludeKoMoves(m, tryMoves, koBlockedMove, SurviveOrKill.Kill);
-
-            for (int i = 0; i <= tryMoves.Count - 1; i++)
-            {
-                GameTryMove tryMove = tryMoves[i];
-                if (tryMove.MakeMoveResult != MakeMoveResult.Legal) continue;
-                ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Kill, tryMove.TryGame, true);
-                if (confirmAlive == ConfirmAliveResult.Dead)
-                    return confirmAlive;
-            }
             ConfirmAliveResult bestResult = ConfirmAliveResult.Alive;
-
             //make single random move out of total possibilities
             int totalPossibilities = tryMoves.Count;
             if (totalPossibilities == 0) return bestResult;
@@ -521,27 +505,16 @@ namespace Go
         /// Make survival move in mcts simulation phase by selecting from all possible moves by randomization.
         /// Include ko moves and set result as KoAlive if ko wins.
         /// </summary>
-        private ConfirmAliveResult MonteCarloMakeSurvivalMove(int depth, Game m)
+        private ConfirmAliveResult MonteCarloMakeSurvivalMove(int depth, Game g)
         {
             if (depth <= 0)
                 return ConfirmAliveResult.Dead;
 
-            (ConfirmAliveResult result, List<GameTryMove> tryMoves, GameTryMove koBlockedMove) = m.GetSurvivalMoves(m);
+            (ConfirmAliveResult result, List<GameTryMove> tryMoves, GameTryMove koBlockedMove) = g.GetSurvivalMoves();
+            if (koBlockedMove != null) tryMoves.Add(koBlockedMove);
             if (result != ConfirmAliveResult.Unknown)
                 return result;
-
-            MonteCarloIncludeKoMoves(m, tryMoves, koBlockedMove, SurviveOrKill.Survive);
-
-            for (int i = 0; i <= tryMoves.Count - 1; i++)
-            {
-                GameTryMove tryMove = tryMoves[i];
-                if (tryMove.MakeMoveResult != MakeMoveResult.Legal) continue;
-                ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Survive, tryMove.TryGame, true);
-                if (confirmAlive == ConfirmAliveResult.Alive)
-                    return confirmAlive;
-            }
             ConfirmAliveResult bestResult = ConfirmAliveResult.Dead;
-
             //make single random move out of total possibilities
             int totalPossibilities = tryMoves.Count;
             if (totalPossibilities == 0) return bestResult;
@@ -553,15 +526,15 @@ namespace Go
             {
                 gameTryMove.ConfirmAlive = MonteCarloMakeKillMove(nextDepth, gameTryMove.TryGame);
 
-                if (gameTryMove.ConfirmAlive == ConfirmAliveResult.Alive)
-                    bestResult = (gameTryMove.Move.Equals(Game.PassMove)) ? ConfirmAliveResult.BothAlive : ConfirmAliveResult.Alive;
+                if (gameTryMove.ConfirmAlive == ConfirmAliveResult.Alive && gameTryMove.Move.Equals(Game.PassMove) && gameTryMove.TryGame.KoGameCheck == KoCheck.None)
+                    bestResult = ConfirmAliveResult.BothAlive;
             }
             else if (gameTryMove.MakeMoveResult == MakeMoveResult.KoBlocked)
             {
                 if (KoHelper.KoSurvivalEnabled(SurviveOrKill.Survive, gameTryMove.TryGame.GameInfo))
                 {
                     gameTryMove.ConfirmAlive = MonteCarloMakeKillMove(depth, gameTryMove.TryGame);
-                    if (gameTryMove.ConfirmAlive.HasFlag(ConfirmAliveResult.Alive))
+                    if (gameTryMove.ConfirmAlive.HasFlag(ConfirmAliveResult.Alive) || gameTryMove.ConfirmAlive.HasFlag(ConfirmAliveResult.BothAlive))
                         gameTryMove.ConfirmAlive = ConfirmAliveResult.KoAlive;
                 }
             }

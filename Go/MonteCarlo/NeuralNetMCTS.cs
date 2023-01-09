@@ -12,9 +12,9 @@ namespace Go
             this.mctsDepth = mctsDepth;
         }
 
-        internal override Boolean ExpandNode(Node node, List<State> possibleStates)
+        internal override Boolean ExpandNode(Node node)
         {
-            if (!base.ExpandNode(node, possibleStates)) return false;
+            if (!base.ExpandNode(node)) return false;
 
             if (node.State.HeatMap == null)
                 GetHeatMap(node);

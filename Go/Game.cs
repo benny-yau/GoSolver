@@ -1,13 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Reflection;
-using System.Diagnostics;
 using System.Configuration;
+using System.Diagnostics;
+using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace Go
 {
@@ -32,10 +28,7 @@ namespace Go
         {
             get
             {
-                if (this != this.Root)
-                    return this.Root.GameInfo;
-                else
-                    return gameInfo;
+                return (this != this.Root) ? this.Root.GameInfo : gameInfo;
             }
             set
             {
@@ -81,9 +74,10 @@ namespace Go
         {
             get
             {
-                if (this.Root.runTimeStopWatch == null)
-                    this.Root.runTimeStopWatch = new Stopwatch();
-                return this.Root.runTimeStopWatch;
+                Stopwatch stopWatch = this.Root.runTimeStopWatch;
+                if (stopWatch == null)
+                    stopWatch = new Stopwatch();
+                return stopWatch;
             }
             set
             {
@@ -264,13 +258,11 @@ namespace Go
         private ConfirmAliveResult UseDictatePoints(ConfirmAliveResult result)
         {
             Point? p = SolutionHelper.GetDictateMove(this);
-            if (p != null)
-            {
-                MakeMoveResult moveResult = this.MakeMove(p.Value);
-                result = ConfirmAliveResult.Incorrect | ConfirmAliveResult.Mapped;
-                if (moveResult == MakeMoveResult.KoBlocked)
-                    result |= ConfirmAliveResult.KoAlive;
-            }
+            if (p == null) return result;
+            MakeMoveResult moveResult = this.MakeMove(p.Value);
+            result = ConfirmAliveResult.Incorrect | ConfirmAliveResult.Mapped;
+            if (moveResult == MakeMoveResult.KoBlocked)
+                result |= ConfirmAliveResult.KoAlive;
             return result;
         }
 
@@ -286,16 +278,14 @@ namespace Go
             Point firstMovePt = this.Board.LastMoves[this.Board.LastMoves.Count - 1];
             JToken firstMove = ((JArray)jsonMap).Where(s => (int)s["FirstMove"]["x"] == firstMovePt.x && (int)s["FirstMove"]["y"] == firstMovePt.y).FirstOrDefault();
 
-            if (firstMove != null)
-            {
-                int x = (int)firstMove["SecondMove"]["x"];
-                int y = (int)firstMove["SecondMove"]["y"];
-                MakeMoveResult moveResult = this.MakeMove(x, y);
-                result |= ConfirmAliveResult.Mapped;
+            if (firstMove == null) return result;
+            int x = (int)firstMove["SecondMove"]["x"];
+            int y = (int)firstMove["SecondMove"]["y"];
+            MakeMoveResult moveResult = this.MakeMove(x, y);
+            result |= ConfirmAliveResult.Mapped;
 
-                if (moveResult == MakeMoveResult.KoBlocked)
-                    result |= ConfirmAliveResult.KoAlive;
-            }
+            if (moveResult == MakeMoveResult.KoBlocked)
+                result |= ConfirmAliveResult.KoAlive;
             return result;
         }
 
@@ -319,17 +309,15 @@ namespace Go
             if (SecondLevel == null) return result;
             Point lastMovePt = this.Board.LastMoves[this.Board.LastMoves.Count - 1];
             JToken secondLevelMove = SecondLevel.Where(m => (int)m["ThirdMove"]["x"] == lastMovePt.x && (int)m["ThirdMove"]["y"] == lastMovePt.y).FirstOrDefault();
-            if (secondLevelMove != null)
-            {
-                JToken fourthMove = secondLevelMove["FourthMove"];
-                int x = (int)fourthMove["x"];
-                int y = (int)fourthMove["y"];
-                MakeMoveResult moveResult = this.MakeMove(x, y);
-                result |= ConfirmAliveResult.Mapped;
+            if (secondLevelMove == null) return result;
+            JToken fourthMove = secondLevelMove["FourthMove"];
+            int x = (int)fourthMove["x"];
+            int y = (int)fourthMove["y"];
+            MakeMoveResult moveResult = this.MakeMove(x, y);
+            result |= ConfirmAliveResult.Mapped;
 
-                if (moveResult == MakeMoveResult.KoBlocked)
-                    result |= ConfirmAliveResult.KoAlive;
-            }
+            if (moveResult == MakeMoveResult.KoBlocked)
+                result |= ConfirmAliveResult.KoAlive;
             return result;
         }
 
@@ -365,17 +353,15 @@ namespace Go
 
             Point lastMovePt = this.Board.LastMoves[this.Board.LastMoves.Count - 1];
             JToken thirdLevelMove = ThirdLevel.Where(m => (int)m["FifthMove"]["x"] == lastMovePt.x && (int)m["FifthMove"]["y"] == lastMovePt.y).FirstOrDefault();
-            if (thirdLevelMove != null)
-            {
-                JToken sixthMove = thirdLevelMove["SixthMove"];
-                int x = (int)sixthMove["x"];
-                int y = (int)sixthMove["y"];
-                MakeMoveResult moveResult = this.MakeMove(x, y);
-                result |= ConfirmAliveResult.Mapped;
+            if (thirdLevelMove == null) return result;
+            JToken sixthMove = thirdLevelMove["SixthMove"];
+            int x = (int)sixthMove["x"];
+            int y = (int)sixthMove["y"];
+            MakeMoveResult moveResult = this.MakeMove(x, y);
+            result |= ConfirmAliveResult.Mapped;
 
-                if (moveResult == MakeMoveResult.KoBlocked)
-                    result |= ConfirmAliveResult.KoAlive;
-            }
+            if (moveResult == MakeMoveResult.KoBlocked)
+                result |= ConfirmAliveResult.KoAlive;
             return result;
         }
 
@@ -399,7 +385,7 @@ namespace Go
         /// </summary>
         public void PrintSurvivalList()
         {
-            (ConfirmAliveResult result, List<GameTryMove> tryMoves, GameTryMove koBlockedMove) = GetSurvivalMoves(this);
+            (ConfirmAliveResult result, List<GameTryMove> tryMoves, GameTryMove koBlockedMove) = GetSurvivalMoves();
             String content = DebugHelper.PrintGameTryMoves(this, tryMoves, null);
             Debug.WriteLine(content);
         }
@@ -409,7 +395,7 @@ namespace Go
         /// </summary>
         public void PrintKillList()
         {
-            (ConfirmAliveResult result, List<GameTryMove> tryMoves, GameTryMove koBlockedMove) = GetKillMoves(this);
+            (ConfirmAliveResult result, List<GameTryMove> tryMoves, GameTryMove koBlockedMove) = GetKillMoves();
             String content = DebugHelper.PrintGameTryMoves(this, tryMoves, null);
             Debug.WriteLine(content);
         }

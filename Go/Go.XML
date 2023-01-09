@@ -484,14 +484,14 @@
             <see cref="!:UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_WuQingYuan_Q30982" />
             </summary>
         </member>
-        <member name="M:Go.GameHelper.GetTryMovesForGame(Go.Game)">
+        <member name="M:Go.GameHelper.WinOrLose(Go.SurviveOrKill,Go.ConfirmAliveResult,Go.GameInfo)">
             <summary>
-            Get all try moves for next move.
+            Determine if win or lose based on result.
             </summary>
         </member>
-        <member name="M:Go.GameHelper.WinOrLose(Go.SurviveOrKill,Go.ConfirmAliveResult,Go.Game)">
+        <member name="M:Go.GameHelper.KoWinOrLose(Go.SurviveOrKill,Go.ConfirmAliveResult,Go.GameInfo)">
             <summary>
-            Determine if win or lose based on result in mcts.
+            Determine if win or lose for ko.
             </summary>
         </member>
         <member name="M:Go.GameHelper.KillOrSurvivalForNextMove(Go.Board)">
@@ -535,6 +535,11 @@
             <summary>
             Get specific board from last moves based on moveCount parameter.
             Requires that the root of the game starts from initial setup.
+            </summary>
+        </member>
+        <member name="M:Go.GameHelper.GetTryMovesForGame(Go.Game)">
+            <summary>
+            Get all try moves for next move.
             </summary>
         </member>
         <member name="M:Go.GroupHelper.GetKillerGroups(Go.Board,Go.Content,System.Boolean)">
@@ -1112,9 +1117,9 @@
             Get tiger mouth of links.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.GetAllDiagonalGroups(Go.Board,Go.Group,System.Collections.Generic.List{Go.Group},System.Boolean)">
+        <member name="M:Go.LinkHelper.GetAllDiagonalGroups(Go.Board,Go.Group,System.Func{Go.Group,System.Boolean},System.Collections.Generic.List{Go.Group})">
             <summary>
-            Get all diagonal groups for checking neighbour groups of killer group.
+            Get all diagonal groups by recursion.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.PointsBetweenDiagonals(Go.Point,Go.Point)">
@@ -1802,9 +1807,8 @@
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30278" />
             Check killer leap move <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q16985" />
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A56" />
-            Check two-point group <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Side_B35" />
-            Check if killer group created with opposite content within the group <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_A171_101Weiqi" />
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario3dan22" />
+            Check two-point group <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Side_B35" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SiegeScenario(Go.Board,System.Collections.Generic.List{Go.Point},System.Int32)">
@@ -1819,6 +1823,7 @@
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_B3" />
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_B3_2" />
             Ensure not link for groups <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q5971" />
+            Check for ko fight <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36_3" />
             Get stone neighbours only for killer group <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q15017" />
             Check any opponent stone at stone and diagonal points <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_Q18500" />
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A56_3" />
@@ -2283,7 +2288,7 @@
             Selection phase - to select the most promising node from sibling nodes based on UCT value.
             </summary>
         </member>
-        <member name="M:Go.MonteCarloTreeSearch.ExpandNode(Go.Node,System.Collections.Generic.List{Go.State})">
+        <member name="M:Go.MonteCarloTreeSearch.ExpandNode(Go.Node)">
             <summary>
             Expansion phase - to expand all possible states as child nodes.
             Confirm alive for each possible state to check if game ended with objective reached already.
@@ -2302,11 +2307,6 @@
         <member name="M:Go.MonteCarloTreeSearch.HandleConfirmedCases(Go.Node)">
             <summary>
             Confirmed cases represent possible game state where the game has ended with confirm alive already.
-            </summary>
-        </member>
-        <member name="M:Go.MonteCarloTreeSearch.MonteCarloIncludeKoMoves(Go.Game,System.Collections.Generic.List{Go.GameTryMove},Go.GameTryMove,Go.SurviveOrKill)">
-            <summary>
-            Ko blocked moves added to game try moves in mcts simulation phase. Only in mcts, ko blocked moves run concurrently with other moves, while in exhaustive search, ko blocked moves run only after all other moves have completed.
             </summary>
         </member>
         <member name="M:Go.MonteCarloTreeSearch.MonteCarloMakeKillMove(System.Int32,Go.Game)">

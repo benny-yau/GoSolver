@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 
 namespace Go
 {
@@ -117,7 +115,7 @@ namespace Go
         /// </summary>
         private void SetContentAt(int x, int y, Content c)
         {
-            if (!(PointWithinBoard(x, y)))
+            if (!PointWithinBoard(x, y))
                 throw new Exception("Invalid coordinate.");
 
             content[x, y] = c;
@@ -327,39 +325,31 @@ namespace Go
             }
             //exclude all corners
             result.RemoveAll(r => Math.Abs(r.x - x) >= Math.Max(2, maxDistance) && Math.Abs(r.x - x) == Math.Abs(r.y - y));
+            //exclude all from same group
+            Group group = GetGroupAt(p);
+            result.RemoveAll(r => GetGroupAt(r) == group);
             return result;
         }
 
         /// <summary>
-        /// Get distinct neighbour groups that are of opposite content to the current group.
+        /// Get neighbour groups that are of opposite content to the current group.
         /// </summary>
-        public HashSet<Group> GetDistinctNeighbourGroups(Group group)
+        public List<Group> GetNeighbourGroups(Group group = null)
         {
+            if (group == null) group = this.MoveGroup;
             Content content = group.Content.Opposite();
             HashSet<Group> neighbourGroups = new HashSet<Group>();
             foreach (Point p in group.Neighbours)
             {
-                if (this[p] == content)
-                {
-                    Group pGroup = this.GetGroupAt(p);
-                    neighbourGroups.Add(pGroup);
-                }
+                if (this[p] != content) continue;
+                neighbourGroups.Add(this.GetGroupAt(p));
             }
-            return neighbourGroups;
+            return neighbourGroups.ToList();
         }
 
-        public List<Group> GetNeighbourGroups(Group group = null)
-        {
-            if (group == null) group = this.MoveGroup;
-            return GetDistinctNeighbourGroups(group).ToList();
-        }
-
-        public List<Group> GetNeighbourGroups(Point p)
-        {
-            Group group = this.GetGroupAt(p);
-            return GetNeighbourGroups(group);
-        }
-
+        /// <summary>
+        /// Get groups from stone neighbours.
+        /// </summary>
         public HashSet<Group> GetGroupsFromStoneNeighbours(Point p, Content c)
         {
             List<Point> stoneNeighbours = this.GetStoneNeighbours(p).Where(q => this[q] == c.Opposite()).ToList();
@@ -381,6 +371,9 @@ namespace Go
             return groups;
         }
 
+        /// <summary>
+        /// Is atari move.
+        /// </summary>
         public bool IsAtariMove
         {
             get
@@ -389,6 +382,9 @@ namespace Go
             }
         }
 
+        /// <summary>
+        /// Is atari without suicide.
+        /// </summary>
         public bool IsAtariWithoutSuicide
         {
             get
