@@ -489,11 +489,6 @@
             Determine if win or lose based on result.
             </summary>
         </member>
-        <member name="M:Go.GameHelper.KoWinOrLose(Go.SurviveOrKill,Go.ConfirmAliveResult,Go.GameInfo)">
-            <summary>
-            Determine if win or lose for ko.
-            </summary>
-        </member>
         <member name="M:Go.GameHelper.KillOrSurvivalForNextMove(Go.Board)">
             <summary>
             Determine if next move is kill or survival, based on count of last moves and initial objective.
@@ -1817,7 +1812,7 @@
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30278" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.GenericEyeFillerMove(Go.GameTryMove,Go.GameTryMove)">
+        <member name="M:Go.RedundantMoveHelper.GenericEyeFillerMove(Go.GameTryMove)">
             <summary>
             Remove redundant moves that fill eyes instead of creating eyes within eye space for survival.
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_B3" />
@@ -1849,7 +1844,7 @@
             Eye filler link for groups.
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.SpecificEyeFillerMove(Go.GameTryMove,System.Boolean)">
+        <member name="M:Go.RedundantMoveHelper.SpecificEyeFillerMove(Go.GameTryMove)">
             <summary>
             Return specific survival or killer move if killer group contains five points or less. 
             Neighbour groups liberty more than one <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A37" />
@@ -2189,9 +2184,9 @@
             Includes target survived and target killed flags to prompt user.
             </summary>
         </member>
-        <member name="M:Go.LifeCheck.CheckIfDeadOrAlive(Go.SurviveOrKill,Go.Game,System.Boolean)">
+        <member name="M:Go.LifeCheck.CheckIfDeadOrAlive(Go.SurviveOrKill,Go.Game)">
             <summary>
-            Check if target group is dead or alive, including survival points check. Ignore ko check to return only dead or alive regardless of ko.
+            Check if target group is dead or alive, including survival points check.
             </summary>
         </member>
         <member name="M:Go.MonteCarloGame.InitializeMonteCarloComputerMove(Go.Game,Go.Node,System.Int32)">

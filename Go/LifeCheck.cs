@@ -290,13 +290,13 @@ namespace Go
 
 
         /// <summary>
-        /// Check if target group is dead or alive, including survival points check. Ignore ko check to return only dead or alive regardless of ko.
+        /// Check if target group is dead or alive, including survival points check.
         /// </summary>
-        public static ConfirmAliveResult CheckIfDeadOrAlive(SurviveOrKill surviveOrKill, Game g, Boolean ignoreKoCheck = false)
+        public static ConfirmAliveResult CheckIfDeadOrAlive(SurviveOrKill surviveOrKill, Game g)
         {
             ConfirmAliveResult confirmAlive = ConfirmAliveResult.Unknown;
             //check for survival points
-            Boolean survivalPointsKilled = (g.Board.CapturedPoints.Intersect(g.GameInfo.survivalPoints).Any());
+            Boolean survivalPointsKilled = g.Board.CapturedPoints.Intersect(g.GameInfo.survivalPoints).Any();
             if (survivalPointsKilled)
                 return (surviveOrKill == SurviveOrKill.Survive) ? ConfirmAliveResult.Alive : ConfirmAliveResult.Dead;
 
@@ -305,26 +305,14 @@ namespace Go
                 //check confirm alive
                 confirmAlive = LifeCheck.ConfirmAlive(g.Board);
                 if (confirmAlive == ConfirmAliveResult.Alive)
-                {
-                    //check for ko alive
-                    if (ignoreKoCheck || g.KoGameCheck != KoCheck.Survive)
-                        return confirmAlive;
-                    else
-                        return ConfirmAliveResult.KoAlive;
-                }
+                    return confirmAlive;
             }
             else
             {
                 //check if target group killed
                 confirmAlive = LifeCheck.CheckIfTargetGroupKilled(g.Board);
                 if (confirmAlive == ConfirmAliveResult.Dead)
-                {
-                    //check for ko alive
-                    if (ignoreKoCheck || g.KoGameCheck != KoCheck.Kill)
-                        return confirmAlive;
-                    else
-                        return ConfirmAliveResult.KoAlive;
-                }
+                    return confirmAlive;
             }
             return ConfirmAliveResult.Unknown;
         }

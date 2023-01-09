@@ -233,8 +233,8 @@ namespace Go
                 return true;
 
             //check if game ended
-            ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(surviveOrKill, g, true);
-            if (confirmAlive == ConfirmAliveResult.Alive || confirmAlive == ConfirmAliveResult.Dead)
+            ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(surviveOrKill, g);
+            if (confirmAlive != ConfirmAliveResult.Unknown && GameHelper.WinOrLose(surviveOrKill, confirmAlive, g.GameInfo))
                 return true;
 
             return SolutionHelper.AnswerFound(g);

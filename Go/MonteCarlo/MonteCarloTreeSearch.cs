@@ -384,12 +384,8 @@ namespace Go
                 Game g = childNode.State.Game;
                 ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(surviveOrKill, g);
                 childNode.State.ConfirmAlive = confirmAlive;
-                if (confirmAlive != ConfirmAliveResult.Unknown)
-                {
-                    Boolean winOrLose = GameHelper.WinOrLose(surviveOrKill, confirmAlive, g.GameInfo);
-                    if (winOrLose)
-                        childNode.State.WinOrLose = true;
-                }
+                if (confirmAlive != ConfirmAliveResult.Unknown && GameHelper.WinOrLose(surviveOrKill, confirmAlive, g.GameInfo))
+                    childNode.State.WinOrLose = true;
             }
             node.Expanded = true;
             return (node.ChildArray.Count > 0);
@@ -429,26 +425,18 @@ namespace Go
         /// <summary>
         /// Confirmed cases represent possible game state where the game has ended with confirm alive already.
         /// </summary>
-        private ConfirmAliveResult HandleConfirmedCases(Node node)
+        private void HandleConfirmedCases(Node node)
         {
+            if (!node.State.WinOrLose) return;
             ConfirmAliveResult confirmAlive = node.State.ConfirmAlive;
-            if (confirmAlive == ConfirmAliveResult.Unknown) return confirmAlive;
-
             DebugHelper.DebugWriteWithTab("Confirm alive at: " + node.GetLastMoves() + " | " + confirmAlive.ToString(), mctsDepth);
             Boolean winOrLose = node.State.WinOrLose;
             if (winOrLose && AnswerFound(node))
-                return confirmAlive;
+                return;
             Node parentNode = node.Parent;
-            if (parentNode == null)
-                return confirmAlive;
-            if (!winOrLose)
-                Pruning(node, null);
-            else
-            {
-                if (parentNode.Parent != null)
-                    Pruning(parentNode, node);
-            }
-            return confirmAlive;
+            if (parentNode != null && parentNode.Parent != null)
+                Pruning(parentNode, node);
+            return;
         }
 
         public ConfirmAliveResult InitializeMonteCarloPlayout(Node node)
@@ -482,19 +470,16 @@ namespace Go
             if (totalPossibilities == 0) return bestResult;
             int selectRandom = GlobalRandom.NextRange(0, totalPossibilities);
             GameTryMove gameTryMove = tryMoves[selectRandom];
-
+            Game tryGame = gameTryMove.TryGame;
             if (gameTryMove.MakeMoveResult == MakeMoveResult.Legal)
             {
-                gameTryMove.ConfirmAlive = MonteCarloMakeSurvivalMove(depth - 1, gameTryMove.TryGame);
+                gameTryMove.ConfirmAlive = MonteCarloMakeSurvivalMove(depth - 1, tryGame);
             }
             else if (gameTryMove.MakeMoveResult == MakeMoveResult.KoBlocked)
             {
-                if (KoHelper.KoSurvivalEnabled(SurviveOrKill.Kill, gameTryMove.TryGame.GameInfo))
-                {
-                    gameTryMove.ConfirmAlive = MonteCarloMakeSurvivalMove(depth, gameTryMove.TryGame);
-                    if (gameTryMove.ConfirmAlive.HasFlag(ConfirmAliveResult.Dead))
-                        gameTryMove.ConfirmAlive = ConfirmAliveResult.KoAlive;
-                }
+                gameTryMove.ConfirmAlive = MonteCarloMakeSurvivalMove(depth, tryGame);
+                if (GameHelper.WinOrLose(SurviveOrKill.Kill, result, tryGame.GameInfo))
+                    return ConfirmAliveResult.KoAlive;
             }
             bestResult = gameTryMove.ConfirmAlive;
             return bestResult;
@@ -520,23 +505,20 @@ namespace Go
             if (totalPossibilities == 0) return bestResult;
             int selectRandom = GlobalRandom.NextRange(0, totalPossibilities);
             GameTryMove gameTryMove = tryMoves[selectRandom];
+            Game tryGame = gameTryMove.TryGame;
 
             int nextDepth = gameTryMove.Move.Equals(Game.PassMove) ? depth : depth - 1;
             if (gameTryMove.MakeMoveResult == MakeMoveResult.Legal)
             {
-                gameTryMove.ConfirmAlive = MonteCarloMakeKillMove(nextDepth, gameTryMove.TryGame);
-
+                gameTryMove.ConfirmAlive = MonteCarloMakeKillMove(nextDepth, tryGame);
                 if (gameTryMove.ConfirmAlive == ConfirmAliveResult.Alive && gameTryMove.Move.Equals(Game.PassMove) && gameTryMove.TryGame.KoGameCheck == KoCheck.None)
                     bestResult = ConfirmAliveResult.BothAlive;
             }
             else if (gameTryMove.MakeMoveResult == MakeMoveResult.KoBlocked)
             {
-                if (KoHelper.KoSurvivalEnabled(SurviveOrKill.Survive, gameTryMove.TryGame.GameInfo))
-                {
-                    gameTryMove.ConfirmAlive = MonteCarloMakeKillMove(depth, gameTryMove.TryGame);
-                    if (gameTryMove.ConfirmAlive.HasFlag(ConfirmAliveResult.Alive) || gameTryMove.ConfirmAlive.HasFlag(ConfirmAliveResult.BothAlive))
-                        gameTryMove.ConfirmAlive = ConfirmAliveResult.KoAlive;
-                }
+                gameTryMove.ConfirmAlive = MonteCarloMakeKillMove(depth, tryGame);
+                if (GameHelper.WinOrLose(SurviveOrKill.Survive, result, tryGame.GameInfo))
+                    return ConfirmAliveResult.KoAlive;
             }
             return bestResult;
         }

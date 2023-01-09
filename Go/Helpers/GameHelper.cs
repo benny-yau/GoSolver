@@ -28,24 +28,6 @@ namespace Go
         }
 
         /// <summary>
-        /// Determine if win or lose for ko.
-        /// </summary>
-        public static Boolean KoWinOrLose(SurviveOrKill surviveOrKill, ConfirmAliveResult result, GameInfo gameInfo)
-        {
-            if (surviveOrKill == SurviveOrKill.Survive)
-            {
-                if (result.HasFlag(ConfirmAliveResult.Alive) || result.HasFlag(ConfirmAliveResult.BothAlive))
-                    return true;
-            }
-            else if (surviveOrKill == SurviveOrKill.Kill)
-            {
-                if (result.HasFlag(ConfirmAliveResult.Dead))
-                    return true;
-            }
-            return false;
-        }
-
-        /// <summary>
         /// Determine if next move is kill or survival, based on count of last moves and initial objective.
         /// </summary>
         public static SurviveOrKill KillOrSurvivalForNextMove(Board board)

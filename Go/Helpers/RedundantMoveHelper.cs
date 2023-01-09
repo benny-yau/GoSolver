@@ -2494,7 +2494,7 @@ namespace Go
             GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
             if (opponentMove == null) return false;
             if (killerGroup != null && killerGroup.Points.Count <= 5)
-                return SpecificEyeFillerMove(opponentMove, true);
+                return SpecificEyeFillerMove(opponentMove);
             else
                 return FillerMoveWithoutKillerGroup(tryMove, opponentMove);
         }
@@ -2516,7 +2516,7 @@ namespace Go
             Point move = tryBoard.Move.Value;
 
             //check generic eye filler move
-            if (!GenericEyeFillerMove(tryMove, opponentMove)) return false;
+            if (!GenericEyeFillerMove(tryMove)) return false;
 
             if (WallHelper.IsNonKillableGroup(tryBoard))
                 return true;
@@ -2564,14 +2564,13 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_B8" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
         /// </summary>
-        public static Boolean GenericEyeFillerMove(GameTryMove tryMove, GameTryMove opponentMove = null)
+        public static Boolean GenericEyeFillerMove(GameTryMove tryMove)
         {
             Board tryBoard = tryMove.TryGame.Board;
             Board currentBoard = tryMove.CurrentGame.Board;
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
             if (!tryMove.IsNegligible) return false;
-            List<Point> emptyNeighbours = tryBoard.GetStoneNeighbours().Where(p => tryBoard[p] == Content.Empty).ToList();
 
             //check any opponent stone at stone and diagonal points
             if (!tryBoard.CornerPoint(move) && tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite()))
@@ -2582,7 +2581,8 @@ namespace Go
                 return false;
 
             //check for ko fight
-            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty && KoHelper.IsKoFight(tryBoard, n, c).Item1))
+            List<Point> emptyNeighbours = tryBoard.GetStoneNeighbours().Where(p => tryBoard[p] == Content.Empty).ToList();
+            if (emptyNeighbours.Any(n => KoHelper.IsKoFight(tryBoard, n, c).Item1))
                 return false;
 
             //count eyes created at move
@@ -2659,7 +2659,7 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_A4" />
         /// Check for atari on neighbour groups <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36_2" />
         /// </summary>
-        public static Boolean SpecificEyeFillerMove(GameTryMove tryMove, Boolean isOpponent = false)
+        public static Boolean SpecificEyeFillerMove(GameTryMove tryMove)
         {
             Board tryBoard = tryMove.TryGame.Board;
             Board currentBoard = tryMove.CurrentGame.Board;

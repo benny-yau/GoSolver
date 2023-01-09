@@ -118,7 +118,7 @@ namespace Go
                     //check if game ended - target group survived
                     if (move.TryGame.Board.MoveGroupLiberties > 1)
                     {
-                        ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Survive, move.TryGame, true);
+                        ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Survive, move.TryGame);
                         if (confirmAlive == ConfirmAliveResult.Alive)
                             return (ConfirmAliveResult.Alive, new List<GameTryMove>() { move }, null);
                     }
@@ -301,15 +301,11 @@ namespace Go
             }
 
             //check for ko
-            if (!survivalWin && koBlockedMove != null && koEnabled)
+            if (!survivalWin && KoMoveCheck(currentGame, SurviveOrKill.Survive, koBlockedMove, depth))
             {
-                GameTryMove koMove = KoMoveCheck(currentGame, SurviveOrKill.Survive, koBlockedMove, depth);
-                if (koMove != null)
-                {
-                    survivalWin = true;
-                    bestResult = koMove.ConfirmAlive;
-                    bestResultMove = koMove;
-                }
+                survivalWin = true;
+                bestResult = koBlockedMove.ConfirmAlive;
+                bestResultMove = koBlockedMove;
             }
 
             //make the move at initial board
@@ -322,45 +318,39 @@ namespace Go
         /// <summary>
         /// Makes ko move and returns result as KoAlive if ko move wins.
         /// </summary>
-        private GameTryMove KoMoveCheck(Game currentGame, SurviveOrKill surviveOrKill, GameTryMove koBlockedMove, int depth)
+        private Boolean KoMoveCheck(Game currentGame, SurviveOrKill surviveOrKill, GameTryMove koTryMove, int depth)
         {
+            if (koTryMove == null) return false;
+            Boolean koEnabled = KoHelper.KoSurvivalEnabled(surviveOrKill, currentGame.GameInfo);
+            if (!koEnabled) return false;
+            Game g = koTryMove.TryGame;
+            Point move = koTryMove.Move;
             Stopwatch watch = null;
             int gameDepth = GameDepth(currentGame);
             if (IsExhaustiveMode(gameDepth))
             {
                 if (gameDepth == 0) Debug.WriteLine(Environment.NewLine);
-                DebugHelper.DebugWriteWithTab("Trying Ko game move at (" + koBlockedMove.Move.x + ", " + koBlockedMove.Move.y + ") at depth " + depth + " | Last moves: " + koBlockedMove.TryGame.Board.GetLastMoves(), gameDepth);
+                DebugHelper.DebugWriteWithTab("Trying Ko game move at (" + move.x + ", " + move.y + ") at depth " + depth + " | Last moves: " + g.Board.GetLastMoves(), gameDepth);
                 watch = Stopwatch.StartNew();
             }
 
-            ConfirmAliveResult result = ConfirmAliveResult.Unknown;
+            //make next opponent move
             if (surviveOrKill == SurviveOrKill.Survive)
-            {
-                (koBlockedMove.ConfirmAlive, koBlockedMove.OpponentBestMove) = MakeKillMove(depth, koBlockedMove.TryGame); //make next opponent move
-                result = koBlockedMove.ConfirmAlive;
-                if (result.HasFlag(ConfirmAliveResult.Alive) || result.HasFlag(ConfirmAliveResult.BothAlive))
-                    result = ConfirmAliveResult.KoAlive;
-            }
+                (koTryMove.ConfirmAlive, koTryMove.OpponentBestMove) = MakeKillMove(depth, g);
             else if (surviveOrKill == SurviveOrKill.Kill)
-            {
-                (koBlockedMove.ConfirmAlive, koBlockedMove.OpponentBestMove) = MakeSurvivalMove(depth, koBlockedMove.TryGame); //make next opponent move
-                result = koBlockedMove.ConfirmAlive;
-                if (result.HasFlag(ConfirmAliveResult.Dead))
-                    result = ConfirmAliveResult.KoAlive;
-            }
+                (koTryMove.ConfirmAlive, koTryMove.OpponentBestMove) = MakeSurvivalMove(depth, g);
 
             if (watch != null)
             {
                 watch.Stop();
-                DebugHelper.DebugWriteWithTab("Time taken for Ko (" + koBlockedMove.Move.x + ", " + koBlockedMove.Move.y + ") at depth " + depth + ": " + watch.ElapsedMilliseconds + " | Result: " + koBlockedMove.ConfirmAlive.ToString(), gameDepth);
+                DebugHelper.DebugWriteWithTab("Time taken for Ko (" + move.x + ", " + move.y + ") at depth " + depth + ": " + watch.ElapsedMilliseconds + " | Result: " + koTryMove.ConfirmAlive.ToString(), gameDepth);
             }
-
-            if (result.HasFlag(ConfirmAliveResult.KoAlive))
+            if (GameHelper.WinOrLose(surviveOrKill, koTryMove.ConfirmAlive, g.GameInfo))
             {
-                koBlockedMove.ConfirmAlive = result;
-                return koBlockedMove;
+                koTryMove.ConfirmAlive = ConfirmAliveResult.KoAlive;
+                return true;
             }
-            return null;
+            return false;
         }
 
         /// <summary>
@@ -397,7 +387,7 @@ namespace Go
                 else if (move.MakeMoveResult == MakeMoveResult.Legal)
                 {
                     //check if game ended - target group or survival points killed
-                    ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Kill, move.TryGame, true);
+                    ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Kill, move.TryGame);
                     if (confirmAlive == ConfirmAliveResult.Dead)
                         return (ConfirmAliveResult.Dead, new List<GameTryMove>() { move }, null);
                     //find redundant moves
@@ -570,15 +560,11 @@ namespace Go
             }
 
             //check for ko
-            if (!killWin && koBlockedMove != null && koEnabled)
+            if (!killWin && KoMoveCheck(currentGame, SurviveOrKill.Kill, koBlockedMove, depth))
             {
-                GameTryMove koMove = KoMoveCheck(currentGame, SurviveOrKill.Kill, koBlockedMove, depth);
-                if (koMove != null)
-                {
-                    killWin = true;
-                    bestResult = koMove.ConfirmAlive;
-                    bestResultMove = koMove;
-                }
+                killWin = true;
+                bestResult = koBlockedMove.ConfirmAlive;
+                bestResultMove = koBlockedMove;
             }
 
             //make the move at initial board
