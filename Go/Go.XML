@@ -394,15 +394,6 @@
             Find eye that is not semi solid eye.
             </summary>
         </member>
-        <member name="M:Go.EyeHelper.TwoPointSuicideAtCoveredEye(Go.Board,Go.Board)">
-            <summary>
-            Two-point suicide at covered eye. 
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31469" />
-            Make move at the other empty point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B57" />
-            Check for killer group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16424_2" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499_2" />
-            </summary>
-        </member>
         <member name="M:Go.EyeHelper.FindSemiSolidEye(Go.Point,Go.Board,Go.Content)">
             <summary>
             Semi solid eyes are real eyes that can have diagonals with immovable points.
@@ -855,7 +846,7 @@
             Move group binding <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B19_2" />
             </summary>
         </member>
-        <member name="M:Go.KillerFormationHelper.IsLinkToExternalGroup(Go.Board,Go.Board)">
+        <member name="M:Go.KillerFormationHelper.IsLinkToExternalGroup(Go.Board,Go.Board,Go.Board)">
             <summary>
             Ensure link is connected to both stones from previous move group and to external group.
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16520_2" />
@@ -865,6 +856,47 @@
             No lost groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18402_2" />
             Check connect and die <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30403" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi_2" />
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.SuicideForLibertyFight(Go.Board,Go.Board,System.Boolean)">
+            <summary>
+            Suicide for liberty fight.
+            Both alive <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_2" />
+            <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_3" />
+            Not both alive <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40_3" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30215_2" />
+            Two target groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30215_3" />
+            <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18_4" />
+            Check killer ko within killer group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_2" />
+            Ko move on external liberty (optional) <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221024_5" />
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.TwoPointSuicideAtCoveredEye(Go.Board,Go.Board)">
+            <summary>
+            Two-point suicide at covered eye. 
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31469" />
+            Make move at the other empty point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B57" />
+            Check for killer group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16424_2" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499_2" />
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.TwoPointAtariMove(Go.Board,Go.Board)">
+            <summary>
+            Two point atari move 
+            Check for three groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q2757_2" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" />
+            <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q15017" />
+            Check snapback <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31469" />
+            Check for ko fight 
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31672" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31428" />
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.BentThreeSuicideAtCoveredEye(Go.Board,Go.Board)">
+            <summary>
+            Bent three formation.
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31453" />
             </summary>
         </member>
         <member name="M:Go.KillerFormationHelper.CheckAnyEndPointCovered(System.Collections.Generic.IEnumerable{Go.Point},Go.Board,Go.Group)">
@@ -1519,34 +1551,7 @@
             Suicide at covered eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499_2" />
             Exclude if corner point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A9_Ext_2" />
             <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16424" />
-            Bent three formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31453" />
             No hope of escape <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17132_2" />
-            </summary>
-        </member>
-        <member name="M:Go.RedundantMoveHelper.SuicideForLibertyFight(Go.GameTryMove,System.Boolean)">
-            <summary>
-            Suicide for liberty fight.
-            Both alive <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_2" />
-            <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_3" />
-            Not both alive <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40_3" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30215_2" />
-            Two target groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30215_3" />
-            <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18_4" />
-            Check killer ko within killer group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_2" />
-            Ko move on external liberty (optional) <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221024_5" />
-            </summary>
-        </member>
-        <member name="M:Go.RedundantMoveHelper.TwoPointAtariMove(Go.Board,Go.Board)">
-            <summary>
-            Two point atari move 
-            Check for three groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q2757_2" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" />
-            <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q15017" />
-            Check snapback <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31469" />
-            Check for ko fight 
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31672" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31428" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SurvivalLeapMove(Go.GameTryMove)">

@@ -76,7 +76,7 @@ namespace Go
         /// Check if real eye found in neighbour groups <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario5dan27" />
         /// Check covered eye at non-killable group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
         /// </summary>
-        public static Boolean SuicidalKillerFormations(Board tryBoard, Board currentBoard, Board capturedBoard = null)
+        public static Boolean SuicidalKillerFormations(Board tryBoard, Board currentBoard, Board captureBoard = null)
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
@@ -85,17 +85,17 @@ namespace Go
             if (tryBoard.MoveGroupLiberties > 2) return false;
 
             //create captured board
-            if (capturedBoard == null)
+            if (captureBoard == null)
             {
                 if (tryBoard.MoveGroupLiberties == 1)
-                    capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
+                    captureBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
                 else if (tryBoard.MoveGroupLiberties == 2)
-                    (_, capturedBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
+                    (_, captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
             }
-            if (capturedBoard == null) return false;
+            if (captureBoard == null) return false;
 
             //check multipoint snapback after capture
-            if (MultipointSnapbackAfterCapture(tryBoard, capturedBoard))
+            if (MultipointSnapbackAfterCapture(tryBoard, captureBoard))
                 return true;
 
             //check suicide at eye point
@@ -107,14 +107,15 @@ namespace Go
                 return false;
 
             //find killer formation
-            if (!FindSuicidalKillerFormation(tryBoard, currentBoard, capturedBoard)) return false;
+            if (!FindSuicidalKillerFormation(tryBoard, currentBoard, captureBoard))
+                return false;
 
             //check if real eye found in neighbour groups
-            if (CheckRealEyeInNeighbourGroups(tryBoard, capturedBoard))
+            if (CheckRealEyeInNeighbourGroups(tryBoard, captureBoard))
                 return false;
 
             //check link to external group
-            if (IsLinkToExternalGroup(tryBoard, currentBoard))
+            if (IsLinkToExternalGroup(tryBoard, currentBoard, captureBoard))
                 return false;
             return true;
         }
@@ -127,16 +128,16 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31435" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18710" />
         /// </summary>
-        public static Boolean MultipointSnapbackAfterCapture(Board tryBoard, Board capturedBoard)
+        public static Boolean MultipointSnapbackAfterCapture(Board tryBoard, Board captureBoard)
         {
             Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.MoveGroupLiberties == 1 && capturedBoard.MoveGroup.Points.Count > 1 && ImmovableHelper.CheckConnectAndDie(capturedBoard, capturedBoard.MoveGroup))
+            if (tryBoard.MoveGroupLiberties == 1 && captureBoard.MoveGroup.Points.Count > 1 && ImmovableHelper.CheckConnectAndDie(captureBoard, captureBoard.MoveGroup))
                 return true;
 
             if (tryBoard.MoveGroupLiberties != 2) return false;
             Group weakGroup = tryBoard.GetNeighbourGroups().FirstOrDefault(group => group.Points.Count >= 2 && group.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, group));
             if (weakGroup == null) return false;
-            if (ImmovableHelper.CheckConnectAndDie(capturedBoard, weakGroup))
+            if (ImmovableHelper.CheckConnectAndDie(captureBoard, weakGroup))
                 return true;
             return false;
         }
@@ -164,7 +165,13 @@ namespace Go
                 return false;
 
             //check for corner six
-            if (KillerFormationHelper.CornerSixFormation(tryBoard, tryBoard.MoveGroup))
+            if (CornerSixFormation(tryBoard, tryBoard.MoveGroup))
+                return false;
+
+            if (BentThreeSuicideAtCoveredEye(tryBoard, captureBoard))
+                return false;
+
+            if (TwoPointAtariMove(tryBoard, captureBoard))
                 return false;
 
             //corner ko move
@@ -248,7 +255,7 @@ namespace Go
         /// Seven side formation <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_6" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_7" />
         /// </summary>
-        private static Boolean FindSuicidalKillerFormation(Board tryBoard, Board currentBoard, Board capturedBoard = null)
+        private static Boolean FindSuicidalKillerFormation(Board tryBoard, Board currentBoard, Board captureBoard)
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
@@ -258,9 +265,13 @@ namespace Go
             int moveCount = tryBoard.MoveGroup.Points.Count;
             if (moveCount == 2)
             {
+                //two-point atari move
+                if (TwoPointAtariMove(tryBoard, captureBoard))
+                    return true;
+
                 //covered eye
                 if (EyeHelper.CheckCoveredEyeAtSuicideGroup(tryBoard))
-                    return EyeHelper.TwoPointSuicideAtCoveredEye(capturedBoard, tryBoard);
+                    return TwoPointSuicideAtCoveredEye(captureBoard, tryBoard);
 
                 //two-point move with empty point
                 if (tryBoard.GetStoneNeighbours().Any(p => tryBoard[p] == Content.Empty))
@@ -273,6 +284,10 @@ namespace Go
 
                 //check for snapback
                 if (ImmovableHelper.CheckSnapbackInNeighbourGroups(tryBoard, tryBoard.MoveGroup))
+                    return true;
+
+                //suicide for liberty fight
+                if (SuicideForLibertyFight(tryBoard, currentBoard))
                     return true;
             }
             else if (moveCount == 3)
@@ -289,7 +304,10 @@ namespace Go
                     return true;
 
                 //corner three formation
-                if (KillerFormationHelper.CornerThreeFormation(tryBoard, tryBoard.MoveGroup))
+                if (CornerThreeFormation(tryBoard, tryBoard.MoveGroup))
+                    return true;
+
+                if (BentThreeSuicideAtCoveredEye(tryBoard, captureBoard))
                     return true;
             }
             else
@@ -334,7 +352,7 @@ namespace Go
             if (tryBoard.AtariTargets.Any() && !BentFourCornerFormation(tryBoard, tryBoard.MoveGroup))
                 return false;
             //grid dimension changed
-            if (KillerFormationHelper.GridDimensionChanged(LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).First().Points, tryBoard.MoveGroup.Points))
+            if (GridDimensionChanged(LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).First().Points, tryBoard.MoveGroup.Points))
                 return true;
             return false;
         }
@@ -365,7 +383,7 @@ namespace Go
         /// Check connect and die <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30403" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi_2" />
         /// </summary>
-        private static Boolean IsLinkToExternalGroup(Board tryBoard, Board currentBoard)
+        private static Boolean IsLinkToExternalGroup(Board tryBoard, Board currentBoard, Board captureBoard)
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
@@ -378,7 +396,8 @@ namespace Go
             List<Group> groups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
             //connect three or more groups
             if (groups.Count >= 3) return false;
-            if (KillerFormationHelper.CornerThreeFormation(tryBoard, tryBoard.MoveGroup)) return false;
+            if (CornerThreeFormation(tryBoard, tryBoard.MoveGroup)) return false;
+            if (TwoPointAtariMove(tryBoard, captureBoard)) return false;
             //connected to previous move group
             Boolean moveConnected = tryLinkBoard.GetStoneNeighbours().Any(p => groups.Any(group => group.Points.Contains(p)));
             if (moveConnected && LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryLinkBoard))
@@ -401,6 +420,182 @@ namespace Go
             }
             return false;
         }
+
+        /// <summary>
+        /// Suicide for liberty fight.
+        /// Both alive <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_2" />
+        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_3" />
+        /// Not both alive <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40_3" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30215_2" />
+        /// Two target groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30215_3" />
+        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18_4" />
+        /// Check killer ko within killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_2" />
+        /// Ko move on external liberty (optional) <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20221024_5" />
+        /// </summary>
+        public static Boolean SuicideForLibertyFight(Board tryBoard, Board currentBoard, Boolean removeOnePoint = true)
+        {
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            if (tryBoard.MoveGroupLiberties != 1) return false;
+            //suicide within killer group
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
+            if (killerGroup == null || killerGroup.Points.Count != tryBoard.MoveGroup.Points.Count + 1) return false;
+
+            List<Group> targetGroups = currentBoard.GetNeighbourGroups(killerGroup);
+            //get only one move within killer group
+            if (removeOnePoint && targetGroups.Count == 1)
+            {
+                Boolean firstPoint = killerGroup.Points.FirstOrDefault(p => currentBoard[p] == Content.Empty).Equals(move);
+                if (!firstPoint) return false;
+            }
+
+            //get external liberty
+            foreach (Group targetGroup in targetGroups)
+            {
+                List<Point> externalLiberties = targetGroup.Liberties.Except(killerGroup.Points).ToList();
+                if (externalLiberties.Count != 1) continue;
+                Point liberty = externalLiberties.First();
+                if (KoHelper.IsKoFight(tryBoard, liberty, c.Opposite()).Item1)
+                {
+                    //check killer ko within killer group
+                    if (GroupHelper.GetKillerGroupFromCache(tryBoard, targetGroup.Points.First(), c) == null) continue;
+                    if (tryBoard.GetNeighbourGroups(targetGroup).Any(n => WallHelper.IsNonKillableGroup(tryBoard, n))) continue;
+                }
+                else
+                {
+                    List<Group> groups = tryBoard.GetGroupsFromStoneNeighbours(liberty, c.Opposite()).ToList();
+                    if (groups.Count == 0 || tryBoard.GetLibertiesOfGroups(groups).Count == 1) continue;
+                }
+
+                //check suicidal move for both players at external liberty
+                if (ImmovableHelper.IsSuicidalMoveForBothPlayers(tryBoard, liberty))
+                    return true;
+
+                if (ImmovableHelper.IsSuicidalMoveForBothPlayers(currentBoard, liberty, true))
+                    return true;
+            }
+
+            //ko move on external liberty (optional)
+            foreach (Group targetGroup in targetGroups)
+            {
+                List<Point> externalLiberties = targetGroup.Liberties.Except(killerGroup.Points).ToList();
+                if (externalLiberties.Count != 1) continue;
+                Point liberty = externalLiberties.First();
+                Board b = currentBoard.MakeMoveOnNewBoard(liberty, c, true);
+                if (b != null && KoHelper.IsKoFight(b))
+                {
+                    Point? eye = KoHelper.GetKoEyePoint(b);
+                    if (eye != null && ImmovableHelper.IsSuicidalMoveForBothPlayers(b, eye.Value, true))
+                        return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Two-point suicide at covered eye. 
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31469" />
+        /// Make move at the other empty point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B57" />
+        /// Check for killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16424_2" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499_2" />
+        /// </summary>
+        public static Boolean TwoPointSuicideAtCoveredEye(Board capturedBoard, Board tryBoard)
+        {
+            if (capturedBoard == null || tryBoard == null) return false;
+            Point move = tryBoard.Move.Value;
+            Content c = capturedBoard.MoveGroup.Content;
+            if (tryBoard.MoveGroup.Points.Count != 2) return false;
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, move, c);
+            foreach (Group group in capturedBoard.CapturedList)
+            {
+                if (group.Points.Count != 2) continue;
+                //make move again at last move
+                Board b = capturedBoard.MakeMoveOnNewBoard(move, c.Opposite());
+                if (b == null) continue;
+                //capture move and find covered eye
+                if (EyeHelper.FindCoveredEyeByCapture(b))
+                    return true;
+                //check for killer group
+                if (killerGroup == null) continue;
+                if (!tryBoard.GetStoneNeighbours().Any(p => tryBoard[p] == Content.Empty)) continue;
+                //make move at the other empty point
+                Point move2 = group.Points.First(p => !p.Equals(move));
+                Board b2 = capturedBoard.MakeMoveOnNewBoard(move2, c.Opposite());
+                if (b2 == null) continue;
+                if (EyeHelper.FindCoveredEyeByCapture(b2))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Two point atari move 
+        /// Check for three groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q2757_2" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q15017" />
+        /// Check snapback <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31469" />
+        /// Check for ko fight 
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31672" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31428" />
+        /// </summary>
+        public static Boolean TwoPointAtariMove(Board tryBoard, Board captureBoard)
+        {
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            if (tryBoard.MoveGroupLiberties != 1) return false;
+            if (!captureBoard.CapturedList.Any(gr => gr.Points.Count == 2) || !tryBoard.IsAtariMove) return false;
+            //check for three groups
+            if (tryBoard.GetGroupsFromStoneNeighbours(move).Count > 2) return true;
+
+            Board board = captureBoard.MakeMoveOnNewBoard(move, c);
+            if (board == null || board.AtariTargets.Count != 1) return false;
+            //check snapback
+            if (board.GetDiagonalNeighbours().Any(n => board[n] == c) && ImmovableHelper.IsSuicidalOnCapture(board).Item1)
+                return true;
+            //check for ko fight
+            if (board.AtariTargets.Count == 1 && board.AtariTargets.First().Points.Count == 1)
+            {
+                Point? libertyPoint = ImmovableHelper.GetLibertyPointOfSuicide(board, board.AtariTargets.First());
+                if (libertyPoint == null) return false;
+                Point q = libertyPoint.Value;
+                if (EyeHelper.FindNonSemiSolidEye(captureBoard, q, c.Opposite()))
+                    return true;
+
+                List<Point> emptyPoints = board.GetStoneNeighbours(q).Where(n => board[n] == Content.Empty).ToList();
+                if (emptyPoints.Count != 1) return false;
+
+                Group killerGroup = GroupHelper.GetKillerGroupFromCache(board, q, c.Opposite());
+                if (killerGroup != null && killerGroup.Points.Count == 2 && EyeHelper.IsCovered(board, emptyPoints.First(), c.Opposite()))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Bent three formation.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31453" />
+        /// </summary>
+        public static Boolean BentThreeSuicideAtCoveredEye(Board tryBoard, Board captureBoard)
+        {
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            if (tryBoard.MoveGroupLiberties != 1) return false;
+            //bent three formation
+            if (captureBoard.MoveGroupLiberties == 1 && BentThreeFormation(tryBoard, tryBoard.MoveGroup.Points))
+            {
+                (_, Board b) = ImmovableHelper.ConnectAndDie(captureBoard);
+                if (b != null)
+                {
+                    IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, tryBoard.MoveGroup.Points);
+                    List<Point> endPoints = pointIntersect.Where(p => p.intersectCount == 1).Select(p => (Point)p.point).ToList();
+                    if (endPoints.Any(p => !p.Equals(move) && EyeHelper.IsCovered(b, p, c.Opposite())))
+                        return true;
+                }
+            }
+            return false;
+        }
+
 
         /*
  15 . . . . . . . . . . . . . . . . . . .
@@ -454,11 +649,11 @@ namespace Go
             if (TwoByTwoFormation(tryBoard, moveGroup.Points, c))
             {
                 //check for atari after capture
-                Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard, moveGroup);
-                if (capturedBoard == null) return false;
+                Board captureBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard, moveGroup);
+                if (captureBoard == null) return false;
                 foreach (Point p in moveGroup.Points)
                 {
-                    (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c, capturedBoard);
+                    (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c, captureBoard);
                     if (isSuicidal) continue;
                     if (b != null && b.AtariTargets.Any(t => t.Points.Count > 1))
                         return true;
@@ -918,7 +1113,7 @@ namespace Go
         /// </summary>
         public static int MaxLengthOfGrid(IEnumerable<Point> points)
         {
-            (int xLength, int yLength) = KillerFormationHelper.WithinGrid(points);
+            (int xLength, int yLength) = WithinGrid(points);
             int maxLength = Math.Max(xLength, yLength);
             return maxLength;
         }

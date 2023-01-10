@@ -140,42 +140,6 @@ namespace Go
         }
 
         /// <summary>
-        /// Two-point suicide at covered eye. 
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31469" />
-        /// Make move at the other empty point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B57" />
-        /// Check for killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16424_2" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499_2" />
-        /// </summary>
-        public static Boolean TwoPointSuicideAtCoveredEye(Board capturedBoard, Board tryBoard)
-        {
-            if (capturedBoard == null || tryBoard == null) return false;
-            Point move = tryBoard.Move.Value;
-            Content c = capturedBoard.MoveGroup.Content;
-            if (tryBoard.MoveGroup.Points.Count != 2) return false;
-            Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, move, c);
-            foreach (Group group in capturedBoard.CapturedList)
-            {
-                if (group.Points.Count != 2) continue;
-                //make move again at last move
-                Board b = capturedBoard.MakeMoveOnNewBoard(move, c.Opposite());
-                if (b == null) continue;
-                //capture move and find covered eye
-                if (EyeHelper.FindCoveredEyeByCapture(b))
-                    return true;
-                //check for killer group
-                if (killerGroup == null) continue;
-                if (!tryBoard.GetStoneNeighbours().Any(p => tryBoard[p] == Content.Empty)) continue;
-                //make move at the other empty point
-                Point move2 = group.Points.First(p => !p.Equals(move));
-                Board b2 = capturedBoard.MakeMoveOnNewBoard(move2, c.Opposite());
-                if (b2 == null) continue;
-                if (EyeHelper.FindCoveredEyeByCapture(b2))
-                    return true;
-            }
-            return false;
-        }
-
-        /// <summary>
         /// Semi solid eyes are real eyes that can have diagonals with immovable points.
         /// </summary>
         public static (Boolean, List<Point>) FindSemiSolidEye(Point eye, Board board, Content c = Content.Unknown)
