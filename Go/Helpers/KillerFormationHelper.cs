@@ -171,9 +171,6 @@ namespace Go
             if (BentThreeSuicideAtCoveredEye(tryBoard, captureBoard))
                 return false;
 
-            if (TwoPointAtariMove(tryBoard, captureBoard))
-                return false;
-
             //corner ko move
             if (CheckCornerKoMoveForRealEye(tryBoard))
                 return false;
@@ -529,7 +526,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Two point atari move 
+        /// Two point atari move.
         /// Check for three groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q2757_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" />
@@ -573,7 +570,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Bent three formation.
+        /// Bent three suicide at covered eye.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31453" />
         /// </summary>
         public static Boolean BentThreeSuicideAtCoveredEye(Board tryBoard, Board captureBoard)
@@ -585,13 +582,11 @@ namespace Go
             if (captureBoard.MoveGroupLiberties == 1 && BentThreeFormation(tryBoard, tryBoard.MoveGroup.Points))
             {
                 (_, Board b) = ImmovableHelper.ConnectAndDie(captureBoard);
-                if (b != null)
-                {
-                    IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, tryBoard.MoveGroup.Points);
-                    List<Point> endPoints = pointIntersect.Where(p => p.intersectCount == 1).Select(p => (Point)p.point).ToList();
-                    if (endPoints.Any(p => !p.Equals(move) && EyeHelper.IsCovered(b, p, c.Opposite())))
-                        return true;
-                }
+                if (b == null) return false;
+                IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, tryBoard.MoveGroup.Points);
+                List<Point> endPoints = pointIntersect.Where(p => p.intersectCount == 1).Select(p => (Point)p.point).ToList();
+                if (endPoints.Any(p => !p.Equals(move) && EyeHelper.IsCovered(b, p, c.Opposite())))
+                    return true;
             }
             return false;
         }

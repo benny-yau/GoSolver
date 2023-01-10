@@ -882,7 +882,7 @@
         </member>
         <member name="M:Go.KillerFormationHelper.TwoPointAtariMove(Go.Board,Go.Board)">
             <summary>
-            Two point atari move 
+            Two point atari move.
             Check for three groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q2757_2" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" />
@@ -895,7 +895,7 @@
         </member>
         <member name="M:Go.KillerFormationHelper.BentThreeSuicideAtCoveredEye(Go.Board,Go.Board)">
             <summary>
-            Bent three formation.
+            Bent three suicide at covered eye.
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31453" />
             </summary>
         </member>
