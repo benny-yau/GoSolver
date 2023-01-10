@@ -12,6 +12,7 @@ namespace Go
         private Node parent;
         private List<Node> childArray;
         private bool expanded = false;
+        private bool noPossibleStates = false;
         private JArray prunedJson;
 
         public Node()
@@ -83,6 +84,18 @@ namespace Go
             set
             {
                 this.expanded = value;
+            }
+        }
+
+        public virtual bool NoPossibleStates
+        {
+            get
+            {
+                return noPossibleStates;
+            }
+            set
+            {
+                this.noPossibleStates = value;
             }
         }
 

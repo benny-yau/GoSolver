@@ -28,12 +28,7 @@ namespace Go
             {
                 if (visitCount != null) return visitCount.Value;
                 if (MonteCarloMapping.mapMovesOrSearchAnswer)
-                {
-                    if (mappingDepthToVerify <= 5)
-                        return this.tree.HitDepthToVerify ? 5 : 10;
-                    else
-                        return 5;
-                }
+                    return (tree.HitDepthToVerify) ? 3 : 5;
                 else
                     return 10;
             }
@@ -102,38 +97,26 @@ namespace Go
                 //select best node
                 Node promisingNode = SelectPromisingNode(tree.Root);
 
-                Boolean noPossibleStates = false;
                 //ensure visit count has reached min requirement
-                if (!promisingNode.Expanded && promisingNode.State.Depth > 0 && (promisingNode == tree.Root || promisingNode.State.VisitCount >= VisitCountMinReq))
+                if (NodeToExpand(promisingNode) && (promisingNode == tree.Root || promisingNode.State.VisitCount >= VisitCountMinReq))
                 {
                     //expand possible states
-                    noPossibleStates = !ExpandNode(promisingNode);
-
-                    if (promisingNode.ChildArray.Count > 0)
-                    {
-                        //select random node or confirmed alive node after expansion
-                        Node winNode = promisingNode.ChildArray.Where(m => m.State.WinOrLose).FirstOrDefault();
-                        if (winNode != null)
-                        {
-                            HandleConfirmedCases(winNode);
-                            continue;
-                        }
-                        else
-                            promisingNode = RandomChildNode(promisingNode);
-                    }
+                    ExpandNode(promisingNode);
+                    if (HandleConfirmedCases(promisingNode)) continue;
+                    promisingNode = RandomChildNode(promisingNode);
                 }
                 //all nodes pruned
-                if (promisingNode.ChildArray.Count == 0 && (promisingNode.Expanded || promisingNode.State.Depth == 0))
+                if (promisingNode.ChildArray.Count == 0 && !NodeToExpand(promisingNode))
                 {
                     if (promisingNode.CurrentDepth == this.tree.Root.CurrentDepth) break;
                     if (CheckAllChildNodesPruned(promisingNode, true)) break;
                 }
 
                 //verify on depth reached or no possible states to expand
-                if (ReachedDepthToVerify(promisingNode) || noPossibleStates)
+                if (ReachedDepthToVerify(promisingNode))
                 {
                     tree.HitDepthToVerify = true;
-                    Node verifyNode = noPossibleStates ? promisingNode : promisingNode.Parent;
+                    Node verifyNode = (promisingNode.NoPossibleStates) ? promisingNode : promisingNode.Parent;
                     Boolean winOrLose = VerifyOnDepthReached(verifyNode);
                     if (winOrLose && AnswerFound(verifyNode))
                         break;
@@ -177,16 +160,22 @@ namespace Go
             return tree;
         }
 
+        private Boolean NodeToExpand(Node node)
+        {
+            return !node.Expanded && node.State.Depth > 0;
+        }
+
         internal virtual Node RandomChildNode(Node node)
         {
-            int noOfPossibleMoves = node.ChildArray.Count;
-            int selectRandom = GlobalRandom.NextRange(0, noOfPossibleMoves);
+            int count = node.ChildArray.Count;
+            if (count == 0) return node;
+            int selectRandom = GlobalRandom.NextRange(0, count);
             return node.ChildArray[selectRandom];
         }
 
         internal virtual Boolean ReachedDepthToVerify(Node node)
         {
-            return node.Parent != null && node.Parent.CurrentDepth >= DepthToVerify;
+            return (node.Parent != null && node.Parent.CurrentDepth >= DepthToVerify) || node.NoPossibleStates;
         }
 
         /// <summary>
@@ -388,6 +377,7 @@ namespace Go
                     childNode.State.WinOrLose = true;
             }
             node.Expanded = true;
+            if (node.ChildArray.Count == 0) node.NoPossibleStates = true;
             return (node.ChildArray.Count > 0);
         }
 
@@ -425,18 +415,16 @@ namespace Go
         /// <summary>
         /// Confirmed cases represent possible game state where the game has ended with confirm alive already.
         /// </summary>
-        private void HandleConfirmedCases(Node node)
+        private Boolean HandleConfirmedCases(Node promisingNode)
         {
-            if (!node.State.WinOrLose) return;
+            Node node = promisingNode.ChildArray.FirstOrDefault(m => m.State.WinOrLose);
+            if (node == null) return false;
             ConfirmAliveResult confirmAlive = node.State.ConfirmAlive;
             DebugHelper.DebugWriteWithTab("Confirm alive at: " + node.GetLastMoves() + " | " + confirmAlive.ToString(), mctsDepth);
-            Boolean winOrLose = node.State.WinOrLose;
-            if (winOrLose && AnswerFound(node))
-                return;
-            Node parentNode = node.Parent;
-            if (parentNode != null && parentNode.Parent != null)
-                Pruning(parentNode, node);
-            return;
+            if (AnswerFound(node))
+                return true;
+            Pruning(node.Parent, node);
+            return true;
         }
 
         public ConfirmAliveResult InitializeMonteCarloPlayout(Node node)
