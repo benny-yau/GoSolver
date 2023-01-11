@@ -244,7 +244,7 @@ namespace Go
             if (targetGroups.Any(n => n.Liberties.Count(p => GroupHelper.GetKillerGroupFromCache(board, p, c.Opposite()) != null) < 2))
                 return false;
             //find uncovered eye
-            if (killerGroups.Any(group => group.Points.Count <= 2 && !group.IsCoveredEye))
+            if (killerGroups.Any(group => group.Points.Count <= 2))
                 return true;
             return false;
         }

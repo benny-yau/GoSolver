@@ -1890,7 +1890,7 @@ namespace Go
         public static GameTryMove GetSpecificNeutralMove(Game g, List<GameTryMove> neutralPointMoves)
         {
             GameTryMove gameTryMove = null;
-            List<Group> killerGroups = GroupHelper.GetKillerGroups(g.Board, Content.Unknown, true);
+            List<Group> killerGroups = GroupHelper.GetKillerGroups(g.Board);
             List<Group> immovableGroups = IsImmovableKill(g, killerGroups).ToList();
             if (immovableGroups.Any())
             {
@@ -2004,10 +2004,12 @@ namespace Go
                 else
                 {
                     //target group contains killer group
-                    List<Group> kgroup = killerGroups.Where(group => board.GetNeighbourGroups(group).Contains(board.GetCurrentGroup(targetGroup))).ToList();
-                    if (kgroup.Count != 1) continue;
+                    List<Group> kgroups = killerGroups.Where(group => board.GetNeighbourGroups(group).Contains(board.GetCurrentGroup(targetGroup))).ToList();
+                    if (kgroups.Count != 1) continue;
+                    Group kgroup = kgroups.First();
+                    if (!kgroup.Points.Any(p => tryBoard[p] == c && tryBoard.GetGroupAt(p).Liberties.Count > 1)) continue;
                     //include all empty points within killer group
-                    neighbourLiberties = kgroup.First().Points.Where(p => tryBoard[p] == Content.Empty).ToList();
+                    neighbourLiberties = kgroup.Points.Where(p => tryBoard[p] == Content.Empty).ToList();
 
                     //compare liberties to see if target group can be killed
                     if (neighbourLiberties.Count == targetGroup.Liberties.Count)
@@ -2030,7 +2032,7 @@ namespace Go
         /// </summary>
         public static GameTryMove GetGenericNeutralMove(Game g, List<GameTryMove> neutralPointMoves)
         {
-            List<Group> killerGroups = GroupHelper.GetKillerGroups(g.Board, Content.Unknown, true);
+            List<Group> killerGroups = GroupHelper.GetKillerGroups(g.Board);
             foreach (Group killerGroup in killerGroups)
             {
                 if (!GroupHelper.IsLibertyGroup(killerGroup, g.Board)) continue;

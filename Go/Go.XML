@@ -534,7 +534,14 @@
         <member name="M:Go.GroupHelper.GetAllKillerGroups(Go.Board,Go.Content)">
             <summary>
             Get killer groups fully surrounded by opponent.
-            Remove where group is covered eye <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30005" />
+            </summary>
+        </member>
+        <member name="M:Go.GroupHelper.CheckCoveredEyeInKillerGroup(Go.Board,System.Collections.Generic.List{Go.Group})">
+            <summary>
+            Check covered eye in killer group.
+            <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30005" />
+            Not covered eye <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A123" />
+            <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30213" />
             </summary>
         </member>
         <member name="M:Go.GroupHelper.CheckNeighbourGroupsOfKillerGroup(Go.Board,Go.Group,System.Boolean)">
