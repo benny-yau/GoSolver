@@ -133,9 +133,8 @@
         </member>
         <member name="M:Go.Game.GetSurvivalMoves(Go.Game)">
             <summary>
-            Get all possible survival moves. Check if the game has ended with any of the possible moves.
-            Reorder try moves by priority. Check and remove redundant moves. 
-            For survive only, add pass move to check for both alive where necessary.
+            Get all possible survival moves. Check if the game has ended with target survived. Check and remove redundant moves. 
+            For survive only, check for recursion and add pass move to check for both alive where necessary.
             </summary>
         </member>
         <member name="M:Go.Game.CheckSurvivalRedundantMoves(Go.GameTryMove)">
@@ -155,20 +154,19 @@
         </member>
         <member name="M:Go.Game.KoMoveCheck(Go.Game,Go.SurviveOrKill,Go.GameTryMove,System.Int32)">
             <summary>
-            Makes ko move and returns result as KoAlive if ko move wins.
+            Make ko move and return result as KoAlive if ko move wins.
             </summary>
         </member>
         <member name="M:Go.Game.GetKillMoves(Go.Game)">
             <summary>
-            Get all possible kill moves. Check if the game has ended with any of the possible moves.
-            Reorder try moves by priority. Check and remove redundant moves. 
-            For kill only, replace neutral points where necessary. Add random move for kill where no move is available.
+            Get all possible kill moves. Check if the game has ended with target killed. Check and remove redundant moves. 
+            For kill only, restore neutral points where necessary and add random move for kill where no move is available.
             </summary>
         </member>
-        <member name="M:Go.Game.RestoreRedundantKo(System.Collections.Generic.List{Go.GameTryMove},System.Collections.Generic.List{Go.GameTryMove})">
+        <member name="M:Go.Game.CreateRandomMoveForRedundantKo(System.Collections.Generic.List{Go.GameTryMove},System.Collections.Generic.List{Go.GameTryMove})">
             <summary>
-            Restore redundant ko moves for killer ko within killer group.
-            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A79" />
+            Create random move for redundant ko.
+            Killer ko within killer group <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A79" />
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B39" />
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_5" />
             Check covered eye <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_6" />
