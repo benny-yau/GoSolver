@@ -311,6 +311,19 @@
             Fill eye points with stone of same content.
             </summary>
         </member>
+        <member name="M:Go.BothAliveHelper.GetKillerGroupsForBothAlive(Go.Board,Go.Content)">
+            <summary>
+            Get killer groups for both alive.
+            </summary>
+        </member>
+        <member name="M:Go.BothAliveHelper.CheckCoveredEyeInKillerGroup(Go.Board,System.Collections.Generic.List{Go.Group})">
+            <summary>
+            Check covered eye in killer group.
+            <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30005" />
+            Not covered eye <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A123" />
+            <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30213" />
+            </summary>
+        </member>
         <member name="M:Go.BothAliveHelper.AddPassMove(Go.Game)">
             <summary>
             Add pass move for game try move.
@@ -526,7 +539,7 @@
             Get all try moves for next move.
             </summary>
         </member>
-        <member name="M:Go.GroupHelper.GetKillerGroups(Go.Board,Go.Content,System.Boolean)">
+        <member name="M:Go.GroupHelper.GetKillerGroups(Go.Board,Go.Content)">
             <summary>
             Get killer group fully surrounded by survival stones. Content in parameter refer to target content (usually survival). 
             </summary>
@@ -534,14 +547,6 @@
         <member name="M:Go.GroupHelper.GetAllKillerGroups(Go.Board,Go.Content)">
             <summary>
             Get killer groups fully surrounded by opponent.
-            </summary>
-        </member>
-        <member name="M:Go.GroupHelper.CheckCoveredEyeInKillerGroup(Go.Board,System.Collections.Generic.List{Go.Group})">
-            <summary>
-            Check covered eye in killer group.
-            <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30005" />
-            Not covered eye <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A123" />
-            <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30213" />
             </summary>
         </member>
         <member name="M:Go.GroupHelper.CheckNeighbourGroupsOfKillerGroup(Go.Board,Go.Group,System.Boolean)">
@@ -747,8 +752,9 @@
             Pre-atari move that targets group with liberty of two. Next atari move will capture the group.
             <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16594" />
             <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_WuQingYuan_Q31154" />
-            <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_WindAndTime_Q30370" />
             <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_A55" />
+            Check target group <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_WindAndTime_Q30370" />
+            <see cref="!:UnitTestProject.SpecificNeutralMoveTest.CheckForRecursionTest_Scenario_XuanXuanGo_A28_101Weiqi_2" />
             Check if any liberty is suicidal <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18410" />
             Rare scenario <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_WindAndTime_Q30275" />
             Check unescapable group <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A85" />

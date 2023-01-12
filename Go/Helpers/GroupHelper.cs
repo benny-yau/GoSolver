@@ -9,7 +9,7 @@ namespace Go
         /// <summary>
         /// Get killer group fully surrounded by survival stones. Content in parameter refer to target content (usually survival). 
         /// </summary>
-        public static List<Group> GetKillerGroups(Board board, Content c = Content.Unknown, Boolean checkCoveredEye = false)
+        public static List<Group> GetKillerGroups(Board board, Content c = Content.Unknown)
         {
             List<Group> killerGroups = null;
             if (c == Content.Unknown)
@@ -20,9 +20,6 @@ namespace Go
                 killerGroups = GetAllKillerGroups(board, c);
                 if (killerGroups.Count == 0) return killerGroups;
 
-                //check covered eye
-                CheckCoveredEyeInKillerGroup(board, killerGroups);
-
                 //cache groups in board
                 if (board.killerGroup == null) board.killerGroup = new Dictionary<Content, List<Group>>();
                 board.killerGroup.Add(c, killerGroups);
@@ -31,12 +28,6 @@ namespace Go
             {
                 //retrieve from cache
                 killerGroups = board.killerGroup[c];
-            }
-            if (checkCoveredEye)
-            {
-                if (killerGroups.Any(gr => gr.IsCoveredEye == null))
-                    CheckCoveredEyeInKillerGroup(board, killerGroups);
-                return killerGroups.Where(gr => !gr.IsCoveredEye.Value).ToList();
             }
             return killerGroups;
         }
@@ -67,31 +58,6 @@ namespace Go
                 }
             }
             return killerGroups;
-        }
-
-
-        /// <summary>
-        /// Check covered eye in killer group.
-        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30005" />
-        /// Not covered eye <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A123" />
-        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30213" />
-        /// </summary>
-        private static void CheckCoveredEyeInKillerGroup(Board board, List<Group> killerGroups)
-        {
-            if (killerGroups.Any(group => group.Points.Count <= 2))
-            {
-                //clear immovable groups with empty points
-                Board clearedBoard = new Board(board);
-                List<Group> immovableGroups = killerGroups.Where(kgroup => kgroup.Points.Count(p => board[p] == Content.Empty) == 2 && kgroup.Points.All(p => ImmovableHelper.IsSuicidalMoveForBothPlayers(board, p))).ToList();
-                immovableGroups.ForEach(group => group.Points.ToList().ForEach(p => clearedBoard[p] = Content.Empty));
-                foreach (Group group in killerGroups)
-                {
-                    Boolean unCoveredEye = group.Points.Count > 2 || EyeHelper.FindRealEyeWithinEmptySpace(clearedBoard, group, EyeType.UnCoveredEye);
-                    if (!unCoveredEye)
-                        group.IsCoveredEye = true;
-                }
-            }
-            killerGroups.Where(gr => gr.IsCoveredEye == null).ToList().ForEach(gr => gr.IsCoveredEye = false);
         }
 
         /// <summary>

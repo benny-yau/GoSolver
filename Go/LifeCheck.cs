@@ -272,7 +272,7 @@ namespace Go
             List<Point> killedPoints = targetGroup.Where(q => board[q] == Content.Empty || board[q] == content).ToList();
             if (killedPoints.Count > 0 && killedPoints.Count == targetGroup.Count)
                 return ConfirmAliveResult.Dead;
-            return ConfirmAliveResult.Alive;
+            return ConfirmAliveResult.Unknown;
         }
 
         /// <summary>
@@ -300,21 +300,12 @@ namespace Go
             if (survivalPointsKilled)
                 return (surviveOrKill == SurviveOrKill.Survive) ? ConfirmAliveResult.Alive : ConfirmAliveResult.Dead;
 
+            //check target dead or alive
             if (surviveOrKill == SurviveOrKill.Survive)
-            {
-                //check confirm alive
                 confirmAlive = LifeCheck.ConfirmAlive(g.Board);
-                if (confirmAlive == ConfirmAliveResult.Alive)
-                    return confirmAlive;
-            }
             else
-            {
-                //check if target group killed
                 confirmAlive = LifeCheck.CheckIfTargetGroupKilled(g.Board);
-                if (confirmAlive == ConfirmAliveResult.Dead)
-                    return confirmAlive;
-            }
-            return ConfirmAliveResult.Unknown;
+            return confirmAlive;
         }
     }
 }

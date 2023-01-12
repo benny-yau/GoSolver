@@ -46,40 +46,51 @@ namespace Go
         public static (ConfirmAliveResult, Node, long?) MonteCarloRealTimeMove(Game game)
         {
             MonteCarloTreeSearch mcts = InitializeMonteCarloComputerMove(game);
-            State state = mcts.tree.Root.State;
 
-            //answer found
+            //make the move on the board
             if (mcts.AnswerNode != null)
             {
                 Game g = mcts.AnswerNode.State.Game;
                 Point answerMove = g.Board.Move.Value;
-                //make the move on the board
                 game.MakeMove(answerMove);
-
-                //check if both alive
-                if (mcts.AnswerNode.State.SurviveOrKill == SurviveOrKill.Survive && answerMove.Equals(Game.PassMove))
-                {
-                    if (ResultBothAlive(g))
-                        return (ConfirmAliveResult.BothAlive, mcts.AnswerNode, mcts.elapsedTime);
-                }
-
-                //check if ko alive
-                if (game.Board.Move.Equals(Game.PassMove) && game.Board.singlePointCapture != null && answerMove.Equals(game.Board.singlePointCapture.Value))
-                    return (ConfirmAliveResult.KoAlive, mcts.AnswerNode, mcts.elapsedTime);
             }
+            ConfirmAliveResult result = GetResultForMCTS(mcts);
+            return (result, mcts.AnswerNode ?? mcts.tree.Root, mcts.elapsedTime);
 
+        }
+
+        private static ConfirmAliveResult GetResultForMCTS(MonteCarloTreeSearch mcts)
+        {
+            State state = mcts.tree.Root.State;
+            Game game = state.Game;
+            Boolean answerFound = (mcts.AnswerNode != null);
             //return result as dead or alive
             ConfirmAliveResult confirmAlive = ConfirmAliveResult.Unknown;
             if (state.SurviveOrKill == SurviveOrKill.Kill)
-                confirmAlive = (mcts.AnswerNode != null) ? ConfirmAliveResult.Dead : ConfirmAliveResult.Alive;
+                confirmAlive = (answerFound) ? ConfirmAliveResult.Dead : ConfirmAliveResult.Alive;
             else if (state.SurviveOrKill == SurviveOrKill.Survive)
-                confirmAlive = (mcts.AnswerNode != null) ? ConfirmAliveResult.Alive : ConfirmAliveResult.Dead;
+                confirmAlive = (answerFound) ? ConfirmAliveResult.Alive : ConfirmAliveResult.Dead;
+
+            if (!answerFound)
+                return confirmAlive;
+
+            Game g = mcts.AnswerNode.State.Game;
+            Point answerMove = g.Board.Move.Value;
+
+            //check if both alive
+            if (mcts.AnswerNode.State.SurviveOrKill == SurviveOrKill.Survive && answerMove.Equals(Game.PassMove))
+            {
+                if (ResultBothAlive(g))
+                    return ConfirmAliveResult.BothAlive;
+            }
+
+            //check if ko alive
+            if (game.Board.Move.Equals(Game.PassMove) && game.Board.singlePointCapture != null && answerMove.Equals(game.Board.singlePointCapture.Value))
+                return ConfirmAliveResult.KoAlive;
 
             //return result with target killed or target survived
             confirmAlive = LifeCheck.CheckIfTargetSurvivedOrKilled(confirmAlive, state.SurviveOrKill, state.Game);
-
-            Node answerNode = (mcts.AnswerNode != null) ? mcts.AnswerNode : mcts.tree.Root;
-            return (confirmAlive, answerNode, mcts.elapsedTime);
+            return confirmAlive;
         }
 
         /// <summary>

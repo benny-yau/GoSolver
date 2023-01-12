@@ -627,8 +627,9 @@ namespace Go
         /// Pre-atari move that targets group with liberty of two. Next atari move will capture the group.
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16594" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_WuQingYuan_Q31154" />
-        /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_WindAndTime_Q30370" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_A55" />
+        /// Check target group <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_WindAndTime_Q30370" />
+        /// <see cref="UnitTestProject.SpecificNeutralMoveTest.CheckForRecursionTest_Scenario_XuanXuanGo_A28_101Weiqi_2" />
         /// Check if any liberty is suicidal <see cref="UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18410" />
         /// Rare scenario <see cref="UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_WindAndTime_Q30275" />
         /// Check unescapable group <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A85" />
@@ -646,6 +647,8 @@ namespace Go
                 //check conditions for pre-atari
                 HashSet<Point> targetLiberties = targetGroup.Liberties;
                 if (targetLiberties.Count != 2) continue;
+                //check target group
+                if (LifeCheck.GetTargets(tryBoard).All(t => targetGroup.Equals(t)) && !AtariHelper.AtariByGroup(tryBoard, targetGroup)) continue;
 
                 //check connect and die
                 (_, Board board) = ConnectAndDie(tryBoard, targetGroup);

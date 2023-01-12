@@ -12,7 +12,7 @@ namespace Go
         public static Boolean EnableCheckForPassMove(Board board, Content c = Content.Unknown, List<GameTryMove> tryMoves = null)
         {
             c = (c == Content.Unknown) ? GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive) : c;
-            List<Group> killerGroups = GroupHelper.GetKillerGroups(board, c, true);
+            List<Group> killerGroups = GetKillerGroupsForBothAlive(board, c);
             if (killerGroups.Count == 0) return false;
 
             foreach (Group killerGroup in killerGroups)
@@ -80,7 +80,7 @@ namespace Go
             if (contentGroups.Count > 2 || (contentGroups.Count == 2 && emptyPoints.Count != 2)) return false;
             if (contentGroups.Count == 2 && !LinkHelper.IsImmediateDiagonallyConnected(board, contentGroups[0], contentGroups[1])) return false;
 
-            List<Group> killerGroups = GroupHelper.GetKillerGroups(board, c.Opposite(), true);
+            List<Group> killerGroups = GetKillerGroupsForBothAlive(board, c.Opposite());
             List<Group> associatedKillerGroups = killerGroups.Where(n => !n.Equals(killerGroup) && board.GetNeighbourGroups(n).Any(gr => targetGroups.Contains(gr))).ToList();
             associatedKillerGroups.Insert(0, killerGroup);
 
@@ -266,6 +266,41 @@ namespace Go
                 eyePoints.ForEach(p => filledBoard[p] = c);
             }
             return filledBoard;
+        }
+
+        /// <summary>
+        /// Get killer groups for both alive.
+        /// </summary>
+        public static List<Group> GetKillerGroupsForBothAlive(Board board, Content c = Content.Unknown)
+        {
+            List<Group> killerGroups = GroupHelper.GetKillerGroups(board, c);
+            if (killerGroups.Any(gr => gr.IsCoveredEye == null))
+                CheckCoveredEyeInKillerGroup(board, killerGroups);
+            return killerGroups.Where(gr => !gr.IsCoveredEye.Value).ToList();
+        }
+
+        /// <summary>
+        /// Check covered eye in killer group.
+        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30005" />
+        /// Not covered eye <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A123" />
+        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30213" />
+        /// </summary>
+        private static void CheckCoveredEyeInKillerGroup(Board board, List<Group> killerGroups)
+        {
+            if (killerGroups.Any(group => group.Points.Count <= 2))
+            {
+                //clear immovable groups with empty points
+                Board clearedBoard = new Board(board);
+                List<Group> immovableGroups = killerGroups.Where(kgroup => kgroup.Points.Count(p => board[p] == Content.Empty) == 2 && kgroup.Points.All(p => ImmovableHelper.IsSuicidalMoveForBothPlayers(board, p))).ToList();
+                immovableGroups.ForEach(group => group.Points.ToList().ForEach(p => clearedBoard[p] = Content.Empty));
+                foreach (Group group in killerGroups)
+                {
+                    Boolean unCoveredEye = group.Points.Count > 2 || EyeHelper.FindRealEyeWithinEmptySpace(clearedBoard, group, EyeType.UnCoveredEye);
+                    if (!unCoveredEye)
+                        group.IsCoveredEye = true;
+                }
+            }
+            killerGroups.Where(gr => gr.IsCoveredEye == null).ToList().ForEach(gr => gr.IsCoveredEye = false);
         }
 
         /// <summary>

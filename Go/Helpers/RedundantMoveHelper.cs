@@ -705,8 +705,8 @@ namespace Go
             Content c = tryMove.MoveContent;
 
             //check connect and die
-            (Boolean suicidal, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard, tryBoard.MoveGroup, false);
-            if (!suicidal) return false;
+            (Boolean connectAndDie, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard, tryBoard.MoveGroup, false);
+            if (!connectAndDie) return false;
 
             if (LifeCheck.GetTargets(tryBoard).All(t => tryBoard.MoveGroup.Equals(t))) return true;
 
@@ -1877,9 +1877,19 @@ namespace Go
             {
                 //check connect and die for last two try moves
                 IEnumerable<Board> tryBoards = tryMoves.Select(t => t.TryGame.Board);
-                if (tryBoards.All(t => ImmovableHelper.CheckConnectAndDie(t) || SuicideGroupNearCapture(t)))
+                if (tryBoards.All(t => ConnectAndDieNotSuicidal(t) || SuicideGroupNearCapture(t)))
                     tryMoves.Add(neutralPointMoves.First());
             }
+        }
+
+        private static Boolean ConnectAndDieNotSuicidal(Board tryBoard)
+        {
+            (Boolean connectAndDie, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
+            if (!connectAndDie) return false;
+            if (tryBoard.MoveGroup.Points.Count > 1) return true;
+            if (LinkHelper.GetGroupLinkedDiagonals(tryBoard).Any(t => ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.GetGroupAt(t.Move))))
+                return true;
+            return false;
         }
 
         /// <summary>
