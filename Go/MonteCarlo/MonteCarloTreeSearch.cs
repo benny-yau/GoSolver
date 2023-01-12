@@ -109,7 +109,7 @@ namespace Go
                 if (promisingNode.ChildArray.Count == 0 && !NodeToExpand(promisingNode))
                 {
                     if (promisingNode.CurrentDepth == this.tree.Root.CurrentDepth) break;
-                    if (CheckAllChildNodesPruned(promisingNode, true)) break;
+                    if (CheckAllChildNodesPruned(promisingNode)) break;
                 }
 
                 //verify on depth reached or no possible states to expand
@@ -279,7 +279,7 @@ namespace Go
         /// <summary>
         /// Check if all nodes have been pruned. Check if answer found else continue to prune parent of current node.
         /// </summary>
-        private Boolean CheckAllChildNodesPruned(Node node, Boolean winResult)
+        private Boolean CheckAllChildNodesPruned(Node node, Boolean winResult = false)
         {
             if (node.ChildArray.Count > 0) return false;
             DebugHelper.DebugWriteWithTab("All child nodes pruned.", mctsDepth);

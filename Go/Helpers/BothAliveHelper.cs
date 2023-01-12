@@ -289,13 +289,28 @@ namespace Go
         {
             if (killerGroups.Any(group => group.Points.Count <= 2))
             {
+                //find immovable groups
+                List<Group> immovableGroups = new List<Group>();
+                foreach (Group killerGroup in killerGroups)
+                {
+                    List<Point> emptyPoints = killerGroup.Points.Where(p => board[p] == Content.Empty).ToList();
+                    if (emptyPoints.Count != 2) continue;
+                    if (emptyPoints.All(p => ImmovableHelper.IsSuicidalMoveForBothPlayers(board, p)))
+                        immovableGroups.Add(killerGroup);
+                }
+
                 //clear immovable groups with empty points
-                Board clearedBoard = new Board(board);
-                List<Group> immovableGroups = killerGroups.Where(kgroup => kgroup.Points.Count(p => board[p] == Content.Empty) == 2 && kgroup.Points.All(p => ImmovableHelper.IsSuicidalMoveForBothPlayers(board, p))).ToList();
-                immovableGroups.ForEach(group => group.Points.ToList().ForEach(p => clearedBoard[p] = Content.Empty));
+                Board b = board;
+                if (immovableGroups.Any())
+                {
+                    b = new Board(board);
+                    immovableGroups.ForEach(group => group.Points.ToList().ForEach(p => b[p] = Content.Empty));
+
+                }
+                //find uncovered eye
                 foreach (Group group in killerGroups)
                 {
-                    Boolean unCoveredEye = group.Points.Count > 2 || EyeHelper.FindRealEyeWithinEmptySpace(clearedBoard, group, EyeType.UnCoveredEye);
+                    Boolean unCoveredEye = group.Points.Count > 2 || EyeHelper.FindRealEyeWithinEmptySpace(b, group, EyeType.UnCoveredEye);
                     if (!unCoveredEye)
                         group.IsCoveredEye = true;
                 }
@@ -312,7 +327,6 @@ namespace Go
             move.TryGame.Board.Move = Game.PassMove;
             move.MakeMoveResult = MakeMoveResult.Legal;
             move.TryGame.Board.LastMoves.Add(Game.PassMove);
-            move.TryGame.KoGameCheck = (move.TryGame.KoGameCheck == KoCheck.Survive) ? KoCheck.Kill : move.TryGame.KoGameCheck;
             return move;
         }
     }
