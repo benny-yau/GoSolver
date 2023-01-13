@@ -141,7 +141,7 @@ namespace Go
         /// Check not negligible <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_4" />
         /// Check any diagonal separated by opposite content <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_5" />
         /// </summary>
-        public static Boolean CheckIsDiagonalLinked(Point pointA, Point pointB, Board board)
+        public static Boolean CheckIsDiagonalLinked(Point pointA, Point pointB, Board board, Boolean immediateLink = false)
         {
             Content c = board[pointA];
             List<Point> diagonals = LinkHelper.PointsBetweenDiagonals(pointA, pointB);
@@ -158,15 +158,19 @@ namespace Go
                     //make opponent move at diagonal
                     (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board);
                     if (suicidal) return true;
-                    //check not negligible
-                    Boolean isNegligible = !b.AtariTargets.Any(t => !t.Points.Contains(pointA) && !t.Points.Contains(pointB)) && b.CapturedList.Count == 0 && !Board.ResolveAtari(board, b);
-                    if (!isNegligible)
-                        return false;
 
                     Point q = diagonals.First(d => !d.Equals(p));
                     //make connection at other diagonal
                     if (ImmovableHelper.IsSuicidalMove(q, c, b).Item1)
                         return false;
+
+                    //check not negligible
+                    if (!immediateLink)
+                    {
+                        Boolean isNegligible = !b.AtariTargets.Any(t => !t.Points.Contains(pointA) && !t.Points.Contains(pointB)) && b.CapturedList.Count == 0 && !Board.ResolveAtari(board, b);
+                        if (!isNegligible)
+                            return false;
+                    }
                 }
                 return true;
             }
@@ -174,19 +178,22 @@ namespace Go
             foreach (Point diagonal in diagonals)
             {
                 if (!ImmovableHelper.IsImmovablePoint(diagonal, c, board).Item1) continue;
-                //empty point
-                if (board[diagonal] == Content.Empty) return true;
-                //filled point
-                Group killerGroup = GroupHelper.GetKillerGroupFromCache(board, diagonal, c);
-                if (killerGroup == null) continue;
-                //ensure only one opponent group within killer group
-                if (board.GetGroupsFromPoints(killerGroup.Points.Where(p => board[p] == c.Opposite()).ToList()).Count > 1) continue;
-                //check capture secure
-                if (!ImmovableHelper.CheckCaptureSecure(board, board.GetGroupAt(diagonal))) continue;
-                //check double atari
-                List<Group> groups = board.GetNeighbourGroups(killerGroup);
-                if (groups.Any(group => group.Liberties.Count == 1) || AtariHelper.DoubleAtariOnTargetGroups(board, groups))
-                    continue;
+                if (!immediateLink)
+                {
+                    //empty point
+                    if (board[diagonal] == Content.Empty) return true;
+                    //filled point
+                    Group killerGroup = GroupHelper.GetKillerGroupFromCache(board, diagonal, c);
+                    if (killerGroup == null) continue;
+                    //ensure only one opponent group within killer group
+                    if (board.GetGroupsFromPoints(killerGroup.Points.Where(p => board[p] == c.Opposite()).ToList()).Count > 1) continue;
+                    //check capture secure
+                    if (!ImmovableHelper.CheckCaptureSecure(board, board.GetGroupAt(diagonal))) continue;
+                    //check double atari
+                    List<Group> groups = board.GetNeighbourGroups(killerGroup);
+                    if (groups.Any(group => group.Liberties.Count == 1) || AtariHelper.DoubleAtariOnTargetGroups(board, groups))
+                        continue;
+                }
                 return true;
             }
             return false;
@@ -223,47 +230,13 @@ namespace Go
             return true;
         }
 
-        /// <summary>
-        /// Check if diagonals are immediately linked.
-        /// </summary>
-        public static Boolean CheckIsDiagonalImmediateLinked(Point pointA, Point pointB, Board board)
-        {
-            Content c = board[pointA];
-            List<Point> diagonals = LinkHelper.PointsBetweenDiagonals(pointA, pointB);
-            //if any diagonal is same content then is linked
-            if (diagonals.Any(d => board[d] == c))
-                return true;
-            //if both diagonals empty then is linked
-            if (diagonals.All(d => board[d] == Content.Empty))
-            {
-                //any diagonal is immovable
-                foreach (Point p in diagonals)
-                {
-                    //make opponent move at diagonal
-                    (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board);
-                    if (suicidal) return true;
-
-                    Point q = diagonals.First(d => !d.Equals(p));
-                    //make connection at other diagonal
-                    if (ImmovableHelper.IsSuicidalMove(q, c, b).Item1)
-                        return false;
-                }
-                return true;
-            }
-            //check any diagonal separated by opposite content
-            foreach (Point diagonal in diagonals)
-            {
-                if (ImmovableHelper.IsImmovablePoint(diagonal, c, board).Item1) return true;
-            }
-            return false;
-        }
 
         /// <summary>
         /// Check is diagonal immediate linked, including capture ko test.
         /// </summary>
         public static Boolean CheckIsDiagonalImmediateLinked(LinkedPoint<Point> diagonal, Board board)
         {
-            if (!CheckIsDiagonalImmediateLinked(diagonal.Move, (Point)diagonal.CheckMove, board))
+            if (!CheckIsDiagonalLinked(diagonal.Move, (Point)diagonal.CheckMove, board, true))
                 return false;
             if (CaptureKoToTestDiagonalLink(diagonal, board, true))
                 return true;

@@ -301,7 +301,7 @@
             <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18" />
             Find uncovered eye <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_ComplexSeki" />
             <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan22" />
-            Two point uncovered eye <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18_2" />
+            <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18_2" />
             Clear all killer groups with empty points <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30213" />
             <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A123" />
             </summary>
@@ -1050,7 +1050,7 @@
             Is absolute link by stone only.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.CheckIsDiagonalLinked(Go.Point,Go.Point,Go.Board)">
+        <member name="M:Go.LinkHelper.CheckIsDiagonalLinked(Go.Point,Go.Point,Go.Board,System.Boolean)">
             <summary>
             Check if diagonals are linked.
             Both diagonals empty <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_4" />
@@ -1069,11 +1069,6 @@
             <summary>
             Capture ko to test diagonal link, in case of double ko.
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" />
-            </summary>
-        </member>
-        <member name="M:Go.LinkHelper.CheckIsDiagonalImmediateLinked(Go.Point,Go.Point,Go.Board)">
-            <summary>
-            Check if diagonals are immediately linked.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.CheckIsDiagonalImmediateLinked(Go.LinkedPoint{Go.Point},Go.Board)">

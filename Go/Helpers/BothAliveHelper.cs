@@ -224,7 +224,7 @@ namespace Go
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18" />
         /// Find uncovered eye <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_ComplexSeki" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan22" />
-        /// Two point uncovered eye <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18_2" />
+        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18_2" />
         /// Clear all killer groups with empty points <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30213" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A123" />
         /// </summary>
@@ -232,21 +232,28 @@ namespace Go
         {
             if (killerGroups.Count == 0) return false;
             Content c = killerGroups.First().Content;
-            IEnumerable<Point> killerLiberties = killerGroups.First().Points.Where(p => board[p] == Content.Empty);
-            //ensure at least one liberty shared with killer group
-            Boolean sharedLiberty = targetGroups.All(group => group.Liberties.Intersect(killerLiberties).Any());
-            if (!sharedLiberty) return false;
-            //check suicidal for both players and not ko move at liberty
-            if (!targetGroups.Any(gr => gr.Liberties.Any(liberty => ImmovableHelper.IsSuicidalMoveForBothPlayers(board, liberty) || board.GetStoneNeighbours(liberty).Any(n => board[n] == c && board.GetGroupAt(n).Points.Count == 1 && board.GetStoneNeighbours(n).Any(s => EyeHelper.FindEye(board, s, c))))))
+
+            //find uncovered eye
+            if (!killerGroups.Any(group => group.Points.Count == 1))
                 return false;
 
             //ensure at least two liberties within killer group in survival neighbour group
             if (targetGroups.Any(n => n.Liberties.Count(p => GroupHelper.GetKillerGroupFromCache(board, p, c.Opposite()) != null) < 2))
                 return false;
-            //find uncovered eye
-            if (killerGroups.Any(group => group.Points.Count <= 2))
-                return true;
-            return false;
+
+            //check suicidal for both players and not ko move at liberty
+            if (!targetGroups.Any(gr => gr.Liberties.Any(liberty => ImmovableHelper.IsSuicidalMoveForBothPlayers(board, liberty) || board.GetStoneNeighbours(liberty).Any(n => board[n] == c && board.GetGroupAt(n).Points.Count == 1 && board.GetStoneNeighbours(n).Any(s => EyeHelper.FindEye(board, s, c))))))
+                return false;
+
+            //ensure at least one liberty shared with killer group
+            foreach (Group killerGroup in killerGroups)
+            {
+                IEnumerable<Point> killerLiberties = killerGroup.Points.Where(p => board[p] == Content.Empty);
+                Boolean sharedLiberty = targetGroups.All(group => group.Liberties.Intersect(killerLiberties).Any());
+                if (!sharedLiberty)
+                    return false;
+            }
+            return true;
         }
 
         /// <summary>
