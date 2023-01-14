@@ -43,6 +43,16 @@ namespace Go
         }
 
         /// <summary>
+        /// Is tiger mouth for link.
+        /// </summary>
+        public static Boolean IsTigerMouthForLink(Board board, Point q, Content c)
+        {
+            if (board[q] != Content.Empty || !ImmovableHelper.FindTigerMouth(board, c, q)) return false;
+            if (board.GetGroupsFromStoneNeighbours(q, c.Opposite()).Count() == 1) return false;
+            return true;
+        }
+
+        /// <summary>
         /// Immovable point to check for links and diagonal points in semi solid eye. For empty point, return if point is immovable which can be a suicide point or tiger's mouth. If not empty point, then check if opponent can escape. Return if immovable and liberty point at tiger mouth.
         /// Empty point <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_GuanZiPu_A3" />
         /// Check connect and die <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A28" />
@@ -272,10 +282,10 @@ namespace Go
             if (suicidal) return false;
 
             (Boolean suicidal2, Board b2) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), b);
-            if (suicidal2 && EyeHelper.FindRealSolidEye(eyePoint, c.Opposite(), b2))
+            if (!suicidal2 || EyeHelper.FindRealSolidEye(eyePoint, c.Opposite(), b2))
                 return false;
 
-            return suicidal2;
+            return true;
         }
 
         /// <summary>
@@ -513,17 +523,20 @@ namespace Go
                 Board b2 = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(b, targetGroup, c);
                 if (b2 == null || b2.MoveGroupLiberties != 1) continue;
 
-                List<Group> suicideGroups = b.GetNeighbourGroups(targetGroup).Where(gr => gr.Points.Count <= 2 && gr.Liberties.Count == 1).ToList();
-                if (suicideGroups.Count != 2) continue;
+                //get all suicide groups
+                List<Group> allSuicideGroups = b.GetNeighbourGroups(targetGroup).Where(gr => gr.Points.Count <= 2 && gr.Liberties.Count == 1).ToList();
+                if (allSuicideGroups.Count != 2) continue;
 
                 //one point move within two point group or two point move
-                List<Group> suicideWithinTwoPointGroup = suicideGroups.Where(gr => gr.Points.Count == 2 || GroupHelper.GetKillerGroupFromCache(b, gr.Points.First(), c) != null).ToList();
-                if (suicideWithinTwoPointGroup.Count != 1) continue;
+                List<Group> suicideGroups = allSuicideGroups.Where(gr => gr.Points.Count == 2 || GroupHelper.GetKillerGroupFromCache(b, gr.Points.First(), c) != null).ToList();
+                if (suicideGroups.Count != 1) continue;
+                Group suicideGroup = suicideGroups.First();
 
-                Group suicideGroupAtTigerMouth = suicideGroups.Where(gr => gr != suicideWithinTwoPointGroup.First() && gr.Points.Count == 1).FirstOrDefault();
+                //get suicide group at tiger mouth
+                Group suicideGroupAtTigerMouth = allSuicideGroups.Where(gr => gr != suicideGroup && gr.Points.Count == 1).FirstOrDefault();
                 if (suicideGroupAtTigerMouth == null) continue;
                 Point r = suicideGroupAtTigerMouth.Points.First();
-                if (!b.GetDiagonalNeighbours(r).Any(n => suicideWithinTwoPointGroup.First().Points.Contains(n))) continue;
+                if (!b.GetDiagonalNeighbours(r).Any(n => suicideGroup.Points.Contains(n))) continue;
                 //capture move
                 if (IsSnapback(b, targetGroup, suicideGroupAtTigerMouth))
                     return true;

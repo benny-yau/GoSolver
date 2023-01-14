@@ -55,30 +55,27 @@ namespace Go
         {
             if (targetGroups.Count == 0) return false;
             Content c = targetGroups.First().Content;
+            //get groups with two liberties only
+            targetGroups = targetGroups.Where(t => t.Liberties.Count == 2).ToList();
             //get distinct liberties of target groups
-            List<Point> liberties = board.GetLibertiesOfGroups(targetGroups.Where(t => t.Liberties.Count == 2).ToList()).Distinct().ToList();
+            List<Point> liberties = board.GetLibertiesOfGroups(targetGroups).Distinct().ToList();
 
             foreach (Point liberty in liberties)
             {
                 //make atari move
                 Board b = board.MakeMoveOnNewBoard(liberty, c.Opposite(), true);
                 if (b == null) continue;
-                Boolean atariOnTargetGroup = b.AtariTargets.Any(a => targetGroups.Any(t => t.Equals(board.GetCurrentGroup(a))));
-                if (!atariOnTargetGroup) continue;
-                //double atari with any target group
-                if (b.AtariTargets.Count >= 2)
-                {
-                    if (DoubleAtariEscape(b)) continue;
+                //double atari
+                if (DoubleAtariWithoutEscape(b))
                     return true;
-                }
             }
             return false;
         }
 
         /// <summary>
-        /// Double atari escape.
+        /// Double atari without escape.
         /// </summary>
-        private static Boolean DoubleAtariEscape(Board board)
+        public static Boolean DoubleAtariWithoutEscape(Board board)
         {
             if (board.AtariTargets.Count <= 1) return false;
             foreach (Group targetGroup in board.AtariTargets)
@@ -87,7 +84,7 @@ namespace Go
                 (Boolean unEscapable, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(board, targetGroup);
                 if (unEscapable) continue;
                 //check if any atari targets left
-                if (!board.AtariTargets.Any(t => escapeBoard.GetGroupLiberties(t).Count == 1))
+                if (board.AtariTargets.Any(t => escapeBoard.GetGroupLiberties(t).Count == 1))
                     return true;
             }
             return false;

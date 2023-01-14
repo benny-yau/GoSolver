@@ -766,14 +766,13 @@ namespace Go
         /// </summary>
         private static Boolean RedundantOnePointMoveInConnectAndDie(GameTryMove tryMove, Board captureBoard)
         {
-            Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
 
             if (tryBoard.MoveGroup.Points.Count != 1 || !tryMove.IsNegligible) return false;
             //ensure killer group contains only try move
-            if (!GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard, currentBoard))
+            if (!GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard))
                 return false;
 
             //check liberty surrounded by opponent

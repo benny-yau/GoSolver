@@ -168,6 +168,7 @@ namespace Go
             if (CornerSixFormation(tryBoard, tryBoard.MoveGroup))
                 return false;
 
+            //bent three
             if (BentThreeSuicideAtCoveredEye(tryBoard, captureBoard))
                 return false;
 
@@ -273,9 +274,9 @@ namespace Go
                 //two-point move with empty point
                 if (tryBoard.GetStoneNeighbours().Any(p => tryBoard[p] == Content.Empty))
                 {
-                    if (SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
+                    if (tryBoard.MoveGroupLiberties == 2 || SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                         return true;
-                    if (tryBoard.IsAtariMove || !GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard, currentBoard))
+                    if (!GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard))
                         return true;
                 }
 
@@ -304,6 +305,7 @@ namespace Go
                 if (CornerThreeFormation(tryBoard, tryBoard.MoveGroup))
                     return true;
 
+                //bent three
                 if (BentThreeSuicideAtCoveredEye(tryBoard, captureBoard))
                     return true;
             }
@@ -335,21 +337,22 @@ namespace Go
         {
             Content c = tryBoard.MoveGroup.Content;
             //move group binding
-            if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Count > 1)
+            List<Group> previousGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
+            if (previousGroups.Count > 1)
                 return false;
             //empty point neighbour
             if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty))
             {
-                if (SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
+                if (tryBoard.MoveGroupLiberties == 2 || SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                     return false;
-                if (tryBoard.MoveGroupLiberties == 2 || tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c && tryBoard.GetGroupAt(n) != tryBoard.MoveGroup))
+                if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c && tryBoard.GetGroupAt(n) != tryBoard.MoveGroup))
                     return false;
             }
             //atari target
             if (tryBoard.AtariTargets.Any() && !BentFourCornerFormation(tryBoard, tryBoard.MoveGroup))
                 return false;
             //grid dimension changed
-            if (GridDimensionChanged(LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).First().Points, tryBoard.MoveGroup.Points))
+            if (GridDimensionChanged(previousGroups.First().Points, tryBoard.MoveGroup.Points))
                 return true;
             return false;
         }
@@ -583,8 +586,10 @@ namespace Go
             {
                 (_, Board b) = ImmovableHelper.ConnectAndDie(captureBoard);
                 if (b == null) return false;
+                //get other end of move group
                 IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, tryBoard.MoveGroup.Points);
                 List<Point> endPoints = pointIntersect.Where(p => p.intersectCount == 1).Select(p => (Point)p.point).ToList();
+                //check for covered eye
                 if (endPoints.Any(p => !p.Equals(move) && EyeHelper.IsCovered(b, p, c.Opposite())))
                     return true;
             }

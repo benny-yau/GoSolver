@@ -90,12 +90,9 @@ namespace Go
                 if (libertyPoint == null) continue;
                 if (board[libertyPoint.Value] != Content.Empty)
                     continue;
-                if (lifeCheck)
-                {
-                    //possible corner three formation
-                    if (KillerFormationHelper.PossibleCornerThreeFormation(board, tigerMouth, c))
-                        return true;
-                }
+                //possible corner three formation
+                if (lifeCheck && KillerFormationHelper.PossibleCornerThreeFormation(board, tigerMouth, c))
+                    return true;
 
                 if (CommonTigerMouthExceptions(board, c, tigerMouth, libertyPoint.Value))
                     return true;
@@ -142,7 +139,7 @@ namespace Go
                     if (LinkHelper.GetPreviousMoveGroup(board, b).Any(t => t.Liberties.Count == 2 && !t.Equals(threatGroup) && t.Liberties.Any(l => ImmovableHelper.FindTigerMouth(board, c, l))))
                         return true;
                     //check for another tiger mouth at move
-                    if (b.GetStoneNeighbours().Any(n => b[n] == Content.Empty && ImmovableHelper.FindTigerMouth(board, c, n)))
+                    if (b.GetStoneNeighbours().Any(n => ImmovableHelper.IsTigerMouthForLink(board, n, c)))
                         return true;
                 }
 
@@ -159,6 +156,9 @@ namespace Go
             return DoubleTigerMouthLink(board, c, tigerMouth, libertyPoint);
         }
 
+        /// <summary>
+        /// Get tiger mouth threat group.
+        /// </summary>
         private static Group TigerMouthThreatGroup(Board board, Point tigerMouth, Content c)
         {
             List<Point> lib = board.GetStoneNeighbours(tigerMouth).Where(n => board[n] != c).ToList();
@@ -187,7 +187,7 @@ namespace Go
             //get all stone neigbours of liberty
             List<Point> diagonals = board.GetStoneNeighbours(libertyPoint);
             diagonals.Remove(tigerMouth);
-            diagonals = diagonals.Where(d => board[d] == Content.Empty && ImmovableHelper.FindTigerMouth(board, c, d)).ToList();
+            diagonals = diagonals.Where(d => ImmovableHelper.IsTigerMouthForLink(board, d, c)).ToList();
             foreach (Point diagonal in diagonals)
             {
                 //ensure link for groups
@@ -209,13 +209,8 @@ namespace Go
             List<LinkedPoint<Point>> diagonalPoints = LinkHelper.GetGroupDiagonals(board, eye);
             foreach (LinkedPoint<Point> p in diagonalPoints)
             {
-                if (board[p.Move] == Content.Empty && ImmovableHelper.FindTigerMouth(board, c.Opposite(), p.Move))
-                {
-                    if (board.GetGroupsFromStoneNeighbours(p.Move, c).Count() == 1) continue;
-                    //ensure tiger mouth is immovable
-                    if (ImmovableHelper.IsImmovablePoint(p.Move, c.Opposite(), board).Item1)
-                        tigerMouthList.Add(p);
-                }
+                if (ImmovableHelper.IsTigerMouthForLink(board, p.Move, c.Opposite()))
+                    tigerMouthList.Add(p);
             }
         }
 
@@ -234,13 +229,12 @@ namespace Go
             Content c = eyes.First().Content;
             if (tigerMouthList != null)
                 tigerMouthList.ForEach(tigerMouth => targetGroups.AddRange(board.GetGroupsFromStoneNeighbours(tigerMouth.Move, c)));
-            targetGroups = targetGroups.Where(t => t.Liberties.Count == 2).Distinct().ToList();
+
             return AtariHelper.DoubleAtariOnTargetGroups(board, targetGroups);
         }
 
         /// <summary>
         /// Get targets of survival group. Can specify other targets than specified in game info.
-        /// Specify another target <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_GuanZiPu_B3" />
         /// </summary>
         public static List<Group> GetTargets(Board board, List<Point> target = null)
         {
@@ -259,17 +253,14 @@ namespace Go
         }
 
         /// <summary>
-        /// Check if target points are killed when converted to empty points or kill content points.
+        /// Check if all target points are killed.
         /// </summary>
-        public static ConfirmAliveResult CheckIfTargetGroupKilled(Board board, List<Point> targetGroup = null, Content content = Content.Unknown)
+        public static ConfirmAliveResult CheckIfTargetGroupKilled(Board board)
         {
-            if (targetGroup == null)
-            {
-                GameInfo gameInfo = board.GameInfo;
-                targetGroup = gameInfo.targetPoints;
-                content = GameHelper.GetContentForSurviveOrKill(gameInfo, SurviveOrKill.Kill);
-            }
-            List<Point> killedPoints = targetGroup.Where(q => board[q] == Content.Empty || board[q] == content).ToList();
+            GameInfo gameInfo = board.GameInfo;
+            List<Point> targetGroup = gameInfo.targetPoints;
+            Content content = GameHelper.GetContentForSurviveOrKill(gameInfo, SurviveOrKill.Survive);
+            List<Point> killedPoints = targetGroup.Where(q => board[q] != content).ToList();
             if (killedPoints.Count > 0 && killedPoints.Count == targetGroup.Count)
                 return ConfirmAliveResult.Dead;
             return ConfirmAliveResult.Unknown;

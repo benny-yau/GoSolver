@@ -243,9 +243,9 @@
             Double atari on target groups.
             </summary>
         </member>
-        <member name="M:Go.AtariHelper.DoubleAtariEscape(Go.Board)">
+        <member name="M:Go.AtariHelper.DoubleAtariWithoutEscape(Go.Board)">
             <summary>
-            Double atari escape.
+            Double atari without escape.
             </summary>
         </member>
         <member name="M:Go.BothAliveHelper.EnableCheckForPassMove(Go.Board,Go.Content,System.Collections.Generic.List{Go.GameTryMove})">
@@ -569,7 +569,7 @@
             Get killer group of neighbour groups.
             </summary>
         </member>
-        <member name="M:Go.GroupHelper.IsSingleGroupWithinKillerGroup(Go.Board,Go.Board)">
+        <member name="M:Go.GroupHelper.IsSingleGroupWithinKillerGroup(Go.Board)">
             <summary>
             Is single group within killer group.
             </summary>
@@ -582,6 +582,11 @@
         <member name="M:Go.ImmovableHelper.FindTigerMouth(Go.Board,Go.Point,Go.Content)">
             <summary>
             Find tiger mouth where mouth point is empty or filled. Content in parameter represents content of stones forming the tiger mouth. Snapback or ko not handled (see IsConfirmTigerMouth). 
+            </summary>
+        </member>
+        <member name="M:Go.ImmovableHelper.IsTigerMouthForLink(Go.Board,Go.Point,Go.Content)">
+            <summary>
+            Is tiger mouth for link.
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.IsImmovablePoint(Go.Point,Go.Content,Go.Board)">
@@ -1076,7 +1081,7 @@
             Check is diagonal immediate linked, including capture ko test.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.CheckDoubleLinkage(Go.Board,Go.LinkedPoint{Go.Point},Go.Content)">
+        <member name="M:Go.LinkHelper.CheckDoubleLinkage(Go.Board,Go.Group,Go.LinkedPoint{Go.Point})">
             <summary>
             Check for double linkage.
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_2" />
@@ -2158,6 +2163,11 @@
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_4" />
             </summary>
         </member>
+        <member name="M:Go.LifeCheck.TigerMouthThreatGroup(Go.Board,Go.Point,Go.Content)">
+            <summary>
+            Get tiger mouth threat group.
+            </summary>
+        </member>
         <member name="M:Go.LifeCheck.DoubleTigerMouthLink(Go.Board,Go.Content,Go.Point,Go.Point)">
             <summary>
             Double tiger mouth link.
@@ -2182,12 +2192,11 @@
         <member name="M:Go.LifeCheck.GetTargets(Go.Board,System.Collections.Generic.List{Go.Point})">
             <summary>
             Get targets of survival group. Can specify other targets than specified in game info.
-            Specify another target <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_GuanZiPu_B3" />
             </summary>
         </member>
-        <member name="M:Go.LifeCheck.CheckIfTargetGroupKilled(Go.Board,System.Collections.Generic.List{Go.Point},Go.Content)">
+        <member name="M:Go.LifeCheck.CheckIfTargetGroupKilled(Go.Board)">
             <summary>
-            Check if target points are killed when converted to empty points or kill content points.
+            Check if all target points are killed.
             </summary>
         </member>
         <member name="M:Go.LifeCheck.CheckIfTargetSurvivedOrKilled(Go.ConfirmAliveResult,Go.SurviveOrKill,Go.Game)">
