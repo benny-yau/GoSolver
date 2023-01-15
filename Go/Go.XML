@@ -1065,20 +1065,9 @@
             Check any diagonal separated by opposite content <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_5" />
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.CheckIsDiagonalLinked(Go.LinkedPoint{Go.Point},Go.Board)">
+        <member name="M:Go.LinkHelper.CheckIsDiagonalLinked(Go.LinkedPoint{Go.Point},Go.Board,System.Boolean)">
             <summary>
             Check is diagonal linked, including capture ko test.
-            </summary>
-        </member>
-        <member name="M:Go.LinkHelper.CaptureKoToTestDiagonalLink(Go.LinkedPoint{Go.Point},Go.Board,System.Boolean)">
-            <summary>
-            Capture ko to test diagonal link, in case of double ko.
-            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" />
-            </summary>
-        </member>
-        <member name="M:Go.LinkHelper.CheckIsDiagonalImmediateLinked(Go.LinkedPoint{Go.Point},Go.Board)">
-            <summary>
-            Check is diagonal immediate linked, including capture ko test.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.CheckDoubleLinkage(Go.Board,Go.Group,Go.LinkedPoint{Go.Point})">
@@ -1100,6 +1089,8 @@
         <member name="M:Go.LinkHelper.GetAllDiagonalConnectedGroups(Go.Board,Go.Group,System.Func{Go.Group,System.Boolean})">
             <summary>
             Get all diagonal connected groups.
+            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_Nie60" />
+            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_3" />
             </summary>
         </member>
         <member name="M:Go.LinkHelper.GetGroupLinkedDiagonals(Go.Board,Go.Group,System.Boolean)">

@@ -202,45 +202,11 @@ namespace Go
         /// <summary>
         /// Check is diagonal linked, including capture ko test.
         /// </summary>
-        public static Boolean CheckIsDiagonalLinked(LinkedPoint<Point> diagonal, Board board)
+        public static Boolean CheckIsDiagonalLinked(LinkedPoint<Point> diagonal, Board board, Boolean immediateLink = false)
         {
-            if (!CheckIsDiagonalLinked(diagonal.Move, (Point)diagonal.CheckMove, board))
+            if (!CheckIsDiagonalLinked(diagonal.Move, (Point)diagonal.CheckMove, board, immediateLink))
                 return false;
-            if (CaptureKoToTestDiagonalLink(diagonal, board))
-                return true;
-            return false;
-        }
-
-        /// <summary>
-        /// Capture ko to test diagonal link, in case of double ko.
-        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" />
-        /// </summary>
-        private static Boolean CaptureKoToTestDiagonalLink(LinkedPoint<Point> diagonal, Board board, Boolean immediateLink = false)
-        {
-            Content c = board[diagonal.Move];
-            List<Point> diagonals = LinkHelper.PointsBetweenDiagonals(diagonal);
-            foreach (Point d in diagonals)
-            {
-                Board b = KoHelper.IsCaptureKoFight(board, d, c, true);
-                if (b == null) continue;
-                if (b[diagonal.Move] != c || b[(Point)diagonal.CheckMove] != c) return false;
-                if (immediateLink && !CheckIsDiagonalImmediateLinked(diagonal, b)) return false;
-                if (!immediateLink && !CheckIsDiagonalLinked(diagonal, b)) return false;
-            }
             return true;
-        }
-
-
-        /// <summary>
-        /// Check is diagonal immediate linked, including capture ko test.
-        /// </summary>
-        public static Boolean CheckIsDiagonalImmediateLinked(LinkedPoint<Point> diagonal, Board board)
-        {
-            if (!CheckIsDiagonalLinked(diagonal.Move, (Point)diagonal.CheckMove, board, true))
-                return false;
-            if (CaptureKoToTestDiagonalLink(diagonal, board, true))
-                return true;
-            return false;
         }
 
         /// <summary>
@@ -302,6 +268,8 @@ namespace Go
 
         /// <summary>
         /// Get all diagonal connected groups.
+        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_Nie60" />
+        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_3" />
         /// </summary>
         public static HashSet<Group> GetAllDiagonalConnectedGroups(Board board, Group group, Func<Group, Boolean> func = null)
         {
@@ -425,7 +393,7 @@ namespace Go
         {
             LinkedPoint<Point> diagonalLink = GetGroupLinkedDiagonals(board, group).FirstOrDefault(d => board.GetGroupAt(d.Move) == findGroup);
             if (diagonalLink == null) return false;
-            return CheckIsDiagonalImmediateLinked(diagonalLink, board);
+            return CheckIsDiagonalLinked(diagonalLink, board, true);
         }
 
         /// <summary>
