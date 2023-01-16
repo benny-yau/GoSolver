@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using dh = Go.DirectionHelper;
 
 namespace Go
 {
@@ -2133,7 +2132,7 @@ namespace Go
             //check eye points at diagonals of tiger mouth
             List<Point> libertyPoint = tryBoard.GetStoneNeighbours().Where(n => tryBoard[n] != c.Opposite()).ToList();
             if (libertyPoint.Count != 1) return false;
-            List<Point> diagonalPoints = TigerMouthEyePoints(tryBoard, move, libertyPoint.First()).Where(e => tryBoard[e] != c.Opposite()).ToList();
+            List<Point> diagonalPoints = ImmovableHelper.GetDiagonalsOfTigerMouth(tryBoard, move, c.Opposite()).Where(e => tryBoard[e] != c.Opposite()).ToList();
             if (diagonalPoints.Count == 0) return false;
 
             //check if diagonal point is tiger mouth 
@@ -2241,27 +2240,6 @@ namespace Go
             }
             return true;
         }
-
-        /// <summary>
-        /// Get eye points at the opposite diagonals of the tiger mouth.
-        /// </summary>
-        public static List<Point> TigerMouthEyePoints(Board board, Point tigerMouthPoint, Point libertyPoint)
-        {
-            List<Point> eyePoints = new List<Point>();
-            Direction direction = dh.GetDirectionFromTwoPoints(libertyPoint, tigerMouthPoint).Item1;
-            int rotation = dh.GetRotationIndex(direction);
-            Point pointSide = dh.GetPointInDirection(board, tigerMouthPoint, direction.Opposite());
-            if (!board.PointWithinBoard(pointSide))
-                return eyePoints;
-            Point pointSideLeft = dh.GetPointInDirection(board, pointSide, dh.GetNewDirection(Direction.Left, rotation));
-            Point pointSideRight = dh.GetPointInDirection(board, pointSide, dh.GetNewDirection(Direction.Right, rotation));
-            if (board.PointWithinBoard(pointSideLeft))
-                eyePoints.Add(pointSideLeft);
-            if (board.PointWithinBoard(pointSideRight))
-                eyePoints.Add(pointSideRight);
-            return eyePoints;
-        }
-
         #endregion
 
         #region redundant eye diagonal
@@ -2692,7 +2670,7 @@ namespace Go
                 return false;
 
             //check break link
-            List<Point> diagonals = RedundantMoveHelper.TigerMouthEyePoints(tryBoard, eyePoint.Value, move).Where(q => tryBoard[q] != c).ToList();
+            List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, eyePoint.Value, c).Where(q => tryBoard[q] != c).ToList();
             if (diagonals.Count == 0 && KoHelper.CheckBaseLineLeapLink(tryBoard, eyePoint.Value, c))
                 return false;
 

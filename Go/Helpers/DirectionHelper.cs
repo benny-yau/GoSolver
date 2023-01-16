@@ -130,7 +130,7 @@ namespace Go
         {
             int x_dist = p.x - q.x;
             int y_dist = p.y - q.y;
-            Boolean x_only =  Math.Abs(x_dist) >= Math.Abs(y_dist);
+            Boolean x_only = Math.Abs(x_dist) >= Math.Abs(y_dist);
 
             if (x_only)
             {
@@ -156,6 +156,28 @@ namespace Go
         {
             return DirectionLinkedList.FindIndex(m => m.Move.Equals(wallDirection));
         }
+
+
+        /// <summary>
+        /// Get eye points at the opposite diagonals of the tiger mouth.
+        /// </summary>
+        public static List<Point> TigerMouthEyePoints(Board board, Point tigerMouthPoint, Point libertyPoint)
+        {
+            List<Point> eyePoints = new List<Point>();
+            Direction direction = GetDirectionFromTwoPoints(libertyPoint, tigerMouthPoint).Item1;
+            int rotation = GetRotationIndex(direction);
+            Point pointSide = GetPointInDirection(board, tigerMouthPoint, direction.Opposite());
+            if (!board.PointWithinBoard(pointSide))
+                return eyePoints;
+            Point pointSideLeft = GetPointInDirection(board, pointSide, GetNewDirection(Direction.Left, rotation));
+            Point pointSideRight = GetPointInDirection(board, pointSide, GetNewDirection(Direction.Right, rotation));
+            if (board.PointWithinBoard(pointSideLeft))
+                eyePoints.Add(pointSideLeft);
+            if (board.PointWithinBoard(pointSideRight))
+                eyePoints.Add(pointSideRight);
+            return eyePoints;
+        }
+
 
     }
 }

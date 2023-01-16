@@ -167,7 +167,7 @@ namespace Go
                     //check not negligible
                     if (!immediateLink)
                     {
-                        Boolean isNegligible = !b.AtariTargets.Any(t => !t.Points.Contains(pointA) && !t.Points.Contains(pointB)) && b.CapturedList.Count == 0 && !Board.ResolveAtari(board, b);
+                        Boolean isNegligible = GameTryMove.IsNegligibleForBoard(b, board, t => !t.Points.Contains(pointA) && !t.Points.Contains(pointB));
                         if (!isNegligible)
                             return false;
                     }
@@ -241,9 +241,9 @@ namespace Go
                     continue;
                 }
 
-                //check if any of the other two diagonals are immovable
-                List<Point> otherDiagonals = board.GetDiagonalNeighbours(p).Where(n => board.GetStoneNeighbours(n).Intersect(opponentStones).Count() >= 2).ToList();
-                if (otherDiagonals.All(d => !ImmovableHelper.IsImmovablePoint(d, c, b).Item1))
+                //check if diagonals are immovable
+                List<Point> tmDiagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(board, p, c);
+                if (tmDiagonals.All(d => !ImmovableHelper.IsImmovablePoint(d, c, b).Item1))
                     return false;
             }
             return true;

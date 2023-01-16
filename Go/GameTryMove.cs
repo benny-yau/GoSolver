@@ -123,6 +123,11 @@ namespace Go
             }
         }
 
+        public static Boolean IsNegligibleForBoard(Board tryBoard, Board currentBoard, Func<Group, Boolean> func = null)
+        {
+            return !(tryBoard.MoveGroupLiberties > 1 && tryBoard.AtariTargets.Any(t => (func != null) ? func(t) : true)) && tryBoard.CapturedList.Count == 0 && !Board.ResolveAtari(currentBoard, tryBoard);
+        }
+
         /// <summary>
         /// Increased count of killer groups.
         /// </summary>

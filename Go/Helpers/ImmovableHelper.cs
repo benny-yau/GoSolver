@@ -45,11 +45,29 @@ namespace Go
         /// <summary>
         /// Is tiger mouth for link.
         /// </summary>
-        public static Boolean IsTigerMouthForLink(Board board, Point q, Content c)
+        public static Boolean IsTigerMouthForLink(Board board, Point p, Content c, Boolean checkDiagonals = true)
         {
-            if (board[q] != Content.Empty || !ImmovableHelper.FindTigerMouth(board, c, q)) return false;
-            if (board.GetGroupsFromStoneNeighbours(q, c.Opposite()).Count() == 1) return false;
+            if (board[p] != Content.Empty || !ImmovableHelper.FindTigerMouth(board, c, p)) return false;
+            //ensure more than one group
+            if (board.GetGroupsFromStoneNeighbours(p, c.Opposite()).Count() == 1) return false;
+            //check if diagonals are immovable
+            if (checkDiagonals)
+            {
+                List<Point> diagonals = GetDiagonalsOfTigerMouth(board, p, c);
+                if (diagonals.All(d => ImmovableHelper.IsImmovablePoint(d, c, board).Item1))
+                    return false;
+            }
             return true;
+        }
+
+        /// <summary>
+        /// Get diagonals of tiger mouth.
+        /// </summary>
+        public static List<Point> GetDiagonalsOfTigerMouth(Board board, Point p, Content c)
+        {
+            List<Point> opponentStones = board.GetStoneNeighbours(p).Where(n => board[n] == c).ToList();
+            List<Point> diagonals = board.GetDiagonalNeighbours(p).Where(n => board.GetStoneNeighbours(n).Intersect(opponentStones).Count() >= 2).ToList();
+            return diagonals;
         }
 
         /// <summary>
@@ -83,6 +101,8 @@ namespace Go
             }
             else //filled point
             {
+                if (board[p] == c) return (true, null);
+
                 Group targetGroup = board.GetGroupAt(p);
                 (Boolean unEscapable, Point? libertyPoint, _) = UnescapableGroup(board, targetGroup);
                 if (!unEscapable)

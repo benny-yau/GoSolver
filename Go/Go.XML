@@ -375,6 +375,11 @@
             Get the count to rotate to get direction from linked list.
             </summary>
         </member>
+        <member name="M:Go.DirectionHelper.TigerMouthEyePoints(Go.Board,Go.Point,Go.Point)">
+            <summary>
+            Get eye points at the opposite diagonals of the tiger mouth.
+            </summary>
+        </member>
         <member name="M:Go.EyeHelper.FindEye(Go.Board,System.Int32,System.Int32,Go.Content)">
             <summary>
             An eye is a point where all direct connected points are black or white as specified.
@@ -584,9 +589,14 @@
             Find tiger mouth where mouth point is empty or filled. Content in parameter represents content of stones forming the tiger mouth. Snapback or ko not handled (see IsConfirmTigerMouth). 
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.IsTigerMouthForLink(Go.Board,Go.Point,Go.Content)">
+        <member name="M:Go.ImmovableHelper.IsTigerMouthForLink(Go.Board,Go.Point,Go.Content,System.Boolean)">
             <summary>
             Is tiger mouth for link.
+            </summary>
+        </member>
+        <member name="M:Go.ImmovableHelper.GetDiagonalsOfTigerMouth(Go.Board,Go.Point,Go.Content)">
+            <summary>
+            Get diagonals of tiger mouth.
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.IsImmovablePoint(Go.Point,Go.Content,Go.Board)">
@@ -1775,11 +1785,6 @@
             Check for uncovered eye <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221220_7" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.TigerMouthEyePoints(Go.Board,Go.Point,Go.Point)">
-            <summary>
-            Get eye points at the opposite diagonals of the tiger mouth.
-            </summary>
-        </member>
         <member name="M:Go.RedundantMoveHelper.SurvivalEyeDiagonalMove(Go.GameTryMove)">
             <summary>
             Find eye diagonal moves that are redundant.
@@ -2137,7 +2142,7 @@
             Double tiger mouth <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_B3" />
             </summary>
         </member>
-        <member name="M:Go.LifeCheck.CommonTigerMouthExceptions(Go.Board,Go.Content,Go.Point,Go.Point)">
+        <member name="M:Go.LifeCheck.CommonTigerMouthExceptions(Go.Board,Go.Content,Go.Point,Go.Point,System.Boolean)">
             <summary>
             Common tiger mouth exceptions.
             Check for atari at tiger mouth <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_4" />
@@ -2159,7 +2164,7 @@
             Get tiger mouth threat group.
             </summary>
         </member>
-        <member name="M:Go.LifeCheck.DoubleTigerMouthLink(Go.Board,Go.Content,Go.Point,Go.Point)">
+        <member name="M:Go.LifeCheck.DoubleTigerMouthLink(Go.Board,Go.Content,Go.Point,Go.Point,System.Boolean)">
             <summary>
             Double tiger mouth link.
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571" />
