@@ -137,5 +137,27 @@ namespace Go
             if (ImmovableHelper.CheckConnectAndDie(board, group)) return false;
             return true;
         }
+
+        /// <summary>
+        /// Target with all non killable groups.
+        /// </summary>
+        public static Boolean TargetWithAllNonKillableGroups(Board board, Group group = null)
+        {
+            if (group == null) group = board.MoveGroup;
+            if (board.GetNeighbourGroups(group).All(n => WallHelper.IsNonKillableGroup(board, n)))
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Target with any non killable group.
+        /// </summary>
+        public static Boolean TargetWithAnyNonKillableGroup(Board board, Group group = null)
+        {
+            if (group == null) group = board.MoveGroup;
+            if (board.GetNeighbourGroups(group).Any(n => WallHelper.IsNonKillableGroup(board, n)))
+                return true;
+            return false;
+        }
     }
 }

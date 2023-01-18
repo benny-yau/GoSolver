@@ -18,7 +18,6 @@ namespace Go
             {
                 //get killer groups
                 killerGroups = GetAllKillerGroups(board, c);
-                if (killerGroups.Count == 0) return killerGroups;
 
                 //cache groups in board
                 if (board.killerGroup == null) board.killerGroup = new Dictionary<Content, List<Group>>();

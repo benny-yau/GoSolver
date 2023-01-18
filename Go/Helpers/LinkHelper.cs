@@ -200,13 +200,13 @@ namespace Go
         }
 
         /// <summary>
-        /// Check is diagonal linked, including capture ko test.
+        /// Check is diagonal linked.
         /// </summary>
         public static Boolean CheckIsDiagonalLinked(LinkedPoint<Point> diagonal, Board board, Boolean immediateLink = false)
         {
-            if (!CheckIsDiagonalLinked(diagonal.Move, (Point)diagonal.CheckMove, board, immediateLink))
-                return false;
-            return true;
+            if (CheckIsDiagonalLinked(diagonal.Move, (Point)diagonal.CheckMove, board, immediateLink))
+                return true;
+            return false;
         }
 
         /// <summary>

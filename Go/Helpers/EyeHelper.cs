@@ -464,7 +464,7 @@ namespace Go
             if (killerGroup.Points.Where(p => board[p] == Content.Empty).All(lib => NoEyeForOpponentWithinKillerGroup(board, lib, c)))
                 return true;
 
-            if (board.GetNeighbourGroups(killerGroup).Any(n => WallHelper.IsNonKillableGroup(board, n)))
+            if (WallHelper.TargetWithAnyNonKillableGroup(board, killerGroup))
                 return true;
             return false;
         }

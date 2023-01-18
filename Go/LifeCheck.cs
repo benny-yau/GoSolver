@@ -124,36 +124,34 @@ namespace Go
 
             //make move at liberty
             Board b = board.MakeMoveOnNewBoard(libertyPoint, c.Opposite());
-            if (b != null && !ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false))
+            if (b == null || b.MoveGroupLiberties <= 2) return false;
+
+            //check for atari at tiger mouth
+            HashSet<Group> tmGroups = b.GetGroupsFromStoneNeighbours(tigerMouth, c.Opposite());
+            //check is negligible
+            Boolean isNegligible = GameTryMove.IsNegligibleForBoard(b, board, t => !tmGroups.Contains(t));
+            if (!isNegligible)
+                return true;
+            if (threatGroup != null)
             {
-                //check for atari at tiger mouth
-                HashSet<Group> tmGroups = b.GetGroupsFromStoneNeighbours(tigerMouth, c.Opposite());
-                //check is negligible
-                Boolean isNegligible = GameTryMove.IsNegligibleForBoard(b, board, t => !tmGroups.Contains(t));
-                if (!isNegligible)
+                //check for two threat groups
+                if (LinkHelper.GetPreviousMoveGroup(board, b).Any(t => t.Liberties.Count == 2 && !t.Equals(threatGroup) && t.Liberties.Any(l => ImmovableHelper.FindTigerMouth(board, c, l))))
                     return true;
+                //check for another tiger mouth at move
+                if (b.GetStoneNeighbours().Any(n => ImmovableHelper.IsTigerMouthForLink(board, n, c, !lifeCheck)))
+                    return true;
+            }
 
-                if (threatGroup != null)
-                {
-                    //check for two threat groups
-                    if (LinkHelper.GetPreviousMoveGroup(board, b).Any(t => t.Liberties.Count == 2 && !t.Equals(threatGroup) && t.Liberties.Any(l => ImmovableHelper.FindTigerMouth(board, c, l))))
-                        return true;
-                    //check for another tiger mouth at move
-                    if (b.GetStoneNeighbours().Any(n => ImmovableHelper.IsTigerMouthForLink(board, n, c, !lifeCheck)))
-                        return true;
-                }
-
-                //check for link breakage
-                if (b.MoveGroup.Points.Count > 1)
-                {
-                    List<Point> stoneNeighbours = LinkHelper.GetNeighboursDiagonallyLinked(b);
-                    if (b.GetDiagonalNeighbours().Any(n => b[n] != c && b.GetStoneNeighbours(n).Intersect(stoneNeighbours).Count() >= 2 && !ImmovableHelper.IsImmovablePoint(n, c, b).Item1))
-                        return true;
-                }
+            //check for link breakage
+            if (b.MoveGroup.Points.Count > 1)
+            {
+                List<Point> stoneNeighbours = LinkHelper.GetNeighboursDiagonallyLinked(b);
+                if (b.GetDiagonalNeighbours().Any(n => b[n] != c && b.GetStoneNeighbours(n).Intersect(stoneNeighbours).Count() >= 2 && !ImmovableHelper.IsImmovablePoint(n, c, b).Item1))
+                    return true;
             }
 
             //check if another tiger mouth present at diagonal neighbours
-            return DoubleTigerMouthLink(board, c, tigerMouth, libertyPoint, lifeCheck);
+            return DoubleTigerMouthLink(board, b, tigerMouth, libertyPoint, lifeCheck);
         }
 
         /// <summary>
@@ -161,16 +159,13 @@ namespace Go
         /// </summary>
         private static Group TigerMouthThreatGroup(Board board, Point tigerMouth, Content c)
         {
-            List<Point> lib = board.GetStoneNeighbours(tigerMouth).Where(n => board[n] != c).ToList();
-            if (lib.Count == 1 && board[lib.First()] == c.Opposite())
-            {
-                Group threatGroup = board.GetGroupAt(lib.First());
-                if (threatGroup.Liberties.Count == 2)
-                    return threatGroup;
-            }
+            List<Point> points = board.GetStoneNeighbours(tigerMouth).Where(n => board[n] == c.Opposite()).ToList();
+            if (points.Count != 1) return null;
+            Group threatGroup = board.GetGroupAt(points.First());
+            if (threatGroup.Liberties.Count == 2)
+                return threatGroup;
             return null;
         }
-
 
         /// <summary>
         /// Double tiger mouth link.
@@ -178,12 +173,10 @@ namespace Go
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571" />
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150" />
         /// </summary>
-        public static Boolean DoubleTigerMouthLink(Board board, Content c, Point tigerMouth, Point libertyPoint, Boolean lifeCheck = false)
+        public static Boolean DoubleTigerMouthLink(Board board, Board b, Point tigerMouth, Point libertyPoint, Boolean lifeCheck = false)
         {
+            Content c = b.MoveGroup.Content.Opposite();
             if (board[tigerMouth] != Content.Empty || !board.GetStoneNeighbours(tigerMouth).Contains(libertyPoint)) return false;
-            //make killer move at liberty
-            Board b = board.MakeMoveOnNewBoard(libertyPoint, c.Opposite());
-            if (b == null || b.MoveGroupLiberties <= 2) return false;
             //get all stone neigbours of liberty
             List<Point> diagonals = board.GetStoneNeighbours(libertyPoint);
             diagonals.Remove(tigerMouth);

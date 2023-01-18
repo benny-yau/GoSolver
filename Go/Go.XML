@@ -1077,7 +1077,7 @@
         </member>
         <member name="M:Go.LinkHelper.CheckIsDiagonalLinked(Go.LinkedPoint{Go.Point},Go.Board,System.Boolean)">
             <summary>
-            Check is diagonal linked, including capture ko test.
+            Check is diagonal linked.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.CheckDoubleLinkage(Go.Board,Go.Group,Go.LinkedPoint{Go.Point})">
@@ -1328,7 +1328,7 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3kyu28_2" />
             Check for negligible in opponent move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" />
             Check any is non killable <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30370" />
-            Check for covered eye <see cref="!:UnitTestProject.RedundantTigerMouthMove.RedundantTigerMouthMove_Scenario_TianLongTu_Q16738_2" />
+            Check for covered eye <see cref="!:UnitTestProject.RedundantTigerMouthMove.RedundantTigerMouthMove_Scenario_WindAndTime_Q30225_2" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.ThreeLibertySuicidal(Go.GameTryMove)">
@@ -2022,6 +2022,16 @@
             Strong neighbour groups with more than two liberties or two liberties that are suicidal to opponent.
             </summary>
         </member>
+        <member name="M:Go.WallHelper.TargetWithAllNonKillableGroups(Go.Board,Go.Group)">
+            <summary>
+            Target with all non killable groups.
+            </summary>
+        </member>
+        <member name="M:Go.WallHelper.TargetWithAnyNonKillableGroup(Go.Board,Go.Group)">
+            <summary>
+            Target with any non killable group.
+            </summary>
+        </member>
         <member name="M:Go.GameMapping.GetMappedJson(Go.Game)">
             <summary>
             Retrieves the mapped json from GameInfo object.
@@ -2164,7 +2174,7 @@
             Get tiger mouth threat group.
             </summary>
         </member>
-        <member name="M:Go.LifeCheck.DoubleTigerMouthLink(Go.Board,Go.Content,Go.Point,Go.Point,System.Boolean)">
+        <member name="M:Go.LifeCheck.DoubleTigerMouthLink(Go.Board,Go.Board,Go.Point,Go.Point,System.Boolean)">
             <summary>
             Double tiger mouth link.
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571" />

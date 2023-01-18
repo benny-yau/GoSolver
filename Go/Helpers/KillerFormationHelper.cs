@@ -103,7 +103,7 @@ namespace Go
                 return false;
 
             //check if neighbour group is non-killable
-            if (tryBoard.GetNeighbourGroups().Any(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
+            if (WallHelper.TargetWithAnyNonKillableGroup(tryBoard))
                 return false;
 
             //find killer formation
@@ -459,7 +459,7 @@ namespace Go
                 {
                     //check killer ko within killer group
                     if (GroupHelper.GetKillerGroupFromCache(tryBoard, targetGroup.Points.First(), c) == null) continue;
-                    if (tryBoard.GetNeighbourGroups(targetGroup).Any(n => WallHelper.IsNonKillableGroup(tryBoard, n))) continue;
+                    if (WallHelper.TargetWithAnyNonKillableGroup(tryBoard, targetGroup)) continue;
                 }
                 else
                 {

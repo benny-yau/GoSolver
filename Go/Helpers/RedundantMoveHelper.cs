@@ -368,7 +368,7 @@ namespace Go
                 if (liberties.Count != 1) continue;
                 Point liberty = liberties.First();
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, eyeGroup.Content, currentBoard);
-                if (b == null || b.GetNeighbourGroups().All(n => WallHelper.IsNonKillableGroup(b, n))) continue;
+                if (b == null || WallHelper.TargetWithAllNonKillableGroups(b)) continue;
                 if (suicidal || ImmovableHelper.CheckConnectAndDie(b))
                     return (true, b);
 
@@ -534,7 +534,7 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3kyu28_2" />
         /// Check for negligible in opponent move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" />
         /// Check any is non killable <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30370" />
-        /// Check for covered eye <see cref="UnitTestProject.RedundantTigerMouthMove.RedundantTigerMouthMove_Scenario_TianLongTu_Q16738_2" />
+        /// Check for covered eye <see cref="UnitTestProject.RedundantTigerMouthMove.RedundantTigerMouthMove_Scenario_WindAndTime_Q30225_2" />
         /// </summary>
         private static Boolean SuicidalMoveWithinNonKillableGroup(GameTryMove tryMove, GameTryMove opponentTryMove = null)
         {
@@ -578,7 +578,7 @@ namespace Go
                     //check if all changed to non killable groups
                     if (b == null || !diagonalPoints.All(n => LinkHelper.CheckIsDiagonalLinked(n, b))) continue;
                     Group kgroup = GroupHelper.GetKillerGroupFromCache(b, move, c.Opposite());
-                    if (kgroup != null && b.GetNeighbourGroups(kgroup).All(n => WallHelper.IsNonKillableGroup(b, n)))
+                    if (kgroup != null && WallHelper.TargetWithAllNonKillableGroups(b, kgroup))
                     {
                         //check for covered eye
                         if (opponentTryMove != null && b.CapturedPoints.Any(n => EyeHelper.IsCovered(b, n, c.Opposite())))
@@ -962,7 +962,7 @@ namespace Go
             Boolean diagonalGroups = LinkHelper.GetGroupLinkedDiagonals(tryBoard).Any();
             if (diagonalGroups) return false;
 
-            if (captureBoard.GetNeighbourGroups(tryBoard.MoveGroup).All(n => WallHelper.IsNonKillableGroup(captureBoard, n)))
+            if (WallHelper.TargetWithAllNonKillableGroups(captureBoard, tryBoard.MoveGroup))
                 return true;
 
             if (tryBoard.MoveGroup.Points.Count > 1)
@@ -1095,7 +1095,7 @@ namespace Go
             if (capturedBoard.MoveGroupLiberties == 1) return false;
 
             //check non killable neighbour group
-            if (tryBoard.GetNeighbourGroups().Any(n => WallHelper.IsNonKillableGroup(tryBoard, n))) return true;
+            if (WallHelper.TargetWithAnyNonKillableGroup(tryBoard)) return true;
 
             //check for snapback
             if (ImmovableHelper.CheckSnapbackInNeighbourGroups(tryBoard, tryBoard.MoveGroup))
@@ -1293,8 +1293,7 @@ namespace Go
             if (GameHelper.GetContentForSurviveOrKill(tryBoard.GameInfo, SurviveOrKill.Survive) == c)
             {
                 //for survive, any suicidal move next to non killable group is redundant
-                List<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(move);
-                if (neighbourGroups.Any(group => WallHelper.IsNonKillableGroup(tryBoard, group)))
+                if (WallHelper.TargetWithAnyNonKillableGroup(tryBoard))
                 {
                     //check connect and die
                     Boolean connectAndDie = ImmovableHelper.AllConnectAndDie(capturedBoard, move);
