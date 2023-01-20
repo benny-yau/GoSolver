@@ -364,7 +364,6 @@ namespace Go
         /// </summary>
         public static Boolean SuicideMoveValidWithOneEmptySpaceLeft(Board tryBoard)
         {
-            int moveCount = tryBoard.MoveGroup.Points.Count;
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             List<Point> stoneNeighbours = tryBoard.GetStoneNeighbours().Where(p => tryBoard[p] == Content.Empty).ToList();
@@ -385,39 +384,37 @@ namespace Go
         /// </summary>
         private static Boolean IsLinkToExternalGroup(Board tryBoard, Board currentBoard, Board captureBoard)
         {
-            Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             if (tryBoard.MoveGroupLiberties != 1) return false;
             Point? liberty = ImmovableHelper.GetLibertyPointOfSuicide(tryBoard);
             Board tryLinkBoard = currentBoard.MakeMoveOnNewBoard(liberty.Value, c);
             if (tryLinkBoard == null || tryLinkBoard.MoveGroupLiberties == 1) return false;
-
-            //get previous move group
+            //ensure link for groups
+            if (!LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryLinkBoard)) return false;
+            //get previous groups
             List<Group> groups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
             //connect three or more groups
             if (groups.Count >= 3) return false;
             if (CornerThreeFormation(tryBoard, tryBoard.MoveGroup)) return false;
             if (TwoPointAtariMove(tryBoard, captureBoard)) return false;
-            //connected to previous move group
-            Boolean moveConnected = tryLinkBoard.GetStoneNeighbours().Any(p => groups.Any(group => group.Points.Contains(p)));
-            if (moveConnected && LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryLinkBoard))
-            {
-                HashSet<Group> linkGroups = currentBoard.GetGroupsFromStoneNeighbours(tryLinkBoard.Move.Value, c.Opposite());
-                //connected to external group not from previous move group
-                if (!linkGroups.Except(groups).Any()) return false;
-                //check connect and die
-                if (ImmovableHelper.CheckConnectAndDie(tryLinkBoard))
-                    return false;
-                //saved groups
-                List<Group> savedGroups = linkGroups.Intersect(groups).ToList();
-                if (savedGroups.Count == 0) return false;
-                List<Group> lostGroups = groups.Except(savedGroups).ToList();
-                //no lost groups
-                if (lostGroups.Count == 0) return true;
-                //lost group not more than two points
-                if (lostGroups.Count == 1 && lostGroups.First().Points.Count <= 2)
-                    return true;
-            }
+
+            HashSet<Group> linkGroups = currentBoard.GetGroupsFromStoneNeighbours(tryLinkBoard.Move.Value, c.Opposite());
+            //connected to external group not from previous move group
+            if (!linkGroups.Except(groups).Any()) return false;
+            //check connect and die
+            if (ImmovableHelper.CheckConnectAndDie(tryLinkBoard))
+                return false;
+            //saved groups
+            List<Group> savedGroups = linkGroups.Intersect(groups).ToList();
+            if (savedGroups.Count == 0)
+                return false;
+            List<Group> lostGroups = groups.Except(savedGroups).ToList();
+            //no lost groups
+            if (lostGroups.Count == 0)
+                return true;
+            //lost group not more than two points
+            if (lostGroups.Count == 1 && lostGroups.First().Points.Count <= 2)
+                return true;
             return false;
         }
 

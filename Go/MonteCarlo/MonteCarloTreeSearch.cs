@@ -467,7 +467,7 @@ namespace Go
             {
                 gameTryMove.ConfirmAlive = MonteCarloMakeSurvivalMove(depth, tryGame);
                 if (GameHelper.WinOrLose(SurviveOrKill.Kill, result, tryGame.GameInfo))
-                    return ConfirmAliveResult.KoAlive;
+                    gameTryMove.ConfirmAlive = ConfirmAliveResult.KoAlive;
             }
             bestResult = gameTryMove.ConfirmAlive;
             return bestResult;
@@ -500,14 +500,15 @@ namespace Go
             {
                 gameTryMove.ConfirmAlive = MonteCarloMakeKillMove(nextDepth, tryGame);
                 if (gameTryMove.ConfirmAlive == ConfirmAliveResult.Alive && gameTryMove.Move.Equals(Game.PassMove) && gameTryMove.TryGame.KoGameCheck == KoCheck.None)
-                    bestResult = ConfirmAliveResult.BothAlive;
+                    gameTryMove.ConfirmAlive = ConfirmAliveResult.BothAlive;
             }
             else if (gameTryMove.MakeMoveResult == MakeMoveResult.KoBlocked)
             {
                 gameTryMove.ConfirmAlive = MonteCarloMakeKillMove(depth, tryGame);
                 if (GameHelper.WinOrLose(SurviveOrKill.Survive, result, tryGame.GameInfo))
-                    return ConfirmAliveResult.KoAlive;
+                    gameTryMove.ConfirmAlive = ConfirmAliveResult.KoAlive;
             }
+            bestResult = gameTryMove.ConfirmAlive;
             return bestResult;
         }
 
