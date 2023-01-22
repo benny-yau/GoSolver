@@ -334,7 +334,7 @@ namespace Go
             if (isSuicidal)
             {
                 //check ko fight
-                if (koEnabled && KoHelper.IsKoFight(tryBoard, group) && tryBoard.GetGroupsFromStoneNeighbours(group.Liberties.First(), c.Opposite()).Where(gr => !gr.Equals(group)).Any(n => !ImmovableHelper.CheckConnectAndDie(tryBoard, n, !koEnabled)))
+                if (koEnabled && KoHelper.IsKoFight(tryBoard, group) && tryBoard.GetGroupsFromStoneNeighbours(libertyPoint.Value, c.Opposite()).Where(gr => !gr.Equals(group)).Any(n => !ImmovableHelper.CheckConnectAndDie(tryBoard, n, !koEnabled)))
                     return (false, null, escapeBoard);
                 return (true, libertyPoint, escapeBoard);
             }
@@ -423,7 +423,7 @@ namespace Go
             if (board.MoveGroupLiberties == 1)
             {
                 if (!koEnabled && KoHelper.IsKoFight(board))
-                    return (false, null);
+                    return (true, null);
                 return (true, board);
             }
             return (false, board);

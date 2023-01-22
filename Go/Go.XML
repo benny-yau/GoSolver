@@ -1108,6 +1108,11 @@
             Get group linked diagonals.
             </summary>
         </member>
+        <member name="M:Go.LinkHelper.GetDiagonalGroups(Go.Board,Go.Group)">
+            <summary>
+            Get diagonal groups.
+            </summary>
+        </member>
         <member name="M:Go.LinkHelper.GetGroupDiagonals(Go.Board,Go.Group)">
             <summary>
             Get all diagonals of group regardless of content.
@@ -1287,6 +1292,7 @@
             <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_B3" /> 
             <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A85" /> 
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario6kyu13" />
+            Check for eye at liberty <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Side_B19" />
             Opponent capture two or more points <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23" />
             <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
             <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_TianLongTu_Q16827_2" />
@@ -1692,6 +1698,7 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31580" />
             Suicide group near capture <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16490" />
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WuQingYuan_Q6150" />
+            <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_B21" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.GetSpecificNeutralMove(Go.Game,System.Collections.Generic.List{Go.GameTryMove})">

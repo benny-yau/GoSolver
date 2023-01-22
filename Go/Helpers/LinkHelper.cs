@@ -303,6 +303,14 @@ namespace Go
         }
 
         /// <summary>
+        /// Get diagonal groups.
+        /// </summary>
+        public static List<Group> GetDiagonalGroups(Board board, Group group = null)
+        {
+            return LinkHelper.GetGroupLinkedDiagonals(board, group).Select(t => board.GetGroupAt(t.Move)).ToList();
+        }
+
+        /// <summary>
         /// Get all diagonals of group regardless of content.
         /// </summary>
         public static List<LinkedPoint<Point>> GetGroupDiagonals(Board board, Group group)
@@ -476,10 +484,8 @@ namespace Go
                 groups.Add(group);
             }
             //get all diagonal points
-            List<LinkedPoint<Point>> diagonalPoints = GetGroupLinkedDiagonals(board, group);
-            foreach (LinkedPoint<Point> diagonalPoint in diagonalPoints)
+            foreach (Group g in GetDiagonalGroups(board, group))
             {
-                Group g = board.GetGroupAt(diagonalPoint.Move);
                 if (groups.Contains(g)) continue;
                 if (func != null && func(g)) continue;
                 groups.Add(g);

@@ -329,7 +329,6 @@ namespace Go
         /// </summary>
         private static Boolean SuicideGroupNearCapture(Board board)
         {
-            if (board.MoveGroupLiberties < 2 || board.MoveGroupLiberties > 3) return false;
             if (ImmovableHelper.CheckConnectAndDie(board)) return false;
             foreach (Group ngroup in board.GetNeighbourGroups())
             {
@@ -349,6 +348,7 @@ namespace Go
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_B3" /> 
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A85" /> 
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario6kyu13" />
+        /// Check for eye at liberty <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Side_B19" />
         /// Opponent capture two or more points <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23" />
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_TianLongTu_Q16827_2" />
@@ -364,19 +364,19 @@ namespace Go
             List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).Where(e => e.Liberties.Count == 2).ToList();
             foreach (Group eyeGroup in eyeGroups)
             {
-                List<Point> liberties = eyeGroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
-                if (liberties.Count != 1) continue;
-                Point liberty = liberties.First();
-                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, eyeGroup.Content, currentBoard);
+                Point liberty = eyeGroup.Liberties.First(lib => !lib.Equals(move));
+                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c, currentBoard);
                 if (b == null || WallHelper.TargetWithAllNonKillableGroups(b)) continue;
                 if (suicidal || ImmovableHelper.CheckConnectAndDie(b))
                     return (true, b);
 
                 if (b == null || b.MoveGroup.Liberties.Count != 2) continue;
-
+                Point liberty2 = b.MoveGroup.Liberties.First(lib => !lib.Equals(move));
+                //check for eye at liberty
+                if (EyeHelper.FindEye(b, liberty2, c) && b.GetGroupsFromStoneNeighbours(liberty2, c.Opposite()).Count >= 3)
+                    return (true, b);
                 //make block move
-                List<Point> moveGroupLiberties = b.MoveGroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
-                (Boolean suicidal2, Board b2) = ImmovableHelper.IsSuicidalMove(moveGroupLiberties.First(), eyeGroup.Content.Opposite(), b);
+                (Boolean suicidal2, Board b2) = ImmovableHelper.IsSuicidalMove(liberty2, c.Opposite(), b);
                 if (suicidal2) continue;
 
                 //opponent capture two or more points
@@ -386,13 +386,10 @@ namespace Go
                 if (b2.GetStoneNeighbours().Where(n => b2[n] != c.Opposite()).Select(n => GroupHelper.GetKillerGroupOfNeighbourGroups(b2, n, c.Opposite())).Any(n => n != null && n.Points.Count >= 3))
                     return (true, b);
 
-                b2[move] = c;
                 //unstoppable group
-                if (ImmovableHelper.CheckConnectAndDie(b2))
-                {
-                    if (b2.GetGroupsFromStoneNeighbours(liberty, c).Count == 1) continue;
+                b2[move] = c;
+                if (ImmovableHelper.CheckConnectAndDie(b2) && b2.GetGroupsFromStoneNeighbours(liberty, c).Count > 1)
                     return (true, b);
-                }
             }
             return (false, null);
         }
@@ -1823,6 +1820,7 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31580" />
         /// Suicide group near capture <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16490" />
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WuQingYuan_Q6150" />
+        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_B21" />
         /// </summary>
         public static void RestoreNeutralMove(Game currentGame, List<GameTryMove> tryMoves, List<GameTryMove> neutralPointMoves)
         {
@@ -1872,18 +1870,17 @@ namespace Go
             else if (tryMoves.Count <= 2)
             {
                 //check connect and die for last two try moves
-                IEnumerable<Board> tryBoards = tryMoves.Select(t => t.TryGame.Board);
-                if (tryBoards.All(t => ConnectAndDieNotSuicidal(t) || SuicideGroupNearCapture(t)))
+                if (tryMoves.Select(t => t.TryGame.Board).All(t => ConnectAndDieEndMove(t) || SuicideGroupNearCapture(t)))
                     tryMoves.Add(neutralPointMoves.First());
             }
         }
 
-        private static Boolean ConnectAndDieNotSuicidal(Board tryBoard)
+        private static Boolean ConnectAndDieEndMove(Board tryBoard)
         {
             (Boolean connectAndDie, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
             if (!connectAndDie) return false;
             if (tryBoard.MoveGroup.Points.Count > 1) return true;
-            if (LinkHelper.GetGroupLinkedDiagonals(tryBoard).Any(t => ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.GetGroupAt(t.Move))))
+            if (LinkHelper.GetDiagonalGroups(tryBoard).Any(t => ImmovableHelper.CheckConnectAndDie(tryBoard, t)))
                 return true;
             return false;
         }
