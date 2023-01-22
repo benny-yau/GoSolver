@@ -329,6 +329,7 @@ namespace Go
         /// </summary>
         private static Boolean SuicideGroupNearCapture(Board board)
         {
+            if (board.MoveGroupLiberties < 2 || board.MoveGroupLiberties > 3) return false;
             if (ImmovableHelper.CheckConnectAndDie(board)) return false;
             foreach (Group ngroup in board.GetNeighbourGroups())
             {
