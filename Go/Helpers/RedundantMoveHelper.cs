@@ -355,7 +355,6 @@ namespace Go
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_TianLongTu_Q16827_2" />
         /// Check for opponent survival move <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q29475" /> 
         /// Unstoppable group <see cref="UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_XuanXuanQiJing_A53" /> 
-        /// Covered eye three liberty connect and die <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23_2" /> 
         /// </summary>
         private static (Boolean, Board) SuicideAtBigTigerMouth(GameTryMove tryMove)
         {
@@ -393,14 +392,10 @@ namespace Go
                 if (ImmovableHelper.CheckConnectAndDie(b2) && b2.GetGroupsFromStoneNeighbours(liberty, c).Count > 1)
                     return (true, b);
 
-                //covered eye three liberty connect and die
-                Group weakGroup = currentBoard.GetNeighbourGroups(eyeGroup).FirstOrDefault(n => n.Points.Count == 1 && n.Liberties.Count == 2);
-                if (weakGroup != null)
-                {
-                    (Boolean connectAndDie, Board board) = ImmovableHelper.ConnectAndDie(currentBoard, weakGroup);
-                    if (board != null && CoveredEyeThreeLibertyConnectAndDie2(board, weakGroup, c).Item1)
-                        return (true, b);
-                }
+
+                if (b.MoveGroup.Points.Count >= 3 && currentBoard.GetNeighbourGroups(eyeGroup).Any(n => ImmovableHelper.CheckConnectAndDie(currentBoard, n)))
+
+                    return (true, b);
             }
             return (false, null);
         }
@@ -1751,9 +1746,7 @@ namespace Go
             List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).Where(e => e.Points.Count >= 2 && e.Liberties.Count == 2).ToList();
             foreach (Group eyeGroup in eyeGroups)
             {
-                List<Point> liberties = eyeGroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
-                if (liberties.Count != 1) continue;
-                Point liberty = liberties.First();
+                Point liberty = eyeGroup.Liberties.First(lib => !lib.Equals(move));
                 Board b = currentBoard.MakeMoveOnNewBoard(liberty, c.Opposite());
                 if (b != null && b.CapturedList.Any(gr => gr.Points.Count >= 2))
                     return true;
@@ -1835,7 +1828,7 @@ namespace Go
         /// </summary>
         public static void RestoreNeutralMove(Game currentGame, List<GameTryMove> tryMoves, List<GameTryMove> neutralPointMoves)
         {
-            //Remove moves that are within killer group
+            //remove moves that are within killer group
             neutralPointMoves.RemoveAll(n => n.TryGame.Board.MoveGroupLiberties == 1 || GroupHelper.GetKillerGroupFromCache(n.TryGame.Board, n.Move) != null);
 
             if (neutralPointMoves.Count == 0) return;
@@ -1998,7 +1991,7 @@ namespace Go
             GameTryMove neutralPointMove = neutralPointMoves.FirstOrDefault(t => t.TryGame.Board.GetGroupsFromStoneNeighbours(t.Move).Count > 0 && t.TryGame.Board.MoveGroup.Points.Count > 1);
             if (neutralPointMove == null) return null;
             Board tryBoard = neutralPointMove.TryGame.Board;
-            foreach (Group targetGroup in tryBoard.GetGroupsFromStoneNeighbours(neutralPointMove.Move))
+            foreach (Group targetGroup in tryBoard.GetGroupsFromStoneNeighbours(tryBoard.Move.Value))
             {
                 List<Point> neighbourLiberties = null;
                 //find neighbour groups at diagonal cut
@@ -2204,7 +2197,7 @@ namespace Go
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16605" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A28" />
         /// Suicide for liberty fight <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40_3" />
-        /// Check for uncovered eye <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221220_7" />
+        /// Check for three liberty covered eye <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221220_7" />
         /// </summary>
         private static Boolean TigerMouthWithoutDiagonalMouth(GameTryMove tryMove, Board capturedBoard)
         {
@@ -2231,7 +2224,7 @@ namespace Go
             //suicide for liberty fight
             if (KillerFormationHelper.SuicideForLibertyFight(tryBoard, currentBoard)) return false;
 
-            //check for uncovered eye
+            //check for three liberty covered eye
             (Boolean connectAndDie, Board b) = CoveredEyeThreeLibertyConnectAndDie(capturedBoard, move, c.Opposite());
             if (b != null)
             {
@@ -2253,22 +2246,6 @@ namespace Go
             {
                 Board b = board.MakeMoveOnNewBoard(d, c.Opposite());
                 if (b != null && b.MoveGroupLiberties > 1 && EyeHelper.FindCoveredEye(b, eye, c))
-                {
-                    if (ImmovableHelper.CheckConnectAndDie(b, board.MoveGroup))
-                        return (true, b);
-                }
-            }
-            return (false, null);
-        }
-
-        private static (Boolean, Board) CoveredEyeThreeLibertyConnectAndDie2(Board board, Group eye, Content c)
-        {
-            if (board.MoveGroupLiberties != 3) return (false, null);
-            if (EyeHelper.CheckCoveredEyeAtSuicideGroup(board, eye)) return (false, null);
-            foreach (Point d in board.GetDiagonalNeighbours(eye.Points.First()).Where(n => board[n] == Content.Empty))
-            {
-                Board b = board.MakeMoveOnNewBoard(d, c.Opposite());
-                if (b != null && b.MoveGroupLiberties > 1 && EyeHelper.CheckCoveredEyeAtSuicideGroup(b, b.GetCurrentGroup(eye)))
                 {
                     if (ImmovableHelper.CheckConnectAndDie(b, board.MoveGroup))
                         return (true, b);

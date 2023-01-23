@@ -1298,7 +1298,6 @@
             <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_TianLongTu_Q16827_2" />
             Check for opponent survival move <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q29475" /> 
             Unstoppable group <see cref="!:UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_XuanXuanQiJing_A53" /> 
-            Covered eye three liberty connect and die <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23_2" /> 
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.AtariRedundantMove(Go.GameTryMove)">
@@ -1790,7 +1789,7 @@
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16605" />
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A28" />
             Suicide for liberty fight <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40_3" />
-            Check for uncovered eye <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221220_7" />
+            Check for three liberty covered eye <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221220_7" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CoveredEyeThreeLibertyConnectAndDie(Go.Board,Go.Point,Go.Content)">
