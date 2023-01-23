@@ -388,7 +388,7 @@ namespace Go
                 if (b.MoveGroup.Points.Count >= 3)
                 {
                     Board b3 = currentBoard.MakeMoveOnNewBoard(liberty, c.Opposite());
-                    if (b3 != null && currentBoard.GetNeighbourGroups(eyeGroup).Any(n => n.Liberties.Count <= 2))
+                    if (b3 != null && b3.GetNeighbourGroups(eyeGroup).Any(n => n.Liberties.Count <= 2))
                         return (true, b);
                 }
 
