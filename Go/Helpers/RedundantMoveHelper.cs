@@ -355,6 +355,7 @@ namespace Go
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_TianLongTu_Q16827_2" />
         /// Check for opponent survival move <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q29475" /> 
         /// Unstoppable group <see cref="UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_XuanXuanQiJing_A53" /> 
+        /// Covered eye three liberty connect and die <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23_2" /> 
         /// </summary>
         private static (Boolean, Board) SuicideAtBigTigerMouth(GameTryMove tryMove)
         {
@@ -391,6 +392,15 @@ namespace Go
                 b2[move] = c;
                 if (ImmovableHelper.CheckConnectAndDie(b2) && b2.GetGroupsFromStoneNeighbours(liberty, c).Count > 1)
                     return (true, b);
+
+                //covered eye three liberty connect and die
+                Group weakGroup = currentBoard.GetNeighbourGroups(eyeGroup).FirstOrDefault(n => n.Points.Count == 1 && n.Liberties.Count == 2);
+                if (weakGroup != null)
+                {
+                    (Boolean connectAndDie, Board board) = ImmovableHelper.ConnectAndDie(currentBoard, weakGroup);
+                    if (board != null && CoveredEyeThreeLibertyConnectAndDie2(board, weakGroup, c).Item1)
+                        return (true, b);
+                }
             }
             return (false, null);
         }
@@ -1700,7 +1710,7 @@ namespace Go
 
         /// <summary>
         /// Must have move at ko fight.
-        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Corner_A68_2" />
+        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_20221229_7" />
         /// </summary>
         private static Boolean MustHaveMoveAtKoFight(GameTryMove tryMove)
         {
@@ -2222,20 +2232,49 @@ namespace Go
             if (KillerFormationHelper.SuicideForLibertyFight(tryBoard, currentBoard)) return false;
 
             //check for uncovered eye
-            if (EyeHelper.FindUncoveredEye(capturedBoard, move, c.Opposite()))
+            (Boolean connectAndDie, Board b) = CoveredEyeThreeLibertyConnectAndDie(capturedBoard, move, c.Opposite());
+            if (b != null)
             {
-                foreach (Point d in capturedBoard.GetDiagonalNeighbours(move).Where(n => capturedBoard[n] == Content.Empty))
-                {
-                    Board b = capturedBoard.MakeMoveOnNewBoard(d, c);
-                    if (b != null && b.MoveGroupLiberties > 1 && EyeHelper.FindCoveredEye(b, move, c.Opposite()))
-                    {
-                        Board b2 = tryBoard.MakeMoveOnNewBoard(d, c.Opposite());
-                        if (b2 == null || b2.MoveGroupLiberties > 3 || ImmovableHelper.UnescapableGroup(b2, tryBoard.MoveGroup).Item1) continue;
-                        return false;
-                    }
-                }
+                Board b2 = tryBoard.MakeMoveOnNewBoard(b.Move.Value, c.Opposite());
+                if (b2 != null && b2.MoveGroupLiberties <= 3 && !ImmovableHelper.UnescapableGroup(b2, tryBoard.MoveGroup).Item1)
+                    return false;
             }
             return true;
+        }
+
+        /// <summary>
+        /// Covered eye three liberty connect and die.
+        /// </summary>
+        private static (Boolean, Board) CoveredEyeThreeLibertyConnectAndDie(Board board, Point eye, Content c)
+        {
+            if (board.MoveGroupLiberties != 3) return (false, null);
+            if (!EyeHelper.FindUncoveredEye(board, eye, c)) return (false, null);
+            foreach (Point d in board.GetDiagonalNeighbours(eye).Where(n => board[n] == Content.Empty))
+            {
+                Board b = board.MakeMoveOnNewBoard(d, c.Opposite());
+                if (b != null && b.MoveGroupLiberties > 1 && EyeHelper.FindCoveredEye(b, eye, c))
+                {
+                    if (ImmovableHelper.CheckConnectAndDie(b, board.MoveGroup))
+                        return (true, b);
+                }
+            }
+            return (false, null);
+        }
+
+        private static (Boolean, Board) CoveredEyeThreeLibertyConnectAndDie2(Board board, Group eye, Content c)
+        {
+            if (board.MoveGroupLiberties != 3) return (false, null);
+            if (EyeHelper.CheckCoveredEyeAtSuicideGroup(board, eye)) return (false, null);
+            foreach (Point d in board.GetDiagonalNeighbours(eye.Points.First()).Where(n => board[n] == Content.Empty))
+            {
+                Board b = board.MakeMoveOnNewBoard(d, c.Opposite());
+                if (b != null && b.MoveGroupLiberties > 1 && EyeHelper.CheckCoveredEyeAtSuicideGroup(b, b.GetCurrentGroup(eye)))
+                {
+                    if (ImmovableHelper.CheckConnectAndDie(b, board.MoveGroup))
+                        return (true, b);
+                }
+            }
+            return (false, null);
         }
         #endregion
 

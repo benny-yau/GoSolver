@@ -105,10 +105,11 @@ namespace Go
             return EyeHelper.FindRealEyeWithinEmptySpace(capturedBoard, capturedGroup, EyeType.CoveredEye);
         }
 
-        public static Boolean FindCoveredEyeByCapture(Board board)
+        public static Boolean FindCoveredEyeByCapture(Board board, Group group = null)
         {
-            Board b = ImmovableHelper.CaptureSuicideGroup(board);
-            if (b != null && FindCoveredEyeAfterCapture(b, board.MoveGroup))
+            if (group == null) group = board.MoveGroup;
+            Board b = ImmovableHelper.CaptureSuicideGroup(board, group);
+            if (b != null && FindCoveredEyeAfterCapture(b, group))
                 return true;
             return false;
         }
@@ -122,7 +123,7 @@ namespace Go
             Point move = tryBoard.Move.Value;
             Content c = group.Content;
 
-            if (FindCoveredEyeByCapture(tryBoard))
+            if (FindCoveredEyeByCapture(tryBoard, group))
                 return true;
 
             if (group.Points.Count != 2) return false;
