@@ -383,18 +383,18 @@ namespace Go
                 //opponent capture two or more points
                 if (b2.CapturedList.Any(gr => gr.Points.Count >= 2))
                     return (true, b);
+
                 //check for opponent survival move
-                if (b2.GetStoneNeighbours().Where(n => b2[n] != c.Opposite()).Select(n => GroupHelper.GetKillerGroupOfNeighbourGroups(b2, n, c.Opposite())).Any(n => n != null && n.Points.Count >= 3))
-                    return (true, b);
+                if (b.MoveGroup.Points.Count >= 3)
+                {
+                    Board b3 = currentBoard.MakeMoveOnNewBoard(liberty, c.Opposite());
+                    if (b3 != null && currentBoard.GetNeighbourGroups(eyeGroup).Any(n => n.Liberties.Count <= 2))
+                        return (true, b);
+                }
 
                 //unstoppable group
                 b2[move] = c;
                 if (ImmovableHelper.CheckConnectAndDie(b2) && b2.GetGroupsFromStoneNeighbours(liberty, c).Count > 1)
-                    return (true, b);
-
-
-                if (b.MoveGroup.Points.Count >= 3 && currentBoard.GetNeighbourGroups(eyeGroup).Any(n => ImmovableHelper.CheckConnectAndDie(currentBoard, n)))
-
                     return (true, b);
             }
             return (false, null);
