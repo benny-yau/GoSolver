@@ -282,10 +282,6 @@ namespace Go
                 //check both alive
                 if (BothAliveHelper.CheckForBothAliveAtMove(tryBoard))
                     return false;
-
-                //check break link
-                if (KoHelper.CheckBaseLineLeapLink(currentBoard, move, c))
-                    return false;
             }
             //check suicide at tiger mouth
             if (SuicideAtBigTigerMouth(tryMove).Item1)

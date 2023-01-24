@@ -244,9 +244,9 @@ namespace Go
             List<Group> targetGroups = new List<Group>();
             ngroups.ForEach(ngroup => targetGroups.AddRange(KoHelper.GetKoTargetGroups(currentBoard, ngroup)));
             targetGroups = targetGroups.Distinct().ToList();
-            if (targetGroups.Count >= 2)
+            if (targetGroups.Count >= 2 && DoubleKoEnabled(tryBoard, currentBoard))
                 return true;
-
+            
             //kill double ko
             List<Group> connectedGroups = LinkHelper.GetAllDiagonalGroups(currentBoard, currentBoard.GetGroupAt(capturePoint));
             List<Group> koGroups = new List<Group>();
@@ -256,11 +256,20 @@ namespace Go
                 if (isKoFight)
                 {
                     koGroups.Add(group);
-                    if (koGroups.Count >= 2)
+                    if (koGroups.Count >= 2 && DoubleKoEnabled(tryBoard, currentBoard))
                         return true;
                 }
             }
             return false;
+        }
+
+        private static Boolean DoubleKoEnabled(Board tryBoard, Board currentBoard)
+        {
+            if (Board.ResolveAtari(currentBoard, tryBoard))
+                return true;
+            if (WallHelper.TargetWithAllNonKillableGroups(tryBoard) || KoHelper.IsKoFightAtNonKillableGroup(tryBoard, tryBoard.MoveGroup))
+                return false;
+            return true;
         }
 
         /// <summary>
