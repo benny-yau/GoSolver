@@ -222,7 +222,7 @@ namespace Go
         /// <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_TianLongTu_Q16975" />
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_3" /> 
         /// Kill double ko <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A23" />
-        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q16446" />
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WuQingYuan_Q30982_2" />
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_2" /> 
         /// </summary>
         public static Boolean PossibilityOfDoubleKo(GameTryMove tryMove)
@@ -238,7 +238,6 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             if (tryBoard.singlePointCapture == null) return false;
             Point capturePoint = tryBoard.singlePointCapture.Value;
-            //survival double ko
             List<Group> ngroups = currentBoard.GetGroupsFromStoneNeighbours(capturePoint, c.Opposite()).ToList();
             ngroups = LinkHelper.GetAllDiagonalGroups(currentBoard, ngroups.First()).ToList();
             List<Group> targetGroups = new List<Group>();
@@ -246,29 +245,26 @@ namespace Go
             targetGroups = targetGroups.Distinct().ToList();
             if (targetGroups.Count >= 2 && DoubleKoEnabled(tryBoard, currentBoard))
                 return true;
-            
-            //kill double ko
-            List<Group> connectedGroups = LinkHelper.GetAllDiagonalGroups(currentBoard, currentBoard.GetGroupAt(capturePoint));
-            List<Group> koGroups = new List<Group>();
-            foreach (Point liberty in currentBoard.GetLibertiesOfGroups(connectedGroups))
-            {
-                (Boolean isKoFight, Group group) = KoHelper.IsKoFight(currentBoard, liberty, c.Opposite());
-                if (isKoFight)
-                {
-                    koGroups.Add(group);
-                    if (koGroups.Count >= 2 && DoubleKoEnabled(tryBoard, currentBoard))
-                        return true;
-                }
-            }
             return false;
         }
 
+        /// <summary>
+        /// Double ko enabled.
+        /// </summary>
         private static Boolean DoubleKoEnabled(Board tryBoard, Board currentBoard)
         {
-            if (Board.ResolveAtari(currentBoard, tryBoard))
-                return true;
-            if (WallHelper.TargetWithAllNonKillableGroups(tryBoard) || KoHelper.IsKoFightAtNonKillableGroup(tryBoard, tryBoard.MoveGroup))
+            Content c = tryBoard.MoveGroup.Content;
+            Point capturePoint = tryBoard.singlePointCapture.Value;
+            //survival double ko
+            if (WallHelper.TargetWithAllNonKillableGroups(tryBoard) && !Board.ResolveAtari(currentBoard, tryBoard))
+            {
+                if (tryBoard.GetGroupsFromStoneNeighbours(capturePoint, c.Opposite()).Count == 2)
+                    return false;
+            }
+            //kill double ko
+            if (KoHelper.IsKoFightAtNonKillableGroup(tryBoard, tryBoard.MoveGroup) && tryBoard.GetNeighbourGroups().Count == 1)
                 return false;
+
             return true;
         }
 

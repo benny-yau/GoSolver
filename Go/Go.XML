@@ -1027,8 +1027,13 @@
             <see cref="!:UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_TianLongTu_Q16975" />
             <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_3" /> 
             Kill double ko <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A23" />
-            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q16446" />
+            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WuQingYuan_Q30982_2" />
             <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_2" /> 
+            </summary>
+        </member>
+        <member name="M:Go.KoHelper.DoubleKoEnabled(Go.Board,Go.Board)">
+            <summary>
+            Double ko enabled.
             </summary>
         </member>
         <member name="M:Go.KoHelper.NeutralPointDoubleKo(Go.Board)">
