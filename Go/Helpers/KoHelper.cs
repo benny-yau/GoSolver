@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using dh = Go.DirectionHelper;
 
 namespace Go
 {
@@ -268,7 +267,7 @@ namespace Go
             {
                 Group group = groups.First();
                 //ensure more than two iiberties
-                if (group.Liberties.Count > 2 || currentBoard.GetNeighbourGroups(group).Where(n => n.Points.Count > 1).All(n => WallHelper.IsNonKillableGroup(currentBoard, n)))
+                if (group.Liberties.Count > 2 || currentBoard.GetNeighbourGroups(group).Where(n => n.Liberties.Count > 1).All(n => WallHelper.IsNonKillableGroup(currentBoard, n)))
                     return false;
             }
             return true;

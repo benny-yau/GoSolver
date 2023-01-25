@@ -2675,7 +2675,7 @@ namespace Go
                 return false;
 
             //suicide group ko fight
-            if (ngroups.Any(n => GroupHelper.GetKillerGroupFromCache(tryBoard, n.Points.First(), c.Opposite()) != null && tryBoard.GetNeighbourGroups(n).Any(gr => !WallHelper.IsNonKillableGroup(tryBoard, gr) && !KoHelper.IsKoFightAtNonKillableGroup(tryBoard, gr))))
+            if (ngroups.Any(n => GroupHelper.GetKillerGroupFromCache(tryBoard, n.Points.First(), c.Opposite()) != null && !WallHelper.TargetWithKoFightAtAllNonKillableGroups(tryBoard, n)))
                 return false;
 
             //check break link

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using dh = Go.DirectionHelper;
 
 namespace Go
 {
@@ -129,8 +128,7 @@ namespace Go
 
             if (checkSuicidal && group.Liberties.Count == 2)
             {
-                Boolean opponentMovable = group.Liberties.All(liberty => ImmovableHelper.IsSuicidalMove(board, liberty, c.Opposite()));
-                if (opponentMovable) return true;
+                if (group.Liberties.All(liberty => ImmovableHelper.IsSuicidalMove(board, liberty, c.Opposite()))) return true;
                 return false;
             }
 
@@ -156,6 +154,17 @@ namespace Go
         {
             if (group == null) group = board.MoveGroup;
             if (board.GetNeighbourGroups(group).Any(n => WallHelper.IsNonKillableGroup(board, n)))
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Target with ko fight at all non killable groups.
+        /// </summary>
+        public static Boolean TargetWithKoFightAtAllNonKillableGroups(Board board, Group group = null)
+        {
+            if (group == null) group = board.MoveGroup;
+            if (board.GetNeighbourGroups(group).All(n => WallHelper.IsNonKillableGroup(board, n) || KoHelper.IsKoFightAtNonKillableGroup(board, n)))
                 return true;
             return false;
         }

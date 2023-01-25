@@ -161,8 +161,7 @@ namespace Go
                 if (opponentMove)
                 {
                     if (AtariResolved) return false;
-                    List<Group> targets = LifeCheck.GetTargets(tryBoard);
-                    if (targets.All(t => tryBoard.GetNeighbourGroups(t).All(n => WallHelper.IsNonKillableGroup(tryBoard, n) || KoHelper.IsKoFightAtNonKillableGroup(tryBoard, n))))
+                    if (LifeCheck.GetTargets(tryBoard).All(t => WallHelper.TargetWithKoFightAtAllNonKillableGroups(tryBoard, t)))
                         return true;
                 }
                 return false;
