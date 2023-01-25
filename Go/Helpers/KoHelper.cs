@@ -255,16 +255,22 @@ namespace Go
         {
             Content c = tryBoard.MoveGroup.Content;
             Point capturePoint = tryBoard.singlePointCapture.Value;
+            List<Group> groups = new List<Group>();
             //survival double ko
             if (WallHelper.TargetWithAllNonKillableGroups(tryBoard) && !Board.ResolveAtari(currentBoard, tryBoard))
+                groups = currentBoard.GetGroupsFromStoneNeighbours(capturePoint, c.Opposite()).ToList();
+            //kill double ko
+            else if (KoHelper.IsKoFightAtNonKillableGroup(tryBoard, tryBoard.MoveGroup))
+                groups = tryBoard.GetNeighbourGroups();
+
+            //ensure only one survival group
+            if (groups.Count == 1)
             {
-                if (tryBoard.GetGroupsFromStoneNeighbours(capturePoint, c.Opposite()).Count == 2)
+                Group group = groups.First();
+                //ensure more than two iiberties
+                if (group.Liberties.Count > 2 || LifeCheck.GetTargets(tryBoard).All(t => group.Equals(t)))
                     return false;
             }
-            //kill double ko
-            if (KoHelper.IsKoFightAtNonKillableGroup(tryBoard, tryBoard.MoveGroup) && tryBoard.GetNeighbourGroups().Count == 1)
-                return false;
-
             return true;
         }
 
