@@ -1031,7 +1031,7 @@
             <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_2" /> 
             </summary>
         </member>
-        <member name="M:Go.KoHelper.DoubleKoEnabled(Go.Board,Go.Board)">
+        <member name="M:Go.KoHelper.DoubleKoEnabled(Go.Board,Go.Board,System.Collections.Generic.List{Go.Group})">
             <summary>
             Double ko enabled.
             </summary>
