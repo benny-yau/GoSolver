@@ -237,6 +237,7 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             if (tryBoard.singlePointCapture == null) return false;
             Point capturePoint = tryBoard.singlePointCapture.Value;
+            //survival double ko
             List<Group> ngroups = currentBoard.GetGroupsFromStoneNeighbours(capturePoint, c.Opposite()).ToList();
             ngroups = LinkHelper.GetAllDiagonalGroups(currentBoard, ngroups.First()).ToList();
             List<Group> targetGroups = new List<Group>();
@@ -244,6 +245,20 @@ namespace Go
             targetGroups = targetGroups.Distinct().ToList();
             if (targetGroups.Count >= 2 && DoubleKoEnabled(tryBoard, currentBoard))
                 return true;
+
+            //kill double ko
+            List<Group> connectedGroups = LinkHelper.GetAllDiagonalGroups(currentBoard, currentBoard.GetGroupAt(capturePoint));
+            List<Group> koGroups = new List<Group>();
+            foreach (Point liberty in currentBoard.GetLibertiesOfGroups(connectedGroups))
+            {
+                (Boolean isKoFight, Group group) = KoHelper.IsKoFight(currentBoard, liberty, c.Opposite());
+                if (isKoFight)
+                {
+                    koGroups.Add(group);
+                    if (koGroups.Count >= 2 && DoubleKoEnabled(tryBoard, currentBoard))
+                        return true;
+                }
+            }
             return false;
         }
 

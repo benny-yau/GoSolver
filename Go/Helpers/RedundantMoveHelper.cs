@@ -2665,9 +2665,8 @@ namespace Go
             Point? eyePoint = KoHelper.GetKoEyePoint(tryBoard);
             if (eyePoint == null) return false;
 
-            //check all eye groups are non killable
-            List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
-            if (ngroups.All(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
+            //ko fight at non killable group
+            if (KoHelper.IsKoFightAtNonKillableGroup(tryBoard, tryBoard.MoveGroup))
                 return true;
 
             //check ko fight necessary
@@ -2675,6 +2674,7 @@ namespace Go
                 return false;
 
             //suicide group ko fight
+            List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
             if (ngroups.Any(n => GroupHelper.GetKillerGroupFromCache(tryBoard, n.Points.First(), c.Opposite()) != null && !WallHelper.TargetWithKoFightAtAllNonKillableGroups(tryBoard, n)))
                 return false;
 
