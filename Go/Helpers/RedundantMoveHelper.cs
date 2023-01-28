@@ -158,7 +158,7 @@ namespace Go
             }
 
             //check for double ko
-            if (KoHelper.NeutralPointDoubleKo(tryBoard))
+            if (KoHelper.NeutralPointDoubleKo(tryBoard, currentBoard))
                 return false;
 
             //check kill opponent
@@ -350,6 +350,7 @@ namespace Go
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_TianLongTu_Q16827_2" />
         /// Check for opponent survival move <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q29475" /> 
+        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245_2" />
         /// Unstoppable group <see cref="UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_XuanXuanQiJing_A53" /> 
         /// </summary>
         private static (Boolean, Board) SuicideAtBigTigerMouth(GameTryMove tryMove)
@@ -383,6 +384,9 @@ namespace Go
                 //check for opponent survival move
                 if (b.MoveGroup.Points.Count >= 3)
                 {
+                    if (b2.GetStoneNeighbours().Where(n => b2[n] != c.Opposite()).Select(n => GroupHelper.GetKillerGroupOfNeighbourGroups(b2, n, c.Opposite())).Any(n => n != null && n.Points.Count >= 3))
+                        return (true, b);
+
                     Board b3 = currentBoard.MakeMoveOnNewBoard(liberty, c.Opposite());
                     if (b3 != null && b3.GetNeighbourGroups(eyeGroup).Any(n => n.Liberties.Count <= 2))
                         return (true, b);
@@ -1797,7 +1801,7 @@ namespace Go
                 return false;
 
             //check for double ko
-            if (KoHelper.NeutralPointDoubleKo(tryBoard))
+            if (KoHelper.NeutralPointDoubleKo(tryBoard, currentBoard))
                 return false;
 
             //check reverse ko for neutral point

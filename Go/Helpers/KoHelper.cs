@@ -265,14 +265,14 @@ namespace Go
         /// <summary>
         /// Double ko enabled.
         /// </summary>
-        private static Boolean DoubleKoEnabled(Board tryBoard, Board currentBoard)
+        private static Boolean DoubleKoEnabled(Board tryBoard, Board currentBoard, Point? eyePoint = null)
         {
             Content c = tryBoard.MoveGroup.Content;
-            Point capturePoint = tryBoard.singlePointCapture.Value;
+            eyePoint = eyePoint ?? tryBoard.singlePointCapture.Value;
             List<Group> groups = new List<Group>();
             //survival double ko
             if (WallHelper.TargetWithAllNonKillableGroups(tryBoard) && !Board.ResolveAtari(currentBoard, tryBoard))
-                groups = currentBoard.GetGroupsFromStoneNeighbours(capturePoint, c.Opposite()).ToList();
+                groups = currentBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).ToList();
             //kill double ko
             else if (KoHelper.IsKoFightAtNonKillableGroup(tryBoard, tryBoard.MoveGroup))
                 groups = tryBoard.GetNeighbourGroups();
@@ -294,7 +294,7 @@ namespace Go
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_4" />
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B41_2" />
         /// </summary>
-        public static Boolean NeutralPointDoubleKo(Board tryBoard)
+        public static Boolean NeutralPointDoubleKo(Board tryBoard, Board currentBoard)
         {
             Content c = tryBoard.MoveGroup.Content;
             Boolean koEnabled = KoHelper.KoContentEnabled(c, tryBoard.GameInfo);
@@ -302,13 +302,22 @@ namespace Go
             List<Point> stoneNeighbours = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindCoveredEye(tryBoard, n, c)).ToList();
             if (stoneNeighbours.Count != 1) return false;
             Point eyePoint = stoneNeighbours.First();
+            //make block move
+            List<Point> emptyNeighbours = tryBoard.GetStoneNeighbours().Where(n => tryBoard[n] == Content.Empty && !n.Equals(eyePoint)).ToList();
+            if (emptyNeighbours.Count != 1) return false;
+
             List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()).ToList();
             ngroups = LinkHelper.GetAllDiagonalGroups(tryBoard, ngroups.First()).ToList();
             List<Group> targetGroups = new List<Group>();
             ngroups.ForEach(ngroup => targetGroups.AddRange(KoHelper.GetKoTargetGroups(tryBoard, ngroup)));
             targetGroups = targetGroups.Distinct().ToList();
             if (targetGroups.Count >= 1)
-                return true;
+            {
+                Board b = new Board(tryBoard);
+                b[emptyNeighbours.First()] = c.Opposite();
+                if (DoubleKoEnabled(b, currentBoard, eyePoint))
+                    return true;
+            }
             return false;
         }
     }

@@ -1031,12 +1031,12 @@
             <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_2" /> 
             </summary>
         </member>
-        <member name="M:Go.KoHelper.DoubleKoEnabled(Go.Board,Go.Board)">
+        <member name="M:Go.KoHelper.DoubleKoEnabled(Go.Board,Go.Board,System.Nullable{Go.Point})">
             <summary>
             Double ko enabled.
             </summary>
         </member>
-        <member name="M:Go.KoHelper.NeutralPointDoubleKo(Go.Board)">
+        <member name="M:Go.KoHelper.NeutralPointDoubleKo(Go.Board,Go.Board)">
             <summary>
             Double ko for neutral point.
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
@@ -1302,6 +1302,7 @@
             <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
             <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_TianLongTu_Q16827_2" />
             Check for opponent survival move <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q29475" /> 
+            <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245_2" />
             Unstoppable group <see cref="!:UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_XuanXuanQiJing_A53" /> 
             </summary>
         </member>
