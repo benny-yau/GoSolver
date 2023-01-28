@@ -846,25 +846,31 @@ namespace Go
 
         /// <summary>
         /// Find bloated eye suicide <see cref="UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_GuanZiPu_A35" />
+        /// Check killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113_4" />
+        /// Check reverse ko fight <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A30" />
         /// </summary>
         public static Boolean FindBloatedEyeSuicide(GameTryMove tryMove, Board captureBoard)
         {
+            Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
-            foreach (Point p in tryBoard.MoveGroup.Liberties)
-            {
-                if (!EyeHelper.FindEye(tryBoard, p, c)) continue;
-                if (tryBoard.GetDiagonalNeighbours(p).Count(q => tryBoard[q] == Content.Empty) == 1)
-                {
-                    if (!tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).All(group => group.Liberties.Count <= 2)) continue;
-                    Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(captureBoard, tryBoard.MoveGroup, c);
-                    if (b != null) continue;
-                    return true;
-                }
-            }
+            //make suicide move
+            Point liberty = captureBoard.GetCurrentGroup(tryBoard.MoveGroup).Liberties.First();
+            Board b = captureBoard.MakeMoveOnNewBoard(liberty, c);
+            if (b != null) return false;
+            //check killer formation
+            HashSet<Group> eyeGroups = captureBoard.GetGroupsFromStoneNeighbours(liberty, c.Opposite());
+            if (eyeGroups.Count == 1 && KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, captureBoard))
+                return false;
+
+            //check reverse ko fight
+            if (KoHelper.IsReverseKoFight(tryBoard) && eyeGroups.Any(n => AtariHelper.AtariByGroup(tryBoard, n)))
+                return false;
+
+            if (EyeHelper.FindEye(tryBoard, liberty, c) || eyeGroups.Count > 1)
+                return true;
             return false;
         }
-
 
         /// <summary>
         /// Check for real eye in neighbour groups.
