@@ -951,19 +951,12 @@ namespace Go
         /// Two liberties <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A132" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_x" />
+        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_20230121_8" />
         /// </summary>
         private static Boolean CheckAnyEndPointCovered(IEnumerable<Point> contentPoints, Board tryBoard, Group moveGroup)
         {
             Content c = moveGroup.Content;
-            if (moveGroup.Liberties.Count == 1)
-            {
-                //suicide move at eye point or atari resolved or suicide move with one empty space
-                if (tryBoard.Move != null && tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c) < 3 && !tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty)) return false;
-            }
-            else
-            {
-                if (tryBoard.GetNeighbourGroups(moveGroup).Count(n => n.Liberties.Count <= 2) < 2) return false;
-            }
+            if (moveGroup.Liberties.Count > 2) return false;
             IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
             List<Point> endPoints = pointIntersect.Where(p => p.intersectCount == 1).Select(p => (Point)p.point).ToList();
             return endPoints.Any(q => EndPointCovered(q, tryBoard, moveGroup));
@@ -972,16 +965,22 @@ namespace Go
         public static Boolean EndPointCovered(Point endPoint, Board tryBoard, Group moveGroup)
         {
             Content c = moveGroup.Content;
-            Boolean oneLiberty = (moveGroup.Liberties.Count == 1);
-            List<Point> diagonals = tryBoard.GetDiagonalNeighbours(endPoint).Where(d => !tryBoard.GetStoneNeighbours(d).Intersect(moveGroup.Points).Any()).ToList();
-            if (!oneLiberty)
+            Point p = tryBoard.GetStoneNeighbours(endPoint).First(n => tryBoard[n] == c);
+            List<Point> diagonals = tryBoard.GetDiagonalNeighbours(endPoint).Where(d => !tryBoard.GetStoneNeighbours(p).Any(n => n.Equals(d))).ToList();
+            if (diagonals.Count == 0) return false;
+            if (moveGroup.Liberties.Count == 2)
             {
+                if (diagonals.Any(d => tryBoard[d] == c.Opposite())) return false;
                 if (tryBoard.GetStoneNeighbours(endPoint).Any(n => tryBoard[n] == Content.Empty)) return false;
-                if (diagonals.Any(d => tryBoard[d] == Content.Empty))
-                    return true;
+                return true;
             }
-            else
+            else if (moveGroup.Liberties.Count == 1)
             {
+                if (diagonals.Any(d => tryBoard[d] != c)) return false;
+                //suicide move with one empty space or connect groups
+                if (tryBoard.Move != null && tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c) < 2 && !tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty)) return false;
+
+                //get neighbour of end point
                 List<Point> nEndPoint = tryBoard.GetStoneNeighbours(endPoint).Where(n => tryBoard[n] != c && !tryBoard.GetDiagonalNeighbours(n).Intersect(moveGroup.Points).Any()).ToList();
                 if (nEndPoint.Count != 1) return false;
                 List<Point> nPoints = tryBoard.GetStoneNeighbours(nEndPoint.First());
@@ -991,6 +990,20 @@ namespace Go
             return false;
         }
 
+        public static Boolean EndPointCovered2(Point endPoint, Board tryBoard, Group moveGroup)
+        {
+            Content c = moveGroup.Content;
+            Boolean oneLiberty = (moveGroup.Liberties.Count == 1);
+            if (!tryBoard.PointWithinMiddleArea(endPoint))
+                return tryBoard.GetDiagonalNeighbours(endPoint).Where(n => !moveGroup.Points.Contains(n)).Any(n => tryBoard[n] == ((oneLiberty) ? c : Content.Empty));
+            else
+            {
+                if (!oneLiberty) return false;
+                if (EyeHelper.IsCovered(tryBoard, endPoint, c.Opposite()))
+                    return true;
+                return false;
+            }
+        }
 
         /*
     15 . . . . . . . . . . . . . . . . . . .

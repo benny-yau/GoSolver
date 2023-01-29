@@ -934,6 +934,7 @@
             Two liberties <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471" />
             <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A132" />
             <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_x" />
+            <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_20230121_8" />
             </summary>
         </member>
         <member name="M:Go.KillerFormationHelper.GetPointIntersect(Go.Board,System.Collections.Generic.IEnumerable{Go.Point})">
