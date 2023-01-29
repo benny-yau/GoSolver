@@ -990,21 +990,6 @@ namespace Go
             return false;
         }
 
-        public static Boolean EndPointCovered2(Point endPoint, Board tryBoard, Group moveGroup)
-        {
-            Content c = moveGroup.Content;
-            Boolean oneLiberty = (moveGroup.Liberties.Count == 1);
-            if (!tryBoard.PointWithinMiddleArea(endPoint))
-                return tryBoard.GetDiagonalNeighbours(endPoint).Where(n => !moveGroup.Points.Contains(n)).Any(n => tryBoard[n] == ((oneLiberty) ? c : Content.Empty));
-            else
-            {
-                if (!oneLiberty) return false;
-                if (EyeHelper.IsCovered(tryBoard, endPoint, c.Opposite()))
-                    return true;
-                return false;
-            }
-        }
-
         /*
     15 . . . . . . . . . . . . . . . . . . .
     16 . . . . . . . . . . . . . . . . . . . 
