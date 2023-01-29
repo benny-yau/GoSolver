@@ -666,9 +666,8 @@ namespace Go
             return false;
         }
 
-        public static Boolean TwoByTwoFormation(Board tryBoard, IEnumerable<Point> killerPoints, Content c)
+        public static Boolean TwoByTwoFormation(Board tryBoard, IEnumerable<Point> contentPoints, Content c)
         {
-            List<Point> contentPoints = killerPoints.Where(t => tryBoard[t] == c).ToList();
             if (contentPoints.Count() != 4) return false;
             IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
             if (pointIntersect.Count(p => p.intersectCount == 2) == 2)
@@ -948,8 +947,10 @@ namespace Go
         /// Check any end point covered. 
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31682" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31682_2" />
-        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471" />
-        /// Two liberties <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A132" />
+        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31682_x" />
+        /// Two liberties <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471" />
+        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A132" />
+        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_x" />
         /// </summary>
         private static Boolean CheckAnyEndPointCovered(IEnumerable<Point> contentPoints, Board tryBoard, Group moveGroup)
         {
@@ -972,15 +973,22 @@ namespace Go
         {
             Content c = moveGroup.Content;
             Boolean oneLiberty = (moveGroup.Liberties.Count == 1);
-            if (!tryBoard.PointWithinMiddleArea(endPoint))
-                return tryBoard.GetDiagonalNeighbours(endPoint).Where(n => !moveGroup.Points.Contains(n)).Any(n => tryBoard[n] == ((oneLiberty) ? c : Content.Empty));
+            List<Point> diagonals = tryBoard.GetDiagonalNeighbours(endPoint).Where(d => !tryBoard.GetStoneNeighbours(d).Intersect(moveGroup.Points).Any()).ToList();
+            if (!oneLiberty)
+            {
+                if (tryBoard.GetStoneNeighbours(endPoint).Any(n => tryBoard[n] == Content.Empty)) return false;
+                if (diagonals.Any(d => tryBoard[d] == Content.Empty))
+                    return true;
+            }
             else
             {
-                if (!oneLiberty) return false;
-                if (EyeHelper.IsCovered(tryBoard, endPoint, c.Opposite()))
+                List<Point> nEndPoint = tryBoard.GetStoneNeighbours(endPoint).Where(n => tryBoard[n] != c && !tryBoard.GetDiagonalNeighbours(n).Intersect(moveGroup.Points).Any()).ToList();
+                if (nEndPoint.Count != 1) return false;
+                List<Point> nPoints = tryBoard.GetStoneNeighbours(nEndPoint.First());
+                if (nPoints.Count(n => tryBoard[n] == c) >= nPoints.Count - 1 && LinkHelper.GetNeighboursDiagonallyLinked(tryBoard, nEndPoint.First(), c).Any())
                     return true;
-                return false;
             }
+            return false;
         }
 
 
