@@ -854,6 +854,8 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
+
+            if (tryBoard.IsAtariMove) return false;
             //make suicide move
             Point liberty = captureBoard.GetCurrentGroup(tryBoard.MoveGroup).Liberties.First();
             Board b = captureBoard.MakeMoveOnNewBoard(liberty, c);

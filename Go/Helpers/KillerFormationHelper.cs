@@ -645,6 +645,10 @@ namespace Go
             Content c = moveGroup.Content;
             if (TwoByTwoFormation(tryBoard, moveGroup.Points, c))
             {
+                //check for eye at corner point
+                if (moveGroup.Liberties.Count == 2 && moveGroup.Liberties.Any(lib => tryBoard.CornerPoint(lib) && tryBoard.GetStoneNeighbours(lib).Intersect(moveGroup.Points).Count() >= 2))
+                    return true;
+
                 //check for atari after capture
                 Board captureBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard, moveGroup);
                 if (captureBoard == null) return false;
@@ -656,8 +660,7 @@ namespace Go
                         return true;
                 }
                 //check end point covered
-                List<Point> contentPoints = moveGroup.Points.Where(t => tryBoard[t] == c).ToList();
-                if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
+                if (CheckAnyEndPointCovered(moveGroup.Points, tryBoard, moveGroup))
                     return true;
             }
             return false;
@@ -747,8 +750,7 @@ namespace Go
                 if (moveGroup.Points.Count(p => !tryBoard.PointWithinMiddleArea(p)) == 3 && LinkHelper.GetGroupDiagonals(tryBoard, moveGroup).Any(d => tryBoard[d.Move] == c))
                     return true;
                 //check end point covered
-                List<Point> contentPoints = moveGroup.Points.Where(t => tryBoard[t] == c).ToList();
-                if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
+                if (CheckAnyEndPointCovered(moveGroup.Points, tryBoard, moveGroup))
                     return true;
             }
             return false;
@@ -944,6 +946,10 @@ namespace Go
 
         /// <summary>
         /// Check any end point covered. 
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31682" />
+        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31682_2" />
+        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471" />
+        /// Two liberties <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A132" />
         /// </summary>
         private static Boolean CheckAnyEndPointCovered(IEnumerable<Point> contentPoints, Board tryBoard, Group moveGroup)
         {
