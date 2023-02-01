@@ -865,6 +865,16 @@
             Bent four corner formation <see cref="!:UnitTestProject.BentFourTest.BentFourTest_Scenario7kyu26_3" />
             </summary>
         </member>
+        <member name="M:Go.KillerFormationHelper.SuicidalEndMove(Go.Board,Go.Board)">
+            <summary>
+            Suicidal end move.
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.WholeGroupDying(Go.Board)">
+            <summary>
+            Whole group dying.
+            </summary>
+        </member>
         <member name="M:Go.KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(Go.Board)">
             <summary>
             Suicide move with one empty space surrounded by opponent stones.
@@ -1425,6 +1435,7 @@
             Find bloated eye suicide <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_GuanZiPu_A35" />
             Check killer formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113_4" />
             Check reverse ko fight <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A30" />
+            Check for eye at corner point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A67_2" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckAnyRealEyeInSuicidalConnectAndDie(Go.Board,Go.Board)">

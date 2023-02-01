@@ -848,6 +848,7 @@ namespace Go
         /// Find bloated eye suicide <see cref="UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_GuanZiPu_A35" />
         /// Check killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113_4" />
         /// Check reverse ko fight <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A30" />
+        /// Check for eye at corner point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A67_2" />
         /// </summary>
         public static Boolean FindBloatedEyeSuicide(GameTryMove tryMove, Board captureBoard)
         {
@@ -867,6 +868,10 @@ namespace Go
 
             //check reverse ko fight
             if (KoHelper.IsReverseKoFight(tryBoard) && eyeGroups.Any(n => AtariHelper.AtariByGroup(tryBoard, n)))
+                return false;
+
+            //check for eye at corner point
+            if (KillerFormationHelper.TwoByTwoFormation(tryBoard, tryBoard.MoveGroup.Points) && tryBoard.MoveGroup.Liberties.Any(lib => tryBoard.CornerPoint(lib) && tryBoard.GetStoneNeighbours(lib).Intersect(tryBoard.MoveGroup.Points).Count() >= 2))
                 return false;
 
             if (EyeHelper.FindEye(tryBoard, liberty, c) || eyeGroups.Count > 1)

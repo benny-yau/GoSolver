@@ -14,7 +14,7 @@ namespace Go
                 if (killerFormationFuncs == null)
                 {
                     killerFormationFuncs = new Dictionary<int, List<Func<Board, Group, Boolean>>>();
-                    killerFormationFuncs.Add(4, new List<Func<Board, Group, Boolean>>() { OneByThreeFormation, BoxFormation, CrowbarEdgeFormation, StraightFourFormation, TwoByTwoFormation, BentFourCornerFormation });
+                    killerFormationFuncs.Add(4, new List<Func<Board, Group, Boolean>>() { OneByThreeFormation, BoxFormation, CrowbarEdgeFormation, StraightFourFormation, TwoByTwoSuicidalFormation, BentFourCornerFormation });
                     killerFormationFuncs.Add(5, new List<Func<Board, Group, Boolean>>() { KnifeFiveFormation, CrowbarFiveFormation, BentFiveFormation });
                     killerFormationFuncs.Add(6, new List<Func<Board, Group, Boolean>>() { FlowerSixFormation, KnifeSixFormation, CornerSixFormation });
                     killerFormationFuncs.Add(7, new List<Func<Board, Group, Boolean>>() { FlowerSevenFormation, OddSevenFormation });
@@ -131,8 +131,12 @@ namespace Go
         public static Boolean MultipointSnapbackAfterCapture(Board tryBoard, Board captureBoard)
         {
             Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.MoveGroupLiberties == 1 && captureBoard.MoveGroup.Points.Count > 1 && ImmovableHelper.CheckConnectAndDie(captureBoard, captureBoard.MoveGroup))
-                return true;
+            if (tryBoard.MoveGroupLiberties == 1)
+            {
+                if (WholeGroupDying(tryBoard)) return false;
+                if (captureBoard.MoveGroup.Points.Count > 1 && ImmovableHelper.CheckConnectAndDie(captureBoard, captureBoard.MoveGroup))
+                    return true;
+            }
 
             if (tryBoard.MoveGroupLiberties != 2) return false;
             Group weakGroup = tryBoard.GetNeighbourGroups().FirstOrDefault(group => group.Points.Count >= 2 && group.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, group));
@@ -287,6 +291,9 @@ namespace Go
                 //suicide for liberty fight
                 if (SuicideForLibertyFight(tryBoard, currentBoard))
                     return true;
+
+                if (SuicidalEndMove(tryBoard, currentBoard))
+                    return true;
             }
             else if (moveCount == 3)
             {
@@ -297,16 +304,15 @@ namespace Go
                 if (SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                     return true;
 
-                //whole survival group dying
-                if (tryBoard.MoveGroupLiberties == 1 && tryBoard.IsAtariMove && tryBoard.GetNeighbourGroups().Count == 1)
-                    return true;
-
                 //corner three formation
                 if (CornerThreeFormation(tryBoard, tryBoard.MoveGroup))
                     return true;
 
                 //bent three
                 if (BentThreeSuicideAtCoveredEye(tryBoard, captureBoard))
+                    return true;
+
+                if (SuicidalEndMove(tryBoard, currentBoard))
                     return true;
             }
             else
@@ -354,6 +360,47 @@ namespace Go
             //grid dimension changed
             if (GridDimensionChanged(previousGroups.First().Points, tryBoard.MoveGroup.Points))
                 return true;
+
+            //check if current group is killer formation
+            if (IsKillerFormationFromFunc(currentBoard, previousGroups.First()))
+                return true;
+            if (tryBoard.MoveGroupLiberties == 1 && previousGroups.First().Points.Count == 3)
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Suicidal end move.
+        /// </summary>
+        public static Boolean SuicidalEndMove(Board tryBoard, Board currentBoard)
+        {
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            if (!WholeGroupDying(tryBoard)) return false;
+
+            //get first liberty within killer group
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
+            if (killerGroup == null) return false;
+            List<Point> emptyPoints = killerGroup.Points.Where(t => currentBoard[t] == Content.Empty).ToList();
+            if (emptyPoints.Count != 2) return false;
+            Point p = emptyPoints[0];
+            Point q = emptyPoints[1];
+            Point firstLiberty = (q.x + q.y * currentBoard.SizeX) < (p.x + p.y * currentBoard.SizeX) ? q : p;
+            return move.Equals(firstLiberty);
+        }
+
+        /// <summary>
+        /// Whole group dying.
+        /// </summary>
+        public static Boolean WholeGroupDying(Board tryBoard)
+        {
+            Content c = tryBoard.MoveGroup.Content;
+            if (tryBoard.MoveGroupLiberties == 1 && tryBoard.IsAtariMove && tryBoard.GetNeighbourGroups().Count == 1)
+            {
+                Point liberty = tryBoard.MoveGroup.Liberties.First();
+                if (tryBoard.GetStoneNeighbours(liberty).Except(tryBoard.MoveGroup.Points).All(n => tryBoard[n] == c.Opposite()))
+                    return true;
+            }
             return false;
         }
 
@@ -640,15 +687,11 @@ namespace Go
  17 . . . . . . X X . . . . . . . . . . . 
  18 . . . . . . . . . . . . . . . . . . . 
          */
-        public static Boolean TwoByTwoFormation(Board tryBoard, Group moveGroup)
+        public static Boolean TwoByTwoSuicidalFormation(Board tryBoard, Group moveGroup)
         {
             Content c = moveGroup.Content;
-            if (TwoByTwoFormation(tryBoard, moveGroup.Points, c))
+            if (TwoByTwoFormation(tryBoard, moveGroup.Points))
             {
-                //check for eye at corner point
-                if (moveGroup.Liberties.Count == 2 && moveGroup.Liberties.Any(lib => tryBoard.CornerPoint(lib) && tryBoard.GetStoneNeighbours(lib).Intersect(moveGroup.Points).Count() >= 2))
-                    return true;
-
                 //check for atari after capture
                 Board captureBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard, moveGroup);
                 if (captureBoard == null) return false;
@@ -666,7 +709,7 @@ namespace Go
             return false;
         }
 
-        public static Boolean TwoByTwoFormation(Board tryBoard, IEnumerable<Point> contentPoints, Content c)
+        public static Boolean TwoByTwoFormation(Board tryBoard, IEnumerable<Point> contentPoints)
         {
             if (contentPoints.Count() != 4) return false;
             IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
