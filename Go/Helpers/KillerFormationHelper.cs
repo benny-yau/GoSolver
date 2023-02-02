@@ -349,9 +349,6 @@ namespace Go
             List<Group> previousGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
             if (previousGroups.Count > 1)
                 return false;
-            //whole group dying
-            if (WholeGroupDying(tryBoard))
-                return true;
             //empty point neighbour
             if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty))
             {
@@ -360,6 +357,9 @@ namespace Go
                 if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c && tryBoard.GetGroupAt(n) != tryBoard.MoveGroup))
                     return false;
             }
+            //whole group dying
+            if (WholeGroupDying(tryBoard))
+                return true;
             //atari target
             if (tryBoard.AtariTargets.Any() && !BentFourCornerFormation(tryBoard, tryBoard.MoveGroup))
                 return false;
