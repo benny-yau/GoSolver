@@ -27,9 +27,8 @@ namespace Go
  18 X . O . . . . . . . . . . . . . . . .
         killer makes move at (1, 18) at end game after removing all ko threats
          */
-        public static Boolean CheckForBentFour(Game currentGame, List<GameTryMove> tryMoves = null)
+        public static Boolean CheckForBentFour(Board board, List<GameTryMove> tryMoves = null)
         {
-            Board board = currentGame.Board;
             List<Group> killerGroups = GroupHelper.GetKillerGroups(board);
             if (killerGroups.Count == 0)
                 return false;
@@ -46,6 +45,12 @@ namespace Go
             if (PreCornerBentFourFormation(board, killerGroup))
                 return true;
             return false;
+        }
+
+        public static Boolean CheckForBentFour(Game currentGame, List<GameTryMove> tryMoves = null)
+        {
+            Board board = currentGame.Board;
+            return CheckForBentFour(board, tryMoves);
         }
 
         /// <summary>

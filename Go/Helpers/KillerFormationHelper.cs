@@ -292,7 +292,7 @@ namespace Go
                 if (SuicideForLibertyFight(tryBoard, currentBoard))
                     return true;
 
-                if (WholeGroupDying(tryBoard))
+                if (SuicidalEndMove(tryBoard, currentBoard))
                     return true;
             }
             else if (moveCount == 3)
@@ -312,7 +312,7 @@ namespace Go
                 if (BentThreeSuicideAtCoveredEye(tryBoard, captureBoard))
                     return true;
 
-                if (WholeGroupDying(tryBoard))
+                if (SuicidalEndMove(tryBoard, currentBoard))
                     return true;
             }
             else
@@ -337,9 +337,9 @@ namespace Go
         /// Empty point neighbour <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_8" />
         /// Atari target <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499_3" />
-        /// Two kill formations <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_XuanXuanGo_A54" />
         /// Whole group dying <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36" />
         /// Bent four corner formation <see cref="UnitTestProject.BentFourTest.BentFourTest_Scenario7kyu26_3" />
+        /// Two kill formations <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_XuanXuanGo_A54" />
         /// </summary>
         private static Boolean CheckRedundantKillGroupExtension(Board tryBoard, Board currentBoard)
         {
@@ -357,11 +357,22 @@ namespace Go
                 if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c && tryBoard.GetGroupAt(n) != tryBoard.MoveGroup))
                     return false;
             }
+
+            //bent four corner formation
+            if (BentFourCornerFormation(tryBoard, tryBoard.MoveGroup) && UniquePatternsHelper.CheckForBentFour(currentBoard))
+                return true;
+
+            List<Point> liberties = tryBoard.MoveGroup.Liberties.ToList();
             //whole group dying
             if (WholeGroupDying(tryBoard))
-                return true;
+            {
+                if (TryKillFormation(currentBoard, c, new List<Point>() { liberties.First() }) && SuicidalEndMove(tryBoard, currentBoard))
+                    return true;
+                return false;
+            }
+
             //atari target
-            if (tryBoard.AtariTargets.Any() && !BentFourCornerFormation(tryBoard, tryBoard.MoveGroup))
+            if (tryBoard.AtariTargets.Any())
                 return false;
 
             //grid dimension changed
@@ -376,11 +387,30 @@ namespace Go
                 return true;
 
             //two kill formations
-            List<Point> liberties = tryBoard.MoveGroup.Liberties.ToList();
             if (liberties.Any(lib => TryKillFormation(currentBoard, c, new List<Point>() { lib })))
                 return true;
 
             return false;
+        }
+
+        /// <summary>
+        /// Suicidal end move.
+        /// </summary>
+        public static Boolean SuicidalEndMove(Board tryBoard, Board currentBoard)
+        {
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            if (!WholeGroupDying(tryBoard)) return false;
+
+            //get first liberty within killer group
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
+            if (killerGroup == null) return false;
+            List<Point> emptyPoints = killerGroup.Points.Where(t => currentBoard[t] == Content.Empty).ToList();
+            if (emptyPoints.Count != 2) return false;
+            Point p = emptyPoints[0];
+            Point q = emptyPoints[1];
+            Point firstLiberty = (q.x + q.y * currentBoard.SizeX) < (p.x + p.y * currentBoard.SizeX) ? q : p;
+            return move.Equals(firstLiberty);
         }
 
         /// <summary>

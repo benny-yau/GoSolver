@@ -860,9 +860,14 @@
             Empty point neighbour <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_8" />
             Atari target <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499_3" />
-            Two kill formations <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_XuanXuanGo_A54" />
             Whole group dying <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36" />
             Bent four corner formation <see cref="!:UnitTestProject.BentFourTest.BentFourTest_Scenario7kyu26_3" />
+            Two kill formations <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_XuanXuanGo_A54" />
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.SuicidalEndMove(Go.Board,Go.Board)">
+            <summary>
+            Suicidal end move.
             </summary>
         </member>
         <member name="M:Go.KillerFormationHelper.WholeGroupDying(Go.Board)">
@@ -2001,7 +2006,7 @@
             Unique patterns such as BentFour and Ten Thousand Year Ko have to identified and return the correct result that can be different from calculated result.
             </summary>
         </member>
-        <member name="M:Go.UniquePatternsHelper.CheckForBentFour(Go.Game,System.Collections.Generic.List{Go.GameTryMove})">
+        <member name="M:Go.UniquePatternsHelper.CheckForBentFour(Go.Board,System.Collections.Generic.List{Go.GameTryMove})">
             <summary>
             Bent four is a unique scenario where it appears to be ko alive but is essentially dead. 
             https://senseis.xmp.net/?BentFourInTheCorner
