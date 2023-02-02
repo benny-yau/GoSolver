@@ -317,14 +317,12 @@ namespace Go
             }
             else
             {
-
                 //check killer formation from functions
                 if (IsKillerFormationFromFunc(tryBoard, tryBoard.MoveGroup))
                 {
                     //check kill group extension
                     if (CheckRedundantKillGroupExtension(tryBoard, currentBoard))
                         return false;
-
                     return true;
                 }
             }
@@ -340,7 +338,7 @@ namespace Go
         /// Atari target <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499_3" />
         /// Two kill formations <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_XuanXuanGo_A54" />
-        /// Suicidal end move <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36" />
+        /// Whole group dying <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36" />
         /// Bent four corner formation <see cref="UnitTestProject.BentFourTest.BentFourTest_Scenario7kyu26_3" />
         /// </summary>
         private static Boolean CheckRedundantKillGroupExtension(Board tryBoard, Board currentBoard)
@@ -351,6 +349,9 @@ namespace Go
             List<Group> previousGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
             if (previousGroups.Count > 1)
                 return false;
+            //whole group dying
+            if (WholeGroupDying(tryBoard))
+                return true;
             //empty point neighbour
             if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty))
             {
@@ -359,9 +360,8 @@ namespace Go
                 if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c && tryBoard.GetGroupAt(n) != tryBoard.MoveGroup))
                     return false;
             }
-
             //atari target
-            if (tryBoard.AtariTargets.Any() && !WholeGroupDying(tryBoard) && !BentFourCornerFormation(tryBoard, tryBoard.MoveGroup))
+            if (tryBoard.AtariTargets.Any() && !BentFourCornerFormation(tryBoard, tryBoard.MoveGroup))
                 return false;
 
             //grid dimension changed
