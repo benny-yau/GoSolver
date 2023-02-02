@@ -399,18 +399,11 @@ namespace Go
         public static Boolean SuicidalEndMove(Board tryBoard, Board currentBoard)
         {
             Point move = tryBoard.Move.Value;
-            Content c = tryBoard.MoveGroup.Content;
             if (!WholeGroupDying(tryBoard)) return false;
 
-            //get first liberty within killer group
-            Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
-            if (killerGroup == null) return false;
-            List<Point> emptyPoints = killerGroup.Points.Where(t => currentBoard[t] == Content.Empty).ToList();
-            if (emptyPoints.Count != 2) return false;
-            Point p = emptyPoints[0];
-            Point q = emptyPoints[1];
-            Point firstLiberty = (q.x + q.y * currentBoard.SizeX) < (p.x + p.y * currentBoard.SizeX) ? q : p;
-            return move.Equals(firstLiberty);
+            //get first liberty
+            Point q = tryBoard.MoveGroup.Liberties.First();
+            return (move.x + move.y * currentBoard.SizeX) < (q.x + q.y * currentBoard.SizeX);
         }
 
         /// <summary>
