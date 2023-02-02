@@ -131,18 +131,19 @@ namespace Go
         public static Boolean MultipointSnapbackAfterCapture(Board tryBoard, Board captureBoard)
         {
             Content c = tryBoard.MoveGroup.Content;
+            if (WholeGroupDying(tryBoard)) return false;
             if (tryBoard.MoveGroupLiberties == 1)
             {
-                if (WholeGroupDying(tryBoard)) return false;
                 if (captureBoard.MoveGroup.Points.Count > 1 && ImmovableHelper.CheckConnectAndDie(captureBoard, captureBoard.MoveGroup))
                     return true;
             }
-
-            if (tryBoard.MoveGroupLiberties != 2) return false;
-            Group weakGroup = tryBoard.GetNeighbourGroups().FirstOrDefault(group => group.Points.Count >= 2 && group.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, group));
-            if (weakGroup == null) return false;
-            if (ImmovableHelper.CheckConnectAndDie(captureBoard, weakGroup))
-                return true;
+            else if (tryBoard.MoveGroupLiberties == 2)
+            {
+                Group weakGroup = tryBoard.GetNeighbourGroups().FirstOrDefault(group => group.Points.Count >= 2 && group.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, group));
+                if (weakGroup == null) return false;
+                if (ImmovableHelper.CheckConnectAndDie(captureBoard, weakGroup))
+                    return true;
+            }
             return false;
         }
 
@@ -233,7 +234,6 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17250" />
         /// Covered eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16424_2" />
         /// Check for snapback <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234" />
-        /// Whole survival group dying <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3" />
         /// Corner three formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18860" />
         /// One-by-three formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A8" />
         /// Crowbar edge formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q6710" />
@@ -292,7 +292,7 @@ namespace Go
                 if (SuicideForLibertyFight(tryBoard, currentBoard))
                     return true;
 
-                if (SuicidalEndMove(tryBoard, currentBoard))
+                if (WholeGroupDying(tryBoard))
                     return true;
             }
             else if (moveCount == 3)
@@ -312,18 +312,21 @@ namespace Go
                 if (BentThreeSuicideAtCoveredEye(tryBoard, captureBoard))
                     return true;
 
-                if (SuicidalEndMove(tryBoard, currentBoard))
+                if (WholeGroupDying(tryBoard))
                     return true;
             }
             else
             {
-                //check kill group extension
-                if (CheckRedundantKillGroupExtension(tryBoard, currentBoard))
-                    return false;
 
                 //check killer formation from functions
                 if (IsKillerFormationFromFunc(tryBoard, tryBoard.MoveGroup))
+                {
+                    //check kill group extension
+                    if (CheckRedundantKillGroupExtension(tryBoard, currentBoard))
+                        return false;
+
                     return true;
+                }
             }
 
             return false;
@@ -335,12 +338,14 @@ namespace Go
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A113" />
         /// Empty point neighbour <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_8" />
         /// Atari target <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40" />
-        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499_3" />
+        /// Two kill formations <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_XuanXuanGo_A54" />
+        /// Suicidal end move <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36" />
         /// Bent four corner formation <see cref="UnitTestProject.BentFourTest.BentFourTest_Scenario7kyu26_3" />
         /// </summary>
         private static Boolean CheckRedundantKillGroupExtension(Board tryBoard, Board currentBoard)
         {
+            Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             //move group binding
             List<Group> previousGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
@@ -354,43 +359,33 @@ namespace Go
                 if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c && tryBoard.GetGroupAt(n) != tryBoard.MoveGroup))
                     return false;
             }
+
             //atari target
-            if (tryBoard.AtariTargets.Any() && !BentFourCornerFormation(tryBoard, tryBoard.MoveGroup))
+            if (tryBoard.AtariTargets.Any() && !WholeGroupDying(tryBoard) && !BentFourCornerFormation(tryBoard, tryBoard.MoveGroup))
                 return false;
+
             //grid dimension changed
-            if (GridDimensionChanged(previousGroups.First().Points, tryBoard.MoveGroup.Points))
+            Group previousGroup = previousGroups.First();
+            if (GridDimensionChanged(previousGroup.Points, tryBoard.MoveGroup.Points))
                 return true;
 
             //check if current group is killer formation
-            if (IsKillerFormationFromFunc(currentBoard, previousGroups.First()))
+            if (IsKillerFormationFromFunc(currentBoard, previousGroup))
                 return true;
-            if (tryBoard.MoveGroupLiberties == 1 && previousGroups.First().Points.Count == 3)
+            if (tryBoard.MoveGroupLiberties == 1 && previousGroup.Points.Count == 3)
                 return true;
+
+            //two kill formations
+            List<Point> liberties = tryBoard.MoveGroup.Liberties.ToList();
+            if (liberties.Any(lib => TryKillFormation(currentBoard, c, new List<Point>() { lib })))
+                return true;
+
             return false;
         }
 
         /// <summary>
-        /// Suicidal end move.
-        /// </summary>
-        public static Boolean SuicidalEndMove(Board tryBoard, Board currentBoard)
-        {
-            Point move = tryBoard.Move.Value;
-            Content c = tryBoard.MoveGroup.Content;
-            if (!WholeGroupDying(tryBoard)) return false;
-
-            //get first liberty within killer group
-            Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
-            if (killerGroup == null) return false;
-            List<Point> emptyPoints = killerGroup.Points.Where(t => currentBoard[t] == Content.Empty).ToList();
-            if (emptyPoints.Count != 2) return false;
-            Point p = emptyPoints[0];
-            Point q = emptyPoints[1];
-            Point firstLiberty = (q.x + q.y * currentBoard.SizeX) < (p.x + p.y * currentBoard.SizeX) ? q : p;
-            return move.Equals(firstLiberty);
-        }
-
-        /// <summary>
         /// Whole group dying.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3" />
         /// </summary>
         public static Boolean WholeGroupDying(Board tryBoard)
         {

@@ -1100,9 +1100,13 @@ namespace Go
             if (!EyeHelper.FindSemiSolidEye(move, capturedBoard, c.Opposite()).Item1)
                 return false;
 
+            //opponent break kill formation
+            if (OpponentBreakKillFormation(tryMove))
+                return false;
+
             //remove one point from two-point empty group
             Group eyeGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
-            if (eyeGroup != null && eyeGroup.Points.All(p => !currentBoard.CornerPoint(p)))
+            if (eyeGroup != null && !eyeGroup.Points.Any(p => currentBoard.CornerPoint(p) && KillerFormationHelper.WholeGroupDying(tryBoard)))
             {
                 Board b = EyeHelper.FindRealEyesWithinTwoEmptyPoints(currentBoard, eyeGroup, EyeType.RealSolidEye);
                 if (b != null && !move.Equals(b.Move.Value))
@@ -1132,9 +1136,6 @@ namespace Go
                 return false;
             }
 
-            //opponent break kill formation
-            if (OpponentBreakKillFormation(tryMove))
-                return false;
 
             //retrieve liberties other than eye liberty
             List<Group> ngroups = capturedBoard.GetNeighbourGroups(tryBoard.MoveGroup);
