@@ -1400,7 +1400,6 @@
         <member name="M:Go.RedundantMoveHelper.SuicidalConnectAndDie(Go.GameTryMove)">
             <summary>
             Check for connect and die moves. <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738" />
-            Reverse connect and die <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WindAndTime_Q29277" />
             Check capture moves <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A75_101Weiqi" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.CheckForRecursionTest_Scenario_Corner_B41" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113_3" />
@@ -1425,6 +1424,7 @@
             <summary>
             Check for weak group with two or less liberties in connect and die.
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_x" />
+            Reverse connect and die <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WindAndTime_Q29277" />
             Check for double atari for one-point move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29481" />
             Check killable group with two or less liberties <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B6" />
             Check for weak group capturing atari group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B17" />
@@ -1452,22 +1452,6 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A17" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30403_2" />
             Check for covered eye move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_8" />
-            </summary>
-        </member>
-        <member name="M:Go.RedundantMoveHelper.CheckOnePointMoveInConnectAndDie(Go.GameTryMove,Go.Board)">
-            <summary>
-            Check for one point move group in connect and die.
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario2dan21" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_2398" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
-            <see cref="!:UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18473" />
-            Check tiger mouth at corner point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie1" />
-            One point move near non killable group
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B7" />
-            <see cref="!:UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_TianLongTu_Q16571" />
-            Check reverse ko fight <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A80" />
-            Check opponent move liberties <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_3" />
-            Check snapback at diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q6710_2" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckDiagonalForSuicidalConnectAndDie(Go.GameTryMove,Go.Board)">
