@@ -380,14 +380,19 @@ namespace Go
             if (GridDimensionChanged(previousGroup.Points, tryBoard.MoveGroup.Points))
                 return true;
 
-            //check if current group is killer formation
-            if (tryBoard.MoveGroupLiberties == 1 && (IsKillerFormationFromFunc(currentBoard, previousGroup) || previousGroup.Points.Count == 3))
-                return true;
+            if (tryBoard.MoveGroupLiberties == 1)
+            {
+                //check if current group is killer formation
+                if (IsKillerFormationFromFunc(currentBoard, previousGroup) || previousGroup.Points.Count == 3)
+                    return true;
 
-            //two kill formations
-            if (liberties.Any(lib => TryKillFormation(currentBoard, c, new List<Point>() { lib })))
-                return true;
-
+                //two kill formations
+                if (TryKillFormation(currentBoard, c, new List<Point>() { liberties.First() }))
+                {
+                    if (IsFirstPoint(currentBoard, move, previousGroup.Liberties.First(p => !p.Equals(move))))
+                        return true;
+                }
+            }
             return false;
         }
 
@@ -405,7 +410,15 @@ namespace Go
             Group group = previousGroups.First();
             if (group.Liberties.Count != 2) return false;
             Point q = group.Liberties.First(p => !p.Equals(move));
-            return (move.x + move.y * currentBoard.SizeX) < (q.x + q.y * currentBoard.SizeX);
+            return IsFirstPoint(currentBoard, move, q);
+        }
+
+        /// <summary>
+        /// Is first point.
+        /// </summary>
+        private static Boolean IsFirstPoint(Board board, Point p, Point q)
+        {
+            return (p.x + p.y * board.SizeX) < (q.x + q.y * board.SizeX);
         }
 
         /// <summary>

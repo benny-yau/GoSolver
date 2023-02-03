@@ -870,6 +870,11 @@
             Suicidal end move.
             </summary>
         </member>
+        <member name="M:Go.KillerFormationHelper.IsFirstPoint(Go.Board,Go.Point,Go.Point)">
+            <summary>
+            Is first point.
+            </summary>
+        </member>
         <member name="M:Go.KillerFormationHelper.WholeGroupDying(Go.Board)">
             <summary>
             Whole group dying.
