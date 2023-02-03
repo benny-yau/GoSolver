@@ -465,16 +465,15 @@ namespace Go
             //check for diagonal killer group
             if (tryBoard.GetDiagonalNeighbours().Any(n => EyeHelper.FindNonSemiSolidEye(tryBoard, n, c))) return false;
 
-
             //check killer formation
             Board b = tryBoard.MakeMoveOnNewBoard(q, c.Opposite());
             if (b != null)
             {
-                Boolean killerFormation = KillerFormationHelper.SuicidalKillerFormations(b, tryBoard);
+                Boolean killerFormation = KillerFormationHelper.IsKillerFormationFromFunc(b, b.MoveGroup);
                 Board b2 = board.MakeMoveOnNewBoard(move, c.Opposite());
                 if (b2 != null)
                 {
-                    Boolean killerFormation2 = KillerFormationHelper.SuicidalKillerFormations(b2, board);
+                    Boolean killerFormation2 = KillerFormationHelper.IsKillerFormationFromFunc(b2, b2.MoveGroup);
                     if (killerFormation && !killerFormation2) return true;
                     if (!killerFormation && killerFormation2) return false;
                 }
@@ -691,7 +690,6 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113_3" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B36" />
         /// Check atari moves <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30986" />
-        /// Check for sieged scenario <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
         /// Check killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_2" />
         /// Check killer move non killable group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31563" />
@@ -726,9 +724,6 @@ namespace Go
                     return false;
             }
 
-            //check for one point move group
-            if (CheckOnePointMoveInConnectAndDie(tryMove, captureBoard))
-                return false;
 
             //check weak group
             if (CheckWeakGroupInConnectAndDie(tryBoard, tryBoard.MoveGroup))

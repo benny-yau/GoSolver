@@ -381,9 +381,7 @@ namespace Go
                 return true;
 
             //check if current group is killer formation
-            if (IsKillerFormationFromFunc(currentBoard, previousGroup))
-                return true;
-            if (tryBoard.MoveGroupLiberties == 1 && previousGroup.Points.Count == 3)
+            if (tryBoard.MoveGroupLiberties == 1 && (IsKillerFormationFromFunc(currentBoard, previousGroup) || previousGroup.Points.Count == 3))
                 return true;
 
             //two kill formations
