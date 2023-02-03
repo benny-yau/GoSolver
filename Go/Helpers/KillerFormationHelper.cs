@@ -403,13 +403,8 @@ namespace Go
             List<Group> previousGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
             if (previousGroups.Count != 1) return false;
             Group group = previousGroups.First();
-
-            //get first liberty within killer group
-            Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
-            if (killerGroup == null) return false;
-            List<Point> emptyPoints = killerGroup.Points.Where(t => currentBoard[t] == Content.Empty).ToList();
-            if (emptyPoints.Count != 2 || emptyPoints.Any(p => !group.Liberties.Contains(p))) return false;
-            Point q = emptyPoints.First(p => !p.Equals(move));
+            if (group.Liberties.Count != 2) return false;
+            Point q = group.Liberties.First(p => !p.Equals(move));
             return (move.x + move.y * currentBoard.SizeX) < (q.x + q.y * currentBoard.SizeX);
         }
 
