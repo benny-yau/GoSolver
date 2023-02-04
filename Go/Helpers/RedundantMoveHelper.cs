@@ -2645,20 +2645,22 @@ namespace Go
             if (!WallHelper.StrongNeighbourGroups(tryBoard, tryBoard.MoveGroup))
                 return false;
 
-            //suicide group ko fight
-            List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
-            if (ngroups.Any(n => GroupHelper.GetKillerGroupFromCache(tryBoard, n.Points.First(), c.Opposite()) != null && !WallHelper.TargetWithKoFightAtAllNonKillableGroups(tryBoard, n)))
-                return false;
-
-            //check break link
-            List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, eyePoint.Value, c).Where(q => tryBoard[q] != c).ToList();
-            if (diagonals.Count == 0 && KoHelper.CheckBaseLineLeapLink(tryBoard, eyePoint.Value, c))
-                return false;
-
             //if all diagonals are real eyes then redundant
+            List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, eyePoint.Value, c).Where(q => tryBoard[q] != c).ToList();
             if (!diagonals.All(eye => EyeHelper.RealEyeAtDiagonal(tryMove, eye)))
                 return false;
 
+            //check break link
+            if (diagonals.Count == 0 && KoHelper.CheckBaseLineLeapLink(tryBoard, eyePoint.Value, c))
+                return false;
+
+            //suicide group ko fight
+            if (!WallHelper.TargetWithAllNonKillableGroups(tryBoard))
+            {
+                List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
+                if (ngroups.Any(n => GroupHelper.GetKillerGroupFromCache(tryBoard, n.Points.First(), c.Opposite()) != null && !WallHelper.TargetWithKoFightAtAllNonKillableGroups(tryBoard, n)))
+                    return false;
+            }
             return true;
         }
 
