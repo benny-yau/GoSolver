@@ -69,6 +69,8 @@ namespace Go
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_A38" /> 
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_Q18341_2" />
+        /// Check connect and die for opponent groups <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q30982_3" />
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q17154" />
         /// Check eye for suicidal move <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q30275" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_A84_3" />
         /// Check escape capture link <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_3" />
@@ -139,7 +141,6 @@ namespace Go
             //check groups with two liberties 
             foreach (Group group in currentBoard.GetNeighbourGroups(eyeGroup).Where(gr => gr.Liberties.Count == 2))
             {
-                if (!GetWeakGroup(currentBoard, group)) continue;
                 foreach (Point liberty in group.Liberties)
                 {
                     (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c, currentBoard);
@@ -149,7 +150,7 @@ namespace Go
                     if (b != null && EyeHelper.FindEye(b, liberty2, c))
                         return false;
                     //check connect and die for opponent groups
-                    if (WallHelper.StrongNeighbourGroups(tryBoard, liberty, c))
+                    if (!tryBoard.GetGroupsFromStoneNeighbours(liberty, c).Any(n => ImmovableHelper.CheckConnectAndDie(tryBoard, n) && (n.Points.Count > 2 || tryBoard.GetNeighbourGroups(n).Count > 1 || n.Liberties.Any(lib => EyeHelper.FindEye(tryBoard, lib)))))
                         continue;
                     //check escape capture link
                     if (ImmovableHelper.EscapeCaptureLink(currentBoard, group, eyePoint))
