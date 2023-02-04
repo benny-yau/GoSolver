@@ -99,40 +99,43 @@ namespace Go
         /// <summary>
         /// Strong neighbour groups with more than two liberties or two liberties that are suicidal to opponent.
         /// </summary>
-        public static Boolean StrongNeighbourGroups(Board board, IEnumerable<Group> neighbourGroups, Boolean checkSuicidal = false)
+        public static Boolean StrongNeighbourGroups(Board board, IEnumerable<Group> neighbourGroups)
         {
             if (!neighbourGroups.Any()) return true;
-            if (neighbourGroups.Any(group => !IsStrongNeighbourGroup(board, group, checkSuicidal)))
+            if (neighbourGroups.Any(group => !IsStrongNeighbourGroup(board, group)))
                 return false;
             return true;
         }
 
-        public static Boolean StrongNeighbourGroups(Board board, Point move, Content c, Boolean checkSuicidal = false)
+        public static Boolean StrongNeighbourGroups(Board board, Point move, Content c)
         {
             HashSet<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(move, c);
-            return StrongNeighbourGroups(board, neighbourGroups, checkSuicidal);
+            return StrongNeighbourGroups(board, neighbourGroups);
         }
 
-        public static Boolean StrongNeighbourGroups(Board board, Group group, Boolean checkSuicidal = false)
+        public static Boolean StrongNeighbourGroups(Board board, Group group)
         {
             List<Group> neighbourGroups = board.GetNeighbourGroups(group);
-            return StrongNeighbourGroups(board, neighbourGroups, checkSuicidal);
+            return StrongNeighbourGroups(board, neighbourGroups);
         }
 
 
-        public static Boolean IsStrongNeighbourGroup(Board board, Group group, Boolean checkSuicidal = false)
+        public static Boolean IsStrongNeighbourGroup(Board board, Group group)
         {
-            Content c = group.Content;
             int liberties = group.Liberties.Count;
             if (liberties < 2) return false;
-
-            if (checkSuicidal && group.Liberties.Count == 2)
-            {
-                if (group.Liberties.All(liberty => ImmovableHelper.IsSuicidalMove(board, liberty, c.Opposite()))) return true;
-                return false;
-            }
-
             if (ImmovableHelper.CheckConnectAndDie(board, group)) return false;
+            return true;
+        }
+
+        public static Boolean HostileNeighbourGroups(Board board, Point move, Content c)
+        {
+            HashSet<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(move, c);
+            foreach (Group group in neighbourGroups)
+            {
+                if (!group.Liberties.All(liberty => ImmovableHelper.IsSuicidalMove(board, liberty, c.Opposite())))
+                    return false;
+            }
             return true;
         }
 

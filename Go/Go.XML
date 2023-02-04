@@ -1435,6 +1435,11 @@
             Check for weak group capturing atari group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B17" />
             </summary>
         </member>
+        <member name="M:Go.RedundantMoveHelper.GetWeakGroup(Go.Board,Go.Group)">
+            <summary>
+            Get weak group.
+            </summary>
+        </member>
         <member name="M:Go.RedundantMoveHelper.FindBloatedEyeSuicide(Go.GameTryMove,Go.Board)">
             <summary>
             Find bloated eye suicide <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_GuanZiPu_A35" />
@@ -2044,7 +2049,7 @@
             Check if non-killable at neighbour points that are empty.
             </summary>
         </member>
-        <member name="M:Go.WallHelper.StrongNeighbourGroups(Go.Board,System.Collections.Generic.IEnumerable{Go.Group},System.Boolean)">
+        <member name="M:Go.WallHelper.StrongNeighbourGroups(Go.Board,System.Collections.Generic.IEnumerable{Go.Group})">
             <summary>
             Strong neighbour groups with more than two liberties or two liberties that are suicidal to opponent.
             </summary>

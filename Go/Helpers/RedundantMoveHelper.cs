@@ -139,6 +139,7 @@ namespace Go
             //check groups with two liberties 
             foreach (Group group in currentBoard.GetNeighbourGroups(eyeGroup).Where(gr => gr.Liberties.Count == 2))
             {
+                if (!GetWeakGroup(currentBoard, group)) continue;
                 foreach (Point liberty in group.Liberties)
                 {
                     (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c, currentBoard);
@@ -484,7 +485,7 @@ namespace Go
             if (qEyeCount > moveEyeCount) return true;
             else if (qEyeCount < moveEyeCount) return false;
             //return only one move if both moves valid
-            else return (q.x + q.y * board.SizeX) < (move.x + move.y * board.SizeX);
+            else return KillerFormationHelper.IsFirstPoint(board, q, move);
         }
         #endregion
 
@@ -814,6 +815,9 @@ namespace Go
             return false;
         }
 
+        /// <summary>
+        /// Get weak group.
+        /// </summary>
         private static Boolean GetWeakGroup(Board tryBoard, Group moveGroup)
         {
             if (WallHelper.IsNonKillableFromSetupMoves(tryBoard, moveGroup))
@@ -2181,7 +2185,7 @@ namespace Go
             if (neighbourGroups.Count >= 3 && (neighbourGroups.Count(g => g.Liberties.Count <= 2) >= 2 || LinkHelper.DiagonalCutMove(tryBoard).Item1)) return false;
 
             //check for strong neighbour groups
-            Boolean strongGroups = WallHelper.StrongNeighbourGroups(currentBoard, move, c, true) && capturedBoard.MoveGroupLiberties > 2;
+            Boolean strongGroups = WallHelper.HostileNeighbourGroups(currentBoard, move, c) && capturedBoard.MoveGroupLiberties > 2;
             if (!strongGroups) return false;
 
             //suicide for liberty fight

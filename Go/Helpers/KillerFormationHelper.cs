@@ -416,7 +416,7 @@ namespace Go
         /// <summary>
         /// Is first point.
         /// </summary>
-        private static Boolean IsFirstPoint(Board board, Point p, Point q)
+        public static Boolean IsFirstPoint(Board board, Point p, Point q)
         {
             return (p.x + p.y * board.SizeX) < (q.x + q.y * board.SizeX);
         }
