@@ -387,7 +387,7 @@ namespace Go
                     return true;
 
                 //two kill formations
-                if (TryKillFormation(currentBoard, c, new List<Point>() { liberties.First() }))
+                if (previousGroup.Liberties.Count == 2 && TryKillFormation(currentBoard, c, new List<Point>() { liberties.First() }))
                 {
                     if (IsFirstPoint(currentBoard, move, previousGroup.Liberties.First(p => !p.Equals(move))))
                         return true;
