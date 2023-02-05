@@ -156,12 +156,12 @@ namespace Go
                 foreach (Point p in diagonals)
                 {
                     //make opponent move at diagonal
-                    (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board);
+                    (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board, true);
                     if (suicidal) return true;
 
                     Point q = diagonals.First(d => !d.Equals(p));
                     //make connection at other diagonal
-                    if (ImmovableHelper.IsSuicidalMove(q, c, b).Item1)
+                    if (ImmovableHelper.IsSuicidalMove(q, c, b, true).Item1)
                         return false;
 
                     //check not negligible

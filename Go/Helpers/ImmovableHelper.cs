@@ -83,7 +83,7 @@ namespace Go
         {
             if (board[p] == Content.Empty) //empty point
             {
-                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board);
+                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board, true);
                 if (!suicidal)
                     return (false, null);
 
@@ -381,10 +381,10 @@ namespace Go
             return IsSuicidalMove(p, c, tryBoard).Item1;
         }
 
-        public static (Boolean, Board) IsSuicidalMove(Point p, Content c, Board tryBoard)
+        public static (Boolean, Board) IsSuicidalMove(Point p, Content c, Board tryBoard, Boolean overrideKo = false)
         {
             if (tryBoard == null) return (false, null);
-            Board board = tryBoard.MakeMoveOnNewBoard(p, c);
+            Board board = tryBoard.MakeMoveOnNewBoard(p, c, overrideKo);
             if (board == null) return (true, null);
             if (board.MoveGroupLiberties == 1)
                 return (true, board);
