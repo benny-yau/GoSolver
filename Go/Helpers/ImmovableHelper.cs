@@ -387,7 +387,11 @@ namespace Go
             Board board = tryBoard.MakeMoveOnNewBoard(p, c, overrideKo);
             if (board == null) return (true, null);
             if (board.MoveGroupLiberties == 1)
+            {
+                if (overrideKo && KoHelper.IsKoFight(board))
+                    return (false, board);
                 return (true, board);
+            }
             return (false, board);
         }
 
