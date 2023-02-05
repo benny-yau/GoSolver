@@ -158,12 +158,8 @@ namespace Go
             if (KoHelper.EssentialAtariForKoMove(this))
             {
                 //end game redundant ko
-                if (opponentMove)
-                {
-                    if (AtariResolved) return false;
-                    if (LifeCheck.GetTargets(tryBoard).All(t => WallHelper.TargetWithKoFightAtAllNonKillableGroups(tryBoard, t)))
-                        return true;
-                }
+                if (opponentMove && LifeCheck.GetTargets(tryBoard).All(t => WallHelper.TargetWithKoFightAtAllNonKillableGroups(tryBoard, t)))
+                    return true;
                 return false;
             }
             return true;

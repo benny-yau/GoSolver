@@ -145,12 +145,12 @@ namespace Go
                 {
                     (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c, currentBoard);
                     if (!suicidal) continue;
-                    Point liberty2 = group.Liberties.First(p => !p.Equals(liberty));
                     //check eye for suicidal move
-                    if (b != null && EyeHelper.FindEye(b, liberty2, c))
+                    Point liberty2 = group.Liberties.First(p => !p.Equals(liberty));
+                    if (b != null && b.GetStoneAndDiagonalNeighbours().Any(n => n.Equals(liberty2) && EyeHelper.FindEye(b, liberty2, c)) && !ImmovableHelper.IsSuicidalMove(currentBoard, liberty, c.Opposite()))
                         return false;
                     //check connect and die for opponent groups
-                    if (!tryBoard.GetGroupsFromStoneNeighbours(liberty, c).Any(n => ImmovableHelper.CheckConnectAndDie(tryBoard, n) && (n.Points.Count > 2 || tryBoard.GetNeighbourGroups(n).Count > 1 || n.Liberties.Any(lib => EyeHelper.FindEye(tryBoard, lib)))))
+                    if (!tryBoard.GetGroupsFromStoneNeighbours(liberty, c).Any(n => n.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, n) && (n.Points.Count > 2 || tryBoard.GetNeighbourGroups(n).Count > 1 || n.Liberties.Any(lib => EyeHelper.FindEye(tryBoard, lib)))))
                         continue;
                     //check escape capture link
                     if (ImmovableHelper.EscapeCaptureLink(currentBoard, group, eyePoint))

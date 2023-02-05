@@ -362,11 +362,12 @@ namespace Go
             if (BentFourCornerFormation(tryBoard, tryBoard.MoveGroup) && UniquePatternsHelper.CheckForBentFour(currentBoard))
                 return true;
 
+            Group previousGroup = previousGroups.First();
             List<Point> liberties = tryBoard.MoveGroup.Liberties.ToList();
             //whole group dying
             if (WholeGroupDying(tryBoard))
             {
-                if (TryKillFormation(currentBoard, c, new List<Point>() { liberties.First() }) && SuicidalEndMove(tryBoard, currentBoard))
+                if (previousGroup.Liberties.Count == 2 && TryKillFormation(currentBoard, c, new List<Point>() { liberties.First() }) && SuicidalEndMove(tryBoard, currentBoard))
                     return true;
                 return false;
             }
@@ -376,7 +377,6 @@ namespace Go
                 return false;
 
             //grid dimension changed
-            Group previousGroup = previousGroups.First();
             if (GridDimensionChanged(previousGroup.Points, tryBoard.MoveGroup.Points))
                 return true;
 
