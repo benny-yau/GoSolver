@@ -1102,7 +1102,7 @@
             Check is diagonal linked.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.CheckDoubleLinkage(Go.Board,Go.Group,Go.LinkedPoint{Go.Point})">
+        <member name="M:Go.LinkHelper.CheckDoubleLinkage(Go.Board,Go.LinkedPoint{Go.Point})">
             <summary>
             Check for double linkage.
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_2" />
@@ -1110,7 +1110,7 @@
             Check double atari at link <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_DoubleAtariOnLinkage" />
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.CheckDoubleAtariForLinks(Go.Board,Go.Group,Go.LinkedPoint{Go.Point})">
+        <member name="M:Go.LinkHelper.CheckDoubleAtariForLinks(Go.Board,Go.LinkedPoint{Go.Point})">
             <summary>
             Check double atari for links.
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_7" />
@@ -1171,14 +1171,14 @@
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_Q18340" /> 
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.CheckTigerMouthExceptionsForLinks(Go.Board,Go.Group)">
+        <member name="M:Go.LinkHelper.CheckTigerMouthExceptionsForLinks(Go.Board,Go.LinkedPoint{Go.Point})">
             <summary>
             Check tiger mouth exceptions for links.
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_2" /> 
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_3" /> 
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.GetTigerMouthsOfLinks(Go.Board,Go.Group)">
+        <member name="M:Go.LinkHelper.GetTigerMouthsOfLinks(Go.Board,Go.LinkedPoint{Go.Point})">
             <summary>
             Get tiger mouth of links.
             </summary>

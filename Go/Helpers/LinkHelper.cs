@@ -215,9 +215,9 @@ namespace Go
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_3" />
         /// Check double atari at link <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_DoubleAtariOnLinkage" />
         /// </summary>
-        private static Boolean CheckDoubleLinkage(Board board, Group group, LinkedPoint<Point> diagonalLink)
+        private static Boolean CheckDoubleLinkage(Board board, LinkedPoint<Point> diagonalLink)
         {
-            Content c = group.Content;
+            Content c = board[diagonalLink.Move];
             List<Point> diagonals = LinkHelper.PointsBetweenDiagonals(diagonalLink);
             foreach (Point p in diagonals.Where(d => board[d] == Content.Empty))
             {
@@ -255,9 +255,9 @@ namespace Go
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_5" />
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_Nie60" />
         /// </summary>
-        private static Boolean CheckDoubleAtariForLinks(Board board, Group group, LinkedPoint<Point> diagonalPoint)
+        private static Boolean CheckDoubleAtariForLinks(Board board, LinkedPoint<Point> diagonalPoint)
         {
-            Content c = group.Content;
+            Content c = board[diagonalPoint.Move];
             List<Point> diagonals = LinkHelper.PointsBetweenDiagonals(diagonalPoint);
             diagonals.RemoveAll(diagonal => board[diagonal] != Content.Empty);
             if (diagonals.Count != 1) return false;
@@ -362,15 +362,15 @@ namespace Go
                     continue;
 
                 //check tiger mouth exceptions
-                if (CheckTigerMouthExceptionsForLinks(board, g))
+                if (CheckTigerMouthExceptionsForLinks(board, diagonalPoint))
                     continue;
 
                 //check for links with double linkage
-                if (!CheckDoubleLinkage(board, g, diagonalPoint))
+                if (!CheckDoubleLinkage(board, diagonalPoint))
                     continue;
 
                 //check double atari for links
-                if (CheckDoubleAtariForLinks(board, g, diagonalPoint))
+                if (CheckDoubleAtariForLinks(board, diagonalPoint))
                     continue;
 
                 allConnectedGroups.Add(g);
@@ -445,10 +445,11 @@ namespace Go
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_2" /> 
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_3" /> 
         /// </summary>
-        public static Boolean CheckTigerMouthExceptionsForLinks(Board board, Group group)
+        public static Boolean CheckTigerMouthExceptionsForLinks(Board board, LinkedPoint<Point> diagonalPoint)
         {
-            List<Point> tigerMouthList = GetTigerMouthsOfLinks(board, group);
-            if (LifeCheck.CheckTigerMouthExceptions(board, tigerMouthList, group.Content))
+            Content c = board[diagonalPoint.Move];
+            List<Point> tigerMouthList = GetTigerMouthsOfLinks(board, diagonalPoint);
+            if (LifeCheck.CheckTigerMouthExceptions(board, tigerMouthList, c))
                 return true;
             return false;
         }
@@ -456,19 +457,16 @@ namespace Go
         /// <summary>
         /// Get tiger mouth of links.
         /// </summary>
-        public static List<Point> GetTigerMouthsOfLinks(Board board, Group group)
+        public static List<Point> GetTigerMouthsOfLinks(Board board, LinkedPoint<Point> diagonalPoint)
         {
+            Content c = board[diagonalPoint.Move];
             List<Point> tigerMouthList = new List<Point>();
-            Content c = group.Content;
-            foreach (LinkedPoint<Point> p in LinkHelper.GetGroupLinkedDiagonals(board, group))
+            foreach (Point q in LinkHelper.PointsBetweenDiagonals(diagonalPoint))
             {
-                foreach (Point q in LinkHelper.PointsBetweenDiagonals(p))
-                {
-                    if (ImmovableHelper.IsTigerMouthForLink(board, q, c))
-                        tigerMouthList.Add(q);
-                }
+                if (ImmovableHelper.IsTigerMouthForLink(board, q, c))
+                    tigerMouthList.Add(q);
             }
-            return tigerMouthList.Distinct().ToList();
+            return tigerMouthList.ToList();
         }
 
         /// <summary>
