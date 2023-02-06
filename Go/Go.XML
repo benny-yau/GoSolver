@@ -815,12 +815,6 @@
             Find real eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18796_2" />
             </summary>
         </member>
-        <member name="M:Go.KillerFormationHelper.CheckCornerKoMoveForRealEye(Go.Board)">
-            <summary>
-            Check corner ko move for real eye. Similar to CheckOnePointMoveInConnectAndDie.
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16446" /> 
-            </summary>
-        </member>
         <member name="M:Go.KillerFormationHelper.FindSuicidalKillerFormation(Go.Board,Go.Board,Go.Board)">
             <summary>
             Two-point move with empty point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A48" />

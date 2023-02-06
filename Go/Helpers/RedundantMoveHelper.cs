@@ -790,7 +790,7 @@ namespace Go
             Group group = tryBoard.GetCurrentGroup(targetGroup);
 
             //capture move
-            (_, Board b) = ImmovableHelper.ConnectAndDie(tryBoard, group, false);
+            (_, Board b) = ImmovableHelper.ConnectAndDie(tryBoard, group);
             if (b == null || b.IsCapturedGroup(group)) return false;
 
             //check weak group

@@ -227,7 +227,7 @@ namespace Go
                 if (neighbourGroups.Count != 3) continue;
 
                 //make opponent move at diagonal
-                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board);
+                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board, true);
                 if (suicidal)
                 {
                     //check double atari at link
