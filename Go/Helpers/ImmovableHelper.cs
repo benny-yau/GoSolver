@@ -313,7 +313,7 @@ namespace Go
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A85" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q14981" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A12" />
-        /// Check ko fight <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_A28_101Weiqi" />
+        /// Check killer ko within killer group <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_A28_101Weiqi" />
         /// Recursive connect and die <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A44_101Weiqi" />
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q17255" />
         /// </summary>
@@ -333,7 +333,7 @@ namespace Go
             (Boolean isSuicidal, Board escapeBoard) = IsSuicidalMove(libertyPoint.Value, c, tryBoard);
             if (isSuicidal)
             {
-                //check ko fight
+                //check killer ko within killer group
                 if (koEnabled && KoHelper.IsKoFight(tryBoard, group) && tryBoard.GetGroupsFromStoneNeighbours(libertyPoint.Value, c.Opposite()).Where(gr => !gr.Equals(group)).Any(n => !ImmovableHelper.CheckConnectAndDie(tryBoard, n, !koEnabled)))
                     return (false, null, escapeBoard);
                 return (true, libertyPoint, escapeBoard);
@@ -352,7 +352,6 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_2282" />
         /// Connect and die <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
         /// Connect and die for move group <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_GuanZiPu_A3" />
-        /// Check for recursion <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_XuanXuanGo_Q18331" />
         /// </summary>
         public static Board EscapeByCapture(Board tryBoard, Group group, Boolean koEnabled = true)
         {
@@ -362,9 +361,6 @@ namespace Go
                 //make capture move
                 (_, Board b) = ImmovableHelper.IsSuicidalOnCapture(tryBoard, target, koEnabled);
                 if (b == null) continue;
-                //check for recursion
-                if (GameHelper.CheckForRecursion(b).Any())
-                    continue;
                 //connect and die
                 if (CheckConnectAndDie(b, group, !koEnabled))
                     continue;

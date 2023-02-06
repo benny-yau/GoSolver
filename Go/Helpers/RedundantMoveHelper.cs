@@ -780,6 +780,7 @@ namespace Go
         /// Check for weak group with two or less liberties in connect and die.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_x" />
         /// Reverse connect and die <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WindAndTime_Q29277" />
+        /// Corner move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16446" /> 
         /// Check for double atari for one-point move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29481" />
         /// Check killable group with two or less liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B6" />
         /// Check for weak group capturing atari group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B17" />
@@ -806,7 +807,7 @@ namespace Go
             foreach (Group gr in AtariHelper.AtariByGroup(group, b))
             {
                 Board b3 = ImmovableHelper.CaptureSuicideGroup(b, gr);
-                if (b3 == null) continue;
+                if (b3 == null || KoHelper.IsKoFight(b3)) continue;
                 Group target = b3.GetCurrentGroup(group);
                 if (b3 != null && target.Liberties.Count == 2 && CheckWeakGroupInConnectAndDie(b3, target))
                     return true;
