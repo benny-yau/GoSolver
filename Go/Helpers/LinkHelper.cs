@@ -161,7 +161,7 @@ namespace Go
 
                     Point q = diagonals.First(d => !d.Equals(p));
                     //make connection at other diagonal
-                    if (ImmovableHelper.IsSuicidalMove(q, c, b, true).Item1)
+                    if (ImmovableHelper.IsSuicidalMove(q, c, b).Item1)
                         return false;
 
                     //check not negligible
@@ -460,11 +460,9 @@ namespace Go
         {
             List<Point> tigerMouthList = new List<Point>();
             Content c = group.Content;
-            List<LinkedPoint<Point>> diagonalPoints = LinkHelper.GetGroupDiagonals(board, group);
-            foreach (LinkedPoint<Point> p in diagonalPoints)
+            foreach (LinkedPoint<Point> p in LinkHelper.GetGroupLinkedDiagonals(board, group))
             {
-                List<Point> pointsBetweenDiagonals = LinkHelper.PointsBetweenDiagonals(p);
-                foreach (Point q in pointsBetweenDiagonals)
+                foreach (Point q in LinkHelper.PointsBetweenDiagonals(p))
                 {
                     if (ImmovableHelper.IsTigerMouthForLink(board, q, c))
                         tigerMouthList.Add(q);
@@ -559,7 +557,6 @@ namespace Go
         /// </summary>
         public static List<Group> GetPreviousMoveGroup(Board currentBoard, Board tryBoard)
         {
-            if (currentBoard == null || tryBoard == null) return new List<Group>();
             Point p = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             return currentBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).ToList();

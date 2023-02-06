@@ -383,7 +383,6 @@ namespace Go
 
         public static (Boolean, Board) IsSuicidalMove(Point p, Content c, Board tryBoard, Boolean overrideKo = false)
         {
-            if (tryBoard == null) return (false, null);
             Board board = tryBoard.MakeMoveOnNewBoard(p, c, overrideKo);
             if (board == null) return (true, null);
             if (board.MoveGroupLiberties == 1)
@@ -403,7 +402,6 @@ namespace Go
         /// </summary>
         public static (Boolean, Board) IsSuicidalMoveForConnectAndDie(Point p, Content c, Board tryBoard, Boolean koEnabled = false)
         {
-            if (tryBoard == null) return (false, null);
             Board board = tryBoard.MakeMoveOnNewBoard(p, c, koEnabled);
             if (board == null) return (true, null);
             if (board.MoveGroupLiberties == 1)

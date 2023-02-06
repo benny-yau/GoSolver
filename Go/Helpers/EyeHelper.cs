@@ -387,8 +387,8 @@ namespace Go
                 //killer move
                 if (content == c && b.CapturedList.Count > 0)
                 {
-                    //capture of real eye group
-                    if (b.CapturedList.Count == 1 && b.GetNeighbourGroups().Count == 0)
+                    //whole group dying
+                    if (eyeType != EyeType.CoveredEye && b.CapturedList.Count == 1 && b.GetNeighbourGroups().Count == 0)
                         return true;
                     return false;
                 }
