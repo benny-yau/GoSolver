@@ -625,7 +625,6 @@ namespace Go
         /// Check for eye at liberty point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A8" />
         /// Check for tiger mouth at liberty point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31646" />
         /// Check for suicidal at other end <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16867" />
-        /// Check if link for groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B32_2" />
         /// Check for both alive <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_TianLongTu_Q16827" />
         /// Set diagonal eye move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29273" />
         /// </summary>
@@ -675,24 +674,33 @@ namespace Go
         /// Check weak group in opponent suicide.
         /// <see cref = "UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16604_3" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16604_4" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B32_2" />
         /// </summary>
         private static Boolean CheckWeakGroupInOpponentSuicide(Board tryBoard, Group atariTarget)
         {
             Content c = tryBoard.MoveGroup.Content;
+            //escape at liberty point
             Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(tryBoard, atariTarget, c.Opposite());
-            if (b == null || b.MoveGroupLiberties == 1) return false;
 
-            if (GetWeakGroup(b, b.MoveGroup))
-                return true;
-
-            if (b.MoveGroupLiberties != 2) return false;
-            foreach (Point p in b.MoveGroup.Liberties)
+            //escape by capture
+            if (b == null)
             {
-                (Boolean suicidal, Board b2) = ImmovableHelper.IsSuicidalMove(p, c, b, true);
-                if (suicidal) continue;
-                if (CheckWeakGroupInOpponentSuicide(b2, b2.GetCurrentGroup(atariTarget)))
-                    return true;
+                foreach (Group group in AtariHelper.AtariByGroup(atariTarget, tryBoard))
+                {
+                    Board captureBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard, group);
+                    if (captureBoard == null) continue;
+                    Group targetGroup = captureBoard.GetCurrentGroup(atariTarget);
+                    if (targetGroup.Liberties.Count == 2 && !WallHelper.IsHostileNeighbourGroup(captureBoard, targetGroup))
+                        return true;
+                }
+                return false;
             }
+            if (ImmovableHelper.CheckConnectAndDie(b)) return true;
+
+            //check weak group
+            if (GetWeakGroup(b, b.MoveGroup)) return true;
+            if (b.MoveGroupLiberties == 2 && !WallHelper.IsHostileNeighbourGroup(b, b.MoveGroup))
+                return true;
             return false;
         }
 
@@ -837,7 +845,7 @@ namespace Go
             if (WallHelper.IsNonKillableFromSetupMoves(tryBoard, moveGroup))
                 return false;
 
-            foreach (Group group in tryBoard.GetNeighbourGroups(moveGroup).Where(n => n.Liberties.Count <= 2))
+            foreach (Group group in tryBoard.GetNeighbourGroups(moveGroup).Where(n => n.Liberties.Count == 2))
             {
                 foreach (Point liberty in group.Liberties)
                 {

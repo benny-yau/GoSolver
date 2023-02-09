@@ -133,10 +133,17 @@ namespace Go
             HashSet<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(move, c);
             foreach (Group group in neighbourGroups)
             {
-                if (!group.Liberties.All(liberty => ImmovableHelper.IsSuicidalMove(board, liberty, c.Opposite())))
+                if (!IsHostileNeighbourGroup(board, group))
                     return false;
             }
             return true;
+        }
+
+        public static Boolean IsHostileNeighbourGroup(Board board, Group group)
+        {
+            if (group.Liberties.All(liberty => ImmovableHelper.IsSuicidalMove(liberty, group.Content.Opposite(), board, true).Item1))
+                return true;
+            return false;
         }
 
         /// <summary>

@@ -604,11 +604,10 @@ namespace Go
             targetGroup = (targetGroup) ?? board.MoveGroup;
             Content c = targetGroup.Content;
             Group group = board.GetCurrentGroup(targetGroup);
-            List<Point> groupLiberties = board.GetGroupLiberties(group);
-            if (groupLiberties.Count > 2) return (false, null);
+            if (group.Liberties.Count > 2) return (false, null);
 
             List<KeyValuePair<LinkedPoint<Point>, Board>> killBoards = new List<KeyValuePair<LinkedPoint<Point>, Board>>();
-            foreach (Point liberty in groupLiberties)
+            foreach (Point liberty in group.Liberties)
             {
                 if (!GameHelper.SetupMoveAvailable(board, liberty)) continue;
                 (_, Board b) = ImmovableHelper.IsSuicidalMoveForConnectAndDie(liberty, c.Opposite(), board, koEnabled);
@@ -620,7 +619,6 @@ namespace Go
             foreach (KeyValuePair<LinkedPoint<Point>, Board> kvp in killBoards.OrderByDescending(b => (int)b.Key.CheckMove))
             {
                 Board b = kvp.Value;
-                LinkedPoint<Point> key = kvp.Key;
                 //check if captured
                 if (b.IsCapturedGroup(group))
                     return (true, b);
