@@ -681,7 +681,19 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(tryBoard, atariTarget, c.Opposite());
             if (b == null || b.MoveGroupLiberties == 1) return false;
-            return GetWeakGroup(b, b.MoveGroup);
+
+            if (GetWeakGroup(b, b.MoveGroup))
+                return true;
+
+            if (b.MoveGroupLiberties != 2) return false;
+            foreach (Point p in b.MoveGroup.Liberties)
+            {
+                (Boolean suicidal, Board b2) = ImmovableHelper.IsSuicidalMove(p, c, b);
+                if (suicidal) continue;
+                if (CheckWeakGroupInOpponentSuicide(b2, b2.GetCurrentGroup(atariTarget)))
+                    return true;
+            }
+            return false;
         }
 
         /// <summary>
