@@ -688,7 +688,7 @@ namespace Go
             if (b.MoveGroupLiberties != 2) return false;
             foreach (Point p in b.MoveGroup.Liberties)
             {
-                (Boolean suicidal, Board b2) = ImmovableHelper.IsSuicidalMove(p, c, b);
+                (Boolean suicidal, Board b2) = ImmovableHelper.IsSuicidalMove(p, c, b, true);
                 if (suicidal) continue;
                 if (CheckWeakGroupInOpponentSuicide(b2, b2.GetCurrentGroup(atariTarget)))
                     return true;
