@@ -2659,7 +2659,7 @@ namespace Go
             if (!WallHelper.TargetWithAllNonKillableGroups(tryBoard))
             {
                 List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
-                if (ngroups.Any(n => GroupHelper.GetKillerGroupFromCache(tryBoard, n.Points.First(), c.Opposite()) != null && !WallHelper.TargetWithKoFightAtAllNonKillableGroups(tryBoard, n)))
+                if (ngroups.Any(n => !WallHelper.TargetWithKoFightAtAllNonKillableGroups(tryBoard, n)))
                     return false;
             }
             return true;
