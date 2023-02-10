@@ -647,7 +647,6 @@ namespace Go
             (Boolean unEscapable, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(tryBoard, atariTarget, false);
             if (unEscapable) return false;
 
-
             //check for weak group
             if (CheckWeakGroupInOpponentSuicide(tryBoard, atariTarget))
                 return false;
@@ -660,7 +659,7 @@ namespace Go
             if (BothAliveHelper.CheckForBothAliveAtMove(tryBoard)) return false;
 
             //check for bloated eye move
-            if (tryBoard.IsAtariMove && tryBoard.GetDiagonalNeighbours().Any(d => tryBoard[d] == Content.Empty && tryBoard.GetStoneNeighbours(d).Any(n => tryBoard[n] == Content.Empty && KoHelper.IsReverseKoFight(currentBoard, n, c))))
+            if (tryBoard.GetDiagonalNeighbours().Any(d => tryBoard[d] == Content.Empty && (tryBoard.GetStoneNeighbours(d).Any(n => tryBoard[n] == Content.Empty && KoHelper.IsReverseKoFight(currentBoard, n, c)) || KoHelper.IsKoFight(currentBoard, d, c).Item1)))
                 return false;
 
             if (WallHelper.IsNonKillableGroup(tryBoard)) //set neutral point move
@@ -680,28 +679,36 @@ namespace Go
         private static Boolean CheckWeakGroupInOpponentSuicide(Board tryBoard, Group atariTarget)
         {
             Content c = tryBoard.MoveGroup.Content;
-            //escape at liberty point
-            Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(tryBoard, atariTarget, c.Opposite());
 
             //escape by capture
-            if (b == null)
+            List<Group> atariGroups = AtariHelper.AtariByGroup(atariTarget, tryBoard);
+            if (atariGroups.Count >= 1)
             {
-                foreach (Group group in AtariHelper.AtariByGroup(atariTarget, tryBoard))
+                foreach (Group group in atariGroups)
                 {
                     Board captureBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard, group);
                     if (captureBoard == null) continue;
                     Group targetGroup = captureBoard.GetCurrentGroup(atariTarget);
-                    if (targetGroup.Liberties.Count == 2 && !WallHelper.IsHostileNeighbourGroup(captureBoard, targetGroup))
-                        return true;
+                    if (!ImmovableHelper.CheckConnectAndDie(captureBoard, targetGroup))
+                    {
+                        if (targetGroup.Liberties.Count == 2 && !WallHelper.IsHostileNeighbourGroup(captureBoard, targetGroup))
+                            return true;
+                        return false;
+                    }
                 }
-                return false;
+                return true;
             }
-            if (ImmovableHelper.CheckConnectAndDie(b)) return true;
+
+            //escape at liberty point
+            Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(tryBoard, atariTarget, c.Opposite());
+            if (b == null) return true;
 
             //check weak group
-            if (GetWeakGroup(b, b.MoveGroup)) return true;
+            if (GetWeakGroup(b, b.MoveGroup))
+                return true;
             if (b.MoveGroupLiberties == 2 && !WallHelper.IsHostileNeighbourGroup(b, b.MoveGroup))
                 return true;
+
             return false;
         }
 
