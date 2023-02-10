@@ -675,6 +675,7 @@ namespace Go
         /// <see cref = "UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16604_3" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16604_4" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B32_2" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A67_3" />
         /// </summary>
         private static Boolean CheckWeakGroupInOpponentSuicide(Board tryBoard, Group atariTarget)
         {
@@ -853,7 +854,7 @@ namespace Go
             if (WallHelper.IsNonKillableFromSetupMoves(tryBoard, moveGroup))
                 return false;
 
-            foreach (Group group in tryBoard.GetNeighbourGroups(moveGroup).Where(n => n.Liberties.Count == 2))
+            foreach (Group group in tryBoard.GetNeighbourGroups(moveGroup).Where(n => n.Liberties.Count <= 2))
             {
                 foreach (Point liberty in group.Liberties)
                 {
