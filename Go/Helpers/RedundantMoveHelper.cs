@@ -2694,12 +2694,13 @@ namespace Go
 
         /// <summary>
         /// Check for two liberty neighbour group. Similar to covered eye.
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanQiJing_A38_2" />
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B41_2" />
         /// </summary>
         public static Boolean CheckForTwoLibertyNeighbourGroup(Board currentBoard, Group group)
         {
             Group currentGroup = currentBoard.GetCurrentGroup(group);
-            if (currentGroup.Liberties.Count > 2 || currentBoard.GetNeighbourGroups(group).All(n => WallHelper.IsNonKillableGroup(currentBoard, n)))
+            if (currentGroup.Liberties.Count > 2 || currentBoard.GetNeighbourGroups(currentGroup).Where(n => n.Liberties.Count > 1).All(n => WallHelper.IsNonKillableGroup(currentBoard, n)))
                 return true;
             return false;
         }

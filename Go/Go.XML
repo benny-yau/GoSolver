@@ -999,9 +999,14 @@
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
             </summary>
         </member>
-        <member name="M:Go.KoHelper.IsReverseKoFight(Go.Board)">
+        <member name="M:Go.KoHelper.IsForwardOrReverseKoFight(Go.Board)">
             <summary>
-            Reverse ko fight.
+            Is forward or reverse ko fight.
+            </summary>
+        </member>
+        <member name="M:Go.KoHelper.MakeKoFight(Go.Board,Go.Point,Go.Content)">
+            <summary>
+            Make ko fight.
             </summary>
         </member>
         <member name="M:Go.KoHelper.IsCaptureKoFight(Go.Board,Go.Group,System.Boolean)">
@@ -1023,6 +1028,11 @@
         <member name="M:Go.KoHelper.GetKoTargetGroups(Go.Board,Go.Group,Go.Group)">
             <summary>
             Get ko atari groups.
+            </summary>
+        </member>
+        <member name="M:Go.KoHelper.GetKoEyePoint(Go.Board)">
+            <summary>
+            Get ko eye point.
             </summary>
         </member>
         <member name="M:Go.KoHelper.CheckBaseLineLeapLink(Go.Board,Go.Point,Go.Content)">
@@ -1942,9 +1952,17 @@
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" /> 
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_2" /> 
             Suicide group ko fight <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q16693_2" /> 
+            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_x_2" /> 
             End game redundant ko <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
             Check break link <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30152_2" /> 
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q30152" /> 
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CheckForTwoLibertyNeighbourGroup(Go.Board,Go.Group)">
+            <summary>
+            Check for two liberty neighbour group. Similar to covered eye.
+            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanQiJing_A38_2" />
+            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B41_2" />
             </summary>
         </member>
         <member name="M:Go.ResultHelper.GameEndedMessage(Go.ConfirmAliveResult,Go.Game)">
