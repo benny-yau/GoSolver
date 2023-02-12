@@ -249,7 +249,7 @@ namespace Go
             List<Group> targetGroups = new List<Group>();
             ngroups.ForEach(ngroup => targetGroups.AddRange(KoHelper.GetKoTargetGroups(currentBoard, ngroup)));
             targetGroups = targetGroups.Distinct().ToList();
-            if (targetGroups.Count >= 2 && DoubleKoEnabled(tryBoard, currentBoard))
+            if (targetGroups.Count >= 2)
                 return true;
 
             //kill double ko
@@ -261,7 +261,7 @@ namespace Go
                 if (isKoFight)
                 {
                     koGroups.Add(group);
-                    if (koGroups.Count >= 2 && DoubleKoEnabled(tryBoard, currentBoard))
+                    if (koGroups.Count >= 2)
                         return true;
                 }
             }
