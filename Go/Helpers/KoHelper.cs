@@ -70,20 +70,23 @@ namespace Go
         }
 
         /// <summary>
-        /// Reverse ko fight.
+        /// Is forward or reverse ko fight.
         /// </summary>
-        public static Boolean IsReverseKoFight(Board tryBoard)
+        public static Boolean IsForwardOrReverseKoFight(Board tryBoard)
         {
             Content c = tryBoard.MoveGroup.Content;
             List<Point> eyePoints = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindEye(tryBoard, n, c)).ToList();
             return eyePoints.Any(p => KoHelper.IsKoFight(tryBoard, p, c).Item1);
         }
 
-        public static Boolean IsReverseKoFight(Board tryBoard, Point p, Content c)
+        /// <summary>
+        /// Make ko fight.
+        /// </summary>
+        public static Boolean MakeKoFight(Board tryBoard, Point p, Content c)
         {
-            Board board = tryBoard.MakeMoveOnNewBoard(p, c);
+            Board board = tryBoard.MakeMoveOnNewBoard(p, c, true);
             if (board == null) return false;
-            return IsReverseKoFight(board);
+            return IsForwardOrReverseKoFight(board);
         }
 
         /// <summary>
@@ -151,6 +154,9 @@ namespace Go
             return currentBoard.GetNeighbourGroups(group).Where(gr => gr != excludeGroup && KoHelper.IsKoFight(currentBoard, gr));
         }
 
+        /// <summary>
+        /// Get ko eye point.
+        /// </summary>
         public static Point? GetKoEyePoint(Board tryBoard)
         {
             Content c = tryBoard.MoveGroup.Content;
