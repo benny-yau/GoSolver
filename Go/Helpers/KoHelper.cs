@@ -321,8 +321,7 @@ namespace Go
             {
                 Board b = new Board(tryBoard);
                 b[emptyNeighbours.First()] = c.Opposite();
-                if (DoubleKoEnabled(b, currentBoard, eyePoint))
-                    return true;
+                return true;
             }
             return false;
         }
