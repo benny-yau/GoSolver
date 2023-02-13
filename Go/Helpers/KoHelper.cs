@@ -318,11 +318,7 @@ namespace Go
             ngroups.ForEach(ngroup => targetGroups.AddRange(KoHelper.GetKoTargetGroups(tryBoard, ngroup)));
             targetGroups = targetGroups.Distinct().ToList();
             if (targetGroups.Count >= 1)
-            {
-                Board b = new Board(tryBoard);
-                b[emptyNeighbours.First()] = c.Opposite();
                 return true;
-            }
             return false;
         }
     }

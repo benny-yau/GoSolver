@@ -450,7 +450,7 @@ namespace Go
             if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] != c && GroupHelper.GetKillerGroupFromCache(tryBoard, n, c) != killerGroup)) return false;
 
             //make move at the other liberty
-            Point q = atariTarget.Liberties.First();
+            Point q = atariTarget.Liberties.First(lib => !lib.Equals(move));
             (Boolean suicidal, Board board) = ImmovableHelper.IsSuicidalMove(q, c, currentBoard);
             if (suicidal) return false;
             Group killerGroup2 = GroupHelper.GetKillerGroupFromCache(board, atariPoint, c);
@@ -2687,7 +2687,7 @@ namespace Go
 
             //suicide group ko fight
             List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
-            if (ngroups.Any(n => !WallHelper.TargetWithKoFightAtAllNonKillableGroups(tryBoard, n) && (!WallHelper.TargetWithAllNonKillableGroups(tryBoard) || !CheckForTwoLibertyNeighbourGroup(currentBoard, n))))
+            if (ngroups.Any(n => !WallHelper.TargetWithKoFightAtAllNonKillableGroups(tryBoard, n)))
                 return false;
             return true;
         }
