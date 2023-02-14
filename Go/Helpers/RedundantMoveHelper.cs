@@ -2154,13 +2154,13 @@ namespace Go
                         return true;
                 }
 
-                Group diagonalKillerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, d, c.Opposite());
+                Group diagonalKillerGroup = GroupHelper.GetKillerGroupOfNeighbourGroups(currentBoard, d, c.Opposite());
                 if (diagonalKillerGroup == null) continue;
 
                 //check move and diagonal space
                 if (ImmovableHelper.IsConfirmTigerMouth(currentBoard, tryBoard) == null) continue;
 
-                Group moveKillerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
+                Group moveKillerGroup = GroupHelper.GetKillerGroupOfNeighbourGroups(currentBoard, move, c.Opposite());
                 if (moveKillerGroup == null)
                 {
                     if (NeutralPointSuicidalMove(tryMove))
@@ -2205,7 +2205,7 @@ namespace Go
             Content c = tryMove.MoveContent;
 
             //suicide within real eye at suicidal redundant move
-            if (tryBoard.MoveGroup.Points.Count == 1 && EyeHelper.FindSemiSolidEye(move, capturedBoard).Item1)
+            if (EyeHelper.FindSemiSolidEye(move, capturedBoard).Item1)
                 return false;
             //check for covered eye
             if (EyeHelper.IsCovered(tryBoard, move, c.Opposite()))
@@ -2213,11 +2213,13 @@ namespace Go
 
             //check for three groups
             List<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(move);
-            if (neighbourGroups.Count >= 3 && (neighbourGroups.Count(g => g.Liberties.Count <= 2) >= 2 || LinkHelper.DiagonalCutMove(tryBoard).Item1)) return false;
+            if (neighbourGroups.Count >= 3)
+                return false;
 
             //check for strong neighbour groups
             Boolean strongGroups = WallHelper.HostileNeighbourGroups(currentBoard, move, c) && capturedBoard.MoveGroupLiberties > 2;
-            if (!strongGroups) return false;
+            if (!strongGroups)
+                return false;
 
             //suicide for liberty fight
             if (KillerFormationHelper.SuicideForLibertyFight(tryBoard, currentBoard)) return false;

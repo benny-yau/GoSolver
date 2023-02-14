@@ -133,7 +133,7 @@ namespace Go
             HashSet<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(move, c);
             foreach (Group group in neighbourGroups)
             {
-                if (!IsHostileNeighbourGroup(board, group))
+                if (group.Liberties.Count <= 2 && !IsHostileNeighbourGroup(board, group))
                     return false;
             }
             return true;
