@@ -65,16 +65,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Check groups with two liberties <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_Corner_B41" /> 
-        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_A38" /> 
-        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
-        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_Q18341_2" />
-        /// Check connect and die for opponent groups <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q30982_3" />
-        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q17154" />
-        /// Check eye for suicidal move <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q30275" />
-        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_A84_3" />
-        /// Check escape capture link <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_3" />
-        /// Ensure neighbour groups are escapable <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31398" /> 
+        /// Find covered eye.
         /// Check no eye for survival <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A52" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q16594" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A41" /> 
@@ -82,6 +73,7 @@ namespace Go
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_4" /> 
         /// Check no eye for survival for opponent <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q30332" /> 
         /// Check eye for survival <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q30982" /> 
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31398" /> 
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_B25" /> 
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q29277" /> 
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario4dan10" /> 
@@ -138,25 +130,11 @@ namespace Go
             if (KoHelper.EssentialAtariForKoMove(tryMove))
                 return false;
 
-            //check groups with two liberties 
+            //check two liberty group to capture neighbour
             foreach (Group group in currentBoard.GetNeighbourGroups(eyeGroup).Where(gr => gr.Liberties.Count == 2))
             {
-                foreach (Point liberty in group.Liberties)
-                {
-                    (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c, currentBoard);
-                    if (!suicidal) continue;
-                    //check eye for suicidal move
-                    Point liberty2 = group.Liberties.First(p => !p.Equals(liberty));
-                    if (b != null && b.GetStoneAndDiagonalNeighbours().Any(n => n.Equals(liberty2) && EyeHelper.FindEye(b, liberty2, c)) && !ImmovableHelper.IsSuicidalMove(currentBoard, liberty, c.Opposite()))
-                        return false;
-                    //check connect and die for opponent groups
-                    if (!tryBoard.GetGroupsFromStoneNeighbours(liberty, c).Any(n => n.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, n) && (n.Points.Count > 2 || tryBoard.GetNeighbourGroups(n).Count > 1 || n.Liberties.Any(lib => EyeHelper.FindEye(tryBoard, lib)))))
-                        continue;
-                    //check escape capture link
-                    if (ImmovableHelper.EscapeCaptureLink(currentBoard, group, eyePoint))
-                        continue;
+                if (CheckTwoLibertyGroupToCaptureNeighbour(currentBoard, tryBoard, group, eyePoint))
                     return false;
-                }
             }
 
             //check for double ko
@@ -216,6 +194,41 @@ namespace Go
             if (opponentTryMove != null && WallHelper.IsNonKillableGroup(opponentTryMove.TryGame.Board))
                 opponentTryMove.IsNeutralPoint = true;
             return true;
+        }
+
+        /// <summary>
+        /// Check two liberty group to capture neighbour.
+        /// <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_Corner_B41" /> 
+        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_A38" /> 
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_Q18341_2" />
+        /// Check eye for suicidal move <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q30275" />
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_A84_3" />
+        /// Capture opponent groups <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q17154" />
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q30982_3" />
+        /// Check escape capture link <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_3" />
+        /// </summary>
+        private static Boolean CheckTwoLibertyGroupToCaptureNeighbour(Board currentBoard, Board tryBoard, Group group, Point capturePoint)
+        {
+            Content c = tryBoard.MoveGroup.Content;
+            foreach (Point liberty in group.Liberties)
+            {
+                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c, currentBoard);
+                if (!suicidal) continue;
+
+                //check eye for suicidal move
+                Point liberty2 = group.Liberties.First(p => !p.Equals(liberty));
+                if (b != null && b.GetStoneAndDiagonalNeighbours().Any(n => n.Equals(liberty2) && EyeHelper.FindEye(b, liberty2, c)) && !ImmovableHelper.IsSuicidalMove(currentBoard, liberty, c.Opposite()))
+                    return true;
+                //capture opponent groups
+                if (!tryBoard.GetGroupsFromStoneNeighbours(liberty, c).Any(n => n.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, n) && (n.Points.Count > 2 || tryBoard.GetNeighbourGroups(n).Count > 1 || n.Liberties.Any(lib => EyeHelper.FindEye(tryBoard, lib)))))
+                    continue;
+                //check escape capture link
+                if (ImmovableHelper.EscapeCaptureLink(currentBoard, group, capturePoint))
+                    continue;
+                return true;
+            }
+            return false;
         }
         #endregion
 
@@ -2689,8 +2702,15 @@ namespace Go
 
             //suicide group ko fight
             List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
-            if (ngroups.Any(n => !WallHelper.TargetWithKoFightAtAllNonKillableGroups(tryBoard, n)))
-                return false;
+            foreach (Group group in ngroups)
+            {
+                if (WallHelper.TargetWithKoFightAtAllNonKillableGroups(tryBoard, group)) continue;
+                if (!WallHelper.TargetWithAllNonKillableGroups(tryBoard))
+                    return false;
+                Group currentGroup = currentBoard.GetCurrentGroup(group);
+                if (currentGroup.Liberties.Count == 2 && CheckTwoLibertyGroupToCaptureNeighbour(currentBoard, tryBoard, currentGroup, eyePoint.Value))
+                    return false;
+            }
             return true;
         }
 
