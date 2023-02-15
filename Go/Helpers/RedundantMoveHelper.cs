@@ -207,6 +207,7 @@ namespace Go
         /// Capture opponent groups <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q17154" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q30982_3" />
         /// Check escape capture link <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_3" />
+        /// Ko fight <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanQiJing_A38_2" />
         /// </summary>
         private static Boolean CheckTwoLibertyGroupToCaptureNeighbour(Board currentBoard, Board tryBoard, Group group, Point capturePoint)
         {
@@ -2621,7 +2622,9 @@ namespace Go
             {
                 //check pre-ko moves
                 if (tryBoard.singlePointCapture == null) return false;
-                return !KoHelper.PossibilityOfDoubleKo(tryMove);
+                //check double ko
+                if (!KoHelper.PossibilityOfDoubleKo(tryMove))
+                    return true;
             }
 
             //check redundant ko
@@ -2712,19 +2715,6 @@ namespace Go
                     return false;
             }
             return true;
-        }
-
-        /// <summary>
-        /// Check for two liberty neighbour group. Similar to covered eye.
-        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanQiJing_A38_2" />
-        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B41_2" />
-        /// </summary>
-        public static Boolean CheckForTwoLibertyNeighbourGroup(Board currentBoard, Group group)
-        {
-            Group currentGroup = currentBoard.GetCurrentGroup(group);
-            if (currentGroup.Liberties.Count > 2 || currentBoard.GetNeighbourGroups(currentGroup).Where(n => n.Liberties.Count > 1).All(n => WallHelper.IsNonKillableGroup(currentBoard, n)))
-                return true;
-            return false;
         }
 
         #endregion

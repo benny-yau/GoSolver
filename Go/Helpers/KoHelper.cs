@@ -13,7 +13,6 @@ namespace Go
         /// Enables one way ko check - either survive or kill
         /// If objective is survive with ko or kill, then ko for survive is enabled, else if objective is survive or kill with ko, then ko for kill is enabled
         /// </summary>
-        /// <returns></returns>
         public static Boolean KoSurvivalEnabled(SurviveOrKill surviveOrKill, GameInfo gameInfo)
         {
             if (surviveOrKill == SurviveOrKill.Survive)
@@ -30,7 +29,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Is Ko fight, including both pre-ko and ko.
+        /// Is ko fight, including both pre-ko and ko.
         /// </summary>
         public static Boolean IsKoFight(Board board, Group targetGroup = null)
         {
@@ -213,10 +212,7 @@ namespace Go
             {
                 (Boolean unEscapable, _, Board b) = ImmovableHelper.UnescapableGroup(tryBoard, atariTarget, false);
                 if (!unEscapable && b != null && b.MoveGroupLiberties > 1)
-                {
-                    atariTarget.IsNonKillable = true;
                     return false;
-                }
             }
             return true;
         }
@@ -258,40 +254,12 @@ namespace Go
             foreach (Point liberty in currentBoard.GetLibertiesOfGroups(connectedGroups))
             {
                 (Boolean isKoFight, Group group) = KoHelper.IsKoFight(currentBoard, liberty, c.Opposite());
-                if (isKoFight)
-                {
-                    koGroups.Add(group);
-                    if (koGroups.Count >= 2)
-                        return true;
-                }
+                if (!isKoFight) continue;
+                koGroups.Add(group);
+                if (koGroups.Count >= 2)
+                    return true;
             }
             return false;
-        }
-
-        /// <summary>
-        /// Double ko enabled.
-        /// </summary>
-        private static Boolean DoubleKoEnabled(Board tryBoard, Board currentBoard, Point? eyePoint = null)
-        {
-            Content c = tryBoard.MoveGroup.Content;
-            eyePoint = eyePoint ?? tryBoard.singlePointCapture.Value;
-            List<Group> groups = new List<Group>();
-            //survival double ko
-            if (WallHelper.TargetWithAllNonKillableGroups(tryBoard) && !Board.ResolveAtari(currentBoard, tryBoard))
-                groups = currentBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).ToList();
-            //kill double ko
-            else if (KoHelper.IsKoFightAtNonKillableGroup(tryBoard, tryBoard.MoveGroup))
-                groups = tryBoard.GetNeighbourGroups();
-
-            //ensure only one survival group
-            if (groups.Count == 1)
-            {
-                Group group = groups.First();
-                //ensure more than two iiberties
-                if (group.Liberties.Count > 2 || currentBoard.GetNeighbourGroups(group).Where(n => n.Liberties.Count > 1).All(n => WallHelper.IsNonKillableGroup(currentBoard, n)))
-                    return false;
-            }
-            return true;
         }
 
         /// <summary>

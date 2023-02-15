@@ -985,11 +985,10 @@
             Enables one way ko check - either survive or kill
             If objective is survive with ko or kill, then ko for survive is enabled, else if objective is survive or kill with ko, then ko for kill is enabled
             </summary>
-            <returns></returns>
         </member>
         <member name="M:Go.KoHelper.IsKoFight(Go.Board,Go.Group)">
             <summary>
-            Is Ko fight, including both pre-ko and ko.
+            Is ko fight, including both pre-ko and ko.
             </summary>
         </member>
         <member name="M:Go.KoHelper.IsKoFightAtNonKillableGroup(Go.Board,Go.Group)">
@@ -1055,11 +1054,6 @@
             Kill double ko <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A23" />
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WuQingYuan_Q30982_2" />
             <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_2" /> 
-            </summary>
-        </member>
-        <member name="M:Go.KoHelper.DoubleKoEnabled(Go.Board,Go.Board,System.Nullable{Go.Point})">
-            <summary>
-            Double ko enabled.
             </summary>
         </member>
         <member name="M:Go.KoHelper.NeutralPointDoubleKo(Go.Board,Go.Board)">
@@ -1286,6 +1280,7 @@
             Capture opponent groups <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q17154" />
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q30982_3" />
             Check escape capture link <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_3" />
+            Ko fight <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanQiJing_A38_2" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.FillKoEyeMove(Go.GameTryMove)">
@@ -1962,13 +1957,6 @@
             End game redundant ko <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
             Check break link <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30152_2" /> 
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q30152" /> 
-            </summary>
-        </member>
-        <member name="M:Go.RedundantMoveHelper.CheckForTwoLibertyNeighbourGroup(Go.Board,Go.Group)">
-            <summary>
-            Check for two liberty neighbour group. Similar to covered eye.
-            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanQiJing_A38_2" />
-            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B41_2" />
             </summary>
         </member>
         <member name="M:Go.ResultHelper.GameEndedMessage(Go.ConfirmAliveResult,Go.Game)">
