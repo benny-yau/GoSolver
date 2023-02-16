@@ -2104,11 +2104,7 @@ namespace Go
                 return false;
 
             if (RedundantTigerMouth(opponentMove, tryMove))
-            {
-                //DebugHelper.PrintGameTryMovesToText(tryMove.TryGame.Board, "RedundantTigerMouth_z5.txt");
-
                 return true;
-            }
             return false;
         }
 
