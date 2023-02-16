@@ -2104,7 +2104,11 @@ namespace Go
                 return false;
 
             if (RedundantTigerMouth(opponentMove, tryMove))
+            {
+                //DebugHelper.PrintGameTryMovesToText(tryMove.TryGame.Board, "RedundantTigerMouth_z5.txt");
+
                 return true;
+            }
             return false;
         }
 
@@ -2119,8 +2123,7 @@ namespace Go
         /// Check possible corner three formation <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WuQingYuan_Q31503_2" />
         /// Opponent move at tiger mouth <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A151_101Weiqi" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_Nie67" />
-        /// Real eye at diagonal point <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221209_5" />
-        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221231_6" />
+        /// Real eye at diagonal point <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221231_6" />
         /// Check for strong neighbour groups <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario3dan22" />
         /// Check for non killable group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30370" />
@@ -2178,6 +2181,10 @@ namespace Go
                 if (moveKillerGroup == null)
                 {
                     if (NeutralPointSuicidalMove(tryMove))
+                        continue;
+
+                    //real eye at diagonal point
+                    if (EyeHelper.FindSemiSolidEye(d, currentBoard).Item1 && !EyeHelper.FindSemiSolidEye(d, tryBoard).Item1)
                         continue;
 
                     //check for strong neighbour groups

@@ -212,7 +212,10 @@ namespace Go
             {
                 (Boolean unEscapable, _, Board b) = ImmovableHelper.UnescapableGroup(tryBoard, atariTarget, false);
                 if (!unEscapable && b != null && b.MoveGroupLiberties > 1)
+                {
+                    atariTarget.IsNonKillable = true;
                     return false;
+                }
             }
             return true;
         }
