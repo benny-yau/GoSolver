@@ -53,11 +53,11 @@ namespace Go
         }
 
         /// <summary>
-        /// Is Ko fight at non killable group.
+        /// Is non killable group ko fight.
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
         /// </summary>
-        public static Boolean IsKoFightAtNonKillableGroup(Board tryBoard, Group koGroup)
+        public static Boolean IsNonKillableGroupKoFight(Board tryBoard, Group koGroup)
         {
             Content c = tryBoard.MoveGroup.Content;
             if (!IsKoFight(tryBoard, koGroup)) return false;

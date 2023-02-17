@@ -492,6 +492,30 @@ namespace Go
         }
 
         /// <summary>
+        /// Check all diagonal groups.
+        /// </summary>
+        public static Boolean CheckAllDiagonalGroups(Board board, Group group, Func<Group, Boolean> func, List<Group> groups = null)
+        {
+            if (groups == null)
+            {
+                groups = new List<Group>();
+                groups.Add(group);
+                if (func(group)) return true;
+            }
+            //get all diagonal points
+            foreach (Group g in GetDiagonalGroups(board, group))
+            {
+                if (groups.Contains(g)) continue;
+                if (func(g)) return true;
+                groups.Add(g);
+                //check all diagonal groups by recursion
+                Boolean result = CheckAllDiagonalGroups(board, g, func, groups);
+                if (result) return true;
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Get the opposite diagonals of the two diagonal points.
         /// </summary>
         public static List<Point> PointsBetweenDiagonals(Point p, Point q)

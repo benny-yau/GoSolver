@@ -158,7 +158,7 @@ namespace Go
             if (KoHelper.EssentialAtariForKoMove(this))
             {
                 //end game redundant ko
-                if (opponentMove && LifeCheck.GetTargets(tryBoard).All(t => WallHelper.TargetWithKoFightAtAllNonKillableGroups(tryBoard, t)))
+                if (opponentMove && WallHelper.AllTargetWithinNonKillableGroups(tryBoard))
                     return true;
                 return false;
             }
@@ -171,13 +171,12 @@ namespace Go
         public GameTryMove MakeMoveWithOpponentAtSamePoint(Boolean overrideKo = true)
         {
             Board opponentTryBoard = new Board(CurrentGame.Board);
-            Point p = Move;
             Content c = MoveContent;
-            if (opponentTryBoard.InternalMakeMove(p, c.Opposite(), overrideKo) == MakeMoveResult.Legal)
+            if (opponentTryBoard.InternalMakeMove(Move, c.Opposite(), overrideKo) == MakeMoveResult.Legal)
             {
-                GameTryMove move = new GameTryMove(CurrentGame);
-                move.TryGame.Board = opponentTryBoard;
-                return move;
+                GameTryMove tryMove = new GameTryMove(CurrentGame);
+                tryMove.TryGame.Board = opponentTryBoard;
+                return tryMove;
             }
             return null;
         }

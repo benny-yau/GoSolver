@@ -991,9 +991,9 @@
             Is ko fight, including both pre-ko and ko.
             </summary>
         </member>
-        <member name="M:Go.KoHelper.IsKoFightAtNonKillableGroup(Go.Board,Go.Group)">
+        <member name="M:Go.KoHelper.IsNonKillableGroupKoFight(Go.Board,Go.Group)">
             <summary>
-            Is Ko fight at non killable group.
+            Is non killable group ko fight.
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi" />
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
             </summary>
@@ -1189,6 +1189,11 @@
         <member name="M:Go.LinkHelper.GetAllDiagonalGroups(Go.Board,Go.Group,System.Func{Go.Group,System.Boolean},System.Collections.Generic.List{Go.Group})">
             <summary>
             Get all diagonal groups by recursion.
+            </summary>
+        </member>
+        <member name="M:Go.LinkHelper.CheckAllDiagonalGroups(Go.Board,Go.Group,System.Func{Go.Group,System.Boolean},System.Collections.Generic.List{Go.Group})">
+            <summary>
+            Check all diagonal groups.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.PointsBetweenDiagonals(Go.Point,Go.Point)">
@@ -2063,7 +2068,12 @@
         </member>
         <member name="M:Go.WallHelper.StrongNeighbourGroups(Go.Board,System.Collections.Generic.IEnumerable{Go.Group})">
             <summary>
-            Strong neighbour groups with more than two liberties or two liberties that are suicidal to opponent.
+            Strong neighbour groups that cannot be captured by connect and die.
+            </summary>
+        </member>
+        <member name="M:Go.WallHelper.HostileNeighbourGroups(Go.Board,Go.Point,Go.Content)">
+            <summary>
+            Hostile neighbour groups with two liberties that are suicidal to opponent.
             </summary>
         </member>
         <member name="M:Go.WallHelper.TargetWithAllNonKillableGroups(Go.Board,Go.Group)">
@@ -2079,6 +2089,11 @@
         <member name="M:Go.WallHelper.TargetWithKoFightAtAllNonKillableGroups(Go.Board,Go.Group)">
             <summary>
             Target with ko fight at all non killable groups.
+            </summary>
+        </member>
+        <member name="M:Go.WallHelper.AllTargetWithinNonKillableGroups(Go.Board)">
+            <summary>
+            All target within non killable groups.
             </summary>
         </member>
         <member name="M:Go.GameMapping.GetMappedJson(Go.Game)">

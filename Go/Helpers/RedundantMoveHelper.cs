@@ -1658,7 +1658,7 @@ namespace Go
 
             //check neighbour groups
             Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, atariTarget, true);
-            if (b != null && !WallHelper.StrongNeighbourGroups(b, b.MoveGroup))
+            if (b != null && !WallHelper.StrongNeighbourGroups(b))
                 return true;
 
             return false;
@@ -2693,16 +2693,16 @@ namespace Go
             if (eyePoint == null) return false;
 
             //ko fight at non killable group
-            if (KoHelper.IsKoFightAtNonKillableGroup(tryBoard, tryBoard.MoveGroup))
+            if (KoHelper.IsNonKillableGroupKoFight(tryBoard, tryBoard.MoveGroup))
             {
-                Boolean killable = tryBoard.GetGroupsFromStoneNeighbours(move, c).Any(n => !WallHelper.TargetWithKoFightAtAllNonKillableGroups(tryBoard, n));
-                if (killable && !WallHelper.StrongNeighbourGroups(tryBoard, tryBoard.MoveGroup))
-                    return false;
-                return true;
+                HashSet<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(move, c);
+                if (LifeCheck.GetTargets(tryBoard).All(t => neighbourGroups.Contains(t)) && WallHelper.AllTargetWithinNonKillableGroups(tryBoard))
+                    return true;
+                return WallHelper.StrongNeighbourGroups(tryBoard);
             }
 
             //check ko fight necessary
-            if (!WallHelper.StrongNeighbourGroups(tryBoard, tryBoard.MoveGroup))
+            if (!WallHelper.StrongNeighbourGroups(tryBoard))
                 return false;
 
             //if all diagonals are real eyes then redundant

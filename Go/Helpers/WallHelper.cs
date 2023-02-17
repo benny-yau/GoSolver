@@ -97,7 +97,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Strong neighbour groups with more than two liberties or two liberties that are suicidal to opponent.
+        /// Strong neighbour groups that cannot be captured by connect and die.
         /// </summary>
         public static Boolean StrongNeighbourGroups(Board board, IEnumerable<Group> neighbourGroups)
         {
@@ -113,8 +113,9 @@ namespace Go
             return StrongNeighbourGroups(board, neighbourGroups);
         }
 
-        public static Boolean StrongNeighbourGroups(Board board, Group group)
+        public static Boolean StrongNeighbourGroups(Board board, Group group = null)
         {
+            if (group == null) group = board.MoveGroup;
             List<Group> neighbourGroups = board.GetNeighbourGroups(group);
             return StrongNeighbourGroups(board, neighbourGroups);
         }
@@ -128,6 +129,9 @@ namespace Go
             return true;
         }
 
+        /// <summary>
+        /// Hostile neighbour groups with two liberties that are suicidal to opponent.
+        /// </summary>
         public static Boolean HostileNeighbourGroups(Board board, Point move, Content c)
         {
             HashSet<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(move, c);
@@ -174,9 +178,22 @@ namespace Go
         public static Boolean TargetWithKoFightAtAllNonKillableGroups(Board board, Group group = null)
         {
             if (group == null) group = board.MoveGroup;
-            if (board.GetNeighbourGroups(group).All(n => WallHelper.IsNonKillableGroup(board, n) || KoHelper.IsKoFightAtNonKillableGroup(board, n)))
+            if (board.GetNeighbourGroups(group).All(n => WallHelper.IsNonKillableGroup(board, n) || KoHelper.IsNonKillableGroupKoFight(board, n)))
                 return true;
             return false;
+        }
+
+        /// <summary>
+        /// All target within non killable groups.
+        /// </summary>
+        public static Boolean AllTargetWithinNonKillableGroups(Board board)
+        {
+            foreach (Group targetGroup in LifeCheck.GetTargets(board))
+            {
+                if (LinkHelper.CheckAllDiagonalGroups(board, targetGroup, t => !WallHelper.TargetWithKoFightAtAllNonKillableGroups(board, t)))
+                    return false;
+            }
+            return true;
         }
     }
 }
