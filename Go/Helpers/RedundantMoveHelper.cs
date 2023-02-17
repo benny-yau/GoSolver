@@ -2666,6 +2666,10 @@ namespace Go
 
         /// <summary>
         /// Check redundant ko. 
+        /// ko fight at non killable group <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A27" />
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi" />
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_20221128" /> 
         /// ko fight necessary <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario2kyu18" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A62" /> 
@@ -2676,7 +2680,6 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_2" /> 
         /// Suicide group ko fight <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q16693_2" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_x_2" /> 
-        /// End game redundant ko <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
         /// Check break link <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30152_2" /> 
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q30152" /> 
         /// </summary>
@@ -2691,7 +2694,12 @@ namespace Go
 
             //ko fight at non killable group
             if (KoHelper.IsKoFightAtNonKillableGroup(tryBoard, tryBoard.MoveGroup))
+            {
+                Boolean killable = tryBoard.GetGroupsFromStoneNeighbours(move, c).Any(n => !WallHelper.TargetWithKoFightAtAllNonKillableGroups(tryBoard, n));
+                if (killable && !WallHelper.StrongNeighbourGroups(tryBoard, tryBoard.MoveGroup))
+                    return false;
                 return true;
+            }
 
             //check ko fight necessary
             if (!WallHelper.StrongNeighbourGroups(tryBoard, tryBoard.MoveGroup))
