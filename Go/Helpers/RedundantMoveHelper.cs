@@ -125,11 +125,6 @@ namespace Go
             }
             if (eyeGroup == null) return false;
             if (tryBoard.CapturedList.Any(gr => !eyeGroup.Points.Contains(gr.Points.First()))) return false;
-
-            //check atari for ko move
-            if (KoHelper.EssentialAtariForKoMove(tryMove))
-                return false;
-
             //check two liberty group to capture neighbour
             foreach (Group group in currentBoard.GetNeighbourGroups(eyeGroup).Where(gr => gr.Liberties.Count == 2))
             {
@@ -2631,8 +2626,6 @@ namespace Go
             }
 
             //check redundant ko
-            if (!tryMove.IsNegligibleForKo())
-                return false;
             if (!CheckRedundantKo(tryMove)) return false;
 
             //check for opponent
@@ -2641,8 +2634,6 @@ namespace Go
             GameTryMove opponentMove = new GameTryMove(tryMove.TryGame);
             opponentMove.TryGame.Board.InternalMakeMove(eyePoint.Value, c.Opposite(), true);
 
-            if (!opponentMove.IsNegligibleForKo(true))
-                return false;
             if (CheckRedundantKo(opponentMove))
                 return true;
             return false;
