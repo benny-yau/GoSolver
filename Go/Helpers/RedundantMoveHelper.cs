@@ -454,7 +454,7 @@ namespace Go
             Group atariTarget = tryBoard.AtariTargets.First();
             Point atariPoint = atariTarget.Points.First();
             //check for redundant atari within killer group
-            Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, atariPoint, c);
+            Group killerGroup = GroupHelper.GetKillerGroupOfNeighbourGroups(tryBoard, atariPoint, c);
             if (killerGroup == null) return false;
             //ensure more than one liberty for move group
             if (tryBoard.MoveGroupLiberties == 1) return false;
@@ -465,7 +465,7 @@ namespace Go
             Point q = atariTarget.Liberties.First(lib => !lib.Equals(move));
             (Boolean suicidal, Board board) = ImmovableHelper.IsSuicidalMove(q, c, currentBoard);
             if (suicidal) return false;
-            Group killerGroup2 = GroupHelper.GetKillerGroupFromCache(board, atariPoint, c);
+            Group killerGroup2 = GroupHelper.GetKillerGroupOfNeighbourGroups(board, atariPoint, c);
             if (killerGroup2 == null) return false;
             //ensure the other move can capture atari target as well
             if (!ImmovableHelper.UnescapableGroup(board, board.GetGroupAt(atariPoint)).Item1) return false;
@@ -2135,8 +2135,7 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Content c = tryMove.MoveContent;
             //ensure is tiger mouth
-            Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
-            if (capturedBoard == null || capturedBoard.MoveGroupLiberties == 1) return false;
+            if (ImmovableHelper.IsConfirmTigerMouth(currentBoard, tryBoard) == null) return false;
 
             //check eye points at diagonals of tiger mouth
             List<Point> libertyPoint = tryBoard.GetStoneNeighbours().Where(n => tryBoard[n] != c.Opposite()).ToList();
@@ -2147,6 +2146,9 @@ namespace Go
             //check if diagonal point is tiger mouth 
             if (diagonalPoints.Any(d => ImmovableHelper.IsConfirmTigerMouth(currentBoard, tryBoard, d) != null))
                 return true;
+
+            Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
+            if (capturedBoard == null || capturedBoard.MoveGroupLiberties == 1) return false;
 
             //check two point atari move
             if (KillerFormationHelper.TwoPointAtariMove(tryBoard, capturedBoard)) return false;
@@ -2168,8 +2170,6 @@ namespace Go
                 Group diagonalKillerGroup = GroupHelper.GetKillerGroupOfNeighbourGroups(currentBoard, d, c.Opposite());
                 if (diagonalKillerGroup == null) continue;
 
-                //check move and diagonal space
-                if (ImmovableHelper.IsConfirmTigerMouth(currentBoard, tryBoard) == null) continue;
 
                 Group moveKillerGroup = GroupHelper.GetKillerGroupOfNeighbourGroups(currentBoard, move, c.Opposite());
                 if (moveKillerGroup == null)
