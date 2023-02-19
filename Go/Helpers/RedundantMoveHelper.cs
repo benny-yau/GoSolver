@@ -2638,11 +2638,7 @@ namespace Go
             opponentMove.TryGame.Board.InternalMakeMove(eyePoint.Value, c.Opposite(), true);
 
             if (CheckRedundantKo(opponentMove))
-            {
-                DebugHelper.PrintGameTryMovesToText(tryBoard, "RedundantSurvivalKoMove_2b.txt");
-
                 return true;
-            }
             return false;
         }
         /// <summary>
