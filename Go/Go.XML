@@ -194,12 +194,12 @@
         </member>
         <member name="M:Go.GameTryMove.MakeKoMove(Go.Point,Go.SurviveOrKill)">
             <summary>
-            Make ko move within board. Set KoGameCheck to mark game within ko and koMoveRepeat to limit ko repeats.
+            Make ko move. Set KoGameCheck to allow only survive or kill for any further ko moves.
             </summary>
         </member>
         <member name="P:Go.GameTryMove.IsNegligible">
             <summary>
-            Negligible moves are checked for redundancy. Return false if not redundant.
+            Is negligible.
             </summary>
         </member>
         <member name="P:Go.GameTryMove.IncreasedKillerGroups">
@@ -207,15 +207,9 @@
             Increased count of killer groups.
             </summary>
         </member>
-        <member name="M:Go.GameTryMove.IsNegligibleForKo(System.Boolean)">
-            <summary>
-            Ko moves only - Check for atari moves. Return false if not redundant.
-            End game redundant ko <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi" />
-            </summary>
-        </member>
         <member name="M:Go.GameTryMove.MakeMoveWithOpponentAtSamePoint(System.Boolean)">
             <summary>
-            Make move at same point as game try move but as opponent instead.
+            Make move at same point as opponent.
             </summary>
         </member>
         <member name="M:Go.AtariHelper.FindAndResolveAtari(Go.GameTryMove)">
@@ -1037,12 +1031,6 @@
         <member name="M:Go.KoHelper.CheckBaseLineLeapLink(Go.Board,Go.Point,Go.Content)">
             <summary>
             Check base line leap link for redundant ko move and fill ko eye move.
-            </summary>
-        </member>
-        <member name="M:Go.KoHelper.EssentialAtariForKoMove(Go.GameTryMove)">
-            <summary>
-            Check essential atari for ko move.
-            Check redundant atari <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_2" />
             </summary>
         </member>
         <member name="M:Go.KoHelper.PossibilityOfDoubleKo(Go.GameTryMove)">

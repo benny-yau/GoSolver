@@ -186,41 +186,6 @@ namespace Go
         }
 
         /// <summary>
-        /// Check essential atari for ko move.
-        /// Check redundant atari <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_2" />
-        /// </summary>
-        public static Boolean EssentialAtariForKoMove(GameTryMove tryMove)
-        {
-            Board tryBoard = tryMove.TryGame.Board;
-            Board currentBoard = tryMove.CurrentGame.Board;
-            Point move = tryBoard.Move.Value;
-            Content c = tryMove.MoveContent;
-
-            if (!tryBoard.IsAtariMove) return false;
-            if (tryBoard.AtariTargets.Count > 1) return true;
-            Group atariTarget = tryBoard.AtariTargets.First();
-
-            //check one liberty non-ko move
-            if (tryBoard.MoveGroupLiberties == 1 && !KoHelper.IsKoFight(tryBoard))
-            {
-                Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard);
-                if (b != null && !ImmovableHelper.CheckConnectAndDie(b))
-                    return false;
-            }
-            //check redundant atari
-            if (tryBoard.GetGroupsFromStoneNeighbours(move, c).Count == 1 && WallHelper.IsNonKillableGroup(currentBoard, atariTarget))
-            {
-                (Boolean unEscapable, _, Board b) = ImmovableHelper.UnescapableGroup(tryBoard, atariTarget, false);
-                if (!unEscapable && b != null && b.MoveGroupLiberties > 1)
-                {
-                    atariTarget.IsNonKillable = true;
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        /// <summary>
         /// Check for possibility of double ko, for both survival and kill. Check for end ko moves as well.
         /// Survival double ko <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_TianLongTu_Q16446" />
         /// <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_TianLongTu_Q16975" />

@@ -96,7 +96,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Make ko move within board. Set KoGameCheck to mark game within ko and koMoveRepeat to limit ko repeats.
+        /// Make ko move. Set KoGameCheck to allow only survive or kill for any further ko moves.
         /// </summary>
         public void MakeKoMove(Point p, SurviveOrKill surviveOrKill)
         {
@@ -112,7 +112,7 @@ namespace Go
             }
         }
         /// <summary>
-        /// Negligible moves are checked for redundancy. Return false if not redundant.
+        /// Is negligible.
         /// </summary>
         public bool IsNegligible
         {
@@ -147,26 +147,8 @@ namespace Go
             return (tryCount > currentCount);
         }
 
-
         /// <summary>
-        /// Ko moves only - Check for atari moves. Return false if not redundant.
-        /// End game redundant ko <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi" />
-        /// </summary>
-        public bool IsNegligibleForKo(Boolean opponentMove = false)
-        {
-            Board tryBoard = this.TryGame.Board;
-            if (KoHelper.EssentialAtariForKoMove(this))
-            {
-                //end game redundant ko
-                if (opponentMove && WallHelper.AllTargetWithinNonKillableGroups(tryBoard))
-                    return true;
-                return false;
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// Make move at same point as game try move but as opponent instead.
+        /// Make move at same point as opponent.
         /// </summary>
         public GameTryMove MakeMoveWithOpponentAtSamePoint(Boolean overrideKo = true)
         {

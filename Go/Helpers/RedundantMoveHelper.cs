@@ -2545,14 +2545,13 @@ namespace Go
                 return false;
 
             //neighbour groups should have liberty more than one
-            if (AtariHelper.AtariByGroup(currentBoard, killerGroup))
+            if (AtariHelper.AtariByGroup(currentBoard, killerGroup, false))
                 return false;
 
             List<Point> emptyPoints = killerGroup.Points.Where(p => currentBoard[p] == Content.Empty).ToList();
 
             //no neighbour group
-            List<Group> neighbourGroups = GroupHelper.GetNeighbourGroupsOfKillerGroup(currentBoard, killerGroup);
-            if (emptyPoints.Any(p => !currentBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Any(gr => neighbourGroups.Contains(gr))))
+            if (emptyPoints.Any(p => currentBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Count == 0))
                 return false;
 
             //ensure not link for groups
