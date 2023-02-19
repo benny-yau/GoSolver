@@ -125,6 +125,9 @@ namespace Go
             }
             if (eyeGroup == null) return false;
             if (tryBoard.CapturedList.Any(gr => !eyeGroup.Points.Contains(gr.Points.First()))) return false;
+
+            if (KoHelper.IsKoFight(tryBoard)) return false;
+
             //check two liberty group to capture neighbour
             foreach (Group group in currentBoard.GetNeighbourGroups(eyeGroup).Where(gr => gr.Liberties.Count == 2))
             {
@@ -2635,7 +2638,11 @@ namespace Go
             opponentMove.TryGame.Board.InternalMakeMove(eyePoint.Value, c.Opposite(), true);
 
             if (CheckRedundantKo(opponentMove))
+            {
+                DebugHelper.PrintGameTryMovesToText(tryBoard, "RedundantSurvivalKoMove_2b.txt");
+
                 return true;
+            }
             return false;
         }
         /// <summary>
@@ -2686,10 +2693,11 @@ namespace Go
             //ko fight at non killable group
             if (KoHelper.IsNonKillableGroupKoFight(tryBoard, tryBoard.MoveGroup))
             {
+                if (WallHelper.StrongNeighbourGroups(tryBoard)) return true;
                 HashSet<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(move, c);
                 if (LifeCheck.GetTargets(tryBoard).All(t => neighbourGroups.Contains(t)) && WallHelper.AllTargetWithinNonKillableGroups(tryBoard))
                     return true;
-                return WallHelper.StrongNeighbourGroups(tryBoard);
+                return false;
             }
 
             //check ko fight necessary
