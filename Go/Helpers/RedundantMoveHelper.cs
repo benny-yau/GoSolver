@@ -2671,7 +2671,8 @@ namespace Go
         /// Real eye at diagonal <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WuQingYuan_Q30982" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_2" /> 
-        /// Suicide group ko fight <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q16693_2" /> 
+        /// Suicide group ko fight <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanQiJing_A38_2" /> 
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q16693_2" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_x_2" /> 
         /// Check break link <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30152_2" /> 
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q30152" /> 
@@ -2696,7 +2697,7 @@ namespace Go
             }
 
             //check ko fight necessary
-            if (!WallHelper.StrongNeighbourGroups(tryBoard))
+            if (!WallHelper.TargetWithAllNonKillableGroups(tryBoard))
                 return false;
 
             //if all diagonals are real eyes then redundant
@@ -2712,9 +2713,6 @@ namespace Go
             List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
             foreach (Group group in ngroups)
             {
-                if (WallHelper.TargetWithKoFightAtAllNonKillableGroups(tryBoard, group)) continue;
-                if (!WallHelper.TargetWithAllNonKillableGroups(tryBoard))
-                    return false;
                 Group currentGroup = currentBoard.GetCurrentGroup(group);
                 if (currentGroup.Liberties.Count == 2 && CheckTwoLibertyGroupToCaptureNeighbour(currentBoard, tryBoard, currentGroup, eyePoint.Value))
                     return false;
