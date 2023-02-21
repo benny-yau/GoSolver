@@ -2166,29 +2166,27 @@ namespace Go
                     if (ImmovableHelper.IsImmovablePoint(d, c.Opposite(), currentBoard).Item1)
                         return true;
                 }
-
                 Group diagonalKillerGroup = GroupHelper.GetKillerGroupOfNeighbourGroups(currentBoard, d, c.Opposite());
                 if (diagonalKillerGroup == null) continue;
-
+                if (AtariHelper.AtariByGroup(currentBoard, diagonalKillerGroup)) continue;
 
                 Group moveKillerGroup = GroupHelper.GetKillerGroupOfNeighbourGroups(currentBoard, move, c.Opposite());
-                if (moveKillerGroup == null)
-                {
-                    if (NeutralPointSuicidalMove(tryMove))
-                        continue;
+                if (moveKillerGroup != null) continue;
 
-                    //real eye at diagonal point
-                    if (EyeHelper.FindSemiSolidEye(d, currentBoard).Item1 && !EyeHelper.FindSemiSolidEye(d, tryBoard).Item1)
-                        continue;
+                if (NeutralPointSuicidalMove(tryMove))
+                    continue;
 
-                    //check for strong neighbour groups
-                    if (WallHelper.StrongNeighbourGroups(currentBoard, move, c) && capturedBoard.MoveGroupLiberties > 2)
-                        return true;
+                //real eye at diagonal point
+                if (EyeHelper.FindSemiSolidEye(d, currentBoard).Item1 && !EyeHelper.FindSemiSolidEye(d, tryBoard).Item1)
+                    continue;
 
-                    //find immovable point at diagonal
-                    if (ImmovableHelper.IsImmovablePoint(d, c.Opposite(), currentBoard).Item1)
-                        return true;
-                }
+                //check for strong neighbour groups
+                if (WallHelper.StrongNeighbourGroups(currentBoard, move, c) && capturedBoard.MoveGroupLiberties > 2)
+                    return true;
+
+                //find immovable point at diagonal
+                if (ImmovableHelper.IsImmovablePoint(d, c.Opposite(), currentBoard).Item1)
+                    return true;
             }
 
             //no diagonal tiger mouth
@@ -2545,7 +2543,7 @@ namespace Go
                 return false;
 
             //neighbour groups should have liberty more than one
-            if (AtariHelper.AtariByGroup(currentBoard, killerGroup, false))
+            if (AtariHelper.AtariByGroup(currentBoard, killerGroup))
                 return false;
 
             List<Point> emptyPoints = killerGroup.Points.Where(p => currentBoard[p] == Content.Empty).ToList();
