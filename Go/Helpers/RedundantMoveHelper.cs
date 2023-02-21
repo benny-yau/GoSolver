@@ -2702,21 +2702,13 @@ namespace Go
 
             //if all diagonals are real eyes then redundant
             List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, eyePoint.Value, c).Where(q => tryBoard[q] != c).ToList();
-            if (!diagonals.All(eye => EyeHelper.RealEyeAtDiagonal(tryMove, eye)))
+            if (!diagonals.All(d => EyeHelper.FindRealEyeWithinEmptySpace(currentBoard, d, c)))
                 return false;
 
             //check break link
             if (diagonals.Count == 0 && KoHelper.CheckBaseLineLeapLink(tryBoard, eyePoint.Value, c))
                 return false;
 
-            //suicide group ko fight
-            List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint.Value, c.Opposite()).Where(ngroup => ngroup != tryBoard.MoveGroup).ToList();
-            foreach (Group group in ngroups)
-            {
-                Group currentGroup = currentBoard.GetCurrentGroup(group);
-                if (currentGroup.Liberties.Count == 2 && CheckTwoLibertyGroupToCaptureNeighbour(currentBoard, tryBoard, currentGroup, eyePoint.Value))
-                    return false;
-            }
             return true;
         }
 

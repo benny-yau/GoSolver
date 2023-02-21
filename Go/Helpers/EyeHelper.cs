@@ -509,14 +509,11 @@ namespace Go
         /// </summary>
         public static Boolean RealEyeAtDiagonal(GameTryMove tryMove, Point eye)
         {
-            GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
+            GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint(true);
             if (opponentMove == null) return false;
-            Board killerBoard = opponentMove.TryGame.Board;
+            Board opponentBoard = opponentMove.TryGame.Board;
             Content c = tryMove.MoveContent;
-            Group killerGroup = GroupHelper.GetKillerGroupFromCache(killerBoard, eye, c);
-            if (killerGroup == null) return false;
-            //find real eye
-            if (FindRealEyeWithinEmptySpace(killerBoard, killerGroup))
+            if (FindRealEyeWithinEmptySpace(opponentBoard, eye, c))
                 return true;
             return false;
         }
