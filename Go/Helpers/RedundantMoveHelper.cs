@@ -459,7 +459,7 @@ namespace Go
             //ensure more than one liberty for move group
             if (tryBoard.MoveGroupLiberties == 1) return false;
             //check for increased killer groups
-            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] != c && GroupHelper.GetKillerGroupFromCache(tryBoard, n, c) != killerGroup)) return false;
+            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] != c && GroupHelper.GetKillerGroupOfNeighbourGroups(tryBoard, n, c) != killerGroup)) return false;
 
             //make move at the other liberty
             Point q = atariTarget.Liberties.First(lib => !lib.Equals(move));
@@ -468,7 +468,7 @@ namespace Go
             Group killerGroup2 = GroupHelper.GetKillerGroupOfNeighbourGroups(board, atariPoint, c);
             if (killerGroup2 == null) return false;
             //ensure the other move can capture atari target as well
-            if (!ImmovableHelper.UnescapableGroup(board, board.GetGroupAt(atariPoint)).Item1) return false;
+            if (!ImmovableHelper.UnescapableGroup(board, board.GetGroupAt(atariPoint), false).Item1) return false;
             //check capture secure
             if (!ImmovableHelper.CheckCaptureSecure(tryBoard, atariTarget))
                 return false;
