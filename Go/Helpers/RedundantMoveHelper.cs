@@ -2710,7 +2710,7 @@ namespace Go
 
             //if all diagonals are real eyes then redundant
             List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, eyePoint.Value, c).Where(q => tryBoard[q] != c).ToList();
-            if (!diagonals.All(d => EyeHelper.FindRealEyeWithinEmptySpace(currentBoard, d, c)))
+            if (!diagonals.All(eye => EyeHelper.RealEyeAtDiagonal(tryMove, eye)))
                 return false;
 
             //check break link
