@@ -427,7 +427,9 @@ namespace Go
             Group atariTarget = tryBoard.AtariTargets.First();
             //ensure target group can escape
             if (!ImmovableHelper.UnescapableGroup(tryBoard, atariTarget).Item1) return false;
-            return RedundantAtariWithinKillerGroup(tryMove);
+            if (RedundantAtariWithinKillerGroup(tryMove))
+                return true;
+            return false;
         }
 
         /// <summary>
@@ -468,7 +470,8 @@ namespace Go
             Group killerGroup2 = GroupHelper.GetKillerGroupOfNeighbourGroups(board, atariPoint, c);
             if (killerGroup2 == null) return false;
             //ensure the other move can capture atari target as well
-            if (!ImmovableHelper.UnescapableGroup(board, board.GetGroupAt(atariPoint), false).Item1) return false;
+            (Boolean escapable, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(board, board.GetGroupAt(atariPoint), false);
+            if (!escapable) return false;
             //check capture secure
             if (!ImmovableHelper.CheckCaptureSecure(tryBoard, atariTarget))
                 return false;
@@ -477,7 +480,12 @@ namespace Go
             //check for reverse ko fight
             if (KoHelper.IsForwardOrReverseKoFight(tryBoard)) return false;
             //check for diagonal killer group
-            if (tryBoard.GetDiagonalNeighbours().Any(n => EyeHelper.FindNonSemiSolidEye(tryBoard, n, c))) return false;
+
+            if (escapeBoard != null && KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(escapeBoard))
+            {
+                if (tryBoard.GetDiagonalNeighbours().Any(n => EyeHelper.FindNonSemiSolidEye(tryBoard, n, c) || ImmovableHelper.FindTigerMouth(tryBoard, c, n)))
+                    return false;
+            }
 
             //check killer formation
             Board b = tryBoard.MakeMoveOnNewBoard(q, c.Opposite());

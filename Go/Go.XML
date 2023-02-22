@@ -384,6 +384,16 @@
             An uncovered eye is a point where none or only one diagonal point covered by opposite content if point is in the middle area, and no diagonal point covered by opposite content if point is at the side or at the corner.
             </summary>
         </member>
+        <member name="M:Go.EyeHelper.CoveredMove(Go.Board,Go.Point,Go.Content)">
+            <summary>
+            Covered move.
+            </summary>
+        </member>
+        <member name="M:Go.EyeHelper.IsCovered(Go.Board,Go.Point,Go.Content)">
+            <summary>
+            Is covered.
+            </summary>
+        </member>
         <member name="M:Go.EyeHelper.FindCoveredEye(Go.Board,Go.Point,Go.Content)">
             <summary>
             Find false eye which has one or more diagonal points covered by opposite content.

@@ -61,6 +61,9 @@ namespace Go
             return !IsCovered(currentBoard, eye, c);
         }
 
+        /// <summary>
+        /// Covered move.
+        /// </summary>
         public static Boolean CoveredMove(Board board, Point eye, Content c)
         {
             List<Point> diagonalPoints = board.GetDiagonalNeighbours(eye);
@@ -71,10 +74,12 @@ namespace Go
             return true;
         }
 
+        /// <summary>
+        /// Is covered.
+        /// </summary>
         public static Boolean IsCovered(Board board, Point eye, Content c)
         {
             List<Point> diagonalNeighbours = board.GetDiagonalNeighbours(eye).Where(q => board[q] == c.Opposite()).ToList();
-            if (board[eye] == c.Opposite()) diagonalNeighbours.RemoveAll(n => board.GetGroupAt(eye) == board.GetGroupAt(n));
             List<Point> stonePoints = board.GetStoneNeighbours(eye).Where(n => board[n] == c).ToList();
             if (board.PointWithinMiddleArea(eye))
                 return (stonePoints.Count >= 3 && diagonalNeighbours.Count >= 2);
