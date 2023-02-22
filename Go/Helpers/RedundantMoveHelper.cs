@@ -477,16 +477,12 @@ namespace Go
                 return false;
             //check for weak groups
             if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Any(gr => gr.Liberties.Count <= 2)) return false;
-            //check for reverse ko fight
-            if (KoHelper.IsForwardOrReverseKoFight(tryBoard)) return false;
             //check for diagonal killer group
-
-            if (escapeBoard != null && KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(escapeBoard))
+            if (escapeBoard != null && escapeBoard.GetStoneNeighbours().Any(n => escapeBoard[n] == Content.Empty))
             {
                 if (tryBoard.GetDiagonalNeighbours().Any(n => EyeHelper.FindNonSemiSolidEye(tryBoard, n, c) || ImmovableHelper.FindTigerMouth(tryBoard, c, n)))
                     return false;
             }
-
             //check killer formation
             Board b = tryBoard.MakeMoveOnNewBoard(q, c.Opposite());
             if (b != null)
@@ -2350,7 +2346,7 @@ namespace Go
             if (!tryMove.IsNegligible || tryBoard.IsAtariMove)
                 return false;
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c);
-            if (killerGroup == null) return false;
+            if (killerGroup == null) return FillerMoveWithoutKillerGroup(tryMove);
 
             //check if any move in killer group
             if (killerGroup != null && killerGroup.Points.Count <= 5)
@@ -2375,7 +2371,8 @@ namespace Go
             if (opponentMove == null) return false;
             if (killerGroup != null && killerGroup.Points.Count <= 5)
                 return SpecificEyeFillerMove(opponentMove);
-            return false;
+            else
+                return FillerMoveWithoutKillerGroup(tryMove, opponentMove);
         }
 
         /// <summary>
