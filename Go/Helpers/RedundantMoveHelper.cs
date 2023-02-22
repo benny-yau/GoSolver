@@ -2350,7 +2350,7 @@ namespace Go
             if (!tryMove.IsNegligible || tryBoard.IsAtariMove)
                 return false;
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c);
-            if (killerGroup == null) return FillerMoveWithoutKillerGroup(tryMove);
+            if (killerGroup == null) return false;
 
             //check if any move in killer group
             if (killerGroup != null && killerGroup.Points.Count <= 5)
@@ -2375,8 +2375,7 @@ namespace Go
             if (opponentMove == null) return false;
             if (killerGroup != null && killerGroup.Points.Count <= 5)
                 return SpecificEyeFillerMove(opponentMove);
-            else
-                return FillerMoveWithoutKillerGroup(tryMove, opponentMove);
+            return false;
         }
 
         /// <summary>
