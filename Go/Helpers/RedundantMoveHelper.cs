@@ -2555,9 +2555,9 @@ namespace Go
             if (EyeFillerLinkForGroups(tryMove))
                 return false;
 
-            //select move that prevent survival creating eye
-            Boolean eyeCreated = tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindSemiSolidEye(n, tryBoard, c).Item1);
-            if (eyeCreated) return false;
+            //prevent survival creating eye
+            if (GroupHelper.IncreasedKillerGroups(tryBoard, currentBoard))
+                return false;
 
             //count possible eyes created
             Dictionary<Point, int> fillerMoves = new Dictionary<Point, int>();

@@ -134,5 +134,15 @@ namespace Go
             return (group.Points.Count(t => board[t] == group.Content) >= 2 && group.Points.Count(t => board[t] == Content.Empty) >= 2);
         }
 
+        /// <summary>
+        /// Increased killer groups.
+        /// </summary>
+        public static Boolean IncreasedKillerGroups(Board tryBoard, Board currentBoard)
+        {
+            Content c = tryBoard.MoveGroup.Content;
+            int tryCount = GroupHelper.GetKillerGroups(tryBoard, c).Count;
+            int currentCount = GroupHelper.GetKillerGroups(currentBoard, c).Count;
+            return (tryCount > currentCount);
+        }
     }
 }

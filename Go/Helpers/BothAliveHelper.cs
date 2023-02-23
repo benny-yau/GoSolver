@@ -182,7 +182,7 @@ namespace Go
             foreach (Point emptyPoint in emptyPoints)
             {
                 Board b = board.MakeMoveOnNewBoard(emptyPoint, c.Opposite());
-                if (b != null && b.MoveGroupLiberties > 1 && GameTryMove.IncreaseKillerGroups(b, board))
+                if (b != null && b.MoveGroupLiberties > 1 && GroupHelper.IncreasedKillerGroups(b, board))
                     return false;
             }
 

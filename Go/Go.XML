@@ -588,6 +588,11 @@
             Liberty group requires at least two content points and two empty points.
             </summary>
         </member>
+        <member name="M:Go.GroupHelper.IncreasedKillerGroups(Go.Board,Go.Board)">
+            <summary>
+            Increased killer groups.
+            </summary>
+        </member>
         <member name="M:Go.ImmovableHelper.FindTigerMouth(Go.Board,Go.Point,Go.Content)">
             <summary>
             Find tiger mouth where mouth point is empty or filled. Content in parameter represents content of stones forming the tiger mouth. Snapback or ko not handled (see IsConfirmTigerMouth). 
