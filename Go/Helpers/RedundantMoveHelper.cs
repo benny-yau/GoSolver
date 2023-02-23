@@ -603,7 +603,7 @@ namespace Go
                     if (kgroup != null && WallHelper.TargetWithAllNonKillableGroups(b, kgroup))
                     {
                         //check for covered eye
-                        if (opponentTryMove != null && EyeHelper.IsCovered(b, d, c.Opposite()))
+                        if (opponentTryMove != null && EyeHelper.IsCovered(tryBoard, move, c.Opposite()))
                             continue;
                         return true;
                     }
