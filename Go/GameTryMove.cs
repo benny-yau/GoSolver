@@ -135,16 +135,8 @@ namespace Go
         {
             get
             {
-                return IncreaseKillerGroups(TryGame.Board, CurrentGame.Board);
+                return GroupHelper.IncreasedKillerGroups(TryGame.Board, CurrentGame.Board);
             }
-        }
-
-        public static Boolean IncreaseKillerGroups(Board tryBoard, Board currentBoard)
-        {
-            Content c = tryBoard.MoveGroup.Content;
-            int tryCount = GroupHelper.GetKillerGroups(tryBoard, c).Count;
-            int currentCount = GroupHelper.GetKillerGroups(currentBoard, c).Count;
-            return (tryCount > currentCount);
         }
 
         /// <summary>
