@@ -603,7 +603,7 @@ namespace Go
                     if (kgroup != null && WallHelper.TargetWithAllNonKillableGroups(b, kgroup))
                     {
                         //check for covered eye
-                        if (opponentTryMove != null && b.CapturedPoints.Any(n => EyeHelper.IsCovered(b, n, c.Opposite())))
+                        if (opponentTryMove != null && EyeHelper.IsCovered(b, d, c.Opposite()))
                             continue;
                         return true;
                     }
@@ -2716,7 +2716,6 @@ namespace Go
             //check break link
             if (diagonals.Count == 0 && KoHelper.CheckBaseLineLeapLink(tryBoard, eyePoint.Value, c))
                 return false;
-
             return true;
         }
 
