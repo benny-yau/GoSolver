@@ -459,6 +459,7 @@ namespace Go
             //check for redundant atari within killer group
             Group killerGroup = GroupHelper.GetKillerGroupOfNeighbourGroups(tryBoard, atariPoint, c);
             if (killerGroup == null) return false;
+            if (!GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard, atariTarget)) return false;
             //check for increased killer groups
             if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] != c && GroupHelper.GetKillerGroupOfNeighbourGroups(tryBoard, n, c) != killerGroup)) return false;
 
