@@ -1680,11 +1680,13 @@ namespace Go
         private static Boolean MustHaveNeutralPoint(GameTryMove tryMove, GameTryMove opponentMove)
         {
             Board tryBoard = tryMove.TryGame.Board;
+            Board currentBoard = tryMove.CurrentGame.Board;
             Board opponentBoard = opponentMove.TryGame.Board;
+            Content c = tryBoard.MoveGroup.Content;
 
             //neutral point at small tiger mouth
             Point tigerMouth = opponentBoard.GetStoneNeighbours().FirstOrDefault(n => EyeHelper.FindEye(opponentBoard, n));
-            if (Convert.ToBoolean(tigerMouth.NotEmpty))
+            if (Convert.ToBoolean(tigerMouth.NotEmpty) && currentBoard[tigerMouth] == Content.Empty && ImmovableHelper.IsSuicidalMove(currentBoard, tigerMouth, c))
             {
                 //redundant suicidal at tiger mouth
                 if (StrongGroupsAtMustHaveMove(tryBoard, tigerMouth))
@@ -2158,8 +2160,7 @@ namespace Go
                         return true;
                 }
                 Group diagonalKillerGroup = GroupHelper.GetKillerGroupOfNeighbourGroups(currentBoard, d, c.Opposite());
-                if (diagonalKillerGroup == null) continue;
-                if (AtariHelper.AtariByGroup(currentBoard, diagonalKillerGroup)) continue;
+                if (diagonalKillerGroup == null || AtariHelper.AtariByGroup(currentBoard, diagonalKillerGroup)) continue;
 
                 Group moveKillerGroup = GroupHelper.GetKillerGroupOfNeighbourGroups(currentBoard, move, c.Opposite());
                 if (moveKillerGroup != null) continue;
@@ -2168,7 +2169,7 @@ namespace Go
                     continue;
 
                 //real eye at diagonal point
-                if (EyeHelper.FindSemiSolidEye(d, currentBoard).Item1 && !EyeHelper.FindSemiSolidEye(d, tryBoard).Item1)
+                if (EyeHelper.FindUncoveredEye(currentBoard, d, c.Opposite()) && !EyeHelper.FindUncoveredEye(tryBoard, d, c.Opposite()))
                     continue;
 
                 //find immovable point at diagonal
