@@ -1269,7 +1269,6 @@
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A37_101Weiqi" />
             Check for double ko <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
             Check atari for ko move <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_2" />
-            Check break link <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30152_3" />
             Check possible links <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" />
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_A40" />
@@ -1739,6 +1738,11 @@
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_B21" />
             </summary>
         </member>
+        <member name="M:Go.RedundantMoveHelper.ConnectAndDieEndMove(Go.Board)">
+            <summary>
+            Connect and die end move.
+            </summary>
+        </member>
         <member name="M:Go.RedundantMoveHelper.GetSpecificNeutralMove(Go.Game,System.Collections.Generic.List{Go.GameTryMove})">
             <summary>
             Get specific neutral move to target survival groups with limited liberties.
@@ -1929,14 +1933,6 @@
             Double ko recursion <see cref="!:UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_Corner_B41" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.RedundantSurvivalKoMove(Go.GameTryMove)">
-            <summary>
-            Redundant survival ko moves <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
-            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_SimpleSeki" />
-            Check for opponent <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30152" />
-            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_B10" />
-            </summary>
-        </member>
         <member name="M:Go.RedundantMoveHelper.RedundantKillerPreKoMove(Go.GameTryMove)">
             <summary>
             Redundant killer pre ko moves <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKillerKoMoveTest_Scenario_XuanXuanGo_A46_101Weiqi_2" />
@@ -1947,7 +1943,20 @@
             Redundant killer ko moves <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKillerKoMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.CheckRedundantKo(Go.GameTryMove)">
+        <member name="M:Go.RedundantMoveHelper.RedundantSurvivalKoMove(Go.GameTryMove)">
+            <summary>
+            Redundant survival ko moves <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
+            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_SimpleSeki" />
+            Check for opponent <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30152" />
+            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_B10" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CheckRedundantKoMove(Go.Board,Go.Board)">
+            <summary>
+            Check redundant ko move.
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CheckRedundantKo(Go.Board,Go.Board)">
             <summary>
             Check redundant ko. 
             ko fight at non killable group <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A27" />

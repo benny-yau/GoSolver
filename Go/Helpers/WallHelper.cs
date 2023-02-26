@@ -178,7 +178,7 @@ namespace Go
         public static Boolean TargetWithKoFightAtAllNonKillableGroups(Board board, Group group = null)
         {
             if (group == null) group = board.MoveGroup;
-            if (board.GetNeighbourGroups(group).All(n => WallHelper.IsNonKillableGroup(board, n) || KoHelper.IsNonKillableGroupKoFight(board, n)))
+            if (board.GetNeighbourGroups(group).All(n => WallHelper.IsNonKillableGroup(board, n) || KoHelper.IsNonKillableGroupKoFight(board, n) || (n.Liberties.Count == 1 && !KoHelper.IsKoFight(board, n))))
                 return true;
             return false;
         }

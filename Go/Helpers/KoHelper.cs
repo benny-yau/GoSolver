@@ -214,8 +214,11 @@ namespace Go
             ngroups.ForEach(ngroup => targetGroups.AddRange(KoHelper.GetKoTargetGroups(currentBoard, ngroup)));
             targetGroups = targetGroups.Distinct().ToList();
             if (targetGroups.Count >= 2)
-                return true;
-
+            {
+                Dictionary<Point, Board> moveBoards = RedundantMoveHelper.GetMoveBoards(currentBoard, targetGroups.Select(gr => gr.Liberties.First()), c.Opposite());
+                if (moveBoards.Count(k => !RedundantMoveHelper.CheckRedundantKoMove(k.Value, currentBoard)) >= 2)
+                    return true;
+            }
             //kill double ko
             List<Group> connectedGroups = LinkHelper.GetAllDiagonalGroups(currentBoard, currentBoard.GetGroupAt(capturePoint));
             List<Group> koGroups = new List<Group>();
@@ -225,7 +228,11 @@ namespace Go
                 if (!isKoFight) continue;
                 koGroups.Add(group);
                 if (koGroups.Count >= 2)
-                    return true;
+                {
+                    Dictionary<Point, Board> moveBoards = RedundantMoveHelper.GetMoveBoards(currentBoard, koGroups.Select(gr => gr.Liberties.First()), c.Opposite());
+                    if (moveBoards.Count(k => !RedundantMoveHelper.CheckRedundantKoMove(k.Value, currentBoard)) >= 2)
+                        return true;
+                }
             }
             return false;
         }
