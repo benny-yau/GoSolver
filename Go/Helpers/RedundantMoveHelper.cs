@@ -377,8 +377,8 @@ namespace Go
                 if (EyeHelper.FindEye(b, liberty2, c) && b.GetGroupsFromStoneNeighbours(liberty2, c.Opposite()).Count >= 3)
                     return (true, b);
                 //make block move
-                (Boolean suicidal2, Board b2) = ImmovableHelper.IsSuicidalMove(liberty2, c.Opposite(), b);
-                if (suicidal2) continue;
+                Board b2 = b.MakeMoveOnNewBoard(liberty2, c.Opposite(), true);
+                if (b2 == null) continue;
 
                 //opponent capture two or more points
                 if (b2.CapturedList.Any(gr => gr.Points.Count >= 2))
@@ -864,8 +864,8 @@ namespace Go
             {
                 foreach (Point liberty in group.Liberties)
                 {
-                    (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, group.Content.Opposite(), tryBoard, false);
-                    if (suicidal) continue;
+                    (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, group.Content.Opposite(), tryBoard, true);
+                    if (suicidal || KoHelper.IsNonKillableGroupKoFight(b, b.MoveGroup)) continue;
                     if (WallHelper.IsNonKillableGroup(b)) continue;
                     return true;
                 }
@@ -1141,12 +1141,11 @@ namespace Go
             else if (liberties.Count == 2)
             {
                 //two liberties - suicide for both players
-                foreach (Point p in liberties)
+                IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(capturedBoard, liberties, c);
+                foreach (Board b in moveBoards)
                 {
-                    (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c, capturedBoard);
-                    if (isSuicidal) continue;
                     //both players are suicidal at the liberty
-                    Point q = liberties.First(liberty => !liberty.Equals(p));
+                    Point q = liberties.First(liberty => !liberty.Equals(b.Move));
                     if (GroupHelper.GetKillerGroupFromCache(tryBoard, q, c.Opposite()) != null && ImmovableHelper.IsSuicidalMoveForBothPlayers(b, q))
                         return false;
                 }
@@ -1160,12 +1159,12 @@ namespace Go
                 {
                     List<Point> nLiberties = ngroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
                     if (nLiberties.Count != 2) continue;
-                    foreach (Point p in nLiberties)
+
+                    IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(capturedBoard, nLiberties, c);
+                    foreach (Board b in moveBoards)
                     {
-                        (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c, capturedBoard);
-                        if (isSuicidal) continue;
                         //both players are suicidal at the liberty
-                        Point q = nLiberties.First(liberty => !liberty.Equals(p));
+                        Point q = nLiberties.First(liberty => !liberty.Equals(b.Move));
                         if (!ImmovableHelper.IsSuicidalMove(b, q, c)) continue;
                         Board b2 = ImmovableHelper.IsSuicidalMove(q, c.Opposite(), b).Item2;
                         if (b2 != null && b2.MoveGroupLiberties <= 2)
@@ -1246,12 +1245,9 @@ namespace Go
             List<Point> liberties = eyeGroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
             if (liberties.Count > 2) return true;
 
-            foreach (Point lib in liberties)
-            {
-                Board b = capturedBoard.MakeMoveOnNewBoard(lib, c);
-                if (b != null && WallHelper.StrongNeighbourGroups(b, b.GetNeighbourGroups(capturedBoard.MoveGroup)))
-                    return true;
-            }
+            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(capturedBoard, liberties, c);
+            if (moveBoards.Any(b => WallHelper.StrongNeighbourGroups(b, b.GetNeighbourGroups(capturedBoard.MoveGroup))))
+                return true;
             return false;
         }
 
@@ -1743,14 +1739,11 @@ namespace Go
 
             //capture at liberty
             List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).Where(e => e.Points.Count >= 2 && e.Liberties.Count == 2).ToList();
-            foreach (Group eyeGroup in eyeGroups)
-            {
-                Point liberty = eyeGroup.Liberties.First(lib => !lib.Equals(move));
-                Board b = currentBoard.MakeMoveOnNewBoard(liberty, c.Opposite());
-                if (b != null && b.CapturedList.Any(gr => gr.Points.Count >= 2))
-                    return true;
-            }
 
+            IEnumerable<Point> moves = eyeGroups.Select(e => e.Liberties.First(lib => !lib.Equals(move)));
+            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, moves, c.Opposite());
+            if (moveBoards.Any(b => b.CapturedList.Any(gr => gr.Points.Count >= 2)))
+                return true;
             return false;
         }
 
@@ -1883,7 +1876,16 @@ namespace Go
         /// </summary>
         private static Boolean ConnectAndDieEndMove(Board tryBoard)
         {
-            if (tryBoard.MoveGroup.Points.Count > 1 && ImmovableHelper.CheckConnectAndDie(tryBoard)) return true;
+            Content c = tryBoard.MoveGroup.Content;
+            (Boolean suicidal, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
+            if (captureBoard == null) return false;
+            //check for bloated suicide
+            if (tryBoard.MoveGroupLiberties == 2)
+            {
+                Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(captureBoard, tryBoard.MoveGroup, c);
+                if (b == null) return true;
+            }
+            if (tryBoard.MoveGroup.Points.Count > 1) return true;
             return false;
         }
 

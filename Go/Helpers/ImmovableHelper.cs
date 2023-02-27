@@ -238,10 +238,10 @@ namespace Go
         /// </summary>
         public static Boolean EscapeLink(Board board, Group targetGroup)
         {
-            foreach (Point liberty in targetGroup.Liberties)
+            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, targetGroup.Liberties, targetGroup.Content);
+            foreach (Board b in moveBoards)
             {
-                Board b = board.MakeMoveOnNewBoard(liberty, targetGroup.Content);
-                if (b == null || !LinkHelper.IsAbsoluteLinkForGroups(board, b))
+                if (!LinkHelper.IsAbsoluteLinkForGroups(board, b))
                     continue;
                 if (!ImmovableHelper.CheckConnectAndDie(b, targetGroup))
                     return true;
@@ -257,10 +257,10 @@ namespace Go
         public static Boolean EscapeCaptureLink(Board board, Group targetGroup, Point? capturePoint = null)
         {
             //check if absolute link at liberty
-            foreach (Point liberty in targetGroup.Liberties)
+            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, targetGroup.Liberties, targetGroup.Content);
+            foreach (Board b in moveBoards)
             {
-                Board b = board.MakeMoveOnNewBoard(liberty, targetGroup.Content);
-                if (b == null || !LinkHelper.IsAbsoluteLinkForGroups(board, b))
+                if (!LinkHelper.IsAbsoluteLinkForGroups(board, b))
                     continue;
                 Group target = b.GetCurrentGroup(targetGroup);
                 if (target.Liberties.Count > 2)
@@ -521,11 +521,12 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B31_4" />
         /// Two point move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234" />
         /// </summary>
-        public static Boolean CheckSnapback(Board board, Group targetGroup)
+        public static Boolean CheckSnapback(Board board, Group target)
         {
-            Content c = targetGroup.Content;
-            if (targetGroup.Points.Count == 1) return false;
-            List<Point> libertyPoints = board.GetGroupLiberties(targetGroup);
+            Content c = target.Content;
+            if (target.Points.Count == 1) return false;
+            Group targetGroup = board.GetCurrentGroup(target);
+            HashSet<Point> libertyPoints = targetGroup.Liberties;
             if (libertyPoints.Count != 2) return false;
 
             List<Group> groups = AtariHelper.AtariByGroup(targetGroup, board);
