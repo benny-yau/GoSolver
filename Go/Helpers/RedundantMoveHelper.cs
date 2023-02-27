@@ -312,10 +312,10 @@ namespace Go
         private static Boolean ThreeLibertyGroupNearCapture(Board board, Group eyeGroup)
         {
             if (eyeGroup.Liberties.Count != 3) return false;
-            foreach (Point liberty in eyeGroup.Liberties)
+            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, eyeGroup.Liberties, eyeGroup.Content.Opposite());
+            foreach (Board b in moveBoards)
             {
-                Board b = board.MakeMoveOnNewBoard(liberty, eyeGroup.Content.Opposite());
-                if (b == null || !b.CapturedList.Any(p => p.Points.Count > 1)) continue;
+                if (!b.CapturedList.Any(p => p.Points.Count > 1)) continue;
                 if (WallHelper.IsNonKillableGroup(b)) continue;
                 if (ImmovableHelper.CheckConnectAndDie(b, eyeGroup))
                     return true;
@@ -1658,12 +1658,11 @@ namespace Go
 
         /// <summary>
         /// Must have neutral point.
-        /// Neutral point at tiger mouth <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario5dan27_3" />
-        /// Neutral point at bigger tiger mouth <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario5dan27_Variation" />
+        /// Neutral point at small tiger mouth <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario5dan27_3" />
+        /// Neutral point at big tiger mouth <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario5dan27_Variation" />
         /// Negative example <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A27" />
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23" />
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_GuanZiPu_Weiqi101_19138" />
-        /// 
         /// Check if atari <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23" />
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_TianLongTu_Q17136" />
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_Q18500_4" />
@@ -1684,16 +1683,6 @@ namespace Go
             Board opponentBoard = opponentMove.TryGame.Board;
             Content c = tryBoard.MoveGroup.Content;
 
-            //neutral point at small tiger mouth
-            Point tigerMouth = opponentBoard.GetStoneNeighbours().FirstOrDefault(n => EyeHelper.FindEye(opponentBoard, n));
-            if (Convert.ToBoolean(tigerMouth.NotEmpty) && currentBoard[tigerMouth] == Content.Empty && ImmovableHelper.IsSuicidalMove(currentBoard, tigerMouth, c))
-            {
-                //redundant suicidal at tiger mouth
-                if (StrongGroupsAtMustHaveMove(tryBoard, tigerMouth))
-                    return false;
-                return true;
-            }
-
             //neutral point at big tiger mouth
             (Boolean suicide, Board suicideBoard) = SuicideAtBigTigerMouth(tryMove);
             if (suicide)
@@ -1701,6 +1690,16 @@ namespace Go
                 Point suicideMove = suicideBoard.Move.Value;
                 if (MustHaveMoveAtBigTigerMouth(suicideBoard, tryMove))
                     return true;
+            }
+
+            //neutral point at small tiger mouth
+            Point tigerMouth = opponentBoard.GetStoneNeighbours().FirstOrDefault(n => EyeHelper.FindEye(opponentBoard, n));
+            if (Convert.ToBoolean(tigerMouth.NotEmpty))
+            {
+                //redundant suicidal at tiger mouth
+                if (StrongGroupsAtMustHaveMove(tryBoard, tigerMouth))
+                    return false;
+                return true;
             }
 
             //ko fight
@@ -2227,12 +2226,8 @@ namespace Go
 
             //check for three liberty covered eye
             (Boolean connectAndDie, Board b) = CoveredEyeThreeLibertyConnectAndDie(capturedBoard, move, c.Opposite());
-            if (b != null)
-            {
-                Board b2 = tryBoard.MakeMoveOnNewBoard(b.Move.Value, c.Opposite());
-                if (b2 != null && b2.MoveGroupLiberties <= 3 && !ImmovableHelper.UnescapableGroup(b2, tryBoard.MoveGroup).Item1)
-                    return false;
-            }
+            if (connectAndDie)
+                return false;
             return true;
         }
 
@@ -2243,10 +2238,11 @@ namespace Go
         {
             if (board.MoveGroupLiberties != 3) return (false, null);
             if (!EyeHelper.FindUncoveredEye(board, eye, c)) return (false, null);
-            foreach (Point d in board.GetDiagonalNeighbours(eye).Where(n => board[n] == Content.Empty))
+            IEnumerable<Point> moves = board.GetDiagonalNeighbours(eye).Where(n => board[n] == Content.Empty);
+            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, moves, c.Opposite());
+            foreach (Board b in moveBoards)
             {
-                Board b = board.MakeMoveOnNewBoard(d, c.Opposite());
-                if (b != null && b.MoveGroupLiberties > 1 && EyeHelper.FindCoveredEye(b, eye, c))
+                if (b.MoveGroupLiberties > 1 && EyeHelper.FindCoveredEye(b, eye, c))
                 {
                     if (ImmovableHelper.CheckConnectAndDie(b, board.MoveGroup))
                         return (true, b);
@@ -2556,21 +2552,9 @@ namespace Go
             if (bestMoves.Count == 1)
                 return !tryMove.Move.Equals(bestMoves.First());
             //select move with max binding
-            Dictionary<Point, Board> moveBoards = GetMoveBoards(currentBoard, bestMoves, c);
-            Point bestMove = KillerFormationHelper.GetMaxBindingPoint(currentBoard, moveBoards.Values).Move;
+            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, bestMoves, c.Opposite());
+            Point bestMove = KillerFormationHelper.GetMaxBindingPoint(currentBoard, moveBoards).Move;
             return !tryMove.Move.Equals(bestMove);
-        }
-
-        public static Dictionary<Point, Board> GetMoveBoards(Board currentBoard, IEnumerable<Point> bestMoves, Content c)
-        {
-            Dictionary<Point, Board> moveBoards = new Dictionary<Point, Board>();
-            foreach (Point p in bestMoves)
-            {
-                Board b = currentBoard.MakeMoveOnNewBoard(p, c.Opposite(), true);
-                if (b == null) continue;
-                moveBoards.Add(p, b);
-            }
-            return moveBoards;
         }
 
         /// <summary>

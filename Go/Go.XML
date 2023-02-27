@@ -543,6 +543,11 @@
             Requires that the root of the game starts from initial setup.
             </summary>
         </member>
+        <member name="M:Go.GameHelper.GetMoveBoards(Go.Board,System.Collections.Generic.IEnumerable{Go.Point},Go.Content,System.Boolean)">
+            <summary>
+            Get move boards.
+            </summary>
+        </member>
         <member name="M:Go.GameHelper.GetTryMovesForGame(Go.Game)">
             <summary>
             Get all try moves for next move.
@@ -1672,12 +1677,11 @@
         <member name="M:Go.RedundantMoveHelper.MustHaveNeutralPoint(Go.GameTryMove,Go.GameTryMove)">
             <summary>
             Must have neutral point.
-            Neutral point at tiger mouth <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario5dan27_3" />
-            Neutral point at bigger tiger mouth <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario5dan27_Variation" />
+            Neutral point at small tiger mouth <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario5dan27_3" />
+            Neutral point at big tiger mouth <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario5dan27_Variation" />
             Negative example <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A27" />
             <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23" />
             <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_GuanZiPu_Weiqi101_19138" />
-            
             Check if atari <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23" />
             <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_TianLongTu_Q17136" />
             <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_Q18500_4" />

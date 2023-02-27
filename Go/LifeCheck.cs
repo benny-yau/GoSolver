@@ -123,7 +123,7 @@ namespace Go
                 return true;
 
             //make move at liberty
-            Board b = board.MakeMoveOnNewBoard(libertyPoint, c.Opposite());
+            Board b = board.MakeMoveOnNewBoard(libertyPoint, c.Opposite(), true);
             if (b == null || b.MoveGroupLiberties <= 2) return false;
 
             //check for atari at tiger mouth
@@ -181,13 +181,10 @@ namespace Go
             List<Point> diagonals = board.GetStoneNeighbours(libertyPoint);
             diagonals.Remove(tigerMouth);
             diagonals = diagonals.Where(d => ImmovableHelper.IsTigerMouthForLink(board, d, c, !lifeCheck)).ToList();
-            foreach (Point diagonal in diagonals)
-            {
-                //ensure link for groups
-                Board b2 = b.MakeMoveOnNewBoard(diagonal, c);
-                if (b2 != null && LinkHelper.IsAbsoluteLinkForGroups(b, b2) && !ImmovableHelper.IsSuicidalMove(b2, tigerMouth, c.Opposite()))
-                    return true;
-            }
+
+            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(b, diagonals, c);
+            if (moveBoards.Any(b2 => LinkHelper.IsAbsoluteLinkForGroups(b, b2) && !ImmovableHelper.IsSuicidalMove(b2, tigerMouth, c.Opposite())))
+                return true;
             return false;
         }
 

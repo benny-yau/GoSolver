@@ -192,13 +192,11 @@ namespace Go
                 if (eyeGroup.Points.Count != 1) continue;
                 List<Point> diagonalPoints = LinkHelper.GetGroupLinkedDiagonals(board, eyeGroup).Select(d => d.Move).Except(stoneNeighbours).ToList();
                 if (diagonalPoints.Count < 2 || board.GetGroupsFromPoints(diagonalPoints).Count(n => n.Liberties.Count <= 2) < 2) continue;
-                foreach (Point q in board.GetStoneNeighbours(p).Where(n => !n.Equals(eye) && board[n] == Content.Empty))
-                {
-                    Board b = board.MakeMoveOnNewBoard(q, c.Opposite(), true);
-                    if (b == null) continue;
-                    if (b.AtariTargets.Count > 1)
-                        return true;
-                }
+
+                IEnumerable<Point> moves = board.GetStoneNeighbours(p).Where(n => !n.Equals(eye) && board[n] == Content.Empty);
+                IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, moves, c.Opposite());
+                if (moveBoards.Any(b => b.AtariTargets.Count > 1))
+                    return true;
             }
             return false;
         }

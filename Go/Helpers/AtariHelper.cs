@@ -60,15 +60,10 @@ namespace Go
             //get distinct liberties of target groups
             List<Point> liberties = board.GetLibertiesOfGroups(targetGroups).Distinct().ToList();
 
-            foreach (Point liberty in liberties)
-            {
-                //make atari move
-                Board b = board.MakeMoveOnNewBoard(liberty, c.Opposite(), true);
-                if (b == null) continue;
-                //double atari
-                if (DoubleAtariWithoutEscape(b))
-                    return true;
-            }
+            //double atari
+            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, liberties, c.Opposite());
+            if (moveBoards.Any(b => DoubleAtariWithoutEscape(b)))
+                return true;
             return false;
         }
 

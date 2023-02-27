@@ -533,11 +533,11 @@ namespace Go
             Group moveGroup = groups.First();
             if (moveGroup.Points.Count > 2 || moveGroup.Liberties.Count > 1) return false;
 
-            foreach (Point libertyPoint in libertyPoints)
+            //make move at suicide point
+            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, libertyPoints, c.Opposite());
+            foreach (Board b in moveBoards)
             {
-                //make move at suicide point
-                Board b = board.MakeMoveOnNewBoard(libertyPoint, c.Opposite());
-                if (b == null || !b.IsAtariMove) continue;
+                if (!b.IsAtariMove) continue;
                 Board b2 = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(b, targetGroup, c);
                 if (b2 == null || b2.MoveGroupLiberties != 1) continue;
 
@@ -684,14 +684,14 @@ namespace Go
                 if (board != null && board.MoveGroup.Points.Count == 1 && board.GetGroupsFromStoneNeighbours(board.Move.Value, c).Count > 1 && EscapeLink(tryBoard, targetGroup))
                     return true;
 
-                //check unescapable group                
-                foreach (Point liberty in currentBoard.GetGroupLiberties(targetGroup))
+                //check unescapable group       
+                IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, currentBoard.GetGroupLiberties(targetGroup), c.Opposite());
+                foreach (Board b in moveBoards)
                 {
-                    Board b = currentBoard.MakeMoveOnNewBoard(liberty, c.Opposite());
-                    if (b == null || b.AtariTargets.Count == 0) continue;
+                    if (b.AtariTargets.Count == 0) continue;
                     if (b.AtariTargets.Any(t => ImmovableHelper.UnescapableGroup(b, t, false).Item1))
                     {
-                        if (ImmovableHelper.IsSuicidalMoveForBothPlayers(tryBoard, liberty))
+                        if (ImmovableHelper.IsSuicidalMoveForBothPlayers(tryBoard, b.Move.Value))
                             return true;
                     }
                 }

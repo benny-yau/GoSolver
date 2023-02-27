@@ -215,8 +215,8 @@ namespace Go
             targetGroups = targetGroups.Distinct().ToList();
             if (targetGroups.Count >= 2)
             {
-                Dictionary<Point, Board> moveBoards = RedundantMoveHelper.GetMoveBoards(currentBoard, targetGroups.Select(gr => gr.Liberties.First()), c.Opposite());
-                if (moveBoards.Count(k => !RedundantMoveHelper.CheckRedundantKoMove(k.Value, currentBoard)) >= 2)
+                IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, targetGroups.Select(gr => gr.Liberties.First()), c);
+                if (moveBoards.Count(k => !RedundantMoveHelper.CheckRedundantKoMove(k, currentBoard)) >= 2)
                     return true;
             }
             //kill double ko
@@ -229,8 +229,8 @@ namespace Go
                 koGroups.Add(group);
                 if (koGroups.Count >= 2)
                 {
-                    Dictionary<Point, Board> moveBoards = RedundantMoveHelper.GetMoveBoards(currentBoard, koGroups.Select(gr => gr.Liberties.First()), c.Opposite());
-                    if (moveBoards.Count(k => !RedundantMoveHelper.CheckRedundantKoMove(k.Value, currentBoard)) >= 2)
+                    IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, koGroups.Select(gr => gr.Liberties.First()), c);
+                    if (moveBoards.Count(k => !RedundantMoveHelper.CheckRedundantKoMove(k, currentBoard)) >= 2)
                         return true;
                 }
             }

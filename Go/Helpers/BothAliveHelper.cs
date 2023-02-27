@@ -179,12 +179,9 @@ namespace Go
                 return false;
 
             //check for increased killer groups
-            foreach (Point emptyPoint in emptyPoints)
-            {
-                Board b = board.MakeMoveOnNewBoard(emptyPoint, c.Opposite());
-                if (b != null && b.MoveGroupLiberties > 1 && GroupHelper.IncreasedKillerGroups(b, board))
-                    return false;
-            }
+            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, emptyPoints, c.Opposite());
+            if (moveBoards.Any(b => b.MoveGroupLiberties > 1 && GroupHelper.IncreasedKillerGroups(b, board)))
+                return false;
 
             //check content group connect and die
             HashSet<Group> contentGroups = board.GetGroupsFromPoints(killerGroup.Points.Where(p => board[p] == c).ToList());

@@ -55,12 +55,10 @@ namespace Go
         public static Boolean TryKillFormation(Board board, Content c, List<Point> emptyPoints, int requiredCount = 1)
         {
             int count = 0;
-            foreach (Point emptyPoint in emptyPoints)
+            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, emptyPoints, c);
+            foreach (Board b in moveBoards)
             {
-                Board b = board.MakeMoveOnNewBoard(emptyPoint, c);
-                if (b == null) return false;
-                Group group = b.GetGroupAt(emptyPoint);
-                if (IsKillerFormationFromFunc(b, group))
+                if (IsKillerFormationFromFunc(b, b.MoveGroup))
                 {
                     count++;
                     if (count >= requiredCount)
@@ -1065,12 +1063,9 @@ namespace Go
             if (currentBoard.GetStoneNeighbours(corner).Any(n => currentBoard[n] != Content.Empty)) return false;
             if (currentBoard.GetDiagonalNeighbours(p).Any(n => currentBoard.PointWithinMiddleArea(n) && EyeHelper.FindRealEyeWithinEmptySpace(currentBoard, n, c)))
             {
-                foreach (Point q in currentBoard.GetStoneNeighbours(corner))
-                {
-                    Board b = currentBoard.MakeMoveOnNewBoard(q, c.Opposite());
-                    if (b != null && !ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false))
-                        return true;
-                }
+                IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, currentBoard.GetStoneNeighbours(corner), c.Opposite());
+                if (moveBoards.Any(b => !ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false)))
+                    return true;
             }
             return false;
         }
