@@ -1683,6 +1683,10 @@ namespace Go
             Board opponentBoard = opponentMove.TryGame.Board;
             Content c = tryBoard.MoveGroup.Content;
 
+            //neutral point at small tiger mouth
+            if (opponentBoard.GetStoneNeighbours().Where(n => EyeHelper.FindEye(opponentBoard, n)).Any(n => !StrongGroupsAtMustHaveMove(tryBoard, n)))
+                return true;
+
             //neutral point at big tiger mouth
             (Boolean suicide, Board suicideBoard) = SuicideAtBigTigerMouth(tryMove);
             if (suicide)
@@ -1690,16 +1694,6 @@ namespace Go
                 Point suicideMove = suicideBoard.Move.Value;
                 if (MustHaveMoveAtBigTigerMouth(suicideBoard, tryMove))
                     return true;
-            }
-
-            //neutral point at small tiger mouth
-            Point tigerMouth = opponentBoard.GetStoneNeighbours().FirstOrDefault(n => EyeHelper.FindEye(opponentBoard, n));
-            if (Convert.ToBoolean(tigerMouth.NotEmpty))
-            {
-                //redundant suicidal at tiger mouth
-                if (StrongGroupsAtMustHaveMove(tryBoard, tigerMouth))
-                    return false;
-                return true;
             }
 
             //ko fight
