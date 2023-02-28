@@ -366,12 +366,12 @@ namespace Go
             foreach (Group eyeGroup in eyeGroups)
             {
                 Point liberty = eyeGroup.Liberties.First(lib => !lib.Equals(move));
-                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c, currentBoard);
+                Board b = currentBoard.MakeMoveOnNewBoard(liberty, c, true);
                 if (b == null || WallHelper.TargetWithAllNonKillableGroups(b)) continue;
-                if (suicidal || ImmovableHelper.CheckConnectAndDie(b))
+                if (ImmovableHelper.CheckConnectAndDie(b))
                     return (true, b);
 
-                if (b == null || b.MoveGroup.Liberties.Count != 2) continue;
+                if (b.MoveGroup.Liberties.Count != 2) continue;
                 Point liberty2 = b.MoveGroup.Liberties.First(lib => !lib.Equals(move));
                 //check for eye at liberty
                 if (EyeHelper.FindEye(b, liberty2, c) && b.GetGroupsFromStoneNeighbours(liberty2, c.Opposite()).Count >= 3)
@@ -390,7 +390,7 @@ namespace Go
                     if (b2.GetStoneNeighbours().Where(n => b2[n] != c.Opposite()).Select(n => GroupHelper.GetKillerGroupOfNeighbourGroups(b2, n, c.Opposite())).Any(n => n != null && n.Points.Count >= 3))
                         return (true, b);
 
-                    Board b3 = currentBoard.MakeMoveOnNewBoard(liberty, c.Opposite());
+                    Board b3 = currentBoard.MakeMoveOnNewBoard(liberty, c.Opposite(), true);
                     if (b3 != null && b3.GetNeighbourGroups(eyeGroup).Any(n => n.Liberties.Count <= 2))
                         return (true, b);
                 }
@@ -986,8 +986,7 @@ namespace Go
             else
             {
                 //check move next to covered point
-                Group tryKillerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
-                if (tryKillerGroup != null && tryMove.IsNegligible && tryBoard.GetStoneNeighbours().Any(p => tryBoard[p] == Content.Empty && EyeHelper.IsCovered(tryBoard, p, c.Opposite())))
+                if (tryMove.IsNegligible && tryBoard.GetStoneNeighbours().Any(p => tryBoard[p] == Content.Empty && EyeHelper.IsCovered(tryBoard, p, c.Opposite())) && GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard))
                     return true;
 
                 //stone neighbours at diagonal of each other
@@ -1002,7 +1001,7 @@ namespace Go
                     //cut diagonal and kill
                     List<Point> cutDiagonal = LinkHelper.PointsBetweenDiagonals(stoneNeighbours[0], stoneNeighbours[1]);
                     cutDiagonal.Remove(move);
-                    Board b = tryBoard.MakeMoveOnNewBoard(cutDiagonal.First(), c);
+                    Board b = tryBoard.MakeMoveOnNewBoard(cutDiagonal.First(), c, true);
                     if (b != null && stoneNeighbours.Any(n => ImmovableHelper.CheckConnectAndDie(b, b.GetGroupAt(n))))
                         return false;
                     return true;
@@ -2549,6 +2548,7 @@ namespace Go
                 return !tryMove.Move.Equals(bestMoves.First());
             //select move with max binding
             IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, bestMoves, c.Opposite());
+            if (!moveBoards.Any()) return false;
             Point bestMove = KillerFormationHelper.GetMaxBindingPoint(currentBoard, moveBoards).Move;
             return !tryMove.Move.Equals(bestMove);
         }

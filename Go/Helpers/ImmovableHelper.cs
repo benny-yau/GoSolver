@@ -291,21 +291,20 @@ namespace Go
         /// </summary>
         private static Boolean SuicidalAfterMustHaveMove(Board currentBoard, Board tryBoard, Point libertyPoint)
         {
-            Point p = tryBoard.Move.Value;
+            Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            if (currentBoard[p] != Content.Empty) return false;
-            Point eyePoint = currentBoard.GetDiagonalNeighbours(p).FirstOrDefault(n => EyeHelper.FindEye(currentBoard, n));
+            Point eyePoint = currentBoard.GetDiagonalNeighbours(move).FirstOrDefault(n => EyeHelper.FindEye(currentBoard, n, c.Opposite()) && EyeHelper.IsCovered(currentBoard, n, c.Opposite()));
             if (!Convert.ToBoolean(eyePoint.NotEmpty)) return false;
-            if (!currentBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).All(n => n.Liberties.Count <= 2)) return false;
+            if (!currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).All(n => n.Liberties.Count <= 2)) return false;
 
             (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(libertyPoint, c, currentBoard);
             if (suicidal) return false;
 
-            (Boolean suicidal2, Board b2) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), b);
-            if (!suicidal2 || EyeHelper.FindRealSolidEye(eyePoint, c.Opposite(), b2))
-                return false;
+            (Boolean suicidal2, Board b2) = ImmovableHelper.IsSuicidalMove(move, c.Opposite(), b);
+            if (suicidal2)
+                return true;
 
-            return true;
+            return false;
         }
 
         /// <summary>
