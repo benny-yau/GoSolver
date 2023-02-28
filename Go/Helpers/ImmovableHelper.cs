@@ -429,13 +429,13 @@ namespace Go
         /// <summary>
         /// Capture group that has liberty of one only and return the board.
         /// </summary>
-        public static Board CaptureSuicideGroup(Point p, Board board, Boolean overrideKo = false)
+        public static Board CaptureSuicideGroup(Point p, Board board, Boolean overrideKo = true)
         {
             if (board[p] == Content.Empty) return null;
             return CaptureSuicideGroup(board, board.GetGroupAt(p), overrideKo);
         }
 
-        public static Board CaptureSuicideGroup(Board board, Group group = null, Boolean overrideKo = false)
+        public static Board CaptureSuicideGroup(Board board, Group group = null, Boolean overrideKo = true)
         {
             if (group == null) group = board.MoveGroup;
             Content c = group.Content.Opposite();

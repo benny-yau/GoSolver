@@ -377,8 +377,8 @@ namespace Go
                 if (EyeHelper.FindEye(b, liberty2, c) && b.GetGroupsFromStoneNeighbours(liberty2, c.Opposite()).Count >= 3)
                     return (true, b);
                 //make block move
-                Board b2 = b.MakeMoveOnNewBoard(liberty2, c.Opposite(), true);
-                if (b2 == null) continue;
+                (Boolean suicidal, Board b2) = ImmovableHelper.IsSuicidalMove(liberty2, c.Opposite(), b, true);
+                if (suicidal) continue;
 
                 //opponent capture two or more points
                 if (b2.CapturedList.Any(gr => gr.Points.Count >= 2))
