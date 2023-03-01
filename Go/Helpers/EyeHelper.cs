@@ -92,7 +92,7 @@ namespace Go
         /// </summary>
         public static Boolean FindCoveredEye(Board tryBoard, Point eye, Content c)
         {
-            if (FindNonSemiSolidEye(tryBoard, eye, c) && IsCovered(tryBoard, eye, c))
+            if (FindEye(tryBoard, eye, c) && IsCovered(tryBoard, eye, c))
             {
                 if (!tryBoard.GetGroupsFromStoneNeighbours(eye, c.Opposite()).All(gr => gr.Liberties.Count == 1))
                     return true;

@@ -293,7 +293,7 @@ namespace Go
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            Point eyePoint = currentBoard.GetDiagonalNeighbours(move).FirstOrDefault(n => EyeHelper.FindEye(currentBoard, n, c.Opposite()) && EyeHelper.IsCovered(currentBoard, n, c.Opposite()));
+            Point eyePoint = currentBoard.GetDiagonalNeighbours(move).FirstOrDefault(n => EyeHelper.FindCoveredEye(currentBoard, n, c.Opposite()));
             if (!Convert.ToBoolean(eyePoint.NotEmpty)) return false;
             if (!currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).All(n => n.Liberties.Count <= 2)) return false;
 
