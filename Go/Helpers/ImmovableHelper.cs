@@ -243,7 +243,7 @@ namespace Go
             {
                 if (!LinkHelper.IsAbsoluteLinkForGroups(board, b))
                     continue;
-                if (!ImmovableHelper.CheckConnectAndDie(b, targetGroup))
+                if (!ImmovableHelper.CheckConnectAndDie(b, targetGroup, false))
                     return true;
             }
             return false;
@@ -573,7 +573,6 @@ namespace Go
         /// </summary>
         public static Boolean IsSnapback(Board tryBoard, Group targetGroup, Group suicideGroup)
         {
-            if (!tryBoard.IsAtariMove) return false;
             (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalOnCapture(tryBoard, suicideGroup);
             if (suicidal && b != null && b.MoveGroup.Points.Count > 1)
             {
@@ -688,7 +687,6 @@ namespace Go
                 IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, currentBoard.GetGroupLiberties(targetGroup), c.Opposite());
                 foreach (Board b in moveBoards)
                 {
-                    if (b.AtariTargets.Count == 0) continue;
                     if (b.AtariTargets.Any(t => ImmovableHelper.UnescapableGroup(b, t, false).Item1))
                     {
                         if (ImmovableHelper.IsSuicidalMoveForBothPlayers(tryBoard, b.Move.Value))

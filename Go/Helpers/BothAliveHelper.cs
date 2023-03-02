@@ -51,24 +51,16 @@ namespace Go
             //two to four liberties for both alive
             if (emptyPoints.Count < 2 || emptyPoints.Count > 4) return false;
 
-            //get target groups not within killer group
-            List<Group> targetGroups = board.GetNeighbourGroups(killerGroup);
-            targetGroups.RemoveAll(group => group.Neighbours.All(n => killerGroup.Points.Contains(n)));
-
-            //ensure at least two liberties in survival neighbour group
-            if (targetGroups.Any(g => g.Liberties.Count == 1 && GroupHelper.GetKillerGroupFromCache(board, g.Points.First(), g.Content.Opposite()) == null))
-                return false;
-
             //fill eye points with content
             Board filledBoard = FillEyePointsBoard(board, killerGroup);
 
-            //check for simple seki and complex seki
             List<Point> contentPoints = killerGroup.Points.Where(t => board[t] == c).ToList();
             List<Group> contentGroups = filledBoard.GetGroupsFromPoints(contentPoints).ToList();
             //more than one content group
             if (contentGroups.Count > 2 || (contentGroups.Count == 2 && emptyPoints.Count != 2)) return false;
             if (contentGroups.Count == 2 && !LinkHelper.IsImmediateDiagonallyConnected(board, contentGroups[0], contentGroups[1])) return false;
 
+            List<Group> targetGroups = GroupHelper.GetNeighbourGroupsOfKillerGroup(board, killerGroup);
             List<Group> killerGroups = GetKillerGroupsForBothAlive(board, c.Opposite());
             List<Group> associatedKillerGroups = killerGroups.Where(n => !n.Equals(killerGroup) && board.GetNeighbourGroups(n).Any(gr => targetGroups.Contains(gr))).ToList();
             associatedKillerGroups.Insert(0, killerGroup);
@@ -112,7 +104,6 @@ namespace Go
                     if (CheckComplexSeki(board, cutKillerGroups, cutTargetGroups))
                         complexSekiGroups.Add(diagonalGroup);
                 }
-
                 if (complexSekiGroups.Count > 1) return true;
                 if (complexSekiGroups.Count == 1)
                 {
@@ -120,7 +111,6 @@ namespace Go
                     if (WallHelper.IsNonKillableFromSetupMoves(board, otherDiagonalGroup))
                         return true;
                 }
-
             }
             return false;
         }
