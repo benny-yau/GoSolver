@@ -124,7 +124,6 @@ namespace Go
             Point diagonal = diagonals.First();
             if (tryBoard.GetGroupAt(diagonal).Points.Count != 1) return false;
             List<Point> pointsBetweenDiagonals = LinkHelper.PointsBetweenDiagonals(move, diagonal);
-            if (!pointsBetweenDiagonals.Any(p => tryBoard[p] == c.Opposite())) return false;
             List<Point> liberties = pointsBetweenDiagonals.Where(p => tryBoard[p] == Content.Empty && !tryBoard.PointWithinMiddleArea(p)).ToList();
             if (liberties.Count != 1) return false;
             Point lib = liberties.First();
@@ -139,9 +138,6 @@ namespace Go
             //make survival move to create ko
             (Boolean suicidal2, Board b2) = ImmovableHelper.IsSuicidalMove(lib2, c, b);
             if (suicidal2) return false;
-
-            if (!b2.GetGroupsFromStoneNeighbours(lib, c.Opposite()).All(group => group.Points.Count == 1)) return false;
-            if (b2.GetGroupAt(e).Liberties.Count != 1) return false;
             return true;
         }
 

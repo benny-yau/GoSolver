@@ -274,9 +274,9 @@ namespace Go
             {
                 if (capturePoint != null && ngroup.Points.Contains(capturePoint.Value)) continue;
                 Board b = ImmovableHelper.CaptureSuicideGroup(board, ngroup);
-                if (b == null) continue;
+                if (b == null || KoHelper.IsKoFight(b)) continue;
                 Group target = b.GetCurrentGroup(targetGroup);
-                if (target.Liberties.Count > 2 && !KoHelper.IsKoFight(b))
+                if (target.Liberties.Count > 2)
                     return true;
                 if (WallHelper.IsNonKillableGroup(b, target))
                     return true;

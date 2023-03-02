@@ -598,7 +598,7 @@ namespace Go
             if (tryBoard.GetGroupsFromStoneNeighbours(move).Count > 2) return true;
 
             Board board = captureBoard.MakeMoveOnNewBoard(move, c);
-            if (board == null || board.AtariTargets.Count != 1) return false;
+            if (board == null || board.AtariTargets.Count == 0) return false;
             //check snapback
             if (board.GetDiagonalNeighbours().Any(n => board[n] == c) && ImmovableHelper.IsSuicidalOnCapture(board).Item1)
                 return true;

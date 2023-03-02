@@ -2123,10 +2123,6 @@ namespace Go
             List<Point> diagonalPoints = ImmovableHelper.GetDiagonalsOfTigerMouth(tryBoard, move, c.Opposite()).Where(e => tryBoard[e] != c.Opposite()).ToList();
             if (diagonalPoints.Count == 0) return false;
 
-            //check if diagonal point is tiger mouth 
-            if (diagonalPoints.Any(d => ImmovableHelper.IsConfirmTigerMouth(currentBoard, tryBoard, d) != null))
-                return true;
-
             Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
             if (capturedBoard == null || capturedBoard.MoveGroupLiberties == 1) return false;
 
