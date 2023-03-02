@@ -644,7 +644,7 @@ namespace Go
             if (tryBoard.MoveGroupLiberties == 1 || tryBoard.CapturedList.Count != 0 || tryMove.AtariResolved || tryBoard.AtariTargets.Count != 1) return false;
 
             Group atariTarget = tryBoard.AtariTargets.First();
-            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] != c && !atariTarget.Points.Contains(n))) return false;
+            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty || (tryBoard[n] == c.Opposite() && !tryBoard.GetGroupAt(n).Equals(atariTarget)))) return false;
             //check for unescapable group
             (Boolean unEscapable, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(tryBoard, atariTarget, false);
             if (unEscapable) return false;
@@ -1898,13 +1898,7 @@ namespace Go
             List<Group> killerGroups = GroupHelper.GetKillerGroups(g.Board);
             List<Group> immovableGroups = IsImmovableKill(g, killerGroups).ToList();
             if (immovableGroups.Any())
-            {
-                foreach (Group immovableGroup in immovableGroups)
-                {
-                    gameTryMove = SpecificKillWithImmovablePoints(g.Board, neutralPointMoves, immovableGroup);
-                    if (gameTryMove != null) break;
-                }
-            }
+                gameTryMove = immovableGroups.Select(gr => SpecificKillWithImmovablePoints(g.Board, neutralPointMoves, gr)).FirstOrDefault(n => n != null);
             else
                 gameTryMove = SpecificKillWithLibertyFight(g.Board, neutralPointMoves, killerGroups);
 

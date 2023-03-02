@@ -11,17 +11,11 @@ namespace Go
         /// </summary>
         public static Boolean EnableCheckForPassMove(Board board, Content c = Content.Unknown, List<GameTryMove> tryMoves = null)
         {
+            if (tryMoves != null && tryMoves.Any(p => GroupHelper.GetKillerGroupFromCache(board, p.Move, c) == null)) return false;
             c = (c == Content.Unknown) ? GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive) : c;
             List<Group> killerGroups = GetKillerGroupsForBothAlive(board, c);
-            if (killerGroups.Count == 0) return false;
-
-            foreach (Group killerGroup in killerGroups)
-            {
-                if (!GroupHelper.IsLibertyGroup(killerGroup, board)) continue;
-                if (tryMoves != null && tryMoves.Any(p => GroupHelper.GetKillerGroupFromCache(board, p.Move, c) == null)) continue;
-                if (EnableCheckForBothAlive(board, killerGroup))
-                    return true;
-            }
+            if (killerGroups.Any(killerGroup => EnableCheckForBothAlive(board, killerGroup)))
+                return true;
             return false;
         }
 
@@ -33,13 +27,8 @@ namespace Go
             Content c = board.MoveGroup.Content;
             List<Group> killerGroups = board.GetStoneAndDiagonalNeighbours().Where(n => board[n] != c).Select(n => GroupHelper.GetKillerGroupFromCache(board, n, c)).Distinct().ToList();
 
-            foreach (Group killerGroup in killerGroups)
-            {
-                if (killerGroup == null) continue;
-                if (!GroupHelper.IsLibertyGroup(killerGroup, board)) continue;
-                if (EnableCheckForBothAlive(board, killerGroup))
-                    return true;
-            }
+            if (killerGroups.Any(killerGroup => killerGroup != null && EnableCheckForBothAlive(board, killerGroup)))
+                return true;
             return false;
         }
 
@@ -309,7 +298,6 @@ namespace Go
                 {
                     b = new Board(board);
                     immovableGroups.ForEach(group => group.Points.ToList().ForEach(p => b[p] = Content.Empty));
-
                 }
                 //find uncovered eye
                 foreach (Group group in killerGroups)

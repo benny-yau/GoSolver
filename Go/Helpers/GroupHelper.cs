@@ -130,7 +130,7 @@ namespace Go
         /// </summary>
         public static Boolean IsLibertyGroup(Group group, Board board)
         {
-            if (group.Content == Content.Empty) return false;
+            if (group.Content == Content.Empty || group.Points.Count < 4) return false;
             return (group.Points.Count(t => board[t] == group.Content) >= 2 && group.Points.Count(t => board[t] == Content.Empty) >= 2);
         }
 
