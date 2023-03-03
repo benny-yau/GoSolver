@@ -333,12 +333,13 @@ namespace Go
             foreach (Group ngroup in board.GetNeighbourGroups())
             {
                 if (ngroup.Liberties.Count > 2 || WallHelper.IsNonKillableGroup(board, ngroup)) continue;
-                List<Group> targetGroups = AtariHelper.AtariByGroup(ngroup, board);
-                if (targetGroups.Count == 0) continue;
-                Board b = ImmovableHelper.CaptureSuicideGroup(board, targetGroups.First(), true);
-                if (b == null) continue;
-                if (ImmovableHelper.CheckConnectAndDie(b, board.MoveGroup))
-                    return true;
+                foreach (Group targetGroup in AtariHelper.AtariByGroup(ngroup, board))
+                {
+                    Board b = ImmovableHelper.CaptureSuicideGroup(board, targetGroup, true);
+                    if (b == null) continue;
+                    if (ImmovableHelper.CheckConnectAndDie(b, board.MoveGroup))
+                        return true;
+                }
             }
             return false;
         }

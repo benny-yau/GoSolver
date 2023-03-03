@@ -416,7 +416,6 @@ namespace Go
                 Board currentBoard = koMove.CurrentGame.Board;
                 Board tryBoard = koMove.TryGame.Board;
                 Content c = tryBoard.MoveGroup.Content;
-                if (koMove.AtariResolved) continue;
                 if (KoHelper.IsNonKillableGroupKoFight(tryBoard, tryBoard.MoveGroup))
                     continue;
                 if (tryBoard.AtariTargets.Any(t => GroupHelper.GetKillerGroupFromCache(tryBoard, t.Points.First(), c) != null))
