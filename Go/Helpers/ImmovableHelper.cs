@@ -29,10 +29,8 @@ namespace Go
             }
             else if (content == c.Opposite())
             {
-                //ensure group in tiger mouth cannot escape
-                (Boolean result, Point? libertyPoint, _) = UnescapableGroup(board, board.GetGroupAt(p));
-                if (result)
-                    return libertyPoint.Value;
+                Board b = ImmovableHelper.CaptureSuicideGroup(board, board.GetGroupAt(p));
+                if (b != null) return b.Move;
             }
             return null;
         }

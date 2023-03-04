@@ -409,21 +409,6 @@ namespace Go
 
         /// <summary>
         /// Redundant atari move.
-        /// </summary>
-        public static Boolean AtariRedundantMove(GameTryMove tryMove)
-        {
-            Board tryBoard = tryMove.TryGame.Board;
-            if (tryBoard.AtariTargets.Count != 1 || tryMove.AtariResolved || tryBoard.MoveGroupLiberties == 1 || tryBoard.CapturedList.Count > 0) return false;
-            Group atariTarget = tryBoard.AtariTargets.First();
-            //ensure target group can escape
-            if (!ImmovableHelper.UnescapableGroup(tryBoard, atariTarget).Item1) return false;
-            if (RedundantAtariWithinKillerGroup(tryMove))
-                return true;
-            return false;
-        }
-
-        /// <summary>
-        /// Redundant atari within killer group.
         /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A9_Ext" />
         /// Check for increased killer groups <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_TianLongTu_Q16487" />
         /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WuQingYuan_Q31493" />
@@ -438,63 +423,40 @@ namespace Go
         /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Side_A23" />
         /// Count possible eyes at stone neighbours <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
         /// </summary>
-        private static Boolean RedundantAtariWithinKillerGroup(GameTryMove tryMove)
+        public static Boolean AtariRedundantMove(GameTryMove tryMove)
         {
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
             Content c = tryBoard.MoveGroup.Content;
+            if (tryBoard.AtariTargets.Count != 1 || tryMove.AtariResolved || tryBoard.MoveGroupLiberties == 1 || tryBoard.CapturedList.Count > 0) return false;
             Group atariTarget = tryBoard.AtariTargets.First();
             Point atariPoint = atariTarget.Points.First();
+            //ensure target group cannot escape
+            (_, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(tryBoard, atariTarget);
+            if (escapeBoard != null) return false;
+
             //check for redundant atari within killer group
-            Group killerGroup = GroupHelper.GetKillerGroupOfNeighbourGroups(tryBoard, atariPoint, c);
+            Group killerGroup = GroupHelper.GetKillerGroupOfNeighbourGroups(currentBoard, atariPoint, c);
             if (killerGroup == null) return false;
-            if (!GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard, atariTarget)) return false;
-            //check for increased killer groups
-            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] != c && GroupHelper.GetKillerGroupOfNeighbourGroups(tryBoard, n, c) != killerGroup)) return false;
+            if (!GroupHelper.IsSingleGroupWithinKillerGroup(currentBoard, atariTarget)) return false;
 
             //make move at the other liberty
             Point q = atariTarget.Liberties.First(lib => !lib.Equals(move));
             (Boolean suicidal, Board board) = ImmovableHelper.IsSuicidalMove(q, c, currentBoard);
             if (suicidal) return false;
             //ensure the other move can capture atari target as well
-            (Boolean escapable, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(board, board.GetGroupAt(atariPoint), false);
-            if (!escapable) return false;
-            Group killerGroup2 = GroupHelper.GetKillerGroupOfNeighbourGroups(board, atariPoint, c);
-            if (killerGroup2 == null) return false;
+            (_, _, Board escapeBoard2) = ImmovableHelper.UnescapableGroup(board, board.GetGroupAt(atariPoint));
+            if (escapeBoard2 != null) return false;
 
-            //check capture secure
-            if (!ImmovableHelper.CheckCaptureSecure(tryBoard, atariTarget))
-                return false;
             //check for weak groups
             if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Any(gr => gr.Liberties.Count <= 2)) return false;
-            //check for diagonal killer group
-            if (escapeBoard != null && escapeBoard.GetStoneNeighbours().Any(n => escapeBoard[n] == Content.Empty))
-            {
-                if (tryBoard.GetDiagonalNeighbours().Any(n => EyeHelper.FindNonSemiSolidEye(tryBoard, n, c) || ImmovableHelper.FindTigerMouth(tryBoard, c, n)))
-                    return false;
-            }
-            //check killer formation
-            Board b = tryBoard.MakeMoveOnNewBoard(q, c.Opposite());
-            if (b != null)
-            {
-                Boolean killerFormation = KillerFormationHelper.IsKillerFormationFromFunc(b, b.MoveGroup);
-                Board b2 = board.MakeMoveOnNewBoard(move, c.Opposite());
-                if (b2 != null)
-                {
-                    Boolean killerFormation2 = KillerFormationHelper.IsKillerFormationFromFunc(b2, b2.MoveGroup);
-                    if (killerFormation && !killerFormation2) return true;
-                    if (!killerFormation && killerFormation2) return false;
-                }
-            }
-            //count possible eyes at stone neighbours
-            int qEyeCount = PossibleEyesCreated(currentBoard, q, c);
-            int moveEyeCount = PossibleEyesCreated(currentBoard, move, c);
-            if (qEyeCount > moveEyeCount) return true;
-            else if (qEyeCount < moveEyeCount) return false;
             //return only one move if both moves valid
-            else return KillerFormationHelper.IsFirstPoint(board, q, move);
+            if (KillerFormationHelper.IsFirstPoint(board, q, move))
+                return true;
+            return false;
         }
+
         #endregion
 
         #region suicidal move
