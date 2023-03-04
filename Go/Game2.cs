@@ -410,12 +410,12 @@ namespace Go
         /// </summary>
         private void CreateRandomMoveForRedundantKo(List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves)
         {
-            if (tryMoves.Count > 1 || tryMoves.Any(t => !EyeHelper.FindCoveredEye(t.CurrentGame.Board, t.Move, t.MoveContent))) return;
             foreach (GameTryMove koMove in redundantTryMoves.Where(t => t.IsRedundantKo))
             {
                 Board currentBoard = koMove.CurrentGame.Board;
                 Board tryBoard = koMove.TryGame.Board;
                 Content c = tryBoard.MoveGroup.Content;
+                if (koMove.AtariResolved) continue;
                 if (KoHelper.IsNonKillableGroupKoFight(tryBoard, tryBoard.MoveGroup))
                     continue;
                 if (tryBoard.AtariTargets.Any(t => GroupHelper.GetKillerGroupFromCache(tryBoard, t.Points.First(), c) != null))
