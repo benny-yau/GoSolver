@@ -1350,11 +1350,6 @@
         <member name="M:Go.RedundantMoveHelper.AtariRedundantMove(Go.GameTryMove)">
             <summary>
             Redundant atari move.
-            </summary>
-        </member>
-        <member name="M:Go.RedundantMoveHelper.RedundantAtariWithinKillerGroup(Go.GameTryMove)">
-            <summary>
-            Redundant atari within killer group.
             <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A9_Ext" />
             Check for increased killer groups <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_TianLongTu_Q16487" />
             <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WuQingYuan_Q31493" />
