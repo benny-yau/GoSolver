@@ -148,8 +148,8 @@ namespace Go
                 tryMoves.Add(BothAliveHelper.AddPassMove(currentGame));
 
             //restore diagonal eye or fill ko eye move
-            if (tryMoves.Count == 0 && redundantTryMoves.Any(move => move.IsDiagonalEyeMove || move.IsFillKoEyeMove))
-                tryMoves.Add(redundantTryMoves.First(move => move.IsDiagonalEyeMove || move.IsFillKoEyeMove));
+            if (tryMoves.Count == 0 && redundantTryMoves.Any(move => move.IsDiagonalEyeMove || move.IsFillKoEye))
+                tryMoves.Add(redundantTryMoves.First(move => move.IsDiagonalEyeMove || move.IsFillKoEye));
 
             //create random move
             CreateRandomMoveForRedundantKo(tryMoves, redundantTryMoves);

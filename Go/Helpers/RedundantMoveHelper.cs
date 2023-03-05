@@ -432,6 +432,10 @@ namespace Go
             if (tryBoard.AtariTargets.Count != 1 || tryMove.AtariResolved || tryBoard.MoveGroupLiberties == 1 || tryBoard.CapturedList.Count > 0) return false;
             Group atariTarget = tryBoard.AtariTargets.First();
             Point atariPoint = atariTarget.Points.First();
+
+            Point q = currentBoard.GetGroupAt(atariPoint).Liberties.First(lib => !lib.Equals(move));
+            if (!KillerFormationHelper.IsFirstPoint(currentBoard, q, move)) return false;
+
             //ensure target group cannot escape
             (_, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(tryBoard, atariTarget);
             if (escapeBoard != null) return false;
@@ -442,7 +446,6 @@ namespace Go
             if (!GroupHelper.IsSingleGroupWithinKillerGroup(currentBoard, atariTarget)) return false;
 
             //make move at the other liberty
-            Point q = atariTarget.Liberties.First(lib => !lib.Equals(move));
             (Boolean suicidal, Board board) = ImmovableHelper.IsSuicidalMove(q, c, currentBoard);
             if (suicidal) return false;
             //ensure the other move can capture atari target as well
@@ -451,10 +454,7 @@ namespace Go
 
             //check for weak groups
             if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Any(gr => gr.Liberties.Count <= 2)) return false;
-            //return only one move if both moves valid
-            if (KillerFormationHelper.IsFirstPoint(board, q, move))
-                return true;
-            return false;
+            return true;
         }
 
         #endregion

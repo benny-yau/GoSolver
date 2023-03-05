@@ -104,13 +104,6 @@ namespace Go
             this.TryGame.InternalMakeMove(p.x, p.y, true);
         }
 
-        public bool IsRedundantMove
-        {
-            get
-            {
-                return IsEye || IsCoveredEyeMove || IsFillKoEyeMove || IsSuicidal || IsNeutralPoint || IsDiagonalEyeMove || IsRedundantKo || IsBaseLine || IsRedundantTigerMouth || IsRedundantEyeFiller || IsLeapMove || IsAtariRedundant;
-            }
-        }
         /// <summary>
         /// Is negligible.
         /// </summary>
@@ -153,6 +146,31 @@ namespace Go
                 return tryMove;
             }
             return null;
+        }
+
+        /// <summary>
+        /// Is redundant move.
+        /// </summary>
+        public bool IsRedundantMove
+        {
+            get
+            {
+                return IsEye || IsCoveredEyeMove || IsFillKoEyeMove || IsSuicidal || IsNeutralPoint || IsDiagonalEyeMove || IsRedundantKo || IsBaseLine || IsRedundantTigerMouth || IsRedundantEyeFiller || IsLeapMove || IsAtariRedundant;
+            }
+        }
+
+        /// <summary>
+        /// Is fill ko eye for restore move.
+        /// </summary>
+        public bool IsFillKoEye
+        {
+            get
+            {
+                Board tryBoard = TryGame.Board;
+                Point move = tryBoard.Move.Value;
+                Content c = tryBoard.MoveGroup.Content;
+                return IsFillKoEyeMove && KoHelper.IsKoFight(CurrentGame.Board, move, c).Item1;
+            }
         }
 
         public Boolean LinkForGroups()
