@@ -159,20 +159,6 @@ namespace Go
             }
         }
 
-        /// <summary>
-        /// Is fill ko eye for restore move.
-        /// </summary>
-        public bool IsFillKoEye
-        {
-            get
-            {
-                Board tryBoard = TryGame.Board;
-                Point move = tryBoard.Move.Value;
-                Content c = tryBoard.MoveGroup.Content;
-                return IsFillKoEyeMove && KoHelper.IsKoFight(CurrentGame.Board, move, c).Item1;
-            }
-        }
-
         public Boolean LinkForGroups()
         {
             return LinkHelper.PossibleLinkForGroups(TryGame.Board, CurrentGame.Board);

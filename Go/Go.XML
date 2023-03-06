@@ -217,11 +217,6 @@
             Is redundant move.
             </summary>
         </member>
-        <member name="P:Go.GameTryMove.IsFillKoEye">
-            <summary>
-            Is fill ko eye for restore move.
-            </summary>
-        </member>
         <member name="M:Go.AtariHelper.FindAndResolveAtari(Go.GameTryMove)">
             <summary>
             Find target groups where the neighbour group of the move is reduced to liberty of one only.
