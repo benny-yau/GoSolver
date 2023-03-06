@@ -162,7 +162,7 @@ namespace Go
 
                     //check is immovable
                     Point q = diagonals.First(d => !d.Equals(p));
-                    if (ImmovableHelper.IsImmovablePoint(q, c, b).Item1) continue;
+                    if (ImmovableHelper.IsImmovablePoint(q, c, b).Item1) return true;
 
                     //make connection at other diagonal
                     if (ImmovableHelper.IsSuicidalMove(q, c, b).Item1)
