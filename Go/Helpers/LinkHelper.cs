@@ -138,7 +138,8 @@ namespace Go
         /// Both diagonals empty <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_4" />
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_2" />
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q17078" />
-        /// Check not negligible <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_4" />
+        /// Check not negligible <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_8" />
+        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_4" />
         /// Check any diagonal separated by opposite content <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_5" />
         /// </summary>
         public static Boolean CheckIsDiagonalLinked(Point pointA, Point pointB, Board board, Boolean immediateLink = false)
@@ -159,7 +160,10 @@ namespace Go
                     (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board, true);
                     if (suicidal) return true;
 
+                    //check is immovable
                     Point q = diagonals.First(d => !d.Equals(p));
+                    if (ImmovableHelper.IsImmovablePoint(q, c, b).Item1) continue;
+
                     //make connection at other diagonal
                     if (ImmovableHelper.IsSuicidalMove(q, c, b).Item1)
                         return false;
@@ -222,7 +226,7 @@ namespace Go
             foreach (Point p in diagonals.Where(d => board[d] == Content.Empty))
             {
                 //ensure three opponent groups
-                List<Point> opponentStones = board.GetStoneNeighbours(p).Where(n => board[n] == c).ToList();
+                List<Point> opponentStones = board.GetStoneNeighbours(p).Where(n => board[n] == c && board.GetGroupAt(n).Liberties.Count > 1).ToList();
                 HashSet<Group> neighbourGroups = board.GetGroupsFromPoints(opponentStones);
                 if (neighbourGroups.Count != 3) continue;
 
