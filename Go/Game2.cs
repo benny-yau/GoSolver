@@ -147,7 +147,7 @@ namespace Go
             if (BothAliveHelper.EnableCheckForPassMove(currentGame.Board, c, tryMoves))
                 tryMoves.Add(BothAliveHelper.AddPassMove(currentGame));
 
-            //restore diagonal eye or fill ko eye move
+            //restore diagonal eye move
             if (tryMoves.Count == 0 && redundantTryMoves.Any(move => move.IsDiagonalEyeMove))
                 tryMoves.Add(redundantTryMoves.First(move => move.IsDiagonalEyeMove));
 
@@ -418,7 +418,8 @@ namespace Go
                 if (koMove.AtariResolved) continue;
                 if (KoHelper.IsNonKillableGroupKoFight(tryBoard, tryBoard.MoveGroup))
                     continue;
-                if (tryBoard.AtariTargets.Any(t => GroupHelper.GetKillerGroupFromCache(tryBoard, t.Points.First(), c) != null))
+                //killer ko within killer group 
+                if (tryBoard.AtariTargets.Any(t => GroupHelper.GetKillerGroupFromCache(tryBoard, t.Points.First(), c) != null && !ImmovableHelper.CheckConnectAndDie(currentBoard, currentBoard.GetGroupAt(t.Points.First()), false)))
                 {
                     GameTryMove move = GetRandomMove(koMove.CurrentGame);
                     if (move != null) tryMoves.Add(move);
