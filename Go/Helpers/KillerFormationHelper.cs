@@ -341,7 +341,7 @@ namespace Go
             //whole group dying
             if (WholeGroupDying(tryBoard))
             {
-                if (TryKillFormation(currentBoard, c, new List<Point>() { liberties.First() }) && SuicidalEndMove(tryBoard, currentBoard))
+                if (previousGroup.Liberties.Count == 2 && TryKillFormation(currentBoard, c, new List<Point>() { liberties.First() }) && SuicidalEndMove(tryBoard, currentBoard))
                     return true;
                 return false;
             }
@@ -357,7 +357,7 @@ namespace Go
                     return true;
 
                 //two kill formations
-                if (TryKillFormation(currentBoard, c, new List<Point>() { liberties.First() }))
+                if (previousGroup.Liberties.Count == 2 && TryKillFormation(currentBoard, c, new List<Point>() { liberties.First() }))
                 {
                     if (IsFirstPoint(currentBoard, move, previousGroup.Liberties.First(p => !p.Equals(move))))
                         return true;
@@ -408,9 +408,12 @@ namespace Go
         public static Boolean WholeGroupDying(Board tryBoard)
         {
             Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.MoveGroupLiberties == 1 && tryBoard.IsAtariMove && tryBoard.GetNeighbourGroups().Count == 1)
+            if (tryBoard.MoveGroupLiberties == 1 && tryBoard.IsAtariMove)
             {
+                List<Group> neighbourGroups = tryBoard.GetNeighbourGroups();
+                if (neighbourGroups.Count != 1) return false;
                 Point liberty = tryBoard.MoveGroup.Liberties.First();
+                if (tryBoard.GetGroupsFromStoneNeighbours(liberty, c).Except(neighbourGroups).Any()) return false;
                 if (tryBoard.GetStoneNeighbours(liberty).Except(tryBoard.MoveGroup.Points).All(n => tryBoard[n] == c.Opposite()))
                     return true;
             }
