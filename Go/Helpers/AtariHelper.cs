@@ -73,6 +73,7 @@ namespace Go
         public static Boolean DoubleAtariWithoutEscape(Board board)
         {
             if (board.AtariTargets.Count <= 1) return false;
+            if (board.MoveGroupLiberties == 1 && !KoHelper.IsKoFight(board)) return false;
             foreach (Group targetGroup in board.AtariTargets)
             {
                 //make escape move for target group

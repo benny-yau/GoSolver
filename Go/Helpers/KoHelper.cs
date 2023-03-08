@@ -36,10 +36,7 @@ namespace Go
             if (targetGroup == null) targetGroup = board.MoveGroup;
             Group group = board.GetCurrentGroup(targetGroup);
             if (group.Points.Count != 1 || group.Liberties.Count != 1) return false;
-            Content c = group.Content;
-            Point move = group.Points.First();
-            Point eyePoint = board.GetStoneNeighbours(move).FirstOrDefault(n => EyeHelper.FindEye(board, n, c));
-            return (Convert.ToBoolean(eyePoint.NotEmpty) && !board.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()).Any(g => g != group && g.Liberties.Count == 1));
+            return IsKoFight(board, group.Liberties.First(), group.Content).Item1;
         }
 
         public static (Boolean, Group) IsKoFight(Board board, Point eye, Content c)
