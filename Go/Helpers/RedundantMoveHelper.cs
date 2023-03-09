@@ -675,7 +675,7 @@ namespace Go
             if (GetWeakGroup(b, b.MoveGroup))
                 return true;
             //continue escape
-            if (b.MoveGroupLiberties == 2 && !WallHelper.IsHostileNeighbourGroup(b, b.MoveGroup))
+            if (b.MoveGroupLiberties == 2 && !WallHelper.IsHostileNeighbourGroup(b))
                 return true;
 
             return false;
@@ -1322,7 +1322,7 @@ namespace Go
         /// <summary>
         /// Multi point suicide move.
         /// Check for corner kill <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario7kyu25" />
-        /// Check for connect and die <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A36" />
+        /// Capture at tryBoard <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A36" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2Q71_101Weiqi" />
         /// Eternal life <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_GuanZiPu_Q14971" />
         /// Capture at tryBoard more than recapture <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935_2" />
@@ -1354,16 +1354,9 @@ namespace Go
             Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
             if (capturedBoard == null) return false;
 
-            if (tryBoard.CapturedList.Count > 0) //capture at tryBoard
-            {
-                //check for connect and die
-                if (ImmovableHelper.CheckConnectAndDie(capturedBoard))
-                    return false;
-
-                //capture at tryBoard more than recapture        
-                if (tryBoard.CapturedPoints.Any(p => !capturedBoard.CapturedPoints.Contains(p) && !capturedBoard.Move.Equals(p)))
-                    return false;
-            }
+            //capture at tryBoard
+            if (tryBoard.CapturedList.Count > 0 && !WallHelper.IsHostileNeighbourGroup(capturedBoard))
+                return false;
 
             //killer formations
             if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, capturedBoard))

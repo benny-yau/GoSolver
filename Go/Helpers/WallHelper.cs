@@ -135,17 +135,15 @@ namespace Go
         public static Boolean HostileNeighbourGroups(Board board, Point move, Content c)
         {
             HashSet<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(move, c);
-            foreach (Group group in neighbourGroups)
-            {
-                if (group.Liberties.Count <= 2 && !IsHostileNeighbourGroup(board, group))
-                    return false;
-            }
+            if (neighbourGroups.Any(n => !IsHostileNeighbourGroup(board, n))) return false;
             return true;
         }
 
-        public static Boolean IsHostileNeighbourGroup(Board board, Group group)
+        public static Boolean IsHostileNeighbourGroup(Board board, Group group = null)
         {
-            if (group.Liberties.All(liberty => ImmovableHelper.IsSuicidalMove(liberty, group.Content.Opposite(), board, true).Item1))
+            if (group == null) group = board.MoveGroup;
+            if (group.Liberties.Count > 2) return true;
+            if (group.Liberties.Count == 2 && group.Liberties.All(liberty => ImmovableHelper.IsSuicidalMove(liberty, group.Content.Opposite(), board, true).Item1))
                 return true;
             return false;
         }
