@@ -337,11 +337,11 @@ namespace Go
                 return true;
 
             Group previousGroup = previousGroups.First();
-            List<Point> liberties = tryBoard.MoveGroup.Liberties.ToList();
             //whole group dying
             if (WholeGroupDying(tryBoard))
             {
-                if (previousGroup.Liberties.Count == 2 && TryKillFormation(currentBoard, c, new List<Point>() { liberties.First() }) && SuicidalEndMove(tryBoard, currentBoard))
+                Point liberty = tryBoard.MoveGroup.Liberties.First();
+                if (TryKillFormation(currentBoard, c, new List<Point>() { liberty }) && SuicidalEndMove(tryBoard, currentBoard))
                     return true;
                 return false;
             }
@@ -355,13 +355,6 @@ namespace Go
                 //check previous group for three point group
                 if (previousGroup.Points.Count == 3 && !KillerFormationHelper.TwoByTwoSuicidalFormation(tryBoard, tryBoard.MoveGroup))
                     return true;
-
-                //two kill formations
-                if (previousGroup.Liberties.Count == 2 && TryKillFormation(currentBoard, c, new List<Point>() { liberties.First() }))
-                {
-                    if (IsFirstPoint(currentBoard, move, previousGroup.Liberties.First(p => !p.Equals(move))))
-                        return true;
-                }
             }
             //atari target
             if (tryBoard.AtariTargets.Any())
