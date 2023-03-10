@@ -15,7 +15,7 @@ namespace Go
                 {
                     killerFormationFuncs = new Dictionary<int, List<Func<Board, Group, Boolean>>>();
                     killerFormationFuncs.Add(4, new List<Func<Board, Group, Boolean>>() { OneByThreeFormation, BoxFormation, CrowbarEdgeFormation, StraightFourFormation, TwoByTwoSuicidalFormation, BentFourCornerFormation });
-                    killerFormationFuncs.Add(5, new List<Func<Board, Group, Boolean>>() { KnifeFiveFormation, CrowbarFiveFormation, BentFiveFormation });
+                    killerFormationFuncs.Add(5, new List<Func<Board, Group, Boolean>>() { KnifeFiveFormation, CrowbarFiveFormation, BentFiveFormation, CornerFiveFormation });
                     killerFormationFuncs.Add(6, new List<Func<Board, Group, Boolean>>() { FlowerSixFormation, KnifeSixFormation, CornerSixFormation });
                     killerFormationFuncs.Add(7, new List<Func<Board, Group, Boolean>>() { FlowerSevenFormation, OddSevenFormation });
                 }
@@ -218,6 +218,7 @@ namespace Go
         /// Crowbar five formation --Three-by-two formation (two liberties) <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A132" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_4" />
         /// Corner six formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
+        /// Corner five formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A67_4" />
         /// Flower six formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16859" />
         /// Flower seven formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B3" />
         /// Knife six formation <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31682" />
@@ -1094,21 +1095,20 @@ namespace Go
         }
 
         /*
- 15 . . . . . . . . . . . . . . . . . . .
- 16 . . . . . . . . . . . . . . . . . . . 
- 17 X X . . . . . . . . . . . . . . . . . 
- 18 X X X . . . . . . . . . . . . . . . . 
-         */
+    15 . . . . . . . . . . . . . . . . . . .
+    16 X . . . . . . . . . . . . . . . . . . 
+    17 X X . . . . . . . . . . . . . . . . . 
+    18 . X X . . . . . . . . . . . . . . . . 
+        */
         public static Boolean CornerFiveFormation(Board tryBoard, Group moveGroup)
         {
             Content c = moveGroup.Content;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 5) return false;
-            if (!contentPoints.Any(p => tryBoard.CornerPoint(p))) return false;
             if (contentPoints.Where(p => tryBoard.PointWithinMiddleArea(p)).Count() != 1) return false;
-            IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
-            if (pointIntersect.Count(p => p.intersectCount == 3) != 1) return false;
-            return (MaxLengthOfGrid(moveGroup.Points) == 2);
+            if (MaxLengthOfGrid(moveGroup.Points) != 2) return false;
+            if (contentPoints.Any(p => tryBoard.CornerPoint(p))) return false;
+            return true;
         }
 
         /*
