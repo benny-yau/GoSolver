@@ -15,7 +15,7 @@ namespace Go
                 {
                     killerFormationFuncs = new Dictionary<int, List<Func<Board, Group, Boolean>>>();
                     killerFormationFuncs.Add(4, new List<Func<Board, Group, Boolean>>() { OneByThreeFormation, BoxFormation, CrowbarEdgeFormation, StraightFourFormation, TwoByTwoSuicidalFormation, BentFourCornerFormation });
-                    killerFormationFuncs.Add(5, new List<Func<Board, Group, Boolean>>() { KnifeFiveFormation, CrowbarFiveFormation, BentFiveFormation, CornerFiveFormation });
+                    killerFormationFuncs.Add(5, new List<Func<Board, Group, Boolean>>() { KnifeFiveFormation, CrowbarFiveFormation, BentFiveFormation });
                     killerFormationFuncs.Add(6, new List<Func<Board, Group, Boolean>>() { FlowerSixFormation, KnifeSixFormation, CornerSixFormation });
                     killerFormationFuncs.Add(7, new List<Func<Board, Group, Boolean>>() { FlowerSevenFormation, OddSevenFormation });
                 }
@@ -875,8 +875,8 @@ namespace Go
  14 X . . . . . . . . . . . . . . . . . .
  15 X X X . . . . . . . . . . . . . . . .
  16 X X . . . . . . . . . . . . . . . . . 
- 17 X . . . . . . . X X X . . . . . . . . 
- 18 . . . . . . . . X X X X . . . . . . . 
+ 17 X . . . . . . . X X X . . . . X X . . 
+ 18 . . . . . . . . X X X X . . X X X X X 
          */
         public static Boolean OddSevenFormation(Board tryBoard, Group moveGroup)
         {
@@ -885,7 +885,7 @@ namespace Go
             if (contentPoints.Count() != 7) return false;
 
             IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
-            if (pointIntersect.Count(p => p.intersectCount == 3) == 3)
+            if (pointIntersect.Count(p => p.intersectCount == 3) >= 2)
             {
                 if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
                     return true;
@@ -912,16 +912,12 @@ namespace Go
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 7) return false;
             IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
-            if (pointIntersect.Count(p => p.intersectCount == 4) == 1)
-            {
-                int threeAdjPoints = pointIntersect.Count(p => p.intersectCount == 3);
-                int twoAdjPoints = pointIntersect.Count(p => p.intersectCount == 2);
 
-                if ((threeAdjPoints == 1 && twoAdjPoints == 2) || (threeAdjPoints == 0 && twoAdjPoints >= 2))
-                {
-                    if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
-                        return true;
-                }
+            if (pointIntersect.Count(p => p.intersectCount == 4) >= 1)
+            {
+                if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
+                    return true;
+
             }
             return false;
         }
@@ -1092,23 +1088,6 @@ namespace Go
             IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
             if (pointIntersect.Count(p => p.intersectCount == 3) != 2) return false;
             return (MaxLengthOfGrid(moveGroup.Points) == 2);
-        }
-
-        /*
-    15 . . . . . . . . . . . . . . . . . . .
-    16 X . . . . . . . . . . . . . . . . . . 
-    17 X X . . . . . . . . . . . . . . . . . 
-    18 . X X . . . . . . . . . . . . . . . . 
-        */
-        public static Boolean CornerFiveFormation(Board tryBoard, Group moveGroup)
-        {
-            Content c = moveGroup.Content;
-            HashSet<Point> contentPoints = moveGroup.Points;
-            if (contentPoints.Count() != 5) return false;
-            if (contentPoints.Where(p => tryBoard.PointWithinMiddleArea(p)).Count() != 1) return false;
-            if (MaxLengthOfGrid(moveGroup.Points) != 2) return false;
-            if (contentPoints.Any(p => tryBoard.CornerPoint(p))) return false;
-            return true;
         }
 
         /*
