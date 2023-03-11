@@ -1472,59 +1472,7 @@ namespace Go
             if (opponentMove == null && !tryMove.IsNegligible && EssentialAtariAtCoveredEye(tryMove))
                 return false;
             //validate neutral point
-            Boolean isNeutralPoint = ValidateNeutralPoint(tryMove);
-            if (isNeutralPoint) return true;
-            if (opponentMove == null && NeutralPointAtNonKillableCorner(tryMove))
-                return true;
-            return false;
-        }
-
-        /// <summary>
-        /// Neutral point at non killable corner. 
-        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A26" />
-        /// Check if any killable group <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WindAndTime_Q29277" />
-        /// Check killer group for captured points <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_ScenarioHighLevel18" />
-        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_TianLongTu_Q17132" />
-        /// <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_SiHuoDaQuan_CornerA29_2" />
-        /// Check eye or tiger mouth at stone and diagonal <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A26_2" />
-        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario3kyu28" />
-        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_TianLongTu_Q17132_3" />
-        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_TianLongTu_Q16466" />
-        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
-        /// </summary>
-        private static Boolean NeutralPointAtNonKillableCorner(GameTryMove tryMove)
-        {
-            Board currentBoard = tryMove.CurrentGame.Board;
-            Board tryBoard = tryMove.TryGame.Board;
-            Point move = tryBoard.Move.Value;
-            Content c = tryBoard.MoveGroup.Content;
-            //ensure move at non killable corner
-            List<Point> nonKillablePoints = tryBoard.GetStoneNeighbours().Where(n => tryBoard[n] == c.Opposite() && WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.GetGroupAt(n))).ToList();
-            if (nonKillablePoints.Count != 2) return false;
-            Point k = nonKillablePoints[0];
-            Point k2 = nonKillablePoints[1];
-            if (!tryBoard.GetDiagonalNeighbours(k).Any(n => n.Equals(k2))) return false;
-
-            //check if any killable group
-            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite() && !WallHelper.IsNonKillableFromSetupMoves(tryBoard, tryBoard.GetGroupAt(n))))
-                return false;
-
-            //check killer group for captured points
-            if (tryBoard.GetStoneAndDiagonalNeighbours().Where(n => tryBoard[n] != c).Select(n => GroupHelper.GetKillerGroupFromCache(tryBoard, n, c)).Any(n => n != null && n.Points.Any(q => tryBoard[q] == c.Opposite())))
-                return false;
-
-            //check eye or tiger mouth at stone and diagonal
-            foreach (Point p in tryBoard.GetStoneAndDiagonalNeighbours().Where(n => tryBoard[n] == Content.Empty))
-            {
-                //check eye
-                if (EyeHelper.FindEye(tryBoard, p, c) && tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).All(n => n.Liberties.Count > 1 || KoHelper.IsKoFight(tryBoard, n)))
-                    return false;
-
-                //check tiger mouth
-                if (ImmovableHelper.FindTigerMouth(tryBoard, c, p))
-                    return false;
-            }
-            return true;
+            return ValidateNeutralPoint(tryMove);
         }
 
         /// <summary>
