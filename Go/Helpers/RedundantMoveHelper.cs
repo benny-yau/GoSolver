@@ -1482,8 +1482,6 @@ namespace Go
         {
             if (!tryMove.IsNegligible && EssentialAtariAtCoveredEye(tryMove))
                 return false;
-            if (NeutralPointSuicidalMove(tryMove))
-                return false;
             //make move from perspective of survival
             GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
             if (opponentMove == null) return false;
@@ -1690,6 +1688,10 @@ namespace Go
 
             //check reverse ko for neutral point
             if (KoHelper.CheckReverseKoForNeutralPoint(tryBoard))
+                return false;
+
+            GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
+            if (opponentMove != null && NeutralPointSuicidalMove(opponentMove))
                 return false;
             return true;
         }
@@ -2175,7 +2177,7 @@ namespace Go
                     return false;
 
                 GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
-                if (NeutralPointSuicidalMove(opponentMove))
+                if (opponentMove != null && NeutralPointSuicidalMove(opponentMove))
                     return false;
 
                 return true;
