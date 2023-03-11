@@ -276,16 +276,14 @@ namespace Go
             //ensure group more than one point have more than one liberty
             if (eyeGroups.Any(e => e.Points.Count > 1 && e.Liberties.Count == 1)) return false;
 
-            if (eyeGroups.Count > 2)
-            {
-                //double atari
-                if (eyeGroups.Count(group => group.Liberties.Count == 1) >= 2)
-                    return false;
+            //double atari
+            if (eyeGroups.Count(group => group.Liberties.Count == 1) >= 2)
+                return false;
 
-                //check both alive
-                if (BothAliveHelper.CheckForBothAliveAtMove(tryBoard))
-                    return false;
-            }
+            //check both alive
+            if (BothAliveHelper.CheckForBothAliveAtMove(tryBoard))
+                return false;
+
             //check suicide at tiger mouth
             if (SuicideAtBigTigerMouth(tryMove).Item1)
                 return false;
