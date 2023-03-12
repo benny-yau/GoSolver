@@ -1315,8 +1315,8 @@ namespace Go
 
         /// <summary>
         /// Multi point suicide move.
-        /// Check for corner kill <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario7kyu25" />
-        /// Capture at tryBoard <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A36" />
+        /// Capture at tryBoard <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A23" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A36" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2Q71_101Weiqi" />
         /// Eternal life <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_GuanZiPu_Q14971" />
         /// Capture at tryBoard more than recapture <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935_2" />
@@ -2050,8 +2050,6 @@ namespace Go
                 Group moveKillerGroup = GroupHelper.GetKillerGroupOfNeighbourGroups(currentBoard, move, c.Opposite());
                 if (moveKillerGroup != null) continue;
 
-
-
                 //find immovable point at diagonal
                 if (ImmovableHelper.IsImmovablePoint(d, c.Opposite(), currentBoard).Item1)
                     return true;
@@ -2321,14 +2319,14 @@ namespace Go
             if (EyeFillerLinkForGroups(tryMove))
                 return false;
 
-            //check for ko fight
-            List<Point> emptyNeighbours = tryBoard.GetStoneNeighbours().Where(p => tryBoard[p] == Content.Empty).ToList();
-            if (emptyNeighbours.Any(n => KoHelper.IsKoFight(tryBoard, n, c).Item1))
+            //check for increased killer groups
+            if (GroupHelper.IncreasedKillerGroups(tryBoard, currentBoard))
                 return false;
 
             //count eyes created at move
             int possibleEyes = PossibleEyesCreated(currentBoard, move, c);
 
+            List<Point> emptyNeighbours = tryBoard.GetStoneNeighbours().Where(p => tryBoard[p] == Content.Empty).ToList();
             foreach (Point p in emptyNeighbours)
             {
                 //check any opponent stone at neighbour points
