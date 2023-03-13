@@ -313,7 +313,6 @@ namespace Go
         /// Whole group dying <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36" />
         /// Bent four corner formation <see cref="UnitTestProject.BentFourTest.BentFourTest_Scenario7kyu26_3" />
         /// Check previous group for killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
-        /// Check previous group for three point group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40" />
         /// Two kill formations <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_XuanXuanGo_A54" />
         /// </summary>
         private static Boolean CheckRedundantKillGroupExtension(Board tryBoard, Board currentBoard)
@@ -347,16 +346,10 @@ namespace Go
                 return false;
             }
 
-            if (tryBoard.MoveGroupLiberties == 1)
-            {
-                //check previous group for killer formation
-                if (IsKillerFormationFromFunc(currentBoard, previousGroup) && !KillerFormationHelper.CornerSixFormation(tryBoard, tryBoard.MoveGroup))
-                    return true;
+            //check previous group for killer formation
+            if (tryBoard.MoveGroupLiberties == 1 && IsKillerFormationFromFunc(currentBoard, previousGroup) && !KillerFormationHelper.CornerSixFormation(tryBoard, tryBoard.MoveGroup))
+                return true;
 
-                //check previous group for three point group
-                if (previousGroup.Points.Count == 3 && !KillerFormationHelper.TwoByTwoSuicidalFormation(tryBoard, tryBoard.MoveGroup))
-                    return true;
-            }
             //atari target
             if (tryBoard.AtariTargets.Any())
                 return false;
