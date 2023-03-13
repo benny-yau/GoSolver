@@ -2073,7 +2073,6 @@ namespace Go
         /// Check for strong neighbour groups <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario3dan22" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16605" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A28" />
-        /// Suicide for liberty fight <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40_3" />
         /// Check for three liberty covered eye <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221220_7" />
         /// </summary>
         private static Boolean TigerMouthWithoutDiagonalMouth(GameTryMove tryMove, Board capturedBoard)
@@ -2084,7 +2083,7 @@ namespace Go
             Content c = tryMove.MoveContent;
 
             //suicide within real eye at suicidal redundant move
-            if (EyeHelper.FindSemiSolidEye(move, capturedBoard).Item1)
+            if (EyeHelper.FindRealEyeWithinEmptySpace(capturedBoard, move, c.Opposite()))
                 return false;
             //check for covered eye
             if (EyeHelper.IsCovered(tryBoard, move, c.Opposite()))
@@ -2099,9 +2098,6 @@ namespace Go
             Boolean strongGroups = WallHelper.HostileNeighbourGroups(currentBoard, move, c) && capturedBoard.MoveGroupLiberties > 2;
             if (!strongGroups)
                 return false;
-
-            //suicide for liberty fight
-            if (KillerFormationHelper.SuicideForLibertyFight(tryBoard, currentBoard)) return false;
 
             //check for three liberty covered eye
             (Boolean connectAndDie, Board b) = CoveredEyeThreeLibertyConnectAndDie(capturedBoard, move, c.Opposite());
