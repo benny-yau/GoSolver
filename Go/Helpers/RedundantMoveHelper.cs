@@ -2011,6 +2011,7 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Content c = tryMove.MoveContent;
             //ensure is tiger mouth
+            if (tryBoard.MoveGroup.Points.Count > 1) return false;
             if (ImmovableHelper.IsConfirmTigerMouth(currentBoard, tryBoard) == null) return false;
 
             //check eye points at diagonals of tiger mouth
@@ -2083,7 +2084,7 @@ namespace Go
             Content c = tryMove.MoveContent;
 
             //suicide within real eye at suicidal redundant move
-            if (EyeHelper.FindRealEyeWithinEmptySpace(capturedBoard, move, c.Opposite()))
+            if (EyeHelper.FindSemiSolidEye(move, capturedBoard).Item1)
                 return false;
             //check for covered eye
             if (EyeHelper.IsCovered(tryBoard, move, c.Opposite()))
@@ -2117,11 +2118,8 @@ namespace Go
             IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, moves, c.Opposite());
             foreach (Board b in moveBoards)
             {
-                if (b.MoveGroupLiberties > 1 && EyeHelper.FindCoveredEye(b, eye, c))
-                {
-                    if (ImmovableHelper.CheckConnectAndDie(b, board.MoveGroup))
-                        return (true, b);
-                }
+                if (EyeHelper.FindCoveredEye(b, eye, c))
+                    return (true, b);
             }
             return (false, null);
         }
