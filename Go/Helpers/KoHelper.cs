@@ -244,10 +244,6 @@ namespace Go
             List<Point> stoneNeighbours = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindCoveredEye(tryBoard, n, c)).ToList();
             if (stoneNeighbours.Count != 1) return false;
             Point eyePoint = stoneNeighbours.First();
-            //make block move
-            List<Point> emptyNeighbours = tryBoard.GetStoneNeighbours().Where(n => tryBoard[n] == Content.Empty && !n.Equals(eyePoint)).ToList();
-            if (emptyNeighbours.Count != 1) return false;
-
             List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()).ToList();
             ngroups = LinkHelper.GetAllDiagonalGroups(tryBoard, ngroups.First()).ToList();
             List<Group> targetGroups = new List<Group>();

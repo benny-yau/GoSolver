@@ -625,6 +625,10 @@ namespace Go
             if (tryBoard.GetDiagonalNeighbours().Any(d => tryBoard[d] == Content.Empty && (tryBoard.GetStoneNeighbours(d).Any(n => tryBoard[n] == Content.Empty && KoHelper.MakeKoFight(currentBoard, n, c)) || KoHelper.IsKoFight(currentBoard, d, c).Item1)))
                 return false;
 
+            //check two point atari move
+            if (KillerFormationHelper.TwoPointAtariMove(opponentMove.TryGame.Board))
+                return false;
+
             if (WallHelper.IsNonKillableGroup(tryBoard)) //set neutral point move
                 tryMove.IsNeutralPoint = true;
             if (tryBoard.GetDiagonalNeighbours().Any(n => GroupHelper.GetKillerGroupFromCache(tryBoard, n, c) != null)) //set diagonal eye move
