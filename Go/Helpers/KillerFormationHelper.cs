@@ -590,9 +590,8 @@ namespace Go
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.MoveGroupLiberties != 1 || !tryBoard.IsAtariMove) return false;
+            if (tryBoard.MoveGroup.Points.Count != 2 || tryBoard.MoveGroupLiberties != 1 || !tryBoard.IsAtariMove) return false;
             if (captureBoard == null) captureBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
-            if (!captureBoard.CapturedList.Any(gr => gr.Points.Count == 2)) return false;
             //check for three groups
             if (tryBoard.GetGroupsFromStoneNeighbours(move).Count > 2) return true;
 
