@@ -1059,12 +1059,9 @@ namespace Go
 
             //remove one point from two-point empty group
             Group eyeGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
-            if (eyeGroup != null)
-            {
-                Board b = EyeHelper.FindRealEyesWithinTwoEmptyPoints(currentBoard, eyeGroup, EyeType.RealSolidEye);
-                if (b != null && !move.Equals(b.Move.Value))
-                    return true;
-            }
+            Board board = EyeHelper.FindRealEyesWithinTwoEmptyPoints(currentBoard, eyeGroup);
+            if (board != null && !move.Equals(board.Move.Value))
+                return true;
             if (capturedBoard.MoveGroupLiberties == 1) return false;
 
             //check non killable neighbour group
@@ -1687,7 +1684,7 @@ namespace Go
 
         #region restore neutral points
         /// <summary>
-        /// Neutral points for kill moves have to be restored on end game one at a time to surround external liberties of target group in order to kill it
+        /// Neutral points for kill moves have to be restored on end game in order to kill survival group.
         /// Two pre-atari moves <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A55" />
         /// No try moves left <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Side_A20" />
         /// Remaining move at liberty point <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
@@ -2180,7 +2177,7 @@ namespace Go
 
         #region eye filler
         /// <summary>
-        /// Survival eye filler moves. Get specific move for group not more than five points and not filled. 
+        /// Survival eye filler moves. Get specific move for group not more than five points and generic move for more than five points. 
         /// </summary>
         public static Boolean SurvivalEyeFillerMove(GameTryMove tryMove)
         {
@@ -2193,7 +2190,6 @@ namespace Go
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c);
             if (killerGroup == null) return false;
 
-            //check if any move in killer group
             if (killerGroup != null && killerGroup.Points.Count <= 5)
                 return SpecificEyeFillerMove(tryMove);
             else
@@ -2201,7 +2197,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Kill eye filler moves valid within only small space about five points. 
+        /// Kill eye filler moves. Get specific move for group not more than five points.
         /// </summary>
         public static Boolean KillEyeFillerMove(GameTryMove tryMove)
         {
@@ -2212,6 +2208,10 @@ namespace Go
             if (!tryMove.IsNegligible || tryBoard.IsAtariMove)
                 return false;
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
+            //suicide within real eye
+            if (EyeHelper.FindRealEyesWithinTwoEmptyPoints(currentBoard, killerGroup) != null)
+                return false;
+            //make survival move
             GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
             if (opponentMove == null) return false;
             if (killerGroup != null && killerGroup.Points.Count <= 5)

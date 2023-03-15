@@ -489,6 +489,8 @@ namespace Go
             (Boolean suicidal2, Board b2) = ImmovableHelper.IsSuicidalMove(p, Content.White, tryBoard);
             if (!connectAndDie)
             {
+                if (suicidal && b != null && KoHelper.IsKoFight(b)) suicidal = false;
+                if (suicidal2 && b2 != null && KoHelper.IsKoFight(b2)) suicidal2 = false;
                 if (suicidal && suicidal2)
                     return true;
             }

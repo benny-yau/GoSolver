@@ -1718,7 +1718,7 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.RestoreNeutralMove(Go.Game,System.Collections.Generic.List{Go.GameTryMove},System.Collections.Generic.List{Go.GameTryMove})">
             <summary>
-            Neutral points for kill moves have to be restored on end game one at a time to surround external liberties of target group in order to kill it
+            Neutral points for kill moves have to be restored on end game in order to kill survival group.
             Two pre-atari moves <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A55" />
             No try moves left <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Side_A20" />
             Remaining move at liberty point <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
@@ -1840,12 +1840,12 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.SurvivalEyeFillerMove(Go.GameTryMove)">
             <summary>
-            Survival eye filler moves. Get specific move for group not more than five points and not filled. 
+            Survival eye filler moves. Get specific move for group not more than five points and generic move for more than five points. 
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.KillEyeFillerMove(Go.GameTryMove)">
             <summary>
-            Kill eye filler moves valid within only small space about five points. 
+            Kill eye filler moves. Get specific move for group not more than five points.
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.FillerMoveWithoutKillerGroup(Go.GameTryMove,Go.GameTryMove)">

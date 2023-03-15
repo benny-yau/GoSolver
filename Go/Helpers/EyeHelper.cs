@@ -237,9 +237,9 @@ namespace Go
         /// <summary>
         /// Find if any of the two empty points is a real eye and return only the first one found.
         /// </summary>
-        public static Board FindRealEyesWithinTwoEmptyPoints(Board board, Group eyeGroup, EyeType eyeType = EyeType.SemiSolidEye)
+        public static Board FindRealEyesWithinTwoEmptyPoints(Board board, Group eyeGroup, EyeType eyeType = EyeType.RealSolidEye)
         {
-            if (eyeGroup.Points.Count != 2 || eyeGroup.Points.Any(p => board[p] != Content.Empty)) return null;
+            if (eyeGroup == null || eyeGroup.Points.Count != 2 || eyeGroup.Points.Any(p => board[p] != Content.Empty)) return null;
             Point eye = eyeGroup.Points.First();
             Point otherEye = eyeGroup.Points.First(p => !p.Equals(eye));
             Content c = eyeGroup.Content.Opposite();
