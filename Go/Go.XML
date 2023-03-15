@@ -992,12 +992,21 @@
             Max length of x and y length of grid.
             </summary>
         </member>
-        <member name="M:Go.KillerFormationHelper.GetMaxBindingPoint(Go.Board,System.Collections.Generic.IEnumerable{Go.Board})">
+        <member name="M:Go.KillerFormationHelper.OpponentBreakKillFormation(Go.Board,Go.Board)">
             <summary>
-            Point for killer to form killer formation. Order by min of max length of grid then by max of intersection points then by minimum neighbour liberties.
+            Opponent break kill formation.
+            <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
+            <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16859_2" />
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.GetMaxBindingPoint(Go.Board,System.Collections.Generic.IEnumerable{Go.Board},Go.Group)">
+            <summary>
+            Point for killer to form max binding.
             Ordering <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36_2" />
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q30919_2" />
             Check for dead formation <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q16902" />
+            <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A16" />
+            Check for opponent break formation <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A80_3" />
             </summary>
         </member>
         <member name="M:Go.KoHelper.KoSurvivalEnabled(Go.SurviveOrKill,Go.GameInfo)">
@@ -1534,13 +1543,6 @@
             Two liberties - suicide for both players <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_A19" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30215" />
             Three liberties <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_20221019_6" />
-            </summary>
-        </member>
-        <member name="M:Go.RedundantMoveHelper.OpponentBreakKillFormation(Go.GameTryMove)">
-            <summary>
-            Opponent break kill formation.
-            <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
-            <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16859_2" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckNonTwoPointGroupInSuicideRealEye(Go.GameTryMove,Go.Board)">

@@ -239,28 +239,16 @@ namespace Go
         /// </summary>
         public static Board FindRealEyesWithinTwoEmptyPoints(Board board, Group eyeGroup, EyeType eyeType = EyeType.SemiSolidEye)
         {
-            int eyeGroupCount = eyeGroup.Points.Count;
-            if (eyeGroupCount != 2) return null;
-            if (eyeGroup.Points.Any(p => board[p] != Content.Empty)) return null;
+            if (eyeGroup.Points.Count != 2 || eyeGroup.Points.Any(p => board[p] != Content.Empty)) return null;
             Point eye = eyeGroup.Points.First();
             Point otherEye = eyeGroup.Points.First(p => !p.Equals(eye));
             Content c = eyeGroup.Content.Opposite();
             Board b = board.MakeMoveOnNewBoard(eye, c);
-            if (b != null)
-            {
-                if (eyeType == EyeType.SemiSolidEye && EyeHelper.FindSemiSolidEye(otherEye, b, c).Item1)
-                    return b;
-                if (eyeType == EyeType.RealSolidEye && EyeHelper.FindRealSolidEye(otherEye, c, b))
-                    return b;
-            }
+            if (b != null && EyeHelper.FindRealEyeWithinEmptySpace(b, otherEye, c, eyeType))
+                return b;
             Board b2 = board.MakeMoveOnNewBoard(otherEye, c);
-            if (b2 != null)
-            {
-                if (eyeType == EyeType.SemiSolidEye && EyeHelper.FindSemiSolidEye(eye, b2, c).Item1)
-                    return b2;
-                if (eyeType == EyeType.RealSolidEye && EyeHelper.FindRealSolidEye(eye, c, b2))
-                    return b2;
-            }
+            if (b2 != null && EyeHelper.FindRealEyeWithinEmptySpace(b2, eye, c, eyeType))
+                return b2;
             return null;
         }
 

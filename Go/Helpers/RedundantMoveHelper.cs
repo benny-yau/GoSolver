@@ -255,7 +255,7 @@ namespace Go
             //ensure is fill eye
             if (!EyeHelper.FindEye(currentBoard, move, c)) return false;
 
-            (Boolean connectAndDie, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard, tryBoard.MoveGroup, false);
+            (Boolean connectAndDie, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
             if (connectAndDie)
             {
                 //check for killer formation
@@ -1054,12 +1054,12 @@ namespace Go
                 return false;
 
             //opponent break kill formation
-            if (OpponentBreakKillFormation(tryMove))
+            if (KillerFormationHelper.OpponentBreakKillFormation(tryBoard, currentBoard))
                 return false;
 
             //remove one point from two-point empty group
             Group eyeGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
-            if (eyeGroup != null && !eyeGroup.Points.Any(p => currentBoard.CornerPoint(p) && KillerFormationHelper.WholeGroupDying(tryBoard)))
+            if (eyeGroup != null)
             {
                 Board b = EyeHelper.FindRealEyesWithinTwoEmptyPoints(currentBoard, eyeGroup, EyeType.RealSolidEye);
                 if (b != null && !move.Equals(b.Move.Value))
@@ -1136,23 +1136,6 @@ namespace Go
                 }
             }
             return true;
-        }
-
-        /// <summary>
-        /// Opponent break kill formation.
-        /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
-        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16859_2" />
-        /// </summary>
-        private static Boolean OpponentBreakKillFormation(GameTryMove tryMove)
-        {
-            Point move = tryMove.Move;
-            Board tryBoard = tryMove.TryGame.Board;
-            Board currentBoard = tryMove.CurrentGame.Board;
-            Content c = tryMove.MoveContent;
-            if (tryBoard.GetStoneAndDiagonalNeighbours().Count(n => tryBoard[n] == c.Opposite()) < 4) return false;
-            if (KillerFormationHelper.TryKillFormation(currentBoard, c.Opposite(), new List<Point>() { move }))
-                return true;
-            return false;
         }
 
         /// <summary>
@@ -2436,7 +2419,7 @@ namespace Go
             //select move with max binding
             IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, bestMoves, c.Opposite());
             if (!moveBoards.Any()) return false;
-            Point bestMove = KillerFormationHelper.GetMaxBindingPoint(currentBoard, moveBoards).Move;
+            Point bestMove = KillerFormationHelper.GetMaxBindingPoint(currentBoard, moveBoards, killerGroup);
             return !tryMove.Move.Equals(bestMove);
         }
 

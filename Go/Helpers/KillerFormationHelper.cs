@@ -1149,38 +1149,58 @@ namespace Go
         }
 
         /// <summary>
-        /// Point for killer to form killer formation. Order by min of max length of grid then by max of intersection points then by minimum neighbour liberties.
+        /// Opponent break kill formation.
+        /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
+        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16859_2" />
+        /// </summary>
+        public static Boolean OpponentBreakKillFormation(Board tryBoard, Board currentBoard)
+        {
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            if (tryBoard.GetStoneAndDiagonalNeighbours().Count(n => tryBoard[n] == c.Opposite()) < 4) return false;
+            if (KillerFormationHelper.TryKillFormation(currentBoard, c.Opposite(), new List<Point>() { move }))
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Point for killer to form max binding.
         /// Ordering <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36_2" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q30919_2" />
         /// Check for dead formation <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q16902" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A16" />
+        /// Check for opponent break formation <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A80_3" />
         /// </summary>
-        public static LinkedPoint<Point> GetMaxBindingPoint(Board currentBoard, IEnumerable<Board> killBoards)
+        public static Point GetMaxBindingPoint(Board currentBoard, IEnumerable<Board> killBoards, Group killerGroup)
         {
             Content c = killBoards.First().MoveGroup.Content;
             List<LinkedPoint<Point>> list = new List<LinkedPoint<Point>>();
-            foreach (Board killBoard in killBoards)
+            foreach (Board b in killBoards)
             {
-                Point p = killBoard.Move.Value;
-                List<Point> moveGroup = killBoard.MoveGroup.Points.ToList();
+                Point p = b.Move.Value;
+                List<Point> moveGroup = b.MoveGroup.Points.ToList();
                 int maxLengthOfGrid = MaxLengthOfGrid(moveGroup);
-                int maxIntersect = moveGroup.Max(q => killBoard.GetStoneNeighbours(q).Intersect(moveGroup).Count());
-                List<Group> neighbourGroups = killBoard.GetGroupsFromStoneNeighbours(p, c).OrderBy(n => n.Liberties.Count).ToList();
+                int maxIntersect = moveGroup.Max(q => b.GetStoneNeighbours(q).Intersect(moveGroup).Count());
+                List<Group> neighbourGroups = b.GetGroupsFromStoneNeighbours(p, c).OrderBy(n => n.Liberties.Count).ToList();
                 int minNeighbourLiberties = (neighbourGroups.Count == 0) ? 0 : neighbourGroups.First().Liberties.Count;
                 int minNeighbourPointCount = (neighbourGroups.Count == 0) ? 0 : neighbourGroups.First().Points.Count;
-                list.Add(new LinkedPoint<Point>(p, new { maxLengthOfGrid, maxIntersect, minNeighbourLiberties, minNeighbourPointCount, killBoard }));
+                list.Add(new LinkedPoint<Point>(p, new { maxLengthOfGrid, maxIntersect, minNeighbourLiberties, minNeighbourPointCount, b }));
             }
             //order by grid length then by max of intersection then by minimum neighbour liberties then by minimum neighbour point count
             list = list.OrderBy(m => ((dynamic)m.CheckMove).maxLengthOfGrid).OrderByDescending(m => ((dynamic)m.CheckMove).maxIntersect).OrderBy(m => ((dynamic)m.CheckMove).minNeighbourLiberties).OrderBy(m => ((dynamic)m.CheckMove).minNeighbourPointCount).ToList();
 
             //check for dead formation
-            foreach (LinkedPoint<Point> p in list)
+            Board killBoard = killBoards.FirstOrDefault((b => DeadFormationInBothAlive(b, killerGroup)));
+            if (killBoard != null)
+                return killBoard.Move.Value;
+            //check for opponent break formation
+            if (killerGroup.Points.Count == 2 && killerGroup.Points.Any(p => currentBoard.CornerPoint(p)))
             {
-                Board killBoard = ((dynamic)p.CheckMove).killBoard;
-                Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, p.Move, c.Opposite());
-                if (DeadFormationInBothAlive(killBoard, killerGroup))
-                    return p;
+                Board killBoard2 = killBoards.FirstOrDefault(b => OpponentBreakKillFormation(b, currentBoard));
+                if (killBoard2 != null)
+                    return killBoard2.Move.Value;
             }
-            return list.First();
+            return list.First().Move;
         }
 
     }
