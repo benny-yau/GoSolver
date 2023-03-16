@@ -431,7 +431,7 @@ namespace Go
             Group atariTarget = tryBoard.AtariTargets.First();
             Point atariPoint = atariTarget.Points.First();
 
-            Point q = currentBoard.GetGroupAt(atariPoint).Liberties.First(lib => !lib.Equals(move));
+            Point q = atariTarget.Liberties.First();
             if (!KillerFormationHelper.IsFirstPoint(currentBoard, q, move)) return false;
 
             //ensure target group cannot escape
@@ -452,6 +452,10 @@ namespace Go
 
             //check for weak groups
             if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Any(gr => gr.Liberties.Count <= 2)) return false;
+
+            //check for bloated eye
+            if (KoFightAtBloatedEye(tryBoard, currentBoard))
+                return false;
             return true;
         }
 
@@ -588,8 +592,6 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A145_101Weiqi" />
         /// Check snapback <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B31_4" />
         /// Check for suicide at big tiger mouth <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A55_2" />
-        /// Check for bloated eye move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A85" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_x_2" />
         /// Check for eye at liberty point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A8" />
         /// Check for tiger mouth at liberty point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31646" />
         /// Check for suicidal at other end <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16867" />
@@ -621,8 +623,8 @@ namespace Go
             //check for both alive
             if (BothAliveHelper.CheckForBothAliveAtMove(tryBoard)) return false;
 
-            //check for bloated eye move
-            if (tryBoard.GetDiagonalNeighbours().Any(d => tryBoard[d] == Content.Empty && (tryBoard.GetStoneNeighbours(d).Any(n => tryBoard[n] == Content.Empty && KoHelper.MakeKoFight(currentBoard, n, c)) || KoHelper.IsKoFight(currentBoard, d, c).Item1)))
+            //check for bloated eye
+            if (KoFightAtBloatedEye(tryBoard, currentBoard))
                 return false;
 
             //check two point atari move
@@ -635,6 +637,19 @@ namespace Go
                 tryMove.IsDiagonalEyeMove = true;
 
             return true;
+        }
+
+        /// <summary>
+        /// Ko fight at bloated eye.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A85" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_x_2" />
+        /// </summary>
+        private static Boolean KoFightAtBloatedEye(Board tryBoard, Board currentBoard)
+        {
+            Content c = tryBoard.MoveGroup.Content;
+            if (tryBoard.GetDiagonalNeighbours().Any(d => tryBoard[d] == Content.Empty && (tryBoard.GetStoneNeighbours(d).Any(n => tryBoard[n] == Content.Empty && KoHelper.MakeKoFight(currentBoard, n, c)) || KoHelper.IsKoFight(currentBoard, d, c).Item1)))
+                return true;
+            return false;
         }
 
         /// <summary>

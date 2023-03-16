@@ -601,21 +601,19 @@ namespace Go
             if (board.GetDiagonalNeighbours().Any(n => board[n] == c) && ImmovableHelper.IsSuicidalOnCapture(board).Item1)
                 return true;
             //check for ko fight
-            if (board.AtariTargets.Count == 1 && board.AtariTargets.First().Points.Count == 1)
-            {
-                Point? libertyPoint = ImmovableHelper.GetLibertyPointOfSuicide(board, board.AtariTargets.First());
-                if (libertyPoint == null) return false;
-                Point q = libertyPoint.Value;
-                if (EyeHelper.FindNonSemiSolidEye(captureBoard, q, c.Opposite()))
-                    return true;
+            if (board.AtariTargets.Count != 1) return false;
+            Group atariTarget = board.AtariTargets.First();
+            if (atariTarget.Points.Count != 1) return false;
+            Point q = atariTarget.Liberties.First();
+            if (EyeHelper.FindNonSemiSolidEye(captureBoard, q, c.Opposite()))
+                return true;
 
-                List<Point> emptyPoints = board.GetStoneNeighbours(q).Where(n => board[n] == Content.Empty).ToList();
-                if (emptyPoints.Count != 1) return false;
+            List<Point> emptyPoints = board.GetStoneNeighbours(q).Where(n => board[n] == Content.Empty).ToList();
+            if (emptyPoints.Count != 1) return false;
 
-                Group killerGroup = GroupHelper.GetKillerGroupFromCache(board, q, c.Opposite());
-                if (killerGroup != null && killerGroup.Points.Count == 2 && EyeHelper.IsCovered(board, emptyPoints.First(), c.Opposite()))
-                    return true;
-            }
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(board, q, c.Opposite());
+            if (killerGroup != null && killerGroup.Points.Count == 2 && EyeHelper.IsCovered(board, emptyPoints.First(), c.Opposite()))
+                return true;
             return false;
         }
 
