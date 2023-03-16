@@ -1988,13 +1988,10 @@ namespace Go
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_TianLongTu_Q16827" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_GuanZiPu_Q18860" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WuQingYuan_Q15126" />
-        /// Check two point atari move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31428" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31672" />
-        /// Check corner three formation <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_Q18860" />
         /// Check possible corner three formation <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WuQingYuan_Q31503_2" />
         /// Opponent move at tiger mouth <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A151_101Weiqi" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_Nie67" />
-        /// Real eye at diagonal point <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221231_6" />
+        /// Uncovered eye at diagonal point <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221231_6" />
         /// Check for non killable group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30370" />
         /// Check for suicide at big tiger mouth <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_Corner_A87" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_TianLongTu_Q16470" />
@@ -2022,17 +2019,11 @@ namespace Go
             Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
             if (capturedBoard == null || capturedBoard.MoveGroupLiberties == 1) return false;
 
-            //check two point atari move
-            if (KillerFormationHelper.TwoPointAtariMove(tryBoard, capturedBoard)) return false;
-
-            //check corner three and possible corner three formation
-            if (KillerFormationHelper.CornerThreeFormation(tryBoard, tryBoard.MoveGroup) || KillerFormationHelper.PossibleCornerThreeFormation(currentBoard, move, c.Opposite())) return false;
-
             foreach (Point d in diagonalPoints)
             {
                 if (NeutralPointSuicidalMove(tryMove))
                     continue;
-                //real eye at diagonal point
+                //uncovered eye at diagonal point
                 if (EyeHelper.FindUncoveredEye(currentBoard, d, c.Opposite()) && !EyeHelper.FindUncoveredEye(tryBoard, d, c.Opposite()))
                     continue;
 
@@ -2044,6 +2035,7 @@ namespace Go
                     if (ImmovableHelper.IsImmovablePoint(d, c.Opposite(), currentBoard).Item1)
                         return true;
                 }
+                //check killer groups
                 Group diagonalKillerGroup = GroupHelper.GetKillerGroupOfNeighbourGroups(currentBoard, d, c.Opposite());
                 if (diagonalKillerGroup == null || AtariHelper.AtariByGroup(currentBoard, diagonalKillerGroup)) continue;
 
@@ -2058,6 +2050,7 @@ namespace Go
             //no diagonal tiger mouth
             if (TigerMouthWithoutDiagonalMouth(tryMove, capturedBoard))
                 return true;
+
             return false;
         }
 
@@ -2073,7 +2066,7 @@ namespace Go
         /// Check for strong neighbour groups <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario3dan22" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16605" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A28" />
-        /// Check for three liberty covered eye <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221220_7" />
+        /// Check for no liberty at move <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221220_7" />
         /// </summary>
         private static Boolean TigerMouthWithoutDiagonalMouth(GameTryMove tryMove, Board capturedBoard)
         {
@@ -2099,29 +2092,12 @@ namespace Go
             if (!strongGroups)
                 return false;
 
-            //check for three liberty covered eye
-            (Boolean connectAndDie, Board b) = CoveredEyeThreeLibertyConnectAndDie(capturedBoard, move, c.Opposite());
-            if (connectAndDie)
+            //check for no liberty at move
+            if (!capturedBoard.GetStoneNeighbours().Any(n => capturedBoard[n] == Content.Empty && !n.Equals(move)))
                 return false;
             return true;
         }
 
-        /// <summary>
-        /// Covered eye three liberty connect and die.
-        /// </summary>
-        private static (Boolean, Board) CoveredEyeThreeLibertyConnectAndDie(Board board, Point eye, Content c)
-        {
-            if (board.MoveGroupLiberties != 3) return (false, null);
-            if (!EyeHelper.FindUncoveredEye(board, eye, c)) return (false, null);
-            IEnumerable<Point> moves = board.GetDiagonalNeighbours(eye).Where(n => board[n] == Content.Empty);
-            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, moves, c.Opposite());
-            foreach (Board b in moveBoards)
-            {
-                if (EyeHelper.FindCoveredEye(b, eye, c))
-                    return (true, b);
-            }
-            return (false, null);
-        }
         #endregion
 
         #region redundant eye diagonal
