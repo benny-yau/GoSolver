@@ -2188,9 +2188,9 @@ namespace Go
             if (!tryMove.IsNegligible || tryBoard.IsAtariMove)
                 return false;
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c);
-            if (killerGroup == null) return false;
+            if (killerGroup == null || killerGroup.Points.Count == 1) return false;
 
-            if (killerGroup != null && killerGroup.Points.Count <= 5)
+            if (killerGroup.Points.Count <= 5)
                 return SpecificEyeFillerMove(tryMove);
             else
                 return GenericEyeFillerMove(tryMove);
@@ -2208,13 +2208,11 @@ namespace Go
             if (!tryMove.IsNegligible || tryBoard.IsAtariMove)
                 return false;
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
-            //suicide within real eye
-            if (EyeHelper.FindRealEyesWithinTwoEmptyPoints(currentBoard, killerGroup) != null)
-                return false;
+            if (killerGroup == null || killerGroup.Points.Count <= 2) return false;
             //make survival move
             GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
             if (opponentMove == null) return false;
-            if (killerGroup != null && killerGroup.Points.Count <= 5)
+            if (killerGroup.Points.Count <= 5)
                 return SpecificEyeFillerMove(opponentMove);
             return false;
         }
