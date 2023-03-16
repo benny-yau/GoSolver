@@ -318,7 +318,7 @@ namespace Go
         {
             Content c = targetGroup.Content;
             Group group = tryBoard.GetCurrentGroup(targetGroup);
-            Point? libertyPoint = ImmovableHelper.GetLibertyPointOfSuicide(tryBoard, group);
+            Point? libertyPoint = ImmovableHelper.GetLibertyPoint(tryBoard, group);
             if (libertyPoint == null) return (false, null, null);
 
             //check if atari any neighbour groups
@@ -437,15 +437,15 @@ namespace Go
         {
             if (group == null) group = board.MoveGroup;
             Content c = group.Content.Opposite();
-            Point? p = GetLibertyPointOfSuicide(board, group);
+            Point? p = GetLibertyPoint(board, group);
             if (p == null) return null;
             return board.MakeMoveOnNewBoard(p.Value, c, overrideKo);
         }
 
         /// <summary>
-        /// Get liberty point of suicide group.
+        /// Get liberty point.
         /// </summary>
-        public static Point? GetLibertyPointOfSuicide(Board tryBoard, Group group = null)
+        public static Point? GetLibertyPoint(Board tryBoard, Group group = null)
         {
             if (group == null) group = tryBoard.MoveGroup;
             List<Point> liberties = tryBoard.GetGroupLiberties(group);
@@ -455,11 +455,11 @@ namespace Go
         }
 
         /// <summary>
-        /// Make move at liberty point of suicide group.
+        /// Make move at liberty.
         /// </summary>
-        public static Board MakeMoveAtLibertyPointOfSuicide(Board tryBoard, Group group, Content c)
+        public static Board MakeMoveAtLiberty(Board tryBoard, Group group, Content c)
         {
-            Point? libertyPoint = ImmovableHelper.GetLibertyPointOfSuicide(tryBoard, group);
+            Point? libertyPoint = ImmovableHelper.GetLibertyPoint(tryBoard, group);
             if (libertyPoint == null) return null;
             Board board = tryBoard.MakeMoveOnNewBoard(libertyPoint.Value, c);
             return board;
@@ -471,7 +471,7 @@ namespace Go
         public static Boolean CheckCaptureSecure(Board board, Group group)
         {
             Content c = group.Content;
-            Board escapeBoard = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(board, group, c);
+            Board escapeBoard = ImmovableHelper.MakeMoveAtLiberty(board, group, c);
             if (escapeBoard != null && escapeBoard.MoveGroupLiberties > 1)
                 return false;
 
@@ -538,7 +538,7 @@ namespace Go
             foreach (Board b in moveBoards)
             {
                 if (!b.IsAtariMove) continue;
-                Board b2 = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(b, targetGroup, c);
+                Board b2 = ImmovableHelper.MakeMoveAtLiberty(b, targetGroup, c);
                 if (b2 == null || b2.MoveGroupLiberties != 1) continue;
 
                 //get all suicide groups

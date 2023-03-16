@@ -719,14 +719,14 @@
             Capture group that has liberty of one only and return the board.
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.GetLibertyPointOfSuicide(Go.Board,Go.Group)">
+        <member name="M:Go.ImmovableHelper.GetLibertyPoint(Go.Board,Go.Group)">
             <summary>
-            Get liberty point of suicide group.
+            Get liberty point.
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(Go.Board,Go.Group,Go.Content)">
+        <member name="M:Go.ImmovableHelper.MakeMoveAtLiberty(Go.Board,Go.Group,Go.Content)">
             <summary>
-            Make move at liberty point of suicide group.
+            Make move at liberty.
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.CheckCaptureSecure(Go.Board,Go.Group)">

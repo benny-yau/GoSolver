@@ -201,7 +201,7 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             foreach (Point liberty in group.Liberties)
             {
-                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c, currentBoard);
+                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c, currentBoard, true);
                 if (!suicidal) continue;
 
                 //check eye for suicidal move
@@ -685,7 +685,7 @@ namespace Go
             }
 
             //escape at liberty point
-            Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(tryBoard, atariTarget, c.Opposite());
+            Board b = ImmovableHelper.MakeMoveAtLiberty(tryBoard, atariTarget, c.Opposite());
             if (b == null) return true;
 
             //check weak group
@@ -813,7 +813,7 @@ namespace Go
                 return true;
 
             //escape move at liberty
-            Board b2 = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(b, group, c);
+            Board b2 = ImmovableHelper.MakeMoveAtLiberty(b, group, c);
             if (b2 != null && b2.MoveGroupLiberties == 2 && CheckWeakGroupInConnectAndDie(b2, group))
                 return true;
 
@@ -1304,7 +1304,7 @@ namespace Go
                 Group atariTarget = tryBoard.AtariTargets.First();
                 if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c))
                 {
-                    Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(tryBoard, atariTarget, c.Opposite());
+                    Board b = ImmovableHelper.MakeMoveAtLiberty(tryBoard, atariTarget, c.Opposite());
                     if (b != null && b.MoveGroupLiberties > 1)
                         return true;
                 }
@@ -1775,7 +1775,7 @@ namespace Go
             //check for bloated suicide
             if (tryBoard.MoveGroupLiberties == 2)
             {
-                Board b = ImmovableHelper.MakeMoveAtLibertyPointOfSuicide(captureBoard, tryBoard.MoveGroup, c);
+                Board b = ImmovableHelper.MakeMoveAtLiberty(captureBoard, tryBoard.MoveGroup, c);
                 if (b == null) return true;
             }
             if (tryBoard.MoveGroup.Points.Count > 1) return true;
@@ -2018,6 +2018,9 @@ namespace Go
 
             Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
             if (capturedBoard == null || capturedBoard.MoveGroupLiberties == 1) return false;
+
+            //check possible corner three formation
+            if (KillerFormationHelper.PossibleCornerThreeFormation(currentBoard, move, c.Opposite())) return false;
 
             foreach (Point d in diagonalPoints)
             {
