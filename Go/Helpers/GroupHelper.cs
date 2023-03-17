@@ -115,13 +115,13 @@ namespace Go
         /// <summary>
         /// Is single group within killer group.
         /// </summary>
-        public static Boolean IsSingleGroupWithinKillerGroup(Board tryBoard, Group group = null)
+        public static Boolean IsSingleGroupWithinKillerGroup(Board tryBoard, Group group = null, Boolean checkLiberties = true)
         {
             if (group == null) group = tryBoard.MoveGroup;
             Content c = group.Content;
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, group.Points.First(), c.Opposite());
             if (killerGroup == null || killerGroup.Points.Any(p => !group.Points.Contains(p) && tryBoard[p] == c)) return false;
-            if (tryBoard.GetNeighbourGroups(killerGroup).Any(gr => gr.Liberties.Count == 1)) return false;
+            if (checkLiberties && tryBoard.GetNeighbourGroups(killerGroup).Any(gr => gr.Liberties.Count == 1)) return false;
             return true;
         }
 

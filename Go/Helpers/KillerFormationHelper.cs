@@ -1175,18 +1175,19 @@ namespace Go
             List<LinkedPoint<Point>> list = new List<LinkedPoint<Point>>();
             foreach (Board b in killBoards)
             {
+                if (!GroupHelper.IsSingleGroupWithinKillerGroup(b, b.MoveGroup, false)) continue;
                 Point p = b.Move.Value;
                 List<Point> moveGroup = b.MoveGroup.Points.ToList();
                 int maxLengthOfGrid = MaxLengthOfGrid(moveGroup);
                 int maxIntersect = moveGroup.Max(q => b.GetStoneNeighbours(q).Intersect(moveGroup).Count());
+                int moveGroupLiberties = b.MoveGroup.Liberties.Count;
                 List<Group> neighbourGroups = b.GetGroupsFromStoneNeighbours(p, c).OrderBy(n => n.Liberties.Count).ToList();
                 int minNeighbourLiberties = (neighbourGroups.Count == 0) ? 0 : neighbourGroups.First().Liberties.Count;
                 int minNeighbourPointCount = (neighbourGroups.Count == 0) ? 0 : neighbourGroups.First().Points.Count;
-                list.Add(new LinkedPoint<Point>(p, new { maxLengthOfGrid, maxIntersect, minNeighbourLiberties, minNeighbourPointCount, b }));
+                list.Add(new LinkedPoint<Point>(p, new { maxLengthOfGrid, maxIntersect, moveGroupLiberties, minNeighbourLiberties, minNeighbourPointCount, b }));
             }
-            //order by grid length then by max of intersection then by minimum neighbour liberties then by minimum neighbour point count
-            list = list.OrderBy(m => ((dynamic)m.CheckMove).maxLengthOfGrid).OrderByDescending(m => ((dynamic)m.CheckMove).maxIntersect).OrderBy(m => ((dynamic)m.CheckMove).minNeighbourLiberties).OrderBy(m => ((dynamic)m.CheckMove).minNeighbourPointCount).ToList();
-
+            //order by grid length then by max of intersection then by move group liberties then by minimum neighbour liberties then by minimum neighbour point count
+            list = list.OrderBy(m => ((dynamic)m.CheckMove).maxLengthOfGrid).ThenByDescending(m => ((dynamic)m.CheckMove).maxIntersect).ThenByDescending(m => ((dynamic)m.CheckMove).moveGroupLiberties).ThenBy(m => ((dynamic)m.CheckMove).minNeighbourLiberties).ThenBy(m => ((dynamic)m.CheckMove).minNeighbourPointCount).ToList();
             //check for dead formation
             Board killBoard = killBoards.FirstOrDefault((b => DeadFormationInBothAlive(b, killerGroup)));
             if (killBoard != null)

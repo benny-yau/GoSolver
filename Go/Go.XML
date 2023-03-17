@@ -588,7 +588,7 @@
             Get killer group of neighbour groups.
             </summary>
         </member>
-        <member name="M:Go.GroupHelper.IsSingleGroupWithinKillerGroup(Go.Board,Go.Group)">
+        <member name="M:Go.GroupHelper.IsSingleGroupWithinKillerGroup(Go.Board,Go.Group,System.Boolean)">
             <summary>
             Is single group within killer group.
             </summary>
