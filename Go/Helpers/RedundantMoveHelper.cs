@@ -125,18 +125,14 @@ namespace Go
             if (currentBoard.GetNeighbourGroups(eyeGroup).Where(gr => gr.Liberties.Count == 2).Any(n => CheckTwoLibertyGroupToCaptureNeighbour(currentBoard, tryBoard, n, eyePoint)))
                 return false;
 
-            //check for double ko
-            if (KoHelper.NeutralPointDoubleKo(tryBoard, currentBoard))
-                return false;
-
             //check kill opponent
-            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == Content.Empty && !eyeGroup.Points.Contains(n) && tryBoard.GetStoneNeighbours(n).Any(s => tryBoard[s] == c.Opposite()) && !WallHelper.NoEyeForSurvival(currentBoard, n, c.Opposite())))
+            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] != c.Opposite() && !eyeGroup.Points.Contains(n) && !WallHelper.NoEyeForSurvival(currentBoard, n, c.Opposite())))
                 return false;
 
             //check eye for survival
             if (eyeGroup.Points.Any(e => tryBoard.GetDiagonalNeighbours(e).Any(n => !WallHelper.NoEyeForSurvival(tryBoard, n, c) && !EyeHelper.FindRealEyeWithinEmptySpace(currentBoard, n, c))))
                 return false;
-
+            
             //check no eye for survival
             if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(tryBoard))
                 return false;
@@ -171,6 +167,10 @@ namespace Go
 
             //check possible links
             if (LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard))
+                return false;
+
+            //check for double ko
+            if (KoHelper.NeutralPointDoubleKo(tryBoard, currentBoard))
                 return false;
 
             //set neutral point for opponent
@@ -1438,17 +1438,8 @@ namespace Go
             middlePoints.RemoveAll(n => !tryBoard.PointWithinBoard(n));
             if (middlePoints.Count == 0 || middlePoints.Any(t => tryBoard[t] == c)) return false;
             //check for opposite content at middle points
-            foreach (Point midPt in middlePoints)
-            {
-                if (tryBoard[midPt] == Content.Empty)
-                    continue;
-                if (tryBoard[midPt] == c.Opposite())
-                {
-                    if (!checkNonKillable) return false;
-                    if (WallHelper.IsNonKillableGroup(tryBoard, midPt))
-                        return false;
-                }
-            }
+            if (checkNonKillable && middlePoints.Any(n => tryBoard[n] == c.Opposite() && WallHelper.IsNonKillableGroup(tryBoard, n)))
+                return false;
             return true;
         }
         #endregion
