@@ -132,7 +132,7 @@ namespace Go
             //check eye for survival
             if (eyeGroup.Points.Any(e => tryBoard.GetDiagonalNeighbours(e).Any(n => !WallHelper.NoEyeForSurvival(tryBoard, n, c) && !EyeHelper.FindRealEyeWithinEmptySpace(currentBoard, n, c))))
                 return false;
-            
+
             //check no eye for survival
             if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(tryBoard))
                 return false;
@@ -2090,7 +2090,7 @@ namespace Go
 
         #region redundant eye diagonal
         /// <summary>
-        /// Find eye diagonal moves that are redundant.
+        /// Survival eye diagonal move.
         /// <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18473" />
         /// Check diagonals are real eyes <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B31" />
         /// Ensure diagonal not required for both alive. 
@@ -2107,51 +2107,44 @@ namespace Go
             Point move = tryMove.Move;
             Content c = GameHelper.GetContentForSurviveOrKill(tryBoard.GameInfo, SurviveOrKill.Survive);
 
-            //suicide moves handled by redundant tiger mouth
-            if (tryBoard.MoveGroupLiberties == 1)
-                return false;
-
             //get diagonals
             List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(q => tryBoard[q] != c).ToList();
             diagonals = diagonals.Where(eye => LinkHelper.PointsBetweenDiagonals(eye, move).All(d => tryBoard[d] == c)).ToList();
-            if (diagonals.Count == 0)
-                return false;
-
+            if (diagonals.Count == 0) return false;
             diagonals.RemoveAll(d => GroupHelper.GetKillerGroupFromCache(currentBoard, d, c) == null);
             if (diagonals.Count == 0) return false;
+
             //check diagonals are real eyes
-            if (diagonals.All(eye => EyeHelper.RealEyeAtDiagonal(tryMove, eye)))
-            {
-                //check other surrounding points are not possible eyes
-                IEnumerable<Point> neighbourPts = tryBoard.GetStoneAndDiagonalNeighbours().Except(diagonals);
-                if (neighbourPts.Any(q => !WallHelper.NoEyeForSurvival(tryBoard, q)))
-                    return false;
+            if (!diagonals.All(eye => EyeHelper.RealEyeAtDiagonal(tryMove, eye))) return false;
 
-                //check link to groups other than eye groups
-                if (LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard))
-                    return false;
+            //check other surrounding points are not possible eyes
+            IEnumerable<Point> neighbourPts = tryBoard.GetStoneAndDiagonalNeighbours().Except(diagonals);
+            if (neighbourPts.Any(q => !WallHelper.NoEyeForSurvival(tryBoard, q)))
+                return false;
 
-                GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
-                if (opponentMove != null && NeutralPointSuicidalMove(opponentMove))
-                    return false;
+            //check link to groups other than eye groups
+            if (LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard))
+                return false;
 
-                return true;
-            }
-            return false;
+            GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
+            if (opponentMove != null && NeutralPointSuicidalMove(opponentMove))
+                return false;
+
+            return true;
         }
 
-
+        /// <summary>
+        /// Kill eye diagonal move.
+        /// </summary>
         public static Boolean KillEyeDiagonalMove(GameTryMove tryMove)
         {
-            if (!tryMove.IsNegligible || NeutralPointSuicidalMove(tryMove))
+            if (!tryMove.IsNegligible)
                 return false;
             GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
             if (opponentMove != null)
                 return SurvivalEyeDiagonalMove(opponentMove);
             return false;
         }
-
-
         #endregion
 
         #region eye filler

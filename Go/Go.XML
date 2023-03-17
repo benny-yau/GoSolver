@@ -1823,12 +1823,17 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.SurvivalEyeDiagonalMove(Go.GameTryMove)">
             <summary>
-            Find eye diagonal moves that are redundant.
+            Survival eye diagonal move.
             <see cref="!:UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18473" />
             Check diagonals are real eyes <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B31" />
             Ensure diagonal not required for both alive. 
             <see cref="!:UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_SiHuoDaQuan_CornerA29_2" />
             Check link to groups <see cref="!:UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_WuQingYuan_Q31154" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.KillEyeDiagonalMove(Go.GameTryMove)">
+            <summary>
+            Kill eye diagonal move.
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SurvivalEyeFillerMove(Go.GameTryMove)">
@@ -2049,9 +2054,9 @@
             Check no eye for survival.
             </summary>
         </member>
-        <member name="M:Go.WallHelper.IsWall(Go.Board,Go.Point,System.Boolean)">
+        <member name="M:Go.WallHelper.IsWall(Go.Board,Go.Point,Go.Content)">
             <summary>
-            Wall is either opposite content which is non killable or empty point which is not movable.
+            Wall is either non killable or is empty point or opponent point which is not movable.
             </summary>
         </member>
         <member name="M:Go.WallHelper.IsNonKillableGroup(Go.Board,Go.Point)">

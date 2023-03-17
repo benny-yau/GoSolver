@@ -15,17 +15,17 @@ namespace Go
         {
             if (!board.PointWithinBoard(eyePoint)) return false;
             c = (c == Content.Unknown) ? GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive) : c;
-            if (board[eyePoint] == c || IsWall(board, eyePoint))
+            if (board[eyePoint] == c || IsWall(board, eyePoint, c))
                 return true;
 
-            if (board.GetStoneNeighbours(eyePoint).Any(n => IsWall(board, n)))
+            if (board.GetStoneNeighbours(eyePoint).Any(n => IsWall(board, n, c)))
                 return true;
 
             Boolean eyeInMiddleArea = board.PointWithinMiddleArea(eyePoint);
             int diagonalWallCount = 0;
             foreach (Point q in board.GetDiagonalNeighbours(eyePoint))
             {
-                if (IsWall(board, q))
+                if (IsWall(board, q, c))
                     diagonalWallCount += 1;
                 if (eyeInMiddleArea && diagonalWallCount > 1 || !eyeInMiddleArea && diagonalWallCount > 0)
                     return true;
@@ -46,13 +46,14 @@ namespace Go
         }
 
         /// <summary>
-        /// Wall is either opposite content which is non killable or empty point which is not movable.
+        /// Wall is either non killable or is empty point or opponent point which is not movable.
         /// </summary>
-        public static Boolean IsWall(Board board, Point p, Boolean outsideBoard = false)
+        public static Boolean IsWall(Board board, Point p, Content c = Content.Unknown)
         {
+            c = (c == Content.Unknown) ? GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive) : c;
             if (!(board.PointWithinBoard(p)))
-                return outsideBoard;
-            return (IsNonKillableGroup(board, p) || board[p] == Content.Empty && !board.GameInfo.IsMovablePoint[p.x, p.y] == true);
+                return false;
+            return (IsNonKillableGroup(board, p) || board[p] != c && !board.GameInfo.IsMovablePoint[p.x, p.y]);
         }
 
         /// <summary>
