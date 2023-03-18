@@ -1181,13 +1181,10 @@ namespace Go
                 int maxLengthOfGrid = MaxLengthOfGrid(moveGroup);
                 int maxIntersect = moveGroup.Max(q => b.GetStoneNeighbours(q).Intersect(moveGroup).Count());
                 int moveGroupLiberties = b.MoveGroup.Liberties.Count;
-                List<Group> neighbourGroups = b.GetGroupsFromStoneNeighbours(p, c).OrderBy(n => n.Liberties.Count).ToList();
-                int minNeighbourLiberties = (neighbourGroups.Count == 0) ? 0 : neighbourGroups.First().Liberties.Count;
-                int minNeighbourPointCount = (neighbourGroups.Count == 0) ? 0 : neighbourGroups.First().Points.Count;
-                list.Add(new LinkedPoint<Point>(p, new { maxLengthOfGrid, maxIntersect, moveGroupLiberties, minNeighbourLiberties, minNeighbourPointCount, b }));
+                list.Add(new LinkedPoint<Point>(p, new { maxLengthOfGrid, maxIntersect, moveGroupLiberties, b }));
             }
-            //order by grid length then by max of intersection then by move group liberties then by minimum neighbour liberties then by minimum neighbour point count
-            list = list.OrderBy(m => ((dynamic)m.CheckMove).maxLengthOfGrid).ThenByDescending(m => ((dynamic)m.CheckMove).maxIntersect).ThenByDescending(m => ((dynamic)m.CheckMove).moveGroupLiberties).ThenBy(m => ((dynamic)m.CheckMove).minNeighbourLiberties).ThenBy(m => ((dynamic)m.CheckMove).minNeighbourPointCount).ToList();
+            //order by grid length then by max of intersection then by move group liberties
+            list = list.OrderBy(m => ((dynamic)m.CheckMove).maxLengthOfGrid).ThenByDescending(m => ((dynamic)m.CheckMove).maxIntersect).ThenByDescending(m => ((dynamic)m.CheckMove).moveGroupLiberties).ToList();
             //check for dead formation
             Board killBoard = killBoards.FirstOrDefault((b => DeadFormationInBothAlive(b, killerGroup)));
             if (killBoard != null)

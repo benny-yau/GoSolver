@@ -590,6 +590,7 @@ namespace Go
         /// Check for tiger mouth at liberty point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31646" />
         /// Check for suicidal at other end <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16867" />
         /// Check for both alive <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_TianLongTu_Q16827" />
+        /// Check link for groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30358_3" />
         /// Set diagonal eye move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29273" />
         /// </summary>
         private static Boolean MultiPointOpponentSuicidalMove(GameTryMove tryMove, GameTryMove opponentMove)
@@ -623,6 +624,10 @@ namespace Go
 
             //check two point atari move
             if (KillerFormationHelper.TwoPointAtariMove(opponentMove.TryGame.Board))
+                return false;
+
+            //check link for groups
+            if (LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard))
                 return false;
 
             if (WallHelper.IsNonKillableGroup(tryBoard)) //set neutral point move
