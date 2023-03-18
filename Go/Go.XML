@@ -1011,8 +1011,12 @@
         </member>
         <member name="M:Go.KoHelper.KoSurvivalEnabled(Go.SurviveOrKill,Go.GameInfo)">
             <summary>
-            Enables one way ko check - either survive or kill
-            If objective is survive with ko or kill, then ko for survive is enabled, else if objective is survive or kill with ko, then ko for kill is enabled
+            Ko survival enabled.
+            </summary>
+        </member>
+        <member name="M:Go.KoHelper.KoContentEnabled(Go.Content,Go.GameInfo)">
+            <summary>
+            Ko content enabled.
             </summary>
         </member>
         <member name="M:Go.KoHelper.IsKoFight(Go.Board,Go.Group)">
@@ -1050,7 +1054,7 @@
         <member name="M:Go.KoHelper.CheckReverseKoForNeutralPoint(Go.Board)">
             <summary>
             Reverse ko for neutral point move.
-            Rare scenario where neutral point required for ko <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A80" />
+            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A80" />
             </summary>
         </member>
         <member name="M:Go.KoHelper.GetKoTargetGroups(Go.Board,Go.Group,Go.Group)">
@@ -1070,7 +1074,7 @@
         </member>
         <member name="M:Go.KoHelper.PossibilityOfDoubleKo(Go.GameTryMove)">
             <summary>
-            Check for possibility of double ko, for both survival and kill. Check for end ko moves as well.
+            Check for possibility of double ko, for both survival and kill.
             Survival double ko <see cref="!:UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_TianLongTu_Q16446" />
             <see cref="!:UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_TianLongTu_Q16975" />
             <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_3" /> 

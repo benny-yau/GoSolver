@@ -10,8 +10,7 @@ namespace Go
     {
 
         /// <summary>
-        /// Enables one way ko check - either survive or kill
-        /// If objective is survive with ko or kill, then ko for survive is enabled, else if objective is survive or kill with ko, then ko for kill is enabled
+        /// Ko survival enabled.
         /// </summary>
         public static Boolean KoSurvivalEnabled(SurviveOrKill surviveOrKill, GameInfo gameInfo)
         {
@@ -22,6 +21,9 @@ namespace Go
             return false;
         }
 
+        /// <summary>
+        /// Ko content enabled.
+        /// </summary>
         public static Boolean KoContentEnabled(Content c, GameInfo gameInfo)
         {
             Content killContent = GameHelper.GetContentForSurviveOrKill(gameInfo, SurviveOrKill.Kill);
@@ -108,7 +110,7 @@ namespace Go
 
         /// <summary>
         /// Reverse ko for neutral point move.
-        /// Rare scenario where neutral point required for ko <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A80" />
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A80" />
         /// </summary>
         public static Boolean CheckReverseKoForNeutralPoint(Board tryBoard)
         {
@@ -116,26 +118,27 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             if (tryBoard.PointWithinMiddleArea(move)) return false;
             if (tryBoard.MoveGroup.Points.Count != 1 || tryBoard.MoveGroupLiberties != 2) return false;
-            List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] == c).ToList();
-            if (diagonals.Count != 1) return false;
-            Point diagonal = diagonals.First();
-            if (tryBoard.GetGroupAt(diagonal).Points.Count != 1) return false;
-            List<Point> pointsBetweenDiagonals = LinkHelper.PointsBetweenDiagonals(move, diagonal);
-            List<Point> liberties = pointsBetweenDiagonals.Where(p => tryBoard[p] == Content.Empty && !tryBoard.PointWithinMiddleArea(p)).ToList();
-            if (liberties.Count != 1) return false;
-            Point lib = liberties.First();
-            List<Point> liberties2 = tryBoard.GetStoneNeighbours(lib).Where(p => tryBoard[p] == Content.Empty).ToList();
-            if (liberties2.Count != 1) return false;
-            Point lib2 = liberties2.First();
-            Point e = tryBoard.GetDiagonalNeighbours(lib).Intersect(tryBoard.GetStoneNeighbours(lib2)).First();
+            foreach (Point diagonal in tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] == c))
+            {
+                if (tryBoard.GetGroupAt(diagonal).Points.Count != 1) continue;
+                List<Point> pointsBetweenDiagonals = LinkHelper.PointsBetweenDiagonals(move, diagonal);
+                List<Point> liberties = pointsBetweenDiagonals.Where(p => tryBoard[p] == Content.Empty && !tryBoard.PointWithinMiddleArea(p)).ToList();
+                if (liberties.Count != 1) continue;
+                Point lib = liberties.First();
+                List<Point> liberties2 = tryBoard.GetStoneNeighbours(lib).Where(p => tryBoard[p] == Content.Empty).ToList();
+                if (liberties2.Count != 1) continue;
+                Point lib2 = liberties2.First();
+                Point e = tryBoard.GetDiagonalNeighbours(lib).Intersect(tryBoard.GetStoneNeighbours(lib2)).First();
 
-            //make opponent move to capture
-            (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(e, c.Opposite(), tryBoard);
-            if (suicidal) return false;
-            //make survival move to create ko
-            (Boolean suicidal2, Board b2) = ImmovableHelper.IsSuicidalMove(lib2, c, b);
-            if (suicidal2) return false;
-            return true;
+                //make opponent move to capture
+                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(e, c.Opposite(), tryBoard);
+                if (suicidal) continue;
+                //make survival move to create ko
+                (Boolean suicidal2, Board b2) = ImmovableHelper.IsSuicidalMove(lib2, c, b);
+                if (suicidal2) continue;
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -179,7 +182,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Check for possibility of double ko, for both survival and kill. Check for end ko moves as well.
+        /// Check for possibility of double ko, for both survival and kill.
         /// Survival double ko <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_TianLongTu_Q16446" />
         /// <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_TianLongTu_Q16975" />
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_3" /> 
@@ -220,12 +223,12 @@ namespace Go
                 (Boolean isKoFight, Group group) = KoHelper.IsKoFight(currentBoard, liberty, c.Opposite());
                 if (!isKoFight) continue;
                 koGroups.Add(group);
-                if (koGroups.Count >= 2)
-                {
-                    IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, koGroups.Select(gr => gr.Liberties.First()), c);
-                    if (moveBoards.Count(k => !RedundantMoveHelper.CheckRedundantKoMove(k, currentBoard)) >= 2)
-                        return true;
-                }
+            }
+            if (koGroups.Count >= 2)
+            {
+                IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, koGroups.Select(gr => gr.Liberties.First()), c);
+                if (moveBoards.Count(k => !RedundantMoveHelper.CheckRedundantKoMove(k, currentBoard)) >= 2)
+                    return true;
             }
             return false;
         }
