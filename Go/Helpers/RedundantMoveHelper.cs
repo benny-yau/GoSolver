@@ -345,6 +345,7 @@ namespace Go
         /// Check for opponent survival move <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q29475" /> 
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245_2" />
         /// Unstoppable group <see cref="UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_XuanXuanQiJing_A53" /> 
+        /// Check three liberty group <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18_3" /> 
         /// </summary>
         private static (Boolean, Board) SuicideAtBigTigerMouth(GameTryMove tryMove)
         {
@@ -355,17 +356,8 @@ namespace Go
             List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).ToList();
             foreach (Group eyeGroup in eyeGroups)
             {
-                if (eyeGroup.Liberties.Count < 2 || eyeGroup.Liberties.Count > 3) continue;
-                List<Point> liberties = eyeGroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
-                Point liberty = default(Point);
-                if (liberties.Count == 1)
-                    liberty = liberties.First();
-                else if (liberties.Count == 2)
-                {
-                    List<Point> coveredEyes = liberties.Where(n => EyeHelper.FindCoveredEye(currentBoard, n, c)).ToList();
-                    if (coveredEyes.Count != 1) continue;
-                    liberty = liberties.First(lib => !lib.Equals(coveredEyes.First()));
-                }
+                if (eyeGroup.Liberties.Count != 2) continue;
+                Point liberty = eyeGroup.Liberties.First(lib => !lib.Equals(move));
                 Board b = currentBoard.MakeMoveOnNewBoard(liberty, c, true);
                 if (b == null || WallHelper.TargetWithAllNonKillableGroups(b)) continue;
                 if (ImmovableHelper.CheckConnectAndDie(b))
@@ -398,6 +390,20 @@ namespace Go
                 //unstoppable group
                 b2[move] = c;
                 if (ImmovableHelper.CheckConnectAndDie(b2) && b2.GetGroupsFromStoneNeighbours(liberty, c).Count > 1)
+                    return (true, b);
+            }
+
+            //check three liberty group
+            foreach (Group eyeGroup in eyeGroups)
+            {
+                if (eyeGroup.Liberties.Count != 3) continue;
+                List<Point> liberties = eyeGroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
+                List<Point> coveredEyes = liberties.Where(n => EyeHelper.FindCoveredEye(currentBoard, n, c)).ToList();
+                if (coveredEyes.Count != 1) continue;
+                Point liberty = liberties.First(lib => !lib.Equals(coveredEyes.First()));
+                Board b = tryBoard.MakeMoveOnNewBoard(liberty, c, true);
+                if (b == null || b.GetStoneNeighbours().Any(n => b[n] == Content.Empty)) continue;
+                if (tryBoard.GetGroupsFromStoneNeighbours(coveredEyes.First(), c.Opposite()).Any(n => ImmovableHelper.CheckConnectAndDie(b, n) && !ImmovableHelper.CheckConnectAndDie(tryBoard, n)))
                     return (true, b);
             }
             return (false, null);
