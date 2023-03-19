@@ -400,13 +400,9 @@ namespace Go
                 List<Point> liberties = eyeGroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
                 foreach (Point liberty in liberties)
                 {
-                    Point liberty2 = liberties.First(lib => !lib.Equals(liberty));
-                    List<Group> groups = tryBoard.GetGroupsFromStoneNeighbours(liberty2, c.Opposite()).Where(n => !n.Equals(tryBoard.MoveGroup)).ToList();
-                    if (groups.Count == 0) continue;
-                    Board b = tryBoard.MakeMoveOnNewBoard(liberty, c, true);
-                    if (b == null || b.GetStoneNeighbours().Any(n => b[n] == Content.Empty)) continue;
-                    if (groups.Any(n => ImmovableHelper.CheckConnectAndDie(b, n) && !ImmovableHelper.CheckConnectAndDie(tryBoard, n)))
-                        return (true, b);
+                    List<Group> groups = tryBoard.GetGroupsFromStoneNeighbours(liberty, c.Opposite()).Where(n => !n.Equals(tryBoard.MoveGroup)).ToList();
+                    if (groups.Any(n => ImmovableHelper.CheckConnectAndDie(currentBoard, n) && !ImmovableHelper.CheckConnectAndDie(tryBoard, n)))
+                        return (true, null);
                 }
             }
             return (false, null);
@@ -1581,7 +1577,7 @@ namespace Go
             (Boolean suicide, Board suicideBoard) = SuicideAtBigTigerMouth(tryMove);
             if (suicide)
             {
-                Point suicideMove = suicideBoard.Move.Value;
+                if (suicideBoard == null) return true;
                 if (MustHaveMoveAtBigTigerMouth(suicideBoard, tryMove))
                     return true;
             }
