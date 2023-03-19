@@ -398,13 +398,16 @@ namespace Go
             {
                 if (eyeGroup.Liberties.Count != 3) continue;
                 List<Point> liberties = eyeGroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
-                List<Point> coveredEyes = liberties.Where(n => EyeHelper.FindCoveredEye(currentBoard, n, c)).ToList();
-                if (coveredEyes.Count != 1) continue;
-                Point liberty = liberties.First(lib => !lib.Equals(coveredEyes.First()));
-                Board b = tryBoard.MakeMoveOnNewBoard(liberty, c, true);
-                if (b == null || b.GetStoneNeighbours().Any(n => b[n] == Content.Empty)) continue;
-                if (tryBoard.GetGroupsFromStoneNeighbours(coveredEyes.First(), c.Opposite()).Any(n => ImmovableHelper.CheckConnectAndDie(b, n) && !ImmovableHelper.CheckConnectAndDie(tryBoard, n)))
-                    return (true, b);
+                foreach (Point liberty in liberties)
+                {
+                    Point liberty2 = liberties.First(lib => !lib.Equals(liberty));
+                    List<Group> groups = tryBoard.GetGroupsFromStoneNeighbours(liberty2, c.Opposite()).Where(n => !n.Equals(tryBoard.MoveGroup)).ToList();
+                    if (groups.Count == 0) continue;
+                    Board b = tryBoard.MakeMoveOnNewBoard(liberty, c, true);
+                    if (b == null || b.GetStoneNeighbours().Any(n => b[n] == Content.Empty)) continue;
+                    if (groups.Any(n => ImmovableHelper.CheckConnectAndDie(b, n) && !ImmovableHelper.CheckConnectAndDie(tryBoard, n)))
+                        return (true, b);
+                }
             }
             return (false, null);
         }
