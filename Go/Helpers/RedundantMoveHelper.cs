@@ -352,10 +352,20 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Board currentBoard = tryMove.CurrentGame.Board;
             Content c = tryMove.MoveContent;
-            List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).Where(e => e.Liberties.Count == 2).ToList();
+            List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).ToList();
             foreach (Group eyeGroup in eyeGroups)
             {
-                Point liberty = eyeGroup.Liberties.First(lib => !lib.Equals(move));
+                if (eyeGroup.Liberties.Count < 2 || eyeGroup.Liberties.Count > 3) continue;
+                List<Point> liberties = eyeGroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
+                Point liberty = default(Point);
+                if (liberties.Count == 1)
+                    liberty = liberties.First();
+                else if (liberties.Count == 2)
+                {
+                    List<Point> coveredEyes = liberties.Where(n => EyeHelper.FindCoveredEye(currentBoard, n, c)).ToList();
+                    if (coveredEyes.Count != 1) continue;
+                    liberty = liberties.First(lib => !lib.Equals(coveredEyes.First()));
+                }
                 Board b = currentBoard.MakeMoveOnNewBoard(liberty, c, true);
                 if (b == null || WallHelper.TargetWithAllNonKillableGroups(b)) continue;
                 if (ImmovableHelper.CheckConnectAndDie(b))
@@ -631,7 +641,6 @@ namespace Go
                 tryMove.IsNeutralPoint = true;
             if (tryBoard.GetDiagonalNeighbours().Any(n => GroupHelper.GetKillerGroupFromCache(tryBoard, n, c) != null)) //set diagonal eye move
                 tryMove.IsDiagonalEyeMove = true;
-
             return true;
         }
 
