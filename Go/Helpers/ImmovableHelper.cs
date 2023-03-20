@@ -190,7 +190,8 @@ namespace Go
             if (SuicidalAfterMustHaveMove(currentBoard, tryBoard, libertyPoint.Value))
                 return null;
 
-            if (ThreeLibertyConnectAndDie(capturedBoard, p.Value))
+            //three liberty connect and die
+            if (ThreeLibertyConnectAndDie(capturedBoard, p.Value).Item1)
                 return null;
 
             return capturedBoard;
@@ -198,37 +199,32 @@ namespace Go
 
 
         /// <summary>
-        /// Three liberty connect and die, not all inclusive. Connect and die group may not be target group for two liberties target group.
+        /// Three liberty connect and die.
         /// <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_TianLongTu_Q14992_2" />
         /// <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_TianLongTu_Q14992" />
         /// Stone neighbours at diagonal of each other <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_Side_B19" />
         /// Check if escapable <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_Corner_A86" />
         /// </summary>
-        public static Boolean ThreeLibertyConnectAndDie(Board board, Point p)
+        public static (Boolean, Board) ThreeLibertyConnectAndDie(Board board, Point p, Group targetGroup = null)
         {
-            Group targetGroup = board.MoveGroup;
+            if (targetGroup == null) targetGroup = board.MoveGroup;
             Content c = targetGroup.Content;
 
-            if (!ImmovableHelper.FindTigerMouth(board, c, p)) return false;
+            if (!ImmovableHelper.FindTigerMouth(board, c, p)) return (false, null);
 
             //stone neighbours at diagonal of each other
             List<Point> stoneNeighbours = LinkHelper.GetNeighboursDiagonallyLinked(board, p, c);
-            if (!stoneNeighbours.Any()) return false;
+            if (!stoneNeighbours.Any()) return (false, null);
 
             Board b = board.MakeMoveOnNewBoard(p, c.Opposite());
-            if (b == null || b.MoveGroupLiberties != 1) return false;
-            if (b.AtariTargets.Count != 1) return false;
+            if (b == null || b.MoveGroupLiberties != 1) return (false, null);
 
             Board b2 = ImmovableHelper.CaptureSuicideGroup(b);
-            if (b2 == null || b2.MoveGroupLiberties != 2) return false;
-            if (!EyeHelper.FindCoveredEye(b2, p, c)) return false;
-            //check if escapable
-            Point e = b2.MoveGroup.Liberties.First(lib => !lib.Equals(p));
-            if (!ImmovableHelper.IsSuicidalMove(b2, e, c))
-                return false;
+            if (b2 == null || b2.MoveGroupLiberties != 2) return (false, null);
+            if (!EyeHelper.FindCoveredEye(b2, p, c)) return (false, null);
             if (CheckConnectAndDie(b2, targetGroup))
-                return true;
-            return false;
+                return (true, b2);
+            return (false, null);
         }
 
         /// <summary>

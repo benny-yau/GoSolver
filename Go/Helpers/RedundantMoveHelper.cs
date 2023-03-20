@@ -401,7 +401,7 @@ namespace Go
                 foreach (Point liberty in liberties)
                 {
                     List<Group> groups = tryBoard.GetGroupsFromStoneNeighbours(liberty, c.Opposite()).Where(n => !n.Equals(tryBoard.MoveGroup)).ToList();
-                    if (groups.Any(n => ImmovableHelper.CheckConnectAndDie(currentBoard, n) && !ImmovableHelper.CheckConnectAndDie(tryBoard, n)))
+                    if (groups.Any(n => !ImmovableHelper.CheckConnectAndDie(tryBoard, n) && (ImmovableHelper.CheckConnectAndDie(currentBoard, n) || ImmovableHelper.ThreeLibertyConnectAndDie(currentBoard, liberty, n).Item1)))
                         return (true, null);
                 }
             }
@@ -579,10 +579,17 @@ namespace Go
         private static Boolean ThreeLibertySuicidal(GameTryMove tryMove)
         {
             Board tryBoard = tryMove.TryGame.Board;
+            Content c = tryBoard.MoveGroup.Content;
             if (!tryMove.IsNegligible) return false;
             if (tryBoard.MoveGroupLiberties != 3) return false;
-            if (tryBoard.MoveGroup.Liberties.Any(lib => ImmovableHelper.ThreeLibertyConnectAndDie(tryBoard, lib)))
-                return true;
+            foreach (Point p in tryBoard.MoveGroup.Liberties)
+            {
+                (Boolean suicidal, Board b) = ImmovableHelper.ThreeLibertyConnectAndDie(tryBoard, p);
+                if (b == null) continue;
+                Point e = b.MoveGroup.Liberties.First(lib => !lib.Equals(p));
+                if (ImmovableHelper.IsSuicidalMove(b, e, c))
+                    return true;
+            }
             return false;
         }
 
