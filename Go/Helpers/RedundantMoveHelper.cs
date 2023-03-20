@@ -145,22 +145,6 @@ namespace Go
                 if (!StrongGroupsAtMustHaveMove(opponentBoard, eyePoint))
                     return false;
             }
-            //check one-point snapback
-            foreach (Group group in tryBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()))
-            {
-                if (group.Liberties.Count <= 2 && group.Points.Count >= 2)
-                {
-                    (_, Board b) = ImmovableHelper.ConnectAndDie(tryBoard, group);
-                    if (b == null) continue;
-                    Boolean captured = b.IsCapturedGroup(group);
-                    if (captured && b.MoveGroupLiberties == 1) return false;
-                    if (!captured)
-                    {
-                        Board b2 = ImmovableHelper.CaptureSuicideGroup(b, group);
-                        if (b2 != null && b2.MoveGroupLiberties == 1) return false;
-                    }
-                }
-            }
 
             //check possible links
             if (LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard))
@@ -2019,8 +2003,6 @@ namespace Go
             if (ImmovableHelper.IsConfirmTigerMouth(currentBoard, tryBoard) == null) return false;
 
             //check eye points at diagonals of tiger mouth
-            List<Point> libertyPoint = tryBoard.GetStoneNeighbours().Where(n => tryBoard[n] != c.Opposite()).ToList();
-            if (libertyPoint.Count != 1) return false;
             List<Point> diagonalPoints = ImmovableHelper.GetDiagonalsOfTigerMouth(tryBoard, move, c.Opposite()).Where(e => tryBoard[e] != c.Opposite()).ToList();
             if (diagonalPoints.Count == 0) return false;
 
