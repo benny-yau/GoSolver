@@ -648,6 +648,81 @@ namespace Go
         }
 
         /// <summary>
+        /// Suicide at big tiger mouth.
+        /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_B3" /> 
+        /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A85" /> 
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario6kyu13" />
+        /// Check for eye at liberty <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Side_B19" />
+        /// Opponent capture two or more points <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23" />
+        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
+        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_TianLongTu_Q16827_2" />
+        /// Check for opponent survival move <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q29475" /> 
+        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245_2" />
+        /// Unstoppable group <see cref="UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_XuanXuanQiJing_A53" /> 
+        /// Check three liberty group <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18_3" /> 
+        /// </summary>
+        public static (Boolean, Board) SuicideAtBigTigerMouth(GameTryMove tryMove)
+        {
+            Point move = tryMove.Move;
+            Board tryBoard = tryMove.TryGame.Board;
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Content c = tryMove.MoveContent;
+            List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).ToList();
+            foreach (Group eyeGroup in eyeGroups)
+            {
+                if (eyeGroup.Liberties.Count != 2) continue;
+                Point liberty = eyeGroup.Liberties.First(lib => !lib.Equals(move));
+                Board b = currentBoard.MakeMoveOnNewBoard(liberty, c, true);
+                if (b == null || WallHelper.TargetWithAllNonKillableGroups(b)) continue;
+                if (ImmovableHelper.CheckConnectAndDie(b))
+                    return (true, b);
+
+                if (b.MoveGroup.Liberties.Count != 2) continue;
+                Point liberty2 = b.MoveGroup.Liberties.First(lib => !lib.Equals(move));
+                //check for eye at liberty
+                if (EyeHelper.FindEye(b, liberty2, c) && b.GetGroupsFromStoneNeighbours(liberty2, c.Opposite()).Count >= 3)
+                    return (true, b);
+                //make block move
+                (Boolean suicidal, Board b2) = ImmovableHelper.IsSuicidalMove(liberty2, c.Opposite(), b, true);
+                if (suicidal) continue;
+
+                //opponent capture two or more points
+                if (b2.CapturedList.Any(gr => gr.Points.Count >= 2))
+                    return (true, b);
+
+                //check for opponent survival move
+                if (b.MoveGroup.Points.Count >= 3)
+                {
+                    if (b2.GetStoneNeighbours().Where(n => b2[n] != c.Opposite()).Select(n => GroupHelper.GetKillerGroupOfNeighbourGroups(b2, n, c.Opposite())).Any(n => n != null && n.Points.Count >= 3))
+                        return (true, b);
+
+                    Board b3 = currentBoard.MakeMoveOnNewBoard(liberty, c.Opposite(), true);
+                    if (b3 != null && b3.GetNeighbourGroups(eyeGroup).Any(n => n.Liberties.Count <= 2))
+                        return (true, b);
+                }
+
+                //unstoppable group
+                b2[move] = c;
+                if (ImmovableHelper.CheckConnectAndDie(b2) && b2.GetGroupsFromStoneNeighbours(liberty, c).Count > 1)
+                    return (true, b);
+            }
+
+            //check three liberty group
+            foreach (Group eyeGroup in eyeGroups)
+            {
+                if (eyeGroup.Liberties.Count != 3) continue;
+                List<Point> liberties = eyeGroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
+                foreach (Point liberty in liberties)
+                {
+                    List<Group> groups = tryBoard.GetGroupsFromStoneNeighbours(liberty, c.Opposite()).Where(n => !n.Equals(tryBoard.MoveGroup)).ToList();
+                    if (groups.Any(n => !ImmovableHelper.CheckConnectAndDie(tryBoard, n) && (ImmovableHelper.CheckConnectAndDie(currentBoard, n) || ImmovableHelper.ThreeLibertyConnectAndDie(currentBoard, liberty, n).Item1)))
+                        return (true, null);
+                }
+            }
+            return (false, null);
+        }
+
+        /// <summary>
         /// Pre-atari move that targets group with liberty of two. Next atari move will capture the group.
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16594" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_WuQingYuan_Q31154" />
