@@ -1875,10 +1875,9 @@ namespace Go
 
         /// <summary>
         /// Check eye points at diagonals of tiger mouth. If all eye points are tiger mouth then is redundant. <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_XuanXuanGo_B31" />
-        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_TianLongTu_Q16827" />
-        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_GuanZiPu_Q18860" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WuQingYuan_Q15126" />
         /// Check possible corner three formation <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WuQingYuan_Q31503_2" />
+        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_GuanZiPu_Q18860" />
         /// Opponent move at tiger mouth <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A151_101Weiqi" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_Nie67" />
         /// Uncovered eye at diagonal point <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221231_6" />
@@ -1897,7 +1896,7 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Content c = tryMove.MoveContent;
             //ensure is tiger mouth
-            if (tryBoard.MoveGroup.Points.Count > 1) return false;
+            if (tryBoard.MoveGroup.Points.Count != 1) return false;
             if (ImmovableHelper.IsConfirmTigerMouth(currentBoard, tryBoard) == null) return false;
 
             //check eye points at diagonals of tiger mouth
@@ -1906,6 +1905,7 @@ namespace Go
 
             Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
             if (capturedBoard == null || capturedBoard.MoveGroupLiberties == 1) return false;
+            if (KoHelper.IsForwardOrReverseKoFight(capturedBoard)) return false;
 
             //check possible corner three formation
             if (KillerFormationHelper.PossibleCornerThreeFormation(currentBoard, move, c.Opposite())) return false;
@@ -1915,7 +1915,7 @@ namespace Go
                 if (NeutralPointSuicidalMove(tryMove))
                     continue;
                 //uncovered eye at diagonal point
-                if (EyeHelper.FindUncoveredEye(currentBoard, d, c.Opposite()) && !EyeHelper.FindUncoveredEye(tryBoard, d, c.Opposite()))
+                if (EyeHelper.FindUncoveredEye(currentBoard, d, c.Opposite()) && EyeHelper.FindCoveredEye(tryBoard, d, c.Opposite()))
                     continue;
 
                 //opponent move at tiger mouth
@@ -2063,7 +2063,8 @@ namespace Go
             if (!tryMove.IsNegligible || tryBoard.IsAtariMove)
                 return false;
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c);
-            if (killerGroup == null || killerGroup.Points.Count == 1) return false;
+            if (killerGroup == null) return FillerMoveWithoutKillerGroup(tryMove);
+            if (killerGroup.Points.Count == 1) return false;
 
             if (killerGroup.Points.Count <= 5)
                 return SpecificEyeFillerMove(tryMove);
@@ -2083,13 +2084,14 @@ namespace Go
             if (!tryMove.IsNegligible || tryBoard.IsAtariMove)
                 return false;
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
-            if (killerGroup == null || killerGroup.Points.Count <= 2) return false;
+            if (killerGroup != null && killerGroup.Points.Count <= 2) return false;
             //make survival move
             GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
             if (opponentMove == null) return false;
-            if (killerGroup.Points.Count <= 5)
+            if (killerGroup != null && killerGroup.Points.Count <= 5)
                 return SpecificEyeFillerMove(opponentMove);
-            return false;
+            else
+                return FillerMoveWithoutKillerGroup(tryMove, opponentMove);
         }
 
         /// <summary>
@@ -2177,6 +2179,10 @@ namespace Go
             if (GroupHelper.IncreasedKillerGroups(tryBoard, currentBoard))
                 return false;
 
+            //check link for groups
+            if (LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard))
+                return false;
+
             //count eyes created at move
             int possibleEyes = PossibleEyesCreated(currentBoard, move, c);
 
@@ -2259,13 +2265,10 @@ namespace Go
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
             if (!tryMove.IsNegligible) return false;
-            Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c);
-            if (killerGroup == null)
-                return false;
 
             //neighbour groups should have liberty more than one
-            if (AtariHelper.AtariByGroup(currentBoard, killerGroup))
-                return false;
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c);
+            if (killerGroup == null || AtariHelper.AtariByGroup(currentBoard, killerGroup)) return false;
 
             List<Point> emptyPoints = killerGroup.Points.Where(p => currentBoard[p] == Content.Empty).ToList();
 
