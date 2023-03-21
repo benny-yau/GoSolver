@@ -1400,9 +1400,6 @@ namespace Go
             if (tryBoard.MoveGroupLiberties != 1 || tryBoard.MoveGroup.Points.Count != 1) return false;
             if (!tryBoard.PointWithinMiddleArea(move)) return false;
             if (!EyeHelper.IsCovered(tryBoard, move, c.Opposite())) return false;
-            Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, tryBoard.MoveGroup, true);
-            if (b == null || b.MoveGroup.Points.Count == 1) return false;
-            if (b.GetStoneNeighbours().Any(n => !n.Equals(move) && b[n] == Content.Empty)) return false;
             return true;
         }
 

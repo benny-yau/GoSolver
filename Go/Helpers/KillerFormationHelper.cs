@@ -450,7 +450,7 @@ namespace Go
             //connected to external group not from previous move group
             if (!linkGroups.Except(groups).Any()) return false;
             //check connect and die
-            if (ImmovableHelper.CheckConnectAndDie(linkBoard))
+            if (ImmovableHelper.CheckConnectAndDie(linkBoard) || ImmovableHelper.CheckConnectAndDie(captureBoard))
                 return false;
             if (CornerThreeFormation(tryBoard, tryBoard.MoveGroup)) return false;
             if (TwoPointAtariMove(tryBoard, captureBoard)) return false;
