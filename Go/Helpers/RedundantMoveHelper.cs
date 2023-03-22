@@ -765,24 +765,28 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
-
             if (tryBoard.IsAtariMove) return false;
+
             //make suicide move
             Point liberty = captureBoard.GetCurrentGroup(tryBoard.MoveGroup).Liberties.First();
             Board b = captureBoard.MakeMoveOnNewBoard(liberty, c);
             if (b != null) return false;
+
             //check killer formation
             HashSet<Group> eyeGroups = captureBoard.GetGroupsFromStoneNeighbours(liberty, c.Opposite());
             if (eyeGroups.Count == 1 && KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, captureBoard))
                 return false;
 
             //check reverse ko fight
-            if (KoHelper.IsForwardOrReverseKoFight(tryBoard) && eyeGroups.Any(n => AtariHelper.AtariByGroup(tryBoard, n)))
+            if (eyeGroups.Count > 1 && eyeGroups.Any(n => AtariHelper.AtariByGroup(tryBoard, n)))
                 return false;
 
             //check for eye at corner point
-            if (KillerFormationHelper.TwoByTwoFormation(tryBoard, tryBoard.MoveGroup.Points) && tryBoard.MoveGroup.Liberties.Any(lib => tryBoard.CornerPoint(lib) && tryBoard.GetStoneNeighbours(lib).Intersect(tryBoard.MoveGroup.Points).Count() >= 2))
-                return false;
+            if (tryBoard.MoveGroup.Liberties.Any(lib => tryBoard.CornerPoint(lib) && tryBoard.GetStoneNeighbours(lib).Intersect(tryBoard.MoveGroup.Points).Count() >= 2))
+            {
+                if (KillerFormationHelper.TwoByTwoFormation(tryBoard, tryBoard.MoveGroup.Points) || LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Count > 1)
+                    return false;
+            }
 
             if (EyeHelper.FindEye(tryBoard, liberty, c) || eyeGroups.Count > 1)
                 return true;
