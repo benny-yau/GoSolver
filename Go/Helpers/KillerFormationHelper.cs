@@ -132,14 +132,13 @@ namespace Go
             if (WholeGroupDying(tryBoard)) return false;
             if (tryBoard.MoveGroupLiberties == 1)
             {
-                if (captureBoard.MoveGroup.Points.Count > 1 && ImmovableHelper.CheckConnectAndDie(captureBoard, captureBoard.MoveGroup))
+                if (captureBoard.MoveGroup.Points.Count > 1 && ImmovableHelper.CheckConnectAndDie(captureBoard))
                     return true;
             }
             else if (tryBoard.MoveGroupLiberties == 2)
             {
                 Group weakGroup = tryBoard.GetNeighbourGroups().FirstOrDefault(group => group.Points.Count >= 2 && group.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, group));
-                if (weakGroup == null) return false;
-                if (ImmovableHelper.CheckConnectAndDie(captureBoard, weakGroup))
+                if (weakGroup != null && ImmovableHelper.CheckConnectAndDie(captureBoard, weakGroup))
                     return true;
             }
             return false;
@@ -429,7 +428,7 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi_2" />
         /// Connect three or more groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B3" />
         /// No lost groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18402_2" />
-        /// Lost group not more than two points <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31682" />
+        /// Single lost group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31682" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17154" />
         /// </summary>
         private static Boolean IsLinkToExternalGroup(Board tryBoard, Board currentBoard, Board captureBoard)
@@ -441,30 +440,31 @@ namespace Go
             if (suicidal) return false;
             //ensure link for groups
             if (!LinkHelper.IsAbsoluteLinkForGroups(currentBoard, linkBoard)) return false;
-            //get previous groups
-            List<Group> groups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
             //connect three or more groups
+            List<Group> groups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
             if (groups.Count >= 3) return false;
 
             HashSet<Group> linkGroups = currentBoard.GetGroupsFromStoneNeighbours(linkBoard.Move.Value, c.Opposite());
             //connected to external group not from previous move group
             if (!linkGroups.Except(groups).Any()) return false;
             //check connect and die
-            if (ImmovableHelper.CheckConnectAndDie(linkBoard) || ImmovableHelper.CheckConnectAndDie(captureBoard))
-                return false;
+            if (ImmovableHelper.CheckConnectAndDie(linkBoard)) return false;
             if (CornerThreeFormation(tryBoard, tryBoard.MoveGroup)) return false;
             if (TwoPointAtariMove(tryBoard, captureBoard)) return false;
             //saved groups
             List<Group> savedGroups = linkGroups.Intersect(groups).ToList();
             if (savedGroups.Count == 0)
                 return false;
-            List<Group> lostGroups = groups.Except(savedGroups).ToList();
             //no lost groups
+            List<Group> lostGroups = groups.Except(savedGroups).ToList();
             if (lostGroups.Count == 0)
                 return true;
-            //lost group not more than two points
+            //single lost group
             if (lostGroups.Count == 1 && lostGroups.First().Points.Count <= 2)
+            {
+                if (linkBoard.MoveGroupLiberties == 2 && !WallHelper.IsNonKillableGroup(linkBoard)) return false;
                 return true;
+            }
             return false;
         }
 
