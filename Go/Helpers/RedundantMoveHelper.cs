@@ -154,6 +154,10 @@ namespace Go
             if (KoHelper.NeutralPointDoubleKo(tryBoard, currentBoard))
                 return false;
 
+            //check liberty fight
+            if (CheckLibertyFightAtCoveredEye(currentBoard, eyePoint, c))
+                return false;
+
             //set neutral point for opponent
             if (opponentTryMove != null && WallHelper.IsNonKillableGroup(opponentTryMove.TryGame.Board))
                 opponentTryMove.IsNeutralPoint = true;
@@ -1553,22 +1557,29 @@ namespace Go
         }
 
         /// <summary>
+        /// Check liberty fight at covered eye.
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_x" />
+        /// </summary>
+        private static Boolean CheckLibertyFightAtCoveredEye(Board board, Point eye, Content c)
+        {
+            foreach (Group ngroup in board.GetGroupsFromStoneNeighbours(eye, c.Opposite()))
+            {
+                (_, List<Point> pointsBetweenDiagonals) = LinkHelper.FindDiagonalCut(board, ngroup);
+                if (pointsBetweenDiagonals == null) continue;
+                if (ngroup.Liberties.Select(lib => GroupHelper.GetKillerGroupFromCache(board, lib, c)).Any(kgroup => kgroup != null && EyeHelper.FindRealEyeWithinEmptySpace(board, kgroup)))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Check liberty fight at must have move.
         /// </summary>
         private static Boolean CheckLibertyFightAtMustHaveMove(Board board)
         {
             Content c = board.MoveGroup.Content;
             Point move = board.Move.Value;
-            List<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(move, c).ToList();
-            if (board.GetLibertiesOfGroups(neighbourGroups).Count != 3) return false;
-            foreach (Group ngroup in neighbourGroups)
-            {
-                (_, List<Point> pointsBetweenDiagonals) = LinkHelper.FindDiagonalCut(board, ngroup);
-                if (pointsBetweenDiagonals == null) continue;
-                if (ngroup.Liberties.Select(lib => GroupHelper.GetKillerGroupFromCache(board, lib, c.Opposite())).Any(kgroup => kgroup != null && kgroup.Points.Count > 1 && EyeHelper.FindRealEyeWithinEmptySpace(board, kgroup)))
-                    return true;
-            }
-            return false;
+            return CheckLibertyFightAtCoveredEye(board, move, c.Opposite());
         }
 
         /// <summary>
@@ -1580,6 +1591,7 @@ namespace Go
         {
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
+            Content c = tryBoard.MoveGroup.Content;
             //ensure eye cannot be created at any stone or diagonal neighbours
             if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(tryBoard))
                 return false;
@@ -1593,6 +1605,10 @@ namespace Go
 
             //check reverse ko for neutral point
             if (KoHelper.CheckReverseKoForNeutralPoint(tryBoard))
+                return false;
+
+            //check liberty fight
+            if (tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindCoveredEye(tryBoard, n, c) && CheckLibertyFightAtCoveredEye(currentBoard, n, c)))
                 return false;
 
             GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();

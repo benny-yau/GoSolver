@@ -1707,6 +1707,12 @@
             Check liberty fight <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_20221128_2" />
             </summary>
         </member>
+        <member name="M:Go.RedundantMoveHelper.CheckLibertyFightAtCoveredEye(Go.Board,Go.Point,Go.Content)">
+            <summary>
+            Check liberty fight at covered eye.
+            <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_x" />
+            </summary>
+        </member>
         <member name="M:Go.RedundantMoveHelper.CheckLibertyFightAtMustHaveMove(Go.Board)">
             <summary>
             Check liberty fight at must have move.
