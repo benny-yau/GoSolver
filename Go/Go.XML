@@ -1707,6 +1707,11 @@
             Check liberty fight <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_20221128_2" />
             </summary>
         </member>
+        <member name="M:Go.RedundantMoveHelper.CheckLibertyFightAtMustHaveMove(Go.Board)">
+            <summary>
+            Check liberty fight at must have move.
+            </summary>
+        </member>
         <member name="M:Go.RedundantMoveHelper.ValidateNeutralPoint(Go.GameTryMove)">
             <summary>
             Validate neutral point by checking if move creates eye for survival at any of the stone and diagonal neighbours.
@@ -1949,12 +1954,10 @@
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi" />
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_20221128" /> 
-            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_20221128_3" /> 
-            ko fight necessary <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario2kyu18" /> 
+            Check liberty fight <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_20221128_4" />
+            Check two liberty group <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanQiJing_A38_2" /> 
+            Target with all non killable groups <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario2kyu18" /> 
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
-            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A62" /> 
-            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Nie20" /> 
-            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q2413" /> 
             Real eye at diagonal <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WuQingYuan_Q30982" /> 
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" /> 
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_2" /> 

@@ -131,7 +131,7 @@ namespace Go
                 return false;
 
             //check two liberty group to capture neighbour
-            if (currentBoard.GetNeighbourGroups(eyeGroup).Where(gr => gr.Liberties.Count == 2).Any(n => CheckTwoLibertyGroupToCaptureNeighbour(currentBoard, tryBoard, n, eyePoint)))
+            if (currentBoard.GetNeighbourGroups(eyeGroup).Any(n => CheckTwoLibertyGroupToCaptureNeighbour(currentBoard, tryBoard, n, eyePoint)))
                 return false;
 
             if (opponentTryMove != null)
@@ -175,7 +175,8 @@ namespace Go
         /// </summary>
         private static Boolean CheckTwoLibertyGroupToCaptureNeighbour(Board currentBoard, Board tryBoard, Group group, Point capturePoint)
         {
-            Content c = tryBoard.MoveGroup.Content;
+            Content c = group.Content;
+            if (group.Liberties.Count != 2) return false;
             foreach (Point liberty in group.Liberties)
             {
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c, currentBoard, true);
@@ -1403,7 +1404,11 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             if (tryBoard.MoveGroupLiberties != 1 || tryBoard.MoveGroup.Points.Count != 1) return false;
             if (!tryBoard.PointWithinMiddleArea(move)) return false;
-            if (!EyeHelper.IsCovered(tryBoard, move, c.Opposite())) return false;
+
+            List<Point> coveredPoints = tryBoard.GetDiagonalNeighbours(move).Where(q => tryBoard[q] == c).ToList();
+            if (coveredPoints.Count > 2) return true;
+            if (coveredPoints.Count != 2) return false;
+            if (coveredPoints[0].x == coveredPoints[1].x || coveredPoints[0].y == coveredPoints[1].y) return false;
             return true;
         }
 
@@ -1538,22 +1543,32 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             Board board = tryBoard.MakeMoveOnNewBoard(tigerMouth, c);
             if (board == null) board = tryBoard;
-            List<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(tigerMouth, c).ToList();
-            if (!WallHelper.StrongNeighbourGroups(board, neighbourGroups))
+            if (!WallHelper.StrongNeighbourGroups(board, tigerMouth, c))
                 return false;
 
             //check liberty fight
-            if (board.GetLibertiesOfGroups(neighbourGroups).Count == 3)
-            {
-                foreach (Group ngroup in neighbourGroups)
-                {
-                    (_, List<Point> pointsBetweenDiagonals) = LinkHelper.FindDiagonalCut(tryBoard, ngroup);
-                    if (pointsBetweenDiagonals == null) continue;
-                    if (ngroup.Liberties.Select(lib => GroupHelper.GetKillerGroupFromCache(board, lib, c.Opposite())).Any(kgroup => kgroup != null && kgroup.Points.Count > 1 && EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, kgroup)))
-                        return false;
-                }
-            }
+            if (CheckLibertyFightAtMustHaveMove(board))
+                return false;
             return true;
+        }
+
+        /// <summary>
+        /// Check liberty fight at must have move.
+        /// </summary>
+        private static Boolean CheckLibertyFightAtMustHaveMove(Board board)
+        {
+            Content c = board.MoveGroup.Content;
+            Point move = board.Move.Value;
+            List<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(move, c).ToList();
+            if (board.GetLibertiesOfGroups(neighbourGroups).Count != 3) return false;
+            foreach (Group ngroup in neighbourGroups)
+            {
+                (_, List<Point> pointsBetweenDiagonals) = LinkHelper.FindDiagonalCut(board, ngroup);
+                if (pointsBetweenDiagonals == null) continue;
+                if (ngroup.Liberties.Select(lib => GroupHelper.GetKillerGroupFromCache(board, lib, c.Opposite())).Any(kgroup => kgroup != null && kgroup.Points.Count > 1 && EyeHelper.FindRealEyeWithinEmptySpace(board, kgroup)))
+                    return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -2392,12 +2407,10 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_20221128" /> 
-        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_20221128_3" /> 
-        /// ko fight necessary <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario2kyu18" /> 
+        /// Check liberty fight <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_20221128_4" />
+        /// Check two liberty group <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanQiJing_A38_2" /> 
+        /// Target with all non killable groups <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario2kyu18" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
-        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A62" /> 
-        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Nie20" /> 
-        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q2413" /> 
         /// Real eye at diagonal <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WuQingYuan_Q30982" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_2" /> 
@@ -2417,15 +2430,19 @@ namespace Go
             //ko fight at non killable group
             if (KoHelper.IsNonKillableGroupKoFight(tryBoard, tryBoard.MoveGroup))
             {
-                Boolean survivalKoEnabled = KoHelper.KoContentEnabled(c.Opposite(), tryBoard.GameInfo);
-                if (!survivalKoEnabled && WallHelper.StrongNeighbourGroups(tryBoard)) return true;
                 HashSet<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(move, c);
                 if (LifeCheck.GetTargets(tryBoard).All(t => neighbourGroups.Contains(t)) && WallHelper.AllTargetWithinNonKillableGroups(tryBoard))
                     return true;
-                return false;
+                if (!WallHelper.StrongNeighbourGroups(tryBoard)) return false;
+                //check liberty fight
+                if (CheckLibertyFightAtMustHaveMove(tryBoard)) return false;
+                //check two liberty group
+                if (neighbourGroups.Any(n => CheckTwoLibertyGroupToCaptureNeighbour(tryBoard, currentBoard, n, eyePoint.Value)))
+                    return false;
+                return true;
             }
 
-            //check ko fight necessary
+            //target with all non killable groups
             if (!WallHelper.TargetWithAllNonKillableGroups(tryBoard))
                 return false;
 
