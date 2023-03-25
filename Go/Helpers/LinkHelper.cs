@@ -30,6 +30,7 @@ namespace Go
 
             //get all possible link groups
             List<Point> groupPoints = currentBoard.GetStoneAndDiagonalNeighbours(move).Where(n => currentBoard[n] == c).ToList();
+            tryBoard.CapturedList.ForEach(q => groupPoints.AddRange(q.Neighbours.Where(n => currentBoard[n] == c)));
             List<Group> groups = currentBoard.GetGroupsFromPoints(groupPoints).ToList();
             //get leap groups
             GetPossibleLeapGroups(tryBoard, currentBoard, groups);
@@ -47,7 +48,7 @@ namespace Go
                         Group groupJ = tryBoard.GetCurrentGroup(groups[j]);
                         groupJ.LinkedPoint = groups[j].LinkedPoint;
                         //check if diagonal groups
-                        if (tryBoard.CapturedList.Count == 0 && LinkHelper.GetDiagonalGroups(currentBoard, groups[i]).Any(n => n.Equals(groups[j])) && !groupI.Equals(tryBoard.MoveGroup)) continue;
+                        if (tryBoard.CapturedList.Count == 0 && LinkHelper.GetDiagonalGroups(currentBoard, groups[i]).Any(n => n.Equals(groups[j])) && (!groupI.Equals(tryBoard.MoveGroup) || !groupJ.Equals(tryBoard.MoveGroup))) continue;
                         //check non killable groups
                         if (WallHelper.IsNonKillableGroup(currentBoard, groups[i]) && WallHelper.IsNonKillableGroup(currentBoard, groups[j])) continue;
                         //check ko link
