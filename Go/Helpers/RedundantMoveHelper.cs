@@ -134,18 +134,6 @@ namespace Go
             if (currentBoard.GetNeighbourGroups(eyeGroup).Any(n => CheckTwoLibertyGroupToCaptureNeighbour(currentBoard, tryBoard, n, eyePoint)))
                 return false;
 
-            if (opponentTryMove != null)
-            {
-                Board opponentBoard = opponentTryMove.TryGame.Board;
-                //check no eye for survival for opponent
-                if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(opponentBoard))
-                    return false;
-
-                //check must-have move
-                if (!StrongGroupsAtMustHaveMove(opponentBoard, eyePoint))
-                    return false;
-            }
-
             //check possible links
             if (LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard))
                 return false;
@@ -158,9 +146,21 @@ namespace Go
             if (CheckLibertyFightAtCoveredEye(currentBoard, eyePoint, c))
                 return false;
 
-            //set neutral point for opponent
-            if (opponentTryMove != null && WallHelper.IsNonKillableGroup(opponentTryMove.TryGame.Board))
-                opponentTryMove.IsNeutralPoint = true;
+            if (opponentTryMove != null)
+            {
+                Board opponentBoard = opponentTryMove.TryGame.Board;
+                //check no eye for survival for opponent
+                if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(opponentBoard))
+                    return false;
+
+                //check must-have move
+                if (!StrongGroupsAtMustHaveMove(opponentBoard, eyePoint))
+                    return false;
+
+                //set neutral point for opponent
+                if (WallHelper.IsNonKillableGroup(opponentBoard))
+                    opponentTryMove.IsNeutralPoint = true;
+            }
             return true;
         }
 
@@ -247,9 +247,8 @@ namespace Go
                     return true;
             }
 
-            List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).ToList();
-
             //not ko enabled
+            List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).ToList();
             if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo) && eyeGroups.Any(e => e.Points.Count == 1 && e.Liberties.Count == 1))
                 return false;
 
@@ -314,8 +313,7 @@ namespace Go
                 foreach (Group targetGroup in AtariHelper.AtariByGroup(ngroup, board))
                 {
                     Board b = ImmovableHelper.CaptureSuicideGroup(board, targetGroup, true);
-                    if (b == null) continue;
-                    if (ImmovableHelper.CheckConnectAndDie(b, board.MoveGroup))
+                    if (b != null && ImmovableHelper.CheckConnectAndDie(b, board.MoveGroup))
                         return true;
                 }
             }
