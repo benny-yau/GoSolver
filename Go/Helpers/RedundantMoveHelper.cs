@@ -224,7 +224,6 @@ namespace Go
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" /> 
         /// Set as neutral point <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16490" />
         /// Two covered eyes <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18" />
-        /// Three liberty eye group <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18_2" />
         /// </summary>
         public static Boolean FillKoEyeMove(GameTryMove tryMove)
         {
@@ -275,29 +274,7 @@ namespace Go
             //two covered eyes
             if (eyeGroups.Any(e => e.Liberties.Count == 2 && e.Liberties.All(lib => EyeHelper.FindCoveredEye(currentBoard, lib, c))))
                 return false;
-
-            //three liberty eye group
-            if (eyeGroups.Any(e => ThreeLibertyGroupNearCapture(currentBoard, e)))
-                return false;
-
             return true;
-        }
-
-        /// <summary>
-        /// Three liberty group near capture.
-        /// </summary>
-        private static Boolean ThreeLibertyGroupNearCapture(Board board, Group eyeGroup)
-        {
-            if (eyeGroup.Liberties.Count != 3) return false;
-            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, eyeGroup.Liberties, eyeGroup.Content.Opposite());
-            foreach (Board b in moveBoards)
-            {
-                if (!b.CapturedList.Any(p => p.Points.Count > 1)) continue;
-                if (WallHelper.IsNonKillableGroup(b)) continue;
-                if (ImmovableHelper.CheckConnectAndDie(b, eyeGroup))
-                    return true;
-            }
-            return false;
         }
 
         /// <summary>

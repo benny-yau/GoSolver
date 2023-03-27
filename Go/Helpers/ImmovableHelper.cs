@@ -659,6 +659,7 @@ namespace Go
         /// Check for opponent survival move <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q29475" /> 
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245_2" />
         /// Unstoppable group <see cref="UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_XuanXuanQiJing_A53" /> 
+        /// Check capture at liberty <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18_2" />
         /// Check suicidal group <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18_3" /> 
         /// </summary>
         public static (Boolean, Board) SuicideAtBigTigerMouth(GameTryMove tryMove)
@@ -707,20 +708,29 @@ namespace Go
                     return (true, b);
             }
 
-            //check suicidal group
+            //check three liberty group
             foreach (Group eyeGroup in eyeGroups)
             {
-                if (eyeGroup.Liberties.Count != 2 && eyeGroup.Liberties.Count != 3) continue;
+                if (eyeGroup.Liberties.Count != 3) continue;
                 List<Point> liberties = eyeGroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
                 foreach (Point liberty in liberties)
                 {
                     List<Group> groups = tryBoard.GetGroupsFromStoneNeighbours(liberty, c.Opposite()).Where(n => !n.Equals(tryBoard.MoveGroup)).ToList();
                     foreach (Group group in groups)
                     {
+                        if (tryBoard.GetNeighbourGroups(group).Any(n => WallHelper.IsNonKillableGroup(tryBoard, n))) continue;
+                        //check capture at liberty
+                        if (group.Liberties.Count == 1 && group.Points.Count > 1 && EyeHelper.IsCovered(tryBoard, group.Liberties.First(), c))
+                        {
+                            Board b = currentBoard.MakeMoveOnNewBoard(group.Liberties.First(), c);
+                            if (b != null && b.MoveGroupLiberties <= 2)
+                                return (true, null);
+                        }
+                        //check suicidal group
                         if (ImmovableHelper.CheckConnectAndDie(tryBoard, group)) continue;
                         if (ImmovableHelper.ThreeLibertyConnectAndDie(currentBoard, liberty, group).Item1)
                             return (true, null);
-                        if (eyeGroup.Liberties.Count == 3 && ImmovableHelper.CheckConnectAndDie(currentBoard, group)) return (true, null);
+                        if (ImmovableHelper.CheckConnectAndDie(currentBoard, group)) return (true, null);
                     }
                 }
             }
