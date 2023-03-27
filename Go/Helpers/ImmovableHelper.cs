@@ -722,8 +722,8 @@ namespace Go
                         //check capture at liberty
                         if (group.Liberties.Count == 1 && group.Points.Count > 1 && EyeHelper.IsCovered(tryBoard, group.Liberties.First(), c))
                         {
-                            Board b = ImmovableHelper.CaptureSuicideGroup(currentBoard, group);
-                            if (b != null && ImmovableHelper.CheckConnectAndDie(b, eyeGroup))
+                            Board b = currentBoard.MakeMoveOnNewBoard(group.Liberties.First(), c);
+                            if (b != null && b.MoveGroupLiberties <= 2)
                                 return (true, null);
                         }
                         //check suicidal group
