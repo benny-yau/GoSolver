@@ -35,6 +35,9 @@ namespace Go
                 //covered eye with more than two liberties
                 if (currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).Any(group => group.Liberties.Count <= 2))
                     return false;
+                //check three liberty group
+                if (ImmovableHelper.CheckThreeLibertyGroupAtBigTigerMouth(tryMove))
+                    return false;
             }
             return true;
         }

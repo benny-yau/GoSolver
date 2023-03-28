@@ -793,8 +793,14 @@
             Check for opponent survival move <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q29475" /> 
             <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245_2" />
             Unstoppable group <see cref="!:UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_XuanXuanQiJing_A53" /> 
+            </summary>
+        </member>
+        <member name="M:Go.ImmovableHelper.CheckThreeLibertyGroupAtBigTigerMouth(Go.GameTryMove)">
+            <summary>
+            Check three liberty group at big tiger mouth.
             Check capture at liberty <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18_2" />
             Check suicidal group <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18_3" /> 
+            <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18_4" /> 
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.PreAtariMove(Go.GameTryMove)">
