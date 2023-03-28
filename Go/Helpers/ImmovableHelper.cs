@@ -717,6 +717,7 @@ namespace Go
         /// Check capture at liberty <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18_2" />
         /// Check suicidal group <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18_3" /> 
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18_4" /> 
+        /// Check covered eye suicidal group <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18_5" /> 
         /// </summary>
         public static Boolean CheckThreeLibertyGroupAtBigTigerMouth(GameTryMove tryMove)
         {
@@ -747,6 +748,9 @@ namespace Go
                         if (ImmovableHelper.ThreeLibertyConnectAndDie(currentBoard, liberty, group).Item1)
                             return true;
                         if (ImmovableHelper.CheckConnectAndDie(currentBoard, group)) return true;
+                        //check covered eye suicidal group
+                        if (EyeHelper.FindCoveredEye(currentBoard, liberty, c) && EyeHelper.FindCoveredEye(currentBoard, move, c) && !KoHelper.IsKoFight(currentBoard, move, c).Item1)
+                            return true;
                     }
                 }
             }

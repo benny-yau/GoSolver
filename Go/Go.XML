@@ -801,6 +801,7 @@
             Check capture at liberty <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18_2" />
             Check suicidal group <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18_3" /> 
             <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18_4" /> 
+            Check covered eye suicidal group <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18_5" /> 
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.PreAtariMove(Go.GameTryMove)">
