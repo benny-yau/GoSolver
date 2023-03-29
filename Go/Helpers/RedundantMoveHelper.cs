@@ -1302,6 +1302,11 @@ namespace Go
                 if (Math.Abs(p.y - q.y) > 2) return false;
                 int y_min = Math.Min(p.y, q.y);
                 int y_max = Math.Max(p.y, q.y);
+                if (p.y.Equals(q.y)) //leap on same line
+                {
+                    y_min -= 1;
+                    y_max += 1;
+                }
                 for (int i = y_min; i <= y_max; i++)
                 {
                     int middle_x = (p.x > q.x) ? q.x + 1 : q.x - 1;
@@ -1313,15 +1318,23 @@ namespace Go
                 if (Math.Abs(p.x - q.x) > 2) return false;
                 int x_min = Math.Min(p.x, q.x);
                 int x_max = Math.Max(p.x, q.x);
+                if (p.x.Equals(q.x)) //leap on same line
+                {
+                    x_min -= 1;
+                    x_max += 1;
+                }
                 for (int i = x_min; i <= x_max; i++)
                 {
                     int middle_y = (p.y < q.y) ? q.y - 1 : q.y + 1;
                     middlePoints.Add(new Point(i, middle_y));
                 }
             }
+            //check for same content at middle points
             middlePoints.RemoveAll(n => !tryBoard.PointWithinBoard(n));
             if (middlePoints.Count == 0 || middlePoints.Any(t => tryBoard[t] == c)) return false;
             //check for opposite content at middle points
+            if (p.y.Equals(q.y)) middlePoints.RemoveAll(n => n.y != p.y);
+            if (p.x.Equals(q.x)) middlePoints.RemoveAll(n => n.x != p.x);
             if (middlePoints.All(n => tryBoard[n] == c.Opposite()))
                 return false;
             return true;
@@ -1562,7 +1575,9 @@ namespace Go
             //ensure eye cannot be created at any stone or diagonal neighbours
             if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(tryBoard))
                 return false;
-
+            //check link for groups
+            if (LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard))
+                return false;
             //check for double ko
             if (KoHelper.NeutralPointDoubleKo(tryBoard, currentBoard))
                 return false;
