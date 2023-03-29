@@ -690,7 +690,7 @@ namespace Go
             Group group = tryBoard.GetCurrentGroup(targetGroup);
 
             //capture move
-            (_, Board b) = ImmovableHelper.ConnectAndDie(tryBoard, group);
+            (_, Board b) = ImmovableHelper.ConnectAndDie(tryBoard, group, false);
             if (b == null || b.IsCapturedGroup(group)) return false;
 
             //check weak group
@@ -706,7 +706,7 @@ namespace Go
             foreach (Group gr in AtariHelper.AtariByGroup(group, b))
             {
                 Board b3 = ImmovableHelper.CaptureSuicideGroup(b, gr);
-                if (b3 == null || KoHelper.IsKoFight(b3)) continue;
+                if (b3 == null) continue;
                 Group target = b3.GetCurrentGroup(group);
                 if (b3 != null && target.Liberties.Count == 2 && CheckWeakGroupInConnectAndDie(b3, target))
                     return true;
@@ -1333,9 +1333,7 @@ namespace Go
             middlePoints.RemoveAll(n => !tryBoard.PointWithinBoard(n));
             if (middlePoints.Count == 0 || middlePoints.Any(t => tryBoard[t] == c)) return false;
             //check for opposite content at middle points
-            if (p.y.Equals(q.y)) middlePoints.RemoveAll(n => n.y != p.y);
-            if (p.x.Equals(q.x)) middlePoints.RemoveAll(n => n.x != p.x);
-            if (middlePoints.All(n => tryBoard[n] == c.Opposite()))
+            if (middlePoints.Count(n => tryBoard[n] == c.Opposite()) >= 2)
                 return false;
             return true;
         }
