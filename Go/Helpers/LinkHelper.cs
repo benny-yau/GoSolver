@@ -117,7 +117,7 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             List<Point> closestNeighbours = tryBoard.GetClosestPoints(move, c);
             //validate leap move
-            closestNeighbours = closestNeighbours.Where(leapMove => RedundantMoveHelper.ValidateLeapMove(tryBoard, move, leapMove, false)).ToList();
+            closestNeighbours = closestNeighbours.Where(leapMove => RedundantMoveHelper.ValidateLeapMove(tryBoard, move, leapMove)).ToList();
 
             //add to groups with linked point
             foreach (Point p in closestNeighbours)

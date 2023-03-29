@@ -275,7 +275,7 @@ namespace Go
                 return false;
 
             //two covered eyes
-            if (eyeGroups.Any(e => e.Liberties.Count == 2 && e.Liberties.All(lib => EyeHelper.FindCoveredEye(currentBoard, lib, c))))
+            if (eyeGroups.Any(e => e.Liberties.Count == 2 && e.Liberties.All(lib => EyeHelper.FindCoveredEye(currentBoard, lib, c) && !KoHelper.IsKoFight(currentBoard, lib, c).Item1)))
                 return false;
             return true;
         }
@@ -1290,10 +1290,9 @@ namespace Go
         }
 
         /// <summary>
-        /// For leap on same line, check for non killable group between the two points as well as one space above or below the space between the leap.
-        /// For leap on different lines, check for non killable group between the two points from min to max of the lines.
+        /// Validate leap move.
         /// </summary>
-        public static Boolean ValidateLeapMove(Board tryBoard, Point p, Point q, Boolean checkNonKillable = true)
+        public static Boolean ValidateLeapMove(Board tryBoard, Point p, Point q)
         {
             Content c = tryBoard[p];
             //get middle points between the leap points
@@ -1303,11 +1302,6 @@ namespace Go
                 if (Math.Abs(p.y - q.y) > 2) return false;
                 int y_min = Math.Min(p.y, q.y);
                 int y_max = Math.Max(p.y, q.y);
-                if (p.y.Equals(q.y) && !tryBoard.PointWithinMiddleArea(p) && !tryBoard.PointWithinMiddleArea(q)) //leap on same line
-                {
-                    y_min -= 1;
-                    y_max += 1;
-                }
                 for (int i = y_min; i <= y_max; i++)
                 {
                     int middle_x = (p.x > q.x) ? q.x + 1 : q.x - 1;
@@ -1319,11 +1313,6 @@ namespace Go
                 if (Math.Abs(p.x - q.x) > 2) return false;
                 int x_min = Math.Min(p.x, q.x);
                 int x_max = Math.Max(p.x, q.x);
-                if (p.x.Equals(q.x) && !tryBoard.PointWithinMiddleArea(p) && !tryBoard.PointWithinMiddleArea(q)) //leap on same line
-                {
-                    x_min -= 1;
-                    x_max += 1;
-                }
                 for (int i = x_min; i <= x_max; i++)
                 {
                     int middle_y = (p.y < q.y) ? q.y - 1 : q.y + 1;
@@ -1333,7 +1322,7 @@ namespace Go
             middlePoints.RemoveAll(n => !tryBoard.PointWithinBoard(n));
             if (middlePoints.Count == 0 || middlePoints.Any(t => tryBoard[t] == c)) return false;
             //check for opposite content at middle points
-            if (checkNonKillable && middlePoints.Any(n => tryBoard[n] == c.Opposite() && WallHelper.IsNonKillableGroup(tryBoard, n)))
+            if (middlePoints.All(n => tryBoard[n] == c.Opposite()))
                 return false;
             return true;
         }
@@ -1572,9 +1561,6 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             //ensure eye cannot be created at any stone or diagonal neighbours
             if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(tryBoard))
-                return false;
-            //check link for groups
-            if (LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard))
                 return false;
 
             //check for double ko

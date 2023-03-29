@@ -1627,10 +1627,9 @@
             Not redundant leap move <see cref="!:UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_GuanZiPu_B3" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.ValidateLeapMove(Go.Board,Go.Point,Go.Point,System.Boolean)">
+        <member name="M:Go.RedundantMoveHelper.ValidateLeapMove(Go.Board,Go.Point,Go.Point)">
             <summary>
-            For leap on same line, check for non killable group between the two points as well as one space above or below the space between the leap.
-            For leap on different lines, check for non killable group between the two points from min to max of the lines.
+            Validate leap move.
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.NeutralPointSurvivalMove(Go.GameTryMove,Go.GameTryMove)">
