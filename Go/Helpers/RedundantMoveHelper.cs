@@ -1491,17 +1491,14 @@ namespace Go
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_x" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_x_2" />
         /// </summary>
-        private static Boolean CheckLibertyFightAtCoveredEye(Board board, Point eye, Content c)
+        private static Boolean CheckLibertyFightAtCoveredEye(Board currentBoard, Point eye, Content c)
         {
-            Group group = board.GetGroupsFromStoneNeighbours(eye, c.Opposite()).FirstOrDefault(n => !n.Equals(board.MoveGroup));
+            Group group = currentBoard.GetGroupsFromStoneNeighbours(eye, c.Opposite()).FirstOrDefault();
             if (group == null) return false;
-            foreach (Group ngroup in LinkHelper.GetAllDiagonalConnectedGroups(board, group))
-            {
-                (_, List<Point> pointsBetweenDiagonals) = LinkHelper.FindDiagonalCut(board, ngroup);
-                if (pointsBetweenDiagonals == null) continue;
-                if (ngroup.Liberties.Select(lib => GroupHelper.GetKillerGroupFromCache(board, lib, c)).Any(kgroup => kgroup != null && EyeHelper.FindRealEyeWithinEmptySpace(board, kgroup)))
-                    return true;
-            }
+            List<Group> groups = LinkHelper.GetAllDiagonalConnectedGroups(currentBoard, group).ToList();
+            if (!groups.Any(n => LinkHelper.FindDiagonalCut(currentBoard, n).Item1 != null)) return false;
+            if (currentBoard.GetLibertiesOfGroups(groups).Select(lib => GroupHelper.GetKillerGroupFromCache(currentBoard, lib, c)).Any(kgroup => kgroup != null && EyeHelper.FindRealEyeWithinEmptySpace(currentBoard, kgroup)))
+                return true;
             return false;
         }
 
@@ -2246,15 +2243,15 @@ namespace Go
                 return false;
 
             //count possible eyes created
-            Dictionary<Point, int> fillerMoves = new Dictionary<Point, int>();
+            /*Dictionary<Point, int> fillerMoves = new Dictionary<Point, int>();
             emptyPoints.ForEach(p => fillerMoves.Add(p, PossibleEyesCreated(currentBoard, p, c)));
             int maxPossibleEyes = fillerMoves.Max(f => f.Value);
             List<Point> bestMoves = fillerMoves.Where(m => m.Value == maxPossibleEyes).Select(f => f.Key).ToList();
 
             if (bestMoves.Count == 1)
-                return !tryMove.Move.Equals(bestMoves.First());
+                return !tryMove.Move.Equals(bestMoves.First());*/
             //select move with max binding
-            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, bestMoves, c.Opposite());
+            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, emptyPoints, c.Opposite());
             if (!moveBoards.Any()) return false;
             Point bestMove = KillerFormationHelper.GetMaxBindingPoint(currentBoard, moveBoards, killerGroup);
             return !tryMove.Move.Equals(bestMove);
