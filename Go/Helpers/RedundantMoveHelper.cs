@@ -711,7 +711,7 @@ namespace Go
                 Board b3 = ImmovableHelper.CaptureSuicideGroup(b, gr);
                 if (b3 == null) continue;
                 Group target = b3.GetCurrentGroup(group);
-                if (b3 != null && target.Liberties.Count == 2 && CheckWeakGroupInConnectAndDie(b3, target))
+                if (target.Liberties.Count == 2 && CheckWeakGroupInConnectAndDie(b3, target))
                     return true;
                 if (!b3.MoveGroup.Equals(target) && GetWeakGroup(b, b3.MoveGroup))
                     return true;
@@ -1460,10 +1460,8 @@ namespace Go
 
             //capture at liberty
             List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).Where(e => e.Points.Count >= 2 && e.Liberties.Count == 2).ToList();
-
             IEnumerable<Point> moves = eyeGroups.Select(e => e.Liberties.First(lib => !lib.Equals(move)));
-            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, moves, c.Opposite());
-            if (moveBoards.Any(b => b.CapturedList.Any(gr => gr.Points.Count >= 2)))
+            if (moves.Any(p => tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Any(n => !n.Equals(tryBoard.MoveGroup) && n.Liberties.Count == 1 && n.Points.Count >= 2)))
                 return true;
             return false;
         }
@@ -1491,10 +1489,13 @@ namespace Go
         /// <summary>
         /// Check liberty fight at covered eye.
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_x" />
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_x_2" />
         /// </summary>
         private static Boolean CheckLibertyFightAtCoveredEye(Board board, Point eye, Content c)
         {
-            foreach (Group ngroup in board.GetGroupsFromStoneNeighbours(eye, c.Opposite()))
+            Group group = board.GetGroupsFromStoneNeighbours(eye, c.Opposite()).FirstOrDefault(n => !n.Equals(board.MoveGroup));
+            if (group == null) return false;
+            foreach (Group ngroup in LinkHelper.GetAllDiagonalConnectedGroups(board, group))
             {
                 (_, List<Point> pointsBetweenDiagonals) = LinkHelper.FindDiagonalCut(board, ngroup);
                 if (pointsBetweenDiagonals == null) continue;
@@ -1691,16 +1692,14 @@ namespace Go
                 GameTryMove neutralPointMove = neutralPointMoves[i];
                 Board tryBoard = neutralPointMove.TryGame.Board;
                 Point move = neutralPointMove.Move;
-                if (tryBoard.MoveGroupLiberties == 1) continue;
                 IEnumerable<Group> targetGroups = tryBoard.GetGroupsFromStoneNeighbours(move);
                 //ensure target group has two liberties and share at least one liberty with killer group
                 foreach (Group group in targetGroups)
                 {
                     if (groups.Contains(group)) continue;
                     groups.Add(group);
-                    HashSet<Point> targetLiberties = group.Liberties;
-                    if (targetLiberties.Count != 2) continue;
-                    List<Point> sharedLiberties = targetLiberties.Intersect(killerLiberties).ToList();
+                    if (group.Liberties.Count != 2) continue;
+                    List<Point> sharedLiberties = group.Liberties.Intersect(killerLiberties).ToList();
                     if (sharedLiberties.Count >= 1 && sharedLiberties.Count <= 2)
                     {
                         //check that both players cannot clear space
