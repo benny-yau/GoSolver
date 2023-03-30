@@ -27,6 +27,7 @@ namespace Go
                 if (!tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindCoveredEye(tryBoard, n, c)))
                     return false;
             }
+            if (tryBoard.GetStoneNeighbours().All(n => tryBoard[n] == c)) return false;
 
             //get all possible link groups
             List<Point> groupPoints = currentBoard.GetStoneAndDiagonalNeighbours(move).Where(n => currentBoard[n] == c).ToList();
@@ -117,7 +118,7 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             List<Point> closestNeighbours = tryBoard.GetClosestPoints(move, c);
             //validate leap move
-            closestNeighbours = closestNeighbours.Where(leapMove => RedundantMoveHelper.ValidateLeapMove(tryBoard, move, leapMove)).ToList();
+            closestNeighbours = closestNeighbours.Where(leapMove => ValidateLeapMove(tryBoard, move, leapMove)).ToList();
 
             //add to groups with linked point
             foreach (Point p in closestNeighbours)
@@ -127,6 +128,60 @@ namespace Go
                 group.LinkedPoint = new LinkedPoint<Point>(move, p);
                 groups.Add(group);
             }
+        }
+
+        /// <summary>
+        /// Validate leap move.
+        /// </summary>
+        public static Boolean ValidateLeapMove(Board tryBoard, Point p, Point q)
+        {
+            Content c = tryBoard[p];
+            //get middle points between the leap points
+            List<Point> middlePoints = new List<Point>();
+            if (Math.Abs(p.x - q.x) == 2)
+            {
+                if (Math.Abs(p.y - q.y) > 2) return false;
+                int y_min = Math.Min(p.y, q.y);
+                int y_max = Math.Max(p.y, q.y);
+                if (p.y.Equals(q.y)) //leap on same line
+                {
+                    y_min -= 1;
+                    y_max += 1;
+                }
+                for (int i = y_min; i <= y_max; i++)
+                {
+                    int middle_x = (p.x > q.x) ? q.x + 1 : q.x - 1;
+                    middlePoints.Add(new Point(middle_x, i));
+                }
+            }
+            else if (Math.Abs(p.y - q.y) == 2)
+            {
+                if (Math.Abs(p.x - q.x) > 2) return false;
+                int x_min = Math.Min(p.x, q.x);
+                int x_max = Math.Max(p.x, q.x);
+                if (p.x.Equals(q.x)) //leap on same line
+                {
+                    x_min -= 1;
+                    x_max += 1;
+                }
+                for (int i = x_min; i <= x_max; i++)
+                {
+                    int middle_y = (p.y < q.y) ? q.y - 1 : q.y + 1;
+                    middlePoints.Add(new Point(i, middle_y));
+                }
+            }
+            //check for same content at middle points
+            middlePoints.RemoveAll(n => !tryBoard.PointWithinBoard(n));
+            if (middlePoints.Count == 0 || middlePoints.Any(t => tryBoard[t] == c)) return false;
+            //check for opposite content at middle points
+            if (middlePoints.Count(n => tryBoard[n] == c.Opposite()) >= 2)
+            {
+                Boolean leapOnSameLine = p.y.Equals(q.y) || p.x.Equals(q.x);
+                if (!leapOnSameLine) return false;
+                if (middlePoints.Any(n => n.x == p.x || n.y == p.y))
+                    return false;
+            }
+            return true;
         }
 
         /// <summary>

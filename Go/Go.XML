@@ -1137,6 +1137,11 @@
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30274" />
             </summary>
         </member>
+        <member name="M:Go.LinkHelper.ValidateLeapMove(Go.Board,Go.Point,Go.Point)">
+            <summary>
+            Validate leap move.
+            </summary>
+        </member>
         <member name="M:Go.LinkHelper.IsAbsoluteLinkForGroups(Go.Board,Go.Board)">
             <summary>
             Is absolute link by stone only.
@@ -1415,7 +1420,7 @@
             Check for suicidal at other end <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16867" />
             Check for both alive <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_TianLongTu_Q16827" />
             Check link for groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30358_3" />
-            Set diagonal eye move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29273" />
+            Set neutral point move <see cref="!:UnitTestProject.MonteCarloRuntimeTest.MonteCarloRuntimeTest_Scenario_WuQingYuan_Q31499" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.KoFightAtBloatedEye(Go.Board,Go.Board)">
@@ -1625,11 +1630,6 @@
             Check non killable group <see cref="!:UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_XuanXuanGo_A23" />
             Check for kill move by survival <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_GuanZiPu_B3" />
             Not redundant leap move <see cref="!:UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_GuanZiPu_B3" />
-            </summary>
-        </member>
-        <member name="M:Go.RedundantMoveHelper.ValidateLeapMove(Go.Board,Go.Point,Go.Point)">
-            <summary>
-            Validate leap move.
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.NeutralPointSurvivalMove(Go.GameTryMove,Go.GameTryMove)">

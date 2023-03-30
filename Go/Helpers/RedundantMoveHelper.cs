@@ -277,6 +277,10 @@ namespace Go
             //two covered eyes
             if (eyeGroups.Any(e => e.Liberties.Count == 2 && e.Liberties.All(lib => EyeHelper.FindCoveredEye(currentBoard, lib, c) && !KoHelper.IsKoFight(currentBoard, lib, c).Item1)))
                 return false;
+
+            //set diagonal eye move
+            if (tryBoard.GetDiagonalNeighbours().Any(n => GroupHelper.GetKillerGroupFromCache(tryBoard, n, c) != null))
+                tryMove.IsDiagonalEyeMove = true;
             return true;
         }
 
@@ -478,7 +482,7 @@ namespace Go
         /// Check for suicidal at other end <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16867" />
         /// Check for both alive <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_TianLongTu_Q16827" />
         /// Check link for groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30358_3" />
-        /// Set diagonal eye move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29273" />
+        /// Set neutral point move <see cref="UnitTestProject.MonteCarloRuntimeTest.MonteCarloRuntimeTest_Scenario_WuQingYuan_Q31499" />
         /// </summary>
         private static Boolean MultiPointOpponentSuicidalMove(GameTryMove tryMove, GameTryMove opponentMove)
         {
@@ -517,10 +521,9 @@ namespace Go
             if (LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard))
                 return false;
 
-            if (WallHelper.IsNonKillableGroup(tryBoard)) //set neutral point move
+            //set neutral point move
+            if (WallHelper.IsNonKillableGroup(tryBoard))
                 tryMove.IsNeutralPoint = true;
-            if (tryBoard.GetDiagonalNeighbours().Any(n => GroupHelper.GetKillerGroupFromCache(tryBoard, n, c) != null)) //set diagonal eye move
-                tryMove.IsDiagonalEyeMove = true;
             return true;
         }
 
@@ -1274,7 +1277,7 @@ namespace Go
             if (closestNeighbours.Count == 0) return false;
 
             //validate if leap move is redundant
-            if (closestNeighbours.All(leapMove => !ValidateLeapMove(tryBoard, move, leapMove)))
+            if (closestNeighbours.All(leapMove => !LinkHelper.ValidateLeapMove(tryBoard, move, leapMove)))
                 return true;
 
             return false;
@@ -1287,55 +1290,6 @@ namespace Go
             if (move != null)
                 return SurvivalLeapMove(move);
             return false;
-        }
-
-        /// <summary>
-        /// Validate leap move.
-        /// </summary>
-        public static Boolean ValidateLeapMove(Board tryBoard, Point p, Point q)
-        {
-            Content c = tryBoard[p];
-            //get middle points between the leap points
-            List<Point> middlePoints = new List<Point>();
-            if (Math.Abs(p.x - q.x) == 2)
-            {
-                if (Math.Abs(p.y - q.y) > 2) return false;
-                int y_min = Math.Min(p.y, q.y);
-                int y_max = Math.Max(p.y, q.y);
-                if (p.y.Equals(q.y)) //leap on same line
-                {
-                    y_min -= 1;
-                    y_max += 1;
-                }
-                for (int i = y_min; i <= y_max; i++)
-                {
-                    int middle_x = (p.x > q.x) ? q.x + 1 : q.x - 1;
-                    middlePoints.Add(new Point(middle_x, i));
-                }
-            }
-            else if (Math.Abs(p.y - q.y) == 2)
-            {
-                if (Math.Abs(p.x - q.x) > 2) return false;
-                int x_min = Math.Min(p.x, q.x);
-                int x_max = Math.Max(p.x, q.x);
-                if (p.x.Equals(q.x)) //leap on same line
-                {
-                    x_min -= 1;
-                    x_max += 1;
-                }
-                for (int i = x_min; i <= x_max; i++)
-                {
-                    int middle_y = (p.y < q.y) ? q.y - 1 : q.y + 1;
-                    middlePoints.Add(new Point(i, middle_y));
-                }
-            }
-            //check for same content at middle points
-            middlePoints.RemoveAll(n => !tryBoard.PointWithinBoard(n));
-            if (middlePoints.Count == 0 || middlePoints.Any(t => tryBoard[t] == c)) return false;
-            //check for opposite content at middle points
-            if (middlePoints.Count(n => tryBoard[n] == c.Opposite()) >= 2)
-                return false;
-            return true;
         }
         #endregion
 
@@ -2013,7 +1967,6 @@ namespace Go
         {
             if (!tryMove.IsNegligible)
                 return false;
-
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
