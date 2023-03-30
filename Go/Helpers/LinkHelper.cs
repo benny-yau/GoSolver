@@ -27,7 +27,6 @@ namespace Go
                 if (!tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindCoveredEye(tryBoard, n, c)))
                     return false;
             }
-            if (tryBoard.GetStoneNeighbours().All(n => tryBoard[n] == c)) return false;
 
             //get all possible link groups
             List<Point> groupPoints = currentBoard.GetStoneAndDiagonalNeighbours(move).Where(n => currentBoard[n] == c).ToList();
