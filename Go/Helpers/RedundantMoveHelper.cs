@@ -1502,6 +1502,16 @@ namespace Go
             return false;
         }
 
+        private static Boolean CheckLibertyFightAtCoveredEye(GameTryMove tryMove)
+        {
+            Board tryBoard = tryMove.TryGame.Board;
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Content c = tryMove.MoveContent;
+            if (tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindCoveredEye(tryBoard, n, c) && CheckLibertyFightAtCoveredEye(currentBoard, n, c)))
+                return true;
+            return false;
+        }
+
         /// <summary>
         /// Check liberty fight at must have move.
         /// </summary>
@@ -1537,12 +1547,17 @@ namespace Go
                 return false;
 
             //check liberty fight
-            if (tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindCoveredEye(tryBoard, n, c) && CheckLibertyFightAtCoveredEye(currentBoard, n, c)))
+            if (CheckLibertyFightAtCoveredEye(tryMove))
                 return false;
 
             GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
-            if (opponentMove != null && NeutralPointSuicidalMove(opponentMove))
-                return false;
+            if (opponentMove != null)
+            {
+                if (NeutralPointSuicidalMove(opponentMove))
+                    return false;
+                if (CheckLibertyFightAtCoveredEye(opponentMove))
+                    return false;
+            }
             return true;
         }
 
