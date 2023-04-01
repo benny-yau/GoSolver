@@ -58,9 +58,7 @@ namespace Go
 
             //find covered eye for opponent
             GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
-            if (opponentMove == null) return false;
-
-            if (FindCoveredEyeMove(opponentMove, tryMove))
+            if (opponentMove != null && FindCoveredEyeMove(opponentMove, tryMove))
                 return true;
 
             return false;
@@ -1537,7 +1535,6 @@ namespace Go
         {
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
-            Content c = tryBoard.MoveGroup.Content;
             //ensure eye cannot be created at any stone or diagonal neighbours
             if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(tryBoard))
                 return false;
@@ -1557,13 +1554,9 @@ namespace Go
                 return false;
 
             GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
-            if (opponentMove != null)
-            {
-                if (NeutralPointSuicidalMove(opponentMove))
-                    return false;
-                if (CheckLibertyFightAtCoveredEye(opponentMove))
-                    return false;
-            }
+            if (opponentMove != null && NeutralPointSuicidalMove(opponentMove))
+                return false;
+
             return true;
         }
 
@@ -1908,7 +1901,7 @@ namespace Go
                 }
                 //check killer groups
                 Group diagonalKillerGroup = GroupHelper.GetKillerGroupOfNeighbourGroups(currentBoard, d, c.Opposite());
-                if (diagonalKillerGroup == null || AtariHelper.AtariByGroup(currentBoard, diagonalKillerGroup)) continue;
+                if (diagonalKillerGroup == null || !WallHelper.StrongNeighbourGroups(currentBoard, currentBoard.GetNeighbourGroups(diagonalKillerGroup))) continue;
 
                 Group moveKillerGroup = GroupHelper.GetKillerGroupOfNeighbourGroups(currentBoard, move, c.Opposite());
                 if (moveKillerGroup != null) continue;
