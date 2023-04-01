@@ -1908,7 +1908,10 @@ namespace Go
 
                 //find immovable point at diagonal
                 if (ImmovableHelper.IsImmovablePoint(d, c.Opposite(), currentBoard).Item1)
-                    return true;
+                {
+                    if (currentBoard[d] == Content.Empty || (currentBoard[d] == c && GroupHelper.IsSingleGroupWithinKillerGroup(currentBoard, currentBoard.GetGroupAt(d))))
+                        return true;
+                }
             }
 
             //no diagonal tiger mouth
@@ -1986,7 +1989,7 @@ namespace Go
             List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(q => tryBoard[q] != c).ToList();
             diagonals = diagonals.Where(eye => LinkHelper.PointsBetweenDiagonals(eye, move).All(d => tryBoard[d] == c)).ToList();
             if (diagonals.Count == 0) return false;
-            diagonals.RemoveAll(d => GroupHelper.GetKillerGroupFromCache(currentBoard, d, c) == null);
+            diagonals.RemoveAll(d => GroupHelper.GetKillerGroupOfNeighbourGroups(currentBoard, d, c) == null);
             if (diagonals.Count == 0) return false;
 
             //check diagonals are real eyes

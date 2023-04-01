@@ -120,7 +120,7 @@ namespace Go
             if (group == null) group = tryBoard.MoveGroup;
             Content c = group.Content;
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, group.Points.First(), c.Opposite());
-            if (killerGroup == null || killerGroup.Points.Any(p => !group.Points.Contains(p) && tryBoard[p] == c)) return false;
+            if (killerGroup == null || killerGroup.Points.Any(p => tryBoard[p] == c && !group.Points.Contains(p))) return false;
             if (checkLiberties && tryBoard.GetNeighbourGroups(killerGroup).Any(gr => gr.Liberties.Count == 1)) return false;
             return true;
         }
