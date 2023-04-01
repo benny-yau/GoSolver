@@ -242,8 +242,6 @@ namespace Go
         public static Boolean NeutralPointDoubleKo(Board tryBoard, Board currentBoard)
         {
             Content c = tryBoard.MoveGroup.Content;
-            Boolean koEnabled = KoHelper.KoContentEnabled(c, tryBoard.GameInfo);
-            if (koEnabled) return false;
             List<Point> stoneNeighbours = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindCoveredEye(tryBoard, n, c)).ToList();
             if (stoneNeighbours.Count != 1) return false;
             Point eyePoint = stoneNeighbours.First();

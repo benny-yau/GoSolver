@@ -25,9 +25,8 @@ namespace Go
             //find uncovered eye
             if (EyeHelper.FindUncoveredPoint(currentBoard, move, c))
             {
-                if (tryBoard.MoveGroupLiberties != 1) return true;
                 //check for killer formations
-                if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard))
+                if (tryBoard.MoveGroupLiberties == 1 && KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard))
                     return false;
             }
             else
@@ -279,7 +278,7 @@ namespace Go
                 return false;
 
             //set diagonal eye move
-            if (tryBoard.GetDiagonalNeighbours().Any(n => GroupHelper.GetKillerGroupFromCache(tryBoard, n, c) != null))
+            if (tryBoard.GetDiagonalNeighbours().Any(n => EyeHelper.FindUncoveredEye(currentBoard, n, c) && !ImmovableHelper.IsImmovablePoint(move, c, currentBoard).Item1))
                 tryMove.IsDiagonalEyeMove = true;
             return true;
         }
