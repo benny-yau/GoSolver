@@ -222,10 +222,11 @@ namespace Go
         /// Check survival eye <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A36" /> 
         /// <see cref="UnitTestProject.KoTest.KoTest_Scenario_Corner_A80" /> 
         /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WuQingYuan_Q30982" /> 
-        /// Check opponent double ko <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_2" /> 
-        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" /> 
-        /// Set as neutral point <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16490" />
         /// Two covered eyes <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18" />
+        /// Check double ko <see cref = "UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16975" />
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" /> 
+        /// <see cref = "UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_2" />
+        /// Set as neutral point <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16490" />
         /// </summary>
         public static Boolean FillKoEyeMove(GameTryMove tryMove)
         {
@@ -268,17 +269,23 @@ namespace Go
             if (ImmovableHelper.SuicideAtBigTigerMouth(tryMove).Item1)
                 return false;
 
-            //check opponent double ko
-            Board opponentBoard = currentBoard.MakeMoveOnNewBoard(move, c.Opposite(), true);
-            if (opponentBoard != null && KoHelper.IsKoFight(opponentBoard) && KoHelper.PossibilityOfDoubleKo(opponentBoard, currentBoard))
-                return false;
-
             //two covered eyes
             if (eyeGroups.Any(e => e.Liberties.Count == 2 && e.Liberties.All(lib => EyeHelper.FindCoveredEye(currentBoard, lib, c) && !KoHelper.IsKoFight(currentBoard, lib, c).Item1)))
                 return false;
 
+            //check double ko
+            Board b = currentBoard.MakeMoveOnNewBoard(move, c.Opposite(), true);
+            if (b != null)
+            {
+                if (KoHelper.IsKoFight(b) && KoHelper.PossibilityOfDoubleKo(b, currentBoard))
+                    return false;
+                Board b2 = ImmovableHelper.CaptureSuicideGroup(b);
+                if (b2 != null && KoHelper.IsKoFight(b2) && KoHelper.PossibilityOfDoubleKo(b2, b))
+                    return false;
+            }
+
             //set diagonal eye move
-            if (tryBoard.GetDiagonalNeighbours().Any(n => EyeHelper.FindUncoveredEye(currentBoard, n, c) && !ImmovableHelper.IsImmovablePoint(move, c, currentBoard).Item1))
+            if (tryBoard.GetDiagonalNeighbours().Any(n => EyeHelper.FindEye(currentBoard, n, c) && !ImmovableHelper.IsImmovablePoint(move, c, currentBoard).Item1))
                 tryMove.IsDiagonalEyeMove = true;
             return true;
         }
