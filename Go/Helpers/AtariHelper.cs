@@ -9,8 +9,7 @@ namespace Go
     public class AtariHelper
     {
         /// <summary>
-        /// Find target groups where the neighbour group of the move is reduced to liberty of one only.
-        /// Resolved atari is where the group of the move has increased liberty from one.
+        /// Find and resolve atari.
         /// <see cref="UnitTestProject.FindAndResolveAtariTest.FindAndResolveAtariTest_Scenario_XuanXuanGo_Q18358" />
         /// </summary>
         public static void FindAndResolveAtari(GameTryMove tryMove)
@@ -82,6 +81,34 @@ namespace Go
                 //check if any atari targets left
                 if (board.AtariTargets.Any(t => escapeBoard.GetGroupLiberties(t).Count == 1))
                     return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Is weak neighbour group.
+        /// </summary>
+        public static Boolean IsWeakNeighbourGroup(Board tryBoard, Group moveGroup)
+        {
+            if (WallHelper.IsNonKillableFromSetupMoves(tryBoard, moveGroup))
+                return false;
+
+            if (tryBoard.GetNeighbourGroups(moveGroup).Where(n => n.Liberties.Count <= 2).Any(gr => IsWeakGroup(tryBoard, gr)))
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Is weak group.
+        /// </summary>
+        public static Boolean IsWeakGroup(Board tryBoard, Group group)
+        {
+            foreach (Point liberty in group.Liberties)
+            {
+                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, group.Content.Opposite(), tryBoard, true);
+                if (suicidal || KoHelper.IsNonKillableGroupKoFight(b, b.MoveGroup)) continue;
+                if (WallHelper.IsNonKillableGroup(b)) continue;
+                return true;
             }
             return false;
         }

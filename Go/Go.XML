@@ -219,8 +219,7 @@
         </member>
         <member name="M:Go.AtariHelper.FindAndResolveAtari(Go.GameTryMove)">
             <summary>
-            Find target groups where the neighbour group of the move is reduced to liberty of one only.
-            Resolved atari is where the group of the move has increased liberty from one.
+            Find and resolve atari.
             <see cref="!:UnitTestProject.FindAndResolveAtariTest.FindAndResolveAtariTest_Scenario_XuanXuanGo_Q18358" />
             </summary>
         </member>
@@ -245,6 +244,16 @@
         <member name="M:Go.AtariHelper.DoubleAtariWithoutEscape(Go.Board)">
             <summary>
             Double atari without escape.
+            </summary>
+        </member>
+        <member name="M:Go.AtariHelper.IsWeakNeighbourGroup(Go.Board,Go.Group)">
+            <summary>
+            Is weak neighbour group.
+            </summary>
+        </member>
+        <member name="M:Go.AtariHelper.IsWeakGroup(Go.Board,Go.Group)">
+            <summary>
+            Is weak group.
             </summary>
         </member>
         <member name="M:Go.BothAliveHelper.EnableCheckForPassMove(Go.Board,Go.Content,System.Collections.Generic.List{Go.GameTryMove})">
@@ -1472,11 +1481,6 @@
             Check for double atari for one-point move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29481" />
             Check killable group with two or less liberties <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B6" />
             Check for weak group capturing atari group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B17" />
-            </summary>
-        </member>
-        <member name="M:Go.RedundantMoveHelper.GetWeakGroup(Go.Board,Go.Group)">
-            <summary>
-            Get weak group.
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.FindBloatedEyeSuicide(Go.GameTryMove,Go.Board)">

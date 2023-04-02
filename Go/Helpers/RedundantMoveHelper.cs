@@ -356,7 +356,9 @@ namespace Go
             if (escapeBoard2 != null) return false;
 
             //check for weak groups
-            if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Any(gr => gr.Liberties.Count <= 2)) return false;
+            if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Any(gr => AtariHelper.IsWeakGroup(currentBoard, gr)))
+                return false;
+
             return true;
         }
 
@@ -562,7 +564,7 @@ namespace Go
                 if (!ImmovableHelper.CheckConnectAndDie(captureBoard, escapeGroup))
                 {
                     //check weak group
-                    if (GetWeakGroup(captureBoard, escapeGroup))
+                    if (AtariHelper.IsWeakNeighbourGroup(captureBoard, escapeGroup))
                         return true;
                     //continue escape
                     if (escapeGroup.Liberties.Count == 2 && !WallHelper.IsHostileNeighbourGroup(captureBoard, escapeGroup))
@@ -576,7 +578,7 @@ namespace Go
             if (b == null) return true;
 
             //check weak group
-            if (GetWeakGroup(b, b.MoveGroup))
+            if (AtariHelper.IsWeakNeighbourGroup(b, b.MoveGroup))
                 return true;
             //continue escape
             if (b.MoveGroupLiberties == 2 && !WallHelper.IsHostileNeighbourGroup(b))
@@ -696,7 +698,7 @@ namespace Go
             if (b == null || b.IsCapturedGroup(group)) return false;
 
             //check weak group
-            if (GetWeakGroup(b, b.GetCurrentGroup(group)))
+            if (AtariHelper.IsWeakNeighbourGroup(b, b.GetCurrentGroup(group)))
                 return true;
 
             //escape move at liberty
@@ -712,29 +714,8 @@ namespace Go
                 Group target = b3.GetCurrentGroup(group);
                 if (target.Liberties.Count == 2 && CheckWeakGroupInConnectAndDie(b3, target))
                     return true;
-                if (!b3.MoveGroup.Equals(target) && GetWeakGroup(b, b3.MoveGroup))
+                if (!b3.MoveGroup.Equals(target) && AtariHelper.IsWeakNeighbourGroup(b, b3.MoveGroup))
                     return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Get weak group.
-        /// </summary>
-        private static Boolean GetWeakGroup(Board tryBoard, Group moveGroup)
-        {
-            if (WallHelper.IsNonKillableFromSetupMoves(tryBoard, moveGroup))
-                return false;
-
-            foreach (Group group in tryBoard.GetNeighbourGroups(moveGroup).Where(n => n.Liberties.Count <= 2))
-            {
-                foreach (Point liberty in group.Liberties)
-                {
-                    (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, group.Content.Opposite(), tryBoard, true);
-                    if (suicidal || KoHelper.IsNonKillableGroupKoFight(b, b.MoveGroup)) continue;
-                    if (WallHelper.IsNonKillableGroup(b)) continue;
-                    return true;
-                }
             }
             return false;
         }
