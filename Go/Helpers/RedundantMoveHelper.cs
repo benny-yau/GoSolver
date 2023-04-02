@@ -344,10 +344,9 @@ namespace Go
             (_, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(tryBoard, atariTarget);
             if (escapeBoard != null) return false;
 
-            //check for redundant atari within killer group
+            //check killer group
             Group killerGroup = GroupHelper.GetKillerGroupOfNeighbourGroups(currentBoard, atariPoint, c);
-            if (killerGroup == null) return false;
-            if (!GroupHelper.IsSingleGroupWithinKillerGroup(currentBoard, atariTarget)) return false;
+            if (killerGroup == null || !GroupHelper.IsSingleGroupWithinKillerGroup(currentBoard, atariTarget)) return false;
 
             //make move at the other liberty
             (Boolean suicidal, Board board) = ImmovableHelper.IsSuicidalMove(q, c, currentBoard);
@@ -358,10 +357,6 @@ namespace Go
 
             //check for weak groups
             if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Any(gr => gr.Liberties.Count <= 2)) return false;
-
-            //check for bloated eye
-            if (KoFightAtBloatedEye(tryBoard, currentBoard))
-                return false;
             return true;
         }
 
@@ -1253,7 +1248,6 @@ namespace Go
             return true;
         }
         #endregion
-
 
         #region leap move
         /// <summary>
