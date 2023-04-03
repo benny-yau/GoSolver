@@ -680,7 +680,7 @@ namespace Go
                 Point liberty2 = b.MoveGroup.Liberties.First(lib => !lib.Equals(move));
                 //check for groups at liberty
                 List<Group> ngroups = b.GetGroupsFromStoneNeighbours(liberty2, c.Opposite()).Where(n => !n.Equals(b.MoveGroup)).ToList();
-                if (ngroups.Any(n => ImmovableHelper.CheckConnectAndDie(b, n) && (ngroups.Count > 1 || n.Points.Count > 1)))
+                if (!WallHelper.StrongNeighbourGroups(b, ngroups))
                     return (true, b);
 
                 //make block move
