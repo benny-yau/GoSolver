@@ -1438,9 +1438,9 @@ namespace Go
                 return true;
 
             //capture at liberty
-            List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).Where(e => e.Points.Count >= 2 && e.Liberties.Count == 2).ToList();
+            List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).Where(e => e.Liberties.Count == 2).ToList();
             IEnumerable<Point> moves = eyeGroups.Select(e => e.Liberties.First(lib => !lib.Equals(move)));
-            if (moves.Any(p => tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Any(n => !n.Equals(tryBoard.MoveGroup) && n.Liberties.Count == 1 && n.Points.Count >= 2)))
+            if (moves.Any(p => tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Any(n => !n.Equals(tryBoard.MoveGroup) && n.Liberties.Count == 1)))
                 return true;
             return false;
         }
@@ -2197,7 +2197,8 @@ namespace Go
 
         /// <summary>
         /// Return specific survival or killer move if killer group contains five points or less. 
-        /// Neighbour groups liberty more than one <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A37" />
+        /// Check killer group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Phenomena_Q25182" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A37" />
         /// Check immovable at liberties <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31602" />
         /// Not link for groups <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31537" />
         /// Prevent survival creating eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_4" />
@@ -2216,7 +2217,7 @@ namespace Go
             Content c = tryMove.MoveContent;
             if (!tryMove.IsNegligible) return false;
 
-            //neighbour groups should have liberty more than one
+            //check killer group
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c);
             if (killerGroup == null || !WallHelper.StrongNeighbourGroups(currentBoard, currentBoard.GetNeighbourGroups(killerGroup))) return false;
 
