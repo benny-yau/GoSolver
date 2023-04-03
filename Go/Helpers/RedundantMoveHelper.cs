@@ -2218,7 +2218,7 @@ namespace Go
 
             //neighbour groups should have liberty more than one
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c);
-            if (killerGroup == null || AtariHelper.AtariByGroup(currentBoard, killerGroup)) return false;
+            if (killerGroup == null || !WallHelper.StrongNeighbourGroups(currentBoard, currentBoard.GetNeighbourGroups(killerGroup))) return false;
 
             List<Point> emptyPoints = killerGroup.Points.Where(p => currentBoard[p] == Content.Empty).ToList();
 
@@ -2234,15 +2234,8 @@ namespace Go
             if (GroupHelper.IncreasedKillerGroups(tryBoard, currentBoard))
                 return false;
 
-            //count possible eyes created
-            Dictionary<Point, int> fillerMoves = new Dictionary<Point, int>();
-            emptyPoints.ForEach(p => fillerMoves.Add(p, KillerFormationHelper.PossibleEyesCreated(currentBoard, p, c)));
-            int maxPossibleEyes = fillerMoves.Max(f => f.Value);
-            List<Point> bestMoves = fillerMoves.Where(m => m.Value == maxPossibleEyes).Select(f => f.Key).ToList();
-            if (bestMoves.Count == 1) return !tryMove.Move.Equals(bestMoves.First());
-
             //select move with max binding
-            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, bestMoves, c.Opposite());
+            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, emptyPoints, c.Opposite());
             if (!moveBoards.Any()) return false;
             Point bestMove = KillerFormationHelper.GetMaxBindingPoint(currentBoard, moveBoards, killerGroup);
             return !tryMove.Move.Equals(bestMove);
