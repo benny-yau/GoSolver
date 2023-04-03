@@ -113,6 +113,20 @@ namespace Go
         }
 
         /// <summary>
+        /// Get killer group of strong neighbour groups.
+        /// </summary>
+        public static Group GetKillerGroupOfStrongNeighbourGroups(Board board, Point p, Content c)
+        {
+            Group killerGroup = GroupHelper.GetKillerGroupOfNeighbourGroups(board, p, c);
+            if (killerGroup == null) return null;
+
+            List<Group> groups = board.GetNeighbourGroups(killerGroup);
+            if (!WallHelper.StrongNeighbourGroups(board, groups)) return null;
+            if (AtariHelper.DoubleAtariOnTargetGroups(board, groups)) return null;
+            return killerGroup;
+        }
+
+        /// <summary>
         /// Is single group within killer group.
         /// </summary>
         public static Boolean IsSingleGroupWithinKillerGroup(Board tryBoard, Group group = null, Boolean checkLiberties = true)

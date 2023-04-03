@@ -248,8 +248,8 @@ namespace Go
                 {
                     //filled point
                     if (board[diagonal] != c.Opposite()) return true;
-                    Group killerGroup = GroupHelper.GetKillerGroupFromCache(board, diagonal, c);
-                    if (killerGroup == null || !WallHelper.StrongNeighbourGroups(board, board.GetNeighbourGroups(killerGroup))) continue;
+                    Group killerGroup = GroupHelper.GetKillerGroupOfStrongNeighbourGroups(board, diagonal, c);
+                    if (killerGroup == null) continue;
                     //ensure only one opponent group within killer group
                     if (!GroupHelper.IsSingleGroupWithinKillerGroup(board, board.GetGroupAt(diagonal))) continue;
                     //check capture secure

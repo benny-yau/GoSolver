@@ -1875,8 +1875,8 @@ namespace Go
                         return true;
                 }
                 //check killer groups
-                Group diagonalKillerGroup = GroupHelper.GetKillerGroupOfNeighbourGroups(currentBoard, d, c.Opposite());
-                if (diagonalKillerGroup == null || !WallHelper.StrongNeighbourGroups(currentBoard, currentBoard.GetNeighbourGroups(diagonalKillerGroup))) continue;
+                Group diagonalKillerGroup = GroupHelper.GetKillerGroupOfStrongNeighbourGroups(currentBoard, d, c.Opposite());
+                if (diagonalKillerGroup == null) continue;
 
                 Group moveKillerGroup = GroupHelper.GetKillerGroupOfNeighbourGroups(currentBoard, move, c.Opposite());
                 if (moveKillerGroup != null) continue;
