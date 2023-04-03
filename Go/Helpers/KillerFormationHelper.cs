@@ -1162,6 +1162,16 @@ namespace Go
         }
 
         /// <summary>
+        /// Return number of possible eyes that can be created at stone neighbour points.
+        /// </summary>
+        public static int PossibleEyesCreated(Board currentBoard, Point p, Content c)
+        {
+            List<Point> stoneNeighbours = currentBoard.GetStoneNeighbours(p);
+            List<Point> possibleEyes = stoneNeighbours.Where(n => currentBoard[n] != c).ToList();
+            return possibleEyes.Count;
+        }
+
+        /// <summary>
         /// Point for killer to form max binding.
         /// Ordering <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36_2" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q30919_2" />

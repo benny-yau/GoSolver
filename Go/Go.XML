@@ -1032,6 +1032,11 @@
             <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16859_2" />
             </summary>
         </member>
+        <member name="M:Go.KillerFormationHelper.PossibleEyesCreated(Go.Board,Go.Point,Go.Content)">
+            <summary>
+            Return number of possible eyes that can be created at stone neighbour points.
+            </summary>
+        </member>
         <member name="M:Go.KillerFormationHelper.GetMaxBindingPoint(Go.Board,System.Collections.Generic.IEnumerable{Go.Board},Go.Group)">
             <summary>
             Point for killer to form max binding.
@@ -1924,11 +1929,6 @@
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A61_2" />
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_A4" />
             Check for atari on neighbour groups <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36_2" />
-            </summary>
-        </member>
-        <member name="M:Go.RedundantMoveHelper.PossibleEyesCreated(Go.Board,Go.Point,Go.Content)">
-            <summary>
-            Return number of possible eyes that can be created at stone neighbour points.
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.RedundantSurvivalPreKoMove(Go.GameTryMove)">

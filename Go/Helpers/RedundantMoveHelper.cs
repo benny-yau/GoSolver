@@ -2134,7 +2134,7 @@ namespace Go
                 return false;
 
             //count eyes created at move
-            int possibleEyes = PossibleEyesCreated(currentBoard, move, c);
+            int possibleEyes = KillerFormationHelper.PossibleEyesCreated(currentBoard, move, c);
 
             List<Point> emptyNeighbours = tryBoard.GetStoneNeighbours().Where(p => tryBoard[p] == Content.Empty).ToList();
             foreach (Point p in emptyNeighbours)
@@ -2143,7 +2143,7 @@ namespace Go
                 if (currentBoard.GetStoneNeighbours(p).Any(n => currentBoard[n] == c.Opposite()))
                     continue;
                 //count eyes created at empty neighbour points
-                int possibleEyesAtNeighbourPt = PossibleEyesCreated(currentBoard, p, c);
+                int possibleEyesAtNeighbourPt = KillerFormationHelper.PossibleEyesCreated(currentBoard, p, c);
                 //possibility of eyes created more than at try move point
                 if (possibleEyesAtNeighbourPt > possibleEyes)
                     return true;
@@ -2234,21 +2234,18 @@ namespace Go
             if (GroupHelper.IncreasedKillerGroups(tryBoard, currentBoard))
                 return false;
 
+            //count possible eyes created
+            Dictionary<Point, int> fillerMoves = new Dictionary<Point, int>();
+            emptyPoints.ForEach(p => fillerMoves.Add(p, KillerFormationHelper.PossibleEyesCreated(currentBoard, p, c)));
+            int maxPossibleEyes = fillerMoves.Max(f => f.Value);
+            List<Point> bestMoves = fillerMoves.Where(m => m.Value == maxPossibleEyes).Select(f => f.Key).ToList();
+            if (bestMoves.Count == 1) return !tryMove.Move.Equals(bestMoves.First());
+
             //select move with max binding
-            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, emptyPoints, c.Opposite());
+            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, bestMoves, c.Opposite());
             if (!moveBoards.Any()) return false;
             Point bestMove = KillerFormationHelper.GetMaxBindingPoint(currentBoard, moveBoards, killerGroup);
             return !tryMove.Move.Equals(bestMove);
-        }
-
-        /// <summary>
-        /// Return number of possible eyes that can be created at stone neighbour points.
-        /// </summary>
-        public static int PossibleEyesCreated(Board currentBoard, Point p, Content c)
-        {
-            List<Point> stoneNeighbours = currentBoard.GetStoneNeighbours(p);
-            List<Point> possibleEyes = stoneNeighbours.Where(n => currentBoard[n] != c).ToList();
-            return possibleEyes.Count;
         }
 
         #endregion
