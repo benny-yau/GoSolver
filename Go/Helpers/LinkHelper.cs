@@ -246,19 +246,14 @@ namespace Go
                 if (!ImmovableHelper.IsImmovablePoint(diagonal, c, board).Item1) continue;
                 if (!immediateLink)
                 {
-                    //empty point
-                    if (board[diagonal] == Content.Empty) return true;
                     //filled point
+                    if (board[diagonal] != c.Opposite()) return true;
                     Group killerGroup = GroupHelper.GetKillerGroupFromCache(board, diagonal, c);
-                    if (killerGroup == null) continue;
+                    if (killerGroup == null || !WallHelper.StrongNeighbourGroups(board, board.GetNeighbourGroups(killerGroup))) continue;
                     //ensure only one opponent group within killer group
-                    if (board.GetGroupsFromPoints(killerGroup.Points.Where(p => board[p] == c.Opposite()).ToList()).Count > 1) continue;
+                    if (!GroupHelper.IsSingleGroupWithinKillerGroup(board, board.GetGroupAt(diagonal))) continue;
                     //check capture secure
                     if (!ImmovableHelper.CheckCaptureSecure(board, board.GetGroupAt(diagonal))) continue;
-                    //check double atari
-                    List<Group> groups = board.GetNeighbourGroups(killerGroup);
-                    if (groups.Any(group => group.Liberties.Count == 1) || AtariHelper.DoubleAtariOnTargetGroups(board, groups))
-                        continue;
                 }
                 return true;
             }
