@@ -434,6 +434,8 @@ namespace Go
 
             if (LifeCheck.GetTargets(tryBoard).Any(t => GroupHelper.GetKillerGroupFromCache(tryBoard, t.Points.First(), c.Opposite()) == killerGroup)) return false;
 
+            if (LinkHelper.FindDiagonalCut(tryBoard, tryBoard.MoveGroup).Item1 != null) return false;
+
             //all neighbour groups are non-killable
             List<Group> neighbourGroups = tryBoard.GetNeighbourGroups(killerGroup);
             if (neighbourGroups.All(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
