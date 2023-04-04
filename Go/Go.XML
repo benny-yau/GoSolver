@@ -285,8 +285,6 @@
             Check simple seki.
             Ensure at least two liberties in survival neighbour group <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A87" />
             Cover eye point <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_B43" />
-            Check diagonal at eye point <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A75" />
-            <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30275" />
             Check killer formation for two liberties <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Side_A23_2" />
             Check killer formation for three or more liberties <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31493_4" />
             Ensure killer group does not have real eye <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_TianLongTu_Q16424_2" />
@@ -746,6 +744,11 @@
         <member name="M:Go.ImmovableHelper.CheckCaptureSecure(Go.Board,Go.Group)">
             <summary>
             Check capture secure.
+            </summary>
+        </member>
+        <member name="M:Go.ImmovableHelper.CheckCaptureSecureForSingleGroup(Go.Board,Go.Group)">
+            <summary>
+            Check capture secure for single group within killer group.
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.IsSuicidalMoveForBothPlayers(Go.Board,Go.Point,System.Boolean)">

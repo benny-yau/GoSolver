@@ -248,12 +248,11 @@ namespace Go
                 {
                     //filled point
                     if (board[diagonal] != c.Opposite()) return true;
+                    //check killer group
                     Group killerGroup = GroupHelper.GetKillerGroupOfStrongNeighbourGroups(board, diagonal, c);
                     if (killerGroup == null) continue;
-                    //ensure only one opponent group within killer group
-                    if (!GroupHelper.IsSingleGroupWithinKillerGroup(board, board.GetGroupAt(diagonal))) continue;
                     //check capture secure
-                    if (!ImmovableHelper.CheckCaptureSecure(board, board.GetGroupAt(diagonal))) continue;
+                    if (!ImmovableHelper.CheckCaptureSecureForSingleGroup(board, board.GetGroupAt(diagonal))) continue;
                 }
                 return true;
             }

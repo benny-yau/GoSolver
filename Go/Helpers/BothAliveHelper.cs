@@ -119,8 +119,6 @@ namespace Go
         /// Check simple seki.
         /// Ensure at least two liberties in survival neighbour group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A87" />
         /// Cover eye point <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_B43" />
-        /// Check diagonal at eye point <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A75" />
-        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30275" />
         /// Check killer formation for two liberties <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Side_A23_2" />
         /// Check killer formation for three or more liberties <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31493_4" />
         /// Ensure killer group does not have real eye <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_TianLongTu_Q16424_2" />
@@ -130,14 +128,8 @@ namespace Go
         private static Boolean CheckSimpleSeki(Board board, Board filledBoard, List<Group> neighbourGroups, Group killerGroup, List<Point> emptyPoints)
         {
             Content c = killerGroup.Content;
-
             //ensure at least two liberties within killer group in survival neighbour group
             if (neighbourGroups.Any(n => n.Liberties.Count(p => killerGroup.Points.Contains(p) || BothAliveDiagonalEye(board, killerGroup, p)) < 2))
-                return false;
-
-            //check diagonal at eye point
-            List<Point> eyePoints = emptyPoints.Where(p => EyeHelper.FindUncoveredEye(board, p, c)).ToList();
-            if (eyePoints.Any(p => board.GetDiagonalNeighbours(p).Any(n => board[n] == Content.Empty && !ImmovableHelper.IsSuicidalMoveForBothPlayers(board, n))))
                 return false;
 
             int emptyPointCount = killerGroup.Points.Count(k => filledBoard[k] == Content.Empty);
@@ -173,7 +165,6 @@ namespace Go
                         return false;
                 }
             }
-
             return true;
         }
 

@@ -477,6 +477,16 @@ namespace Go
         }
 
         /// <summary>
+        /// Check capture secure for single group within killer group.
+        /// </summary>
+        public static Boolean CheckCaptureSecureForSingleGroup(Board board, Group group)
+        {
+            if (!GroupHelper.IsSingleGroupWithinKillerGroup(board, group)) return false;
+            if (!ImmovableHelper.CheckCaptureSecure(board, group)) return false;
+            return true;
+        }
+
+        /// <summary>
         /// Is suicide move for both players.
         /// </summary>
         public static Boolean IsSuicidalMoveForBothPlayers(Board tryBoard, Point p, Boolean connectAndDie = false)

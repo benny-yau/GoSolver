@@ -359,6 +359,12 @@ namespace Go
             if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Any(gr => AtariHelper.IsWeakGroup(currentBoard, gr)))
                 return false;
 
+            //check for absolute link
+            if (LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryBoard))
+            {
+                if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Except(LinkHelper.GetPreviousMoveGroup(currentBoard, board)).Any())
+                    return false;
+            }
             return true;
         }
 
@@ -666,6 +672,10 @@ namespace Go
             if (tryBoard.MoveGroup.Points.Count != 1 || !tryMove.IsNegligible) return false;
             //ensure killer group contains only try move
             if (!GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard))
+                return false;
+
+            //check capture secure
+            if (!ImmovableHelper.CheckCaptureSecure(captureBoard, tryBoard.MoveGroup))
                 return false;
 
             //check liberty surrounded by opponent
@@ -1804,19 +1814,12 @@ namespace Go
         public static Boolean RedundantTigerMouthMove(GameTryMove tryMove)
         {
             //find tiger mouth
-            if (!tryMove.IsNegligible)
-                return false;
-
             if (RedundantTigerMouth(tryMove))
                 return true;
 
             //find tiger mouth for opponent
             GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
-            if (opponentMove == null) return false;
-            if (!opponentMove.IsNegligible)
-                return false;
-
-            if (RedundantTigerMouth(opponentMove, tryMove))
+            if (opponentMove != null && RedundantTigerMouth(opponentMove, tryMove))
                 return true;
             return false;
         }
@@ -1844,7 +1847,7 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Content c = tryMove.MoveContent;
             //ensure is tiger mouth
-            if (tryBoard.MoveGroup.Points.Count != 1) return false;
+            if (tryBoard.MoveGroup.Points.Count != 1 || !tryMove.IsNegligible) return false;
             if (ImmovableHelper.IsConfirmTigerMouth(currentBoard, tryBoard) == null) return false;
 
             //check eye points at diagonals of tiger mouth
@@ -1863,7 +1866,7 @@ namespace Go
                 if (NeutralPointSuicidalMove(tryMove))
                     continue;
                 //uncovered eye at diagonal point
-                if (EyeHelper.FindUncoveredEye(currentBoard, d, c.Opposite()) && EyeHelper.FindCoveredEye(tryBoard, d, c.Opposite()))
+                if (EyeHelper.FindEye(currentBoard, d, c.Opposite()) && EyeHelper.FindCoveredEye(tryBoard, d, c.Opposite()))
                     continue;
 
                 //opponent move at tiger mouth
@@ -1884,7 +1887,7 @@ namespace Go
                 //find immovable point at diagonal
                 if (ImmovableHelper.IsImmovablePoint(d, c.Opposite(), currentBoard).Item1)
                 {
-                    if (currentBoard[d] == Content.Empty || (currentBoard[d] == c && GroupHelper.IsSingleGroupWithinKillerGroup(currentBoard, currentBoard.GetGroupAt(d))))
+                    if (currentBoard[d] == Content.Empty || (currentBoard[d] == c && ImmovableHelper.CheckCaptureSecureForSingleGroup(currentBoard, currentBoard.GetGroupAt(d))))
                         return true;
                 }
             }
