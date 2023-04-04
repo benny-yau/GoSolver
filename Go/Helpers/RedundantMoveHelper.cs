@@ -235,7 +235,7 @@ namespace Go
             //ensure is fill eye
             if (!EyeHelper.FindEye(currentBoard, move, c)) return false;
 
-            (Boolean connectAndDie, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
+            (Boolean connectAndDie, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard, tryBoard.MoveGroup, false);
             if (connectAndDie)
             {
                 //check for killer formation
@@ -2218,8 +2218,8 @@ namespace Go
             if (!tryMove.IsNegligible) return false;
 
             //check killer group
-            Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c);
-            if (killerGroup == null || !WallHelper.StrongNeighbourGroups(currentBoard, currentBoard.GetNeighbourGroups(killerGroup))) return false;
+            Group killerGroup = GroupHelper.GetKillerGroupOfStrongNeighbourGroups(currentBoard, move, c);
+            if (killerGroup == null) return false;
 
             List<Point> emptyPoints = killerGroup.Points.Where(p => currentBoard[p] == Content.Empty).ToList();
 

@@ -30,7 +30,7 @@ namespace Go
 
             //get all possible link groups
             List<Point> groupPoints = currentBoard.GetStoneAndDiagonalNeighbours(move).Where(n => currentBoard[n] == c).ToList();
-            tryBoard.CapturedList.ForEach(q => groupPoints.AddRange(q.Neighbours.Where(n => currentBoard[n] == c)));
+            tryBoard.CapturedList.ForEach(q => groupPoints.AddRange(q.Neighbours.Where(n => currentBoard[n] == c && !n.Equals(move))));
             List<Group> groups = currentBoard.GetGroupsFromPoints(groupPoints).ToList();
             //get leap groups
             GetPossibleLeapGroups(tryBoard, currentBoard, groups);

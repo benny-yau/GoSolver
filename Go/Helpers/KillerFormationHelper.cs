@@ -1196,7 +1196,7 @@ namespace Go
             //order by grid length then by max of intersection then by move group liberties
             list = list.OrderBy(m => ((dynamic)m.CheckMove).maxLengthOfGrid).ThenByDescending(m => ((dynamic)m.CheckMove).maxIntersect).ThenByDescending(m => ((dynamic)m.CheckMove).moveGroupLiberties).ToList();
             //check for dead formation
-            Board killBoard = killBoards.FirstOrDefault((b => DeadFormationInBothAlive(b, killerGroup)));
+            Board killBoard = list.Select(m => ((dynamic)m.CheckMove).b).FirstOrDefault(b => DeadFormationInBothAlive(b, killerGroup));
             if (killBoard != null)
                 return killBoard.Move.Value;
             //check for opponent break formation
