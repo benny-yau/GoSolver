@@ -212,6 +212,7 @@ namespace Go
         /// Ensure group more than one point have more than one liberty <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Nie20" /> 
         /// Check for killer formation <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A67" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie20" />
+        /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WuQingYuan_Q16508" />
         /// Check weak group in connect and die <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_XuanXuanGo_B6" /> 
         /// Check suicide at tiger mouth <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16867" /> 
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_B3" /> 
@@ -1831,7 +1832,7 @@ namespace Go
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_GuanZiPu_Q18860" />
         /// Opponent move at tiger mouth <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A151_101Weiqi" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_Nie67" />
-        /// Uncovered eye at diagonal point <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221231_6" />
+        /// Covered eye at diagonal point <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221231_6" />
         /// Check for non killable group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30370" />
         /// Check for suicide at big tiger mouth <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_Corner_A87" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_TianLongTu_Q16470" />
@@ -1865,7 +1866,7 @@ namespace Go
             {
                 if (NeutralPointSuicidalMove(tryMove))
                     continue;
-                //uncovered eye at diagonal point
+                //covered eye at diagonal point
                 if (EyeHelper.FindEye(currentBoard, d, c.Opposite()) && EyeHelper.FindCoveredEye(tryBoard, d, c.Opposite()))
                     continue;
 
@@ -2089,11 +2090,16 @@ namespace Go
         /// Siege scenario. At least one closest group targeted by neighbour group.
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30278" />
         /// </summary>
-        private static Boolean SiegeScenario(Board tryBoard, List<Point> points, int groupCount = 1)
+        private static Boolean SiegeScenario(Board tryBoard, List<Point> points)
         {
             HashSet<Group> groups = tryBoard.GetGroupsFromPoints(points);
-            if (groups.Count < groupCount) return false;
-            return groups.Count(gr => gr.Neighbours.Except(tryBoard.MoveGroup.Points).Count(n => tryBoard[n] == gr.Content.Opposite()) >= 2) >= groupCount;
+            foreach (Group group in groups)
+            {
+                HashSet<Group> connectedGroups = LinkHelper.GetAllDiagonalConnectedGroups(tryBoard, group);
+                if (connectedGroups.Any(gr => gr.Neighbours.Except(tryBoard.MoveGroup.Points).Count(n => tryBoard[n] == gr.Content.Opposite()) >= 2))
+                    return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -2166,9 +2172,8 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryBoard.Move.Value;
             Content c = tryBoard[move];
-            if (!tryBoard.CornerPoint(move) || tryBoard.IsAtariMove || !tryMove.IsNegligible) return false;
+            if (tryBoard.MoveGroup.Points.Count != 1 || !tryBoard.CornerPoint(move) || tryBoard.IsAtariMove || !tryMove.IsNegligible) return false;
 
-            if (tryBoard.MoveGroup.Points.Count != 1) return false;
             //check for kill formation
             Boolean killFormation = (tryBoard.GetClosestPoints(move, c.Opposite()).Count >= 3 && !tryBoard.GetClosestPoints(move, c).Any());
             if (killFormation) return false;
@@ -2204,7 +2209,7 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A37" />
         /// Check immovable at liberties <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31602" />
         /// Not link for groups <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31537" />
-        /// Prevent survival creating eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_4" />
+        /// Check increased killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_4" />
         /// Group binding <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A16" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36" />
         /// No neighbour group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A80" />
@@ -2224,9 +2229,8 @@ namespace Go
             Group killerGroup = GroupHelper.GetKillerGroupOfStrongNeighbourGroups(currentBoard, move, c);
             if (killerGroup == null) return false;
 
-            List<Point> emptyPoints = killerGroup.Points.Where(p => currentBoard[p] == Content.Empty).ToList();
-
             //no neighbour group
+            List<Point> emptyPoints = killerGroup.Points.Where(p => currentBoard[p] == Content.Empty).ToList();
             if (emptyPoints.Any(p => currentBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Count == 0))
                 return false;
 
@@ -2234,7 +2238,7 @@ namespace Go
             if (EyeFillerLinkForGroups(tryMove))
                 return false;
 
-            //prevent survival creating eye
+            //check increased killer group
             if (GroupHelper.IncreasedKillerGroups(tryBoard, currentBoard))
                 return false;
 
