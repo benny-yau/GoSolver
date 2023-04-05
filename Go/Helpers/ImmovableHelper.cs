@@ -464,11 +464,15 @@ namespace Go
         /// <summary>
         /// Check capture secure.
         /// </summary>
-        public static Boolean CheckCaptureSecure(Board board, Group group)
+        public static Boolean CheckCaptureSecure(Board board, Group group, Boolean immovable = false)
         {
             Content c = group.Content;
             Board escapeBoard = ImmovableHelper.MakeMoveAtLiberty(board, group, c);
-            if (escapeBoard != null && escapeBoard.MoveGroupLiberties > 1)
+            if (immovable)
+            {
+                if (escapeBoard != null) return false;
+            }
+            else if (escapeBoard != null && escapeBoard.MoveGroupLiberties > 1)
                 return false;
 
             if (AtariHelper.AtariByGroup(group, board).Any())

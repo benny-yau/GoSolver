@@ -346,7 +346,7 @@ namespace Go
             if (killerGroup == null || !GroupHelper.IsSingleGroupWithinKillerGroup(currentBoard, atariTarget)) return false;
 
             //ensure target group cannot escape
-            if (!ImmovableHelper.CheckCaptureSecureForSingleGroup(tryBoard, atariTarget))
+            if (!ImmovableHelper.CheckCaptureSecure(tryBoard, atariTarget, true))
                 return false;
 
             //make move at the other liberty
@@ -354,15 +354,13 @@ namespace Go
             if (suicidal) return false;
 
             //ensure the other move can capture atari target as well
-            if (!ImmovableHelper.CheckCaptureSecureForSingleGroup(board, board.GetGroupAt(atariPoint)))
+            if (!ImmovableHelper.CheckCaptureSecure(board, board.GetGroupAt(atariPoint), true))
                 return false;
 
             //check for weak groups
-            if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Any(gr => AtariHelper.IsWeakGroup(currentBoard, gr)))
+            if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Any(gr => gr.Liberties.Count <= 2))
                 return false;
 
-            if (LinkHelper.GetPreviousMoveGroup(currentBoard, board).Any(gr => AtariHelper.IsWeakGroup(currentBoard, gr)))
-                return false;
             return true;
         }
 

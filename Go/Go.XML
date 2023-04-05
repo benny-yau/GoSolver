@@ -741,7 +741,7 @@
             Make move at liberty.
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.CheckCaptureSecure(Go.Board,Go.Group)">
+        <member name="M:Go.ImmovableHelper.CheckCaptureSecure(Go.Board,Go.Group,System.Boolean)">
             <summary>
             Check capture secure.
             </summary>

@@ -93,7 +93,7 @@ namespace Go
             if (WallHelper.IsNonKillableFromSetupMoves(tryBoard, moveGroup))
                 return false;
 
-            if (tryBoard.GetNeighbourGroups(moveGroup).Where(n => n.Liberties.Count <= 2).Any(gr => IsWeakGroup(tryBoard, gr)))
+            if (tryBoard.GetNeighbourGroups(moveGroup).Any(gr => IsWeakGroup(tryBoard, gr)))
                 return true;
             return false;
         }
@@ -103,6 +103,7 @@ namespace Go
         /// </summary>
         public static Boolean IsWeakGroup(Board tryBoard, Group group)
         {
+            if (group.Liberties.Count > 2) return false;
             foreach (Point liberty in group.Liberties)
             {
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, group.Content.Opposite(), tryBoard, true);
