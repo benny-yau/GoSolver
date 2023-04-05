@@ -361,6 +361,8 @@ namespace Go
             if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Any(gr => gr.Liberties.Count <= 2))
                 return false;
 
+            if (LinkHelper.GetPreviousMoveGroup(currentBoard, board).Any(gr => gr.Liberties.Count <= 2))
+                return false;
             return true;
         }
 
