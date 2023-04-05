@@ -1416,7 +1416,7 @@ namespace Go
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             if (tryBoard.PointWithinMiddleArea(move)) return false;
-            if (tryBoard.GetDiagonalNeighbours().Any(d => tryBoard[d] == c.Opposite() && tryBoard.IsSinglePoint(d) && tryBoard.GetStoneNeighbours(d).Any(n => tryBoard[n] == Content.Empty && ImmovableHelper.FindTigerMouth(tryBoard, c.Opposite(), n))))
+            if (tryBoard.GetDiagonalNeighbours().Any(d => tryBoard[d] == c.Opposite() && tryBoard.GetGroupAt(d).Points.Count <= 2 && tryBoard.GetStoneNeighbours(d).Any(n => tryBoard[n] == Content.Empty && ImmovableHelper.FindTigerMouth(tryBoard, c.Opposite(), n))))
                 return true;
             return false;
         }
