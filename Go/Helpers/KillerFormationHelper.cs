@@ -1181,11 +1181,10 @@ namespace Go
         /// </summary>
         public static Point GetMaxBindingPoint(Board currentBoard, IEnumerable<Board> killBoards, Group killerGroup)
         {
-            Content c = killBoards.First().MoveGroup.Content;
+            Content c = killerGroup.Content;
             List<LinkedPoint<Point>> list = new List<LinkedPoint<Point>>();
             foreach (Board b in killBoards)
             {
-                if (!GroupHelper.IsSingleGroupWithinKillerGroup(b, b.MoveGroup, false)) continue;
                 Point p = b.Move.Value;
                 List<Point> moveGroup = b.MoveGroup.Points.ToList();
                 int maxLengthOfGrid = MaxLengthOfGrid(moveGroup);

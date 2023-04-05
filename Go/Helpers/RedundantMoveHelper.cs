@@ -2242,8 +2242,10 @@ namespace Go
                 return false;
 
             //select move with max binding
-            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, emptyPoints, c.Opposite());
+            List<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, emptyPoints, c.Opposite()).ToList();
+            moveBoards.RemoveAll(b => !GroupHelper.IsSingleGroupWithinKillerGroup(b, b.MoveGroup, false));
             if (!moveBoards.Any()) return false;
+
             Point bestMove = KillerFormationHelper.GetMaxBindingPoint(currentBoard, moveBoards, killerGroup);
             return !tryMove.Move.Equals(bestMove);
         }

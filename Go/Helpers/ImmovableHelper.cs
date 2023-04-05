@@ -708,7 +708,7 @@ namespace Go
                         return (true, b);
 
                     Board b3 = currentBoard.MakeMoveOnNewBoard(liberty, c.Opposite(), true);
-                    if (b3 != null && b3.GetNeighbourGroups(eyeGroup).Any(n => n.Liberties.Count <= 2))
+                    if (b3 != null && b3.GetNeighbourGroups(eyeGroup).Any(n => !WallHelper.IsHostileNeighbourGroup(b3, n)))
                         return (true, b);
                 }
 

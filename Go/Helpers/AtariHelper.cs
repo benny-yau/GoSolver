@@ -107,8 +107,8 @@ namespace Go
             foreach (Point liberty in group.Liberties)
             {
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, group.Content.Opposite(), tryBoard, true);
-                if (suicidal || KoHelper.IsNonKillableGroupKoFight(b, b.MoveGroup)) continue;
-                if (WallHelper.IsNonKillableGroup(b)) continue;
+                if (suicidal) continue;
+                if (group.Liberties.Count == 2 && (WallHelper.IsNonKillableGroup(b) || KoHelper.IsNonKillableGroupKoFight(b, b.MoveGroup))) continue;
                 return true;
             }
             return false;
