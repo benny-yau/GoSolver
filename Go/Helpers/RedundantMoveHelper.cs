@@ -341,31 +341,28 @@ namespace Go
             Point q = atariTarget.Liberties.First();
             if (!KillerFormationHelper.IsFirstPoint(currentBoard, q, move)) return false;
 
-            //ensure target group cannot escape
-            (_, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(tryBoard, atariTarget);
-            if (escapeBoard != null) return false;
-
             //check killer group
-            Group killerGroup = GroupHelper.GetKillerGroupOfNeighbourGroups(currentBoard, atariPoint, c);
+            Group killerGroup = GroupHelper.GetKillerGroupOfStrongNeighbourGroups(currentBoard, atariPoint, c);
             if (killerGroup == null || !GroupHelper.IsSingleGroupWithinKillerGroup(currentBoard, atariTarget)) return false;
+
+            //ensure target group cannot escape
+            if (!ImmovableHelper.CheckCaptureSecureForSingleGroup(tryBoard, atariTarget))
+                return false;
 
             //make move at the other liberty
             (Boolean suicidal, Board board) = ImmovableHelper.IsSuicidalMove(q, c, currentBoard);
             if (suicidal) return false;
+
             //ensure the other move can capture atari target as well
-            (_, _, Board escapeBoard2) = ImmovableHelper.UnescapableGroup(board, board.GetGroupAt(atariPoint));
-            if (escapeBoard2 != null) return false;
+            if (!ImmovableHelper.CheckCaptureSecureForSingleGroup(board, board.GetGroupAt(atariPoint)))
+                return false;
 
             //check for weak groups
             if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Any(gr => AtariHelper.IsWeakGroup(currentBoard, gr)))
                 return false;
 
-            //check for absolute link
-            if (LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryBoard))
-            {
-                if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Except(LinkHelper.GetPreviousMoveGroup(currentBoard, board)).Any())
-                    return false;
-            }
+            if (LinkHelper.GetPreviousMoveGroup(currentBoard, board).Any(gr => AtariHelper.IsWeakGroup(currentBoard, gr)))
+                return false;
             return true;
         }
 
