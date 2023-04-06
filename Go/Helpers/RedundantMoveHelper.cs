@@ -2215,6 +2215,7 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A61_2" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_A4" />
         /// Check for atari on neighbour groups <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36_2" />
+        /// Check multiple groups <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31646" />
         /// </summary>
         public static Boolean SpecificEyeFillerMove(GameTryMove tryMove)
         {
@@ -2241,11 +2242,15 @@ namespace Go
             if (GroupHelper.IncreasedKillerGroups(tryBoard, currentBoard))
                 return false;
 
-            //select move with max binding
+            //check multiple groups
             List<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, emptyPoints, c.Opposite()).ToList();
-            moveBoards.RemoveAll(b => !GroupHelper.IsSingleGroupWithinKillerGroup(b, b.MoveGroup, false));
+            List<Board> multipleGroups = moveBoards.Where(b => !GroupHelper.IsSingleGroupWithinKillerGroup(b, b.MoveGroup, false)).ToList();
+            if (multipleGroups.Any(b => b.MoveGroup.Liberties.All(n => ImmovableHelper.IsSuicidalMoveForBothPlayers(b, n))))
+                return false;
+            moveBoards.RemoveAll(n => multipleGroups.Any(b => b.Move.Equals(n.Move)));
             if (!moveBoards.Any()) return false;
 
+            //select move with max binding
             Point bestMove = KillerFormationHelper.GetMaxBindingPoint(currentBoard, moveBoards, killerGroup);
             return !tryMove.Move.Equals(bestMove);
         }
