@@ -360,9 +360,6 @@ namespace Go
             //check for weak groups
             if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Any(gr => gr.Liberties.Count <= 2))
                 return false;
-
-            if (LinkHelper.GetPreviousMoveGroup(currentBoard, board).Any(gr => gr.Liberties.Count <= 2))
-                return false;
             return true;
         }
 
@@ -464,6 +461,9 @@ namespace Go
                     {
                         //check for covered eye
                         if (opponentTryMove != null && EyeHelper.IsCovered(tryBoard, move, c.Opposite()))
+                            continue;
+                        //check for weak group
+                        if (!b.CapturedList.Any(n => n.Points.Contains(tryBoard.MoveGroup.Points.First())) && b.GetNeighbourGroups(tryBoard.MoveGroup).Any(n => AtariHelper.IsWeakGroup(b, n)))
                             continue;
                         return true;
                     }
