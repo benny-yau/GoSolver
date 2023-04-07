@@ -61,7 +61,7 @@ namespace Go
 
             //double atari
             IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, liberties, c.Opposite());
-            if (moveBoards.Any(b => DoubleAtariWithoutEscape(b)))
+            if (moveBoards.Any(b => b.CapturedList.Count > 0 || DoubleAtariWithoutEscape(b)))
                 return true;
             return false;
         }
@@ -76,8 +76,8 @@ namespace Go
             foreach (Group targetGroup in board.AtariTargets)
             {
                 //make escape move for target group
-                (Boolean unEscapable, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(board, targetGroup);
-                if (unEscapable) continue;
+                (Boolean unEscapable, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(board, targetGroup, false);
+                if (unEscapable) return true;
                 //check if any atari targets left
                 if (board.AtariTargets.Any(t => escapeBoard.GetGroupLiberties(t).Count == 1))
                     return true;
