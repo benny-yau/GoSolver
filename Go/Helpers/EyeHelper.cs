@@ -20,11 +20,6 @@ namespace Go
         /// <summary>
         /// An eye is a point where all direct connected points are black or white as specified.
         /// </summary>
-        public static Boolean FindEye(Board board, int x, int y, Content c = Content.Unknown)
-        {
-            return FindEye(x, y, board, c).Item1;
-        }
-
         public static (Boolean, Content) FindEye(int x, int y, Board board, Content c = Content.Unknown)
         {
             if (!board.PointWithinBoard(x, y))
@@ -41,7 +36,7 @@ namespace Go
 
         public static Boolean FindEye(Board board, Point eye, Content c = Content.Unknown)
         {
-            return FindEye(board, eye.x, eye.y, c);
+            return FindEye(eye.x, eye.y, board, c).Item1;
         }
 
         /// <summary>
@@ -148,13 +143,10 @@ namespace Go
         /// <summary>
         /// Semi solid eyes are real eyes that can have diagonals with immovable points.
         /// </summary>
-        public static (Boolean, List<Point>) FindSemiSolidEye(Point eye, Board board, Content c = Content.Unknown)
+        public static (Boolean, List<Point>) FindSemiSolidEye(Point eye, Board board, Content c)
         {
             GameInfo gameInfo = board.GameInfo;
-            (Boolean isEye, Content content) = FindEye(eye.x, eye.y, board, c);
-            if (!isEye)
-                return (false, null);
-            if (c == Content.Unknown) c = content;
+            if (!FindEye(board, eye, c)) return (false, null);
 
             //ensure all groups have more than one liberty
             HashSet<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(eye, c.Opposite());

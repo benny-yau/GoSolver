@@ -14,19 +14,19 @@ namespace Go
             List<Group> killerGroups = null;
             if (c == Content.Unknown)
                 c = GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive);
-            if (board.killerGroup == null || !board.killerGroup.ContainsKey(c))
+            if (board.KillerGroups == null || !board.KillerGroups.ContainsKey(c))
             {
                 //get killer groups
                 killerGroups = GetAllKillerGroups(board, c);
 
                 //cache groups in board
-                if (board.killerGroup == null) board.killerGroup = new Dictionary<Content, List<Group>>();
-                board.killerGroup.Add(c, killerGroups);
+                if (board.KillerGroups == null) board.KillerGroups = new Dictionary<Content, List<Group>>();
+                board.KillerGroups.Add(c, killerGroups);
             }
             else
             {
                 //retrieve from cache
-                killerGroups = board.killerGroup[c];
+                killerGroups = board.KillerGroups[c];
             }
             return killerGroups;
         }

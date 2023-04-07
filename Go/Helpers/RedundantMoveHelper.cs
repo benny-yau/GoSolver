@@ -1921,7 +1921,7 @@ namespace Go
             Content c = tryMove.MoveContent;
 
             //suicide within real eye at suicidal redundant move
-            if (EyeHelper.FindSemiSolidEye(move, capturedBoard).Item1)
+            if (EyeHelper.FindSemiSolidEye(move, capturedBoard, c.Opposite()).Item1)
                 return false;
             //check for covered eye
             if (EyeHelper.IsCovered(tryBoard, move, c.Opposite()))
@@ -2264,9 +2264,7 @@ namespace Go
         /// </summary>
         public static Boolean RedundantSurvivalPreKoMove(GameTryMove tryMove)
         {
-            if (tryMove.IsKoFight)
-                return RedundantSurvivalKoMove(tryMove);
-            return false;
+            return RedundantSurvivalKoMove(tryMove);
         }
 
         /// <summary>
@@ -2296,6 +2294,7 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Board currentBoard = tryMove.CurrentGame.Board;
             Content c = tryBoard.MoveGroup.Content;
+            if (!KoHelper.IsKoFight(tryBoard)) return false;
             Boolean koEnabled = KoHelper.KoContentEnabled(c, tryBoard.GameInfo);
             if (!koEnabled)
             {

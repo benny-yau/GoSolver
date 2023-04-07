@@ -32,21 +32,6 @@ namespace Go
         public bool IsAtariRedundant { get; set; }
         public bool MustHaveNeutralPoint { get; set; }
 
-        private bool? isKoFight = null;
-        public bool IsKoFight
-        {
-            get
-            {
-                if (isKoFight == null)
-                    isKoFight = KoHelper.IsKoFight(TryGame.Board);
-                return isKoFight.Value;
-            }
-            set
-            {
-                isKoFight = value;
-            }
-        }
-
         private bool? atariResolved = null;
         public bool AtariResolved
         {

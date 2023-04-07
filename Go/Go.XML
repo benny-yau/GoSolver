@@ -386,7 +386,7 @@
             Get eye points at the opposite diagonals of the tiger mouth.
             </summary>
         </member>
-        <member name="M:Go.EyeHelper.FindEye(Go.Board,System.Int32,System.Int32,Go.Content)">
+        <member name="M:Go.EyeHelper.FindEye(System.Int32,System.Int32,Go.Board,Go.Content)">
             <summary>
             An eye is a point where all direct connected points are black or white as specified.
             </summary>

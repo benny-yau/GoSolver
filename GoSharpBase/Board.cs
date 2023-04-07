@@ -41,7 +41,7 @@ namespace Go
             }
         }
 
-        public Dictionary<Content, List<Group>> killerGroup { get; set; }
+        public Dictionary<Content, List<Group>> KillerGroups { get; set; }
         public GameInfo GameInfo { get; set; }
         public static readonly Point PassMove = new Point(-1, -1);
 
@@ -69,7 +69,6 @@ namespace Go
             this.singlePointCapture = fromBoard.singlePointCapture;
             this.IsRandomMove = fromBoard.IsRandomMove;
             this.LastMoves.AddRange(fromBoard.LastMoves);
-
             this.GroupCache.AddRange(fromBoard.GroupCache);
             if (fromBoard.GroupCacheFromPoint != null)
             {
@@ -271,9 +270,12 @@ namespace Go
         /// <summary>
         /// Get diagonal points on all four directions.
         /// </summary>
-        public List<Point> GetDiagonalNeighbours(int x, int y)
+        public List<Point> GetDiagonalNeighbours(Point? p = null)
         {
             List<Point> rc = new List<Point>();
+            if (p == null) p = this.Move.Value;
+            int x = p.Value.x;
+            int y = p.Value.y;
             if (x > 0 && y > 0) rc.Add(new Point(x - 1, y - 1));
             if (x < SizeX - 1 && y < SizeY - 1) rc.Add(new Point(x + 1, y + 1));
             if (y > 0 && x < SizeX - 1) rc.Add(new Point(x + 1, y - 1));
@@ -281,54 +283,13 @@ namespace Go
             return rc;
         }
 
-        public List<Point> GetDiagonalNeighbours(Point? p = null)
-        {
-            if (p == null) p = this.Move.Value;
-            return GetDiagonalNeighbours(p.Value.x, p.Value.y);
-        }
-
         /// <summary>
         /// Get all surrounding points, both stone and diagonal neighbours.
         /// </summary>
-        public List<Point> GetStoneAndDiagonalNeighbours(int x, int y)
-        {
-            return GetStoneNeighbours(x, y).Union(GetDiagonalNeighbours(x, y)).ToList();
-        }
         public List<Point> GetStoneAndDiagonalNeighbours(Point? p = null)
         {
             if (p == null) p = this.Move.Value;
-            return GetStoneAndDiagonalNeighbours(p.Value.x, p.Value.y);
-        }
-
-        /// <summary>
-        /// Get closest points to specific point by going in circles with increasing distance.
-        /// </summary>
-        public List<Point> GetClosestPoints(Point p, Content c = Content.Unknown, int maxDistance = 2)
-        {
-            int x = p.x;
-            int y = p.y;
-            if (c == Content.Unknown) c = this[x, y];
-            List<Point> result = new List<Point>();
-            for (int i = 1; i <= maxDistance; i++)
-            {
-                for (int j = -i; j <= i - 1; j++)
-                {
-                    if (PointWithinBoard(x - i, y - j) && this[x - i, y - j] == c)
-                        result.Add(new Point(x - i, y - j)); //left
-                    if (PointWithinBoard(x + j, y - i) && this[x + j, y - i] == c)
-                        result.Add(new Point(x + j, y - i)); //top
-                    if (PointWithinBoard(x + i, y + j) && this[x + i, y + j] == c)
-                        result.Add(new Point(x + i, y + j)); //right
-                    if (PointWithinBoard(x - j, y + i) && this[x - j, y + i] == c)
-                        result.Add(new Point(x - j, y + i)); //bottom
-                }
-            }
-            //exclude all corners
-            result.RemoveAll(r => Math.Abs(r.x - x) >= Math.Max(2, maxDistance) && Math.Abs(r.x - x) == Math.Abs(r.y - y));
-            //exclude all from same group
-            Group group = GetGroupAt(p);
-            result.RemoveAll(r => GetGroupAt(r) == group);
-            return result;
+            return GetStoneNeighbours(p).Union(GetDiagonalNeighbours(p)).ToList();
         }
 
         /// <summary>
@@ -337,11 +298,11 @@ namespace Go
         public List<Group> GetNeighbourGroups(Group group = null)
         {
             if (group == null) group = this.MoveGroup;
-            Content content = group.Content.Opposite();
+            Content c = group.Content.Opposite();
             HashSet<Group> neighbourGroups = new HashSet<Group>();
             foreach (Point p in group.Neighbours)
             {
-                if (this[p] != content) continue;
+                if (this[p] != c) continue;
                 neighbourGroups.Add(this.GetGroupAt(p));
             }
             return neighbourGroups.ToList();
@@ -420,7 +381,7 @@ namespace Go
         {
             GroupCache.Clear();
             GroupCacheFromPoint = null;
-            killerGroup = null;
+            KillerGroups = null;
             AtariTargets = null;
             CapturedList.Clear();
         }
@@ -506,14 +467,9 @@ namespace Go
         /// <summary>
         /// Check if point within middle area of board.
         /// </summary>
-        public Boolean PointWithinMiddleArea(int x, int y)
-        {
-            return (x > 0 && x < SizeX - 1 && y > 0 && y < SizeY - 1);
-        }
-
         public Boolean PointWithinMiddleArea(Point p)
         {
-            return PointWithinMiddleArea(p.x, p.y);
+            return (p.x > 0 && p.x < SizeX - 1 && p.y > 0 && p.y < SizeY - 1);
         }
 
         public Boolean CornerPoint(Point p)
@@ -522,17 +478,15 @@ namespace Go
         }
 
         /// <summary>
-        /// Find atari for last move on board and set all groups to AtariTargets.
+        /// Find atari targets for last move on board and set to AtariTargets.
         /// </summary>
         public static List<Group> FindAtari(Board board)
         {
-            Point? lastMove = board.LastMove;
-            if (lastMove == null) return null;
-            if (lastMove.Equals(PassMove)) return null;
-            Content c = board[lastMove.Value];
+            Point move = board.Move.Value;
+            Content c = board[move];
 
             //set atari targets in board 
-            board.AtariTargets = board.GetGroupsFromStoneNeighbours(lastMove.Value, c).Where(group => group.Liberties.Count == 1).ToList();
+            board.AtariTargets = board.GetGroupsFromStoneNeighbours(move, c).Where(n => n.Liberties.Count == 1).ToList();
             return board.AtariTargets;
         }
 
@@ -542,26 +496,54 @@ namespace Go
         /// </summary>
         public static Boolean ResolveAtari(Board currentBoard, Board tryBoard)
         {
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard[move];
             //capture stones to resolve atari
-            if (tryBoard.CapturedList.Any(group => currentBoard.GetNeighbourGroups(group).Any(g => g.Liberties.Count == 1)))
+            if (tryBoard.CapturedList.Any(n => currentBoard.GetNeighbourGroups(n).Any(g => g.Liberties.Count == 1)))
                 return true;
 
             //check neighbour points with group liberty increased from one.
-            if (tryBoard.MoveGroupLiberties > 1)
-            {
-                Point move = tryBoard.Move.Value;
-                Content c = tryBoard[move];
-                HashSet<Group> groups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite());
-                if (groups.Any(group => group.Liberties.Count == 1))
-                    return true;
-            }
+            if (tryBoard.MoveGroupLiberties == 1) return false;
+            HashSet<Group> groups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite());
+            if (groups.Any(n => n.Liberties.Count == 1))
+                return true;
             return false;
+        }
+
+        /// <summary>
+        /// Get closest points to specific point by going in circles with increasing distance.
+        /// </summary>
+        public List<Point> GetClosestPoints(Point p, Content c = Content.Unknown, int maxDistance = 2)
+        {
+            int x = p.x;
+            int y = p.y;
+            if (c == Content.Unknown) c = this[x, y];
+            List<Point> result = new List<Point>();
+            for (int i = 1; i <= maxDistance; i++)
+            {
+                for (int j = -i; j <= i - 1; j++)
+                {
+                    if (PointWithinBoard(x - i, y - j) && this[x - i, y - j] == c)
+                        result.Add(new Point(x - i, y - j)); //left
+                    if (PointWithinBoard(x + j, y - i) && this[x + j, y - i] == c)
+                        result.Add(new Point(x + j, y - i)); //top
+                    if (PointWithinBoard(x + i, y + j) && this[x + i, y + j] == c)
+                        result.Add(new Point(x + i, y + j)); //right
+                    if (PointWithinBoard(x - j, y + i) && this[x - j, y + i] == c)
+                        result.Add(new Point(x - j, y + i)); //bottom
+                }
+            }
+            //exclude all corners
+            result.RemoveAll(r => Math.Abs(r.x - x) >= Math.Max(2, maxDistance) && Math.Abs(r.x - x) == Math.Abs(r.y - y));
+            //exclude all from same group
+            Group group = GetGroupAt(p);
+            result.RemoveAll(r => GetGroupAt(r) == group);
+            return result;
         }
 
         /// <summary>
         /// Draws board.
         /// </summary>
-        /// <returns></returns>
         public override string ToString()
         {
             string rc = "\n" + new String(' ', 4);
@@ -584,6 +566,9 @@ namespace Go
             return rc;
         }
 
+        /// <summary>
+        /// Print setup script.
+        /// </summary>
         public String PrintSetupScript()
         {
             string rc = "";

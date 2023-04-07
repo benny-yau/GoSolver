@@ -6,7 +6,7 @@ using System.Text;
 namespace Go
 {
     /// <summary>
-    /// Represents a group of stones (black, white, or empty spaces) on a board object. Neighbours represent immediate connected points that are of different content.
+    /// Represents a group of stones (black, white, or empty spaces) on a board.
     /// </summary>
     public class Group
     {
