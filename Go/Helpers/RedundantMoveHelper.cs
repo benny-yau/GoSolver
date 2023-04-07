@@ -2226,8 +2226,8 @@ namespace Go
             if (!tryMove.IsNegligible) return false;
 
             //check killer group
-            Group killerGroup = GroupHelper.GetKillerGroupOfStrongNeighbourGroups(currentBoard, move, c);
-            if (killerGroup == null) return false;
+            Group killerGroup = GroupHelper.GetKillerGroupOfNeighbourGroups(currentBoard, move, c);
+            if (killerGroup == null || currentBoard.GetNeighbourGroups(killerGroup).Any(n => n.Liberties.Count <= 2)) return false;
 
             //no neighbour group
             List<Point> emptyPoints = killerGroup.Points.Where(p => currentBoard[p] == Content.Empty).ToList();
@@ -2245,8 +2245,7 @@ namespace Go
             //check multiple groups
             List<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, emptyPoints, c.Opposite()).ToList();
             List<Board> multipleGroups = moveBoards.Where(b => !GroupHelper.IsSingleGroupWithinKillerGroup(b, b.MoveGroup, false)).ToList();
-            if (multipleGroups.Any(b => b.MoveGroup.Liberties.All(n => ImmovableHelper.IsSuicidalMoveForBothPlayers(b, n))))
-                return false;
+            if (multipleGroups.Any(b => !ImmovableHelper.CheckConnectAndDie(b))) return false;
             moveBoards.RemoveAll(n => multipleGroups.Any(b => b.Move.Equals(n.Move)));
             if (!moveBoards.Any()) return false;
 
