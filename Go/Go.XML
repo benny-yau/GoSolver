@@ -1045,7 +1045,7 @@
             Return number of possible eyes that can be created at stone neighbour points.
             </summary>
         </member>
-        <member name="M:Go.KillerFormationHelper.GetMaxBindingPoint(Go.Board,System.Collections.Generic.IEnumerable{Go.Board},Go.Group)">
+        <member name="M:Go.KillerFormationHelper.GetMaxBindingPoint(Go.Board,System.Collections.Generic.IEnumerable{Go.Board},Go.Group,System.Boolean)">
             <summary>
             Point for killer to form max binding.
             Ordering <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36_2" />
@@ -1925,7 +1925,7 @@
             Eye filler link for groups.
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.SpecificEyeFillerMove(Go.GameTryMove)">
+        <member name="M:Go.RedundantMoveHelper.SpecificEyeFillerMove(Go.GameTryMove,System.Boolean)">
             <summary>
             Return specific survival or killer move if killer group contains five points or less. 
             Check killer group <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Phenomena_Q25182" />

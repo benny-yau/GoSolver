@@ -1179,7 +1179,7 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A16" />
         /// Check for opponent break formation <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A80_3" />
         /// </summary>
-        public static Point GetMaxBindingPoint(Board currentBoard, IEnumerable<Board> killBoards, Group killerGroup)
+        public static Point GetMaxBindingPoint(Board currentBoard, IEnumerable<Board> killBoards, Group killerGroup, Boolean isOpponent = false)
         {
             Content c = killerGroup.Content;
             List<LinkedPoint<Point>> list = new List<LinkedPoint<Point>>();
@@ -1195,9 +1195,13 @@ namespace Go
             //order by grid length then by max of intersection then by move group liberties
             list = list.OrderBy(m => ((dynamic)m.CheckMove).maxLengthOfGrid).ThenByDescending(m => ((dynamic)m.CheckMove).maxIntersect).ThenByDescending(m => ((dynamic)m.CheckMove).moveGroupLiberties).ToList();
             //check for dead formation
-            Board killBoard = list.Select(m => ((dynamic)m.CheckMove).b).FirstOrDefault(b => DeadFormationInBothAlive(b, killerGroup));
-            if (killBoard != null)
-                return killBoard.Move.Value;
+            if (isOpponent)
+            {
+                Board killBoard = list.Select(m => ((dynamic)m.CheckMove).b).FirstOrDefault(b => DeadFormationInBothAlive(b, killerGroup));
+                if (killBoard != null)
+                    return killBoard.Move.Value;
+            }
+
             //check for opponent break formation
             if (killerGroup.Points.Count == 2 && killerGroup.Points.Any(p => currentBoard.CornerPoint(p)))
             {

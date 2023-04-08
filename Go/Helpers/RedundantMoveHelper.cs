@@ -2039,7 +2039,7 @@ namespace Go
             GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
             if (opponentMove == null) return false;
             if (killerGroup != null && killerGroup.Points.Count <= 5)
-                return SpecificEyeFillerMove(opponentMove);
+                return SpecificEyeFillerMove(opponentMove, true);
             return false;
         }
 
@@ -2203,7 +2203,7 @@ namespace Go
         /// Check for atari on neighbour groups <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36_2" />
         /// Check multiple groups <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31646" />
         /// </summary>
-        public static Boolean SpecificEyeFillerMove(GameTryMove tryMove)
+        public static Boolean SpecificEyeFillerMove(GameTryMove tryMove, Boolean isOpponent = false)
         {
             Board tryBoard = tryMove.TryGame.Board;
             Board currentBoard = tryMove.CurrentGame.Board;
@@ -2236,7 +2236,7 @@ namespace Go
             if (!moveBoards.Any()) return false;
 
             //select move with max binding
-            Point bestMove = KillerFormationHelper.GetMaxBindingPoint(currentBoard, moveBoards, killerGroup);
+            Point bestMove = KillerFormationHelper.GetMaxBindingPoint(currentBoard, moveBoards, killerGroup, isOpponent);
             return !tryMove.Move.Equals(bestMove);
         }
 
