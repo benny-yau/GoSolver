@@ -2201,6 +2201,8 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A61_2" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_A4" />
         /// Check for atari on neighbour groups <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36_2" />
+        /// Check for dead formation <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q16902" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A16" />
         /// Check multiple groups <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31646" />
         /// </summary>
         public static Boolean SpecificEyeFillerMove(GameTryMove tryMove, Boolean isOpponent = false)
@@ -2232,11 +2234,16 @@ namespace Go
             List<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, emptyPoints, c.Opposite()).ToList();
             List<Board> multipleGroups = moveBoards.Where(b => !GroupHelper.IsSingleGroupWithinKillerGroup(b, b.MoveGroup, false)).ToList();
             if (multipleGroups.Any(b => !ImmovableHelper.CheckConnectAndDie(b))) return false;
+
+            //check for dead formation
+            if (isOpponent && moveBoards.Any(b => KillerFormationHelper.DeadFormationInBothAlive(b, killerGroup)))
+                return false;
+
             moveBoards.RemoveAll(n => multipleGroups.Any(b => b.Move.Equals(n.Move)));
             if (!moveBoards.Any()) return false;
 
             //select move with max binding
-            Point bestMove = KillerFormationHelper.GetMaxBindingPoint(currentBoard, moveBoards, killerGroup, isOpponent);
+            Point bestMove = KillerFormationHelper.GetMaxBindingPoint(currentBoard, moveBoards, killerGroup);
             return !tryMove.Move.Equals(bestMove);
         }
 

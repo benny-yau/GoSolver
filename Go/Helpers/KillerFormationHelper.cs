@@ -1175,11 +1175,9 @@ namespace Go
         /// Point for killer to form max binding.
         /// Ordering <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36_2" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q30919_2" />
-        /// Check for dead formation <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q16902" />
-        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A16" />
         /// Check for opponent break formation <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A80_3" />
         /// </summary>
-        public static Point GetMaxBindingPoint(Board currentBoard, IEnumerable<Board> killBoards, Group killerGroup, Boolean isOpponent = false)
+        public static Point GetMaxBindingPoint(Board currentBoard, IEnumerable<Board> killBoards, Group killerGroup)
         {
             Content c = killerGroup.Content;
             List<LinkedPoint<Point>> list = new List<LinkedPoint<Point>>();
@@ -1194,13 +1192,6 @@ namespace Go
             }
             //order by grid length then by max of intersection then by move group liberties
             list = list.OrderBy(m => ((dynamic)m.CheckMove).maxLengthOfGrid).ThenByDescending(m => ((dynamic)m.CheckMove).maxIntersect).ThenByDescending(m => ((dynamic)m.CheckMove).moveGroupLiberties).ToList();
-            //check for dead formation
-            if (isOpponent)
-            {
-                Board killBoard = list.Select(m => ((dynamic)m.CheckMove).b).FirstOrDefault(b => DeadFormationInBothAlive(b, killerGroup));
-                if (killBoard != null)
-                    return killBoard.Move.Value;
-            }
 
             //check for opponent break formation
             if (killerGroup.Points.Count == 2 && killerGroup.Points.Any(p => currentBoard.CornerPoint(p)))
