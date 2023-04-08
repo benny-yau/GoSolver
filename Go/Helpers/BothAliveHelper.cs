@@ -108,8 +108,7 @@ namespace Go
                 if (complexSekiGroups.Count == 1)
                 {
                     Group otherDiagonalGroup = diagonalGroups.First(d => d != complexSekiGroups.First());
-                    if (WallHelper.IsNonKillableFromSetupMoves(board, otherDiagonalGroup))
-                        return true;
+                    if (!ImmovableHelper.CheckConnectAndDie(board, otherDiagonalGroup)) return true;
                 }
             }
             return false;

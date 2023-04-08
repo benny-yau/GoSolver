@@ -342,8 +342,9 @@ namespace Go
             if (!KillerFormationHelper.IsFirstPoint(currentBoard, q, move)) return false;
 
             //check killer group
-            Group killerGroup = GroupHelper.GetKillerGroupOfStrongNeighbourGroups(currentBoard, atariPoint, c);
-            if (killerGroup == null || !GroupHelper.IsSingleGroupWithinKillerGroup(currentBoard, atariTarget)) return false;
+            Group killerGroup = GroupHelper.GetKillerGroupOfNeighbourGroups(currentBoard, atariPoint, c);
+            if (killerGroup == null || currentBoard.GetNeighbourGroups(killerGroup).Any(n => n.Liberties.Count <= 2))
+                return false;
 
             //ensure target group cannot escape
             if (!ImmovableHelper.CheckCaptureSecure(tryBoard, atariTarget, true))
@@ -357,9 +358,6 @@ namespace Go
             if (!ImmovableHelper.CheckCaptureSecure(board, board.GetGroupAt(atariPoint), true))
                 return false;
 
-            //check for weak groups
-            if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Any(gr => gr.Liberties.Count <= 2))
-                return false;
             return true;
         }
 
@@ -463,7 +461,7 @@ namespace Go
                         if (opponentTryMove != null && EyeHelper.IsCovered(tryBoard, move, c.Opposite()))
                             continue;
                         //check for weak group
-                        if (!b.CapturedList.Any(n => n.Points.Contains(tryBoard.MoveGroup.Points.First())) && b.GetNeighbourGroups(tryBoard.MoveGroup).Any(n => AtariHelper.IsWeakGroup(b, n)))
+                        if (!b.CapturedList.Any(n => n.Points.Contains(tryBoard.MoveGroup.Points.First())) && AtariHelper.IsWeakNeighbourGroup(b, tryBoard.MoveGroup))
                             continue;
                         return true;
                     }
@@ -1220,7 +1218,6 @@ namespace Go
         /// </summary>
         public static Boolean MultiPointSuicidalMove(GameTryMove tryMove)
         {
-            Point move = tryMove.Move;
             Board tryBoard = tryMove.TryGame.Board;
             Board currentBoard = tryMove.CurrentGame.Board;
 
@@ -2043,8 +2040,7 @@ namespace Go
             if (opponentMove == null) return false;
             if (killerGroup != null && killerGroup.Points.Count <= 5)
                 return SpecificEyeFillerMove(opponentMove);
-            else
-                return FillerMoveWithoutKillerGroup(tryMove, opponentMove);
+            return false;
         }
 
         /// <summary>
@@ -2058,7 +2054,7 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario3dan22" />
         /// Check two-point group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Side_B35" />
         /// </summary>
-        private static Boolean FillerMoveWithoutKillerGroup(GameTryMove tryMove, GameTryMove opponentMove = null)
+        private static Boolean FillerMoveWithoutKillerGroup(GameTryMove tryMove)
         {
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryBoard.Move.Value;
@@ -2069,19 +2065,9 @@ namespace Go
             if (WallHelper.IsNonKillableGroup(tryBoard))
                 return true;
 
-            if (opponentMove == null)
-            {
-                //check for one point leap move
-                if (SiegeScenario(tryBoard, tryBoard.GetClosestPoints(move)))
-                    return false;
-            }
-            else
-            {
-                //check killer leap move
-                Board opponentBoard = opponentMove.TryGame.Board;
-                if (SiegeScenario(opponentBoard, opponentBoard.GetClosestPoints(move)))
-                    return false;
-            }
+            //check for one point leap move
+            if (SiegeScenario(tryBoard, tryBoard.GetClosestPoints(move)))
+                return false;
             return true;
         }
 

@@ -708,13 +708,13 @@ namespace Go
                         return (true, b);
 
                     Board b3 = currentBoard.MakeMoveOnNewBoard(liberty, c.Opposite(), true);
-                    if (b3 != null && b3.GetNeighbourGroups(eyeGroup).Any(n => !WallHelper.IsHostileNeighbourGroup(b3, n)))
+                    if (b3 != null && b3.GetNeighbourGroups(eyeGroup).Any(n => b3.GetGroupsFromStoneNeighbours(liberty, c).Count > 1 && !WallHelper.IsHostileNeighbourGroup(b3, n)))
                         return (true, b);
                 }
 
                 //unstoppable group
                 b2[move] = c;
-                if (ImmovableHelper.CheckConnectAndDie(b2) && b2.GetGroupsFromStoneNeighbours(liberty, c).Count > 1)
+                if (b2.GetGroupsFromStoneNeighbours(liberty, c).Count > 1 && !WallHelper.IsHostileNeighbourGroup(b2, b2.MoveGroup))
                     return (true, b);
             }
 
