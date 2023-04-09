@@ -1864,12 +1864,12 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.SurvivalEyeFillerMove(Go.GameTryMove)">
             <summary>
-            Survival eye filler moves. Get specific move for group not more than five points and generic move for more than five points. 
+            Survival eye filler moves. Get specific move for group of two to five points. 
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.KillEyeFillerMove(Go.GameTryMove)">
             <summary>
-            Kill eye filler moves. Get specific move for group not more than five points.
+            Kill eye filler moves. Get specific move for group of three to five points.
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.FillerMoveWithoutKillerGroup(Go.GameTryMove)">

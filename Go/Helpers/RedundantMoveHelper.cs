@@ -2002,7 +2002,7 @@ namespace Go
 
         #region eye filler
         /// <summary>
-        /// Survival eye filler moves. Get specific move for group not more than five points and generic move for more than five points. 
+        /// Survival eye filler moves. Get specific move for group of two to five points. 
         /// </summary>
         public static Boolean SurvivalEyeFillerMove(GameTryMove tryMove)
         {
@@ -2013,17 +2013,12 @@ namespace Go
             if (!tryMove.IsNegligible || tryBoard.IsAtariMove)
                 return false;
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c);
-            if (killerGroup == null) return FillerMoveWithoutKillerGroup(tryMove);
-            if (killerGroup.Points.Count == 1) return false;
-
-            if (killerGroup.Points.Count <= 5)
-                return SpecificEyeFillerMove(tryMove);
-            else
-                return GenericEyeFillerMove(tryMove);
+            if (killerGroup == null || killerGroup.Points.Count == 1 || killerGroup.Points.Count > 5) return false;
+            return SpecificEyeFillerMove(tryMove);
         }
 
         /// <summary>
-        /// Kill eye filler moves. Get specific move for group not more than five points.
+        /// Kill eye filler moves. Get specific move for group of three to five points.
         /// </summary>
         public static Boolean KillEyeFillerMove(GameTryMove tryMove)
         {
@@ -2034,13 +2029,11 @@ namespace Go
             if (!tryMove.IsNegligible || tryBoard.IsAtariMove)
                 return false;
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
-            if (killerGroup != null && killerGroup.Points.Count <= 2) return false;
+            if (killerGroup == null || killerGroup.Points.Count <= 2 || killerGroup.Points.Count > 5) return false;
             //make survival move
             GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
             if (opponentMove == null) return false;
-            if (killerGroup != null && killerGroup.Points.Count <= 5)
-                return SpecificEyeFillerMove(opponentMove, true);
-            return false;
+            return SpecificEyeFillerMove(opponentMove, true);
         }
 
         /// <summary>
