@@ -2062,9 +2062,6 @@ namespace Go
             //check generic eye filler move
             if (!GenericEyeFillerMove(tryMove)) return false;
 
-            if (WallHelper.IsNonKillableGroup(tryBoard))
-                return true;
-
             //check for one point leap move
             if (SiegeScenario(tryBoard, tryBoard.GetClosestPoints(move)))
                 return false;
@@ -2116,7 +2113,7 @@ namespace Go
                 return false;
 
             //ensure not link for groups
-            if (EyeFillerLinkForGroups(tryMove))
+            if (LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryBoard))
                 return false;
 
             //check for increased killer groups
@@ -2170,25 +2167,6 @@ namespace Go
         }
 
         /// <summary>
-        /// Eye filler link for groups.
-        /// </summary>
-        public static Boolean EyeFillerLinkForGroups(GameTryMove tryMove)
-        {
-            Board tryBoard = tryMove.TryGame.Board;
-            Board currentBoard = tryMove.CurrentGame.Board;
-            Content c = tryMove.MoveContent;
-
-            //check for opponent stones at stone and diagonal points
-            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite()))
-            {
-                //ensure link for groups
-                if (!LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryBoard)) return false;
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>
         /// Return specific survival or killer move if killer group contains five points or less. 
         /// Check killer group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Phenomena_Q25182" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A37" />
@@ -2223,7 +2201,7 @@ namespace Go
                 return false;
 
             //ensure not link for groups
-            if (EyeFillerLinkForGroups(tryMove))
+            if (LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryBoard))
                 return false;
 
             //check increased killer group

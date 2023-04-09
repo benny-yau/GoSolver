@@ -1918,11 +1918,6 @@
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A6" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.EyeFillerLinkForGroups(Go.GameTryMove)">
-            <summary>
-            Eye filler link for groups.
-            </summary>
-        </member>
         <member name="M:Go.RedundantMoveHelper.SpecificEyeFillerMove(Go.GameTryMove,System.Boolean)">
             <summary>
             Return specific survival or killer move if killer group contains five points or less. 

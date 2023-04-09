@@ -93,8 +93,8 @@ namespace Go
                 //check complex seki with diagonal cut
                 HashSet<Group> diagonalGroups = board.GetGroupsFromPoints(pointsBetweenDiagonals);
                 if (diagonalGroups.Count != 2) return false;
+                if (diagonalGroups.Any(n => ImmovableHelper.CheckConnectAndDie(board, n))) return false;
 
-                List<Group> complexSekiGroups = new List<Group>();
                 foreach (Group diagonalGroup in diagonalGroups)
                 {
                     Group diagonalKillerGroup = GroupHelper.GetKillerGroupFromCache(board, diagonalGroup.Points.First(), c);
@@ -102,13 +102,7 @@ namespace Go
                     List<Group> cutKillerGroups = associatedKillerGroups.Where(g => diagonalKillerGroup.Points.Contains(g.Points.First())).ToList();
                     List<Group> cutTargetGroups = targetGroups.Where(group => diagonalKillerGroup.Points.Contains(group.Points.First())).ToList();
                     if (CheckComplexSeki(board, cutKillerGroups, cutTargetGroups))
-                        complexSekiGroups.Add(diagonalGroup);
-                }
-                if (complexSekiGroups.Count > 1) return true;
-                if (complexSekiGroups.Count == 1)
-                {
-                    Group otherDiagonalGroup = diagonalGroups.First(d => d != complexSekiGroups.First());
-                    if (!ImmovableHelper.CheckConnectAndDie(board, otherDiagonalGroup)) return true;
+                        return true;
                 }
             }
             return false;
