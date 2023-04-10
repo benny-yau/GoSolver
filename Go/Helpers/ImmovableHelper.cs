@@ -283,7 +283,7 @@ namespace Go
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_Q18500" />
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario1dan21" />
         /// </summary>
-        private static Boolean SuicidalAfterMustHaveMove(Board currentBoard, Board tryBoard, Point libertyPoint)
+        public static Boolean SuicidalAfterMustHaveMove(Board currentBoard, Board tryBoard, Point libertyPoint)
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
@@ -497,10 +497,11 @@ namespace Go
         {
             (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, Content.Black, tryBoard);
             (Boolean suicidal2, Board b2) = ImmovableHelper.IsSuicidalMove(p, Content.White, tryBoard);
+            if (b == null || b2 == null) return false;
             if (!connectAndDie)
             {
-                if (suicidal && b != null && KoHelper.IsKoFight(b)) suicidal = false;
-                if (suicidal2 && b2 != null && KoHelper.IsKoFight(b2)) suicidal2 = false;
+                if (suicidal && KoHelper.IsKoFight(b)) suicidal = false;
+                if (suicidal2 && KoHelper.IsKoFight(b2)) suicidal2 = false;
                 if (suicidal && suicidal2)
                     return true;
             }

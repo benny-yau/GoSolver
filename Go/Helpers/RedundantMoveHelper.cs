@@ -996,13 +996,19 @@ namespace Go
             else if (liberties.Count == 2)
             {
                 //two liberties - suicide for both players
+                if (liberties.Any(lib => EyeHelper.FindEye(capturedBoard, lib, c.Opposite()))) return true;
                 IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(capturedBoard, liberties, c);
                 foreach (Board b in moveBoards)
                 {
                     //both players are suicidal at the liberty
                     Point q = liberties.First(liberty => !liberty.Equals(b.Move));
                     if (GroupHelper.GetKillerGroupFromCache(tryBoard, q, c.Opposite()) != null && ImmovableHelper.IsSuicidalMoveForBothPlayers(b, q))
+                    {
+                        HashSet<Group> groups = currentBoard.GetGroupsFromStoneNeighbours(q, c.Opposite());
+                        if (groups.Any(n => ImmovableHelper.EscapeCaptureLink(currentBoard, n)))
+                            continue;
                         return false;
+                    }
                 }
             }
             else if (liberties.Count == 3)
