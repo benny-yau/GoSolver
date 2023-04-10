@@ -515,11 +515,13 @@ namespace Go
                 }
 
                 //check suicidal move for both players at external liberty
-                if (ImmovableHelper.IsSuicidalMoveForBothPlayers(tryBoard, liberty))
+                if (ImmovableHelper.IsSuicidalMoveForBothPlayers(tryBoard, liberty) || ImmovableHelper.IsSuicidalMoveForBothPlayers(currentBoard, liberty, true))
+                {
+                    HashSet<Group> groups = currentBoard.GetGroupsFromStoneNeighbours(liberty, c.Opposite());
+                    if (groups.Any(n => ImmovableHelper.EscapeCaptureLink(currentBoard, n)))
+                        continue;
                     return true;
-
-                if (ImmovableHelper.IsSuicidalMoveForBothPlayers(currentBoard, liberty, true))
-                    return true;
+                }
             }
 
             //ko move on external liberty (optional)

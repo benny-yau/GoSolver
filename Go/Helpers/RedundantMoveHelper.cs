@@ -2201,13 +2201,15 @@ namespace Go
             if (GroupHelper.IncreasedKillerGroups(tryBoard, currentBoard))
                 return false;
 
+            if (!isOpponent) return true;
+
             //check multiple groups
             List<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, emptyPoints, c.Opposite()).ToList();
             List<Board> multipleGroups = moveBoards.Where(b => !GroupHelper.IsSingleGroupWithinKillerGroup(b, b.MoveGroup, false)).ToList();
             if (multipleGroups.Any(b => !ImmovableHelper.CheckConnectAndDie(b))) return false;
 
             //check for dead formation
-            if (isOpponent && moveBoards.Any(b => KillerFormationHelper.DeadFormationInBothAlive(b, killerGroup)))
+            if (moveBoards.Any(b => KillerFormationHelper.DeadFormationInBothAlive(b, killerGroup)))
                 return false;
 
             moveBoards.RemoveAll(n => multipleGroups.Any(b => b.Move.Equals(n.Move)));
@@ -2215,7 +2217,10 @@ namespace Go
 
             //select move with max binding
             Point bestMove = KillerFormationHelper.GetMaxBindingPoint(currentBoard, moveBoards, killerGroup);
-            return !tryMove.Move.Equals(bestMove);
+            if (!tryMove.Move.Equals(bestMove))
+                return true;
+
+            return false;
         }
 
         #endregion
