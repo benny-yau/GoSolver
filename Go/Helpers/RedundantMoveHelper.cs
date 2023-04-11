@@ -981,6 +981,9 @@ namespace Go
                 return false;
             }
 
+            //kill covered eye at diagonal point
+            if (KillCoveredEyeAtDiagonal(tryBoard, currentBoard))
+                return false;
 
             //retrieve liberties other than eye liberty
             List<Group> ngroups = capturedBoard.GetNeighbourGroups(tryBoard.MoveGroup);
@@ -1014,21 +1017,17 @@ namespace Go
             else if (liberties.Count == 3)
             {
                 //three liberties - suicide for both players
-                if (ngroups.Any(n => GroupHelper.GetKillerGroupFromCache(capturedBoard, n.Points.First(), c) == null))
-                    return true;
                 foreach (Group ngroup in ngroups)
                 {
                     List<Point> nLiberties = ngroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
                     if (nLiberties.Count != 2) continue;
-
+                    if (liberties.Any(lib => EyeHelper.FindEye(capturedBoard, lib, c.Opposite()))) continue;
                     IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(capturedBoard, nLiberties, c);
                     foreach (Board b in moveBoards)
                     {
                         //both players are suicidal at the liberty
                         Point q = nLiberties.First(liberty => !liberty.Equals(b.Move));
-                        if (!ImmovableHelper.IsSuicidalMove(b, q, c)) continue;
-                        Board b2 = ImmovableHelper.IsSuicidalMove(q, c.Opposite(), b).Item2;
-                        if (b2 != null && b2.MoveGroupLiberties <= 2)
+                        if (ImmovableHelper.IsSuicidalMoveForBothPlayers(b, q))
                             return false;
                     }
                 }
@@ -1834,7 +1833,6 @@ namespace Go
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_GuanZiPu_Q18860" />
         /// Opponent move at tiger mouth <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A151_101Weiqi" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_Nie67" />
-        /// Covered eye at diagonal point <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221231_6" />
         /// Check for non killable group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30370" />
         /// Check for suicide at big tiger mouth <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_Corner_A87" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_TianLongTu_Q16470" />
@@ -1868,8 +1866,8 @@ namespace Go
             {
                 if (NeutralPointSuicidalMove(tryMove))
                     continue;
-                //covered eye at diagonal point
-                if (EyeHelper.FindEye(currentBoard, d, c.Opposite()) && EyeHelper.FindCoveredEye(tryBoard, d, c.Opposite()))
+                //kill covered eye at diagonal point
+                if (KillCoveredEyeAtDiagonal(tryBoard, currentBoard))
                     continue;
 
                 //opponent move at tiger mouth
@@ -1944,6 +1942,23 @@ namespace Go
             if (!capturedBoard.GetStoneNeighbours().Any(n => capturedBoard[n] == Content.Empty && !n.Equals(move)))
                 return false;
             return true;
+        }
+
+        /// <summary>
+        /// Kill covered eye at diagonal point.
+        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221231_6" />
+        /// </summary>
+        private static Boolean KillCoveredEyeAtDiagonal(Board tryBoard, Board currentBoard)
+        {
+            Content c = tryBoard.MoveGroup.Content;
+            List<Point> diagonalEyes = tryBoard.GetDiagonalNeighbours().Where(n => EyeHelper.FindUncoveredEye(currentBoard, n, c.Opposite()) && EyeHelper.FindCoveredEye(tryBoard, n, c.Opposite())).ToList();
+            foreach (Point e in diagonalEyes)
+            {
+                if (!tryBoard.GetDiagonalNeighbours(e).Any(n => tryBoard[n] == Content.Empty)) continue;
+                if (tryBoard.GetGroupsFromStoneNeighbours(e, c).Count(n => n.Liberties.Count <= 2) >= 2)
+                    return true;
+            }
+            return false;
         }
 
         #endregion
@@ -2178,6 +2193,7 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A61_2" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_A4" />
         /// Check for atari on neighbour groups <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36_2" />
+        /// Check eye for survival <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275_2" />
         /// Check for dead formation <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q16902" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A16" />
         /// Check multiple groups <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31646" />
@@ -2207,7 +2223,12 @@ namespace Go
             if (GroupHelper.IncreasedKillerGroups(tryBoard, currentBoard))
                 return false;
 
-            if (!isOpponent) return true;
+            if (!isOpponent)
+            {
+                //check eye for survival
+                Boolean eyeForSurvival = currentBoard.GetNeighbourGroups(killerGroup).Count > 1 && emptyPoints.Any(p => currentBoard.GetStoneNeighbours(p).Count(n => currentBoard[n] == Content.Empty) >= 2);
+                if (!eyeForSurvival) return true;
+            }
 
             //check multiple groups
             List<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, emptyPoints, c.Opposite()).ToList();
