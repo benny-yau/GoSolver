@@ -928,7 +928,7 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_ScenarioHighLevel28" />
         /// Check corner point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A80" />
         /// Check for snapback  <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B31" />
-        /// Atari move required <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q2757" />
+        /// Check atari move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q2757" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18500_3" />
         /// Suicide for liberty fight <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40_2" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126" />
@@ -966,21 +966,6 @@ namespace Go
             if (ImmovableHelper.CheckSnapbackInNeighbourGroups(tryBoard, tryBoard.MoveGroup))
                 return false;
 
-            //atari move required
-            if (tryBoard.IsAtariMove)
-            {
-                //check for non two-point group
-                Boolean twoPointGroup = KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard);
-                if (!twoPointGroup && CheckNonTwoPointGroupInSuicideRealEye(tryMove, capturedBoard))
-                    return true;
-
-                //check two point group
-                if (twoPointGroup && CheckTwoPointGroupInSuicideRealEye(tryMove, capturedBoard))
-                    return true;
-
-                return false;
-            }
-
             //kill covered eye at diagonal point
             if (KillCoveredEyeAtDiagonal(tryBoard, currentBoard))
                 return false;
@@ -996,16 +981,16 @@ namespace Go
                 if (KillerFormationHelper.SuicideForLibertyFight(tryBoard, currentBoard, false))
                     return false;
             }
-            else if (liberties.Count == 2)
+            else if (liberties.Count == 2 && !liberties.Any(lib => EyeHelper.FindEye(capturedBoard, lib, c.Opposite())))
             {
                 //two liberties - suicide for both players
-                if (liberties.Any(lib => EyeHelper.FindEye(capturedBoard, lib, c.Opposite()))) return true;
                 IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(capturedBoard, liberties, c);
                 foreach (Board b in moveBoards)
                 {
                     //both players are suicidal at the liberty
                     Point q = liberties.First(liberty => !liberty.Equals(b.Move));
-                    if (GroupHelper.GetKillerGroupFromCache(tryBoard, q, c.Opposite()) != null && ImmovableHelper.IsSuicidalMoveForBothPlayers(b, q))
+                    if (GroupHelper.GetKillerGroupFromCache(tryBoard, q, c.Opposite()) == null) continue;
+                    if (ImmovableHelper.IsSuicidalMoveForBothPlayers(b, q))
                     {
                         HashSet<Group> groups = currentBoard.GetGroupsFromStoneNeighbours(q, c.Opposite());
                         if (groups.Any(n => ImmovableHelper.EscapeCaptureLink(currentBoard, n)))
@@ -1014,14 +999,13 @@ namespace Go
                     }
                 }
             }
-            else if (liberties.Count == 3)
+            else if (liberties.Count == 3 && !liberties.Any(lib => EyeHelper.FindEye(capturedBoard, lib, c.Opposite())))
             {
                 //three liberties - suicide for both players
                 foreach (Group ngroup in ngroups)
                 {
                     List<Point> nLiberties = ngroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
                     if (nLiberties.Count != 2) continue;
-                    if (liberties.Any(lib => EyeHelper.FindEye(capturedBoard, lib, c.Opposite()))) continue;
                     IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(capturedBoard, nLiberties, c);
                     foreach (Board b in moveBoards)
                     {
@@ -1031,6 +1015,17 @@ namespace Go
                             return false;
                     }
                 }
+            }
+
+            //check atari move
+            if (tryBoard.IsAtariMove)
+            {
+                //check for non two-point group
+                Boolean twoPointGroup = eyeGroup != null && eyeGroup.Points.Count == 2;
+                if (!twoPointGroup && CheckNonTwoPointGroupInSuicideRealEye(tryMove, capturedBoard))
+                    return true;
+
+                return false;
             }
             return true;
         }
