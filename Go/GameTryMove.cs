@@ -59,7 +59,7 @@ namespace Go
             get
             {
                 Board tryBoard = this.TryGame.Board;
-                return tryBoard.AtariTargets.Count > 0 && (tryBoard.MoveGroupLiberties > 1 || KoHelper.IsKoFight(tryBoard));
+                return tryBoard.AtariTargets.Count > 0 && !ImmovableHelper.IsSuicidalWithoutKo(tryBoard);
             }
         }
 
@@ -121,7 +121,7 @@ namespace Go
         {
             if (tryBoard.CapturedList.Count > 0) return false;
             if (Board.ResolveAtari(currentBoard, tryBoard)) return false;
-            if ((tryBoard.MoveGroupLiberties > 1 || KoHelper.IsKoFight(tryBoard)) && tryBoard.AtariTargets.Any(t => (func != null) ? func(t) : true)) return false;
+            if (!ImmovableHelper.IsSuicidalWithoutKo(tryBoard) && tryBoard.AtariTargets.Any(t => (func != null) ? func(t) : true)) return false;
             return true;
         }
 

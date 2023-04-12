@@ -383,6 +383,11 @@ namespace Go
             return (false, board);
         }
 
+        public static Boolean IsSuicidalWithoutKo(Board tryBoard)
+        {
+            return tryBoard.MoveGroupLiberties == 1 && !KoHelper.IsKoFight(tryBoard);
+        }
+
         /// <summary>
         /// Suicidal move for connect and die.
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_A80" />

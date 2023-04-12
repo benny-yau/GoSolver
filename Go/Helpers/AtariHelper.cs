@@ -61,7 +61,7 @@ namespace Go
 
             //double atari
             IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, liberties, c.Opposite());
-            if (moveBoards.Any(b => b.CapturedList.Count > 0 || DoubleAtariWithoutEscape(b)))
+            if (moveBoards.Any(b => DoubleAtariWithoutEscape(b) || b.CapturedList.Count > 0 || Board.ResolveAtari(board, b)))
                 return true;
             return false;
         }
