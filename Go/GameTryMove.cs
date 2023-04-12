@@ -33,6 +33,10 @@ namespace Go
         public bool MustHaveNeutralPoint { get; set; }
 
         private bool? atariResolved = null;
+
+        /// <summary>
+        /// Atari resolved.
+        /// </summary>
         public bool AtariResolved
         {
             get
@@ -44,6 +48,18 @@ namespace Go
             set
             {
                 atariResolved = value;
+            }
+        }
+
+        /// <summary>
+        /// Atari without suicide.
+        /// </summary>
+        public bool AtariWithoutSuicide
+        {
+            get
+            {
+                Board tryBoard = this.TryGame.Board;
+                return tryBoard.AtariTargets.Count > 0 && (tryBoard.MoveGroupLiberties > 1 || KoHelper.IsKoFight(tryBoard));
             }
         }
 
@@ -97,13 +113,16 @@ namespace Go
             get
             {
                 Board board = this.TryGame.Board;
-                return (board.CapturedList.Count == 0 && !AtariResolved && !board.IsAtariWithoutSuicide);
+                return (board.CapturedList.Count == 0 && !AtariResolved && !AtariWithoutSuicide);
             }
         }
 
         public static Boolean IsNegligibleForBoard(Board tryBoard, Board currentBoard, Func<Group, Boolean> func = null)
         {
-            return !(tryBoard.MoveGroupLiberties > 1 && tryBoard.AtariTargets.Any(t => (func != null) ? func(t) : true)) && tryBoard.CapturedList.Count == 0 && !Board.ResolveAtari(currentBoard, tryBoard);
+            if (tryBoard.CapturedList.Count > 0) return false;
+            if (Board.ResolveAtari(currentBoard, tryBoard)) return false;
+            if ((tryBoard.MoveGroupLiberties > 1 || KoHelper.IsKoFight(tryBoard)) && tryBoard.AtariTargets.Any(t => (func != null) ? func(t) : true)) return false;
+            return true;
         }
 
         /// <summary>

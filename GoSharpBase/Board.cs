@@ -251,20 +251,16 @@ namespace Go
         /// <summary>
         /// Get directly connected points on all four directions.
         /// </summary>
-        public List<Point> GetStoneNeighbours(int x, int y)
+        public List<Point> GetStoneNeighbours(Point? p = null)
         {
+            if (p == null) p = this.Move.Value;
+            int x = p.Value.x; int y = p.Value.y;
             List<Point> rc = new List<Point>();
             if (x > 0) rc.Add(new Point(x - 1, y));
             if (x < SizeX - 1) rc.Add(new Point(x + 1, y));
             if (y > 0) rc.Add(new Point(x, y - 1));
             if (y < SizeY - 1) rc.Add(new Point(x, y + 1));
             return rc;
-        }
-
-        public List<Point> GetStoneNeighbours(Point? p = null)
-        {
-            if (p == null) p = this.Move.Value;
-            return GetStoneNeighbours(p.Value.x, p.Value.y);
         }
 
         /// <summary>
@@ -343,26 +339,6 @@ namespace Go
             }
         }
 
-        /// <summary>
-        /// Is atari without suicide.
-        /// </summary>
-        public bool IsAtariWithoutSuicide
-        {
-            get
-            {
-                return AtariTargets.Count > 0 && MoveGroupLiberties > 1;
-            }
-        }
-
-        /// <summary>
-        /// Check if point is single point from direct connected points.
-        /// </summary>
-        public Boolean IsSinglePoint(Point? p = null)
-        {
-            if (p == null) p = this.Move;
-            Content c = this[p.Value];
-            return this.GetStoneNeighbours(p).All(q => this[q] != c);
-        }
 
         /// <summary>
         /// Set points to empty for captured groups.

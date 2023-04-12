@@ -20,23 +20,18 @@ namespace Go
         /// <summary>
         /// An eye is a point where all direct connected points are black or white as specified.
         /// </summary>
-        public static (Boolean, Content) FindEye(int x, int y, Board board, Content c = Content.Unknown)
-        {
-            if (!board.PointWithinBoard(x, y))
-                return (false, c);
-            if (board[x, y] != Content.Empty) return (false, c);
-
-            List<Point> stoneNeighbours = board.GetStoneNeighbours(x, y);
-            if (c == Content.Unknown) c = board[stoneNeighbours.First()];
-            if (c == Content.Empty) return (false, c);
-            if (stoneNeighbours.All(q => board[q] == c))
-                return (true, c);
-            return (false, c);
-        }
-
         public static Boolean FindEye(Board board, Point eye, Content c = Content.Unknown)
         {
-            return FindEye(eye.x, eye.y, board, c).Item1;
+            if (!board.PointWithinBoard(eye))
+                return false;
+            if (board[eye] != Content.Empty) return false;
+
+            List<Point> stoneNeighbours = board.GetStoneNeighbours(eye);
+            if (c == Content.Unknown) c = board[stoneNeighbours.First()];
+            if (c == Content.Empty) return false;
+            if (stoneNeighbours.All(q => board[q] == c))
+                return true;
+            return false;
         }
 
         /// <summary>

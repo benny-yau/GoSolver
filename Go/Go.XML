@@ -192,6 +192,16 @@
             The new move is made on the board of the TryGame, while the old board is retained on the CurrentGame.
             </summary>
         </member>
+        <member name="P:Go.GameTryMove.AtariResolved">
+            <summary>
+            Atari resolved.
+            </summary>
+        </member>
+        <member name="P:Go.GameTryMove.AtariWithoutSuicide">
+            <summary>
+            Atari without suicide.
+            </summary>
+        </member>
         <member name="M:Go.GameTryMove.MakeKoMove(Go.Point,Go.SurviveOrKill)">
             <summary>
             Make ko move. Set KoGameCheck to allow only survive or kill for any further ko moves.
@@ -386,7 +396,7 @@
             Get eye points at the opposite diagonals of the tiger mouth.
             </summary>
         </member>
-        <member name="M:Go.EyeHelper.FindEye(System.Int32,System.Int32,Go.Board,Go.Content)">
+        <member name="M:Go.EyeHelper.FindEye(Go.Board,Go.Point,Go.Content)">
             <summary>
             An eye is a point where all direct connected points are black or white as specified.
             </summary>

@@ -122,7 +122,13 @@ namespace Go
 
             List<Group> groups = board.GetNeighbourGroups(killerGroup);
             if (!WallHelper.StrongNeighbourGroups(board, groups)) return null;
-            if (AtariHelper.DoubleAtariOnTargetGroups(board, groups)) return null;
+            foreach (Group group in groups.Where(n => n.Liberties.Count == 2))
+            {
+                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board, true);
+                if (suicidal) continue;
+                if (b != null && !GameTryMove.IsNegligibleForBoard(b, board, t => !t.Equals(b.GetCurrentGroup(group))))
+                    return null;
+            }
             return killerGroup;
         }
 
