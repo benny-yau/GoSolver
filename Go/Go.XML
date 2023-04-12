@@ -1308,7 +1308,6 @@
             <summary>
             Get stone neighbours at diagonal of each other.
             </summary>
-            <returns></returns>
         </member>
         <member name="M:Go.RedundantMoveHelper.FindPotentialEye(Go.GameTryMove)">
             <summary>

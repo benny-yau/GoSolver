@@ -52,8 +52,7 @@ namespace Go
                         //check non killable groups
                         if (WallHelper.IsNonKillableGroup(currentBoard, groups[i]) && WallHelper.IsNonKillableGroup(currentBoard, groups[j])) continue;
                         //check ko link
-                        if ((groupI.Liberties.Count == 1 && !KoHelper.IsKoFight(tryBoard, groupI)) || (groupJ.Liberties.Count == 1 && !KoHelper.IsKoFight(tryBoard, groupJ)))
-                            continue;
+                        if (ImmovableHelper.IsSuicidalWithoutKo(tryBoard, groupI) || ImmovableHelper.IsSuicidalWithoutKo(tryBoard, groupJ)) continue;
                         //check if currently linked
                         Boolean isLinked = (groupI == groupJ) || PossibleLinkToAnyGroup(tryBoard, groupI, groupJ);
                         if (isLinked)
@@ -647,7 +646,6 @@ namespace Go
         /// <summary>
         /// Get stone neighbours at diagonal of each other.
         /// </summary>
-        /// <returns></returns>
         public static List<Point> GetNeighboursDiagonallyLinked(Board board)
         {
             Point move = board.Move.Value;

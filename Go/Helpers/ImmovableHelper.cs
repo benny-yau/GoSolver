@@ -129,24 +129,21 @@ namespace Go
         /// </summary>
         private static Boolean CheckForKoInImmovablePoint(Board board, Group targetGroup, Point q)
         {
-            if (targetGroup.Points.Count != 1) return false;
+            if (targetGroup.Points.Count != 1 || targetGroup.Liberties.Count != 1) return false;
             Content c = targetGroup.Content.Opposite();
             //check for ko by capture neighbour groups
-            if (EyeHelper.IsCovered(board, q, c.Opposite()))
+            List<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(q, c).Where(n => n.Liberties.Count == 1).ToList();
+            if (neighbourGroups.Count > 1)
             {
-                List<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(q, c).Where(n => n.Liberties.Count == 1).ToList();
-                if (neighbourGroups.Count > 1)
+                foreach (Group group in neighbourGroups)
                 {
-                    foreach (Group group in neighbourGroups)
-                    {
-                        (Boolean unEscapable, _, Board b) = ImmovableHelper.UnescapableGroup(board, group);
-                        if (!unEscapable && KoHelper.IsKoFight(b, targetGroup))
-                            return true;
-                    }
+                    (Boolean unEscapable, _, Board b) = ImmovableHelper.UnescapableGroup(board, group);
+                    if (!unEscapable && KoHelper.IsKoFight(b, targetGroup))
+                        return true;
                 }
-                else if (KoHelper.IsKoFight(board, targetGroup))
-                    return true;
             }
+            else if (KoHelper.IsKoFight(board, targetGroup))
+                return true;
 
             //check for reverse ko fight 
             List<Point> stoneNeighbours = board.GetStoneNeighbours(q);
@@ -374,18 +371,19 @@ namespace Go
         {
             Board board = tryBoard.MakeMoveOnNewBoard(p, c, overrideKo);
             if (board == null) return (true, null);
-            if (board.MoveGroupLiberties == 1)
+            if (board.MoveGroupLiberties != 1) return (false, board);
+            if (KoHelper.IsKoFight(board))
             {
-                if (overrideKo && KoHelper.IsKoFight(board))
-                    return (false, board);
-                return (true, board);
+                if (overrideKo) return (false, board);
+                return (true, null);
             }
-            return (false, board);
+            return (true, board);
         }
 
-        public static Boolean IsSuicidalWithoutKo(Board tryBoard)
+        public static Boolean IsSuicidalWithoutKo(Board tryBoard, Group targetGroup = null)
         {
-            return tryBoard.MoveGroupLiberties == 1 && !KoHelper.IsKoFight(tryBoard);
+            if (targetGroup == null) targetGroup = tryBoard.MoveGroup;
+            return targetGroup.Liberties.Count == 1 && !KoHelper.IsKoFight(tryBoard, targetGroup);
         }
 
         /// <summary>
@@ -398,13 +396,13 @@ namespace Go
         {
             Board board = tryBoard.MakeMoveOnNewBoard(p, c, koEnabled);
             if (board == null) return (true, null);
-            if (board.MoveGroupLiberties == 1)
+            if (board.MoveGroupLiberties != 1) return (false, board);
+            if (KoHelper.IsKoFight(board))
             {
-                if (!koEnabled && KoHelper.IsKoFight(board))
-                    return (true, null);
-                return (true, board);
+                if (koEnabled) return (false, board);
+                return (true, null);
             }
-            return (false, board);
+            return (true, board);
         }
 
         /// <summary>
@@ -415,14 +413,13 @@ namespace Go
         {
             Board board = ImmovableHelper.CaptureSuicideGroup(tryBoard, targetGroup, koEnabled);
             if (board == null) return (true, null);
-
-            if (board.MoveGroupLiberties == 1)
+            if (board.MoveGroupLiberties != 1) return (false, board);
+            if (KoHelper.IsKoFight(board))
             {
-                if (!koEnabled && KoHelper.IsKoFight(board))
-                    return (true, null);
-                return (true, board);
+                if (koEnabled) return (false, board);
+                return (true, null);
             }
-            return (false, board);
+            return (true, board);
         }
 
         /// <summary>
@@ -505,8 +502,6 @@ namespace Go
             if (b == null || b2 == null) return false;
             if (!connectAndDie)
             {
-                if (suicidal && KoHelper.IsKoFight(b)) suicidal = false;
-                if (suicidal2 && KoHelper.IsKoFight(b2)) suicidal2 = false;
                 if (suicidal && suicidal2)
                     return true;
             }
