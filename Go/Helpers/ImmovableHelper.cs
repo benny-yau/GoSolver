@@ -305,7 +305,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Ensure group cannot escape by moving at liberty point.       
+        /// Unescapable group. Ensure target group cannot escape by moving at liberty point or capturing neighbour groups.   
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A85" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q14981" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A12" />
@@ -320,17 +320,17 @@ namespace Go
             Point? libertyPoint = ImmovableHelper.GetLibertyPoint(tryBoard, group);
             if (libertyPoint == null) return (false, null);
 
-            //check if atari any neighbour groups
+            //check escape by capture
             Board captureBoard = EscapeByCapture(tryBoard, group, koEnabled);
             if (captureBoard != null)
                 return (false, captureBoard);
 
-            //move at liberty is suicidal
+            //make move at liberty
             (Boolean isSuicidal, Board escapeBoard) = IsSuicidalMove(libertyPoint.Value, c, tryBoard);
             if (isSuicidal)
             {
                 //check killer ko within killer group
-                if (koEnabled && KoHelper.IsKoFight(tryBoard, group) && tryBoard.GetGroupsFromStoneNeighbours(libertyPoint.Value, c.Opposite()).Where(gr => !gr.Equals(group)).Any(n => !ImmovableHelper.CheckConnectAndDie(tryBoard, n, !koEnabled)))
+                if (koEnabled && KoHelper.IsKoFight(tryBoard, group) && tryBoard.GetGroupsFromStoneNeighbours(libertyPoint.Value, c.Opposite()).Any(n => !n.Equals(group) && !ImmovableHelper.CheckConnectAndDie(tryBoard, n, false)))
                     return (false, escapeBoard);
                 return (true, escapeBoard);
             }

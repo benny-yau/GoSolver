@@ -699,7 +699,7 @@
         </member>
         <member name="M:Go.ImmovableHelper.UnescapableGroup(Go.Board,Go.Group,System.Boolean)">
             <summary>
-            Ensure group cannot escape by moving at liberty point.       
+            Unescapable group. Ensure target group cannot escape by moving at liberty point or capturing neighbour groups.   
             <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A85" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q14981" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A12" />
