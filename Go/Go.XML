@@ -627,7 +627,7 @@
         </member>
         <member name="M:Go.ImmovableHelper.FindTigerMouth(Go.Board,Go.Point,Go.Content)">
             <summary>
-            Find tiger mouth where mouth point is empty or filled. Content in parameter represents content of stones forming the tiger mouth. Snapback or ko not handled (see IsConfirmTigerMouth). 
+            Find tiger mouth where mouth point is empty or filled. Content in parameter represents content of stones forming the tiger mouth. 
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.IsTigerMouthForLink(Go.Board,Go.Point,Go.Content,System.Boolean)">
@@ -662,7 +662,7 @@
         </member>
         <member name="M:Go.ImmovableHelper.IsConfirmTigerMouth(Go.Board,Go.Board,System.Nullable{Go.Point})">
             <summary>
-            Capture suicide group and check for captured count greater than one or move liberty greater than one to ensure no ko or snapback.
+            Is confirm tiger mouth.
             <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q16827" />
             Check connect and die on current board <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_2" />
             Check all connect and die on captured board <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
@@ -1691,7 +1691,7 @@
         <member name="M:Go.RedundantMoveHelper.MustHaveNeutralPoint(Go.GameTryMove,Go.GameTryMove)">
             <summary>
             Must have neutral point.
-            Neutral point at small tiger mouth <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario5dan27_3" />
+            Neutral point at small tiger mouth <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Corner_A27" />
             Neutral point at big tiger mouth <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario5dan27_Variation" />
             Negative example <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A27" />
             <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23" />

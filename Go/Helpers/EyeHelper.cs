@@ -197,7 +197,7 @@ namespace Go
             foreach (Point p in board.GetDiagonalNeighbours(eyePoint))
             {
                 if (board[p] == c) continue;
-                if (ImmovableHelper.IsImmovablePoint(p, c, board).Item1)
+                if (ImmovableHelper.IsImmovablePoint(board, p, c))
                     immovablePoints.Add(p);
             }
             return immovablePoints;
@@ -322,7 +322,7 @@ namespace Go
 
             //eye at diagonal
             Point eye = eyeDiagonals.First();
-            if (!EyeHelper.FindEye(board, eye) || board.PointWithinMiddleArea(eye)) return false;
+            if (!EyeHelper.FindEye(board, eye, c.Opposite()) || board.PointWithinMiddleArea(eye)) return false;
 
             List<Group> eyeGroups = board.GetGroupsFromStoneNeighbours(eye, c).ToList();
             if (!eyeGroups.All(group => group.Liberties.Count > 1)) return false;

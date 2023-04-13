@@ -76,7 +76,7 @@ namespace Go
             foreach (Group targetGroup in board.AtariTargets)
             {
                 //make escape move for target group
-                (Boolean unEscapable, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(board, targetGroup, false);
+                (Boolean unEscapable, Board escapeBoard) = ImmovableHelper.UnescapableGroup(board, targetGroup, false);
                 if (unEscapable) return true;
                 //check if any atari targets left
                 if (board.AtariTargets.Any(t => escapeBoard.GetGroupLiberties(t).Count == 1))

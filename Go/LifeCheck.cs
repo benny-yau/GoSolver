@@ -146,7 +146,7 @@ namespace Go
             if (b.MoveGroup.Points.Count > 1)
             {
                 List<Point> stoneNeighbours = LinkHelper.GetNeighboursDiagonallyLinked(b);
-                if (b.GetDiagonalNeighbours().Any(n => b[n] != c && b.GetStoneNeighbours(n).Intersect(stoneNeighbours).Count() >= 2 && !ImmovableHelper.IsImmovablePoint(n, c, b).Item1))
+                if (b.GetDiagonalNeighbours().Any(n => b[n] != c && b.GetStoneNeighbours(n).Intersect(stoneNeighbours).Count() >= 2 && !ImmovableHelper.IsImmovablePoint(b, n, c)))
                     return true;
             }
 

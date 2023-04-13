@@ -284,7 +284,7 @@ namespace Go
             }
 
             //set diagonal eye move
-            if (tryBoard.GetDiagonalNeighbours().Any(n => EyeHelper.FindEye(currentBoard, n, c) && !ImmovableHelper.IsImmovablePoint(move, c, currentBoard).Item1))
+            if (tryBoard.GetDiagonalNeighbours().Any(n => EyeHelper.FindEye(currentBoard, n, c) && !ImmovableHelper.IsImmovablePoint(currentBoard, move, c)))
                 tryMove.IsDiagonalEyeMove = true;
             return true;
         }
@@ -500,7 +500,7 @@ namespace Go
             Group atariTarget = tryBoard.AtariTargets.First();
             if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty || (tryBoard[n] == c.Opposite() && !tryBoard.GetGroupAt(n).Equals(atariTarget)))) return false;
             //check for unescapable group
-            (Boolean unEscapable, _, Board escapeBoard) = ImmovableHelper.UnescapableGroup(tryBoard, atariTarget, false);
+            (Boolean unEscapable, Board escapeBoard) = ImmovableHelper.UnescapableGroup(tryBoard, atariTarget, false);
             if (unEscapable) return false;
 
             //check for weak group
@@ -1361,7 +1361,7 @@ namespace Go
 
         /// <summary>
         /// Must have neutral point.
-        /// Neutral point at small tiger mouth <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario5dan27_3" />
+        /// Neutral point at small tiger mouth <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Corner_A27" />
         /// Neutral point at big tiger mouth <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario5dan27_Variation" />
         /// Negative example <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A27" />
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23" />
@@ -1387,7 +1387,7 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
 
             //neutral point at small tiger mouth
-            if (opponentBoard.GetStoneNeighbours().Where(n => EyeHelper.FindEye(opponentBoard, n)).Any(n => !StrongGroupsAtMustHaveMove(tryBoard, n)))
+            if (opponentBoard.GetStoneNeighbours().Where(n => EyeHelper.FindEye(opponentBoard, n, c.Opposite())).Any(n => !StrongGroupsAtMustHaveMove(tryBoard, n)))
                 return true;
 
             //neutral point at big tiger mouth
@@ -1870,7 +1870,7 @@ namespace Go
                 {
                     if (ImmovableHelper.SuicideAtBigTigerMouth(opponentMove).Item1 || BothAliveHelper.CheckForBothAliveAtMove(opponentMove.TryGame.Board))
                         continue;
-                    if (ImmovableHelper.IsImmovablePoint(d, c.Opposite(), currentBoard).Item1)
+                    if (ImmovableHelper.IsImmovablePoint(currentBoard, d, c.Opposite()))
                         return true;
                 }
                 //check killer groups
@@ -1881,7 +1881,7 @@ namespace Go
                 if (moveKillerGroup != null) continue;
 
                 //find immovable point at diagonal
-                if (ImmovableHelper.IsImmovablePoint(d, c.Opposite(), currentBoard).Item1)
+                if (ImmovableHelper.IsImmovablePoint(currentBoard, d, c.Opposite()))
                 {
                     if (currentBoard[d] == Content.Empty || (currentBoard[d] == c && ImmovableHelper.CheckCaptureSecureForSingleGroup(currentBoard, currentBoard.GetGroupAt(d))))
                         return true;

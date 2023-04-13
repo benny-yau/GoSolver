@@ -223,7 +223,7 @@ namespace Go
 
                     //check is immovable
                     Point q = diagonals.First(d => !d.Equals(p));
-                    if (ImmovableHelper.IsImmovablePoint(q, c, b).Item1) return true;
+                    if (ImmovableHelper.IsImmovablePoint(b, q, c)) return true;
 
                     //make connection at other diagonal
                     if (ImmovableHelper.IsSuicidalMove(q, c, b).Item1)
@@ -242,7 +242,7 @@ namespace Go
             //check any diagonal separated by opposite content
             foreach (Point diagonal in diagonals)
             {
-                if (!ImmovableHelper.IsImmovablePoint(diagonal, c, board).Item1) continue;
+                if (!ImmovableHelper.IsImmovablePoint(board, diagonal, c)) continue;
                 if (!immediateLink)
                 {
                     //filled point
@@ -302,7 +302,7 @@ namespace Go
 
                 //check if diagonals are immovable
                 List<Point> tmDiagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(board, p, c);
-                if (tmDiagonals.All(d => !ImmovableHelper.IsImmovablePoint(d, c, b).Item1))
+                if (tmDiagonals.All(d => !ImmovableHelper.IsImmovablePoint(b, d, c)))
                     return false;
             }
             return true;

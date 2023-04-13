@@ -7,21 +7,22 @@ namespace Go
     public class ImmovableHelper
     {
         /// <summary>
-        /// Find tiger mouth where mouth point is empty or filled. Content in parameter represents content of stones forming the tiger mouth. Snapback or ko not handled (see IsConfirmTigerMouth). 
+        /// Find tiger mouth where mouth point is empty or filled. Content in parameter represents content of stones forming the tiger mouth. 
         /// </summary>
         public static Point? FindTigerMouth(Board board, Point p, Content c)
         {
             if (!board.PointWithinBoard(p))
                 return null;
             Content content = board[p];
+            List<Point> stoneNeighbours = board.GetStoneNeighbours(p);
+            if (stoneNeighbours.Count(n => board[n] == c) != stoneNeighbours.Count - 1) return null;
             if (content == Content.Empty)
             {
-                List<Point> stoneNeighbours = board.GetStoneNeighbours(p);
                 List<Point> libertyPoint = stoneNeighbours.Where(n => board[n] != c).ToList();
                 if (libertyPoint.Count != 1) return null;
                 Point q = libertyPoint.First();
                 //make move into tiger mouth
-                Board b = board.MakeMoveOnNewBoard(p, c.Opposite());
+                Board b = board.MakeMoveOnNewBoard(p, c.Opposite(), true);
                 if (b == null) return q;
                 //capture move at tiger mouth
                 Board b2 = CaptureSuicideGroup(b);
@@ -52,7 +53,7 @@ namespace Go
             if (checkDiagonals)
             {
                 List<Point> diagonals = GetDiagonalsOfTigerMouth(board, p, c);
-                if (diagonals.All(d => ImmovableHelper.IsImmovablePoint(d, c, board).Item1))
+                if (diagonals.All(d => ImmovableHelper.IsImmovablePoint(board, d, c)))
                     return false;
             }
             return true;
@@ -102,7 +103,7 @@ namespace Go
                 if (board[p] == c) return (true, null);
 
                 Group targetGroup = board.GetGroupAt(p);
-                (Boolean unEscapable, Point? libertyPoint, _) = UnescapableGroup(board, targetGroup);
+                (Boolean unEscapable, _) = UnescapableGroup(board, targetGroup);
                 if (!unEscapable)
                     return (false, null);
 
@@ -111,13 +112,18 @@ namespace Go
                     return (false, null);
 
                 //check for ko possibility
-                Point q = libertyPoint.Value;
-                if (CheckForKoInImmovablePoint(board, targetGroup, q))
+                Point? q = ImmovableHelper.GetLibertyPoint(board, targetGroup);
+                if (q != null && CheckForKoInImmovablePoint(board, targetGroup, q.Value))
                     return (false, null);
 
                 return (true, q);
             }
             return (false, null);
+        }
+
+        public static Boolean IsImmovablePoint(Board board, Point p, Content c)
+        {
+            return IsImmovablePoint(p, c, board).Item1;
         }
 
         /// <summary>
@@ -137,7 +143,7 @@ namespace Go
             {
                 foreach (Group group in neighbourGroups)
                 {
-                    (Boolean unEscapable, _, Board b) = ImmovableHelper.UnescapableGroup(board, group);
+                    (Boolean unEscapable, Board b) = ImmovableHelper.UnescapableGroup(board, group);
                     if (!unEscapable && KoHelper.IsKoFight(b, targetGroup))
                         return true;
                 }
@@ -155,7 +161,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Capture suicide group and check for captured count greater than one or move liberty greater than one to ensure no ko or snapback.
+        /// Is confirm tiger mouth.
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q16827" />
         /// Check connect and die on current board <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_2" />
         /// Check all connect and die on captured board <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
@@ -307,17 +313,17 @@ namespace Go
         /// Recursive connect and die <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A44_101Weiqi" />
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q17255" />
         /// </summary>
-        public static (Boolean, Point?, Board) UnescapableGroup(Board tryBoard, Group targetGroup, Boolean koEnabled = true)
+        public static (Boolean, Board) UnescapableGroup(Board tryBoard, Group targetGroup, Boolean koEnabled = true)
         {
             Content c = targetGroup.Content;
             Group group = tryBoard.GetCurrentGroup(targetGroup);
             Point? libertyPoint = ImmovableHelper.GetLibertyPoint(tryBoard, group);
-            if (libertyPoint == null) return (false, null, null);
+            if (libertyPoint == null) return (false, null);
 
             //check if atari any neighbour groups
             Board captureBoard = EscapeByCapture(tryBoard, group, koEnabled);
             if (captureBoard != null)
-                return (false, null, captureBoard);
+                return (false, captureBoard);
 
             //move at liberty is suicidal
             (Boolean isSuicidal, Board escapeBoard) = IsSuicidalMove(libertyPoint.Value, c, tryBoard);
@@ -325,15 +331,15 @@ namespace Go
             {
                 //check killer ko within killer group
                 if (koEnabled && KoHelper.IsKoFight(tryBoard, group) && tryBoard.GetGroupsFromStoneNeighbours(libertyPoint.Value, c.Opposite()).Where(gr => !gr.Equals(group)).Any(n => !ImmovableHelper.CheckConnectAndDie(tryBoard, n, !koEnabled)))
-                    return (false, null, escapeBoard);
-                return (true, libertyPoint, escapeBoard);
+                    return (false, escapeBoard);
+                return (true, escapeBoard);
             }
 
             //recursive connect and die
             if (CheckConnectAndDie(escapeBoard, group, !koEnabled))
-                return (true, libertyPoint, escapeBoard);
+                return (true, escapeBoard);
 
-            return (false, null, escapeBoard);
+            return (false, escapeBoard);
         }
 
         /// <summary>
@@ -499,7 +505,6 @@ namespace Go
         {
             (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, Content.Black, tryBoard);
             (Boolean suicidal2, Board b2) = ImmovableHelper.IsSuicidalMove(p, Content.White, tryBoard);
-            if (b == null || b2 == null) return false;
             if (!connectAndDie)
             {
                 if (suicidal && suicidal2)
@@ -588,7 +593,7 @@ namespace Go
             if (suicidal && b != null && b.MoveGroup.Points.Count > 1)
             {
                 //check if target group is escapable
-                (Boolean unEscapable, _, Board escapeBoard) = UnescapableGroup(tryBoard, targetGroup, false);
+                (Boolean unEscapable, Board escapeBoard) = UnescapableGroup(tryBoard, targetGroup, false);
                 if (unEscapable) return true;
                 //check not more than two stones captured
                 int capturedPoints = escapeBoard.CapturedPoints.Count();
@@ -806,11 +811,9 @@ namespace Go
                 IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, currentBoard.GetGroupLiberties(targetGroup), c.Opposite());
                 foreach (Board b in moveBoards)
                 {
-                    if (b.AtariTargets.Any(t => ImmovableHelper.UnescapableGroup(b, t, false).Item1))
-                    {
-                        if (ImmovableHelper.IsSuicidalMoveForBothPlayers(tryBoard, b.Move.Value))
-                            return true;
-                    }
+                    if (!b.AtariTargets.Any(t => UnescapableGroup(b, t, false).Item1)) continue;
+                    if (IsSuicidalMoveForBothPlayers(tryBoard, b.Move.Value))
+                        return true;
                 }
             }
             return false;
