@@ -327,13 +327,7 @@ namespace Go
 
             //make move at liberty
             (Boolean isSuicidal, Board escapeBoard) = IsSuicidalMove(libertyPoint.Value, c, tryBoard);
-            if (isSuicidal)
-            {
-                //check killer ko within killer group
-                if (koEnabled && KoHelper.IsKoFight(tryBoard, group) && tryBoard.GetGroupsFromStoneNeighbours(libertyPoint.Value, c.Opposite()).Any(n => !n.Equals(group) && !ImmovableHelper.CheckConnectAndDie(tryBoard, n, false)))
-                    return (false, escapeBoard);
-                return (true, escapeBoard);
-            }
+            if (isSuicidal) return (true, escapeBoard);
 
             //recursive connect and die
             if (CheckConnectAndDie(escapeBoard, group, !koEnabled))
