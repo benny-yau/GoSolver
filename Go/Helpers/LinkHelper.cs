@@ -317,12 +317,13 @@ namespace Go
         private static Boolean CheckDoubleAtariForLinks(Board board, LinkedPoint<Point> diagonalPoint)
         {
             Content c = board[diagonalPoint.Move];
-            List<Point> diagonals = LinkHelper.PointsBetweenDiagonals(diagonalPoint);
-            diagonals.RemoveAll(diagonal => board[diagonal] != Content.Empty);
-            if (diagonals.Count != 1) return false;
-            Point d = diagonals.First();
-            List<Group> tigerMouthGroups = board.GetGroupsFromStoneNeighbours(d, c.Opposite()).ToList();
-            return AtariHelper.DoubleAtariOnTargetGroups(board, tigerMouthGroups);
+            foreach (Point d in LinkHelper.PointsBetweenDiagonals(diagonalPoint))
+            {
+                List<Group> tigerMouthGroups = board.GetGroupsFromStoneNeighbours(d, c.Opposite()).ToList();
+                if (AtariHelper.DoubleAtariOnTargetGroups(board, tigerMouthGroups))
+                    return true;
+            }
+            return false;
         }
 
         /// <summary>
