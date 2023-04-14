@@ -595,7 +595,7 @@ namespace Go
             if (tryBoard.MoveGroup.Points.Count != 2 || tryBoard.MoveGroupLiberties != 1 || !tryBoard.IsAtariMove) return false;
             if (captureBoard == null) captureBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
             //check for three groups
-            if (tryBoard.GetGroupsFromStoneNeighbours(move).Count > 2) return true;
+            if (ThreeOpponentGroupsAtMove(tryBoard)) return true;
 
             Board board = captureBoard.MakeMoveOnNewBoard(move, c);
             if (board == null || board.AtariTargets.Count == 0) return false;
@@ -616,6 +616,22 @@ namespace Go
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(board, q, c.Opposite());
             if (killerGroup != null && killerGroup.Points.Count == 2 && EyeHelper.IsCovered(board, emptyPoints.First(), c.Opposite()))
                 return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Three opponent groups at move.
+        /// </summary>
+        public static Boolean ThreeOpponentGroupsAtMove(Board tryBoard)
+        {
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            if (tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c.Opposite()) > 2)
+            {
+                List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(tryBoard, move, c.Opposite());
+                if (diagonals.All(d => tryBoard[d] != c.Opposite()))
+                    return true;
+            }
             return false;
         }
 

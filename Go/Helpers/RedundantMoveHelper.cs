@@ -892,8 +892,8 @@ namespace Go
                 return false;
 
             //check for three neighbour groups
-            Boolean threeGroups = tryBoard.GetGroupsFromStoneNeighbours(move).Count >= 3;
-            if (threeGroups) return false;
+            if (KillerFormationHelper.ThreeOpponentGroupsAtMove(tryBoard))
+                return false;
 
             //check killer formation
             if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, captureBoard))
@@ -1924,8 +1924,7 @@ namespace Go
                 return false;
 
             //check for three groups
-            List<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(move);
-            if (neighbourGroups.Count >= 3)
+            if (KillerFormationHelper.ThreeOpponentGroupsAtMove(tryBoard))
                 return false;
 
             //check for strong neighbour groups

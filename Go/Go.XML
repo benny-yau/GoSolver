@@ -1000,6 +1000,11 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31428" />
             </summary>
         </member>
+        <member name="M:Go.KillerFormationHelper.ThreeOpponentGroupsAtMove(Go.Board)">
+            <summary>
+            Three opponent groups at move.
+            </summary>
+        </member>
         <member name="M:Go.KillerFormationHelper.BentThreeSuicideAtCoveredEye(Go.Board,Go.Board)">
             <summary>
             Bent three suicide at covered eye.
