@@ -766,31 +766,20 @@
             Is suicide move for both players.
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.CheckSnapbackInNeighbourGroups(Go.Board,Go.Group)">
+        <member name="M:Go.ImmovableHelper.CheckSnapbackFromMove(Go.Board,System.Nullable{Go.Point})">
             <summary>
-            Check snapback in neighbour groups.
+            Check snapback from move.
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234" />
             <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A55" />
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.CheckSnapback(Go.Board,Go.Group)">
+        <member name="M:Go.ImmovableHelper.CheckSnapback(Go.Board,Go.Group,Go.Group)">
             <summary>
             Check snapback.
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A26" />
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31493" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B31_4" />
             Two point move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234" />
-            </summary>
-        </member>
-        <member name="M:Go.ImmovableHelper.IsSnapback(Go.Board,Go.Group,Go.Group)">
-            <summary>
-            Snapback.
-            Check if target group is escapable <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B31" />
-            <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_GuanZiPu_A3" />
-            <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31640" />
-            Check kill eye snapback <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B32" />
-            Check not more than two stones captured <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WuQingYuan_Q31471" />
-            Check if kill move can escape <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_B28" />
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.ConnectAndDie(Go.Board,Go.Group,System.Boolean)">
@@ -1000,7 +989,7 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31428" />
             </summary>
         </member>
-        <member name="M:Go.KillerFormationHelper.ThreeOpponentGroupsAtMove(Go.Board)">
+        <member name="M:Go.KillerFormationHelper.ThreeOpponentGroupsAtMove(Go.Board,System.Nullable{Go.Point})">
             <summary>
             Three opponent groups at move.
             </summary>

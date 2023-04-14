@@ -963,7 +963,7 @@ namespace Go
             if (WallHelper.TargetWithAnyNonKillableGroup(tryBoard)) return true;
 
             //check for snapback
-            if (ImmovableHelper.CheckSnapbackInNeighbourGroups(tryBoard, tryBoard.MoveGroup))
+            if (ImmovableHelper.CheckSnapbackFromMove(tryBoard))
                 return false;
 
             //kill covered eye at diagonal point

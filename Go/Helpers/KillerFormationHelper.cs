@@ -257,7 +257,7 @@ namespace Go
                 }
 
                 //check for snapback
-                if (ImmovableHelper.CheckSnapbackInNeighbourGroups(tryBoard, tryBoard.MoveGroup))
+                if (ImmovableHelper.CheckSnapbackFromMove(tryBoard))
                     return true;
 
                 //suicide for liberty fight
@@ -622,13 +622,13 @@ namespace Go
         /// <summary>
         /// Three opponent groups at move.
         /// </summary>
-        public static Boolean ThreeOpponentGroupsAtMove(Board tryBoard)
+        public static Boolean ThreeOpponentGroupsAtMove(Board tryBoard, Point? eyePoint = null)
         {
-            Point move = tryBoard.Move.Value;
-            Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c.Opposite()) > 2)
+            if (eyePoint == null) eyePoint = tryBoard.Move.Value;
+            Content c = tryBoard[eyePoint.Value];
+            if (tryBoard.GetStoneNeighbours(eyePoint).Count(n => tryBoard[n] == c.Opposite()) > 2)
             {
-                List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(tryBoard, move, c.Opposite());
+                List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(tryBoard, eyePoint.Value, c.Opposite());
                 if (diagonals.All(d => tryBoard[d] != c.Opposite()))
                     return true;
             }

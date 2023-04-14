@@ -269,7 +269,7 @@ namespace Go
                     return false;
 
                 //check snapback
-                if (eyeGroups.Any(group => ImmovableHelper.CheckSnapback(board, group)))
+                if (killerGroup.Points.Any(p => board[p] != Content.Empty && ImmovableHelper.CheckSnapbackFromMove(board, p)))
                     return false;
 
                 //check unique corner connect and die
