@@ -102,8 +102,7 @@ namespace Go
         /// </summary>
         public static Boolean StrongNeighbourGroups(Board board, IEnumerable<Group> neighbourGroups)
         {
-            if (!neighbourGroups.Any()) return true;
-            if (neighbourGroups.Any(group => !IsStrongNeighbourGroup(board, group)))
+            if (neighbourGroups.Any(group => !ImmovableHelper.CheckConnectAndDie(board, group)))
                 return false;
             return true;
         }
@@ -119,15 +118,6 @@ namespace Go
             if (group == null) group = board.MoveGroup;
             List<Group> neighbourGroups = board.GetNeighbourGroups(group);
             return StrongNeighbourGroups(board, neighbourGroups);
-        }
-
-
-        public static Boolean IsStrongNeighbourGroup(Board board, Group group)
-        {
-            int liberties = group.Liberties.Count;
-            if (liberties < 2) return false;
-            if (ImmovableHelper.CheckConnectAndDie(board, group)) return false;
-            return true;
         }
 
         /// <summary>
@@ -177,7 +167,7 @@ namespace Go
         public static Boolean TargetWithKoFightAtAllNonKillableGroups(Board board, Group group = null)
         {
             if (group == null) group = board.MoveGroup;
-            if (board.GetNeighbourGroups(group).All(n => WallHelper.IsNonKillableGroup(board, n) || KoHelper.IsNonKillableGroupKoFight(board, n) || (n.Liberties.Count == 1 && !KoHelper.IsKoFight(board, n))))
+            if (board.GetNeighbourGroups(group).All(n => WallHelper.IsNonKillableGroup(board, n) || KoHelper.IsNonKillableGroupKoFight(board, n)))
                 return true;
             return false;
         }

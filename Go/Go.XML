@@ -630,11 +630,6 @@
             Find tiger mouth where mouth point is empty or filled. Content in parameter represents content of stones forming the tiger mouth. 
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.IsTigerMouthForLink(Go.Board,Go.Point,Go.Content,System.Boolean)">
-            <summary>
-            Is tiger mouth for link.
-            </summary>
-        </member>
         <member name="M:Go.ImmovableHelper.GetDiagonalsOfTigerMouth(Go.Board,Go.Point,Go.Content)">
             <summary>
             Get diagonals of tiger mouth.
@@ -1301,6 +1296,16 @@
         <member name="M:Go.LinkHelper.GetNeighboursDiagonallyLinked(Go.Board)">
             <summary>
             Get stone neighbours at diagonal of each other.
+            </summary>
+        </member>
+        <member name="M:Go.LinkHelper.IsTigerMouthForLink(Go.Board,Go.Point,Go.Content,System.Boolean)">
+            <summary>
+            Is tiger mouth for link. Check diagonal only for links, not for confirm alive.
+            </summary>
+        </member>
+        <member name="M:Go.LinkHelper.TigerMouthThreatGroup(Go.Board,Go.Point,Go.Content)">
+            <summary>
+            Get tiger mouth threat group.
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.FindPotentialEye(Go.GameTryMove)">
@@ -2261,11 +2266,6 @@
             Link breakage for pre atari groups <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_2" />
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_3" />
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_4" />
-            </summary>
-        </member>
-        <member name="M:Go.LifeCheck.TigerMouthThreatGroup(Go.Board,Go.Point,Go.Content)">
-            <summary>
-            Get tiger mouth threat group.
             </summary>
         </member>
         <member name="M:Go.LifeCheck.DoubleTigerMouthLink(Go.Board,Go.Board,Go.Point,Go.Point,System.Boolean)">

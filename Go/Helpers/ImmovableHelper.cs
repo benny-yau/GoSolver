@@ -42,24 +42,6 @@ namespace Go
         }
 
         /// <summary>
-        /// Is tiger mouth for link.
-        /// </summary>
-        public static Boolean IsTigerMouthForLink(Board board, Point p, Content c, Boolean checkDiagonals = true)
-        {
-            if (board[p] != Content.Empty || !ImmovableHelper.FindTigerMouth(board, c, p)) return false;
-            //ensure more than one group
-            if (board.GetGroupsFromStoneNeighbours(p, c.Opposite()).Count() == 1) return false;
-            //check if diagonals are immovable
-            if (checkDiagonals)
-            {
-                List<Point> diagonals = GetDiagonalsOfTigerMouth(board, p, c);
-                if (diagonals.All(d => ImmovableHelper.IsImmovablePoint(board, d, c)))
-                    return false;
-            }
-            return true;
-        }
-
-        /// <summary>
         /// Get diagonals of tiger mouth.
         /// </summary>
         public static List<Point> GetDiagonalsOfTigerMouth(Board board, Point p, Content c)

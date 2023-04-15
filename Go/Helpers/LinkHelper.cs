@@ -523,7 +523,7 @@ namespace Go
             List<Point> tigerMouthList = new List<Point>();
             foreach (Point q in LinkHelper.PointsBetweenDiagonals(diagonalPoint))
             {
-                if (ImmovableHelper.IsTigerMouthForLink(board, q, c))
+                if (IsTigerMouthForLink(board, q, c))
                     tigerMouthList.Add(q);
             }
             return tigerMouthList.ToList();
@@ -661,5 +661,38 @@ namespace Go
             stoneNeighbours = stoneNeighbours.Where(n => board.GetDiagonalNeighbours(n).Intersect(stoneNeighbours).Any()).ToList();
             return stoneNeighbours;
         }
+
+        /// <summary>
+        /// Is tiger mouth for link. Check diagonal only for links, not for confirm alive.
+        /// </summary>
+        public static Boolean IsTigerMouthForLink(Board board, Point p, Content c, Boolean checkDiagonals = true)
+        {
+            if (board[p] != Content.Empty || !ImmovableHelper.FindTigerMouth(board, c, p)) return false;
+            //ensure more than one group
+            if (board.GetGroupsFromStoneNeighbours(p, c.Opposite()).Count() == 1) return false;
+            //check if diagonals are immovable
+            if (checkDiagonals)
+            {
+                List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(board, p, c);
+                if (diagonals.All(d => ImmovableHelper.IsImmovablePoint(board, d, c) && TigerMouthThreatGroup(board, d, c) == null))
+                    return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Get tiger mouth threat group.
+        /// </summary>
+        public static Group TigerMouthThreatGroup(Board board, Point tigerMouth, Content c)
+        {
+            if (board[tigerMouth] != Content.Empty) return null;
+            List<Point> points = board.GetStoneNeighbours(tigerMouth).Where(n => board[n] == c.Opposite()).ToList();
+            if (points.Count != 1) return null;
+            Group threatGroup = board.GetGroupAt(points.First());
+            if (threatGroup.Liberties.Count == 2)
+                return threatGroup;
+            return null;
+        }
+
     }
 }
