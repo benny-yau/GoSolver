@@ -1313,7 +1313,7 @@
             Is immovable point without threat group.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.TigerMouthThreatGroup(Go.Board,Go.Point,Go.Content)">
+        <member name="M:Go.LinkHelper.TigerMouthThreatGroup(Go.Board,Go.Point,Go.Content,System.Func{Go.Group,System.Boolean})">
             <summary>
             Get tiger mouth threat group.
             </summary>

@@ -156,15 +156,6 @@ namespace Go
                 found = (stoneCount + immovablePoints.Count >= diagonalCount - 1);
             else //for eye point at side or corner, all diagonals should be immovable
                 found = (stoneCount + immovablePoints.Count == diagonalCount);
-
-            //check for esceptions
-            if (found && immovablePoints.Count >= 2)
-            {
-                if (DoubleAtariOnSemiSolidEye(board, eye, c))
-                    return (false, null);
-                if (immovablePoints.Count(n => LinkHelper.TigerMouthThreatGroup(board, n, c) != null) >= 2)
-                    return (false, null);
-            }
             return (found, immovablePoints);
         }
 

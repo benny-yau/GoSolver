@@ -240,18 +240,22 @@ namespace Go
                 return true;
             }
             //check any diagonal separated by opposite content
-            foreach (Point diagonal in diagonals)
+            foreach (Point p in diagonals)
             {
-                if (!ImmovableHelper.IsImmovablePoint(board, diagonal, c)) continue;
+                if (!ImmovableHelper.IsImmovablePoint(board, p, c)) continue;
                 if (!immediateLink)
                 {
-                    //filled point
-                    if (board[diagonal] != c.Opposite()) return true;
+                    //empty point
+                    if (board[p] == Content.Empty)
+                    {
+                        Boolean capturedGroup = TigerMouthThreatGroup(board, p, c, n => n.Liberties.Count == 1) != null && board[diagonals.First(d => !d.Equals(p))] == c.Opposite();
+                        if (!capturedGroup) return true;
+                    }
                     //check killer group
-                    Group killerGroup = GroupHelper.GetKillerGroupOfStrongNeighbourGroups(board, diagonal, c);
+                    Group killerGroup = GroupHelper.GetKillerGroupOfStrongNeighbourGroups(board, p, c);
                     if (killerGroup == null) continue;
                     //check capture secure
-                    if (!ImmovableHelper.CheckCaptureSecureForSingleGroup(board, board.GetGroupAt(diagonal))) continue;
+                    if (board[p] != Content.Empty && !ImmovableHelper.CheckCaptureSecureForSingleGroup(board, board.GetGroupAt(p))) continue;
                 }
                 return true;
             }
@@ -287,22 +291,9 @@ namespace Go
 
                 //make opponent move at diagonal
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board, true);
-                if (suicidal)
-                {
-                    //check double atari at link
-                    Point? liberty = ImmovableHelper.FindTigerMouth(board, p, c);
-                    if (liberty != null && board[liberty.Value] != Content.Empty)
-                    {
-                        Group killerGroup = GroupHelper.GetKillerGroupFromCache(board, p, c);
-                        if (killerGroup != null && LifeCheck.CheckOpponentDoubleAtari(board, new List<Group>() { killerGroup }))
-                            return false;
-                    }
-                    continue;
-                }
-
-                //check if diagonals are immovable
-                List<Point> tmDiagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(board, p, c);
-                if (tmDiagonals.All(d => !LinkHelper.IsImmovablePointWithoutThreatGroup(b, d, c)))
+                if (suicidal || b == null) continue;
+                Point middleStone = opponentStones.First(n => board.GetDiagonalNeighbours(n).Count(d => opponentStones.Contains(d)) >= 2);
+                if (opponentStones.Where(n => !n.Equals(middleStone)).All(n => !CheckIsDiagonalLinked(middleStone, n, b)))
                     return false;
             }
             return true;
@@ -685,20 +676,28 @@ namespace Go
         /// </summary>
         public static Boolean IsImmovablePointWithoutThreatGroup(Board board, Point p, Content c)
         {
-            return ImmovableHelper.IsImmovablePoint(board, p, c) && TigerMouthThreatGroup(board, p, c) == null;
+            return ImmovableHelper.IsImmovablePoint(board, p, c) && TigerMouthThreatGroup(board, p, c, n => n.Liberties.Count <= 2) == null;
         }
 
         /// <summary>
         /// Get tiger mouth threat group.
         /// </summary>
-        public static Group TigerMouthThreatGroup(Board board, Point tigerMouth, Content c)
+        public static Group TigerMouthThreatGroup(Board board, Point tigerMouth, Content c, Func<Group, Boolean> func = null)
         {
             if (board[tigerMouth] != Content.Empty) return null;
             List<Point> points = board.GetStoneNeighbours(tigerMouth).Where(n => board[n] == c.Opposite()).ToList();
             if (points.Count != 1) return null;
             Group threatGroup = board.GetGroupAt(points.First());
-            if (threatGroup.Liberties.Count == 2)
-                return threatGroup;
+            if (func == null)
+            {
+                if (threatGroup.Liberties.Count == 2)
+                    return threatGroup;
+            }
+            else
+            {
+                if (func(threatGroup))
+                    return threatGroup;
+            }
             return null;
         }
 
