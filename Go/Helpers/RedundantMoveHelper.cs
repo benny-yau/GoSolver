@@ -888,7 +888,7 @@ namespace Go
 
             if (tryBoard.MoveGroup.Points.Count == 1) return false;
             //ensure no liberties
-            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty))
+            if (KillerFormationHelper.GetLibertiesAtMove(tryBoard).Any())
                 return false;
 
             //check for three neighbour groups
@@ -2135,8 +2135,7 @@ namespace Go
             //count eyes created at move
             int possibleEyes = KillerFormationHelper.PossibleEyesCreated(currentBoard, move, c);
 
-            List<Point> emptyNeighbours = tryBoard.GetStoneNeighbours().Where(p => tryBoard[p] == Content.Empty).ToList();
-            foreach (Point p in emptyNeighbours)
+            foreach (Point p in KillerFormationHelper.GetLibertiesAtMove(tryBoard))
             {
                 //check any opponent stone at neighbour points
                 if (currentBoard.GetStoneNeighbours(p).Any(n => currentBoard[n] == c.Opposite()))

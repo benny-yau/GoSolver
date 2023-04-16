@@ -248,7 +248,7 @@ namespace Go
                     return TwoPointSuicideAtCoveredEye(captureBoard, tryBoard);
 
                 //two-point move with empty point
-                if (tryBoard.GetStoneNeighbours().Any(p => tryBoard[p] == Content.Empty))
+                if (GetLibertiesAtMove(tryBoard).Any())
                 {
                     if (tryBoard.MoveGroupLiberties == 2 || SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                         return true;
@@ -323,7 +323,7 @@ namespace Go
             if (previousGroups.Count > 1)
                 return false;
             //empty point neighbour
-            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty))
+            if (GetLibertiesAtMove(tryBoard).Any())
             {
                 if (tryBoard.MoveGroupLiberties == 2 || SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                     return false;
@@ -415,8 +415,7 @@ namespace Go
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            List<Point> stoneNeighbours = tryBoard.GetStoneNeighbours().Where(p => tryBoard[p] == Content.Empty).ToList();
-            if (stoneNeighbours.Any(n => tryBoard.GetStoneNeighbours(n).Where(q => !q.Equals(move)).All(q => tryBoard[q] == c.Opposite())))
+            if (GetLibertiesAtMove(tryBoard).Any(n => tryBoard.GetStoneNeighbours(n).Where(q => !q.Equals(move)).All(q => tryBoard[q] == c.Opposite())))
                 return true;
             return false;
         }
@@ -566,7 +565,7 @@ namespace Go
                     return true;
                 //check for killer group
                 if (killerGroup == null) continue;
-                if (!tryBoard.GetStoneNeighbours().Any(p => tryBoard[p] == Content.Empty)) continue;
+                if (!GetLibertiesAtMove(tryBoard).Any()) continue;
                 //make move at the other empty point
                 Point move2 = group.Points.First(p => !p.Equals(move));
                 Board b2 = capturedBoard.MakeMoveOnNewBoard(move2, c.Opposite());
@@ -617,6 +616,14 @@ namespace Go
             if (killerGroup != null && killerGroup.Points.Count == 2 && EyeHelper.IsCovered(board, emptyPoints.First(), c.Opposite()))
                 return true;
             return false;
+        }
+
+        /// <summary>
+        /// Get liberties at move.
+        /// </summary>
+        public static IEnumerable<Point> GetLibertiesAtMove(Board tryBoard)
+        {
+            return tryBoard.GetStoneNeighbours().Where(p => tryBoard[p] == Content.Empty);
         }
 
         /// <summary>
