@@ -11,8 +11,6 @@ namespace Go
         /// </summary>
         public static Point? FindTigerMouth(Board board, Point p, Content c)
         {
-            if (!board.PointWithinBoard(p))
-                return null;
             Content content = board[p];
             List<Point> stoneNeighbours = board.GetStoneNeighbours(p);
             if (stoneNeighbours.Count(n => board[n] == c) != stoneNeighbours.Count - 1) return null;
@@ -23,10 +21,8 @@ namespace Go
                 Point q = libertyPoint.First();
                 //make move into tiger mouth
                 Board b = board.MakeMoveOnNewBoard(p, c.Opposite(), true);
-                if (b == null) return q;
-                //capture move at tiger mouth
-                Board b2 = CaptureSuicideGroup(b);
-                if (b2 != null) return b2.Move;
+                if (b == null || b.MoveGroupLiberties != 1) return null;
+                return b.MoveGroup.Liberties.First();
             }
             else if (content == c.Opposite())
             {
@@ -512,10 +508,6 @@ namespace Go
             Point middleStone = stoneNeighbours.First(n => board.GetDiagonalNeighbours(n).Count(d => stoneNeighbours.Contains(d)) >= 2);
             Group target = board.GetGroupAt(middleStone);
 
-            //check killer group
-            Group killerGroup = GroupHelper.GetKillerGroupFromCache(board, eyePoint.Value, c.Opposite());
-            Boolean twoPointKillerGroup = (killerGroup != null) || eyeGroup.Points.Count == 2;
-            if (!twoPointKillerGroup) return false;
             return CheckSnapback(board, target, eyeGroup);
         }
 

@@ -302,7 +302,7 @@ namespace Go
 
                 //check if diagonals are immovable
                 List<Point> tmDiagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(board, p, c);
-                if (tmDiagonals.All(d => !ImmovableHelper.IsImmovablePoint(b, d, c) && TigerMouthThreatGroup(b, d, c) == null))
+                if (tmDiagonals.All(d => !LinkHelper.IsImmovablePointWithoutThreatGroup(b, d, c)))
                     return false;
             }
             return true;
@@ -674,10 +674,18 @@ namespace Go
             if (checkDiagonals)
             {
                 List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(board, p, c);
-                if (diagonals.All(d => ImmovableHelper.IsImmovablePoint(board, d, c) && TigerMouthThreatGroup(board, d, c) == null))
+                if (diagonals.All(d => IsImmovablePointWithoutThreatGroup(board, d, c)))
                     return false;
             }
             return true;
+        }
+
+        /// <summary>
+        /// Is immovable point without threat group.
+        /// </summary>
+        public static Boolean IsImmovablePointWithoutThreatGroup(Board board, Point p, Content c)
+        {
+            return ImmovableHelper.IsImmovablePoint(board, p, c) && TigerMouthThreatGroup(board, p, c) == null;
         }
 
         /// <summary>

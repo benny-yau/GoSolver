@@ -22,10 +22,7 @@ namespace Go
         /// </summary>
         public static Boolean FindEye(Board board, Point eye, Content c = Content.Unknown)
         {
-            if (!board.PointWithinBoard(eye))
-                return false;
             if (board[eye] != Content.Empty) return false;
-
             List<Point> stoneNeighbours = board.GetStoneNeighbours(eye);
             if (c == Content.Unknown) c = board[stoneNeighbours.First()];
             if (c == Content.Empty) return false;
@@ -160,10 +157,14 @@ namespace Go
             else //for eye point at side or corner, all diagonals should be immovable
                 found = (stoneCount + immovablePoints.Count == diagonalCount);
 
-            //check double atari
-            if (found && stoneCount < 2 && DoubleAtariOnSemiSolidEye(board, eye, c))
-                return (false, null);
-
+            //check for esceptions
+            if (found && immovablePoints.Count >= 2)
+            {
+                if (DoubleAtariOnSemiSolidEye(board, eye, c))
+                    return (false, null);
+                if (immovablePoints.Count(n => LinkHelper.TigerMouthThreatGroup(board, n, c) != null) >= 2)
+                    return (false, null);
+            }
             return (found, immovablePoints);
         }
 
@@ -177,9 +178,7 @@ namespace Go
             {
                 Group eyeGroup = board.GetGroupAt(p);
                 if (eyeGroup.Points.Count != 1) continue;
-                List<Point> diagonalPoints = LinkHelper.GetGroupLinkedDiagonals(board, eyeGroup).Select(d => d.Move).Except(stoneNeighbours).ToList();
-                if (diagonalPoints.Count < 2 || board.GetGroupsFromPoints(diagonalPoints).Count(n => n.Liberties.Count <= 2) < 2) continue;
-
+                if (LinkHelper.GetDiagonalGroups(board, eyeGroup).Count(n => n.Liberties.Count <= 2) < 2) continue;
                 IEnumerable<Point> moves = board.GetStoneNeighbours(p).Where(n => !n.Equals(eye) && board[n] == Content.Empty);
                 IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, moves, c.Opposite());
                 if (moveBoards.Any(b => b.AtariTargets.Count > 1))
