@@ -168,7 +168,7 @@ namespace Go
             //get all stone neigbours of liberty
             List<Point> diagonals = board.GetStoneNeighbours(libertyPoint);
             diagonals.Remove(tigerMouth);
-            diagonals = diagonals.Where(d => LinkHelper.IsTigerMouthForLink(board, d, c, !lifeCheck)).ToList();
+            diagonals = diagonals.Where(d => LinkHelper.IsTigerMouthForLink(board, d, c, false)).ToList();
 
             IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(b, diagonals, c);
             if (moveBoards.Any(b2 => !ImmovableHelper.IsSuicidalMove(b2, tigerMouth, c.Opposite())))
