@@ -141,8 +141,11 @@ namespace Go
                 //check for another tiger mouth at move
                 if (b.GetStoneNeighbours().Any(n => LinkHelper.IsTigerMouthForLink(board, n, c, !lifeCheck)))
                     return true;
+            }
 
-                //check for link breakage
+            //check for link breakage
+            if (b.MoveGroup.Points.Count > 1)
+            {
                 List<Point> stoneNeighbours = LinkHelper.GetNeighboursDiagonallyLinked(b);
                 if (b.GetDiagonalNeighbours().Any(n => b[n] != c && b.GetStoneNeighbours(n).Intersect(stoneNeighbours).Count() >= 2 && !ImmovableHelper.IsImmovablePoint(b, n, c)))
                     return true;
