@@ -679,7 +679,7 @@ namespace Go
         /// </summary>
         public static Boolean IsImmovablePointWithoutThreatGroup(Board board, Point p, Content c)
         {
-            return ImmovableHelper.IsImmovablePoint(board, p, c) && TigerMouthThreatGroup(board, p, c, n => n.Liberties.Count <= 2) == null;
+            return ImmovableHelper.IsImmovablePoint(board, p, c) && TigerMouthThreatGroup(board, p, c) == null;
         }
 
         /// <summary>
