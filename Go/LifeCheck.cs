@@ -133,7 +133,7 @@ namespace Go
             if (!isNegligible)
                 return true;
 
-            if (threatGroup != null && b.MoveGroupLiberties > 2)
+            if (threatGroup != null)
             {
                 //check for two threat groups
                 if (LinkHelper.GetPreviousMoveGroup(board, b).Any(t => t.Liberties.Count == 2 && !t.Equals(threatGroup) && t.Liberties.Any(l => ImmovableHelper.FindTigerMouth(board, c, l))))
@@ -164,14 +164,14 @@ namespace Go
         public static Boolean DoubleTigerMouthLink(Board board, Board b, Point tigerMouth, Point libertyPoint, Boolean lifeCheck = false)
         {
             Content c = b.MoveGroup.Content.Opposite();
-            if (board[tigerMouth] != Content.Empty || !board.GetStoneNeighbours(tigerMouth).Contains(libertyPoint)) return false;
+            if (board[tigerMouth] != Content.Empty || board[libertyPoint] != Content.Empty) return false;
             //get all stone neigbours of liberty
             List<Point> diagonals = board.GetStoneNeighbours(libertyPoint);
             diagonals.Remove(tigerMouth);
             diagonals = diagonals.Where(d => LinkHelper.IsTigerMouthForLink(board, d, c, !lifeCheck)).ToList();
 
             IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(b, diagonals, c);
-            if (moveBoards.Any(b2 => LinkHelper.IsAbsoluteLinkForGroups(b, b2) && !ImmovableHelper.IsSuicidalMove(b2, tigerMouth, c.Opposite())))
+            if (moveBoards.Any(b2 => !ImmovableHelper.IsSuicidalMove(b2, tigerMouth, c.Opposite())))
                 return true;
             return false;
         }
