@@ -245,17 +245,20 @@ namespace Go
                 if (!ImmovableHelper.IsImmovablePoint(board, p, c)) continue;
                 if (!immediateLink)
                 {
-                    //empty point
                     if (board[p] == Content.Empty)
                     {
-                        Boolean capturedGroup = TigerMouthThreatGroup(board, p, c, n => n.Liberties.Count == 1) != null && board[diagonals.First(d => !d.Equals(p))] == c.Opposite();
+                        //check captured group
+                        Boolean capturedGroup = TigerMouthThreatGroup(board, p, c, n => n.Liberties.Count == 1) != null;
                         if (!capturedGroup) return true;
+                    }
+                    else
+                    {
+                        //check capture secure
+                        if (!ImmovableHelper.CheckCaptureSecureForSingleGroup(board, board.GetGroupAt(p))) continue;
                     }
                     //check killer group
                     Group killerGroup = GroupHelper.GetKillerGroupOfStrongNeighbourGroups(board, p, c);
                     if (killerGroup == null) continue;
-                    //check capture secure
-                    if (board[p] != Content.Empty && !ImmovableHelper.CheckCaptureSecureForSingleGroup(board, board.GetGroupAt(p))) continue;
                 }
                 return true;
             }

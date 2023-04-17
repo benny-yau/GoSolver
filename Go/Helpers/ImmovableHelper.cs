@@ -16,9 +16,6 @@ namespace Go
             if (stoneNeighbours.Count(n => board[n] == c) != stoneNeighbours.Count - 1) return null;
             if (content == Content.Empty)
             {
-                List<Point> libertyPoint = stoneNeighbours.Where(n => board[n] != c).ToList();
-                if (libertyPoint.Count != 1) return null;
-                Point q = libertyPoint.First();
                 //make move into tiger mouth
                 Board b = board.MakeMoveOnNewBoard(p, c.Opposite(), true);
                 if (b == null || b.MoveGroupLiberties != 1) return null;

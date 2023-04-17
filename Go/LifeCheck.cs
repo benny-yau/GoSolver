@@ -124,7 +124,7 @@ namespace Go
 
             //make move at liberty
             Board b = board.MakeMoveOnNewBoard(libertyPoint, c.Opposite(), true);
-            if (b == null || b.MoveGroupLiberties <= 2) return false;
+            if (b == null || b.MoveGroupLiberties == 1) return false;
 
             //check for atari at tiger mouth
             HashSet<Group> tmGroups = b.GetGroupsFromStoneNeighbours(tigerMouth, c.Opposite());
@@ -132,7 +132,8 @@ namespace Go
             Boolean isNegligible = GameTryMove.IsNegligibleForBoard(b, board, t => !tmGroups.Contains(t));
             if (!isNegligible)
                 return true;
-            if (threatGroup != null)
+
+            if (threatGroup != null && b.MoveGroupLiberties > 2)
             {
                 //check for two threat groups
                 if (LinkHelper.GetPreviousMoveGroup(board, b).Any(t => t.Liberties.Count == 2 && !t.Equals(threatGroup) && t.Liberties.Any(l => ImmovableHelper.FindTigerMouth(board, c, l))))
@@ -140,11 +141,8 @@ namespace Go
                 //check for another tiger mouth at move
                 if (b.GetStoneNeighbours().Any(n => LinkHelper.IsTigerMouthForLink(board, n, c, !lifeCheck)))
                     return true;
-            }
 
-            //check for link breakage
-            if (b.MoveGroup.Points.Count > 1)
-            {
+                //check for link breakage
                 List<Point> stoneNeighbours = LinkHelper.GetNeighboursDiagonallyLinked(b);
                 if (b.GetDiagonalNeighbours().Any(n => b[n] != c && b.GetStoneNeighbours(n).Intersect(stoneNeighbours).Count() >= 2 && !ImmovableHelper.IsImmovablePoint(b, n, c)))
                     return true;
