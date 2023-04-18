@@ -226,7 +226,7 @@ namespace Go
                     if (ImmovableHelper.IsImmovablePoint(b, q, c)) return true;
 
                     //make connection at other diagonal
-                    if (ImmovableHelper.IsSuicidalMove(q, c, b).Item1)
+                    if (ImmovableHelper.IsSuicidalMove(b, q, c))
                         return false;
 
                     //check not negligible
@@ -297,9 +297,9 @@ namespace Go
                 if (suicidal || b == null) continue;
                 Point middleStone = opponentStones.First(n => board.GetDiagonalNeighbours(n).Count(d => opponentStones.Contains(d)) >= 2);
                 if (opponentStones.Where(n => !n.Equals(middleStone)).All(n => !CheckIsDiagonalLinked(middleStone, n, b)))
-                    return false;
+                    return true;
             }
-            return true;
+            return false;
         }
 
         /// <summary>
@@ -420,7 +420,7 @@ namespace Go
                     continue;
 
                 //check for links with double linkage
-                if (!CheckDoubleLinkage(board, diagonalPoint))
+                if (CheckDoubleLinkage(board, diagonalPoint))
                     continue;
 
                 //check double atari for links
@@ -601,31 +601,13 @@ namespace Go
             List<LinkedPoint<Point>> diagonals = GetGroupDiagonals(board, group).Where(d => board[d.Move] == c && board[(Point)d.CheckMove] == c).ToList();
             foreach (LinkedPoint<Point> diagonal in diagonals)
             {
-                if (board.GetGroupAt(diagonal.Move).Liberties.Count == 1) continue;
+                Group diagonalGroup = board.GetGroupAt(diagonal.Move);
+                if (diagonalGroup.Equals(group) || diagonalGroup.Liberties.Count == 1) continue;
                 List<Point> pointsBetweenDiagonals = PointsBetweenDiagonals(diagonal);
                 if (pointsBetweenDiagonals.All(d => board[d] == c.Opposite() && board.GetGroupAt(d).Liberties.Count > 1))
                     return (diagonal.Move, pointsBetweenDiagonals);
             }
             return (null, null);
-        }
-
-        /// <summary>
-        /// Diagonal cut at move.
-        /// </summary>
-        public static (Boolean, List<Point>) DiagonalCutMove(Board board)
-        {
-            Point move = board.Move.Value;
-            Content c = board.MoveGroup.Content;
-            if (board.GetNeighbourGroups().Count <= 1) return (false, null);
-            List<Point> diagonals = board.GetDiagonalNeighbours().Where(d => board[d] == c).ToList();
-            foreach (Point diagonal in diagonals)
-            {
-                if (board.GetGroupAt(diagonal).Liberties.Count == 1) continue;
-                List<Point> pointsBetweenDiagonals = PointsBetweenDiagonals(diagonal, move);
-                if (pointsBetweenDiagonals.All(d => board[d] == c.Opposite()))
-                    return (true, pointsBetweenDiagonals);
-            }
-            return (false, null);
         }
 
         /// <summary>

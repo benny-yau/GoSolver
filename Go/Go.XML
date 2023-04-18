@@ -441,11 +441,6 @@
             Semi solid eyes are real eyes that can have diagonals with immovable points.
             </summary>
         </member>
-        <member name="M:Go.EyeHelper.DoubleAtariOnSemiSolidEye(Go.Board,Go.Point,Go.Content)">
-            <summary>
-            Double atari on semi solid eye. <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_DoubleAtariOnSemiSolidEye" />
-            </summary>
-        </member>
         <member name="M:Go.EyeHelper.GetImmovablePoints(Go.Point,Go.Board,Go.Content)">
             <summary>
             Get all immovable points at eye point diagonals.
@@ -1286,11 +1281,6 @@
         <member name="M:Go.LinkHelper.FindDiagonalCut(Go.Board,Go.Group)">
             <summary>
             Diagonal cut between two neighbour groups.
-            </summary>
-        </member>
-        <member name="M:Go.LinkHelper.DiagonalCutMove(Go.Board)">
-            <summary>
-            Diagonal cut at move.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.GetPreviousMoveGroup(Go.Board,Go.Board)">

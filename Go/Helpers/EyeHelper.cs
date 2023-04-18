@@ -160,25 +160,6 @@ namespace Go
         }
 
         /// <summary>
-        /// Double atari on semi solid eye. <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_DoubleAtariOnSemiSolidEye" />
-        /// </summary>
-        private static Boolean DoubleAtariOnSemiSolidEye(Board board, Point eye, Content c)
-        {
-            List<Point> stoneNeighbours = board.GetStoneNeighbours(eye);
-            foreach (Point p in stoneNeighbours)
-            {
-                Group eyeGroup = board.GetGroupAt(p);
-                if (eyeGroup.Points.Count != 1) continue;
-                if (LinkHelper.GetDiagonalGroups(board, eyeGroup).Count(n => n.Liberties.Count <= 2) < 2) continue;
-                IEnumerable<Point> moves = board.GetStoneNeighbours(p).Where(n => !n.Equals(eye) && board[n] == Content.Empty);
-                IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, moves, c.Opposite());
-                if (moveBoards.Any(b => b.AtariTargets.Count > 1))
-                    return true;
-            }
-            return false;
-        }
-
-        /// <summary>
         /// Get all immovable points at eye point diagonals.
         /// </summary>
         private static List<Point> GetImmovablePoints(Point eyePoint, Board board, Content c)

@@ -139,7 +139,7 @@ namespace Go
                 if (LinkHelper.GetPreviousMoveGroup(board, b).Any(t => t.Liberties.Count == 2 && !t.Equals(threatGroup) && t.Liberties.Any(l => ImmovableHelper.FindTigerMouth(board, c, l))))
                     return true;
                 //check for another tiger mouth at move
-                if (b.GetStoneNeighbours().Any(n => LinkHelper.IsTigerMouthForLink(board, n, c, false)))
+                if (b.GetStoneNeighbours().Any(n => LinkHelper.IsTigerMouthForLink(board, n, c, !lifeCheck)))
                     return true;
             }
 
@@ -168,7 +168,7 @@ namespace Go
             //get all stone neigbours of liberty
             List<Point> diagonals = board.GetStoneNeighbours(libertyPoint);
             diagonals.Remove(tigerMouth);
-            diagonals = diagonals.Where(d => LinkHelper.IsTigerMouthForLink(board, d, c, false)).ToList();
+            diagonals = diagonals.Where(d => LinkHelper.IsTigerMouthForLink(board, d, c, !lifeCheck)).ToList();
 
             IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(b, diagonals, c);
             if (moveBoards.Any(b2 => !ImmovableHelper.IsSuicidalMove(b2, tigerMouth, c.Opposite())))
