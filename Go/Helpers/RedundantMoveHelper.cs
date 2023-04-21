@@ -1484,16 +1484,8 @@ namespace Go
             if (group == null) return false;
             List<Group> groups = LinkHelper.GetAllDiagonalConnectedGroups(currentBoard, group).ToList();
             if (!groups.Any(n => LinkHelper.FindDiagonalCut(currentBoard, n).Item1 != null)) return false;
-            /*if (!groups.Any(n => LinkHelper.FindDiagonalCut0(currentBoard, n).Item1 != null))
-            {
-                DebugHelper.PrintGameTryMovesToText(currentBoard, "CheckLibertyFightAtCoveredEye_die1.txt");
-                return false;
-            }*/
             if (currentBoard.GetLibertiesOfGroups(groups).Select(lib => GroupHelper.GetKillerGroupFromCache(currentBoard, lib, c)).Any(kgroup => kgroup != null && EyeHelper.FindRealEyeWithinEmptySpace(currentBoard, kgroup)))
-            {
-                DebugHelper.PrintGameTryMovesToText(currentBoard, "CheckLibertyFightAtCoveredEye_die0.txt");
                 return true;
-            }
             return false;
         }
 
