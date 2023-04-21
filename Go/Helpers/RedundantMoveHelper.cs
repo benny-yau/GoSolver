@@ -1908,7 +1908,7 @@ namespace Go
         /// Check for strong neighbour groups <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario3dan22" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16605" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A28" />
-        /// Check for no liberty at move <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221220_7" />
+        /// Check for liberty fight <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221220_7" />
         /// </summary>
         private static Boolean TigerMouthWithoutDiagonalMouth(GameTryMove tryMove, Board capturedBoard)
         {
@@ -1933,8 +1933,9 @@ namespace Go
             if (!strongGroups)
                 return false;
 
-            //check for no liberty at move
-            if (!capturedBoard.GetStoneNeighbours().Any(n => capturedBoard[n] == Content.Empty && !n.Equals(move)))
+            //check for liberty fight
+            List<Group> groups = LinkHelper.GetAllDiagonalConnectedGroups(capturedBoard, capturedBoard.MoveGroup).ToList();
+            if (groups.Any(n => LinkHelper.FindDiagonalCut(capturedBoard, n).Item1 != null))
                 return false;
             return true;
         }
