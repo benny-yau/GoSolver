@@ -250,7 +250,7 @@ namespace Go
 
             //not ko enabled
             List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).ToList();
-            if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo) && eyeGroups.Any(e => e.Points.Count == 1 && e.Liberties.Count == 1))
+            if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo) && eyeGroups.Any(e => KoHelper.IsKoFight(currentBoard, e)))
                 return false;
 
             //ensure group more than one point have more than one liberty
@@ -795,6 +795,7 @@ namespace Go
 
         /// <summary>
         /// Check for suicidal moves depending on diagonal groups.
+        /// Ensure no diagonal at move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18796_2" />
         /// Check liberties are connected <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
         /// Check for killer formation <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi_2" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q15082" />
@@ -1483,8 +1484,16 @@ namespace Go
             if (group == null) return false;
             List<Group> groups = LinkHelper.GetAllDiagonalConnectedGroups(currentBoard, group).ToList();
             if (!groups.Any(n => LinkHelper.FindDiagonalCut(currentBoard, n).Item1 != null)) return false;
+            /*if (!groups.Any(n => LinkHelper.FindDiagonalCut0(currentBoard, n).Item1 != null))
+            {
+                DebugHelper.PrintGameTryMovesToText(currentBoard, "CheckLibertyFightAtCoveredEye_die1.txt");
+                return false;
+            }*/
             if (currentBoard.GetLibertiesOfGroups(groups).Select(lib => GroupHelper.GetKillerGroupFromCache(currentBoard, lib, c)).Any(kgroup => kgroup != null && EyeHelper.FindRealEyeWithinEmptySpace(currentBoard, kgroup)))
+            {
+                DebugHelper.PrintGameTryMovesToText(currentBoard, "CheckLibertyFightAtCoveredEye_die0.txt");
                 return true;
+            }
             return false;
         }
 

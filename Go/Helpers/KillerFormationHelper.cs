@@ -729,7 +729,7 @@ namespace Go
                         return true;
                 }
                 //check end point covered
-                if (CheckAnyEndPointCovered(moveGroup.Points, tryBoard, moveGroup))
+                if (CheckAnyEndPointCovered(tryBoard, moveGroup))
                     return true;
             }
             return false;
@@ -814,11 +814,11 @@ namespace Go
             {
                 Content c = moveGroup.Content;
                 if (tryBoard.GetNeighbourGroups(moveGroup).Count <= 1) return false;
-                //edge formation
-                if (moveGroup.Points.Count(p => !tryBoard.PointWithinMiddleArea(p)) == 3 && LinkHelper.GetGroupDiagonals(tryBoard, moveGroup).Any(d => tryBoard[d.Move] == c))
-                    return true;
                 //check end point covered
-                if (CheckAnyEndPointCovered(moveGroup.Points, tryBoard, moveGroup))
+                if (CheckAnyEndPointCovered(tryBoard, moveGroup))
+                    return true;
+                //edge formation
+                if (moveGroup.Points.Count(p => !tryBoard.PointWithinMiddleArea(p)) == 3 && LinkHelper.GetGroupLinkedDiagonals(tryBoard, moveGroup).Any())
                     return true;
             }
             return false;
@@ -836,7 +836,7 @@ namespace Go
             if (contentPoints.Count() != 4) return false;
             (int xLength, int yLength) = WithinGrid(contentPoints);
             if ((xLength == 0 || yLength == 0))
-                return CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup);
+                return CheckAnyEndPointCovered(tryBoard, moveGroup);
             return false;
         }
 
@@ -881,7 +881,7 @@ namespace Go
             {
                 if (pointIntersect.Count(p => p.intersectCount == 2) == 3)
                     return true;
-                else if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
+                else if (CheckAnyEndPointCovered(tryBoard, moveGroup))
                     return true;
             }
             return false;
@@ -903,7 +903,7 @@ namespace Go
             IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
             if (pointIntersect.Count(p => p.intersectCount == 3) >= 2)
             {
-                if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
+                if (CheckAnyEndPointCovered(tryBoard, moveGroup))
                     return true;
             }
             return false;
@@ -931,7 +931,7 @@ namespace Go
 
             if (pointIntersect.Count(p => p.intersectCount == 4) >= 1)
             {
-                if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
+                if (CheckAnyEndPointCovered(tryBoard, moveGroup))
                     return true;
 
             }
@@ -958,7 +958,7 @@ namespace Go
             IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
             if (pointIntersect.Count(p => p.intersectCount == 3) >= 1)
             {
-                if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
+                if (CheckAnyEndPointCovered(tryBoard, moveGroup))
                     return true;
             }
             return false;
@@ -981,7 +981,7 @@ namespace Go
             IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
             List<Point> middlePoint = pointIntersect.Where(p => p.intersectCount >= 3).Select(p => (Point)p.point).ToList();
             if (middlePoint.Count != 1) return false;
-            if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
+            if (CheckAnyEndPointCovered(tryBoard, moveGroup))
                 return true;
             return false;
         }
@@ -1002,7 +1002,7 @@ namespace Go
             IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
             if (pointIntersect.Count(p => p.intersectCount == 2) == 3 && pointIntersect.Count(p => p.intersectCount == 1) == 2)
             {
-                if (CheckAnyEndPointCovered(contentPoints, tryBoard, moveGroup))
+                if (CheckAnyEndPointCovered(tryBoard, moveGroup))
                     return true;
             }
             return false;
@@ -1018,11 +1018,11 @@ namespace Go
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_x" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_20230121_8" />
         /// </summary>
-        private static Boolean CheckAnyEndPointCovered(IEnumerable<Point> contentPoints, Board tryBoard, Group moveGroup)
+        private static Boolean CheckAnyEndPointCovered(Board tryBoard, Group moveGroup)
         {
             Content c = moveGroup.Content;
             if (moveGroup.Liberties.Count > 2) return false;
-            IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
+            IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, moveGroup.Points);
             List<Point> endPoints = pointIntersect.Where(p => p.intersectCount == 1).Select(p => (Point)p.point).ToList();
             return endPoints.Any(q => EndPointCovered(q, tryBoard, moveGroup));
         }

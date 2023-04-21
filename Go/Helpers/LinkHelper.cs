@@ -342,6 +342,7 @@ namespace Go
             Content c = group.Content;
             foreach (Point p in group.Points)
             {
+                if (board[p] != c) continue;
                 foreach (Point q in board.GetDiagonalNeighbours(p))
                 {
                     if (board[q] != c) continue;
@@ -388,7 +389,7 @@ namespace Go
         public static List<Point> GetMoveDiagonals(Board tryBoard)
         {
             Content c = tryBoard.MoveGroup.Content;
-            return tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] == c && !tryBoard.MoveGroup.Points.Contains(n)).ToList();
+            return tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] == c && !tryBoard.GetGroupAt(n).Equals(tryBoard.MoveGroup)).ToList();
         }
 
         /// <summary>
@@ -598,11 +599,10 @@ namespace Go
         {
             Content c = group.Content;
             if (board.GetNeighbourGroups(group).Count <= 1) return (null, null);
-            List<LinkedPoint<Point>> diagonals = GetGroupDiagonals(board, group).Where(d => board[d.Move] == c && board[(Point)d.CheckMove] == c).ToList();
-            foreach (LinkedPoint<Point> diagonal in diagonals)
+            foreach (LinkedPoint<Point> diagonal in GetGroupLinkedDiagonals(board, group))
             {
                 Group diagonalGroup = board.GetGroupAt(diagonal.Move);
-                if (diagonalGroup.Equals(group) || diagonalGroup.Liberties.Count == 1) continue;
+                if (diagonalGroup.Liberties.Count == 1) continue;
                 List<Point> pointsBetweenDiagonals = PointsBetweenDiagonals(diagonal);
                 if (pointsBetweenDiagonals.All(d => board[d] == c.Opposite() && board.GetGroupAt(d).Liberties.Count > 1))
                     return (diagonal.Move, pointsBetweenDiagonals);
