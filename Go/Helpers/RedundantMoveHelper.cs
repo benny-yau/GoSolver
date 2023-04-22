@@ -1482,7 +1482,7 @@ namespace Go
         {
             Group group = currentBoard.GetGroupsFromStoneNeighbours(eye, c.Opposite()).FirstOrDefault();
             if (group == null) return false;
-            List<Group> groups = LinkHelper.GetAllDiagonalConnectedGroups(currentBoard, group).ToList();
+            List<Group> groups = LinkHelper.GetAllDiagonalGroups(currentBoard, group).ToList();
             if (!groups.Any(n => LinkHelper.FindDiagonalCut(currentBoard, n).Item1 != null)) return false;
             if (currentBoard.GetLibertiesOfGroups(groups).Select(lib => GroupHelper.GetKillerGroupFromCache(currentBoard, lib, c)).Any(kgroup => kgroup != null && EyeHelper.FindRealEyeWithinEmptySpace(currentBoard, kgroup)))
                 return true;
@@ -1934,7 +1934,7 @@ namespace Go
                 return false;
 
             //check for liberty fight
-            List<Group> groups = LinkHelper.GetAllDiagonalConnectedGroups(capturedBoard, capturedBoard.MoveGroup).ToList();
+            List<Group> groups = LinkHelper.GetAllDiagonalGroups(capturedBoard, capturedBoard.MoveGroup).ToList();
             if (groups.Any(n => LinkHelper.FindDiagonalCut(capturedBoard, n).Item1 != null))
                 return false;
             return true;
