@@ -181,9 +181,9 @@
             <see cref="!:UnitTestProject.KoTest.KoTest_Scenario_TianLongTu_Q17077" />
             </summary>
         </member>
-        <member name="M:Go.Game.CreateRandomMoveForSurvival(System.Collections.Generic.List{Go.GameTryMove},Go.Game)">
+        <member name="M:Go.Game.CreateRandomMoveForCoveredEyeSurvival(System.Collections.Generic.List{Go.GameTryMove},Go.Game)">
             <summary>
-            Create random move for survival.
+            Create random move for covered eye survival.
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_20230422_8" />
             </summary>
         </member>

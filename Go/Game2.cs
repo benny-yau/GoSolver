@@ -152,7 +152,7 @@ namespace Go
                 tryMoves.Add(redundantTryMoves.First(move => move.IsDiagonalEyeMove));
 
             //create random move
-            CreateRandomMoveForSurvival(tryMoves, currentGame);
+            CreateRandomMoveForCoveredEyeSurvival(tryMoves, currentGame);
             CreateRandomMoveForRedundantKo(tryMoves, redundantTryMoves);
 
             PrintGameMoveList(tryMoves, redundantTryMoves, currentGame);
@@ -448,10 +448,10 @@ namespace Go
         }
 
         /// <summary>
-        /// Create random move for survival.
+        /// Create random move for covered eye survival.
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_20230422_8" />
         /// </summary>
-        private void CreateRandomMoveForSurvival(List<GameTryMove> tryMoves, Game currentGame)
+        private void CreateRandomMoveForCoveredEyeSurvival(List<GameTryMove> tryMoves, Game currentGame)
         {
             Board board = currentGame.Board;
             if (tryMoves.Count > 2) return;
@@ -459,11 +459,20 @@ namespace Go
             foreach (Group targetGroup in targets)
             {
                 Content c = targetGroup.Content;
-                List<Group> killerGroups = LifeCheck.GetTwoPossibleEyes(currentGame.Board, targetGroup);
+                List<Group> killerGroups = LifeCheck.GetTwoPossibleEyes(board, targetGroup);
                 if (killerGroups == null) continue;
+                //ensure at least one covered eye
                 List<Point> coveredEyes = killerGroups.Where(n => n.Points.Count == 1 && EyeHelper.FindCoveredEye(board, n.Points.First(), c)).Select(n => n.Points.First()).ToList();
-                if (coveredEyes.Count < 2) continue;
-                if (tryMoves.Any(n => !coveredEyes.Contains(n.Move))) continue;
+                if (coveredEyes.Count == 0) continue;
+                if (coveredEyes.Count == 1 && !killerGroups.Where(n => !coveredEyes.Contains(n.Points.First())).Any(n => n.Points.Count <= 2)) continue;
+                //cover external liberties
+                List<Group> groups = LinkHelper.GetAllDiagonalConnectedGroups(board, targetGroup).ToList();
+                Board coveredBoard = new Board(board);
+                List<Point> externalLiberties = board.GetLibertiesOfGroups(groups).Where(n => !killerGroups.Any(k => k.Points.Contains(n))).ToList();
+                externalLiberties.ForEach(n => coveredBoard[n] = c.Opposite());
+                //check for connect and die
+                if (groups.Select(n => coveredBoard.GetCurrentGroup(n)).Any(n => n.Liberties.Count < 2 || ImmovableHelper.CheckConnectAndDie(coveredBoard, n))) continue;
+                DebugHelper.PrintGameTryMovesToText(board, "CreateRandomMoveForCoveredEyeSurvival_r8.txt");
                 GameTryMove tryMove = GetRandomMove(currentGame);
                 if (tryMove != null) tryMoves.Add(tryMove);
                 return;
