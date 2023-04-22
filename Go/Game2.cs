@@ -472,7 +472,6 @@ namespace Go
                 externalLiberties.ForEach(n => coveredBoard[n] = c.Opposite());
                 //check for connect and die
                 if (groups.Select(n => coveredBoard.GetCurrentGroup(n)).Any(n => n.Liberties.Count < 2 || ImmovableHelper.CheckConnectAndDie(coveredBoard, n))) continue;
-                DebugHelper.PrintGameTryMovesToText(board, "CreateRandomMoveForCoveredEyeSurvival_r8.txt");
                 GameTryMove tryMove = GetRandomMove(currentGame);
                 if (tryMove != null) tryMoves.Add(tryMove);
                 return;
