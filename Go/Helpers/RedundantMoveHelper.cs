@@ -1484,9 +1484,7 @@ namespace Go
             if (group == null) return false;
             List<Group> groups = LinkHelper.GetAllDiagonalGroups(currentBoard, group).ToList();
             if (!groups.Any(n => LinkHelper.FindDiagonalCut(currentBoard, n).Item1 != null)) return false;
-            if (currentBoard.GetLibertiesOfGroups(groups).Select(lib => GroupHelper.GetKillerGroupFromCache(currentBoard, lib, c)).Any(kgroup => kgroup != null && EyeHelper.FindRealEyeWithinEmptySpace(currentBoard, kgroup)))
-                return true;
-            return false;
+            return true;
         }
 
         private static Boolean CheckLibertyFightAtCoveredEye(GameTryMove tryMove)
@@ -2027,8 +2025,7 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
-            if (!tryMove.IsNegligible || tryBoard.IsAtariMove)
-                return false;
+            if (!tryMove.IsNegligible) return false;
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c);
             if (killerGroup == null || killerGroup.Points.Count == 1 || killerGroup.Points.Count > 5) return false;
             return SpecificEyeFillerMove(tryMove);
@@ -2043,8 +2040,7 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
-            if (!tryMove.IsNegligible || tryBoard.IsAtariMove)
-                return false;
+            if (!tryMove.IsNegligible) return false;
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
             if (killerGroup == null || killerGroup.Points.Count <= 2 || killerGroup.Points.Count > 5) return false;
             //make survival move

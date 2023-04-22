@@ -598,7 +598,7 @@ namespace Go
         public static (Point?, List<Point>) FindDiagonalCut(Board board, Group group)
         {
             Content c = group.Content;
-            if (board.GetNeighbourGroups(group).Count <= 1) return (null, null);
+            if (group.Liberties.Count == 1 || board.GetNeighbourGroups(group).Count <= 1) return (null, null);
             foreach (LinkedPoint<Point> diagonal in GetGroupLinkedDiagonals(board, group))
             {
                 Group diagonalGroup = board.GetGroupAt(diagonal.Move);
