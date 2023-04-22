@@ -181,6 +181,12 @@
             <see cref="!:UnitTestProject.KoTest.KoTest_Scenario_TianLongTu_Q17077" />
             </summary>
         </member>
+        <member name="M:Go.Game.CreateRandomMoveForSurvival(System.Collections.Generic.List{Go.GameTryMove},Go.Game)">
+            <summary>
+            Create random move for survival.
+            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_20230422_8" />
+            </summary>
+        </member>
         <member name="M:Go.Game.MakeKillMove(System.Int32,Go.Game)">
             <summary>
             Make all possible kill moves by exhaustive search.
@@ -312,6 +318,7 @@
             <summary>
             Check complex seki.
             With diagonal group <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan22" />
+            <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_20230422_8" />
             Without diagonal group <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A123" />
             Check suicidal for both players and not ko move at liberty <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
             <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18" />
@@ -2240,6 +2247,11 @@
             <summary>
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16860" />
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A28" />
+            </summary>
+        </member>
+        <member name="M:Go.LifeCheck.GetTwoPossibleEyes(Go.Board,Go.Group)">
+            <summary>
+            Get two possible eyes.
             </summary>
         </member>
         <member name="M:Go.LifeCheck.CheckTigerMouthExceptions(Go.Board,System.Collections.Generic.IEnumerable{Go.Point},Go.Content,System.Boolean)">

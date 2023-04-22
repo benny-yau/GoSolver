@@ -14,18 +14,9 @@ namespace Go
         /// </summary>
         public static ConfirmAliveResult ConfirmAlive(Board board, List<Point> targetPoints = null)
         {
-            List<Group> target = LifeCheck.GetTargets(board, targetPoints);
-            if (target.Count == 0) return ConfirmAliveResult.Unknown;
-
-            if (target.Count > 1) //partial alive
-            {
-                if (target.Any(p => ConfirmAlive(board, p) == ConfirmAliveResult.Alive))
-                    return ConfirmAliveResult.Alive;
-            }
-            else if (target.Count == 1)
-            {
-                return ConfirmAlive(board, target.First());
-            }
+            List<Group> targets = LifeCheck.GetTargets(board, targetPoints);
+            if (targets.Any(p => ConfirmAlive(board, p) == ConfirmAliveResult.Alive))
+                return ConfirmAliveResult.Alive;
             return ConfirmAliveResult.Unknown;
         }
 
@@ -43,13 +34,8 @@ namespace Go
             if (targetGroup.Liberties.Count == 1) return ConfirmAliveResult.Unknown;
 
             //get at least two possible eyes
-            List<Group> killerGroups = GroupHelper.GetKillerGroups(board, c).OrderBy(gr => gr.Points.Count).ToList();
-            if (killerGroups.Count < 2) return ConfirmAliveResult.Unknown;
-            //get extended groups from target group
-            HashSet<Group> groups = LinkHelper.GetAllDiagonalConnectedGroups(board, targetGroup);
-            //ensure group is connected to target
-            killerGroups.RemoveAll(e => !board.GetNeighbourGroups(e).All(n => groups.Contains(n)));
-            if (killerGroups.Count < 2) return ConfirmAliveResult.Unknown;
+            List<Group> killerGroups = GetTwoPossibleEyes(board, targetGroup);
+            if (killerGroups == null) return ConfirmAliveResult.Unknown;
 
             //check for semi solid eyes
             for (int i = 0; i <= killerGroups.Count - 1; i++)
@@ -72,6 +58,22 @@ namespace Go
             if (eyes.Count >= 2)
                 return ConfirmAliveResult.Alive;
             return ConfirmAliveResult.Unknown;
+        }
+
+        /// <summary>
+        /// Get two possible eyes.
+        /// </summary>
+        public static List<Group> GetTwoPossibleEyes(Board board, Group targetGroup)
+        {
+            Content c = targetGroup.Content;
+            List<Group> killerGroups = GroupHelper.GetKillerGroups(board, c).OrderBy(gr => gr.Points.Count).ToList();
+            if (killerGroups.Count < 2) return null;
+            //get extended groups from target group
+            HashSet<Group> groups = LinkHelper.GetAllDiagonalConnectedGroups(board, targetGroup);
+            //ensure group is connected to target
+            killerGroups.RemoveAll(e => !board.GetNeighbourGroups(e).All(n => groups.Contains(n)));
+            if (killerGroups.Count < 2) return null;
+            return killerGroups;
         }
 
         /// <summary>

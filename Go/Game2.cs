@@ -152,6 +152,7 @@ namespace Go
                 tryMoves.Add(redundantTryMoves.First(move => move.IsDiagonalEyeMove));
 
             //create random move
+            CreateRandomMoveForSurvival(tryMoves, currentGame);
             CreateRandomMoveForRedundantKo(tryMoves, redundantTryMoves);
 
             PrintGameMoveList(tryMoves, redundantTryMoves, currentGame);
@@ -437,15 +438,35 @@ namespace Go
         private void CreateRandomMoveForKill(List<GameTryMove> tryMoves, Game currentGame)
         {
             Board board = currentGame.Board;
+            if (tryMoves.Count > 0) return;
             //do not add move if last move is random or pass move
             Point? lastMove = board.LastMove;
             if (lastMove != null && (board.IsRandomMove || lastMove.Value.Equals(Game.PassMove))) return;
 
-            //add move if no more try moves
-            if (tryMoves.Count == 0)
+            GameTryMove tryMove = GetRandomMove(currentGame);
+            if (tryMove != null) tryMoves.Add(tryMove);
+        }
+
+        /// <summary>
+        /// Create random move for survival.
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_20230422_8" />
+        /// </summary>
+        private void CreateRandomMoveForSurvival(List<GameTryMove> tryMoves, Game currentGame)
+        {
+            Board board = currentGame.Board;
+            if (tryMoves.Count > 2) return;
+            List<Group> targets = LifeCheck.GetTargets(currentGame.Board);
+            foreach (Group targetGroup in targets)
             {
-                GameTryMove move = GetRandomMove(currentGame);
-                if (move != null) tryMoves.Add(move);
+                Content c = targetGroup.Content;
+                List<Group> killerGroups = LifeCheck.GetTwoPossibleEyes(currentGame.Board, targetGroup);
+                if (killerGroups == null) continue;
+                List<Point> coveredEyes = killerGroups.Where(n => n.Points.Count == 1 && EyeHelper.FindCoveredEye(board, n.Points.First(), c)).Select(n => n.Points.First()).ToList();
+                if (coveredEyes.Count < 2) continue;
+                if (tryMoves.Any(n => !coveredEyes.Contains(n.Move))) continue;
+                GameTryMove tryMove = GetRandomMove(currentGame);
+                if (tryMove != null) tryMoves.Add(tryMove);
+                return;
             }
         }
 
@@ -467,10 +488,10 @@ namespace Go
             }
             if (p.Equals(Game.PassMove))
                 return null;
-            GameTryMove move = new GameTryMove(currentGame);
-            move.MakeMoveResult = move.TryGame.InternalMakeMove(p.x, p.y);
-            move.TryGame.Board.IsRandomMove = true;
-            return move;
+            GameTryMove tryMove = new GameTryMove(currentGame);
+            tryMove.MakeMoveResult = tryMove.TryGame.InternalMakeMove(p.x, p.y);
+            tryMove.TryGame.Board.IsRandomMove = true;
+            return tryMove;
         }
 
         /// <summary>

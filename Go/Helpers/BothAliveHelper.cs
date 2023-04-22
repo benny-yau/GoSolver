@@ -179,6 +179,7 @@ namespace Go
         /// <summary>
         /// Check complex seki.
         /// With diagonal group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan22" />
+        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_20230422_8" />
         /// Without diagonal group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A123" />
         /// Check suicidal for both players and not ko move at liberty <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18" />
@@ -192,10 +193,6 @@ namespace Go
         {
             if (killerGroups.Count == 0) return false;
             Content c = killerGroups.First().Content;
-
-            //find uncovered eye
-            if (!killerGroups.Any(group => group.Points.Count == 1))
-                return false;
 
             //ensure at least two liberties within killer group in survival neighbour group
             if (targetGroups.Any(n => n.Liberties.Count(p => GroupHelper.GetKillerGroupFromCache(board, p, c.Opposite()) != null) < 2))
