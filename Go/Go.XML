@@ -1290,7 +1290,7 @@
             Get the opposite diagonals of the two diagonal points.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.FindDiagonalCut(Go.Board,Go.Group)">
+        <member name="M:Go.LinkHelper.FindDiagonalCut(Go.Board,Go.Group,System.Boolean)">
             <summary>
             Diagonal cut between two neighbour groups.
             </summary>

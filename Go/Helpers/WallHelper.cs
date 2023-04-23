@@ -196,7 +196,7 @@ namespace Go
             //cover external liberties
             foreach (Point p in board.GetLibertiesOfGroups(groups))
             {
-                Group killerGroup = GroupHelper.GetKillerGroupOfNeighbourGroups(board, p, c);
+                Group killerGroup = GroupHelper.GetKillerGroupFromCache(board, p, c);
                 if (killerGroup != null && killerGroup.Points.Count <= 3) continue;
                 coveredBoard[p] = c.Opposite();
             }

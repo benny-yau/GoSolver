@@ -107,32 +107,32 @@ namespace Go
             {
                 Point p = gameInfo.movablePoints[i];
                 //create try moves
-                GameTryMove move = new GameTryMove(currentGame);
-                move.MakeMoveResult = move.TryGame.Board.InternalMakeMove(p, c);
-                if (move.MakeMoveResult == MakeMoveResult.KoBlocked)
+                GameTryMove tryMove = new GameTryMove(currentGame);
+                tryMove.MakeMoveResult = tryMove.TryGame.Board.InternalMakeMove(p, c);
+                if (tryMove.MakeMoveResult == MakeMoveResult.KoBlocked)
                 {
                     //ko moves
-                    move.MakeKoMove(p, SurviveOrKill.Survive);
-                    move.IsRedundantKo = RedundantMoveHelper.RedundantSurvivalKoMove(move);
-                    if (move.IsRedundantKo) redundantTryMoves.Add(move);
-                    if (KoHelper.KoContentEnabled(c, gameInfo) && (!move.IsRedundantKo || mappingRange))
-                        koBlockedMove = move;
+                    tryMove.MakeKoMove(p, SurviveOrKill.Survive);
+                    tryMove.IsRedundantKo = RedundantMoveHelper.RedundantSurvivalKoMove(tryMove);
+                    if (tryMove.IsRedundantKo) redundantTryMoves.Add(tryMove);
+                    if (KoHelper.KoContentEnabled(c, gameInfo) && (!tryMove.IsRedundantKo || mappingRange))
+                        koBlockedMove = tryMove;
                 }
-                else if (move.MakeMoveResult == MakeMoveResult.Legal)
+                else if (tryMove.MakeMoveResult == MakeMoveResult.Legal)
                 {
                     //check if game ended - target group survived
-                    if (move.TryGame.Board.MoveGroupLiberties > 1)
+                    if (tryMove.TryGame.Board.MoveGroupLiberties > 1)
                     {
-                        ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Survive, move.TryGame);
+                        ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Survive, tryMove.TryGame);
                         if (confirmAlive == ConfirmAliveResult.Alive)
-                            return (ConfirmAliveResult.Alive, new List<GameTryMove>() { move }, null);
+                            return (ConfirmAliveResult.Alive, new List<GameTryMove>() { tryMove }, null);
                     }
                     //check recursion and return as alive
-                    if (GameHelper.CheckForRecursion(move))
-                        return (ConfirmAliveResult.Alive, new List<GameTryMove>() { move }, null);
+                    if (GameHelper.CheckForRecursion(tryMove))
+                        return (ConfirmAliveResult.Alive, new List<GameTryMove>() { tryMove }, null);
                     //find redundant moves
-                    CheckSurvivalRedundantMoves(move);
-                    tryMoves.Add(move);
+                    CheckSurvivalRedundantMoves(tryMove);
+                    tryMoves.Add(tryMove);
                 }
             }
 
@@ -163,37 +163,37 @@ namespace Go
         /// <summary>
         /// Check for various redundant moves for survival that can be eliminated to reduce range of possible moves.
         /// </summary>
-        private void CheckSurvivalRedundantMoves(GameTryMove move)
+        private void CheckSurvivalRedundantMoves(GameTryMove tryMove)
         {
-            move.IsEye = RedundantMoveHelper.FindPotentialEye(move);
-            if (move.IsEye)
+            tryMove.IsEye = RedundantMoveHelper.FindPotentialEye(tryMove);
+            if (tryMove.IsEye)
                 return;
-            move.IsCoveredEyeMove = RedundantMoveHelper.RedundantCoveredEyeMove(move);
-            if (move.IsCoveredEyeMove)
+            tryMove.IsCoveredEyeMove = RedundantMoveHelper.RedundantCoveredEyeMove(tryMove);
+            if (tryMove.IsCoveredEyeMove)
                 return;
-            move.IsFillKoEyeMove = RedundantMoveHelper.FillKoEyeMove(move);
-            if (move.IsFillKoEyeMove)
+            tryMove.IsFillKoEyeMove = RedundantMoveHelper.FillKoEyeMove(tryMove);
+            if (tryMove.IsFillKoEyeMove)
                 return;
-            move.IsSuicidal = RedundantMoveHelper.SuicidalRedundantMove(move);
-            if (move.IsSuicidal)
+            tryMove.IsSuicidal = RedundantMoveHelper.SuicidalRedundantMove(tryMove);
+            if (tryMove.IsSuicidal)
                 return;
-            move.IsNeutralPoint = RedundantMoveHelper.NeutralPointSurvivalMove(move);
-            if (move.IsNeutralPoint)
+            tryMove.IsNeutralPoint = RedundantMoveHelper.NeutralPointSurvivalMove(tryMove);
+            if (tryMove.IsNeutralPoint)
                 return;
-            move.IsDiagonalEyeMove = RedundantMoveHelper.SurvivalEyeDiagonalMove(move);
-            if (move.IsDiagonalEyeMove)
+            tryMove.IsDiagonalEyeMove = RedundantMoveHelper.SurvivalEyeDiagonalMove(tryMove);
+            if (tryMove.IsDiagonalEyeMove)
                 return;
-            move.IsRedundantKo = RedundantMoveHelper.RedundantSurvivalPreKoMove(move);
-            if (move.IsRedundantKo)
+            tryMove.IsRedundantKo = RedundantMoveHelper.RedundantSurvivalPreKoMove(tryMove);
+            if (tryMove.IsRedundantKo)
                 return;
-            move.IsRedundantTigerMouth = RedundantMoveHelper.RedundantTigerMouthMove(move);
-            if (move.IsRedundantTigerMouth)
+            tryMove.IsRedundantTigerMouth = RedundantMoveHelper.RedundantTigerMouthMove(tryMove);
+            if (tryMove.IsRedundantTigerMouth)
                 return;
-            move.IsRedundantEyeFiller = RedundantMoveHelper.SurvivalEyeFillerMove(move);
-            if (move.IsRedundantEyeFiller)
+            tryMove.IsRedundantEyeFiller = RedundantMoveHelper.SurvivalEyeFillerMove(tryMove);
+            if (tryMove.IsRedundantEyeFiller)
                 return;
-            move.IsAtariRedundant = RedundantMoveHelper.AtariRedundantMove(move);
-            if (move.IsAtariRedundant)
+            tryMove.IsAtariRedundant = RedundantMoveHelper.AtariRedundantMove(tryMove);
+            if (tryMove.IsAtariRedundant)
                 return;
         }
 
@@ -201,37 +201,37 @@ namespace Go
         /// <summary>
         /// Check for various redundant moves for kill that can be eliminated to reduce range of possible moves.
         /// </summary>
-        private void CheckKillRedundantMoves(GameTryMove move)
+        private void CheckKillRedundantMoves(GameTryMove tryMove)
         {
-            move.IsEye = RedundantMoveHelper.FindPotentialEye(move);
-            if (move.IsEye)
+            tryMove.IsEye = RedundantMoveHelper.FindPotentialEye(tryMove);
+            if (tryMove.IsEye)
                 return;
-            move.IsCoveredEyeMove = RedundantMoveHelper.RedundantCoveredEyeMove(move);
-            if (move.IsCoveredEyeMove)
+            tryMove.IsCoveredEyeMove = RedundantMoveHelper.RedundantCoveredEyeMove(tryMove);
+            if (tryMove.IsCoveredEyeMove)
                 return;
-            move.IsFillKoEyeMove = RedundantMoveHelper.FillKoEyeMove(move);
-            if (move.IsFillKoEyeMove)
+            tryMove.IsFillKoEyeMove = RedundantMoveHelper.FillKoEyeMove(tryMove);
+            if (tryMove.IsFillKoEyeMove)
                 return;
-            move.IsSuicidal = RedundantMoveHelper.SuicidalRedundantMove(move);
-            if (move.IsSuicidal)
+            tryMove.IsSuicidal = RedundantMoveHelper.SuicidalRedundantMove(tryMove);
+            if (tryMove.IsSuicidal)
                 return;
-            move.IsNeutralPoint = RedundantMoveHelper.NeutralPointKillMove(move);
-            if (move.IsNeutralPoint)
+            tryMove.IsNeutralPoint = RedundantMoveHelper.NeutralPointKillMove(tryMove);
+            if (tryMove.IsNeutralPoint)
                 return;
-            move.IsNeutralPoint = RedundantMoveHelper.KillEyeDiagonalMove(move);
-            if (move.IsNeutralPoint)
+            tryMove.IsNeutralPoint = RedundantMoveHelper.KillEyeDiagonalMove(tryMove);
+            if (tryMove.IsNeutralPoint)
                 return;
-            move.IsRedundantKo = RedundantMoveHelper.RedundantKillerPreKoMove(move);
-            if (move.IsRedundantKo)
+            tryMove.IsRedundantKo = RedundantMoveHelper.RedundantKillerPreKoMove(tryMove);
+            if (tryMove.IsRedundantKo)
                 return;
-            move.IsRedundantTigerMouth = RedundantMoveHelper.RedundantTigerMouthMove(move);
-            if (move.IsRedundantTigerMouth)
+            tryMove.IsRedundantTigerMouth = RedundantMoveHelper.RedundantTigerMouthMove(tryMove);
+            if (tryMove.IsRedundantTigerMouth)
                 return;
-            move.IsRedundantEyeFiller = RedundantMoveHelper.KillEyeFillerMove(move);
-            if (move.IsRedundantEyeFiller)
+            tryMove.IsRedundantEyeFiller = RedundantMoveHelper.KillEyeFillerMove(tryMove);
+            if (tryMove.IsRedundantEyeFiller)
                 return;
-            move.IsAtariRedundant = RedundantMoveHelper.AtariRedundantMove(move);
-            if (move.IsAtariRedundant)
+            tryMove.IsAtariRedundant = RedundantMoveHelper.AtariRedundantMove(tryMove);
+            if (tryMove.IsAtariRedundant)
                 return;
         }
 
@@ -356,26 +356,26 @@ namespace Go
             {
                 Point p = gameInfo.killMovablePoints[i];
                 //create try moves
-                GameTryMove move = new GameTryMove(currentGame);
-                move.MakeMoveResult = move.TryGame.Board.InternalMakeMove(p, c);
-                if (move.MakeMoveResult == MakeMoveResult.KoBlocked)
+                GameTryMove tryMove = new GameTryMove(currentGame);
+                tryMove.MakeMoveResult = tryMove.TryGame.Board.InternalMakeMove(p, c);
+                if (tryMove.MakeMoveResult == MakeMoveResult.KoBlocked)
                 {
                     //ko moves
-                    move.MakeKoMove(p, SurviveOrKill.Kill);
-                    move.IsRedundantKo = RedundantMoveHelper.RedundantKillerKoMove(move);
-                    if (move.IsRedundantKo) redundantTryMoves.Add(move);
-                    if (KoHelper.KoContentEnabled(c, gameInfo) && (!move.IsRedundantKo || mappingRange))
-                        koBlockedMove = move;
+                    tryMove.MakeKoMove(p, SurviveOrKill.Kill);
+                    tryMove.IsRedundantKo = RedundantMoveHelper.RedundantKillerKoMove(tryMove);
+                    if (tryMove.IsRedundantKo) redundantTryMoves.Add(tryMove);
+                    if (KoHelper.KoContentEnabled(c, gameInfo) && (!tryMove.IsRedundantKo || mappingRange))
+                        koBlockedMove = tryMove;
                 }
-                else if (move.MakeMoveResult == MakeMoveResult.Legal)
+                else if (tryMove.MakeMoveResult == MakeMoveResult.Legal)
                 {
                     //check if game ended - target group or survival points killed
-                    ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Kill, move.TryGame);
+                    ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Kill, tryMove.TryGame);
                     if (confirmAlive == ConfirmAliveResult.Dead)
-                        return (ConfirmAliveResult.Dead, new List<GameTryMove>() { move }, null);
+                        return (ConfirmAliveResult.Dead, new List<GameTryMove>() { tryMove }, null);
                     //find redundant moves
-                    CheckKillRedundantMoves(move);
-                    tryMoves.Add(move);
+                    CheckKillRedundantMoves(tryMove);
+                    tryMoves.Add(tryMove);
                 }
             }
 
@@ -423,8 +423,8 @@ namespace Go
                 //killer ko within killer group 
                 if (tryBoard.AtariTargets.Any(t => GroupHelper.GetKillerGroupFromCache(tryBoard, t.Points.First(), c) != null && !ImmovableHelper.CheckConnectAndDie(currentBoard, currentBoard.GetGroupAt(t.Points.First()), false)))
                 {
-                    GameTryMove move = GetRandomMove(koMove.CurrentGame);
-                    if (move != null) tryMoves.Add(move);
+                    GameTryMove tryMove = GetRandomMove(koMove.CurrentGame);
+                    if (tryMove != null) tryMoves.Add(tryMove);
                     break;
                 }
             }

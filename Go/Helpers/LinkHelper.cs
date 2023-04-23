@@ -595,17 +595,17 @@ namespace Go
         /// <summary>
         /// Diagonal cut between two neighbour groups.
         /// </summary>
-        public static (Point?, List<Point>) FindDiagonalCut(Board board, Group group)
+        public static (Point?, List<Point>) FindDiagonalCut(Board board, Group group, Boolean checkLiberties = true)
         {
             Content c = group.Content;
             if (group.Liberties.Count == 1 || board.GetNeighbourGroups(group).Count <= 1) return (null, null);
             foreach (LinkedPoint<Point> diagonal in GetGroupLinkedDiagonals(board, group))
             {
                 Group diagonalGroup = board.GetGroupAt(diagonal.Move);
-                if (diagonalGroup.Liberties.Count == 1) continue;
-                List<Point> pointsBetweenDiagonals = PointsBetweenDiagonals(diagonal);
-                if (pointsBetweenDiagonals.All(d => board[d] == c.Opposite() && board.GetGroupAt(d).Liberties.Count > 1))
-                    return (diagonal.Move, pointsBetweenDiagonals);
+                if (checkLiberties && diagonalGroup.Liberties.Count == 1) continue;
+                List<Point> diagonals = PointsBetweenDiagonals(diagonal);
+                if (diagonals.All(d => board[d] == c.Opposite() && (!checkLiberties || board.GetGroupAt(d).Liberties.Count > 1)))
+                    return (diagonal.Move, diagonals);
             }
             return (null, null);
         }

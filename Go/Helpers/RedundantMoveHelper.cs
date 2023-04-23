@@ -1277,9 +1277,9 @@ namespace Go
         public static Boolean KillLeapMove(GameTryMove tryMove)
         {
             //test if opponent move at same point is suicidal
-            GameTryMove move = tryMove.MakeMoveWithOpponentAtSamePoint();
-            if (move != null)
-                return SurvivalLeapMove(move);
+            GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
+            if (opponentMove != null)
+                return SurvivalLeapMove(opponentMove);
             return false;
         }
         #endregion
@@ -1487,8 +1487,15 @@ namespace Go
             Group group = currentBoard.GetGroupsFromStoneNeighbours(eye, c.Opposite()).FirstOrDefault();
             if (group == null) return false;
             List<Group> groups = LinkHelper.GetAllDiagonalGroups(currentBoard, group).ToList();
-            if (!groups.Any(n => LinkHelper.FindDiagonalCut(currentBoard, n).Item1 != null)) return false;
-            return true;
+            foreach (Group gr in groups)
+            {
+                (_, List<Point> diagonals) = LinkHelper.FindDiagonalCut(currentBoard, gr);
+                if (diagonals == null) continue;
+                if (diagonals.Any(n => ImmovableHelper.CheckConnectAndDie(currentBoard, currentBoard.GetGroupAt(n), false)))
+                    continue;
+                return true;
+            }
+            return false;
         }
 
         private static Boolean CheckLibertyFightAtCoveredEye(GameTryMove tryMove)
@@ -1730,10 +1737,10 @@ namespace Go
             {
                 List<Point> neighbourLiberties = null;
                 //find neighbour groups at diagonal cut
-                (_, List<Point> pointsBetweenDiagonals) = LinkHelper.FindDiagonalCut(tryBoard, targetGroup);
-                if (pointsBetweenDiagonals != null)
+                (_, List<Point> diagonals) = LinkHelper.FindDiagonalCut(tryBoard, targetGroup);
+                if (diagonals != null)
                 {
-                    HashSet<Group> neighbourGroups = tryBoard.GetGroupsFromPoints(pointsBetweenDiagonals);
+                    HashSet<Group> neighbourGroups = tryBoard.GetGroupsFromPoints(diagonals);
                     //get the group other than neutral point group
                     Group neighbourGroup = neighbourGroups.FirstOrDefault(group => !group.Equals(tryBoard.MoveGroup) && !WallHelper.IsNonKillableGroup(tryBoard, group));
                     if (neighbourGroup == null) continue;
@@ -1937,7 +1944,7 @@ namespace Go
 
             //check for liberty fight
             List<Group> groups = LinkHelper.GetAllDiagonalGroups(capturedBoard, capturedBoard.MoveGroup).ToList();
-            if (groups.Any(n => LinkHelper.FindDiagonalCut(capturedBoard, n).Item1 != null))
+            if (groups.Any(n => LinkHelper.FindDiagonalCut(capturedBoard, n, false).Item1 != null))
                 return false;
             return true;
         }
