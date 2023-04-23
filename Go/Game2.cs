@@ -411,6 +411,7 @@ namespace Go
         /// </summary>
         private void CreateRandomMoveForRedundantKo(List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves)
         {
+            if (tryMoves.Count == 1 && tryMoves.Select(n => n.TryGame.Board).Any(b => b.IsRandomMove || b.Move.Equals(Game.PassMove))) return;
             foreach (GameTryMove koMove in redundantTryMoves.Where(t => t.IsRedundantKo))
             {
                 Board currentBoard = koMove.CurrentGame.Board;
@@ -454,7 +455,7 @@ namespace Go
         private void CreateRandomMoveForCoveredEyeSurvival(List<GameTryMove> tryMoves, Game currentGame)
         {
             Board board = currentGame.Board;
-            if (tryMoves.Count > 2) return;
+            if (tryMoves.Count > 0) return;
             List<Group> targets = LifeCheck.GetTargets(currentGame.Board);
             foreach (Group targetGroup in targets)
             {
@@ -465,19 +466,17 @@ namespace Go
                 List<Point> coveredEyes = killerGroups.Where(n => n.Points.Count == 1 && EyeHelper.FindCoveredEye(board, n.Points.First(), c)).Select(n => n.Points.First()).ToList();
                 if (coveredEyes.Count == 0) continue;
                 if (coveredEyes.Count == 1 && !killerGroups.Where(n => !coveredEyes.Contains(n.Points.First())).Any(n => n.Points.Count <= 2)) continue;
-                //cover external liberties
-                List<Group> groups = LinkHelper.GetAllDiagonalConnectedGroups(board, targetGroup).ToList();
-                Board coveredBoard = new Board(board);
-                List<Point> externalLiberties = board.GetLibertiesOfGroups(groups).Where(n => !killerGroups.Any(k => k.Points.Contains(n))).ToList();
-                externalLiberties.ForEach(n => coveredBoard[n] = c.Opposite());
-                //check for connect and die
-                if (groups.Select(n => coveredBoard.GetCurrentGroup(n)).Any(n => n.Liberties.Count < 2 || ImmovableHelper.CheckConnectAndDie(coveredBoard, n))) continue;
+                //check for strong groups at covered board
+                if (!WallHelper.StrongGroupsAtCoveredBoard(board, targetGroup)) continue;
                 GameTryMove tryMove = GetRandomMove(currentGame);
                 if (tryMove != null) tryMoves.Add(tryMove);
                 return;
             }
         }
 
+        /// <summary>
+        /// Get random move.
+        /// </summary>
         private GameTryMove GetRandomMove(Game currentGame)
         {
             Board board = currentGame.Board;

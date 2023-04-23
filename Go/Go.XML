@@ -187,6 +187,11 @@
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_20230422_8" />
             </summary>
         </member>
+        <member name="M:Go.Game.GetRandomMove(Go.Game)">
+            <summary>
+            Get random move.
+            </summary>
+        </member>
         <member name="M:Go.Game.MakeKillMove(System.Int32,Go.Game)">
             <summary>
             Make all possible kill moves by exhaustive search.
@@ -1395,6 +1400,7 @@
             <see cref="!:UnitTestProject.KoTest.KoTest_Scenario_Corner_A80" /> 
             <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WuQingYuan_Q30982" /> 
             Two covered eyes <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18" />
+            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_20230422_8" />
             Check double ko <see cref = "!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16975" />
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" /> 
             <see cref = "!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_2" />
@@ -2137,6 +2143,11 @@
         <member name="M:Go.WallHelper.AllTargetWithinNonKillableGroups(Go.Board)">
             <summary>
             All target within non killable groups.
+            </summary>
+        </member>
+        <member name="M:Go.WallHelper.StrongGroupsAtCoveredBoard(Go.Board,Go.Group)">
+            <summary>
+            Strong groups at covered board.
             </summary>
         </member>
         <member name="M:Go.GameMapping.GetMappedJson(Go.Game)">

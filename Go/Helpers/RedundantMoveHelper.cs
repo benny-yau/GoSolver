@@ -222,6 +222,7 @@ namespace Go
         /// <see cref="UnitTestProject.KoTest.KoTest_Scenario_Corner_A80" /> 
         /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WuQingYuan_Q30982" /> 
         /// Two covered eyes <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18" />
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_20230422_8" />
         /// Check double ko <see cref = "UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16975" />
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" /> 
         /// <see cref = "UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_2" />
@@ -270,7 +271,10 @@ namespace Go
 
             //two covered eyes
             if (eyeGroups.Any(e => e.Liberties.Count == 2 && e.Liberties.All(lib => EyeHelper.FindCoveredEye(currentBoard, lib, c) && !KoHelper.IsKoFight(currentBoard, lib, c).Item1)))
-                return false;
+            {
+                if (!WallHelper.StrongGroupsAtCoveredBoard(currentBoard, eyeGroups.First()))
+                    return false;
+            }
 
             //check double ko
             Board b = currentBoard.MakeMoveOnNewBoard(move, c.Opposite(), true);

@@ -184,5 +184,25 @@ namespace Go
             }
             return true;
         }
+
+        /// <summary>
+        /// Strong groups at covered board.
+        /// </summary>
+        public static Boolean StrongGroupsAtCoveredBoard(Board board, Group targetGroup)
+        {
+            Content c = targetGroup.Content;
+            List<Group> groups = LinkHelper.GetAllDiagonalGroups(board, targetGroup).ToList();
+            Board coveredBoard = new Board(board);
+            //cover external liberties
+            foreach (Point p in board.GetLibertiesOfGroups(groups))
+            {
+                Group killerGroup = GroupHelper.GetKillerGroupOfNeighbourGroups(board, p, c);
+                if (killerGroup != null && killerGroup.Points.Count <= 3) continue;
+                coveredBoard[p] = c.Opposite();
+            }
+            //check for connect and die
+            if (groups.Select(n => coveredBoard.GetCurrentGroup(n)).Any(n => n.Liberties.Count < 2 || ImmovableHelper.CheckConnectAndDie(coveredBoard, n))) return false;
+            return true;
+        }
     }
 }

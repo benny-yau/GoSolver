@@ -621,6 +621,7 @@ namespace Go
                 Point liberty = eyeGroup.Liberties.First(lib => !lib.Equals(move));
                 Board b = currentBoard.MakeMoveOnNewBoard(liberty, c, true);
                 if (b == null || WallHelper.TargetWithAllNonKillableGroups(b)) continue;
+                if (b.GetGroupsFromStoneNeighbours(move, c.Opposite()).Count == 1 && EyeHelper.FindEye(b, move, c)) continue;
                 if (ImmovableHelper.CheckConnectAndDie(b))
                     return (true, b);
 
