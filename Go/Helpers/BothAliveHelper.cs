@@ -9,6 +9,23 @@ namespace Go
         /// <summary>
         /// Add pass move to survival try moves to check for both alive. Ensure no other try move present other than those within killer group.
         /// </summary>
+        public static void EnableCheckForPassMove(Game currentGame, List<GameTryMove> tryMoves, SurviveOrKill surviveOrKill)
+        {
+            Board board = currentGame.Board;
+            if (board.LastMove != null && board.LastMove.Value.Equals(Game.PassMove)) return;
+            Content c = GameHelper.GetContentForSurviveOrKill(currentGame.GameInfo, surviveOrKill);
+            if (!EnableCheckForPassMove(board, c, tryMoves)) return;
+            if (surviveOrKill == SurviveOrKill.Survive)
+            {
+                tryMoves.Add(BothAliveHelper.AddPassMove(currentGame));
+            }
+            else
+            {
+                GameTryMove tryMove = Game.GetRandomMove(currentGame);
+                if (tryMove != null) tryMoves.Add(tryMove);
+            }
+        }
+
         public static Boolean EnableCheckForPassMove(Board board, Content c = Content.Unknown, List<GameTryMove> tryMoves = null)
         {
             if (tryMoves != null && tryMoves.Any(p => GroupHelper.GetKillerGroupFromCache(board, p.Move, c) == null)) return false;

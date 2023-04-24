@@ -146,10 +146,11 @@ namespace Go
             }
 
             //check for link breakage
-            if (b.MoveGroup.Points.Count > 1)
+            List<Point> stoneNeighbours = LinkHelper.GetNeighboursDiagonallyLinked(b);
+            if (b.GetDiagonalNeighbours().Any(n => b[n] != c && b.GetStoneNeighbours(n).Intersect(stoneNeighbours).Count() >= 2 && !ImmovableHelper.IsImmovablePoint(b, n, c)))
             {
-                List<Point> stoneNeighbours = LinkHelper.GetNeighboursDiagonallyLinked(b);
-                if (b.GetDiagonalNeighbours().Any(n => b[n] != c && b.GetStoneNeighbours(n).Intersect(stoneNeighbours).Count() >= 2 && !ImmovableHelper.IsImmovablePoint(b, n, c)))
+                Board b2 = ImmovableHelper.ConnectAndDie(b, b.MoveGroup, false).Item2;
+                if (b2 == null || !ImmovableHelper.CheckCaptureSecure(b2, b.MoveGroup))
                     return true;
             }
 

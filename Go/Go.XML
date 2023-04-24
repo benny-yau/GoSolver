@@ -163,7 +163,7 @@
             For kill only, restore neutral points where necessary and add random move for kill where no move is available.
             </summary>
         </member>
-        <member name="M:Go.Game.CreateRandomMoveForRedundantKo(System.Collections.Generic.List{Go.GameTryMove},System.Collections.Generic.List{Go.GameTryMove})">
+        <member name="M:Go.Game.CreateRandomMoveForRedundantKo(Go.Game,System.Collections.Generic.List{Go.GameTryMove},System.Collections.Generic.List{Go.GameTryMove})">
             <summary>
             Create random move for redundant ko.
             Killer ko within killer group <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A79" />
@@ -277,7 +277,7 @@
             Is weak group.
             </summary>
         </member>
-        <member name="M:Go.BothAliveHelper.EnableCheckForPassMove(Go.Board,Go.Content,System.Collections.Generic.List{Go.GameTryMove})">
+        <member name="M:Go.BothAliveHelper.EnableCheckForPassMove(Go.Game,System.Collections.Generic.List{Go.GameTryMove},Go.SurviveOrKill)">
             <summary>
             Add pass move to survival try moves to check for both alive. Ensure no other try move present other than those within killer group.
             </summary>

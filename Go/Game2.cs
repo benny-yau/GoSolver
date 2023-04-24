@@ -143,17 +143,16 @@ namespace Go
             //sort game try moves
             tryMoves = (from tryMove in tryMoves orderby tryMove.AtariResolved descending, tryMove.AtariWithoutSuicide descending, tryMove.IncreasedKillerGroups descending, tryMove.TryGame.Board.MoveGroupLiberties descending select tryMove).ToList();
 
-            //check for both alive
-            if (BothAliveHelper.EnableCheckForPassMove(currentGame.Board, c, tryMoves))
-                tryMoves.Add(BothAliveHelper.AddPassMove(currentGame));
-
             //restore diagonal eye move
             if (tryMoves.Count == 0 && redundantTryMoves.Any(move => move.IsDiagonalEyeMove))
                 tryMoves.Add(redundantTryMoves.First(move => move.IsDiagonalEyeMove));
 
+            //check for both alive
+            BothAliveHelper.EnableCheckForPassMove(currentGame, tryMoves, SurviveOrKill.Survive);
+
             //create random move
             CreateRandomMoveForCoveredEyeSurvival(tryMoves, currentGame);
-            CreateRandomMoveForRedundantKo(tryMoves, redundantTryMoves);
+            CreateRandomMoveForRedundantKo(currentGame, tryMoves, redundantTryMoves);
 
             PrintGameMoveList(tryMoves, redundantTryMoves, currentGame);
 
@@ -393,8 +392,10 @@ namespace Go
 
             //create random move
             CreateRandomMoveForKill(tryMoves, currentGame);
-            CreateRandomMoveForRedundantKo(tryMoves, redundantTryMoves);
+            CreateRandomMoveForRedundantKo(currentGame, tryMoves, redundantTryMoves);
 
+            //check for both alive
+            BothAliveHelper.EnableCheckForPassMove(currentGame, tryMoves, SurviveOrKill.Kill);
             PrintGameMoveList(tryMoves, redundantTryMoves, currentGame);
 
             return (ConfirmAliveResult.Unknown, tryMoves, koBlockedMove);
@@ -409,12 +410,14 @@ namespace Go
         /// Check atari resolved <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q17078_2" />
         /// Check base line leap link <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q17078_3" />
         /// </summary>
-        private void CreateRandomMoveForRedundantKo(List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves)
+        private void CreateRandomMoveForRedundantKo(Game currentGame, List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves)
         {
+            Board currentBoard = currentGame.Board;
+            if (currentBoard.LastMove != null && currentBoard.LastMove.Value.Equals(Game.PassMove)) return;
             if (tryMoves.Count == 1 && tryMoves.Select(n => n.TryGame.Board).Any(b => b.IsRandomMove || b.Move.Equals(Game.PassMove))) return;
+
             foreach (GameTryMove koMove in redundantTryMoves.Where(t => t.IsRedundantKo))
             {
-                Board currentBoard = koMove.CurrentGame.Board;
                 Board tryBoard = koMove.TryGame.Board;
                 Content c = tryBoard.MoveGroup.Content;
                 if (koMove.AtariResolved) continue;
@@ -423,7 +426,7 @@ namespace Go
                 //killer ko within killer group 
                 if (tryBoard.AtariTargets.Any(t => GroupHelper.GetKillerGroupFromCache(tryBoard, t.Points.First(), c) != null && !ImmovableHelper.CheckConnectAndDie(currentBoard, currentBoard.GetGroupAt(t.Points.First()), false)))
                 {
-                    GameTryMove tryMove = GetRandomMove(koMove.CurrentGame);
+                    GameTryMove tryMove = GetRandomMove(currentGame);
                     if (tryMove != null) tryMoves.Add(tryMove);
                     break;
                 }
@@ -477,7 +480,7 @@ namespace Go
         /// <summary>
         /// Get random move.
         /// </summary>
-        private GameTryMove GetRandomMove(Game currentGame)
+        public static GameTryMove GetRandomMove(Game currentGame)
         {
             Board board = currentGame.Board;
             Point p = Game.PassMove;
