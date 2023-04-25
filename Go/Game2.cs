@@ -79,7 +79,7 @@ namespace Go
 
             //make the move at initial board
             if (GameHelper.WinOrLose(surviveOrKill, confirmAlive, this.GameInfo))
-                this.MakeMove(bestResultMove.Move);
+                this.MakeMove(bestResultMove.TryGame.Board);
 
             if (debugMode)
             {
@@ -148,7 +148,7 @@ namespace Go
                 tryMoves.Add(redundantTryMoves.First(move => move.IsDiagonalEyeMove));
 
             //check for both alive
-            BothAliveHelper.EnableCheckForPassMove(currentGame, tryMoves, SurviveOrKill.Survive);
+            BothAliveHelper.EnablePassMoveForBothAlive(currentGame, tryMoves, SurviveOrKill.Survive);
 
             //create random move
             CreateRandomMoveForCoveredEyeSurvival(tryMoves, currentGame);
@@ -286,7 +286,7 @@ namespace Go
                     bestResultMove = gameTryMove;
                     if (GameHelper.WinOrLose(SurviveOrKill.Survive, bestResult, currentGame.GameInfo))
                     {
-                        if (gameTryMove.Move.Equals(Game.PassMove) && gameTryMove.TryGame.KoGameCheck == KoCheck.None) bestResult = ConfirmAliveResult.BothAlive;
+                        if (gameTryMove.Move.Equals(Game.PassMove) && gameTryMove.TryGame.Board.KoGameCheck == KoCheck.None) bestResult = ConfirmAliveResult.BothAlive;
                         return (bestResult, bestResultMove);
                     }
                 }
@@ -395,7 +395,7 @@ namespace Go
             CreateRandomMoveForRedundantKo(currentGame, tryMoves, redundantTryMoves);
 
             //check for both alive
-            BothAliveHelper.EnableCheckForPassMove(currentGame, tryMoves, SurviveOrKill.Kill);
+            BothAliveHelper.EnablePassMoveForBothAlive(currentGame, tryMoves, SurviveOrKill.Kill);
             PrintGameMoveList(tryMoves, redundantTryMoves, currentGame);
 
             return (ConfirmAliveResult.Unknown, tryMoves, koBlockedMove);

@@ -14,7 +14,6 @@ namespace Go
     {
         public Game Root { get; private set; }
         public Board Board { get; set; }
-        public KoCheck KoGameCheck = KoCheck.None;
 
         public static int LookAheadDepth = 8;
         public static Boolean breakRealTime = Convert.ToBoolean(ConfigurationSettings.AppSettings["BREAK_REAL_TIME"]);
@@ -109,7 +108,6 @@ namespace Go
         {
             Board = new Board(fromGame.Board);
             Board.GameInfo = fromGame.Root.GameInfo;
-            KoGameCheck = fromGame.KoGameCheck;
             Root = fromGame.Root;
         }
 
@@ -120,6 +118,18 @@ namespace Go
         {
             Root = this;
             Board = new Board(GameInfo);
+        }
+
+        /// <summary>
+        /// Make move on initial board.
+        /// </summary>
+        public MakeMoveResult MakeMove(Board board)
+        {
+            Point move = board.Move.Value;
+            MakeMoveResult result = MakeMove(move);
+            this.Board.IsRandomMove = board.IsRandomMove;
+            this.Board.KoGameCheck = board.KoGameCheck;
+            return result;
         }
 
         public MakeMoveResult MakeMove(Point p)

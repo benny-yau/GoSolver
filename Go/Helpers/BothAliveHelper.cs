@@ -7,20 +7,22 @@ namespace Go
     public class BothAliveHelper
     {
         /// <summary>
-        /// Add pass move to survival try moves to check for both alive. Ensure no other try move present other than those within killer group.
+        /// Enable pass move for both alive.
         /// </summary>
-        public static void EnableCheckForPassMove(Game currentGame, List<GameTryMove> tryMoves, SurviveOrKill surviveOrKill)
+        public static void EnablePassMoveForBothAlive(Game currentGame, List<GameTryMove> tryMoves, SurviveOrKill surviveOrKill)
         {
             Board board = currentGame.Board;
-            if (board.LastMove != null && board.LastMove.Value.Equals(Game.PassMove)) return;
             Content c = GameHelper.GetContentForSurviveOrKill(currentGame.GameInfo, surviveOrKill);
-            if (!EnableCheckForPassMove(board, c, tryMoves)) return;
             if (surviveOrKill == SurviveOrKill.Survive)
             {
+                if (!EnableCheckForPassMove(board, c, tryMoves)) return;
                 tryMoves.Add(BothAliveHelper.AddPassMove(currentGame));
             }
             else
             {
+                if (board.LastMove != null && board.LastMove.Value.Equals(Game.PassMove)) return;
+                if (tryMoves.Count == 1 && tryMoves.Select(n => n.TryGame.Board).Any(b => b.IsRandomMove)) return;
+                if (!EnableCheckForPassMove(board, c, tryMoves)) return;
                 GameTryMove tryMove = Game.GetRandomMove(currentGame);
                 if (tryMove != null) tryMoves.Add(tryMove);
             }
@@ -31,7 +33,7 @@ namespace Go
             if (tryMoves != null && tryMoves.Any(p => GroupHelper.GetKillerGroupFromCache(board, p.Move, c) == null)) return false;
             c = (c == Content.Unknown) ? GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive) : c;
             List<Group> killerGroups = GetKillerGroupsForBothAlive(board, c);
-            if (killerGroups.Any(killerGroup => EnableCheckForBothAlive(board, killerGroup)))
+            if (killerGroups.Any(killerGroup => CheckForBothAlive(board, killerGroup)))
                 return true;
             return false;
         }
@@ -44,13 +46,13 @@ namespace Go
             Content c = board.MoveGroup.Content;
             List<Group> killerGroups = board.GetStoneAndDiagonalNeighbours().Where(n => board[n] != c).Select(n => GroupHelper.GetKillerGroupFromCache(board, n, c)).Distinct().ToList();
 
-            if (killerGroups.Any(killerGroup => killerGroup != null && EnableCheckForBothAlive(board, killerGroup)))
+            if (killerGroups.Any(killerGroup => killerGroup != null && CheckForBothAlive(board, killerGroup)))
                 return true;
             return false;
         }
 
         /// <summary>
-        /// Enable check for both alive.
+        /// Check for both alive.
         /// For simple seki which is usually the case, find one killer group with at least two liberties, and one survival neighbour group with at least two liberties. Simple seki <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_SimpleSeki" />
         /// In most cases, there is only one killer group and one neighbour survival group, but there can also be two neighbour survival groups. Simple seki with two neighbour survival groups <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan16" />
@@ -61,7 +63,7 @@ namespace Go
         /// Ensure shared liberty suicidal for killer <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31445" />
         /// </summary>
-        private static Boolean EnableCheckForBothAlive(Board board, Group killerGroup)
+        private static Boolean CheckForBothAlive(Board board, Group killerGroup)
         {
             Content c = killerGroup.Content;
             List<Point> emptyPoints = killerGroup.Points.Where(k => board[k] == Content.Empty).ToList();

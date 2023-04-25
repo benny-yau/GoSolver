@@ -51,8 +51,7 @@ namespace Go
             if (mcts.AnswerNode != null)
             {
                 Game g = mcts.AnswerNode.State.Game;
-                Point answerMove = g.Board.Move.Value;
-                game.MakeMove(answerMove);
+                game.MakeMove(g.Board);
             }
             ConfirmAliveResult result = GetResultForMCTS(mcts);
             return (result, mcts.AnswerNode ?? mcts.tree.Root, mcts.elapsedTime);

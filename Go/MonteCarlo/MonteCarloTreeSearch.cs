@@ -499,7 +499,7 @@ namespace Go
             if (gameTryMove.MakeMoveResult == MakeMoveResult.Legal)
             {
                 gameTryMove.ConfirmAlive = MonteCarloMakeKillMove(nextDepth, tryGame);
-                if (gameTryMove.ConfirmAlive == ConfirmAliveResult.Alive && gameTryMove.Move.Equals(Game.PassMove) && gameTryMove.TryGame.KoGameCheck == KoCheck.None)
+                if (gameTryMove.ConfirmAlive == ConfirmAliveResult.Alive && gameTryMove.Move.Equals(Game.PassMove) && gameTryMove.TryGame.Board.KoGameCheck == KoCheck.None)
                     gameTryMove.ConfirmAlive = ConfirmAliveResult.BothAlive;
             }
             else if (gameTryMove.MakeMoveResult == MakeMoveResult.KoBlocked)

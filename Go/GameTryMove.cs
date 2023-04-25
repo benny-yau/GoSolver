@@ -101,7 +101,7 @@ namespace Go
         /// </summary>
         public void MakeKoMove(Point p, SurviveOrKill surviveOrKill)
         {
-            this.TryGame.KoGameCheck = (surviveOrKill == SurviveOrKill.Kill) ? KoCheck.Kill : KoCheck.Survive;
+            this.TryGame.Board.KoGameCheck = (surviveOrKill == SurviveOrKill.Kill) ? KoCheck.Kill : KoCheck.Survive;
             this.TryGame.InternalMakeMove(p.x, p.y, true);
         }
 

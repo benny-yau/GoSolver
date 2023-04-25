@@ -20,6 +20,7 @@ namespace Go
         public Group MoveGroup { get; set; }
         public Point? singlePointCapture;
         public Boolean IsRandomMove { get; set; }
+        public KoCheck KoGameCheck { get; set; }
         public List<Group> CapturedList = new List<Group>();
         public List<Point> LastMoves = new List<Point>();
 
@@ -68,6 +69,7 @@ namespace Go
             this.Move = fromBoard.Move;
             this.singlePointCapture = fromBoard.singlePointCapture;
             this.IsRandomMove = fromBoard.IsRandomMove;
+            this.KoGameCheck = fromBoard.KoGameCheck;
             this.LastMoves.AddRange(fromBoard.LastMoves);
             this.GroupCache.AddRange(fromBoard.GroupCache);
             if (fromBoard.GroupCacheFromPoint != null)

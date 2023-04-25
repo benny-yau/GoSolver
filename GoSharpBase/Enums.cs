@@ -43,9 +43,9 @@ namespace Go
     /// </summary>
     public enum KoCheck
     {
+        None,
         Kill,
-        Survive,
-        None
+        Survive
     }
 
     /// <summary>
