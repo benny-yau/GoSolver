@@ -598,11 +598,10 @@ namespace Go
         public static (Point?, List<Point>) FindDiagonalCut(Board board, Group group)
         {
             Content c = group.Content;
-            if (ImmovableHelper.IsSuicidalWithoutKo(board, group)) return (null, null);
             foreach (LinkedPoint<Point> diagonal in GetGroupLinkedDiagonals(board, group))
             {
                 Group diagonalGroup = board.GetGroupAt(diagonal.Move);
-                if (ImmovableHelper.IsSuicidalWithoutKo(board, diagonalGroup)) continue;
+                if (ImmovableHelper.IsSuicidalWithoutKo(board, diagonalGroup) || ImmovableHelper.IsSuicidalWithoutKo(board, group)) continue;
                 List<Point> diagonals = PointsBetweenDiagonals(diagonal);
                 if (diagonals.All(d => board[d] == c.Opposite() && !ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt(d))))
                     return (diagonal.Move, diagonals);
