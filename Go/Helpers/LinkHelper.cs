@@ -600,8 +600,8 @@ namespace Go
             Content c = group.Content;
             foreach (LinkedPoint<Point> diagonal in GetGroupLinkedDiagonals(board, group))
             {
-                Group diagonalGroup = board.GetGroupAt(diagonal.Move);
-                if (ImmovableHelper.IsSuicidalWithoutKo(board, diagonalGroup) || ImmovableHelper.IsSuicidalWithoutKo(board, group)) continue;
+                if (ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt(diagonal.Move))) continue;
+                if (ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt((Point)diagonal.CheckMove))) continue;
                 List<Point> diagonals = PointsBetweenDiagonals(diagonal);
                 if (diagonals.All(d => board[d] == c.Opposite() && !ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt(d))))
                     return (diagonal.Move, diagonals);
