@@ -1944,7 +1944,7 @@ namespace Go
 
             //check for liberty fight
             List<Group> groups = LinkHelper.GetAllDiagonalGroups(capturedBoard, capturedBoard.MoveGroup).ToList();
-            if (groups.Any(n => LinkHelper.FindDiagonalCut(capturedBoard, n, false).Item1 != null))
+            if (groups.Any(n => LinkHelper.FindDiagonalCut(capturedBoard, n).Item1 != null))
                 return false;
             return true;
         }
@@ -2387,7 +2387,7 @@ namespace Go
             }
 
             //check break link
-            if (diagonals.Count == 0 && KoHelper.CheckBaseLineLeapLink(tryBoard, eyePoint.Value, c))
+            if (diagonals.Count == 0 && LinkHelper.CheckBaseLineLeapLink(tryBoard, eyePoint.Value, c))
                 return false;
             return true;
         }

@@ -166,20 +166,6 @@ namespace Go
             }
         }
 
-        /// <summary>
-        /// Check base line leap link for redundant ko move and fill ko eye move.
-        /// </summary>
-        public static Boolean CheckBaseLineLeapLink(Board tryBoard, Point eyePoint, Content c)
-        {
-            List<Point> stoneNeighbours = tryBoard.GetStoneNeighbours(eyePoint).Where(n => tryBoard[n] == c && !n.Equals(tryBoard.Move.Value)).ToList();
-            if (stoneNeighbours.Count != 2) return false;
-            if (stoneNeighbours.Any(n => tryBoard.PointWithinMiddleArea(n))) return false;
-            if (tryBoard.GetGroupsFromPoints(stoneNeighbours).Count != 2) return false;
-            Point firstStone = stoneNeighbours[0];
-            if (!tryBoard.GetDiagonalNeighbours(firstStone).Any(n => n.Equals(stoneNeighbours[1])))
-                return true;
-            return false;
-        }
 
         /// <summary>
         /// Check for possibility of double ko, for both survival and kill.

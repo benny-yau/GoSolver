@@ -1127,11 +1127,6 @@
             Get ko eye point.
             </summary>
         </member>
-        <member name="M:Go.KoHelper.CheckBaseLineLeapLink(Go.Board,Go.Point,Go.Content)">
-            <summary>
-            Check base line leap link for redundant ko move and fill ko eye move.
-            </summary>
-        </member>
         <member name="M:Go.KoHelper.PossibilityOfDoubleKo(Go.GameTryMove)">
             <summary>
             Check for possibility of double ko, for both survival and kill.
@@ -1295,7 +1290,7 @@
             Get the opposite diagonals of the two diagonal points.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.FindDiagonalCut(Go.Board,Go.Group,System.Boolean)">
+        <member name="M:Go.LinkHelper.FindDiagonalCut(Go.Board,Go.Group)">
             <summary>
             Diagonal cut between two neighbour groups.
             </summary>
@@ -1323,6 +1318,11 @@
         <member name="M:Go.LinkHelper.TigerMouthThreatGroup(Go.Board,Go.Point,Go.Content,System.Func{Go.Group,System.Boolean})">
             <summary>
             Get tiger mouth threat group.
+            </summary>
+        </member>
+        <member name="M:Go.LinkHelper.CheckBaseLineLeapLink(Go.Board,Go.Point,Go.Content)">
+            <summary>
+            Check base line leap link.
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.FindPotentialEye(Go.GameTryMove)">

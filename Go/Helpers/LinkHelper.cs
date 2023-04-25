@@ -595,16 +595,16 @@ namespace Go
         /// <summary>
         /// Diagonal cut between two neighbour groups.
         /// </summary>
-        public static (Point?, List<Point>) FindDiagonalCut(Board board, Group group, Boolean checkLiberties = true)
+        public static (Point?, List<Point>) FindDiagonalCut(Board board, Group group)
         {
             Content c = group.Content;
-            if (group.Liberties.Count == 1 || board.GetNeighbourGroups(group).Count <= 1) return (null, null);
+            if (ImmovableHelper.IsSuicidalWithoutKo(board, group)) return (null, null);
             foreach (LinkedPoint<Point> diagonal in GetGroupLinkedDiagonals(board, group))
             {
                 Group diagonalGroup = board.GetGroupAt(diagonal.Move);
-                if (checkLiberties && diagonalGroup.Liberties.Count == 1) continue;
+                if (ImmovableHelper.IsSuicidalWithoutKo(board, diagonalGroup)) continue;
                 List<Point> diagonals = PointsBetweenDiagonals(diagonal);
-                if (diagonals.All(d => board[d] == c.Opposite() && (!checkLiberties || board.GetGroupAt(d).Liberties.Count > 1)))
+                if (diagonals.All(d => board[d] == c.Opposite() && !ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt(d))))
                     return (diagonal.Move, diagonals);
             }
             return (null, null);
@@ -686,5 +686,14 @@ namespace Go
             return null;
         }
 
+        /// <summary>
+        /// Check base line leap link.
+        /// </summary>
+        public static Boolean CheckBaseLineLeapLink(Board tryBoard, Point eyePoint, Content c)
+        {
+            List<Point> stoneNeighbours = tryBoard.GetStoneNeighbours(eyePoint).Where(n => tryBoard[n] == c && !n.Equals(tryBoard.Move.Value)).ToList();
+            if (stoneNeighbours.Count != 2 || stoneNeighbours.Any(n => tryBoard.PointWithinMiddleArea(n))) return false;
+            return true;
+        }
     }
 }
