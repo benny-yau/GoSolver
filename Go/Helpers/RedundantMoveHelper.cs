@@ -917,8 +917,8 @@ namespace Go
                 return false;
 
             //capture suicide stone by move at liberty point
-            (Boolean suicidal, Board capturedBoard) = ImmovableHelper.IsSuicidalOnCapture(tryBoard);
-            if (suicidal || capturedBoard == null) return false;
+            Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
+            if (capturedBoard == null || KoHelper.IsKoFight(capturedBoard)) return false;
             if (capturedBoard.CapturedPoints.Count() > 1) return true;
             if (SuicideWithinRealEye(tryMove, capturedBoard))
                 return true;
