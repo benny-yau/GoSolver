@@ -245,8 +245,8 @@ namespace Go
             foreach (Group ngroup in ngroups)
             {
                 if (capturePoint != null && ngroup.Points.Contains(capturePoint.Value)) continue;
-                Board b = ImmovableHelper.CaptureSuicideGroup(board, ngroup);
-                if (b == null || KoHelper.IsKoFight(b)) continue;
+                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalOnCapture(board, ngroup);
+                if (suicidal || b == null) continue;
                 Group target = b.GetCurrentGroup(targetGroup);
                 if (target.Liberties.Count > 2)
                     return true;
@@ -384,7 +384,7 @@ namespace Go
         /// Is suicide move on capture.
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_B28_2" />
         /// </summary>
-        public static (Boolean, Board) IsSuicidalOnCapture(Board tryBoard, Group targetGroup = null, Boolean koEnabled = true)
+        public static (Boolean, Board) IsSuicidalOnCapture(Board tryBoard, Group targetGroup = null, Boolean koEnabled = false)
         {
             Board board = ImmovableHelper.CaptureSuicideGroup(tryBoard, targetGroup, koEnabled);
             if (board == null)

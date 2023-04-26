@@ -917,8 +917,8 @@ namespace Go
                 return false;
 
             //capture suicide stone by move at liberty point
-            Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
-            if (capturedBoard == null || KoHelper.IsKoFight(capturedBoard)) return false;
+            (Boolean suicidal, Board capturedBoard) = ImmovableHelper.IsSuicidalOnCapture(tryBoard);
+            if (suicidal || capturedBoard == null) return false;
             if (capturedBoard.CapturedPoints.Count() > 1) return true;
             if (SuicideWithinRealEye(tryMove, capturedBoard))
                 return true;
@@ -1860,9 +1860,8 @@ namespace Go
             List<Point> diagonalPoints = ImmovableHelper.GetDiagonalsOfTigerMouth(tryBoard, move, c.Opposite()).Where(e => tryBoard[e] != c.Opposite()).ToList();
             if (diagonalPoints.Count == 0) return false;
 
-            Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
-            if (capturedBoard == null || capturedBoard.MoveGroupLiberties == 1) return false;
-            if (KoHelper.IsForwardOrReverseKoFight(capturedBoard)) return false;
+            (Boolean suicidal, Board capturedBoard) = ImmovableHelper.IsSuicidalOnCapture(tryBoard);
+            if (suicidal || capturedBoard == null) return false;
 
             //check possible corner three formation
             if (KillerFormationHelper.PossibleCornerThreeFormation(currentBoard, move, c.Opposite())) return false;
