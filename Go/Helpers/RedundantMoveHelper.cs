@@ -1987,7 +1987,7 @@ namespace Go
             Content c = GameHelper.GetContentForSurviveOrKill(tryBoard.GameInfo, SurviveOrKill.Survive);
 
             //get diagonals
-            List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(q => tryBoard[q] == Content.Empty).ToList();
+            List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(q => tryBoard[q] != c).ToList();
             diagonals = diagonals.Where(eye => LinkHelper.PointsBetweenDiagonals(eye, move).All(d => tryBoard[d] == c)).ToList();
             if (diagonals.Count == 0) return false;
             diagonals.RemoveAll(d => GroupHelper.GetKillerGroupOfNeighbourGroups(currentBoard, d, c) == null);
@@ -2359,7 +2359,7 @@ namespace Go
                 HashSet<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(move, c);
                 if (LifeCheck.GetTargets(tryBoard).All(t => neighbourGroups.Contains(t)) && WallHelper.AllTargetWithinNonKillableGroups(tryBoard))
                     return true;
-                if (!WallHelper.StrongNeighbourGroups(tryBoard)) return false;
+                if (!WallHelper.StrongNeighbourGroups(tryBoard) || AtariHelper.DoubleAtariWithoutEscape(tryBoard)) return false;
                 //check liberty fight
                 if (CheckLibertyFightAtMustHaveMove(tryBoard)) return false;
                 //check two liberty group
@@ -2376,7 +2376,6 @@ namespace Go
             List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, eyePoint.Value, c).Where(q => tryBoard[q] != c).ToList();
             foreach (Point d in diagonals)
             {
-                if (currentBoard[d] == c.Opposite()) return false;
                 Board opponentBoard = currentBoard;
                 if (opponentBoard[eyePoint.Value] == Content.Empty)
                 {

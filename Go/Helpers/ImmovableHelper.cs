@@ -384,10 +384,14 @@ namespace Go
         /// Is suicide move on capture.
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_B28_2" />
         /// </summary>
-        public static (Boolean, Board) IsSuicidalOnCapture(Board tryBoard, Group targetGroup = null, Boolean koEnabled = false)
+        public static (Boolean, Board) IsSuicidalOnCapture(Board tryBoard, Group targetGroup = null, Boolean koEnabled = true)
         {
             Board board = ImmovableHelper.CaptureSuicideGroup(tryBoard, targetGroup, koEnabled);
-            if (board == null) return (true, null);
+            if (board == null)
+            {
+                if (KoHelper.IsKoFight(tryBoard, targetGroup)) return (true, null);
+                return (false, null);
+            }
             if (board.MoveGroupLiberties != 1) return (false, board);
             if (KoHelper.IsKoFight(board))
             {
