@@ -462,7 +462,7 @@ namespace Go
             if (opponentMove == null) return false;
             Board opponentBoard = opponentMove.TryGame.Board;
             Content c = tryMove.MoveContent;
-            if (FindRealEyeWithinEmptySpace(opponentBoard, eye, c) && !AtariHelper.DoubleAtariWithoutEscape(opponentBoard))
+            if (FindRealEyeWithinEmptySpace(opponentBoard, eye, c))
                 return true;
             return false;
         }

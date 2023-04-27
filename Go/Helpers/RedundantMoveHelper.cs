@@ -1994,6 +1994,7 @@ namespace Go
 
             //check diagonals are real eyes
             if (!diagonals.All(eye => EyeHelper.RealEyeAtDiagonal(tryMove, eye))) return false;
+            if (diagonals.Count(eye => tryBoard[eye] == c.Opposite()) >= 2) return false;
 
             //check other surrounding points are not possible eyes
             IEnumerable<Point> neighbourPts = tryBoard.GetStoneAndDiagonalNeighbours().Except(diagonals);
@@ -2358,7 +2359,7 @@ namespace Go
                 HashSet<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(move, c);
                 if (LifeCheck.GetTargets(tryBoard).All(t => neighbourGroups.Contains(t)) && WallHelper.AllTargetWithinNonKillableGroups(tryBoard))
                     return true;
-                if (!WallHelper.StrongNeighbourGroups(tryBoard) || AtariHelper.DoubleAtariWithoutEscape(tryBoard)) return false;
+                if (!WallHelper.StrongNeighbourGroups(tryBoard)) return false;
                 //check liberty fight
                 if (CheckLibertyFightAtMustHaveMove(tryBoard)) return false;
                 //check two liberty group
@@ -2384,6 +2385,7 @@ namespace Go
                 if (!EyeHelper.FindRealEyeWithinEmptySpace(opponentBoard, d, c))
                     return false;
             }
+            if (diagonals.Count(d => currentBoard[d] == c.Opposite()) >= 2) return false;
 
             //check break link
             if (diagonals.Count == 0 && LinkHelper.CheckBaseLineLeapLink(tryBoard, eyePoint.Value, c))
