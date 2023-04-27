@@ -1068,8 +1068,7 @@ namespace Go
             if (contentPoints.Count() != 3 || tryBoard.MoveGroupLiberties != 1) return false;
             if (!contentPoints.Any(p => tryBoard.CornerPoint(p)) || contentPoints.Any(p => tryBoard.PointWithinMiddleArea(p))) return false;
             if (MaxLengthOfGrid(moveGroup.Points) != 1) return false;
-            //ensure at least two atari targets
-            if (tryBoard.AtariTargets.Count <= 1) return false;
+            if (tryBoard.AtariTargets.Count == 0) return false;
             return true;
         }
 

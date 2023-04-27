@@ -58,7 +58,7 @@ namespace Go
         /// </summary>
         public static Boolean IsNonKillableGroupKoFight(Board tryBoard, Group koGroup)
         {
-            Content c = tryBoard.MoveGroup.Content;
+            Content c = koGroup.Content;
             if (!IsKoFight(tryBoard, koGroup)) return false;
             Point eye = tryBoard.GetStoneNeighbours(koGroup.Points.First()).First(n => tryBoard[n] == Content.Empty);
             List<Group> eyeGroups = tryBoard.GetGroupsFromStoneNeighbours(eye, c.Opposite()).ToList();
@@ -197,7 +197,9 @@ namespace Go
             targetGroups = targetGroups.Distinct().ToList();
             if (targetGroups.Count >= 2)
             {
-                IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, targetGroups.Select(gr => gr.Liberties.First()), c);
+                List<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, targetGroups.Select(gr => gr.Liberties.First()), c).ToList();
+                moveBoards.RemoveAll(n => !(n.IsAtariMove || Board.ResolveAtari(currentBoard, n)));
+                moveBoards.RemoveAll(n => IsNonKillableGroupKoFight(n, n.MoveGroup));
                 if (moveBoards.Count(k => !RedundantMoveHelper.CheckRedundantKoMove(k, currentBoard)) >= 2)
                     return true;
             }
@@ -208,6 +210,9 @@ namespace Go
             {
                 (Boolean isKoFight, Group group) = KoHelper.IsKoFight(currentBoard, liberty, c.Opposite());
                 if (!isKoFight) continue;
+                Board b = ImmovableHelper.CaptureSuicideGroup(currentBoard, group);
+                List<Point> diagonalPoints = ImmovableHelper.GetDiagonalsOfTigerMouth(b, liberty, c.Opposite());
+                if (diagonalPoints.Any() && diagonalPoints.All(n => b[n] == c.Opposite()) && IsNonKillableGroupKoFight(b, b.MoveGroup)) continue;
                 koGroups.Add(group);
             }
             if (koGroups.Count >= 2)

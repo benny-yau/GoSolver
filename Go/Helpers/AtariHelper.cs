@@ -73,16 +73,21 @@ namespace Go
         {
             if (board.AtariTargets.Count <= 1) return false;
             if (ImmovableHelper.IsSuicidalWithoutKo(board)) return false;
+
+            //check if both targets escapable
             foreach (Group targetGroup in board.AtariTargets)
             {
-                //make escape move for target group
-                (Boolean unEscapable, Board escapeBoard) = ImmovableHelper.UnescapableGroup(board, targetGroup, false);
-                if (unEscapable) return true;
-                //check if any atari targets left
-                if (board.AtariTargets.Any(t => escapeBoard.GetGroupLiberties(t).Count == 1))
-                    return true;
+                //check escape by capture
+                Board captureBoard = ImmovableHelper.EscapeByCapture(board, targetGroup, false);
+                if (captureBoard != null && !board.AtariTargets.Any(t => captureBoard.GetGroupLiberties(t).Count == 1))
+                    return false;
+
+                //make move at liberty
+                (_, Board escapeBoard) = ImmovableHelper.IsSuicidalMove(targetGroup.Liberties.First(), targetGroup.Content, board);
+                if (escapeBoard != null && !ImmovableHelper.CheckConnectAndDie(escapeBoard, targetGroup) && !board.AtariTargets.Any(t => escapeBoard.GetGroupLiberties(t).Count == 1))
+                    return false;
             }
-            return false;
+            return true;
         }
 
         /// <summary>

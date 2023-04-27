@@ -245,8 +245,8 @@ namespace Go
             foreach (Group ngroup in ngroups)
             {
                 if (capturePoint != null && ngroup.Points.Contains(capturePoint.Value)) continue;
-                Board b = ImmovableHelper.CaptureSuicideGroup(board, ngroup);
-                if (b == null || KoHelper.IsKoFight(b)) continue;
+                (_, Board b) = ImmovableHelper.IsSuicidalOnCapture(board, ngroup);
+                if (b == null) continue;
                 Group target = b.GetCurrentGroup(targetGroup);
                 if (target.Liberties.Count > 2)
                     return true;
