@@ -1992,9 +1992,15 @@ namespace Go
             diagonals.RemoveAll(d => GroupHelper.GetKillerGroupOfNeighbourGroups(currentBoard, d, c) == null);
             if (diagonals.Count == 0) return false;
 
+            //make opponent move
+            GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
+            if (opponentMove == null) return false;
+            Board opponentBoard = opponentMove.TryGame.Board;
             //check diagonals are real eyes
-            if (!diagonals.All(eye => EyeHelper.RealEyeAtDiagonal(tryMove, eye))) return false;
-            if (diagonals.Count(eye => tryBoard[eye] == c.Opposite()) >= 2) return false;
+            if (!diagonals.All(eye => EyeHelper.FindRealEyeWithinEmptySpace(opponentBoard, eye, c))) return false;
+            //ensure no weak groups
+            if (diagonals.Count > 1 && opponentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).Count(n => n.Liberties.Count <= 2) >= 2)
+                return false;
 
             //check other surrounding points are not possible eyes
             IEnumerable<Point> neighbourPts = tryBoard.GetStoneAndDiagonalNeighbours().Except(diagonals);
@@ -2005,7 +2011,6 @@ namespace Go
             if (LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard))
                 return false;
 
-            GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
             if (opponentMove != null && NeutralPointSuicidalMove(opponentMove))
                 return false;
 
@@ -2372,20 +2377,22 @@ namespace Go
             if (!WallHelper.TargetWithAllNonKillableGroups(tryBoard))
                 return false;
 
+            //make opponent move for pre-ko
+            Board opponentBoard = currentBoard;
+            if (opponentBoard[eyePoint.Value] == Content.Empty)
+            {
+                opponentBoard = new Board(currentBoard);
+                opponentBoard.MakeMoveOnNewBoard(eyePoint.Value, c.Opposite(), true);
+            }
+
             //if all diagonals are real eyes then redundant
             List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, eyePoint.Value, c).Where(q => tryBoard[q] != c).ToList();
-            foreach (Point d in diagonals)
-            {
-                Board opponentBoard = currentBoard;
-                if (opponentBoard[eyePoint.Value] == Content.Empty)
-                {
-                    opponentBoard = new Board(currentBoard);
-                    opponentBoard.MakeMoveOnNewBoard(eyePoint.Value, c.Opposite(), true);
-                }
-                if (!EyeHelper.FindRealEyeWithinEmptySpace(opponentBoard, d, c))
-                    return false;
-            }
-            if (diagonals.Count(d => currentBoard[d] == c.Opposite()) >= 2) return false;
+            if (diagonals.Any(d => !EyeHelper.FindRealEyeWithinEmptySpace(opponentBoard, d, c)))
+                return false;
+
+            //ensure no weak groups
+            if (diagonals.Count > 1 && opponentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).Count(n => n.Liberties.Count <= 2) >= 2)
+                return false;
 
             //check break link
             if (diagonals.Count == 0 && LinkHelper.CheckBaseLineLeapLink(tryBoard, eyePoint.Value, c))

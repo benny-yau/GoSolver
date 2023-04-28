@@ -520,15 +520,6 @@
             No eye for opponent within killer group.
             </summary>
         </member>
-        <member name="M:Go.EyeHelper.RealEyeAtDiagonal(Go.GameTryMove,Go.Point)">
-            <summary>
-            Real eye at diagonal with empty point should be semi solid eye or within enclosed killer group. If eye is filled then check if possible to create real eye.
-            Eye filled <see cref="!:UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTestScenario_XuanXuanGo_A46_101Weiqi" />
-            Check if covered eye <see cref="!:UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_GuanZiPu_A2Q29_101Weiqi" />
-            Check for double capture <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WuQingYuan_Q30982" />
-            <see cref="!:UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_WuQingYuan_Q30982" />
-            </summary>
-        </member>
         <member name="M:Go.GameHelper.WinOrLose(Go.SurviveOrKill,Go.ConfirmAliveResult,Go.GameInfo)">
             <summary>
             Determine if win or lose based on result.
