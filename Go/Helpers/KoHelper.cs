@@ -198,8 +198,8 @@ namespace Go
             if (targetGroups.Count >= 2)
             {
                 List<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, targetGroups.Select(gr => gr.Liberties.First()), c).ToList();
-                moveBoards.RemoveAll(n => !(n.IsAtariMove || Board.ResolveAtari(currentBoard, n)));
                 moveBoards.RemoveAll(n => IsNonKillableGroupKoFight(n, n.MoveGroup));
+                moveBoards.RemoveAll(n => ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, capturePoint, c).All(d => n[d] == c, true) && WallHelper.TargetWithAllNonKillableGroups(n) && !Board.ResolveAtari(currentBoard, n));
                 if (moveBoards.Count(k => !RedundantMoveHelper.CheckRedundantKoMove(k, currentBoard)) >= 2)
                     return true;
             }
@@ -210,14 +210,12 @@ namespace Go
             {
                 (Boolean isKoFight, Group group) = KoHelper.IsKoFight(currentBoard, liberty, c.Opposite());
                 if (!isKoFight) continue;
-                Board b = ImmovableHelper.CaptureSuicideGroup(currentBoard, group);
-                List<Point> diagonalPoints = ImmovableHelper.GetDiagonalsOfTigerMouth(b, liberty, c.Opposite());
-                if (diagonalPoints.Any() && diagonalPoints.All(n => b[n] == c.Opposite()) && IsNonKillableGroupKoFight(b, b.MoveGroup)) continue;
                 koGroups.Add(group);
             }
             if (koGroups.Count >= 2)
             {
-                IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, koGroups.Select(gr => gr.Liberties.First()), c);
+                List<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, koGroups.Select(gr => gr.Liberties.First()), c).ToList();
+                moveBoards.RemoveAll(n => ImmovableHelper.GetDiagonalsOfTigerMouth(n, n.Move.Value, c.Opposite()).All(d => n[d] == c.Opposite(), true) && IsNonKillableGroupKoFight(n, n.MoveGroup));
                 if (moveBoards.Count(k => !RedundantMoveHelper.CheckRedundantKoMove(k, currentBoard)) >= 2)
                     return true;
             }

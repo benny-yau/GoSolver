@@ -46,5 +46,17 @@ namespace Go
             }
             return maxObj;
         }
+
+        public static bool All<T>(this IEnumerable<T> source, Func<T, bool> predicate, bool mustExist)
+        {
+            foreach (var e in source)
+            {
+                if (!predicate(e))
+                    return false;
+                mustExist = false;
+            }
+            return !mustExist;
+        }
+
     }
 }
