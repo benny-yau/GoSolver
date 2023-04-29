@@ -732,13 +732,14 @@ namespace Go
                 //check conditions for pre-atari
                 HashSet<Point> targetLiberties = targetGroup.Liberties;
                 if (targetLiberties.Count != 2) continue;
-                //check target group
-                if (LifeCheck.GetTargets(tryBoard).All(t => targetGroup.Equals(t)) && !AtariHelper.AtariByGroup(tryBoard, targetGroup)) continue;
 
                 //check connect and die
                 (_, Board board) = ConnectAndDie(tryBoard, targetGroup);
                 if (board != null && board.MoveGroup.Points.Count == 1 && board.GetGroupsFromStoneNeighbours(board.Move.Value, c).Count > 1 && EscapeLink(tryBoard, targetGroup))
                     return true;
+
+                //check target group
+                if (LifeCheck.GetTargets(tryBoard).All(t => targetGroup.Equals(t)) && !AtariHelper.AtariByGroup(tryBoard, targetGroup)) continue;
 
                 //check unescapable group       
                 IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, currentBoard.GetGroupLiberties(targetGroup), c.Opposite());
