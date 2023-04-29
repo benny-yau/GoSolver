@@ -1355,7 +1355,7 @@ namespace Go
             if (tryBoard.AtariTargets.Count != 1) return true;
 
             Group atariTarget = tryBoard.AtariTargets.First();
-            if (atariTarget.Points.Count != 1) return true;
+            if (!KoHelper.IsKoFight(tryBoard, atariTarget)) return true;
 
             //check neighbour groups
             Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, atariTarget, true);
@@ -2011,7 +2011,7 @@ namespace Go
             if (LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard))
                 return false;
 
-            if (opponentMove != null && NeutralPointSuicidalMove(opponentMove))
+            if (NeutralPointSuicidalMove(opponentMove))
                 return false;
 
             return true;
