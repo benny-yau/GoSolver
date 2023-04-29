@@ -327,7 +327,7 @@ namespace Go
             {
                 if (tryBoard.MoveGroupLiberties == 2 || SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                     return false;
-                if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c && tryBoard.GetGroupAt(n) != tryBoard.MoveGroup))
+                if (LinkHelper.GetMoveDiagonals(tryBoard).Any())
                     return false;
             }
 
@@ -1208,9 +1208,9 @@ namespace Go
             foreach (Board b in killBoards)
             {
                 Point p = b.Move.Value;
-                List<Point> moveGroup = b.MoveGroup.Points.ToList();
-                int maxLengthOfGrid = MaxLengthOfGrid(moveGroup);
-                int maxIntersect = moveGroup.Max(q => b.GetStoneNeighbours(q).Intersect(moveGroup).Count());
+                List<Point> movePoints = b.MoveGroup.Points.ToList();
+                int maxLengthOfGrid = MaxLengthOfGrid(movePoints);
+                int maxIntersect = movePoints.Max(q => b.GetStoneNeighbours(q).Intersect(movePoints).Count());
                 int moveGroupLiberties = b.MoveGroup.Liberties.Count;
                 list.Add(new LinkedPoint<Point>(p, new { maxLengthOfGrid, maxIntersect, moveGroupLiberties, b }));
             }
@@ -1220,9 +1220,8 @@ namespace Go
             //check for opponent break formation
             if (killerGroup.Points.Count == 2 && killerGroup.Points.Any(p => currentBoard.CornerPoint(p)))
             {
-                Board killBoard2 = killBoards.FirstOrDefault(b => OpponentBreakKillFormation(b, currentBoard));
-                if (killBoard2 != null)
-                    return killBoard2.Move.Value;
+                Board killBoard = killBoards.FirstOrDefault(b => OpponentBreakKillFormation(b, currentBoard));
+                if (killBoard != null) return killBoard.Move.Value;
             }
             return list.First().Move;
         }

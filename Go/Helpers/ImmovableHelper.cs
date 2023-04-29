@@ -213,8 +213,7 @@ namespace Go
             IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, targetGroup.Liberties, targetGroup.Content);
             foreach (Board b in moveBoards)
             {
-                if (!LinkHelper.IsAbsoluteLinkForGroups(board, b))
-                    continue;
+                if (!LinkHelper.IsAbsoluteLinkForGroups(board, b)) continue;
                 if (!ImmovableHelper.CheckConnectAndDie(b, targetGroup, false))
                     return true;
             }
@@ -232,12 +231,9 @@ namespace Go
             IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, targetGroup.Liberties, targetGroup.Content);
             foreach (Board b in moveBoards)
             {
-                if (!LinkHelper.IsAbsoluteLinkForGroups(board, b))
-                    continue;
+                if (!LinkHelper.IsAbsoluteLinkForGroups(board, b)) continue;
                 Group target = b.GetCurrentGroup(targetGroup);
-                if (target.Liberties.Count > 2)
-                    return true;
-                if (WallHelper.IsNonKillableGroup(b, target))
+                if (target.Liberties.Count > 2 || WallHelper.IsNonKillableGroup(b, target))
                     return true;
             }
             //check for atari target group other than capture point
@@ -248,9 +244,7 @@ namespace Go
                 (_, Board b) = ImmovableHelper.IsSuicidalOnCapture(board, ngroup);
                 if (b == null) continue;
                 Group target = b.GetCurrentGroup(targetGroup);
-                if (target.Liberties.Count > 2)
-                    return true;
-                if (WallHelper.IsNonKillableGroup(b, target))
+                if (target.Liberties.Count > 2 || WallHelper.IsNonKillableGroup(b, target))
                     return true;
             }
             return false;
@@ -695,7 +689,7 @@ namespace Go
                                 return true;
                         }
                         //check suicidal group
-                        if (ImmovableHelper.CheckConnectAndDie(tryBoard, group)) continue;
+                        if (ImmovableHelper.CheckConnectAndDie(tryBoard, group, false)) continue;
                         if (ImmovableHelper.ThreeLibertyConnectAndDie(currentBoard, liberty, group).Item1)
                             return true;
                         if (ImmovableHelper.CheckConnectAndDie(currentBoard, group)) return true;
@@ -726,13 +720,9 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            IEnumerable<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(move);
-            foreach (Group targetGroup in neighbourGroups)
+            IEnumerable<Group> targetGroups = tryBoard.GetGroupsFromStoneNeighbours(move).Where(gr => gr.Liberties.Count == 2);
+            foreach (Group targetGroup in targetGroups)
             {
-                //check conditions for pre-atari
-                HashSet<Point> targetLiberties = targetGroup.Liberties;
-                if (targetLiberties.Count != 2) continue;
-
                 //check connect and die
                 (_, Board board) = ConnectAndDie(tryBoard, targetGroup);
                 if (board != null && board.MoveGroup.Points.Count == 1 && board.GetGroupsFromStoneNeighbours(board.Move.Value, c).Count > 1 && EscapeLink(tryBoard, targetGroup))
