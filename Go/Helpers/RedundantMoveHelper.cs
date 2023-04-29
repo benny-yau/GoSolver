@@ -2230,12 +2230,12 @@ namespace Go
             if (GroupHelper.IncreasedKillerGroups(tryBoard, currentBoard))
                 return false;
 
-            if (!isOpponent)
-            {
-                //check eye for survival
-                Boolean eyeForSurvival = currentBoard.GetNeighbourGroups(killerGroup).Count > 1 && emptyPoints.Any(p => currentBoard.GetStoneNeighbours(p).Count(n => currentBoard[n] == Content.Empty) >= 2);
-                if (!eyeForSurvival) return true;
-            }
+            //check eye for survival
+            Boolean eyeForSurvival = currentBoard.GetNeighbourGroups(killerGroup).Count > 1 && emptyPoints.Any(p => currentBoard.GetStoneNeighbours(p).Count(n => currentBoard[n] == Content.Empty) >= 2);
+            if (eyeForSurvival) return false;
+
+            //redundant for survival
+            if (!isOpponent) return true;
 
             //check multiple groups
             List<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, emptyPoints, c.Opposite()).ToList();
