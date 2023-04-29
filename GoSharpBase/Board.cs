@@ -116,9 +116,6 @@ namespace Go
         /// </summary>
         private void SetContentAt(int x, int y, Content c)
         {
-            if (!PointWithinBoard(x, y))
-                throw new Exception("Invalid coordinate.");
-
             content[x, y] = c;
             ClearGroupCache();
         }

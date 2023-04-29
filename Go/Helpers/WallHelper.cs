@@ -13,7 +13,6 @@ namespace Go
         /// </summary>
         public static Boolean NoEyeForSurvival(Board board, Point eyePoint, Content c = Content.Unknown)
         {
-            if (!board.PointWithinBoard(eyePoint)) return false;
             c = (c == Content.Unknown) ? GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive) : c;
             if (board[eyePoint] == c || IsWall(board, eyePoint, c))
                 return true;
@@ -25,8 +24,7 @@ namespace Go
             int diagonalWallCount = 0;
             foreach (Point q in board.GetDiagonalNeighbours(eyePoint))
             {
-                if (IsWall(board, q, c))
-                    diagonalWallCount += 1;
+                if (IsWall(board, q, c)) diagonalWallCount += 1;
                 if (eyeInMiddleArea && diagonalWallCount > 1 || !eyeInMiddleArea && diagonalWallCount > 0)
                     return true;
             }
@@ -51,8 +49,7 @@ namespace Go
         public static Boolean IsWall(Board board, Point p, Content c = Content.Unknown)
         {
             c = (c == Content.Unknown) ? GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive) : c;
-            if (!(board.PointWithinBoard(p)))
-                return false;
+            if (!board.PointWithinBoard(p)) return false;
             return (IsNonKillableGroup(board, p) || board[p] != c && !board.GameInfo.IsMovablePoint[p.x, p.y]);
         }
 
@@ -61,10 +58,8 @@ namespace Go
         /// </summary>
         public static Boolean IsNonKillableGroup(Board board, Point p)
         {
-            if (GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Kill) != board[p])
-                return false;
-            Group group = board.GetGroupAt(p);
-            return IsNonKillableGroup(board, group);
+            if (GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Kill) != board[p]) return false;
+            return IsNonKillableGroup(board, board.GetGroupAt(p));
         }
 
         public static Boolean IsNonKillableGroup(Board board, Group targetGroup = null)
@@ -75,12 +70,11 @@ namespace Go
             if (group.IsNonKillable != null) return group.IsNonKillable.Value;
 
             //check if group is non killable
-            group.IsNonKillable = IsNonKillableFromSetupMoves(board, group);
-            if (group.IsNonKillable.Value)
-                return true;
+            Func<Group, Boolean> func = s => (s.IsNonKillable != null) ? s.IsNonKillable.Value : false || IsNonKillableFromSetupMoves(board, s);
+            group.IsNonKillable = func(group);
+            if (group.IsNonKillable.Value) return true;
 
             //search all connected groups if non killable
-            Func<Group, Boolean> func = s => (s.IsNonKillable != null) ? s.IsNonKillable.Value : false || IsNonKillableFromSetupMoves(board, s);
             HashSet<Group> groups = LinkHelper.GetAllDiagonalConnectedGroups(board, group, func);
             groups.Remove(group);
             Boolean nonKillable = groups.Any(s => func(s));
