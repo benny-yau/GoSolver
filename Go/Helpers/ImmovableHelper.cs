@@ -509,7 +509,8 @@ namespace Go
             else
             {
                 //check base line move
-                if (board.GetDiagonalNeighbours(eyePoint).Any(d => board[d] != c.Opposite()) && board.GetNeighbourGroups(eyeGroup).Any(n => CheckSnapback(board, n, eyeGroup)))
+                if (!board.GetDiagonalNeighbours(eyePoint).Any(d => board[d] != c.Opposite())) return false;
+                if (board.GetNeighbourGroups(eyeGroup).Any(n => CheckSnapback(board, n, eyeGroup)))
                     return true;
             }
             return false;
@@ -521,6 +522,7 @@ namespace Go
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31493" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B31_4" />
         /// Two point move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234" />
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16924" />
         /// </summary>
         public static Boolean CheckSnapback(Board board, Group target, Group eyeGroup)
         {
@@ -530,12 +532,15 @@ namespace Go
             foreach (Board b in moveBoards)
             {
                 if (!b.IsAtariMove) continue;
+                //capture suicide group
                 List<Group> groups = AtariHelper.AtariByGroup(target, b).Where(n => !n.Equals(b.GetCurrentGroup(eyeGroup))).ToList();
                 if (groups.Count != 1) continue;
                 Board b2 = ImmovableHelper.CaptureSuicideGroup(b, groups.First());
                 if (b2 == null || b2.MoveGroup.Points.Count == 1 || b2.MoveGroupLiberties != 1) continue;
+                //capture eye group
                 Board b3 = ImmovableHelper.CaptureSuicideGroup(b, eyeGroup);
                 if (b3 == null) continue;
+                //escape suicide group
                 Board escapeBoard = MakeMoveAtLiberty(b3, groups.First(), c.Opposite());
                 if (escapeBoard != null && !ImmovableHelper.CheckConnectAndDie(escapeBoard))
                     return true;
@@ -583,7 +588,8 @@ namespace Go
 
         public static Boolean CheckConnectAndDie(Board board, Group targetGroup = null, Boolean koEnabled = true)
         {
-            if (targetGroup != null && board.GetGroupLiberties(targetGroup).Count == 1) return true;
+            targetGroup = (targetGroup) ?? board.MoveGroup;
+            if (board.GetGroupLiberties(targetGroup).Count == 1) return true;
             return ConnectAndDie(board, targetGroup, koEnabled).Item1;
         }
 
