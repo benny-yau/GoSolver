@@ -535,14 +535,15 @@ namespace Go
                 //capture suicide group
                 List<Group> groups = AtariHelper.AtariByGroup(target, b).Where(n => !n.Equals(b.GetCurrentGroup(eyeGroup)) && !KoHelper.IsKoFight(b, n)).ToList();
                 if (groups.Count != 1) continue;
-                Board b2 = ImmovableHelper.CaptureSuicideGroup(b, groups.First());
+                Group suicideGroup = groups.First();
+                Board b2 = ImmovableHelper.CaptureSuicideGroup(b, suicideGroup);
                 if (b2 == null || b2.MoveGroup.Points.Count == 1 || b2.MoveGroupLiberties != 1) continue;
                 //capture eye group
                 Board b3 = ImmovableHelper.CaptureSuicideGroup(b, eyeGroup);
                 if (b3 == null) continue;
                 //escape suicide group
-                Board escapeBoard = MakeMoveAtLiberty(b3, groups.First(), c.Opposite());
-                if (escapeBoard != null && !ImmovableHelper.CheckConnectAndDie(escapeBoard))
+                Board escapeBoard = MakeMoveAtLiberty(b3, suicideGroup, c.Opposite());
+                if (escapeBoard != null && !ImmovableHelper.CheckConnectAndDie(escapeBoard, escapeBoard.MoveGroup, false))
                     return true;
             }
             return false;
