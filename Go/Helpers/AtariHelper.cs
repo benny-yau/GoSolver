@@ -83,7 +83,7 @@ namespace Go
                     return false;
 
                 //make move at liberty
-                (_, Board escapeBoard) = ImmovableHelper.IsSuicidalMove(targetGroup.Liberties.First(), targetGroup.Content, board);
+                Board escapeBoard = ImmovableHelper.MakeMoveAtLiberty(board, targetGroup, targetGroup.Content);
                 if (escapeBoard != null && !ImmovableHelper.CheckConnectAndDie(escapeBoard, targetGroup) && !board.AtariTargets.Any(t => escapeBoard.GetGroupLiberties(t).Count == 1))
                     return false;
             }

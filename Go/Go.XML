@@ -769,6 +769,7 @@
             Check snapback from move.
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234" />
             <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A55" />
+            Check base line move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16851" /> 
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.CheckSnapback(Go.Board,Go.Group,Go.Group)">

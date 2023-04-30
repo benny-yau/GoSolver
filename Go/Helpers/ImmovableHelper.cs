@@ -286,8 +286,7 @@ namespace Go
         {
             Content c = targetGroup.Content;
             Group group = tryBoard.GetCurrentGroup(targetGroup);
-            Point? libertyPoint = ImmovableHelper.GetLibertyPoint(tryBoard, group);
-            if (libertyPoint == null) return (false, null);
+            if (group.Liberties.Count != 1) return (false, null);
 
             //check escape by capture
             Board captureBoard = EscapeByCapture(tryBoard, group, koEnabled);
@@ -295,11 +294,10 @@ namespace Go
                 return (false, captureBoard);
 
             //make move at liberty
-            (Boolean isSuicidal, Board escapeBoard) = IsSuicidalMove(libertyPoint.Value, c, tryBoard);
-            if (isSuicidal) return (true, escapeBoard);
+            Board escapeBoard = MakeMoveAtLiberty(tryBoard, group, c);
 
             //recursive connect and die
-            if (CheckConnectAndDie(escapeBoard, group, !koEnabled))
+            if (escapeBoard == null || CheckConnectAndDie(escapeBoard, group, !koEnabled))
                 return (true, escapeBoard);
 
             return (false, escapeBoard);
@@ -489,6 +487,7 @@ namespace Go
         /// Check snapback from move.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A55" />
+        /// Check base line move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16851" /> 
         /// </summary>
         public static Boolean CheckSnapbackFromMove(Board board, Point? eyePoint = null)
         {
@@ -497,13 +496,23 @@ namespace Go
             Group eyeGroup = board.GetGroupAt(eyePoint.Value);
             if (eyeGroup.Liberties.Count != 1) return false;
 
-            //check three opponent groups
-            if (!KillerFormationHelper.ThreeOpponentGroupsAtMove(board, eyePoint)) return false;
-            List<Point> stoneNeighbours = board.GetStoneNeighbours(eyePoint).Where(n => board[n] == c.Opposite()).ToList();
-            Point middleStone = stoneNeighbours.First(n => board.GetDiagonalNeighbours(n).Count(d => stoneNeighbours.Contains(d)) >= 2);
-            Group target = board.GetGroupAt(middleStone);
-
-            return CheckSnapback(board, target, eyeGroup);
+            if (board.PointWithinMiddleArea(eyePoint.Value))
+            {
+                //check three opponent groups
+                if (!KillerFormationHelper.ThreeOpponentGroupsAtMove(board, eyePoint)) return false;
+                List<Point> stoneNeighbours = board.GetStoneNeighbours(eyePoint).Where(n => board[n] == c.Opposite()).ToList();
+                Point middleStone = stoneNeighbours.First(n => board.GetDiagonalNeighbours(n).Count(d => stoneNeighbours.Contains(d)) >= 2);
+                Group target = board.GetGroupAt(middleStone);
+                if (CheckSnapback(board, target, eyeGroup))
+                    return true;
+            }
+            else
+            {
+                //check base line move
+                if (board.GetDiagonalNeighbours(eyePoint).Any(d => board[d] != c.Opposite()) && board.GetNeighbourGroups(eyeGroup).Any(n => CheckSnapback(board, n, eyeGroup)))
+                    return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -517,7 +526,6 @@ namespace Go
         {
             Content c = target.Content;
             if (target.Points.Count == 1 || target.Liberties.Count != 2) return false;
-
             IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, target.Liberties, c.Opposite());
             foreach (Board b in moveBoards)
             {
@@ -525,10 +533,12 @@ namespace Go
                 List<Group> groups = AtariHelper.AtariByGroup(target, b).Where(n => !n.Equals(b.GetCurrentGroup(eyeGroup))).ToList();
                 if (groups.Count != 1) continue;
                 Board b2 = ImmovableHelper.CaptureSuicideGroup(b, groups.First());
-                if (b2 == null || b2.MoveGroupLiberties != 1) continue;
+                if (b2 == null || b2.MoveGroup.Points.Count == 1 || b2.MoveGroupLiberties != 1) continue;
                 Board b3 = ImmovableHelper.CaptureSuicideGroup(b, eyeGroup);
-                if (b3 != null && ImmovableHelper.UnescapableGroup(b3, groups.First(), false).Item1) continue;
-                return true;
+                if (b3 == null) continue;
+                Board escapeBoard = MakeMoveAtLiberty(b3, groups.First(), c.Opposite());
+                if (escapeBoard != null && !ImmovableHelper.CheckConnectAndDie(escapeBoard))
+                    return true;
             }
             return false;
         }
@@ -573,6 +583,7 @@ namespace Go
 
         public static Boolean CheckConnectAndDie(Board board, Group targetGroup = null, Boolean koEnabled = true)
         {
+            if (targetGroup != null && board.GetGroupLiberties(targetGroup).Count == 1) return true;
             return ConnectAndDie(board, targetGroup, koEnabled).Item1;
         }
 
