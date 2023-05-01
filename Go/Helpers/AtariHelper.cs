@@ -84,7 +84,7 @@ namespace Go
 
                 //make move at liberty
                 Board escapeBoard = ImmovableHelper.MakeMoveAtLiberty(board, targetGroup, targetGroup.Content);
-                if (escapeBoard != null && !ImmovableHelper.CheckConnectAndDie(escapeBoard, targetGroup, false) && !board.AtariTargets.Any(t => escapeBoard.GetGroupLiberties(t).Count == 1))
+                if (escapeBoard != null && escapeBoard.MoveGroupLiberties > 1 && !board.AtariTargets.Any(t => escapeBoard.GetGroupLiberties(t).Count == 1))
                     return false;
             }
             return true;

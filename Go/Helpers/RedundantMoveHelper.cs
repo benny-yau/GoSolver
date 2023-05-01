@@ -299,7 +299,7 @@ namespace Go
         private static Boolean SuicideGroupNearCapture(Board board)
         {
             if (board.MoveGroupLiberties < 2 || board.MoveGroupLiberties > 3) return false;
-            if (ImmovableHelper.CheckConnectAndDie(board)) return false;
+            if (ImmovableHelper.CheckConnectAndDie(board, board.MoveGroup, false)) return false;
             foreach (Group ngroup in board.GetNeighbourGroups())
             {
                 if (ngroup.Liberties.Count > 2 || WallHelper.IsNonKillableGroup(board, ngroup)) continue;
@@ -2240,7 +2240,7 @@ namespace Go
             //check multiple groups
             List<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, emptyPoints, c.Opposite()).ToList();
             List<Board> multipleGroups = moveBoards.Where(b => !GroupHelper.IsSingleGroupWithinKillerGroup(b, b.MoveGroup, false)).ToList();
-            if (multipleGroups.Any(b => !ImmovableHelper.CheckConnectAndDie(b))) return false;
+            if (multipleGroups.Any(b => !ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false))) return false;
 
             //check for dead formation
             if (moveBoards.Any(b => KillerFormationHelper.DeadFormationInBothAlive(b, killerGroup)))
