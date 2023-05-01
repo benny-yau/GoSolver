@@ -340,7 +340,7 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             if (tryBoard.AtariTargets.Count != 1 || tryMove.AtariResolved || tryBoard.MoveGroupLiberties == 1 || tryBoard.CapturedList.Count > 0) return false;
             Group atariTarget = tryBoard.AtariTargets.First();
-            Point atariPoint = atariTarget.Points.First();
+            Point atariPoint = tryBoard.GetStoneNeighbours().First(n => tryBoard[n] == c.Opposite() && tryBoard.GetGroupAt(n).Equals(atariTarget));
 
             Point q = atariTarget.Liberties.First();
             if (!KillerFormationHelper.IsFirstPoint(currentBoard, q, move)) return false;
@@ -348,6 +348,9 @@ namespace Go
             //check killer group
             Group killerGroup = GroupHelper.GetKillerGroupOfNeighbourGroups(currentBoard, atariPoint, c);
             if (killerGroup == null || currentBoard.GetNeighbourGroups(killerGroup).Any(n => n.Liberties.Count <= 2))
+                return false;
+
+            if (!GroupHelper.IsSingleGroupWithinKillerGroup(currentBoard, atariTarget))
                 return false;
 
             //ensure target group cannot escape
