@@ -169,13 +169,13 @@ namespace Go
         /// </summary>
         public static Boolean DoubleTigerMouthLink(Board board, Board b, Point tigerMouth, Point libertyPoint, Boolean lifeCheck = false)
         {
-            Content c = b.MoveGroup.Content.Opposite();
+            Content c = b.MoveGroup.Content;
+            if (b.MoveGroupLiberties <= 3) return false;
             if (board[tigerMouth] != Content.Empty || board[libertyPoint] != Content.Empty) return false;
             //get all stone neigbours of liberty
             List<Point> diagonals = board.GetStoneNeighbours(libertyPoint);
             diagonals.Remove(tigerMouth);
-            diagonals = diagonals.Where(d => LinkHelper.IsTigerMouthForLink(board, d, c, !lifeCheck)).ToList();
-            if (diagonals.Any() && b.MoveGroupLiberties > 3)
+            if (diagonals.Any(d => LinkHelper.IsTigerMouthForLink(board, d, c.Opposite(), !lifeCheck)))
                 return true;
             return false;
         }
