@@ -2285,9 +2285,6 @@
             Check for another tiger mouth at move <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_10" />
             Check for link breakage <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_2" />
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_Nie60_2" />
-            Link breakage for pre atari groups <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_2" />
-            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_3" />
-            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_4" />
             </summary>
         </member>
         <member name="M:Go.LifeCheck.DoubleTigerMouthLink(Go.Board,Go.Board,Go.Point,Go.Point,System.Boolean)">

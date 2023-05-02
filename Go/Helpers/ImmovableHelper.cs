@@ -34,6 +34,11 @@ namespace Go
             return (FindTigerMouth(board, p, c) != null);
         }
 
+        public static Boolean FindEmptyTigerMouth(Board board, Content c, Point p)
+        {
+            return board[p] == Content.Empty && FindTigerMouth(board, p, c) != null;
+        }
+
         /// <summary>
         /// Get diagonals of tiger mouth.
         /// </summary>

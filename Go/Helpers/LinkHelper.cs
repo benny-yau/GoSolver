@@ -642,7 +642,7 @@ namespace Go
         /// </summary>
         public static Boolean IsTigerMouthForLink(Board board, Point p, Content c, Boolean checkDiagonals = true)
         {
-            if (board[p] != Content.Empty || !ImmovableHelper.FindTigerMouth(board, c, p)) return false;
+            if (!ImmovableHelper.FindEmptyTigerMouth(board, c, p)) return false;
             //ensure more than one group
             if (board.GetGroupsFromStoneNeighbours(p, c.Opposite()).Count() == 1) return false;
             //check if diagonals are immovable
