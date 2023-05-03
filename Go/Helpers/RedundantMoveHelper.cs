@@ -1392,10 +1392,12 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Board currentBoard = tryMove.CurrentGame.Board;
             Board opponentBoard = opponentMove.TryGame.Board;
+            Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
 
             //neutral point at small tiger mouth
-            if (opponentBoard.GetStoneNeighbours().Where(n => EyeHelper.FindEye(opponentBoard, n, c.Opposite())).Any(n => !StrongGroupsAtMustHaveMove(tryBoard, n)))
+            List<Point> eyePoint = opponentBoard.GetStoneNeighbours().Where(n => EyeHelper.FindEye(opponentBoard, n, c.Opposite())).ToList();
+            if (eyePoint.Any(n => !StrongGroupsAtMustHaveMove(tryBoard, n) || tryBoard.GetDiagonalNeighbours(n).Any(d => EyeHelper.FindUncoveredEye(tryBoard, d, c.Opposite()))))
                 return true;
 
             //neutral point at big tiger mouth
