@@ -119,5 +119,12 @@ namespace Go
             return false;
         }
 
+        /// <summary>
+        /// Is atari without suicide.
+        /// </summary>
+        public static Boolean IsAtariWithoutSuicide(Board tryBoard)
+        {
+            return tryBoard.AtariTargets.Count > 0 && !ImmovableHelper.IsSuicidalWithoutKo(tryBoard);
+        }
     }
 }

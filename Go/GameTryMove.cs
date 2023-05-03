@@ -58,8 +58,7 @@ namespace Go
         {
             get
             {
-                Board tryBoard = this.TryGame.Board;
-                return tryBoard.AtariTargets.Count > 0 && !ImmovableHelper.IsSuicidalWithoutKo(tryBoard);
+                return AtariHelper.IsAtariWithoutSuicide(TryGame.Board);
             }
         }
 
