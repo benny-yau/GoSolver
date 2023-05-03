@@ -185,7 +185,7 @@ namespace Go
             Board b2 = b.MakeMoveOnNewBoard(tigerMouth, c.Opposite(), true);
             if (b2 == null) return false;
             IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(b2, b2.GetGroupLiberties(b.MoveGroup), c);
-            if (moveBoards.Any(n => AtariHelper.IsAtariWithoutSuicide(n) || n.CapturedList.Count > 0))
+            if (moveBoards.Any(n => !GameTryMove.IsNegligibleForBoard(n, b2)))
                 return true;
             if (moveBoards.Any(n => n.MoveGroupLiberties > 1 && LinkHelper.IsAbsoluteLinkForGroups(b2, n) && b2.GetCurrentGroup(b.MoveGroup).Liberties.Any(s => ImmovableHelper.FindTigerMouth(b2, c.Opposite(), s))))
                 return true;
