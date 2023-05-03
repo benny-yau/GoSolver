@@ -138,13 +138,13 @@ namespace Go
             if (threatGroup != null)
             {
                 //check for two threat groups
-                if (LinkHelper.IsAbsoluteLinkForGroups(board, b) && LinkHelper.GetPreviousMoveGroup(board, b).Any(t => t.Liberties.Count == 2 && !t.Equals(threatGroup) && t.Liberties.Any(l => ImmovableHelper.FindTigerMouth(board, c, l))))
+                if (CheckForPossibleThreatGroup(b, board, tigerMouth, false))
                     return true;
 
                 //check for another tiger mouth at move
                 if (b.GetStoneNeighbours().Any(n => LinkHelper.IsTigerMouthForLink(board, n, c, !lifeCheck)))
                 {
-                    if (b.MoveGroupLiberties > 3 || CheckForPossibleThreatGroup(b, tigerMouth))
+                    if (b.MoveGroupLiberties > 3 || CheckForPossibleThreatGroup(b, board, tigerMouth))
                         return true;
                 }
 
@@ -157,7 +157,7 @@ namespace Go
             List<Point> stoneNeighbours = LinkHelper.GetNeighboursDiagonallyLinked(b);
             if (b.GetDiagonalNeighbours().Any(n => b[n] != c && b.GetStoneNeighbours(n).Intersect(stoneNeighbours).Count() >= 2 && !ImmovableHelper.IsImmovablePoint(b, n, c)))
             {
-                if (b.MoveGroupLiberties > 2 || CheckForPossibleThreatGroup(b, tigerMouth))
+                if (b.MoveGroupLiberties > 2 || CheckForPossibleThreatGroup(b, board, tigerMouth))
                     return true;
             }
 
@@ -166,7 +166,7 @@ namespace Go
             diagonals.Remove(tigerMouth);
             if (diagonals.Any(d => LinkHelper.IsTigerMouthForLink(board, d, c, !lifeCheck)))
             {
-                if (b.MoveGroupLiberties > 3 || CheckForPossibleThreatGroup(b, tigerMouth))
+                if (b.MoveGroupLiberties > 3 || CheckForPossibleThreatGroup(b, board, tigerMouth))
                     return true;
             }
             return false;
@@ -175,13 +175,21 @@ namespace Go
         /// <summary>
         /// Check for possible threat group.
         /// </summary>
-        public static Boolean CheckForPossibleThreatGroup(Board b, Point tigerMouth)
+        public static Boolean CheckForPossibleThreatGroup(Board b, Board board, Point tigerMouth, Boolean checkSecondMove = true)
         {
             Content c = b.MoveGroup.Content;
-            List<Point> moves = b.MoveGroup.Liberties.ToList();
+            if (LinkHelper.IsAbsoluteLinkForGroups(board, b) && b.MoveGroup.Liberties.Any(s => !s.Equals(tigerMouth) && ImmovableHelper.FindTigerMouth(board, c.Opposite(), s)))
+                return true;
+            if (!checkSecondMove) return false;
+
             Board b2 = b.MakeMoveOnNewBoard(tigerMouth, c.Opposite(), true);
             if (b2 == null) return false;
-            return GameHelper.GetMoveBoards(b2, moves, c).Any(n => n != null && (AtariHelper.IsAtariWithoutSuicide(n) || n.CapturedList.Count > 0 || (n.MoveGroupLiberties > 1 && LinkHelper.IsAbsoluteLinkForGroups(b2, n))));
+            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(b2, b2.GetGroupLiberties(b.MoveGroup), c);
+            if (moveBoards.Any(n => AtariHelper.IsAtariWithoutSuicide(n) || n.CapturedList.Count > 0))
+                return true;
+            if (moveBoards.Any(n => n.MoveGroupLiberties > 1 && LinkHelper.IsAbsoluteLinkForGroups(b2, n) && b2.GetCurrentGroup(b.MoveGroup).Liberties.Any(s => ImmovableHelper.FindTigerMouth(b2, c.Opposite(), s))))
+                return true;
+            return false;
         }
 
         /// <summary>
