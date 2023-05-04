@@ -188,10 +188,18 @@ namespace Go
             if (b2 == null) return false;
             //make second move
             IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(b2, b2.GetGroupLiberties(b.MoveGroup), c);
-            if (moveBoards.Any(n => !GameTryMove.IsNegligibleForBoard(n, b2)))
-                return true;
             if (moveBoards.Any(n => n.MoveGroupLiberties > maxLiberties.Value))
                 return true;
+            if (moveBoards.Any(n => !GameTryMove.IsNegligibleForBoard(n, b2)))
+                return true;
+
+            //check for link breakage
+            foreach (Board b3 in moveBoards.Where(n => n.MoveGroupLiberties >= 2))
+            {
+                List<Point> stoneNeighbours = LinkHelper.GetNeighboursDiagonallyLinked(b3);
+                if (b3.GetDiagonalNeighbours().Any(n => b3[n] != c && b3.GetStoneNeighbours(n).Intersect(stoneNeighbours).Count() >= 2 && !ImmovableHelper.IsImmovablePoint(b3, n, c)))
+                    return true;
+            }
             return false;
         }
 
