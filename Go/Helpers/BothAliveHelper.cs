@@ -200,7 +200,7 @@ namespace Go
         /// With diagonal group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan22" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_20230422_8" />
         /// Without diagonal group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A123" />
-        /// Check suicidal for both players and not ko move at liberty <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
+        /// Check suicidal for both players and covered eye move at liberty <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18" />
         /// Find uncovered eye <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_ComplexSeki" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan22" />
@@ -217,15 +217,17 @@ namespace Go
             if (targetGroups.Any(n => n.Liberties.Count(p => GroupHelper.GetKillerGroupFromCache(board, p, c.Opposite()) != null) < 2))
                 return false;
 
-            //check suicidal for both players and not ko move at liberty
-            if (!targetGroups.Any(gr => gr.Liberties.Any(liberty => ImmovableHelper.IsSuicidalMoveForBothPlayers(board, liberty) || board.GetStoneNeighbours(liberty).Any(n => board[n] == c && board.GetGroupAt(n).Points.Count == 1 && board.GetStoneNeighbours(n).Any(s => EyeHelper.FindEye(board, s, c))))))
+            //check suicidal for both players and covered eye move at liberty
+            HashSet<Point> liberties = board.GetLibertiesOfGroups(targetGroups);
+            Boolean suicidalForBothPlayers = liberties.Any(n => ImmovableHelper.IsSuicidalMoveForBothPlayers(board, n));
+            if (!suicidalForBothPlayers && !liberties.Any(n => board.GetGroupsFromStoneNeighbours(n, c.Opposite()).Any(gr => gr.Liberties.Any(s => EyeHelper.FindCoveredEyeWithLiberties(board, s, c)))))
                 return false;
 
             //ensure at least one liberty shared with killer group
             foreach (Group killerGroup in killerGroups)
             {
                 IEnumerable<Point> killerLiberties = killerGroup.Points.Where(p => board[p] == Content.Empty);
-                Boolean sharedLiberty = targetGroups.All(group => group.Liberties.Intersect(killerLiberties).Any());
+                Boolean sharedLiberty = targetGroups.All(gr => gr.Liberties.Intersect(killerLiberties).Any());
                 if (!sharedLiberty)
                     return false;
             }

@@ -87,6 +87,13 @@ namespace Go
             return false;
         }
 
+        public static Boolean FindCoveredEyeWithLiberties(Board board, Point eye, Content c)
+        {
+            if (FindCoveredEye(board, eye, c) && board.GetGroupsFromStoneNeighbours(eye, c.Opposite()).All(e => e.Liberties.Count > 1))
+                return true;
+            return false;
+        }
+
         /// <summary>
         /// Find covered eye within empty space after capture.
         /// </summary>

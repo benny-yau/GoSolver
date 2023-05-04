@@ -717,7 +717,7 @@ namespace Go
                             return true;
                         if (ImmovableHelper.CheckConnectAndDie(currentBoard, group)) return true;
                         //check covered eye suicidal group
-                        if (EyeHelper.FindCoveredEye(currentBoard, liberty, c) && EyeHelper.FindCoveredEye(currentBoard, move, c) && !KoHelper.IsKoFight(currentBoard, move, c).Item1)
+                        if (EyeHelper.FindCoveredEye(currentBoard, liberty, c) && EyeHelper.FindCoveredEyeWithLiberties(currentBoard, move, c))
                             return true;
                     }
                 }
