@@ -756,7 +756,7 @@ namespace Go
                 IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, currentBoard.GetGroupLiberties(targetGroup), c.Opposite());
                 foreach (Board b in moveBoards)
                 {
-                    if (!b.AtariTargets.Any(t => UnescapableGroup(b, t, false).Item1)) continue;
+                    if (!b.AtariTargets.Any(t => UnescapableGroup(b, t).Item1)) continue;
                     if (IsSuicidalMoveForBothPlayers(tryBoard, b.Move.Value))
                         return true;
                 }
