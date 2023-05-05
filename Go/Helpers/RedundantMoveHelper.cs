@@ -1922,7 +1922,7 @@ namespace Go
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16605" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A28" />
         /// Check for liberty fight <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221220_7" />
-        /// Check for diagonal move liberty <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20230505_8" />
+        /// Check for killer group <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20230505_8" />
         /// </summary>
         private static Boolean TigerMouthWithoutDiagonalMouth(GameTryMove tryMove, Board capturedBoard)
         {
@@ -1952,13 +1952,9 @@ namespace Go
             if (groups.Any(n => LinkHelper.FindDiagonalCut(capturedBoard, n).Item1 != null))
                 return false;
 
-            //check for diagonal move liberty
+            //check for killer group
             if (GroupHelper.GetKillerGroupOfNeighbourGroups(tryBoard, move, c.Opposite()) == null)
-            {
-                List<Point> diagonalPoints = ImmovableHelper.GetDiagonalsOfTigerMouth(tryBoard, move, c.Opposite()).Where(e => tryBoard[e] == Content.Empty).ToList();
-                if (diagonalPoints.Any(n => !tryBoard.GetStoneNeighbours(n).Any(s => tryBoard[s] == Content.Empty)))
-                    return false;
-            }
+                return false;
             return true;
         }
 
