@@ -528,6 +528,7 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B31_4" />
         /// Two point move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234" />
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16924" />
+        /// Escape suicide group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3dan17_2" />
         /// </summary>
         public static Boolean CheckSnapback(Board board, Group target, Group eyeGroup)
         {
@@ -548,7 +549,7 @@ namespace Go
                 if (b3 == null) continue;
                 //escape suicide group
                 Board escapeBoard = MakeMoveAtLiberty(b3, suicideGroup, c.Opposite());
-                if (escapeBoard != null && !ImmovableHelper.CheckConnectAndDie(escapeBoard, escapeBoard.MoveGroup, false))
+                if (escapeBoard != null && LinkHelper.IsAbsoluteLinkForGroups(b3, escapeBoard))
                     return true;
             }
             return false;
