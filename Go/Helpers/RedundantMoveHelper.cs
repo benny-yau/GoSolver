@@ -1953,7 +1953,7 @@ namespace Go
                 return false;
 
             //check for killer group
-            if (GroupHelper.GetKillerGroupOfNeighbourGroups(tryBoard, move, c.Opposite()) == null)
+            if (!GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard, tryBoard.MoveGroup, false))
                 return false;
             return true;
         }
