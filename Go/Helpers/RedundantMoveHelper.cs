@@ -118,16 +118,24 @@ namespace Go
             if (eyeGroup == null) return false;
             if (tryBoard.CapturedList.Any(gr => !eyeGroup.Points.Contains(gr.Points.First()))) return false;
 
+            //check no eye for survival
+            if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(tryBoard))
+                return false;
+
             //check eye for survival
-            if (eyeGroup.Points.Any(e => tryBoard.GetDiagonalNeighbours(e).Any(n => !WallHelper.NoEyeForSurvival(tryBoard, n, c) && !EyeHelper.FindRealEyeWithinEmptySpace(currentBoard, n, c))))
+            Point p = eyeGroup.Points.Count == 1 ? eyePoint : eyeGroup.Points.First(n => !n.Equals(eyePoint));
+            List<Point> diagonals = tryBoard.GetDiagonalNeighbours(p).Where(n => !WallHelper.NoEyeForSurvival(tryBoard, n, c)).ToList();
+            if (diagonals.Any(n => !EyeHelper.FindRealEyeWithinEmptySpace(currentBoard, n, c)))
+                return false;
+
+            //check for weak groups
+            Board b2 = currentBoard;
+            if (opponentTryMove != null) b2 = opponentTryMove.TryGame.Board;
+            if (diagonals.Count > 1 && b2.GetGroupsFromStoneNeighbours(eyePoint, c).Count(n => n.Liberties.Count <= 2) >= 2)
                 return false;
 
             //check kill opponent
             if (tryBoard.GetStoneAndDiagonalNeighbours().Append(move).Any(n => !WallHelper.NoEyeForSurvival(currentBoard, n, c.Opposite())))
-                return false;
-
-            //check no eye for survival
-            if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(tryBoard))
                 return false;
 
             //check two liberty group to capture neighbour
@@ -1362,6 +1370,7 @@ namespace Go
         /// </summary>
         private static Boolean EssentialAtariAtCoveredEye(GameTryMove tryMove)
         {
+            Content c = tryMove.MoveContent;
             Board tryBoard = tryMove.TryGame.Board;
             if (tryMove.AtariResolved || tryBoard.CapturedList.Count > 0 || tryBoard.MoveGroupLiberties == 1) return true;
             if (tryBoard.AtariTargets.Count != 1) return true;
@@ -1371,9 +1380,9 @@ namespace Go
 
             //check neighbour groups
             Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, atariTarget, true);
-            if (b != null && !WallHelper.StrongNeighbourGroups(b))
-                return true;
-            return false;
+            if (b == null || WallHelper.StrongNeighbourGroups(b)) return false;
+            if (b.GetDiagonalNeighbours().Any(d => EyeHelper.FindUncoveredEye(b, d, c.Opposite()))) return false;
+            return true;
         }
 
         /// <summary>
