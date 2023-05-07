@@ -675,6 +675,18 @@ namespace Go
             Content c = tryMove.MoveContent;
 
             if (tryBoard.MoveGroup.Points.Count != 1 || !tryMove.IsNegligible) return false;
+
+            //check liberty surrounded by opponent
+            if (KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
+                return false;
+
+            //check diagonals immovable
+            if (tryBoard.GetDiagonalNeighbours().All(n => ImmovableHelper.IsImmovablePoint(tryBoard, n, c.Opposite())))
+            {
+                if (!tryBoard.MoveGroup.Liberties.Any(n => tryBoard.GetStoneNeighbours(n).Any(s => tryBoard[s] == c && !s.Equals(move))))
+                    return true;
+            }
+
             //ensure killer group contains only try move
             if (!GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard))
                 return false;
@@ -683,9 +695,6 @@ namespace Go
             if (!ImmovableHelper.CheckCaptureSecure(captureBoard, tryBoard.MoveGroup))
                 return false;
 
-            //check liberty surrounded by opponent
-            if (KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
-                return false;
 
             //ensure all strong neighbour groups
             if (WallHelper.StrongNeighbourGroups(captureBoard, move, c))
