@@ -373,6 +373,19 @@ namespace Go
             if (!ImmovableHelper.CheckCaptureSecure(board, board.GetGroupAt(atariPoint), true))
                 return false;
 
+            //check weak group
+            List<Group> ngroups = tryBoard.GetNeighbourGroups(atariTarget);
+            if (ngroups.Count > 1 && tryBoard.MoveGroup.Liberties.Count == 2)
+            {
+                foreach (Point p in tryBoard.MoveGroup.Liberties.Where(n => !n.Equals(q)))
+                {
+                    Board b = tryBoard.MakeMoveOnNewBoard(p, c.Opposite(), true);
+                    if (b != null && !GameTryMove.IsNegligibleForBoard(b, tryBoard, s => !ngroups.Contains(s)))
+                        return false;
+                    if (tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Count(n => !ngroups.Contains(n)) >= 2)
+                        return false;
+                }
+            }
             return true;
         }
 
@@ -413,6 +426,7 @@ namespace Go
                 if (!singlePoint && MultiPointOpponentSuicidalMove(tryMove, opponentMove))
                     return true;
             }
+
             if (SuicidalMoveWithinNonKillableGroup(opponentMove, tryMove))
                 return true;
             return false;
@@ -687,6 +701,7 @@ namespace Go
             //check liberty surrounded by opponent
             if (KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                 return false;
+
 
             //ensure killer group contains only try move
             if (!GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard))
