@@ -688,13 +688,6 @@ namespace Go
             if (KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                 return false;
 
-            //check diagonals immovable
-            if (tryBoard.GetDiagonalNeighbours().All(n => ImmovableHelper.IsImmovablePoint(tryBoard, n, c.Opposite())))
-            {
-                if (!tryBoard.MoveGroup.Liberties.Any(n => tryBoard.GetStoneNeighbours(n).Any(s => tryBoard[s] == c && !s.Equals(move))))
-                    return true;
-            }
-
             //ensure killer group contains only try move
             if (!GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard))
                 return false;
