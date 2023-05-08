@@ -386,6 +386,8 @@ namespace Go
                     List<Point> npoints = b.GetStoneAndDiagonalNeighbours().Where(n => b[n] == c).ToList();
                     if (b.GetGroupsFromPoints(npoints).Any(n => !ngroups.Contains(n)))
                         return false;
+                    if (LinkHelper.CheckForKoBreak(b))
+                        return false;
                 }
             }
             return true;

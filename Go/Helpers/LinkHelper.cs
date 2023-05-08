@@ -694,5 +694,18 @@ namespace Go
             if (stoneNeighbours.Count != 2 || stoneNeighbours.Any(n => tryBoard.PointWithinMiddleArea(n))) return false;
             return true;
         }
+
+        /// <summary>
+        /// Check for ko break.
+        /// </summary>
+        public static Boolean CheckForKoBreak(Board b)
+        {
+            Content c = b.MoveGroup.Content;
+            if (b.GetStoneNeighbours().Any(n => ImmovableHelper.FindEmptyTigerMouth(b, c, n) && b.GetStoneNeighbours(n).Any(s => ImmovableHelper.FindEmptyTigerMouth(b, c.Opposite(), s))))
+                return true;
+            if (b.GetStoneNeighbours().Any(n => b[n] == c.Opposite() && KoHelper.IsKoFight(b, b.GetGroupAt(n))))
+                return true;
+            return false;
+        }
     }
 }

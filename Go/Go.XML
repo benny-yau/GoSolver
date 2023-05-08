@@ -1325,6 +1325,11 @@
             Check base line leap link.
             </summary>
         </member>
+        <member name="M:Go.LinkHelper.CheckForKoBreak(Go.Board)">
+            <summary>
+            Check for ko break.
+            </summary>
+        </member>
         <member name="M:Go.RedundantMoveHelper.FindPotentialEye(Go.GameTryMove)">
             <summary>
             Find potential eye that should not be filled. 

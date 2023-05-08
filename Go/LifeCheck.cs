@@ -148,8 +148,8 @@ namespace Go
                         return true;
                 }
 
-                //check for tiger mouth created for ko
-                if (b.GetStoneNeighbours().Any(n => ImmovableHelper.FindEmptyTigerMouth(b, c.Opposite(), n) && b.GetStoneNeighbours(n).Any(s => ImmovableHelper.FindEmptyTigerMouth(b, c, s))))
+                //check for ko break
+                if (LinkHelper.CheckForKoBreak(b))
                     return true;
             }
 
@@ -169,7 +169,7 @@ namespace Go
                 if (b.MoveGroupLiberties > 3 || CheckForPossibleThreatGroup(b, board, tigerMouth))
                 {
                     Board b2 = b.MakeMoveOnNewBoard(tigerMouth, c, true);
-                    if (b2 != null && diagonals.All(n => b2.GetGroupsFromStoneNeighbours(n, c.Opposite()).All(s => WallHelper.IsNonKillableGroup(b2, s))))
+                    if (b2 != null && diagonals.All(n => b2.GetGroupsFromStoneNeighbours(n, c.Opposite()).All(s => WallHelper.IsNonKillableGroup(b2, s)) && b2.GetNeighbourGroups(b.MoveGroup).All(t => WallHelper.IsHostileNeighbourGroup(b2, t))))
                         return false;
                     return true;
                 }
@@ -191,9 +191,15 @@ namespace Go
             //fill tiger mouth
             Board b2 = b.MakeMoveOnNewBoard(tigerMouth, c.Opposite(), true);
             if (b2 == null) return false;
+
             //make second move
             IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(b2, b2.GetGroupLiberties(b.MoveGroup), c);
             if (moveBoards.Any(n => n.MoveGroupLiberties > 1 || !GameTryMove.IsNegligibleForBoard(n, b2)))
+                return true;
+
+            //check neighbour groups
+            Group moveGroup = b2.GetCurrentGroup(b.MoveGroup);
+            if (moveGroup.Liberties.Count >= 2 && b2.GetNeighbourGroups(moveGroup).Any(n => !WallHelper.IsHostileNeighbourGroup(b2, n)))
                 return true;
 
             return false;
