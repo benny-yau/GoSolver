@@ -49,7 +49,6 @@ namespace Go
         public static Boolean IsWall(Board board, Point p, Content c = Content.Unknown)
         {
             c = (c == Content.Unknown) ? GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive) : c;
-            if (!board.PointWithinBoard(p)) return false;
             return (IsNonKillableGroup(board, p) || board[p] != c && !board.GameInfo.IsMovablePoint[p.x, p.y]);
         }
 

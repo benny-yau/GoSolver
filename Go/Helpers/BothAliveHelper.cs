@@ -95,7 +95,6 @@ namespace Go
             }
             else if (associatedKillerGroups.Count >= 2) //complex seki
             {
-                if (emptyPoints.Count > 3) return false;
                 //two liberties for content group
                 Boolean oneLiberty = board.GetGroupsFromPoints(contentPoints).Any(gr => gr.Liberties.Count == 1);
                 if (oneLiberty) return false;

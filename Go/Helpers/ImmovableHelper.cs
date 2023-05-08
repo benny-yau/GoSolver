@@ -155,14 +155,14 @@ namespace Go
             Point? libertyPoint = FindTigerMouth(currentBoard, p.Value, c.Opposite());
             if (libertyPoint == null) return null;
 
-            //check connect and die on current board
-            if (!WallHelper.StrongNeighbourGroups(currentBoard, p.Value, c))
-                return null;
-
             Board capturedBoard = CaptureSuicideGroup(p.Value, tryBoard);
             if (capturedBoard == null) return null;
             //ensure not ko
             if (KoHelper.IsKoFight(capturedBoard))
+                return null;
+
+            //check connect and die on current board
+            if (!WallHelper.StrongNeighbourGroups(currentBoard, p.Value, c))
                 return null;
 
             //check all connect and die on captured board
