@@ -382,7 +382,7 @@ namespace Go
                     Board b = tryBoard.MakeMoveOnNewBoard(p, c.Opposite(), true);
                     if (b != null && !GameTryMove.IsNegligibleForBoard(b, tryBoard, s => !ngroups.Contains(s)))
                         return false;
-                    if (tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Count(n => !ngroups.Contains(n)) >= 2)
+                    if (tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Any(n => !ngroups.Contains(n)))
                         return false;
                 }
             }
