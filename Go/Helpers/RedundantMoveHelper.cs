@@ -380,9 +380,11 @@ namespace Go
                 foreach (Point p in tryBoard.MoveGroup.Liberties.Where(n => !n.Equals(q)))
                 {
                     Board b = tryBoard.MakeMoveOnNewBoard(p, c.Opposite(), true);
-                    if (b != null && !GameTryMove.IsNegligibleForBoard(b, tryBoard, s => !ngroups.Contains(s)))
+                    if (b == null) continue;
+                    if (!GameTryMove.IsNegligibleForBoard(b, tryBoard, s => !ngroups.Contains(s)))
                         return false;
-                    if (tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Any(n => !ngroups.Contains(n)))
+                    List<Point> npoints = b.GetStoneAndDiagonalNeighbours().Where(n => b[n] == c).ToList();
+                    if (b.GetGroupsFromPoints(npoints).Any(n => !ngroups.Contains(n)))
                         return false;
                 }
             }
