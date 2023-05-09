@@ -110,9 +110,9 @@ namespace Go
         /// Check for tiger mouth threat group  
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_7" />
         /// Check for two threat groups <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_6" />
-        /// Check for another tiger mouth at move <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_10" />
         /// Check for link breakage <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_2" />
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_Nie60_2" /> 
+        /// Check for another tiger mouth at move <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_10" />
         /// Check double tiger mouth at move <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571" />
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571" />
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150" />
@@ -141,13 +141,6 @@ namespace Go
                 if (CheckForPossibleThreatGroup(b, board, tigerMouth, false))
                     return true;
 
-                //check for another tiger mouth at move
-                if (b.GetStoneNeighbours().Any(n => LinkHelper.IsTigerMouthForLink(board, n, c, !lifeCheck)))
-                {
-                    if (b.MoveGroupLiberties > 3 || CheckForPossibleThreatGroup(b, board, tigerMouth))
-                        return true;
-                }
-
                 //check for ko break
                 if (LinkHelper.CheckForKoBreak(b))
                     return true;
@@ -161,7 +154,7 @@ namespace Go
                     return true;
             }
 
-            //check double tiger mouth at move
+            //check for another tiger mouth at move
             List<Point> diagonals = board.GetStoneNeighbours(libertyPoint);
             diagonals.Remove(tigerMouth);
             if (diagonals.Any(d => LinkHelper.IsTigerMouthForLink(board, d, c, !lifeCheck)))

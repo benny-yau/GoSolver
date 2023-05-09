@@ -703,8 +703,6 @@ namespace Go
             Content c = b.MoveGroup.Content;
             if (b.GetStoneNeighbours().Any(n => ImmovableHelper.FindEmptyTigerMouth(b, c, n) && b.GetStoneNeighbours(n).Any(s => ImmovableHelper.FindEmptyTigerMouth(b, c.Opposite(), s))))
                 return true;
-            if (b.GetStoneNeighbours().Any(n => b[n] == c.Opposite() && KoHelper.IsKoFight(b, b.GetGroupAt(n))))
-                return true;
             return false;
         }
     }

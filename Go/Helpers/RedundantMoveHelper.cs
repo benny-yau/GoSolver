@@ -374,22 +374,9 @@ namespace Go
                 return false;
 
             //check weak group
-            List<Group> ngroups = tryBoard.GetNeighbourGroups(atariTarget);
-            if (ngroups.Count > 1 && tryBoard.MoveGroup.Liberties.Count == 2)
-            {
-                foreach (Point p in tryBoard.MoveGroup.Liberties.Where(n => !n.Equals(q)))
-                {
-                    Board b = tryBoard.MakeMoveOnNewBoard(p, c.Opposite(), true);
-                    if (b == null) continue;
-                    if (!GameTryMove.IsNegligibleForBoard(b, tryBoard, s => !ngroups.Contains(s)))
-                        return false;
-                    List<Point> npoints = b.GetStoneAndDiagonalNeighbours().Where(n => b[n] == c).ToList();
-                    if (b.GetGroupsFromPoints(npoints).Any(n => !ngroups.Contains(n)))
-                        return false;
-                    if (LinkHelper.CheckForKoBreak(b))
-                        return false;
-                }
-            }
+            if (tryBoard.GetNeighbourGroups(atariTarget).Count > 1 && AtariHelper.DoubleAtariOnTargetGroups(tryBoard, new List<Group>() { tryBoard.MoveGroup }))
+                return false;
+
             return true;
         }
 
@@ -1358,12 +1345,11 @@ namespace Go
         public static Boolean NeutralPointSuicidalMove(GameTryMove tryMove)
         {
             Board tryBoard = tryMove.TryGame.Board;
-            Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             if (tryBoard.MoveGroupLiberties != 1 || tryBoard.MoveGroup.Points.Count != 1) return false;
             if (!tryBoard.PointWithinMiddleArea()) return false;
 
-            List<Point> coveredPoints = tryBoard.GetDiagonalNeighbours(move).Where(q => tryBoard[q] == c).ToList();
+            List<Point> coveredPoints = tryBoard.GetDiagonalNeighbours().Where(q => tryBoard[q] == c).ToList();
             if (coveredPoints.Count > 2) return true;
             if (coveredPoints.Count != 2) return false;
             if (coveredPoints[0].x == coveredPoints[1].x || coveredPoints[0].y == coveredPoints[1].y) return false;

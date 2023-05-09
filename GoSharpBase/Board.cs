@@ -446,13 +446,15 @@ namespace Go
         public Boolean PointWithinMiddleArea(Point? p = null)
         {
             if (p == null) p = this.Move.Value;
-            return (p.Value.x > 0 && p.Value.x < SizeX - 1 && p.Value.y > 0 && p.Value.y < SizeY - 1);
+            int x = p.Value.x; int y = p.Value.y;
+            return (x > 0 && x < SizeX - 1 && y > 0 && y < SizeY - 1);
         }
 
         public Boolean CornerPoint(Point? p = null)
         {
             if (p == null) p = this.Move.Value;
-            return (p.Value.x == 0 || p.Value.x == SizeX - 1) && (p.Value.y == 0 || p.Value.y == SizeY - 1);
+            int x = p.Value.x; int y = p.Value.y;
+            return (x == 0 || x == SizeX - 1) && (y == 0 || y == SizeY - 1);
         }
 
         /// <summary>
