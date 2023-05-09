@@ -199,6 +199,7 @@ namespace Go
 
             //check neighbour groups
             Group moveGroup = b2.GetCurrentGroup(b.MoveGroup);
+            if (AtariHelper.AtariByGroup(b2, moveGroup)) return true;
             if (moveGroup.Liberties.Count >= 2 && b2.GetNeighbourGroups(moveGroup).Any(n => !WallHelper.IsHostileNeighbourGroup(b2, n)))
                 return true;
 

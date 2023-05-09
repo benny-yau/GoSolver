@@ -1207,11 +1207,10 @@ namespace Go
         /// Not suicidal for semi-solid eye <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A95" />
         private static Boolean CornerPointSuicide(GameTryMove tryMove, Board captureBoard)
         {
-            Point move = tryMove.Move;
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
-            if (!tryBoard.CornerPoint(move)) return false;
+            if (!tryBoard.CornerPoint()) return false;
 
             //one point target
             if (!tryBoard.AtariTargets.Any())
@@ -1362,7 +1361,7 @@ namespace Go
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             if (tryBoard.MoveGroupLiberties != 1 || tryBoard.MoveGroup.Points.Count != 1) return false;
-            if (!tryBoard.PointWithinMiddleArea(move)) return false;
+            if (!tryBoard.PointWithinMiddleArea()) return false;
 
             List<Point> coveredPoints = tryBoard.GetDiagonalNeighbours(move).Where(q => tryBoard[q] == c).ToList();
             if (coveredPoints.Count > 2) return true;
@@ -1452,9 +1451,8 @@ namespace Go
         private static Boolean MustHaveMoveAtKoFight(GameTryMove tryMove)
         {
             Board tryBoard = tryMove.TryGame.Board;
-            Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.PointWithinMiddleArea(move)) return false;
+            if (tryBoard.PointWithinMiddleArea()) return false;
             if (tryBoard.GetDiagonalNeighbours().Any(d => tryBoard[d] == c.Opposite() && tryBoard.GetGroupAt(d).Points.Count <= 2 && tryBoard.GetStoneNeighbours(d).Any(n => tryBoard[n] == Content.Empty && ImmovableHelper.FindTigerMouth(tryBoard, c.Opposite(), n))))
                 return true;
             return false;
@@ -2215,7 +2213,7 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryBoard.Move.Value;
             Content c = tryBoard[move];
-            if (tryBoard.MoveGroup.Points.Count != 1 || !tryBoard.CornerPoint(move) || tryBoard.IsAtariMove || !tryMove.IsNegligible) return false;
+            if (tryBoard.MoveGroup.Points.Count != 1 || !tryBoard.CornerPoint() || tryBoard.IsAtariMove || !tryMove.IsNegligible) return false;
 
             //check for kill formation
             Boolean killFormation = (tryBoard.GetClosestPoints(move, c.Opposite()).Count >= 3 && !tryBoard.GetClosestPoints(move, c).Any());

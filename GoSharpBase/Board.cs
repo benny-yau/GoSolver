@@ -434,22 +434,25 @@ namespace Go
             return (x >= 0 && x <= SizeX - 1 && y >= 0 && y <= SizeY - 1);
         }
 
-        public Boolean PointWithinBoard(Point p)
+        public Boolean PointWithinBoard(Point? p = null)
         {
-            return PointWithinBoard(p.x, p.y);
+            if (p == null) p = this.Move.Value;
+            return PointWithinBoard(p.Value.x, p.Value.y);
         }
 
         /// <summary>
         /// Check if point within middle area of board.
         /// </summary>
-        public Boolean PointWithinMiddleArea(Point p)
+        public Boolean PointWithinMiddleArea(Point? p = null)
         {
-            return (p.x > 0 && p.x < SizeX - 1 && p.y > 0 && p.y < SizeY - 1);
+            if (p == null) p = this.Move.Value;
+            return (p.Value.x > 0 && p.Value.x < SizeX - 1 && p.Value.y > 0 && p.Value.y < SizeY - 1);
         }
 
-        public Boolean CornerPoint(Point p)
+        public Boolean CornerPoint(Point? p = null)
         {
-            return (p.x == 0 || p.x == SizeX - 1) && (p.y == 0 || p.y == SizeY - 1);
+            if (p == null) p = this.Move.Value;
+            return (p.Value.x == 0 || p.Value.x == SizeX - 1) && (p.Value.y == 0 || p.Value.y == SizeY - 1);
         }
 
         /// <summary>
