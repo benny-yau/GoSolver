@@ -374,7 +374,7 @@ namespace Go
                 return false;
 
             //check weak group
-            if (tryBoard.GetNeighbourGroups(atariTarget).Count > 1 && AtariHelper.DoubleAtariOnTargetGroups(tryBoard, new List<Group>() { tryBoard.MoveGroup }))
+            if (tryBoard.GetNeighbourGroups(atariTarget).Count > 1 && LinkHelper.DoubleAtariOnTargetGroups(tryBoard, new List<Group>() { tryBoard.MoveGroup }))
                 return false;
 
             return true;

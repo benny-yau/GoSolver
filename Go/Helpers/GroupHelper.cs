@@ -122,7 +122,7 @@ namespace Go
 
             List<Group> groups = board.GetNeighbourGroups(killerGroup);
             if (!WallHelper.StrongNeighbourGroups(board, groups)) return null;
-            if (AtariHelper.DoubleAtariOnTargetGroups(board, groups)) return null;
+            if (LinkHelper.DoubleAtariOnTargetGroups(board, groups)) return null;
             return killerGroup;
         }
 

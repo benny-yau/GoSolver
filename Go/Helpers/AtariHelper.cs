@@ -47,25 +47,6 @@ namespace Go
             return targetGroups;
         }
 
-        /// <summary>
-        /// Double atari on target groups.
-        /// </summary>
-        public static Boolean DoubleAtariOnTargetGroups(Board board, List<Group> targetGroups)
-        {
-            if (targetGroups.Count == 0) return false;
-            Content c = targetGroups.First().Content;
-            //get groups with two liberties only
-            targetGroups = targetGroups.Where(t => t.Liberties.Count == 2).ToList();
-            if (targetGroups.Count == 0) return false;
-            //get distinct liberties of target groups
-            List<Point> liberties = board.GetLibertiesOfGroups(targetGroups).Distinct().ToList();
-
-            //double atari
-            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, liberties, c.Opposite());
-            if (moveBoards.Any(b => DoubleAtariWithoutEscape(b) || b.CapturedList.Count > 0 || Board.ResolveAtari(board, b) || LinkHelper.CheckForKoBreak(b)))
-                return true;
-            return false;
-        }
 
         /// <summary>
         /// Double atari without escape.

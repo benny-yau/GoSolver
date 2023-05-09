@@ -262,11 +262,6 @@
             Check for ko liberty <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_A85_2" />
             </summary>
         </member>
-        <member name="M:Go.AtariHelper.DoubleAtariOnTargetGroups(Go.Board,System.Collections.Generic.List{Go.Group})">
-            <summary>
-            Double atari on target groups.
-            </summary>
-        </member>
         <member name="M:Go.AtariHelper.DoubleAtariWithoutEscape(Go.Board)">
             <summary>
             Double atari without escape.
@@ -1323,6 +1318,21 @@
         <member name="M:Go.LinkHelper.CheckBaseLineLeapLink(Go.Board,Go.Point,Go.Content)">
             <summary>
             Check base line leap link.
+            </summary>
+        </member>
+        <member name="M:Go.LinkHelper.DoubleAtariOnTargetGroups(Go.Board,System.Collections.Generic.List{Go.Group})">
+            <summary>
+            Double atari on target groups.
+            </summary>
+        </member>
+        <member name="M:Go.LinkHelper.LinkWithThreatGroup(Go.Board,Go.Board)">
+            <summary>
+            Link with threat group.
+            </summary>
+        </member>
+        <member name="M:Go.LinkHelper.MoveAtTigerMouth(Go.Board)">
+            <summary>
+            Move at tiger mouth.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.CheckForKoBreak(Go.Board)">

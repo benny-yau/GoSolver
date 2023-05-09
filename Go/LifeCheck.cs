@@ -231,7 +231,7 @@ namespace Go
             if (tigerMouthList != null)
                 tigerMouthList.ForEach(tigerMouth => targetGroups.AddRange(board.GetGroupsFromStoneNeighbours(tigerMouth.Move, c)));
 
-            return AtariHelper.DoubleAtariOnTargetGroups(board, targetGroups);
+            return LinkHelper.DoubleAtariOnTargetGroups(board, targetGroups);
         }
 
         /// <summary>

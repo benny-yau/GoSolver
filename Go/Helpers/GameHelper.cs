@@ -145,12 +145,13 @@ namespace Go
         /// <summary>
         /// Get move boards.
         /// </summary>
-        public static IEnumerable<Board> GetMoveBoards(Board currentBoard, IEnumerable<Point> moves, Content c, Boolean overrideKo = true)
+        public static IEnumerable<Board> GetMoveBoards(Board currentBoard, IEnumerable<Point> moves, Content c, Boolean checkSuicidal = false)
         {
             foreach (Point p in moves)
             {
-                Board b = currentBoard.MakeMoveOnNewBoard(p, c, overrideKo);
+                Board b = currentBoard.MakeMoveOnNewBoard(p, c, true);
                 if (b == null) continue;
+                if (checkSuicidal && ImmovableHelper.IsSuicidalWithoutKo(b)) continue;
                 yield return b;
             }
         }

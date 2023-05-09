@@ -214,28 +214,19 @@ namespace Go
             //if both diagonals empty then is linked
             if (diagonals.All(d => board[d] == Content.Empty))
             {
-                //any diagonal is immovable
-                foreach (Point p in diagonals)
-                {
-                    //make opponent move at diagonal
-                    (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board, true);
-                    if (suicidal) return true;
+                IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, diagonals, c.Opposite(), true);
+                if (!immediateLink && moveBoards.Any(b => !GameTryMove.IsNegligibleForBoard(b, board, t => !t.Points.Contains(pointA) && !t.Points.Contains(pointB))))
+                    return false;
 
+                foreach (Board b in moveBoards)
+                {
                     //check is immovable
-                    Point q = diagonals.First(d => !d.Equals(p));
+                    Point q = diagonals.First(d => !d.Equals(b.Move.Value));
                     if (ImmovableHelper.IsImmovablePoint(b, q, c)) return true;
 
                     //make connection at other diagonal
                     if (ImmovableHelper.IsSuicidalMove(b, q, c))
                         return false;
-
-                    //check not negligible
-                    if (!immediateLink)
-                    {
-                        Boolean isNegligible = GameTryMove.IsNegligibleForBoard(b, board, t => !t.Points.Contains(pointA) && !t.Points.Contains(pointB));
-                        if (!isNegligible)
-                            return false;
-                    }
                 }
                 return true;
             }
@@ -314,7 +305,7 @@ namespace Go
             foreach (Point d in LinkHelper.PointsBetweenDiagonals(diagonalPoint))
             {
                 List<Group> tigerMouthGroups = board.GetGroupsFromStoneNeighbours(d, c.Opposite()).ToList();
-                if (AtariHelper.DoubleAtariOnTargetGroups(board, tigerMouthGroups))
+                if (DoubleAtariOnTargetGroups(board, tigerMouthGroups))
                     return true;
             }
             return false;
@@ -693,6 +684,52 @@ namespace Go
             List<Point> stoneNeighbours = tryBoard.GetStoneNeighbours(eyePoint).Where(n => tryBoard[n] == c && !n.Equals(tryBoard.Move.Value)).ToList();
             if (stoneNeighbours.Count != 2 || stoneNeighbours.Any(n => tryBoard.PointWithinMiddleArea(n))) return false;
             return true;
+        }
+
+
+        /// <summary>
+        /// Double atari on target groups.
+        /// </summary>
+        public static Boolean DoubleAtariOnTargetGroups(Board board, List<Group> targetGroups)
+        {
+            if (targetGroups.Count == 0) return false;
+            Content c = targetGroups.First().Content;
+            //get groups with two liberties only
+            targetGroups = targetGroups.Where(t => t.Liberties.Count == 2).ToList();
+            if (targetGroups.Count == 0) return false;
+            //get distinct liberties of target groups
+            List<Point> liberties = board.GetLibertiesOfGroups(targetGroups).Distinct().ToList();
+
+            //double atari
+            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, liberties, c.Opposite(), true);
+            if (moveBoards.Any(b => AtariHelper.DoubleAtariWithoutEscape(b) || b.CapturedList.Count > 0 || Board.ResolveAtari(board, b) || LinkWithThreatGroup(b, board) || MoveAtTigerMouth(b) || CheckForKoBreak(b)))
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Link with threat group.
+        /// </summary>
+        public static Boolean LinkWithThreatGroup(Board b, Board board)
+        {
+            Content c = b.MoveGroup.Content;
+            if (b.MoveGroupLiberties <= 2) return false;
+            if (!LinkHelper.IsAbsoluteLinkForGroups(board, b)) return false;
+            if (LinkHelper.GetPreviousMoveGroup(board, b).Any(n => n.Liberties.Count == 2 && n.Liberties.Any(s => ImmovableHelper.FindTigerMouth(board, c.Opposite(), s))))
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Move at tiger mouth.
+        /// </summary>
+        public static Boolean MoveAtTigerMouth(Board b)
+        {
+            Content c = b.MoveGroup.Content;
+            if (b.MoveGroupLiberties <= 2) return false;
+            if (b.GetStoneNeighbours().Any(n => ImmovableHelper.FindEmptyTigerMouth(b, c.Opposite(), n)))
+                return true;
+            return false;
         }
 
         /// <summary>
