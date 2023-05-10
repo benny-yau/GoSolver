@@ -1335,9 +1335,14 @@
             Move at tiger mouth.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.CheckForKoBreak(Go.Board)">
+        <member name="M:Go.LinkHelper.CheckForKoBreak(Go.Board,System.Func{Go.Point,System.Boolean})">
             <summary>
             Check for ko break.
+            </summary>
+        </member>
+        <member name="M:Go.LinkHelper.DoubleKoBreak(Go.Board,Go.Point,Go.Content)">
+            <summary>
+            Double ko break.
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.FindPotentialEye(Go.GameTryMove)">
@@ -2311,6 +2316,7 @@
             Check double tiger mouth at move <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571" />
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571" />
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150" />
+            Double ko break <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_y" />
             </summary>
         </member>
         <member name="M:Go.LifeCheck.CheckForPossibleThreatGroup(Go.Board,Go.Board,Go.Point)">

@@ -116,9 +116,14 @@ namespace Go
         /// Check double tiger mouth at move <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571" />
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571" />
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150" />
+        /// Double ko break <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_y" />
         /// </summary>
         public static Boolean CommonTigerMouthExceptions(Board board, Content c, Point tigerMouth, Point libertyPoint, Boolean lifeCheck = false)
         {
+            //double ko break
+            if (LinkHelper.DoubleKoBreak(board, tigerMouth, c))
+                return true;
+
             //make move at liberty
             Board b = board.MakeMoveOnNewBoard(libertyPoint, c.Opposite(), true);
             if (b == null || b.MoveGroupLiberties == 1) return false;

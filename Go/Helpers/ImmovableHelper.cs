@@ -34,9 +34,12 @@ namespace Go
             return (FindTigerMouth(board, p, c) != null);
         }
 
-        public static Boolean FindEmptyTigerMouth(Board board, Content c, Point p)
+        public static Boolean FindEmptyTigerMouth(Board board, Content c, Point p, Boolean checkNonKillable = true)
         {
-            return board[p] == Content.Empty && FindTigerMouth(board, p, c) != null;
+            if (board[p] != Content.Empty || FindTigerMouth(board, p, c) == null) return false;
+            if (checkNonKillable && board.GetGroupsFromStoneNeighbours(p, c.Opposite()).All(n => WallHelper.IsNonKillableGroup(board, n)))
+                return false;
+            return true;
         }
 
         /// <summary>

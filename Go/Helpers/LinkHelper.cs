@@ -214,14 +214,13 @@ namespace Go
             //if both diagonals empty then is linked
             if (diagonals.All(d => board[d] == Content.Empty))
             {
+                //check is immovable
+                if (diagonals.Any(d => ImmovableHelper.IsImmovablePoint(board, d, c))) return true;
                 IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, diagonals, c.Opposite(), true);
                 foreach (Board b in moveBoards)
                 {
-                    //check is immovable
-                    Point q = diagonals.First(d => !d.Equals(b.Move.Value));
-                    if (ImmovableHelper.IsImmovablePoint(b, q, c)) return true;
-
                     //make connection at other diagonal
+                    Point q = diagonals.First(d => !d.Equals(b.Move.Value));
                     if (ImmovableHelper.IsSuicidalMove(b, q, c))
                         return false;
 
@@ -241,8 +240,9 @@ namespace Go
                     if (board[p] == Content.Empty)
                     {
                         //check captured group
-                        Boolean capturedGroup = TigerMouthThreatGroup(board, p, c, n => n.Liberties.Count == 1) != null;
-                        if (!capturedGroup) return true;
+                        Group gr = TigerMouthThreatGroup(board, p, c, n => n.Liberties.Count == 1);
+                        if (gr == null || !DoubleAtariOnTargetGroups(board, board.GetNeighbourGroups(gr)))
+                            return true;
                     }
                     else
                     {
@@ -719,7 +719,7 @@ namespace Go
             if (!LinkHelper.IsAbsoluteLinkForGroups(board, b)) return false;
             List<Group> groups = LinkHelper.GetPreviousMoveGroup(board, b).Where(n => n.Liberties.Count == 2).ToList();
             if (func != null) groups.RemoveAll(s => func(s));
-            if (groups.Any(n => n.Liberties.Any(s => ImmovableHelper.FindTigerMouth(board, c.Opposite(), s))))
+            if (groups.Any(n => n.Liberties.Any(s => ImmovableHelper.FindEmptyTigerMouth(board, c.Opposite(), s))))
                 return true;
             return false;
         }
@@ -739,10 +739,35 @@ namespace Go
         /// <summary>
         /// Check for ko break.
         /// </summary>
-        public static Boolean CheckForKoBreak(Board b)
+        public static Boolean CheckForKoBreak(Board b, Func<Point, Boolean> func = null)
         {
             Content c = b.MoveGroup.Content;
-            if (b.GetStoneNeighbours().Any(n => ImmovableHelper.FindEmptyTigerMouth(b, c, n) && b.GetStoneNeighbours(n).Any(s => ImmovableHelper.FindEmptyTigerMouth(b, c.Opposite(), s))))
+            foreach (Point p in b.GetStoneNeighbours())
+            {
+                if (b[p] != Content.Empty) continue;
+                if (func != null && func(p)) continue;
+                Point? liberty = ImmovableHelper.FindTigerMouth(b, p, c);
+                if (liberty == null || !ImmovableHelper.FindEmptyTigerMouth(b, c.Opposite(), liberty.Value)) continue;
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Double ko break.
+        /// </summary>
+        public static Boolean DoubleKoBreak(Board b, Point tigerMouth, Content c)
+        {
+            Point p = b.GetStoneNeighbours(tigerMouth).FirstOrDefault(n => b[n] == Content.Empty);
+            if (!Convert.ToBoolean(p.NotEmpty)) return false;
+            List<Point> nPoints = b.GetStoneNeighbours(p).Where(n => !n.Equals(tigerMouth)).ToList();
+            List<Point> rc = nPoints.Where(n => b[n] == c.Opposite()).ToList();
+            if (rc.Count != nPoints.Count - 1) return false;
+            Point q = nPoints.Except(rc).First();
+            if (b[q] != Content.Empty) return false;
+            Board b2 = b.MakeMoveOnNewBoard(q, c.Opposite(), true);
+            if (b2 == null) return false;
+            if (CheckForKoBreak(b2, s => s.Equals(p)))
                 return true;
             return false;
         }
