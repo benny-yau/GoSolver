@@ -1325,7 +1325,7 @@
             Double atari on target groups.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.LinkWithThreatGroup(Go.Board,Go.Board)">
+        <member name="M:Go.LinkHelper.LinkWithThreatGroup(Go.Board,Go.Board,System.Func{Go.Group,System.Boolean})">
             <summary>
             Link with threat group.
             </summary>
@@ -2313,7 +2313,7 @@
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150" />
             </summary>
         </member>
-        <member name="M:Go.LifeCheck.CheckForPossibleThreatGroup(Go.Board,Go.Board,Go.Point,System.Boolean)">
+        <member name="M:Go.LifeCheck.CheckForPossibleThreatGroup(Go.Board,Go.Board,Go.Point)">
             <summary>
             Check for possible threat group.
             </summary>

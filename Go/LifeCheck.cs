@@ -119,32 +119,28 @@ namespace Go
         /// </summary>
         public static Boolean CommonTigerMouthExceptions(Board board, Content c, Point tigerMouth, Point libertyPoint, Boolean lifeCheck = false)
         {
-            //check for tiger mouth threat group
-            Group threatGroup = LinkHelper.TigerMouthThreatGroup(board, tigerMouth, c);
-            if (threatGroup != null && AtariHelper.AtariByGroup(board, threatGroup))
-                return true;
-
             //make move at liberty
             Board b = board.MakeMoveOnNewBoard(libertyPoint, c.Opposite(), true);
             if (b == null || b.MoveGroupLiberties == 1) return false;
 
-            //check for atari at tiger mouth
-            HashSet<Group> tmGroups = b.GetGroupsFromStoneNeighbours(tigerMouth, c.Opposite());
             //check is negligible
+            HashSet<Group> tmGroups = b.GetGroupsFromStoneNeighbours(tigerMouth, c.Opposite());
             Boolean isNegligible = GameTryMove.IsNegligibleForBoard(b, board, t => !tmGroups.Contains(t));
             if (!isNegligible)
                 return true;
 
+            //check for tiger mouth threat group
+            Group threatGroup = LinkHelper.TigerMouthThreatGroup(board, tigerMouth, c);
             if (threatGroup != null)
             {
-                //check for two threat groups
-                if (CheckForPossibleThreatGroup(b, board, tigerMouth, false))
-                    return true;
-
-                //check for ko break
-                if (LinkHelper.CheckForKoBreak(b))
+                if (AtariHelper.AtariByGroup(board, threatGroup)) return true;
+                if (LinkHelper.LinkWithThreatGroup(b, board, s => s == threatGroup))
                     return true;
             }
+
+            //check for ko break
+            if (LinkHelper.CheckForKoBreak(b))
+                return true;
 
             //check for link breakage
             List<Point> stoneNeighbours = LinkHelper.GetNeighboursDiagonallyLinked(b);
@@ -155,14 +151,13 @@ namespace Go
             }
 
             //check for another tiger mouth at move
-            List<Point> diagonals = board.GetStoneNeighbours(libertyPoint);
-            diagonals.Remove(tigerMouth);
-            if (diagonals.Any(d => LinkHelper.IsTigerMouthForLink(board, d, c, !lifeCheck)))
+            List<Point> tigerMouths = b.GetStoneNeighbours().Where(n => !n.Equals(tigerMouth) && LinkHelper.IsTigerMouthForLink(board, n, c, !lifeCheck)).ToList();
+            if (tigerMouths.Any())
             {
                 if (b.MoveGroupLiberties > 3 || CheckForPossibleThreatGroup(b, board, tigerMouth))
                 {
                     Board b2 = b.MakeMoveOnNewBoard(tigerMouth, c, true);
-                    if (b2 != null && diagonals.All(n => b2.GetGroupsFromStoneNeighbours(n, c.Opposite()).All(s => WallHelper.IsNonKillableGroup(b2, s)) && b2.GetNeighbourGroups(b.MoveGroup).All(t => WallHelper.IsHostileNeighbourGroup(b2, t))))
+                    if (b2 != null && tigerMouths.All(n => b2.GetGroupsFromStoneNeighbours(n, c.Opposite()).All(s => WallHelper.IsNonKillableGroup(b2, s)) && b2.GetNeighbourGroups(b.MoveGroup).All(t => WallHelper.IsHostileNeighbourGroup(b2, t))))
                         return false;
                     return true;
                 }
@@ -173,13 +168,9 @@ namespace Go
         /// <summary>
         /// Check for possible threat group.
         /// </summary>
-        public static Boolean CheckForPossibleThreatGroup(Board b, Board board, Point tigerMouth, Boolean checkSecondMove = true)
+        public static Boolean CheckForPossibleThreatGroup(Board b, Board board, Point tigerMouth)
         {
             Content c = b.MoveGroup.Content;
-            //possible threat group
-            if (LinkHelper.IsAbsoluteLinkForGroups(board, b) && b.MoveGroup.Liberties.Any(s => !s.Equals(tigerMouth) && ImmovableHelper.FindTigerMouth(board, c.Opposite(), s)))
-                return true;
-            if (!checkSecondMove) return false;
 
             //fill tiger mouth
             Board b2 = b.MakeMoveOnNewBoard(tigerMouth, c.Opposite(), true);

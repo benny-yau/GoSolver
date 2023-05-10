@@ -215,9 +215,6 @@ namespace Go
             if (diagonals.All(d => board[d] == Content.Empty))
             {
                 IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, diagonals, c.Opposite(), true);
-                if (!immediateLink && moveBoards.Any(b => !GameTryMove.IsNegligibleForBoard(b, board, t => !t.Points.Contains(pointA) && !t.Points.Contains(pointB))))
-                    return false;
-
                 foreach (Board b in moveBoards)
                 {
                     //check is immovable
@@ -226,6 +223,11 @@ namespace Go
 
                     //make connection at other diagonal
                     if (ImmovableHelper.IsSuicidalMove(b, q, c))
+                        return false;
+
+                    //check negligible
+                    if (immediateLink) continue;
+                    if (!GameTryMove.IsNegligibleForBoard(b, board, t => !t.Points.Contains(pointA) && !t.Points.Contains(pointB)))
                         return false;
                 }
                 return true;
@@ -710,12 +712,14 @@ namespace Go
         /// <summary>
         /// Link with threat group.
         /// </summary>
-        public static Boolean LinkWithThreatGroup(Board b, Board board)
+        public static Boolean LinkWithThreatGroup(Board b, Board board, Func<Group, Boolean> func = null)
         {
             Content c = b.MoveGroup.Content;
             if (b.MoveGroupLiberties <= 2) return false;
             if (!LinkHelper.IsAbsoluteLinkForGroups(board, b)) return false;
-            if (LinkHelper.GetPreviousMoveGroup(board, b).Any(n => n.Liberties.Count == 2 && n.Liberties.Any(s => ImmovableHelper.FindTigerMouth(board, c.Opposite(), s))))
+            List<Group> groups = LinkHelper.GetPreviousMoveGroup(board, b).Where(n => n.Liberties.Count == 2).ToList();
+            if (func != null) groups.RemoveAll(s => func(s));
+            if (groups.Any(n => n.Liberties.Any(s => ImmovableHelper.FindTigerMouth(board, c.Opposite(), s))))
                 return true;
             return false;
         }
