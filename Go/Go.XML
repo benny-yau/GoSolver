@@ -2319,9 +2319,9 @@
             Double ko break <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_y" />
             </summary>
         </member>
-        <member name="M:Go.LifeCheck.CheckForPossibleThreatGroup(Go.Board,Go.Board,Go.Point)">
+        <member name="M:Go.LifeCheck.CheckThreatGroupEscape(Go.Board,Go.Point,System.Collections.Generic.List{Go.Point})">
             <summary>
-            Check for possible threat group.
+            Check threat group escape.
             </summary>
         </member>
         <member name="M:Go.LifeCheck.GetTigerMouthsOfEyeGroups(Go.Board,Go.Group,System.Collections.Generic.List{Go.LinkedPoint{Go.Point}})">

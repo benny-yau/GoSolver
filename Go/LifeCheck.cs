@@ -151,7 +151,7 @@ namespace Go
             List<Point> stoneNeighbours = LinkHelper.GetNeighboursDiagonallyLinked(b);
             if (b.GetDiagonalNeighbours().Any(n => b[n] != c && b.GetStoneNeighbours(n).Intersect(stoneNeighbours).Count() >= 2 && !ImmovableHelper.IsImmovablePoint(b, n, c)))
             {
-                if (b.MoveGroupLiberties > 2 || CheckForPossibleThreatGroup(b, board, tigerMouth))
+                if (b.MoveGroupLiberties > 2 || CheckThreatGroupEscape(b, tigerMouth, new List<Point>() { b.Move.Value }))
                     return true;
             }
 
@@ -159,21 +159,16 @@ namespace Go
             List<Point> tigerMouths = b.GetStoneNeighbours().Where(n => !n.Equals(tigerMouth) && LinkHelper.IsTigerMouthForLink(board, n, c, !lifeCheck)).ToList();
             if (tigerMouths.Any())
             {
-                if (b.MoveGroupLiberties > 3 || CheckForPossibleThreatGroup(b, board, tigerMouth))
-                {
-                    Board b2 = b.MakeMoveOnNewBoard(tigerMouth, c, true);
-                    if (b2 != null && tigerMouths.All(n => b2.GetGroupsFromStoneNeighbours(n, c.Opposite()).All(s => WallHelper.IsNonKillableGroup(b2, s)) && b2.GetNeighbourGroups(b.MoveGroup).All(t => WallHelper.IsHostileNeighbourGroup(b2, t))))
-                        return false;
+                if (b.MoveGroupLiberties > 3 || CheckThreatGroupEscape(b, tigerMouth, tigerMouths))
                     return true;
-                }
             }
             return false;
         }
 
         /// <summary>
-        /// Check for possible threat group.
+        /// Check threat group escape.
         /// </summary>
-        public static Boolean CheckForPossibleThreatGroup(Board b, Board board, Point tigerMouth)
+        public static Boolean CheckThreatGroupEscape(Board b, Point tigerMouth, List<Point> targetPoints = null)
         {
             Content c = b.MoveGroup.Content;
 
@@ -181,15 +176,17 @@ namespace Go
             Board b2 = b.MakeMoveOnNewBoard(tigerMouth, c.Opposite(), true);
             if (b2 == null) return false;
 
+            //check non killable
+            if (targetPoints != null && targetPoints.All(n => b2.GetGroupsFromStoneNeighbours(n, c).All(s => WallHelper.IsNonKillableGroup(b2, s))))
+                return false;
+
             //make second move
             IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(b2, b2.GetGroupLiberties(b.MoveGroup), c);
             if (moveBoards.Any(n => n.MoveGroupLiberties > 1 || !GameTryMove.IsNegligibleForBoard(n, b2)))
                 return true;
 
-            //check neighbour groups
-            Group moveGroup = b2.GetCurrentGroup(b.MoveGroup);
-            if (AtariHelper.AtariByGroup(b2, moveGroup)) return true;
-            if (moveGroup.Liberties.Count >= 2 && b2.GetNeighbourGroups(moveGroup).Any(n => !WallHelper.IsHostileNeighbourGroup(b2, n)))
+            //check double atari
+            if (LinkHelper.DoubleAtariOnTargetGroups(b2, b2.GetNeighbourGroups(b.MoveGroup)))
                 return true;
 
             return false;
