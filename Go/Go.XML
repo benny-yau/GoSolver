@@ -1345,6 +1345,11 @@
             Double ko break.
             </summary>
         </member>
+        <member name="M:Go.LinkHelper.LinkBreakage(Go.Board,Go.Content)">
+            <summary>
+            Link breakage.
+            </summary>
+        </member>
         <member name="M:Go.RedundantMoveHelper.FindPotentialEye(Go.GameTryMove)">
             <summary>
             Find potential eye that should not be filled. 

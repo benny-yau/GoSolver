@@ -148,8 +148,7 @@ namespace Go
                 return true;
 
             //check for link breakage
-            List<Point> stoneNeighbours = LinkHelper.GetNeighboursDiagonallyLinked(b);
-            if (b.GetDiagonalNeighbours().Any(n => b[n] != c && b.GetStoneNeighbours(n).Intersect(stoneNeighbours).Count() >= 2 && !ImmovableHelper.IsImmovablePoint(b, n, c)))
+            if (LinkHelper.LinkBreakage(b, c))
             {
                 if (b.MoveGroupLiberties > 2 || CheckThreatGroupEscape(b, tigerMouth, new List<Point>() { b.Move.Value }))
                     return true;

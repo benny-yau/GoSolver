@@ -771,5 +771,18 @@ namespace Go
                 return true;
             return false;
         }
+
+        /// <summary>
+        /// Link breakage.
+        /// </summary>
+        public static Boolean LinkBreakage(Board b, Content c)
+        {
+            List<Point> stoneNeighbours = LinkHelper.GetNeighboursDiagonallyLinked(b);
+            List<Point> diagonals = b.GetDiagonalNeighbours().Where(n => b[n] != c && b.GetStoneNeighbours(n).Intersect(stoneNeighbours).Count() >= 2).ToList();
+            diagonals = diagonals.Where(n => !ImmovableHelper.IsImmovablePoint(b, n, c)).ToList();
+            if (diagonals.Any() && b.GetGroupsFromPoints(stoneNeighbours).Any(s => !WallHelper.IsNonKillableGroup(b, s)))
+                return true;
+            return false;
+        }
     }
 }
