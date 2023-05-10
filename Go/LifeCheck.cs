@@ -21,6 +21,7 @@ namespace Go
         }
 
         /// <summary>
+        /// Confirm alive.
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16860" />
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A28" />
         /// </summary>
@@ -37,7 +38,7 @@ namespace Go
             List<Group> killerGroups = GetTwoPossibleEyes(board, targetGroup);
             if (killerGroups == null) return ConfirmAliveResult.Unknown;
 
-            //check for semi solid eyes
+            //check for real eyes
             for (int i = 0; i <= killerGroups.Count - 1; i++)
             {
                 Group group = killerGroups[i];
@@ -52,9 +53,7 @@ namespace Go
             //check for tiger mouth exception
             if (CheckTigerMouthExceptions(board, tigerMouthList.Select(t => t.Move), c, true)) return ConfirmAliveResult.Unknown;
 
-            if (CheckOpponentDoubleAtari(board, eyes, tigerMouthList)) return ConfirmAliveResult.Unknown;
-
-            //at least two semi solid eyes to predetermine target group is alive
+            //two real eyes to confirm alive
             if (eyes.Count >= 2)
                 return ConfirmAliveResult.Alive;
             return ConfirmAliveResult.Unknown;
@@ -205,25 +204,6 @@ namespace Go
                 if (LinkHelper.IsTigerMouthForLink(board, p.Move, c.Opposite(), false))
                     tigerMouthList.Add(p);
             }
-        }
-
-
-        /// <summary>
-        /// Check opponent double atari moves.
-        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_7" />
-        /// </summary>
-        public static Boolean CheckOpponentDoubleAtari(Board board, List<Group> eyes, List<LinkedPoint<Point>> tigerMouthList = null)
-        {
-            //get eye groups
-            List<Group> targetGroups = new List<Group>();
-            eyes.ForEach(eye => targetGroups.AddRange(board.GetNeighbourGroups(eye)));
-
-            //get tiger mouth groups
-            Content c = eyes.First().Content;
-            if (tigerMouthList != null)
-                tigerMouthList.ForEach(tigerMouth => targetGroups.AddRange(board.GetGroupsFromStoneNeighbours(tigerMouth.Move, c)));
-
-            return LinkHelper.DoubleAtariOnTargetGroups(board, targetGroups);
         }
 
         /// <summary>

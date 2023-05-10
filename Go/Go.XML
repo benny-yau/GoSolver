@@ -2287,6 +2287,7 @@
         </member>
         <member name="M:Go.LifeCheck.ConfirmAlive(Go.Board,Go.Group)">
             <summary>
+            Confirm alive.
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16860" />
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A28" />
             </summary>
@@ -2334,12 +2335,6 @@
             Get tiger mouth of eye groups.
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_2" />
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_3" />
-            </summary>
-        </member>
-        <member name="M:Go.LifeCheck.CheckOpponentDoubleAtari(Go.Board,System.Collections.Generic.List{Go.Group},System.Collections.Generic.List{Go.LinkedPoint{Go.Point}})">
-            <summary>
-            Check opponent double atari moves.
-            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_7" />
             </summary>
         </member>
         <member name="M:Go.LifeCheck.GetTargets(Go.Board,System.Collections.Generic.List{Go.Point})">
