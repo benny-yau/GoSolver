@@ -1589,9 +1589,11 @@ namespace Go
         /// </summary>
         public static void RestoreNeutralMove(Game currentGame, List<GameTryMove> tryMoves, List<GameTryMove> neutralPointMoves)
         {
-            //remove moves that are within killer group
+            if (neutralPointMoves.Count == 0) return;
+            Content c = neutralPointMoves.First().MoveContent;
+            //remove unnecessary moves
             neutralPointMoves.RemoveAll(n => n.TryGame.Board.MoveGroupLiberties == 1 || GroupHelper.GetKillerGroupFromCache(n.TryGame.Board, n.Move) != null);
-
+            neutralPointMoves.RemoveAll(n => !n.TryGame.Board.GetStoneAndDiagonalNeighbours().Any(s => n.TryGame.Board[s] == c.Opposite()));
             if (neutralPointMoves.Count == 0) return;
             GameTryMove genericNeutralMove = null;
             //specific neutral point
