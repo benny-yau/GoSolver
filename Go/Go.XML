@@ -2131,7 +2131,7 @@
             Check no eye for survival.
             </summary>
         </member>
-        <member name="M:Go.WallHelper.IsWall(Go.Board,Go.Point,Go.Content)">
+        <member name="M:Go.WallHelper.IsWall(Go.Board,Go.Point)">
             <summary>
             Wall is either non killable or is empty point or opponent point which is not movable.
             </summary>

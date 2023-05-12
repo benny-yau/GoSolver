@@ -11,20 +11,19 @@ namespace Go
         /// <summary>
         /// Check if move creates eye for survival. If all stone and diagonal neighbours is same content or is wall then move is redundant neutral point.
         /// </summary>
-        public static Boolean NoEyeForSurvival(Board board, Point eyePoint, Content c = Content.Unknown)
+        public static Boolean NoEyeForSurvival(Board board, Point eyePoint, Content c)
         {
-            c = (c == Content.Unknown) ? GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive) : c;
-            if (board[eyePoint] == c || IsWall(board, eyePoint, c))
+            if (board[eyePoint] == c || IsWall(board, eyePoint))
                 return true;
 
-            if (board.GetStoneNeighbours(eyePoint).Any(n => IsWall(board, n, c)))
+            if (board.GetStoneNeighbours(eyePoint).Any(n => IsWall(board, n)))
                 return true;
 
             Boolean eyeInMiddleArea = board.PointWithinMiddleArea(eyePoint);
             int diagonalWallCount = 0;
             foreach (Point q in board.GetDiagonalNeighbours(eyePoint))
             {
-                if (IsWall(board, q, c)) diagonalWallCount += 1;
+                if (IsWall(board, q)) diagonalWallCount += 1;
                 if (eyeInMiddleArea && diagonalWallCount > 1 || !eyeInMiddleArea && diagonalWallCount > 0)
                     return true;
             }
@@ -46,10 +45,10 @@ namespace Go
         /// <summary>
         /// Wall is either non killable or is empty point or opponent point which is not movable.
         /// </summary>
-        public static Boolean IsWall(Board board, Point p, Content c = Content.Unknown)
+        public static Boolean IsWall(Board board, Point p)
         {
-            c = (c == Content.Unknown) ? GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive) : c;
-            return (IsNonKillableGroup(board, p) || board[p] != c && !board.GameInfo.IsMovablePoint[p.x, p.y]);
+            Content c = GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Kill);
+            return (IsNonKillableGroup(board, p) || board[p] != c.Opposite() && !board.GameInfo.IsMovablePoint[p.x, p.y]);
         }
 
         /// <summary>

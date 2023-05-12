@@ -1717,7 +1717,6 @@ namespace Go
                 Board tryBoard = neutralPointMove.TryGame.Board;
                 Point move = neutralPointMove.Move;
                 IEnumerable<Group> targetGroups = tryBoard.GetGroupsFromStoneNeighbours(move);
-                //ensure target group has two liberties and share at least one liberty with killer group
                 foreach (Group group in targetGroups)
                 {
                     if (groups.Contains(group)) continue;
@@ -1726,7 +1725,7 @@ namespace Go
                     List<Point> sharedLiberties = group.Liberties.Intersect(killerLiberties).ToList();
                     if (sharedLiberties.Count >= 1 && sharedLiberties.Count <= 2)
                     {
-                        //check that both players cannot clear space
+                        //ensure both players are suicidal at liberties
                         if (sharedLiberties.Any(p => !ImmovableHelper.IsSuicidalMoveForBothPlayers(tryBoard, p)))
                             continue;
                         return neutralPointMove;
@@ -1749,9 +1748,10 @@ namespace Go
         /// </summary>
         public static GameTryMove SpecificKillWithLibertyFight(Board board, List<GameTryMove> neutralPointMoves, List<Group> killerGroups)
         {
+            if (neutralPointMoves.Count == 0) return null;
             Content c = neutralPointMoves.First().MoveContent;
-            //any neutral point move next to target group and more than one point
-            GameTryMove neutralPointMove = neutralPointMoves.FirstOrDefault(t => t.TryGame.Board.GetGroupsFromStoneNeighbours(t.Move).Count > 0 && t.TryGame.Board.MoveGroup.Points.Count > 1);
+            //get any neutral point move next to target group
+            GameTryMove neutralPointMove = neutralPointMoves.FirstOrDefault(t => t.TryGame.Board.GetGroupsFromStoneNeighbours(t.Move).Count > 0);
             if (neutralPointMove == null) return null;
             Board tryBoard = neutralPointMove.TryGame.Board;
             foreach (Group targetGroup in tryBoard.GetGroupsFromStoneNeighbours(tryBoard.Move.Value))
@@ -1761,9 +1761,8 @@ namespace Go
                 (_, List<Point> diagonals) = LinkHelper.FindDiagonalCut(tryBoard, targetGroup);
                 if (diagonals != null)
                 {
-                    HashSet<Group> neighbourGroups = tryBoard.GetGroupsFromPoints(diagonals);
                     //get the group other than neutral point group
-                    Group neighbourGroup = neighbourGroups.FirstOrDefault(group => !group.Equals(tryBoard.MoveGroup) && !WallHelper.IsNonKillableGroup(tryBoard, group));
+                    Group neighbourGroup = tryBoard.GetGroupsFromPoints(diagonals).FirstOrDefault(gr => !gr.Equals(tryBoard.MoveGroup) && !WallHelper.IsNonKillableGroup(tryBoard, gr));
                     if (neighbourGroup == null) continue;
                     neighbourLiberties = neighbourGroup.Liberties.ToList();
 
@@ -1774,11 +1773,10 @@ namespace Go
                 else
                 {
                     //target group contains killer group
-                    List<Group> kgroups = killerGroups.Where(group => board.GetNeighbourGroups(group).Contains(board.GetCurrentGroup(targetGroup))).ToList();
+                    List<Group> kgroups = killerGroups.Where(gr => board.GetNeighbourGroups(gr).Contains(board.GetCurrentGroup(targetGroup))).ToList();
                     if (kgroups.Count != 1) continue;
                     Group kgroup = kgroups.First();
                     if (!kgroup.Points.Any(p => tryBoard[p] == c && tryBoard.GetGroupAt(p).Liberties.Count > 1)) continue;
-                    //include all empty points within killer group
                     neighbourLiberties = kgroup.Points.Where(p => tryBoard[p] == Content.Empty).ToList();
 
                     //compare liberties to see if target group can be killed
@@ -1786,8 +1784,8 @@ namespace Go
                         return neutralPointMove;
                 }
 
-                //real solid eye found
-                if (neighbourLiberties.Any(liberty => EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, liberty, c)))
+                //real eye found
+                if (neighbourLiberties.Any(n => EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, n, c)))
                     return neutralPointMove;
             }
             return null;
@@ -1802,6 +1800,8 @@ namespace Go
         /// </summary>
         public static GameTryMove GetGenericNeutralMove(Game g, List<GameTryMove> neutralPointMoves)
         {
+            if (neutralPointMoves.Count == 0) return null;
+            Content c = neutralPointMoves.First().MoveContent;
             List<Group> killerGroups = GroupHelper.GetKillerGroups(g.Board);
             foreach (Group killerGroup in killerGroups)
             {
@@ -1809,24 +1809,17 @@ namespace Go
 
                 //cover all neutral points
                 Board coveredBoard = new Board(g.Board);
-                neutralPointMoves.ForEach(m => coveredBoard[m.Move] = killerGroup.Content);
+                neutralPointMoves.ForEach(m => coveredBoard[m.Move] = c);
 
-                //order by inner liberties of neighbour group
+                //order by liberties
                 List<Group> orderedGroups = g.Board.GetNeighbourGroups(killerGroup).OrderBy(n => coveredBoard.GetGroupLiberties(n).Count).ToList();
-
-                //get liberties by order
-                HashSet<Point> libertyPoints = g.Board.GetLibertiesOfGroups(orderedGroups);
-                //get neutral points of killer group neighbours
-                neutralPointMoves = neutralPointMoves.Where(n => libertyPoints.Contains(n.Move)).ToList();
-                foreach (Point p in libertyPoints)
+                foreach (Point p in g.Board.GetLibertiesOfGroups(orderedGroups))
                 {
                     GameTryMove neutralMove = neutralPointMoves.FirstOrDefault(n => n.Move.Equals(p));
                     if (neutralMove == null) continue;
 
                     //check neighbour groups
-                    Board b = neutralMove.TryGame.Board;
-                    if (WallHelper.StrongNeighbourGroups(coveredBoard, b.Move.Value, b.MoveGroup.Content))
-                        continue;
+                    if (WallHelper.StrongNeighbourGroups(coveredBoard, neutralMove.Move, c)) continue;
                     return neutralMove;
                 }
             }
@@ -2030,7 +2023,7 @@ namespace Go
 
             //check other surrounding points are not possible eyes
             IEnumerable<Point> neighbourPts = tryBoard.GetStoneAndDiagonalNeighbours().Except(diagonals);
-            if (neighbourPts.Any(q => !WallHelper.NoEyeForSurvival(tryBoard, q)))
+            if (neighbourPts.Any(q => !WallHelper.NoEyeForSurvival(tryBoard, q, c)))
                 return false;
 
             //check link to groups other than eye groups
