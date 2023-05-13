@@ -541,7 +541,7 @@
             Determine if content for kill or survival, based on start content.
             </summary>
         </member>
-        <member name="M:Go.GameHelper.SetupMoveAvailable(Go.Board,Go.Point)">
+        <member name="M:Go.GameHelper.SetupMoveAvailable(Go.Board,Go.Point,Go.Content)">
             <summary>
             Determine if setup move is available for kill or survival.
             </summary>
@@ -2131,7 +2131,7 @@
             Check no eye for survival.
             </summary>
         </member>
-        <member name="M:Go.WallHelper.IsWall(Go.Board,Go.Point)">
+        <member name="M:Go.WallHelper.IsWall(Go.Board,Go.Point,Go.Content)">
             <summary>
             Wall is either non killable or is empty point or opponent point which is not movable.
             </summary>

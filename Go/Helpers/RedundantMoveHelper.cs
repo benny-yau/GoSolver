@@ -134,10 +134,6 @@ namespace Go
             if (diagonals.Count > 1 && b2.GetGroupsFromStoneNeighbours(eyePoint, c).Count(n => n.Liberties.Count <= 2) >= 2)
                 return false;
 
-            //check kill opponent
-            if (tryBoard.GetStoneAndDiagonalNeighbours().Append(move).Any(n => !WallHelper.NoEyeForSurvival(currentBoard, n, c.Opposite())))
-                return false;
-
             //check two liberty group to capture neighbour
             if (currentBoard.GetNeighbourGroups(eyeGroup).Any(n => CheckTwoLibertyGroupToCaptureNeighbour(currentBoard, tryBoard, n, eyePoint)))
                 return false;
