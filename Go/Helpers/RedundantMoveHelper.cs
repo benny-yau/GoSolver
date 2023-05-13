@@ -122,9 +122,13 @@ namespace Go
             if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(tryBoard))
                 return false;
 
+            //check kill opponent
+            if (tryBoard.GetStoneNeighbours().Any(n => !WallHelper.NoEyeForSurvival(tryBoard, n, c)))
+                return false;
+
             //check eye for survival
             Point p = eyeGroup.Points.Count == 1 ? eyePoint : eyeGroup.Points.First(n => !n.Equals(eyePoint));
-            List<Point> diagonals = tryBoard.GetDiagonalNeighbours(p).Where(n => !WallHelper.NoEyeForSurvival(tryBoard, n, c)).ToList();
+            List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, p, c).Where(n => !WallHelper.NoEyeForSurvival(tryBoard, n, c)).ToList();
             if (diagonals.Any(n => !EyeHelper.FindRealEyeWithinEmptySpace(currentBoard, n, c)))
                 return false;
 

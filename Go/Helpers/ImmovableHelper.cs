@@ -52,8 +52,8 @@ namespace Go
         public static List<Point> GetDiagonalsOfTigerMouth(Board board, Point p, Content c)
         {
             List<Point> opponentStones = board.GetStoneNeighbours(p).Where(n => board[n] == c).ToList();
-            List<Point> diagonals = board.GetDiagonalNeighbours(p).Where(n => board.GetStoneNeighbours(n).Intersect(opponentStones).Count() >= 2).ToList();
-            return diagonals;
+            int diagonalCount = board.CornerPoint(p) ? 1 : 2;
+            return board.GetDiagonalNeighbours(p).Where(n => board.GetStoneNeighbours(n).Intersect(opponentStones).Count() >= diagonalCount).ToList();
         }
 
         /// <summary>
