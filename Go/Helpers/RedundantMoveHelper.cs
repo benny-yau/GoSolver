@@ -122,10 +122,6 @@ namespace Go
             if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(tryBoard))
                 return false;
 
-            //check kill opponent
-            if (tryBoard.GetStoneNeighbours().Any(n => !WallHelper.NoEyeForSurvival(tryBoard, n, c)))
-                return false;
-
             //check eye for survival
             Point p = eyeGroup.Points.Count == 1 ? eyePoint : eyeGroup.Points.First(n => !n.Equals(eyePoint));
             List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, p, c).Where(n => !WallHelper.NoEyeForSurvival(tryBoard, n, c)).ToList();
@@ -136,6 +132,11 @@ namespace Go
             Board b2 = currentBoard;
             if (opponentTryMove != null) b2 = opponentTryMove.TryGame.Board;
             if (diagonals.Count > 1 && b2.GetGroupsFromStoneNeighbours(eyePoint, c).Count(n => n.Liberties.Count <= 2) >= 2)
+                return false;
+
+            //check kill opponent
+            List<Point> opponentPoints = tryBoard.GetStoneAndDiagonalNeighbours().Except(tryBoard.GetStoneNeighbours(eyePoint)).ToList();
+            if (opponentPoints.Any(n => !WallHelper.NoEyeForSurvival(currentBoard, n, c.Opposite()) && !tryBoard.GetGroupsFromStoneNeighbours(n, c).Any(s => WallHelper.IsNonKillableGroup(tryBoard, s))))
                 return false;
 
             //check two liberty group to capture neighbour
