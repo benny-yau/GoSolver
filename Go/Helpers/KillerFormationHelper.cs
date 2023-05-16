@@ -1201,7 +1201,7 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q30919_2" />
         /// Check for opponent break formation <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A80_3" />
         /// </summary>
-        public static Point GetMaxBindingPoint(Board currentBoard, IEnumerable<Board> killBoards, Group killerGroup)
+        public static Point? GetMaxBindingPoint(Board currentBoard, IEnumerable<Board> killBoards, Group killerGroup)
         {
             Content c = killerGroup.Content;
             List<LinkedPoint<Point>> list = new List<LinkedPoint<Point>>();
@@ -1216,6 +1216,13 @@ namespace Go
             }
             //order by grid length then by max of intersection then by move group liberties
             list = list.OrderBy(m => ((dynamic)m.CheckMove).maxLengthOfGrid).ThenByDescending(m => ((dynamic)m.CheckMove).maxIntersect).ThenByDescending(m => ((dynamic)m.CheckMove).moveGroupLiberties).ToList();
+
+            //check for equals in ordering
+            if (list.Count == 1) return list.First().Move;
+            dynamic moveA = list[0].CheckMove;
+            dynamic moveB = list[1].CheckMove;
+            if (moveA.maxLengthOfGrid == moveB.maxLengthOfGrid && moveA.maxIntersect == moveB.maxIntersect && moveA.moveGroupLiberties == moveB.moveGroupLiberties)
+                return null;
 
             //check for opponent break formation
             if (killerGroup.Points.Count == 2 && killerGroup.Points.Any(p => currentBoard.CornerPoint(p)))

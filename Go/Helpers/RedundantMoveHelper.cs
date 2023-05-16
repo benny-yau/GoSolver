@@ -2272,8 +2272,8 @@ namespace Go
             if (!moveBoards.Any()) return false;
 
             //select move with max binding
-            Point bestMove = KillerFormationHelper.GetMaxBindingPoint(currentBoard, moveBoards, killerGroup);
-            if (!tryMove.Move.Equals(bestMove))
+            Point? bestMove = KillerFormationHelper.GetMaxBindingPoint(currentBoard, moveBoards, killerGroup);
+            if (bestMove != null && !tryMove.Move.Equals(bestMove))
                 return true;
 
             return false;
