@@ -45,12 +45,12 @@ namespace Go
             return content;
         }
 
-        public static void PrintGameTryMovesToText(Board board)
+        public static void PrintBoardToText(Board board)
         {
-            PrintGameTryMovesToText(board, "GameBoards.txt");
+            PrintBoardToText(board, "GameBoards.txt");
         }
 
-        public static void PrintGameTryMovesToText(Board board, String fileName)
+        public static void PrintBoardToText(Board board, String fileName)
         {
             String content = board.ToString() + Environment.NewLine + board.GameInfo.ScenarioName + Environment.NewLine + board.GetLastMoves() + Environment.NewLine;
             File.AppendAllText(Directory.GetCurrentDirectory() + "\\" + fileName, content);

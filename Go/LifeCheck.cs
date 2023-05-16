@@ -184,7 +184,8 @@ namespace Go
                 return true;
 
             //check double atari
-            if (LinkHelper.DoubleAtariOnTargetGroups(b2, b2.GetNeighbourGroups(b.MoveGroup)))
+            List<Group> ngroups = b2.GetNeighbourGroups(b.MoveGroup);
+            if (ngroups.Any(n => n.Liberties.Count == 1) || LinkHelper.DoubleAtariOnTargetGroups(b2, ngroups))
                 return true;
 
             return false;
