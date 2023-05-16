@@ -369,9 +369,11 @@ namespace Go
             //make move at the other liberty
             (Boolean suicidal, Board board) = ImmovableHelper.IsSuicidalMove(q, c, currentBoard);
             if (suicidal) return false;
+            Group target = board.GetGroupAt(atariPoint);
+            if (!GameTryMove.IsNegligibleForBoard(board, currentBoard, n => !n.Equals(target))) return false;
 
             //ensure the other move can capture atari target as well
-            if (!ImmovableHelper.CheckCaptureSecure(board, board.GetGroupAt(atariPoint), true))
+            if (!ImmovableHelper.CheckCaptureSecure(board, target, true))
                 return false;
 
             //check weak group
@@ -2263,7 +2265,7 @@ namespace Go
             if (multipleGroups.Any(b => !ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false))) return false;
 
             //check for dead formation
-            if (moveBoards.Any(b => KillerFormationHelper.DeadFormationInBothAlive(b, killerGroup)))
+            if (moveBoards.Any(b => KillerFormationHelper.IsKillerFormationFromFunc(b, b.MoveGroup) || KillerFormationHelper.DeadFormationInBothAlive(b, killerGroup)))
                 return false;
 
             moveBoards.RemoveAll(n => multipleGroups.Any(b => b.Move.Equals(n.Move)));
