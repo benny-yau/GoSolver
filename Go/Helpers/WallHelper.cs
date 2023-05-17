@@ -171,13 +171,10 @@ namespace Go
         /// <summary>
         /// All target within non killable groups.
         /// </summary>
-        public static Boolean AllTargetWithinNonKillableGroups(Board board)
+        public static Boolean AllTargetWithinNonKillableGroups(Board board, Group targetGroup)
         {
-            foreach (Group targetGroup in LifeCheck.GetTargets(board))
-            {
-                if (LinkHelper.CheckAllDiagonalGroups(board, targetGroup, t => !WallHelper.TargetWithKoFightAtAllNonKillableGroups(board, t)))
-                    return false;
-            }
+            if (LinkHelper.CheckAllDiagonalGroups(board, targetGroup, t => !WallHelper.TargetWithKoFightAtAllNonKillableGroups(board, t)))
+                return false;
             return true;
         }
 

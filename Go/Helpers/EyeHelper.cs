@@ -34,11 +34,11 @@ namespace Go
         /// <summary>
         /// An uncovered eye is a point where none or only one diagonal point covered by opposite content if point is in the middle area, and no diagonal point covered by opposite content if point is at the side or at the corner.
         /// </summary>
-        public static Boolean FindUncoveredEye(Board currentBoard, Point eye, Content c)
+        public static Boolean FindUncoveredEye(Board board, Point eye, Content c)
         {
-            if (FindEye(currentBoard, eye, c))
+            if (FindEye(board, eye, c))
             {
-                return FindUncoveredPoint(currentBoard, eye, c);
+                return FindUncoveredPoint(board, eye, c);
             }
             return false;
         }
@@ -77,11 +77,11 @@ namespace Go
         /// <summary>
         /// Find false eye which has one or more diagonal points covered by opposite content.
         /// </summary>
-        public static Boolean FindCoveredEye(Board tryBoard, Point eye, Content c)
+        public static Boolean FindCoveredEye(Board board, Point eye, Content c)
         {
-            if (FindEye(tryBoard, eye, c) && IsCovered(tryBoard, eye, c))
+            if (FindEye(board, eye, c) && IsCovered(board, eye, c))
             {
-                if (!tryBoard.GetGroupsFromStoneNeighbours(eye, c.Opposite()).All(gr => gr.Liberties.Count == 1))
+                if (!board.GetGroupsFromStoneNeighbours(eye, c.Opposite()).All(gr => gr.Liberties.Count == 1))
                     return true;
             }
             return false;
@@ -127,6 +127,18 @@ namespace Go
 
             if (group.Points.Count != 2) return false;
             if (group.Points.Any(p => tryBoard.GetDiagonalNeighbours(p).Count(q => tryBoard[q] == c && LinkHelper.PointsBetweenDiagonals(p, q).All(r => tryBoard[r] == c.Opposite())) == (tryBoard.PointWithinMiddleArea(p) ? 2 : 1)))
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Find uncovered eye at diagonal.
+        /// </summary>
+        public static Boolean FindUncoveredEyeAtDiagonal(Board tryBoard, Point? move = null)
+        {
+            if (move == null) move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            if (tryBoard.GetDiagonalNeighbours(move).Any(d => EyeHelper.FindUncoveredEye(tryBoard, d, c.Opposite())))
                 return true;
             return false;
         }

@@ -449,6 +449,11 @@
             Check for two-point covered eye for suicide group.
             </summary>
         </member>
+        <member name="M:Go.EyeHelper.FindUncoveredEyeAtDiagonal(Go.Board,System.Nullable{Go.Point})">
+            <summary>
+            Find uncovered eye at diagonal.
+            </summary>
+        </member>
         <member name="M:Go.EyeHelper.FindNonSemiSolidEye(Go.Board,Go.Point,Go.Content)">
             <summary>
             Find eye that is not semi solid eye.
@@ -2171,7 +2176,7 @@
             Target with ko fight at all non killable groups.
             </summary>
         </member>
-        <member name="M:Go.WallHelper.AllTargetWithinNonKillableGroups(Go.Board)">
+        <member name="M:Go.WallHelper.AllTargetWithinNonKillableGroups(Go.Board,Go.Group)">
             <summary>
             All target within non killable groups.
             </summary>

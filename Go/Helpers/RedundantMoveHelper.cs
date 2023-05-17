@@ -1381,7 +1381,7 @@ namespace Go
             //check neighbour groups
             Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, atariTarget, true);
             if (b == null || WallHelper.StrongNeighbourGroups(b)) return false;
-            if (b.GetDiagonalNeighbours().Any(d => EyeHelper.FindUncoveredEye(b, d, c.Opposite()))) return false;
+            if (EyeHelper.FindUncoveredEyeAtDiagonal(b)) return false;
             return true;
         }
 
@@ -1415,7 +1415,7 @@ namespace Go
 
             //neutral point at small tiger mouth
             List<Point> eyePoint = opponentBoard.GetStoneNeighbours().Where(n => EyeHelper.FindEye(opponentBoard, n, c.Opposite())).ToList();
-            if (eyePoint.Any(n => !StrongGroupsAtMustHaveMove(tryBoard, n) || tryBoard.GetDiagonalNeighbours(n).Any(d => EyeHelper.FindUncoveredEye(tryBoard, d, c.Opposite()))))
+            if (eyePoint.Any(n => !StrongGroupsAtMustHaveMove(tryBoard, n) || EyeHelper.FindUncoveredEyeAtDiagonal(tryBoard, n)))
                 return true;
 
             //neutral point at big tiger mouth
@@ -2384,13 +2384,15 @@ namespace Go
             if (KoHelper.IsNonKillableGroupKoFight(tryBoard, tryBoard.MoveGroup))
             {
                 HashSet<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(move, c);
-                if (LifeCheck.GetTargets(tryBoard).All(t => neighbourGroups.Contains(t)) && WallHelper.AllTargetWithinNonKillableGroups(tryBoard))
+                if (LifeCheck.GetTargets(tryBoard).All(t => neighbourGroups.Contains(t) && WallHelper.AllTargetWithinNonKillableGroups(tryBoard, t)))
                     return true;
                 if (!WallHelper.StrongNeighbourGroups(tryBoard)) return false;
                 //check liberty fight
                 if (CheckLibertyFightAtMustHaveMove(tryBoard)) return false;
                 //check two liberty group
                 if (neighbourGroups.Any(n => CheckTwoLibertyGroupToCaptureNeighbour(tryBoard, currentBoard, n, eyePoint.Value)))
+                    return false;
+                if (EyeHelper.FindUncoveredEyeAtDiagonal(tryBoard))
                     return false;
                 return true;
             }
