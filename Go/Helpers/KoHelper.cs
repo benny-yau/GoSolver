@@ -45,7 +45,7 @@ namespace Go
         {
             if (!EyeHelper.FindEye(board, eye, c)) return (false, null);
             List<Group> eyeGroups = board.GetGroupsFromStoneNeighbours(eye, c.Opposite()).ToList();
-            List<Group> groups = eyeGroups.Where(group => group.Points.Count == 1 && group.Liberties.Count == 1).ToList();
+            List<Group> groups = eyeGroups.Where(n => n.Points.Count == 1 && n.Liberties.Count == 1).ToList();
             if (groups.Count != 1) return (false, null);
             if (eyeGroups.Any(g => g != groups.First() && g.Liberties.Count == 1)) return (false, null);
             return (true, groups.First());

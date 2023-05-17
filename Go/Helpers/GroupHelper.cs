@@ -81,9 +81,9 @@ namespace Go
         {
             List<Group> neighbourGroups = board.GetNeighbourGroups(killerGroup);
             if (isFilledBoard)
-                neighbourGroups.RemoveAll(group => group.Neighbours.All(n => board[n] == killerGroup.Content && board.GetGroupAt(n) == killerGroup));
+                neighbourGroups.RemoveAll(gr => gr.Neighbours.All(n => board[n] == killerGroup.Content && board.GetGroupAt(n) == killerGroup));
             else
-                neighbourGroups.RemoveAll(group => group.Neighbours.All(n => killerGroup.Points.Contains(n)));
+                neighbourGroups.RemoveAll(gr => gr.Neighbours.All(n => killerGroup.Points.Contains(n)));
             return neighbourGroups;
         }
 

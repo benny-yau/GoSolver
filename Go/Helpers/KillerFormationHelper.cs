@@ -137,7 +137,7 @@ namespace Go
             }
             else if (tryBoard.MoveGroupLiberties == 2)
             {
-                Group weakGroup = tryBoard.GetNeighbourGroups().FirstOrDefault(group => group.Points.Count >= 2 && group.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, group));
+                Group weakGroup = tryBoard.GetNeighbourGroups().FirstOrDefault(n => n.Points.Count >= 2 && n.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, n));
                 if (weakGroup != null && ImmovableHelper.CheckConnectAndDie(captureBoard, weakGroup))
                     return true;
             }
@@ -180,7 +180,7 @@ namespace Go
             List<Group> killerGroups = GroupHelper.GetKillerGroups(captureBoard, c.Opposite());
             List<Group> neighbourGroups = captureBoard.GetNeighbourGroups(killerGroup);
 
-            if (neighbourGroups.Any(group => WallHelper.IsNonKillableGroup(captureBoard, group)))
+            if (neighbourGroups.Any(n => WallHelper.IsNonKillableGroup(captureBoard, n)))
                 return true;
 
             foreach (Group kgroup in killerGroups.Where(gr => gr != killerGroup))

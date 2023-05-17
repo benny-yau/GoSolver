@@ -67,14 +67,14 @@ namespace Go
         private static Boolean CheckForBothAlive(Board board, Group killerGroup)
         {
             Content c = killerGroup.Content;
-            List<Point> emptyPoints = killerGroup.Points.Where(k => board[k] == Content.Empty).ToList();
+            List<Point> emptyPoints = killerGroup.Points.Where(n => board[n] == Content.Empty).ToList();
             //two to four liberties for both alive
             if (emptyPoints.Count < 2 || emptyPoints.Count > 4) return false;
 
             //fill eye points with content
             Board filledBoard = FillEyePointsBoard(board, killerGroup);
 
-            List<Point> contentPoints = killerGroup.Points.Where(t => board[t] == c).ToList();
+            List<Point> contentPoints = killerGroup.Points.Where(n => board[n] == c).ToList();
             List<Group> contentGroups = filledBoard.GetGroupsFromPoints(contentPoints).ToList();
             //more than one content group
             if (contentGroups.Count > 2 || (contentGroups.Count == 2 && emptyPoints.Count != 2)) return false;
@@ -90,7 +90,7 @@ namespace Go
                 //at least three content points in killer group
                 if (contentPoints.Count < 3) return false;
                 //at least two liberties for content groups in filled board
-                if (contentGroups.Any(group => group.Liberties.Count == 1)) return false;
+                if (contentGroups.Any(n => n.Liberties.Count == 1)) return false;
                 return CheckSimpleSeki(board, filledBoard, targetGroups, killerGroup, emptyPoints);
             }
             else if (associatedKillerGroups.Count >= 2) //complex seki
@@ -271,7 +271,7 @@ namespace Go
         /// </summary>
         private static void CheckCoveredEyeInKillerGroup(Board board, List<Group> killerGroups)
         {
-            if (killerGroups.Any(group => group.Points.Count <= 2))
+            if (killerGroups.Any(n => n.Points.Count <= 2))
             {
                 //find immovable groups
                 List<Group> immovableGroups = new List<Group>();
@@ -288,7 +288,7 @@ namespace Go
                 if (immovableGroups.Any())
                 {
                     b = new Board(board);
-                    immovableGroups.ForEach(group => group.Points.ToList().ForEach(p => b[p] = Content.Empty));
+                    immovableGroups.ForEach(n => n.Points.ToList().ForEach(p => b[p] = Content.Empty));
                 }
                 //find uncovered eye
                 foreach (Group group in killerGroups)

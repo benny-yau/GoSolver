@@ -646,7 +646,7 @@ namespace Go
             foreach (Group eyeGroup in eyeGroups)
             {
                 if (eyeGroup.Liberties.Count != 2) continue;
-                Point liberty = eyeGroup.Liberties.First(lib => !lib.Equals(move));
+                Point liberty = eyeGroup.Liberties.First(n => !n.Equals(move));
                 Board b = currentBoard.MakeMoveOnNewBoard(liberty, c, true);
                 if (b == null || WallHelper.TargetWithAllNonKillableGroups(b)) continue;
                 if (b.GetGroupsFromStoneNeighbours(move, c.Opposite()).Count == 1 && EyeHelper.FindEye(b, move, c)) continue;
@@ -654,7 +654,7 @@ namespace Go
                     return (true, b);
 
                 if (b.MoveGroup.Liberties.Count != 2) continue;
-                Point liberty2 = b.MoveGroup.Liberties.First(lib => !lib.Equals(move));
+                Point liberty2 = b.MoveGroup.Liberties.First(n => !n.Equals(move));
                 //check for groups at liberty
                 List<Group> ngroups = b.GetGroupsFromStoneNeighbours(liberty2, c.Opposite()).Where(n => !n.Equals(b.MoveGroup)).ToList();
                 if (!WallHelper.StrongNeighbourGroups(b, ngroups))
@@ -704,7 +704,7 @@ namespace Go
             foreach (Group eyeGroup in eyeGroups)
             {
                 if (eyeGroup.Liberties.Count != 3) continue;
-                List<Point> liberties = eyeGroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
+                List<Point> liberties = eyeGroup.Liberties.Where(n => !n.Equals(move)).ToList();
                 foreach (Point liberty in liberties)
                 {
                     List<Group> groups = tryBoard.GetGroupsFromStoneNeighbours(liberty, c.Opposite()).Where(n => !n.Equals(tryBoard.MoveGroup)).ToList();

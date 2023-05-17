@@ -32,7 +32,7 @@ namespace Go
             else
             {
                 //covered eye with more than two liberties
-                if (currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).Any(group => group.Liberties.Count <= 2))
+                if (currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).Any(n => n.Liberties.Count <= 2))
                     return false;
                 //check three liberty group
                 if (ImmovableHelper.CheckThreeLibertyGroupAtBigTigerMouth(tryMove))
@@ -91,7 +91,6 @@ namespace Go
         {
             Board tryBoard = tryMove.TryGame.Board;
             Board currentBoard = tryMove.CurrentGame.Board;
-            Point move = tryBoard.Move.Value;
             Content c = tryMove.MoveContent;
             if (tryMove.AtariResolved) return false;
             Group eyeGroup = null;
@@ -111,7 +110,7 @@ namespace Go
                 //two-point covered eye
                 eyePoint = tryBoard.CapturedPoints.First(q => tryBoard.GetStoneNeighbours().Contains(q));
                 if (!EyeHelper.CoveredMove(tryBoard, eyePoint, c)) return false;
-                Boolean unEscapable = tryBoard.MoveGroup.Liberties.Any(lib => tryBoard.GameInfo.IsMovablePoint[lib.x, lib.y] == false);
+                Boolean unEscapable = tryBoard.MoveGroup.Liberties.Any(n => tryBoard.GameInfo.IsMovablePoint[n.x, n.y] == false);
                 if (unEscapable)
                     eyeGroup = tryBoard.CapturedList.First();
             }
@@ -267,7 +266,7 @@ namespace Go
             if (eyeGroups.Any(e => e.Points.Count > 1 && e.Liberties.Count == 1)) return false;
 
             //double atari
-            if (eyeGroups.Count(group => group.Liberties.Count == 1) >= 2)
+            if (eyeGroups.Count(n => n.Liberties.Count == 1) >= 2)
                 return false;
 
             //check both alive
@@ -279,7 +278,7 @@ namespace Go
                 return false;
 
             //two covered eyes
-            if (eyeGroups.Any(e => e.Liberties.Count == 2 && e.Liberties.All(lib => EyeHelper.FindCoveredEye(currentBoard, lib, c) && !KoHelper.IsKoFight(currentBoard, lib, c).Item1)))
+            if (eyeGroups.Any(e => e.Liberties.Count == 2 && e.Liberties.All(n => EyeHelper.FindCoveredEye(currentBoard, n, c) && !KoHelper.IsKoFight(currentBoard, n, c).Item1)))
             {
                 if (!WallHelper.StrongGroupsAtCoveredBoard(currentBoard, eyeGroups.First()))
                     return false;
@@ -377,7 +376,7 @@ namespace Go
                 return false;
 
             //check weak group
-            if (tryBoard.GetNeighbourGroups(atariTarget).Count > 1 && LinkHelper.DoubleAtariOnTargetGroups(tryBoard, new List<Group>() { tryBoard.MoveGroup }))
+            if (currentBoard.GetNeighbourGroups(currentBoard.GetGroupAt(atariPoint)).Count > 1 && LinkHelper.DoubleAtariOnTargetGroups(tryBoard, new List<Group>() { tryBoard.MoveGroup }))
                 return false;
 
             return true;
@@ -782,7 +781,7 @@ namespace Go
                 return false;
 
             //check for eye at corner point
-            if (tryBoard.MoveGroup.Liberties.Any(lib => tryBoard.CornerPoint(lib) && tryBoard.GetStoneNeighbours(lib).Intersect(tryBoard.MoveGroup.Points).Count() >= 2))
+            if (tryBoard.MoveGroup.Liberties.Any(n => tryBoard.CornerPoint(n) && tryBoard.GetStoneNeighbours(n).Intersect(tryBoard.MoveGroup.Points).Count() >= 2))
             {
                 if (KillerFormationHelper.TwoByTwoFormation(tryBoard, tryBoard.MoveGroup.Points) || LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Count > 1)
                     return false;
@@ -1008,7 +1007,7 @@ namespace Go
                 if (KillerFormationHelper.SuicideForLibertyFight(tryBoard, currentBoard, false))
                     return false;
             }
-            else if (liberties.Count == 2 && !liberties.Any(lib => EyeHelper.FindEye(capturedBoard, lib, c.Opposite())))
+            else if (liberties.Count == 2 && !liberties.Any(n => EyeHelper.FindEye(capturedBoard, n, c.Opposite())))
             {
                 //two liberties - suicide for both players
                 IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(capturedBoard, liberties, c);
@@ -1026,12 +1025,12 @@ namespace Go
                     }
                 }
             }
-            else if (liberties.Count == 3 && !liberties.Any(lib => EyeHelper.FindEye(capturedBoard, lib, c.Opposite())))
+            else if (liberties.Count == 3 && !liberties.Any(n => EyeHelper.FindEye(capturedBoard, n, c.Opposite())))
             {
                 //three liberties - suicide for both players
                 foreach (Group ngroup in ngroups)
                 {
-                    List<Point> nLiberties = ngroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
+                    List<Point> nLiberties = ngroup.Liberties.Where(n => !n.Equals(move)).ToList();
                     if (nLiberties.Count != 2) continue;
                     IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(capturedBoard, nLiberties, c);
                     foreach (Board b in moveBoards)
@@ -1107,7 +1106,7 @@ namespace Go
             HashSet<Group> eyeGroups = capturedBoard.GetGroupsFromStoneNeighbours(move, c);
             if (eyeGroups.Count() != 1) return false;
             Group eyeGroup = eyeGroups.First();
-            List<Point> liberties = eyeGroup.Liberties.Where(lib => !lib.Equals(move)).ToList();
+            List<Point> liberties = eyeGroup.Liberties.Where(n => !n.Equals(move)).ToList();
             if (liberties.Count > 2) return true;
 
             IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(capturedBoard, liberties, c);
@@ -1473,7 +1472,7 @@ namespace Go
 
             //capture at liberty
             List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).Where(e => e.Liberties.Count == 2).ToList();
-            IEnumerable<Point> moves = eyeGroups.Select(e => e.Liberties.First(lib => !lib.Equals(move)));
+            IEnumerable<Point> moves = eyeGroups.Select(e => e.Liberties.First(n => !n.Equals(move)));
             if (moves.Any(p => tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Any(n => !n.Equals(tryBoard.MoveGroup) && n.Liberties.Count == 1)))
                 return true;
             return false;
@@ -1710,7 +1709,7 @@ namespace Go
         public static GameTryMove SpecificKillWithImmovablePoints(Board board, List<GameTryMove> neutralPointMoves, Group killerGroup)
         {
             List<Point> contentPoints = killerGroup.Points.Where(t => board[t] == killerGroup.Content).ToList();
-            if (board.GetGroupsFromPoints(contentPoints).Any(group => group.Liberties.Count == 1)) return null;
+            if (board.GetGroupsFromPoints(contentPoints).Any(n => n.Liberties.Count == 1)) return null;
             List<Point> killerLiberties = killerGroup.Points.Where(p => board[p] == Content.Empty).ToList();
 
             HashSet<Group> groups = new HashSet<Group>();

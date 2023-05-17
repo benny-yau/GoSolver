@@ -161,7 +161,7 @@ namespace Go
 
             //ensure all groups have more than one liberty
             HashSet<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(eye, c.Opposite());
-            if (neighbourGroups.Count > 1 && neighbourGroups.Any(group => group.Liberties.Count == 1))
+            if (neighbourGroups.Count > 1 && neighbourGroups.Any(n => n.Liberties.Count == 1))
                 return (false, null);
 
             //get suicide point or tiger's mouth at all diagonals
@@ -242,7 +242,7 @@ namespace Go
 
             //ensure all groups have more than one liberty
             List<Group> eyeGroups = board.GetNeighbourGroups(killerGroup);
-            if (eyeGroups.Count > 1 && eyeGroups.Any(group => group.Liberties.Count == 1))
+            if (eyeGroups.Count > 1 && eyeGroups.Any(n => n.Liberties.Count == 1))
                 return false;
 
             Board b = new Board(board);
@@ -315,7 +315,7 @@ namespace Go
             if (!EyeHelper.FindEye(board, eye, c.Opposite()) || board.PointWithinMiddleArea(eye)) return false;
 
             List<Group> eyeGroups = board.GetGroupsFromStoneNeighbours(eye, c).ToList();
-            if (!eyeGroups.All(group => group.Liberties.Count > 1)) return false;
+            if (!eyeGroups.All(n => n.Liberties.Count > 1)) return false;
 
             //check connect and die at target group
             Group targetGroup = eyeGroups.Except(board.GetNeighbourGroups(killerGroup)).FirstOrDefault();
@@ -430,7 +430,7 @@ namespace Go
                 return true;
 
             //ensure all liberties cannot create eye for opponent
-            if (killerGroup.Points.Where(p => board[p] == Content.Empty).All(lib => NoEyeForOpponentWithinKillerGroup(board, lib, c)))
+            if (killerGroup.Points.Where(p => board[p] == Content.Empty).All(n => NoEyeForOpponentWithinKillerGroup(board, n, c)))
                 return true;
 
             if (WallHelper.TargetWithAnyNonKillableGroup(board, killerGroup))
