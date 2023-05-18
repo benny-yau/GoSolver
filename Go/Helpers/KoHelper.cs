@@ -232,15 +232,13 @@ namespace Go
         {
             Content c = tryBoard.MoveGroup.Content;
             List<Point> stoneNeighbours = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindCoveredEye(tryBoard, n, c)).ToList();
-            if (stoneNeighbours.Count != 1) return false;
-            Point eyePoint = stoneNeighbours.First();
-            List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(eyePoint, c.Opposite()).ToList();
-            ngroups = LinkHelper.GetAllDiagonalGroups(tryBoard, ngroups.First()).ToList();
-            List<Group> targetGroups = new List<Group>();
-            ngroups.ForEach(ngroup => targetGroups.AddRange(KoHelper.GetKoTargetGroups(tryBoard, ngroup)));
-            targetGroups = targetGroups.Distinct().ToList();
-            if (targetGroups.Count >= 1)
-                return true;
+            foreach (Point p in stoneNeighbours)
+            {
+                List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).ToList();
+                ngroups = LinkHelper.GetAllDiagonalGroups(tryBoard, ngroups.First()).ToList();
+                if (ngroups.Any(n => KoHelper.GetKoTargetGroups(tryBoard, n).Any()))
+                    return true;
+            }
             return false;
         }
     }

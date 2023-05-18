@@ -138,7 +138,7 @@ namespace Go
         {
             if (move == null) move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.GetDiagonalNeighbours(move).Any(d => EyeHelper.FindUncoveredEye(tryBoard, d, c.Opposite())))
+            if (tryBoard.GetDiagonalNeighbours(move).Any(d => EyeHelper.FindNonSemiSolidEye(tryBoard, d, c.Opposite())))
                 return true;
             return false;
         }
@@ -148,7 +148,7 @@ namespace Go
         /// </summary>
         public static Boolean FindNonSemiSolidEye(Board board, Point eye, Content c)
         {
-            return EyeHelper.FindEye(board, eye, c) && !EyeHelper.FindSemiSolidEye(eye, board, c).Item1;
+            return EyeHelper.FindUncoveredEye(board, eye, c) && !EyeHelper.FindSemiSolidEye(eye, board, c).Item1;
         }
 
         /// <summary>
