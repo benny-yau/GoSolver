@@ -283,13 +283,15 @@ namespace Go
             {
                 //ensure three opponent groups
                 List<Point> opponentStones = board.GetStoneNeighbours(p).Where(n => board[n] == c && !ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt(n))).ToList();
-                HashSet<Group> neighbourGroups = board.GetGroupsFromPoints(opponentStones);
-                if (neighbourGroups.Count != 3) continue;
+                if (opponentStones.Count < 3) continue;
 
                 //make opponent move at diagonal
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board, true);
                 if (suicidal || b == null) continue;
-                Point middleStone = opponentStones.First(n => board.GetDiagonalNeighbours(n).Count(d => opponentStones.Contains(d)) >= 2);
+                if (!KillerFormationHelper.ThreeOpponentGroupsAtMove(b, p)) continue;
+                opponentStones = b.GetStoneNeighbours(p).Where(n => b[n] == c).ToList();
+                if (b.GetGroupsFromPoints(opponentStones).Count < 3) continue;
+                Point middleStone = opponentStones.First(n => b.GetDiagonalNeighbours(n).Count(d => opponentStones.Contains(d)) >= 2);
                 if (opponentStones.Where(n => !n.Equals(middleStone)).All(n => !CheckIsDiagonalLinked(middleStone, n, b)))
                     return true;
             }
