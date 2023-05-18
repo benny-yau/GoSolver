@@ -221,7 +221,8 @@ namespace Go
                 {
                     //make connection at other diagonal
                     Point q = diagonals.First(d => !d.Equals(b.Move.Value));
-                    if (ImmovableHelper.IsSuicidalMove(b, q, c))
+                    Board b2 = b.MakeMoveOnNewBoard(q, c);
+                    if (b2 == null || ImmovableHelper.CheckConnectAndDie(b2))
                         return false;
 
                     //check negligible
@@ -744,8 +745,9 @@ namespace Go
             {
                 if (b[p] != Content.Empty) continue;
                 if (func != null && func(p)) continue;
-                Point? liberty = ImmovableHelper.FindTigerMouth(b, p, c);
-                if (liberty == null || !ImmovableHelper.FindEmptyTigerMouth(b, c.Opposite(), liberty.Value)) continue;
+                if (!ImmovableHelper.FindTigerMouth(b, c, p)) continue;
+                Point q = b.GetStoneNeighbours(p).First(n => b[n] != c);
+                if (!ImmovableHelper.FindEmptyTigerMouth(b, c.Opposite(), q)) continue;
                 return true;
             }
             return false;
