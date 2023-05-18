@@ -282,7 +282,7 @@ namespace Go
             foreach (Point p in diagonals.Where(d => board[d] == Content.Empty))
             {
                 //ensure three opponent groups
-                List<Point> opponentStones = board.GetStoneNeighbours(p).Where(n => board[n] == c && board.GetGroupAt(n).Liberties.Count > 1).ToList();
+                List<Point> opponentStones = board.GetStoneNeighbours(p).Where(n => board[n] == c && !ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt(n))).ToList();
                 HashSet<Group> neighbourGroups = board.GetGroupsFromPoints(opponentStones);
                 if (neighbourGroups.Count != 3) continue;
 

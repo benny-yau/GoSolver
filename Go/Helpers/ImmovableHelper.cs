@@ -75,7 +75,7 @@ namespace Go
                 if (b == null)
                 {
                     //check connect and die
-                    if (EyeHelper.FindEye(board, p, c) && AllConnectAndDie(board, p))
+                    if (!WallHelper.StrongNeighbourGroups(board, p, c.Opposite()))
                         return (false, null);
                     return (true, null);
                 }
