@@ -47,26 +47,30 @@ namespace Go
             return targetGroups;
         }
 
-
         /// <summary>
         /// Double atari without escape.
         /// </summary>
         public static Boolean DoubleAtariWithoutEscape(Board board)
         {
-            if (board.AtariTargets.Count <= 1) return false;
+            Point move = board.Move.Value;
+            Content c = board.MoveGroup.Content;
             if (ImmovableHelper.IsSuicidalWithoutKo(board)) return false;
+            if (board.AtariTargets.Count == 0) return false;
+            List<Group> groups = board.GetGroupsFromStoneNeighbours(move, c).Where(n => n.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(board, n)).ToList();
+            groups = groups.Union(board.AtariTargets).ToList();
+            if (groups.Count < 2) return false;
 
-            //check if both targets escapable
+            //check if atari targets escapable
             foreach (Group targetGroup in board.AtariTargets)
             {
                 //check escape by capture
                 Board captureBoard = ImmovableHelper.EscapeByCapture(board, targetGroup, false);
-                if (captureBoard != null && !board.AtariTargets.Any(t => captureBoard.GetGroupLiberties(t).Count == 1) && !LinkHelper.DoubleAtariOnTargetGroups(captureBoard, board.AtariTargets))
+                if (captureBoard != null && !groups.Any(t => ImmovableHelper.CheckConnectAndDie(captureBoard, t)) && !LinkHelper.DoubleAtariOnTargetGroups(captureBoard, groups))
                     return false;
 
                 //make move at liberty
                 Board escapeBoard = ImmovableHelper.MakeMoveAtLiberty(board, targetGroup, targetGroup.Content);
-                if (escapeBoard != null && !ImmovableHelper.CheckConnectAndDie(escapeBoard) && !board.AtariTargets.Any(t => escapeBoard.GetGroupLiberties(t).Count == 1) && !LinkHelper.DoubleAtariOnTargetGroups(escapeBoard, board.AtariTargets))
+                if (escapeBoard != null && !groups.Any(t => ImmovableHelper.CheckConnectAndDie(escapeBoard, t)) && !LinkHelper.DoubleAtariOnTargetGroups(escapeBoard, groups))
                     return false;
             }
             return true;
