@@ -278,7 +278,7 @@ namespace Go
                 return false;
 
             //two covered eyes
-            if (eyeGroups.Any(e => e.Liberties.Count == 2 && e.Liberties.All(n => EyeHelper.FindCoveredEye(currentBoard, n, c) && !KoHelper.IsKoFight(currentBoard, n, c).Item1)))
+            if (eyeGroups.Any(e => e.Liberties.Count == 2 && e.Liberties.All(n => EyeHelper.FindCoveredEye(currentBoard, n, c))))
             {
                 if (!WallHelper.StrongGroupsAtCoveredBoard(currentBoard, eyeGroups.First()))
                     return false;

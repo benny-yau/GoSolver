@@ -126,9 +126,10 @@ namespace Go
             return true;
         }
 
-        public static Boolean IsHostileNeighbourGroup(Board board, Group group = null)
+        public static Boolean IsHostileNeighbourGroup(Board board, Group targetGroup = null)
         {
-            if (group == null) group = board.MoveGroup;
+            if (targetGroup == null) targetGroup = board.MoveGroup;
+            Group group = board.GetCurrentGroup(targetGroup);
             if (group.Liberties.Count > 2) return true;
             if (group.Liberties.Count == 2 && group.Liberties.All(liberty => ImmovableHelper.IsSuicidalMove(liberty, group.Content.Opposite(), board, true).Item1))
                 return true;

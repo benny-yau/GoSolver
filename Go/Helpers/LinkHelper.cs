@@ -698,7 +698,7 @@ namespace Go
             if (targetGroups.Count == 0) return false;
             Content c = targetGroups.First().Content;
             //get groups with two liberties only
-            targetGroups = targetGroups.Where(t => t.Liberties.Count == 2).ToList();
+            targetGroups = targetGroups.Where(t => board.GetGroupLiberties(t).Count == 2).ToList();
             if (targetGroups.Count == 0) return false;
             //get distinct liberties of target groups
             List<Point> liberties = board.GetLibertiesOfGroups(targetGroups).Distinct().ToList();

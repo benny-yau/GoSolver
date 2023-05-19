@@ -61,12 +61,12 @@ namespace Go
             {
                 //check escape by capture
                 Board captureBoard = ImmovableHelper.EscapeByCapture(board, targetGroup, false);
-                if (captureBoard != null && !board.AtariTargets.Any(t => captureBoard.GetGroupLiberties(t).Count == 1))
+                if (captureBoard != null && !board.AtariTargets.Any(t => captureBoard.GetGroupLiberties(t).Count == 1) && !LinkHelper.DoubleAtariOnTargetGroups(captureBoard, board.AtariTargets))
                     return false;
 
                 //make move at liberty
                 Board escapeBoard = ImmovableHelper.MakeMoveAtLiberty(board, targetGroup, targetGroup.Content);
-                if (escapeBoard != null && !ImmovableHelper.CheckConnectAndDie(escapeBoard) && !board.AtariTargets.Any(t => escapeBoard.GetGroupLiberties(t).Count == 1))
+                if (escapeBoard != null && !ImmovableHelper.CheckConnectAndDie(escapeBoard) && !board.AtariTargets.Any(t => escapeBoard.GetGroupLiberties(t).Count == 1) && !LinkHelper.DoubleAtariOnTargetGroups(escapeBoard, board.AtariTargets))
                     return false;
             }
             return true;
