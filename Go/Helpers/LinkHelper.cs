@@ -698,14 +698,40 @@ namespace Go
             if (targetGroups.Count == 0) return false;
             Content c = targetGroups.First().Content;
             //get groups with two liberties only
-            targetGroups = targetGroups.Where(t => board.GetGroupLiberties(t).Count == 2).ToList();
+            List<Group> groups = targetGroups.Where(t => board.GetGroupLiberties(t).Count == 2).ToList();
+            if (groups.Count > 0)
+            {
+                //get distinct liberties of target groups
+                List<Point> liberties = board.GetLibertiesOfGroups(groups).Distinct().ToList();
+
+                //double atari
+                IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, liberties, c.Opposite(), true);
+                if (moveBoards.Any(b => AtariHelper.DoubleAtariWithoutEscape(b) || b.CapturedList.Count > 0 || Board.ResolveAtari(board, b) || LinkWithThreatGroup(b, board) || MoveAtTigerMouth(b) || CheckForKoBreak(b)))
+                    return true;
+            }
+            if (DoubleConnectAndDieOnTargetGroups(board, targetGroups))
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Double connect and die on target groups.
+        /// </summary>
+        public static Boolean DoubleConnectAndDieOnTargetGroups(Board board, List<Group> targetGroups)
+        {
+            if (targetGroups.Count == 0) return false;
+            Content c = targetGroups.First().Content;
+            //get groups with three liberties only
+            targetGroups = targetGroups.Where(t => board.GetGroupLiberties(t).Count == 3).ToList();
             if (targetGroups.Count == 0) return false;
             //get distinct liberties of target groups
             List<Point> liberties = board.GetLibertiesOfGroups(targetGroups).Distinct().ToList();
-
-            //double atari
             IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, liberties, c.Opposite(), true);
-            if (moveBoards.Any(b => AtariHelper.DoubleAtariWithoutEscape(b) || b.CapturedList.Count > 0 || Board.ResolveAtari(board, b) || LinkWithThreatGroup(b, board) || MoveAtTigerMouth(b) || CheckForKoBreak(b)))
+            moveBoards = moveBoards.Where(b => targetGroups.Any(n => ImmovableHelper.CheckConnectAndDie(b, n))).ToList();
+            //double connect and die
+            if (moveBoards.Any(b => b.GetGroupsFromStoneNeighbours(b.Move.Value, c.Opposite()).Count(n => ImmovableHelper.CheckConnectAndDie(b, n)) >= 2))
+                return true;
+            if (moveBoards.Any(b => b.CapturedList.Count > 0 || Board.ResolveAtari(board, b) || LinkWithThreatGroup(b, board) || MoveAtTigerMouth(b) || CheckForKoBreak(b)))
                 return true;
             return false;
         }
