@@ -376,7 +376,7 @@ namespace Go
                 return false;
 
             //check weak group
-            if (currentBoard.GetNeighbourGroups(currentBoard.GetGroupAt(atariPoint)).Count > 1 && LinkHelper.DoubleAtariOnTargetGroups(tryBoard, new List<Group>() { tryBoard.MoveGroup }))
+            if (currentBoard.GetNeighbourGroups(currentBoard.GetGroupAt(atariPoint)).Count > 1 && !WallHelper.IsHostileNeighbourGroup(tryBoard))
                 return false;
 
             return true;

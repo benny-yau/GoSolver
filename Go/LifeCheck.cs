@@ -129,8 +129,8 @@ namespace Go
 
             //check is negligible
             HashSet<Group> tmGroups = b.GetGroupsFromStoneNeighbours(tigerMouth, c.Opposite());
-            Boolean isNegligible = GameTryMove.IsNegligibleForBoard(b, board, t => !tmGroups.Contains(t));
-            if (!isNegligible)
+            Boolean notNegligible = LinkHelper.CaptureForCommonExceptions(board, b) || Board.ResolveAtari(board, b) || b.AtariTargets.Any(t => !tmGroups.Contains(t));
+            if (notNegligible)
                 return true;
 
             //check for tiger mouth threat group

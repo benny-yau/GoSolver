@@ -706,7 +706,7 @@ namespace Go
 
                 //double atari
                 IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, liberties, c.Opposite(), true);
-                if (moveBoards.Any(b => AtariHelper.DoubleAtariWithoutEscape(b) || b.CapturedList.Count > 0 || Board.ResolveAtari(board, b) || LinkWithThreatGroup(b, board) || MoveAtTigerMouth(b) || CheckForKoBreak(b)))
+                if (moveBoards.Any(b => AtariHelper.DoubleAtariWithoutEscape(b) || CaptureForCommonExceptions(board, b) || Board.ResolveAtari(board, b) || LinkWithThreatGroup(b, board) || MoveAtTigerMouth(b) || CheckForKoBreak(b)))
                     return true;
             }
             if (DoubleConnectAndDieOnTargetGroups(board, targetGroups))
@@ -731,7 +731,17 @@ namespace Go
             //double connect and die
             if (moveBoards.Any(b => b.GetGroupsFromStoneNeighbours(b.Move.Value, c.Opposite()).Count(n => ImmovableHelper.CheckConnectAndDie(b, n)) >= 2))
                 return true;
-            if (moveBoards.Any(b => b.CapturedList.Count > 0 || Board.ResolveAtari(board, b) || LinkWithThreatGroup(b, board) || MoveAtTigerMouth(b) || CheckForKoBreak(b)))
+            if (moveBoards.Any(b => CaptureForCommonExceptions(board, b) || Board.ResolveAtari(board, b) || LinkWithThreatGroup(b, board) || MoveAtTigerMouth(b) || CheckForKoBreak(b)))
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Capture for common exceptions.
+        /// </summary>
+        public static Boolean CaptureForCommonExceptions(Board board, Board b)
+        {
+            if (b.CapturedList.Any(n => board.GetNeighbourGroups(n).Any(s => s.Liberties.Count <= 2 && !WallHelper.IsNonKillableFromSetupMoves(board, s))))
                 return true;
             return false;
         }

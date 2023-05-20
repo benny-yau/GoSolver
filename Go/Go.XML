@@ -1335,6 +1335,11 @@
             Double connect and die on target groups.
             </summary>
         </member>
+        <member name="M:Go.LinkHelper.CaptureForCommonExceptions(Go.Board,Go.Board)">
+            <summary>
+            Capture for common exceptions.
+            </summary>
+        </member>
         <member name="M:Go.LinkHelper.LinkWithThreatGroup(Go.Board,Go.Board,System.Func{Go.Group,System.Boolean})">
             <summary>
             Link with threat group.
