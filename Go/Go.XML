@@ -673,13 +673,18 @@
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario1dan21" />
             </summary>.
         </member>
-        <member name="M:Go.ImmovableHelper.ThreeLibertyConnectAndDie(Go.Board,Go.Point,Go.Group)">
+        <member name="M:Go.ImmovableHelper.ThreeLibertyConnectAndDie(Go.Board,System.Nullable{Go.Point},Go.Group)">
             <summary>
             Three liberty connect and die.
             <see cref="!:UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_TianLongTu_Q14992_2" />
             <see cref="!:UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_TianLongTu_Q14992" />
             Stone neighbours at diagonal of each other <see cref="!:UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_Side_B19" />
             Check if escapable <see cref="!:UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_Corner_A86" />
+            </summary>
+        </member>
+        <member name="M:Go.ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(Go.Board,Go.Group,System.Nullable{Go.Point})">
+            <summary>
+            Two and three liberties connect and die.
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.EscapeLink(Go.Board,Go.Group)">
@@ -1363,6 +1368,11 @@
         <member name="M:Go.LinkHelper.LinkBreakage(Go.Board,Go.Content)">
             <summary>
             Link breakage.
+            </summary>
+        </member>
+        <member name="M:Go.LinkHelper.CheckNegligibleForLinks(Go.Board,Go.Board,System.Func{Go.Group,System.Boolean})">
+            <summary>
+            Check negligible for links.
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.FindPotentialEye(Go.GameTryMove)">

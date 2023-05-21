@@ -194,26 +194,42 @@ namespace Go
         /// Stone neighbours at diagonal of each other <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_Side_B19" />
         /// Check if escapable <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_Corner_A86" />
         /// </summary>
-        public static (Boolean, Board) ThreeLibertyConnectAndDie(Board board, Point p, Group targetGroup = null)
+        public static (Boolean, Board) ThreeLibertyConnectAndDie(Board board, Point? p = null, Group targetGroup = null)
         {
             if (targetGroup == null) targetGroup = board.MoveGroup;
             Content c = targetGroup.Content;
 
-            if (!ImmovableHelper.FindTigerMouth(board, c, p)) return (false, null);
+            if (p == null)
+            {
+                Point liberty = targetGroup.Liberties.FirstOrDefault(n => ImmovableHelper.FindTigerMouth(board, c, n));
+                if (!Convert.ToBoolean(liberty.NotEmpty)) return (false, null);
+                p = liberty;
+            }
+            else if (!ImmovableHelper.FindTigerMouth(board, c, p.Value)) return (false, null);
 
             //stone neighbours at diagonal of each other
-            List<Point> stoneNeighbours = LinkHelper.GetNeighboursDiagonallyLinked(board, p, c);
+            List<Point> stoneNeighbours = LinkHelper.GetNeighboursDiagonallyLinked(board, p.Value, c);
             if (!stoneNeighbours.Any()) return (false, null);
 
-            Board b = board.MakeMoveOnNewBoard(p, c.Opposite());
+            Board b = board.MakeMoveOnNewBoard(p.Value, c.Opposite());
             if (b == null || b.MoveGroupLiberties != 1) return (false, null);
 
             Board b2 = ImmovableHelper.CaptureSuicideGroup(b);
             if (b2 == null || b2.MoveGroupLiberties != 2) return (false, null);
-            if (!EyeHelper.FindCoveredEye(b2, p, c)) return (false, null);
+            if (!EyeHelper.FindCoveredEye(b2, p.Value, c)) return (false, null);
             if (CheckConnectAndDie(b2, targetGroup))
                 return (true, b2);
             return (false, null);
+        }
+
+        /// <summary>
+        /// Two and three liberties connect and die.
+        /// </summary>
+        public static Boolean TwoAndThreeLibertiesConnectAndDie(Board board, Group targetGroup = null, Point? p = null)
+        {
+            if (ImmovableHelper.CheckConnectAndDie(board, targetGroup)) return true;
+            if (ImmovableHelper.ThreeLibertyConnectAndDie(board, p, targetGroup).Item1) return true;
+            return false;
         }
 
         /// <summary>
@@ -721,9 +737,8 @@ namespace Go
                         }
                         //check suicidal group
                         if (ImmovableHelper.CheckConnectAndDie(tryBoard, group, false)) continue;
-                        if (ImmovableHelper.ThreeLibertyConnectAndDie(currentBoard, liberty, group).Item1)
+                        if (ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(currentBoard, group, liberty))
                             return true;
-                        if (ImmovableHelper.CheckConnectAndDie(currentBoard, group)) return true;
                         //check covered eye suicidal group
                         if (EyeHelper.FindCoveredEye(currentBoard, liberty, c) && EyeHelper.FindCoveredEyeWithLiberties(currentBoard, move, c))
                             return true;

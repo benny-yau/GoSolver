@@ -225,12 +225,9 @@ namespace Go
                     if (b2 == null || ImmovableHelper.CheckConnectAndDie(b2))
                         return false;
 
-                    //check negligible
+                    //check negligible for links
                     if (immediateLink) continue;
-                    List<Group> ngroups = b.GetGroupsFromStoneNeighbours(b.Move.Value, c.Opposite()).Where(n => !n.Equals(b.GetGroupAt(pointA)) && !n.Equals(b.GetGroupAt(pointB))).ToList();
-                    if (!GameTryMove.IsNegligibleForBoard(b, board, t => ngroups.Contains(t)))
-                        return false;
-                    if (ngroups.Any(n => ImmovableHelper.CheckConnectAndDie(b, n)))
+                    if (LinkHelper.CheckNegligibleForLinks(b, board, n => !n.Equals(b.GetGroupAt(pointA)) && !n.Equals(b.GetGroupAt(pointB))))
                         return false;
                 }
                 return true;
@@ -732,7 +729,7 @@ namespace Go
             IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, liberties, c.Opposite(), true);
             moveBoards = moveBoards.Where(b => targetGroups.Any(n => ImmovableHelper.CheckConnectAndDie(b, n))).ToList();
             //double connect and die
-            if (moveBoards.Any(b => b.GetGroupsFromStoneNeighbours(b.Move.Value, c.Opposite()).Count(n => ImmovableHelper.CheckConnectAndDie(b, n)) >= 2))
+            if (moveBoards.Any(b => b.GetGroupsFromStoneNeighbours(b.Move.Value, c.Opposite()).Count(n => ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(b, n)) >= 2))
                 return true;
             if (moveBoards.Any(b => CaptureForCommonExceptions(board, b) || Board.ResolveAtari(board, b) || LinkWithThreatGroup(b, board) || MoveAtTigerMouth(b) || CheckForKoBreak(b)))
                 return true;
@@ -808,7 +805,11 @@ namespace Go
             if (b[q] != Content.Empty) return false;
             Board b2 = b.MakeMoveOnNewBoard(q, c.Opposite(), true);
             if (b2 == null) return false;
+            //check for another ko
             if (CheckForKoBreak(b2, s => s.Equals(p)))
+                return true;
+            //check negligible for links
+            if (CheckNegligibleForLinks(b2, b))
                 return true;
             return false;
         }
@@ -822,6 +823,22 @@ namespace Go
             List<Point> diagonals = b.GetDiagonalNeighbours().Where(n => b[n] != c && b.GetStoneNeighbours(n).Intersect(stoneNeighbours).Count() >= 2).ToList();
             diagonals = diagonals.Where(n => !ImmovableHelper.IsImmovablePoint(b, n, c)).ToList();
             if (diagonals.Any() && b.GetGroupsFromPoints(stoneNeighbours).Any(s => !WallHelper.IsNonKillableGroup(b, s)))
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Check negligible for links.
+        /// </summary>
+        public static Boolean CheckNegligibleForLinks(Board b2, Board b, Func<Group, Boolean> func = null)
+        {
+            Content c = b2.MoveGroup.Content;
+            //check is negligible
+            Boolean notNegligible = LinkHelper.CaptureForCommonExceptions(b, b2) || Board.ResolveAtari(b, b2);
+            if (notNegligible)
+                return true;
+            //check for connect and die
+            if (b2.GetGroupsFromStoneNeighbours(b2.Move.Value, c).Any(n => (func != null ? func(n) : true) && ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(b2, n)))
                 return true;
             return false;
         }

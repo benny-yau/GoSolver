@@ -56,7 +56,7 @@ namespace Go
             Content c = board.MoveGroup.Content;
             if (ImmovableHelper.IsSuicidalWithoutKo(board)) return false;
             if (board.AtariTargets.Count == 0) return false;
-            List<Group> groups = board.GetGroupsFromStoneNeighbours(move, c).Where(n => n.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(board, n)).ToList();
+            List<Group> groups = board.GetGroupsFromStoneNeighbours(move, c).Where(n => n.Liberties.Count >= 2 && n.Liberties.Count <= 3 && ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(board, n)).ToList();
             groups = groups.Union(board.AtariTargets).ToList();
             if (groups.Count < 2) return false;
 
@@ -65,12 +65,12 @@ namespace Go
             {
                 //check escape by capture
                 Board captureBoard = ImmovableHelper.EscapeByCapture(board, targetGroup, false);
-                if (captureBoard != null && !groups.Any(t => ImmovableHelper.CheckConnectAndDie(captureBoard, t)) && !LinkHelper.DoubleAtariOnTargetGroups(captureBoard, groups))
+                if (captureBoard != null && !groups.Any(t => ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(captureBoard, t)) && !LinkHelper.DoubleAtariOnTargetGroups(captureBoard, groups))
                     return false;
 
                 //make move at liberty
                 Board escapeBoard = ImmovableHelper.MakeMoveAtLiberty(board, targetGroup, targetGroup.Content);
-                if (escapeBoard != null && !groups.Any(t => ImmovableHelper.CheckConnectAndDie(escapeBoard, t)) && !LinkHelper.DoubleAtariOnTargetGroups(escapeBoard, groups))
+                if (escapeBoard != null && !groups.Any(t => ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(escapeBoard, t)) && !LinkHelper.DoubleAtariOnTargetGroups(escapeBoard, groups))
                     return false;
             }
             return true;

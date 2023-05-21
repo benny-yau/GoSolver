@@ -127,10 +127,9 @@ namespace Go
             Board b = board.MakeMoveOnNewBoard(libertyPoint, c.Opposite(), true);
             if (b == null || b.MoveGroupLiberties == 1) return false;
 
-            //check is negligible
+            //check negligible for links
             HashSet<Group> tmGroups = b.GetGroupsFromStoneNeighbours(tigerMouth, c.Opposite());
-            Boolean notNegligible = LinkHelper.CaptureForCommonExceptions(board, b) || Board.ResolveAtari(board, b) || b.AtariTargets.Any(t => !tmGroups.Contains(t));
-            if (notNegligible)
+            if (LinkHelper.CheckNegligibleForLinks(b, board, t => !tmGroups.Contains(t)))
                 return true;
 
             //check for tiger mouth threat group
