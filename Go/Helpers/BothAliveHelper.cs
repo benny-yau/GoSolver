@@ -79,19 +79,19 @@ namespace Go
             //more than one content group
             if (contentGroups.Count > 2 || (contentGroups.Count == 2 && emptyPoints.Count != 2)) return false;
 
-            List<Group> targetGroups = GroupHelper.GetNeighbourGroupsOfKillerGroup(board, killerGroup);
+            List<Group> ngroups = GroupHelper.GetNeighbourGroupsOfKillerGroup(board, killerGroup);
             List<Group> killerGroups = GetKillerGroupsForBothAlive(board, c.Opposite());
-            List<Group> associatedKillerGroups = killerGroups.Where(n => !n.Equals(killerGroup) && board.GetNeighbourGroups(n).Any(gr => targetGroups.Contains(gr))).ToList();
+            List<Group> associatedKillerGroups = killerGroups.Where(n => !n.Equals(killerGroup) && board.GetNeighbourGroups(n).Any(gr => ngroups.Contains(gr))).ToList();
             associatedKillerGroups.Insert(0, killerGroup);
 
             if (associatedKillerGroups.Count == 1)  //simple seki
             {
-                if (targetGroups.Count > 2) return false;
+                if (ngroups.Count > 2) return false;
                 //at least three content points in killer group
                 if (contentPoints.Count < 3) return false;
                 //at least two liberties for content groups in filled board
                 if (contentGroups.Any(n => n.Liberties.Count == 1)) return false;
-                return CheckSimpleSeki(board, filledBoard, targetGroups, killerGroup, emptyPoints);
+                return CheckSimpleSeki(board, filledBoard, ngroups, killerGroup, emptyPoints);
             }
             else if (associatedKillerGroups.Count >= 2) //complex seki
             {
@@ -106,7 +106,7 @@ namespace Go
                 //find diagonal cut
                 (_, List<Point> diagonals) = LinkHelper.FindDiagonalCut(board, killerGroup);
                 //check complex seki without diagonal cut
-                if (diagonals == null) return CheckComplexSeki(board, associatedKillerGroups, targetGroups);
+                if (diagonals == null) return CheckComplexSeki(board, associatedKillerGroups, ngroups);
 
                 //check complex seki with diagonal cut
                 HashSet<Group> diagonalGroups = board.GetGroupsFromPoints(diagonals);
@@ -118,7 +118,7 @@ namespace Go
                     Group diagonalKillerGroup = GroupHelper.GetKillerGroupFromCache(board, diagonalGroup.Points.First(), c);
                     if (diagonalKillerGroup == null) continue;
                     List<Group> cutKillerGroups = associatedKillerGroups.Where(gr => diagonalKillerGroup.Points.Contains(gr.Points.First())).ToList();
-                    List<Group> cutTargetGroups = targetGroups.Where(gr => diagonalKillerGroup.Points.Contains(gr.Points.First())).ToList();
+                    List<Group> cutTargetGroups = ngroups.Where(gr => diagonalKillerGroup.Points.Contains(gr.Points.First())).ToList();
                     if (CheckComplexSeki(board, cutKillerGroups, cutTargetGroups))
                         return true;
                 }
@@ -136,17 +136,17 @@ namespace Go
         /// Check for increased killer groups <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31445_2" />
         /// Check content group connect and die <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_TianLongTu_Q16424_3" />
         /// </summary>
-        private static Boolean CheckSimpleSeki(Board board, Board filledBoard, List<Group> neighbourGroups, Group killerGroup, List<Point> emptyPoints)
+        private static Boolean CheckSimpleSeki(Board board, Board filledBoard, List<Group> ngroups, Group killerGroup, List<Point> emptyPoints)
         {
             Content c = killerGroup.Content;
             //ensure at least two liberties within killer group in survival neighbour group
-            if (neighbourGroups.Any(n => n.Liberties.Count(p => killerGroup.Points.Contains(p) || BothAliveDiagonalEye(board, killerGroup, p)) < 2))
+            if (ngroups.Any(n => n.Liberties.Count(p => killerGroup.Points.Contains(p) || BothAliveDiagonalEye(board, killerGroup, p)) < 2))
                 return false;
 
             int emptyPointCount = killerGroup.Points.Count(k => filledBoard[k] == Content.Empty);
             if (emptyPointCount >= 3)
             {
-                if (!WallHelper.StrongNeighbourGroups(board, neighbourGroups))
+                if (!WallHelper.StrongNeighbourGroups(board, ngroups))
                     return false;
                 //check killer formation for three or more liberties
                 if (!KillerFormationHelper.DeadFormationInBothAlive(filledBoard, killerGroup, emptyPointCount, 2))
@@ -207,17 +207,17 @@ namespace Go
         /// Clear all killer groups with empty points <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30213" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A123" />
         /// </summary>
-        private static Boolean CheckComplexSeki(Board board, List<Group> killerGroups, List<Group> targetGroups)
+        private static Boolean CheckComplexSeki(Board board, List<Group> killerGroups, List<Group> ngroups)
         {
             if (killerGroups.Count == 0) return false;
             Content c = killerGroups.First().Content;
 
             //ensure at least two liberties within killer group in survival neighbour group
-            if (targetGroups.Any(n => n.Liberties.Count(p => GroupHelper.GetKillerGroupFromCache(board, p, c.Opposite()) != null) < 2))
+            if (ngroups.Any(n => n.Liberties.Count(p => GroupHelper.GetKillerGroupFromCache(board, p, c.Opposite()) != null) < 2))
                 return false;
 
             //check suicidal for both players and covered eye move at liberty
-            HashSet<Point> liberties = board.GetLibertiesOfGroups(targetGroups);
+            HashSet<Point> liberties = board.GetLibertiesOfGroups(ngroups);
             Boolean suicidalForBothPlayers = liberties.Any(n => ImmovableHelper.IsSuicidalMoveForBothPlayers(board, n));
             if (!suicidalForBothPlayers && !liberties.Any(n => board.GetGroupsFromStoneNeighbours(n, c.Opposite()).Any(gr => gr.Liberties.Any(s => EyeHelper.FindCoveredEyeWithLiberties(board, s, c)))))
                 return false;
@@ -226,7 +226,7 @@ namespace Go
             foreach (Group killerGroup in killerGroups)
             {
                 IEnumerable<Point> killerLiberties = killerGroup.Points.Where(p => board[p] == Content.Empty);
-                Boolean sharedLiberty = targetGroups.All(gr => gr.Liberties.Intersect(killerLiberties).Any());
+                Boolean sharedLiberty = ngroups.All(gr => gr.Liberties.Intersect(killerLiberties).Any());
                 if (!sharedLiberty)
                     return false;
             }

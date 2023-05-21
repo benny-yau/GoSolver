@@ -96,24 +96,24 @@ namespace Go
         /// <summary>
         /// Strong neighbour groups that cannot be captured by connect and die.
         /// </summary>
-        public static Boolean StrongNeighbourGroups(Board board, IEnumerable<Group> neighbourGroups)
+        public static Boolean StrongNeighbourGroups(Board board, IEnumerable<Group> ngroups)
         {
-            if (neighbourGroups.Any(n => n.Liberties.Count < 2 || ImmovableHelper.CheckConnectAndDie(board, n)))
+            if (ngroups.Any(n => n.Liberties.Count < 2 || ImmovableHelper.CheckConnectAndDie(board, n)))
                 return false;
             return true;
         }
 
         public static Boolean StrongNeighbourGroups(Board board, Point move, Content c)
         {
-            HashSet<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(move, c);
-            return StrongNeighbourGroups(board, neighbourGroups);
+            HashSet<Group> ngroups = board.GetGroupsFromStoneNeighbours(move, c);
+            return StrongNeighbourGroups(board, ngroups);
         }
 
         public static Boolean StrongNeighbourGroups(Board board, Group group = null)
         {
             if (group == null) group = board.MoveGroup;
-            List<Group> neighbourGroups = board.GetNeighbourGroups(group);
-            return StrongNeighbourGroups(board, neighbourGroups);
+            List<Group> ngroups = board.GetNeighbourGroups(group);
+            return StrongNeighbourGroups(board, ngroups);
         }
 
         /// <summary>
@@ -121,8 +121,8 @@ namespace Go
         /// </summary>
         public static Boolean HostileNeighbourGroups(Board board, Point move, Content c)
         {
-            HashSet<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(move, c);
-            if (neighbourGroups.Any(n => !IsHostileNeighbourGroup(board, n))) return false;
+            HashSet<Group> ngroups = board.GetGroupsFromStoneNeighbours(move, c);
+            if (ngroups.Any(n => !IsHostileNeighbourGroup(board, n))) return false;
             return true;
         }
 

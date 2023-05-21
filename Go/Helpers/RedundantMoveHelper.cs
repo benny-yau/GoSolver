@@ -451,15 +451,15 @@ namespace Go
             if (LinkHelper.FindDiagonalCut(tryBoard, tryBoard.MoveGroup).Item1 != null) return false;
 
             //all neighbour groups are non-killable
-            List<Group> neighbourGroups = tryBoard.GetNeighbourGroups(killerGroup);
-            if (neighbourGroups.All(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
+            List<Group> ngroups = tryBoard.GetNeighbourGroups(killerGroup);
+            if (ngroups.All(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
                 return true;
 
             //check any is non killable
-            if (!neighbourGroups.Any(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
+            if (!ngroups.Any(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
                 return false;
 
-            foreach (Group ngroup in neighbourGroups)
+            foreach (Group ngroup in ngroups)
             {
                 List<LinkedPoint<Point>> diagonalPoints = LinkHelper.GetGroupLinkedDiagonals(tryBoard, ngroup);
                 foreach (LinkedPoint<Point> p in diagonalPoints)
@@ -2382,14 +2382,14 @@ namespace Go
             //ko fight at non killable group
             if (KoHelper.IsNonKillableGroupKoFight(tryBoard, tryBoard.MoveGroup))
             {
-                HashSet<Group> neighbourGroups = tryBoard.GetGroupsFromStoneNeighbours(move, c);
-                if (LifeCheck.GetTargets(tryBoard).All(t => neighbourGroups.Contains(t) && WallHelper.AllTargetWithinNonKillableGroups(tryBoard, t)))
+                HashSet<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(move, c);
+                if (LifeCheck.GetTargets(tryBoard).All(t => ngroups.Contains(t) && WallHelper.AllTargetWithinNonKillableGroups(tryBoard, t)))
                     return true;
                 if (!WallHelper.StrongNeighbourGroups(tryBoard)) return false;
                 //check liberty fight
                 if (CheckLibertyFightAtMustHaveMove(tryBoard)) return false;
                 //check two liberty group
-                if (neighbourGroups.Any(n => CheckTwoLibertyGroupToCaptureNeighbour(tryBoard, currentBoard, n, eyePoint.Value)))
+                if (ngroups.Any(n => CheckTwoLibertyGroupToCaptureNeighbour(tryBoard, currentBoard, n, eyePoint.Value)))
                     return false;
                 if (EyeHelper.FindUncoveredEyeAtDiagonal(tryBoard))
                     return false;

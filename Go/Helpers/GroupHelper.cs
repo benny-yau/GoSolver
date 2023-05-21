@@ -51,7 +51,7 @@ namespace Go
                 //find killer groups with no liberties left or surrounded by non movable points
                 if (group.Liberties.Count == 0 || (!isKill && group.Liberties.All(n => gameInfo.IsMovablePoint[n.x, n.y] == false) && !LifeCheck.GetTargets(board).Any(t => group.Points.Contains(t.Points.First()))))
                 {
-                    (Boolean isKillerGroup, List<Group> neighbourGroups) = CheckNeighbourGroupsOfKillerGroup(filledBoard, group, true);
+                    (Boolean isKillerGroup, _) = CheckNeighbourGroupsOfKillerGroup(filledBoard, group, true);
                     if (!isKillerGroup) continue;
                     killerGroups.Add(group);
                 }
@@ -64,14 +64,14 @@ namespace Go
         /// </summary>
         public static (Boolean, List<Group>) CheckNeighbourGroupsOfKillerGroup(Board board, Group killerGroup, Boolean isFilledBoard = false)
         {
-            List<Group> neighbourGroups = GetNeighbourGroupsOfKillerGroup(board, killerGroup, isFilledBoard);
-            if (neighbourGroups.Count == 0) return (false, null);
-            if (neighbourGroups.Count == 1) return (true, neighbourGroups);
+            List<Group> ngroups = GetNeighbourGroupsOfKillerGroup(board, killerGroup, isFilledBoard);
+            if (ngroups.Count == 0) return (false, null);
+            if (ngroups.Count == 1) return (true, ngroups);
 
-            List<Group> diagonalGroups = LinkHelper.GetAllDiagonalGroups(board, neighbourGroups.First(), s => !neighbourGroups.Contains(s));
-            if (neighbourGroups.Except(diagonalGroups).Any())
+            List<Group> diagonalGroups = LinkHelper.GetAllDiagonalGroups(board, ngroups.First(), s => !ngroups.Contains(s));
+            if (ngroups.Except(diagonalGroups).Any())
                 return (false, null);
-            return (true, neighbourGroups);
+            return (true, ngroups);
         }
 
         /// <summary>
@@ -79,12 +79,12 @@ namespace Go
         /// </summary>
         public static List<Group> GetNeighbourGroupsOfKillerGroup(Board board, Group killerGroup, Boolean isFilledBoard = false)
         {
-            List<Group> neighbourGroups = board.GetNeighbourGroups(killerGroup);
+            List<Group> ngroups = board.GetNeighbourGroups(killerGroup);
             if (isFilledBoard)
-                neighbourGroups.RemoveAll(gr => gr.Neighbours.All(n => board[n] == killerGroup.Content && board.GetGroupAt(n) == killerGroup));
+                ngroups.RemoveAll(gr => gr.Neighbours.All(n => board[n] == killerGroup.Content && board.GetGroupAt(n) == killerGroup));
             else
-                neighbourGroups.RemoveAll(gr => gr.Neighbours.All(n => killerGroup.Points.Contains(n)));
-            return neighbourGroups;
+                ngroups.RemoveAll(gr => gr.Neighbours.All(n => killerGroup.Points.Contains(n)));
+            return ngroups;
         }
 
         /// <summary>
@@ -106,8 +106,8 @@ namespace Go
         {
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(board, p, c);
             if (killerGroup == null) return null;
-            HashSet<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(p, c.Opposite());
-            if (GroupHelper.GetNeighbourGroupsOfKillerGroup(board, killerGroup).Any(n => neighbourGroups.Contains(n)))
+            HashSet<Group> ngroups = board.GetGroupsFromStoneNeighbours(p, c.Opposite());
+            if (GroupHelper.GetNeighbourGroupsOfKillerGroup(board, killerGroup).Any(n => ngroups.Contains(n)))
                 return killerGroup;
             return null;
         }

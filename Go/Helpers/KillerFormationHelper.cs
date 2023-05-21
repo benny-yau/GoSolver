@@ -178,20 +178,20 @@ namespace Go
 
             //get all killer groups except move killer group
             List<Group> killerGroups = GroupHelper.GetKillerGroups(captureBoard, c.Opposite());
-            List<Group> neighbourGroups = captureBoard.GetNeighbourGroups(killerGroup);
+            List<Group> ngroups = captureBoard.GetNeighbourGroups(killerGroup);
 
-            if (neighbourGroups.Any(n => WallHelper.IsNonKillableGroup(captureBoard, n)))
+            if (ngroups.Any(n => WallHelper.IsNonKillableGroup(captureBoard, n)))
                 return true;
 
             foreach (Group kgroup in killerGroups.Where(gr => gr != killerGroup))
             {
-                List<Group> neighbourKillerGroups = captureBoard.GetNeighbourGroups(kgroup);
-                if (!neighbourKillerGroups.Intersect(neighbourGroups).Any()) continue;
+                List<Group> nKillerGroups = captureBoard.GetNeighbourGroups(kgroup);
+                if (!nKillerGroups.Intersect(ngroups).Any()) continue;
                 //real eye with one neighbour group only
-                if (neighbourKillerGroups.Count == 1)
+                if (nKillerGroups.Count == 1)
                     return true;
                 //find real eye
-                if (EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, kgroup) && WallHelper.StrongNeighbourGroups(captureBoard, neighbourKillerGroups))
+                if (EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, kgroup) && WallHelper.StrongNeighbourGroups(captureBoard, nKillerGroups))
                     return true;
                 if (EyeHelper.RealEyeOfDiagonallyConnectedGroups(captureBoard, kgroup))
                     return true;
@@ -396,10 +396,10 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             if (tryBoard.MoveGroupLiberties == 1 && tryBoard.IsAtariMove)
             {
-                List<Group> neighbourGroups = tryBoard.GetNeighbourGroups();
-                if (neighbourGroups.Count != 1) return false;
+                List<Group> ngroups = tryBoard.GetNeighbourGroups();
+                if (ngroups.Count != 1) return false;
                 Point liberty = tryBoard.MoveGroup.Liberties.First();
-                if (tryBoard.GetGroupsFromStoneNeighbours(liberty, c).Except(neighbourGroups).Any()) return false;
+                if (tryBoard.GetGroupsFromStoneNeighbours(liberty, c).Except(ngroups).Any()) return false;
                 if (tryBoard.GetStoneNeighbours(liberty).Except(tryBoard.MoveGroup.Points).All(n => tryBoard[n] == c.Opposite()))
                     return true;
             }

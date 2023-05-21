@@ -124,10 +124,10 @@ namespace Go
             if (targetGroup.Points.Count != 1 || targetGroup.Liberties.Count != 1) return false;
             Content c = targetGroup.Content.Opposite();
             //check for ko by capture neighbour groups
-            List<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(q, c).Where(n => n.Liberties.Count == 1).ToList();
-            if (neighbourGroups.Count > 1)
+            List<Group> ngroups = board.GetGroupsFromStoneNeighbours(q, c).Where(n => n.Liberties.Count == 1).ToList();
+            if (ngroups.Count > 1)
             {
-                foreach (Group group in neighbourGroups)
+                foreach (Group group in ngroups)
                 {
                     (Boolean unEscapable, Board b) = ImmovableHelper.UnescapableGroup(board, group);
                     if (!unEscapable && KoHelper.IsKoFight(b, targetGroup))
@@ -620,8 +620,8 @@ namespace Go
                 if (stoneNeighbours.Any(n => capturedBoard[n] != c))
                     throw new Exception("Different content in connect and die.");
             }
-            List<Group> neighbourGroups = capturedBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).ToList();
-            return neighbourGroups.Any(group => CheckConnectAndDie(capturedBoard, group));
+            List<Group> ngroups = capturedBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).ToList();
+            return ngroups.Any(group => CheckConnectAndDie(capturedBoard, group));
         }
 
         /// <summary>

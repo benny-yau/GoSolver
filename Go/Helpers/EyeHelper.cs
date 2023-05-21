@@ -160,8 +160,8 @@ namespace Go
             if (!FindEye(board, eye, c)) return (false, null);
 
             //ensure all groups have more than one liberty
-            HashSet<Group> neighbourGroups = board.GetGroupsFromStoneNeighbours(eye, c.Opposite());
-            if (neighbourGroups.Count > 1 && neighbourGroups.Any(n => n.Liberties.Count == 1))
+            HashSet<Group> ngroups = board.GetGroupsFromStoneNeighbours(eye, c.Opposite());
+            if (ngroups.Count > 1 && ngroups.Any(n => n.Liberties.Count == 1))
                 return (false, null);
 
             //get suicide point or tiger's mouth at all diagonals

@@ -227,7 +227,10 @@ namespace Go
 
                     //check negligible
                     if (immediateLink) continue;
-                    if (!GameTryMove.IsNegligibleForBoard(b, board, t => !t.Points.Contains(pointA) && !t.Points.Contains(pointB)))
+                    List<Group> ngroups = b.GetGroupsFromStoneNeighbours(b.Move.Value, c.Opposite()).Where(n => !n.Equals(b.GetGroupAt(pointA)) && !n.Equals(b.GetGroupAt(pointB))).ToList();
+                    if (!GameTryMove.IsNegligibleForBoard(b, board, t => ngroups.Contains(t)))
+                        return false;
+                    if (ngroups.Any(n => ImmovableHelper.CheckConnectAndDie(b, n)))
                         return false;
                 }
                 return true;
