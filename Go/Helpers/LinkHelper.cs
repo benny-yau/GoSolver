@@ -244,17 +244,18 @@ namespace Go
                         Group gr = TigerMouthThreatGroup(board, p, c, n => n.Liberties.Count == 1);
                         if (gr == null || !DoubleAtariOnTargetGroups(board, board.GetNeighbourGroups(gr)))
                             return true;
+                        continue;
                     }
                     else
                     {
                         //check capture secure
                         if (!ImmovableHelper.CheckCaptureSecureForSingleGroup(board, board.GetGroupAt(p))) continue;
+                        //check killer group
+                        Group killerGroup = GroupHelper.GetKillerGroupOfStrongNeighbourGroups(board, p, c);
+                        if (killerGroup == null) continue;
+                        return true;
                     }
-                    //check killer group
-                    Group killerGroup = GroupHelper.GetKillerGroupOfStrongNeighbourGroups(board, p, c);
-                    if (killerGroup == null) continue;
                 }
-                return true;
             }
             return false;
         }
@@ -803,13 +804,19 @@ namespace Go
             if (rc.Count != nPoints.Count - 1) return false;
             Point q = nPoints.Except(rc).First();
             if (b[q] != Content.Empty) return false;
+            //make move to form tiger mouth
             Board b2 = b.MakeMoveOnNewBoard(q, c.Opposite(), true);
-            if (b2 == null) return false;
+            if (b2 == null || ImmovableHelper.IsSuicidalWithoutKo(b2)) return false;
+            //make ko move
+            Board koTryBoard = b2.MakeMoveOnNewBoard(tigerMouth, c.Opposite());
+            if (koTryBoard == null || !KoHelper.IsKoFight(koTryBoard))
+                return false;
             //check for another ko
             if (CheckForKoBreak(b2, s => s.Equals(p)))
                 return true;
             //check negligible for links
-            if (CheckNegligibleForLinks(b2, b))
+            HashSet<Group> tmGroups = b2.GetGroupsFromStoneNeighbours(tigerMouth, c.Opposite());
+            if (CheckNegligibleForLinks(b2, b, n => !tmGroups.Contains(n)))
                 return true;
             return false;
         }
