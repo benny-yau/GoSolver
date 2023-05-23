@@ -171,7 +171,7 @@ namespace Go
 
             //fill tiger mouth
             Board b2 = b.MakeMoveOnNewBoard(tigerMouth, c.Opposite(), true);
-            if (b2 == null) return false;
+            if (b2 == null || ImmovableHelper.CheckConnectAndDie(b2)) return true;
 
             //check non killable
             if (targetPoints != null && targetPoints.All(n => b2.GetGroupsFromStoneNeighbours(n, c).All(s => WallHelper.IsNonKillableGroup(b2, s))))

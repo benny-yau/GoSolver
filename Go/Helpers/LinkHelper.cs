@@ -644,18 +644,10 @@ namespace Go
             if (checkDiagonals)
             {
                 List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(board, p, c);
-                if (diagonals.All(d => IsImmovablePointWithoutThreatGroup(board, d, c)))
+                if (diagonals.All(d => ImmovableHelper.IsImmovablePoint(board, d, c)))
                     return false;
             }
             return true;
-        }
-
-        /// <summary>
-        /// Is immovable point without threat group.
-        /// </summary>
-        public static Boolean IsImmovablePointWithoutThreatGroup(Board board, Point p, Content c)
-        {
-            return board[p] == Content.Empty && ImmovableHelper.IsImmovablePoint(board, p, c) && TigerMouthThreatGroup(board, p, c, n => n.Liberties.Count <= 2) == null;
         }
 
         /// <summary>
@@ -805,8 +797,8 @@ namespace Go
             Point q = nPoints.Except(rc).First();
             if (b[q] != Content.Empty) return false;
             //make move to form tiger mouth
-            Board b2 = b.MakeMoveOnNewBoard(q, c.Opposite(), true);
-            if (b2 == null || ImmovableHelper.IsSuicidalWithoutKo(b2)) return false;
+            (_, Board b2) = ImmovableHelper.IsSuicidalMove(q, c.Opposite(), b, true);
+            if (b2 == null) return false;
             //make ko move
             Board koTryBoard = b2.MakeMoveOnNewBoard(tigerMouth, c.Opposite());
             if (koTryBoard == null || !KoHelper.IsKoFight(koTryBoard))
