@@ -644,10 +644,18 @@ namespace Go
             if (checkDiagonals)
             {
                 List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(board, p, c);
-                if (diagonals.All(d => ImmovableHelper.IsImmovablePoint(board, d, c)))
+                if (diagonals.All(d => IsImmovablePointWithoutThreatGroup(board, d, c)))
                     return false;
             }
             return true;
+        }
+
+        /// <summary>
+        /// Is immovable point without threat group.
+        /// </summary>
+        public static Boolean IsImmovablePointWithoutThreatGroup(Board board, Point p, Content c)
+        {
+            return board[p] == Content.Empty && ImmovableHelper.IsImmovablePoint(board, p, c) && TigerMouthThreatGroup(board, p, c, n => n.Liberties.Count <= 2) == null;
         }
 
         /// <summary>
