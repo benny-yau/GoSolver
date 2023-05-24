@@ -124,14 +124,9 @@ namespace Go
             //check eye for survival
             Point p = eyeGroup.Points.Count == 1 ? eyePoint : eyeGroup.Points.First(n => !n.Equals(eyePoint));
             List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, p, c).Where(n => !WallHelper.NoEyeForSurvival(tryBoard, n, c)).ToList();
-            if (diagonals.Any(n => !EyeHelper.FindRealEyeWithinEmptySpace(currentBoard, n, c)))
+            if (diagonals.Any() && diagonals.Count(n => EyeHelper.FindRealEyeWithinEmptySpace(currentBoard, n, c)) != 1)
                 return false;
 
-            //check for weak groups
-            Board b2 = currentBoard;
-            if (opponentTryMove != null) b2 = opponentTryMove.TryGame.Board;
-            if (diagonals.Count > 1 && b2.GetGroupsFromStoneNeighbours(eyePoint, c).Count(n => n.Liberties.Count <= 2) >= 2)
-                return false;
 
             //check kill opponent
             List<Point> opponentPoints = tryBoard.GetStoneAndDiagonalNeighbours().Except(tryBoard.GetStoneNeighbours(eyePoint)).ToList();
@@ -2408,13 +2403,9 @@ namespace Go
                 opponentBoard.MakeMoveOnNewBoard(eyePoint.Value, c.Opposite(), true);
             }
 
-            //if all diagonals are real eyes then redundant
+            //real eye at diagonal
             List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, eyePoint.Value, c).Where(q => tryBoard[q] != c).ToList();
-            if (diagonals.Any(d => !EyeHelper.FindRealEyeWithinEmptySpace(opponentBoard, d, c)))
-                return false;
-
-            //ensure no weak groups
-            if (diagonals.Count > 1 && opponentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).Count(n => n.Liberties.Count <= 2) >= 2)
+            if (diagonals.Any() && diagonals.Count(d => EyeHelper.FindRealEyeWithinEmptySpace(opponentBoard, d, c)) != 1)
                 return false;
 
             //check break link

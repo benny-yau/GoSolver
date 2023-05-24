@@ -1315,11 +1315,6 @@
             Is tiger mouth for link. Check diagonal only for links, not for confirm alive.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.IsImmovablePointWithoutThreatGroup(Go.Board,Go.Point,Go.Content)">
-            <summary>
-            Is immovable point without threat group.
-            </summary>
-        </member>
         <member name="M:Go.LinkHelper.TigerMouthThreatGroup(Go.Board,Go.Point,Go.Content,System.Func{Go.Group,System.Boolean})">
             <summary>
             Get tiger mouth threat group.
