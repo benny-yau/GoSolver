@@ -1045,7 +1045,8 @@ namespace Go
                 Boolean twoPointGroup = eyeGroup != null && eyeGroup.Points.Count == 2;
                 if (!twoPointGroup && CheckNonTwoPointGroupInSuicideRealEye(tryMove, capturedBoard))
                     return true;
-
+                if (twoPointGroup && CheckTwoPointGroupInSuicideRealEye(tryMove, capturedBoard))
+                    return true;
                 return false;
             }
             return true;
@@ -1093,19 +1094,12 @@ namespace Go
             if (currentBoard.GetGroupsFromStoneNeighbours(liberty, c).Any(n => n.Liberties.Count == 1))
                 return true;
 
-            //check connect and die
-            if (ImmovableHelper.CheckConnectAndDie(capturedBoard))
-                return false;
-
             //check for liberty fight
             HashSet<Group> eyeGroups = capturedBoard.GetGroupsFromStoneNeighbours(move, c);
             if (eyeGroups.Count() != 1) return false;
             Group eyeGroup = eyeGroups.First();
             List<Point> liberties = eyeGroup.Liberties.Where(n => !n.Equals(move)).ToList();
-            if (liberties.Count > 2) return true;
-
-            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(capturedBoard, liberties, c);
-            if (moveBoards.Any(b => WallHelper.StrongNeighbourGroups(b, b.GetNeighbourGroups(capturedBoard.MoveGroup))))
+            if (liberties.Count > 2)
                 return true;
             return false;
         }

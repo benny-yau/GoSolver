@@ -726,7 +726,7 @@
             Connect and die for move group <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_GuanZiPu_A3" />
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.IsSuicidalMove(Go.Board,Go.Point,Go.Content)">
+        <member name="M:Go.ImmovableHelper.IsSuicidalMove(Go.Board,Go.Point,Go.Content,System.Boolean)">
             <summary>
             Is suicidal move.
             </summary>

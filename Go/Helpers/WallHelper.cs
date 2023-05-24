@@ -131,7 +131,7 @@ namespace Go
             if (targetGroup == null) targetGroup = board.MoveGroup;
             Group group = board.GetCurrentGroup(targetGroup);
             if (group.Liberties.Count > 2) return true;
-            if (group.Liberties.Count == 2 && group.Liberties.All(liberty => ImmovableHelper.IsSuicidalMove(liberty, group.Content.Opposite(), board, true).Item1))
+            if (group.Liberties.Count == 2 && group.Liberties.All(liberty => ImmovableHelper.IsSuicidalMove(board, liberty, group.Content.Opposite(), true)))
                 return true;
             return false;
         }

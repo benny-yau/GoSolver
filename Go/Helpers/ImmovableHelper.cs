@@ -356,9 +356,9 @@ namespace Go
         /// <summary>
         /// Is suicidal move.
         /// </summary>
-        public static Boolean IsSuicidalMove(Board tryBoard, Point p, Content c)
+        public static Boolean IsSuicidalMove(Board tryBoard, Point p, Content c, Boolean overrideKo = false)
         {
-            return IsSuicidalMove(p, c, tryBoard).Item1;
+            return IsSuicidalMove(p, c, tryBoard, overrideKo).Item1;
         }
 
         public static (Boolean, Board) IsSuicidalMove(Point p, Content c, Board tryBoard, Boolean overrideKo = false)
