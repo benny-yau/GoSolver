@@ -96,7 +96,7 @@ namespace Go
             else if (associatedKillerGroups.Count >= 2) //complex seki
             {
                 //two liberties for content group
-                Boolean oneLiberty = board.GetGroupsFromPoints(contentPoints).Any(gr => gr.Liberties.Count == 1);
+                Boolean oneLiberty = board.GetGroupsFromPoints(contentPoints).Any(n => n.Liberties.Count == 1);
                 if (oneLiberty) return false;
 
                 //ensure shared liberty suicidal for killer
@@ -110,15 +110,14 @@ namespace Go
 
                 //check complex seki with diagonal cut
                 HashSet<Group> diagonalGroups = board.GetGroupsFromPoints(diagonals);
-                if (diagonalGroups.Count != 2) return false;
                 if (diagonalGroups.Any(n => ImmovableHelper.CheckConnectAndDie(board, n))) return false;
 
                 foreach (Group diagonalGroup in diagonalGroups)
                 {
                     Group diagonalKillerGroup = GroupHelper.GetKillerGroupFromCache(board, diagonalGroup.Points.First(), c);
                     if (diagonalKillerGroup == null) continue;
-                    List<Group> cutKillerGroups = associatedKillerGroups.Where(gr => diagonalKillerGroup.Points.Contains(gr.Points.First())).ToList();
-                    List<Group> cutTargetGroups = ngroups.Where(gr => diagonalKillerGroup.Points.Contains(gr.Points.First())).ToList();
+                    List<Group> cutKillerGroups = associatedKillerGroups.Where(n => diagonalKillerGroup.Points.Contains(n.Points.First())).ToList();
+                    List<Group> cutTargetGroups = ngroups.Where(n => diagonalKillerGroup.Points.Contains(n.Points.First())).ToList();
                     if (CheckComplexSeki(board, cutKillerGroups, cutTargetGroups))
                         return true;
                 }
@@ -226,7 +225,7 @@ namespace Go
             foreach (Group killerGroup in killerGroups)
             {
                 IEnumerable<Point> killerLiberties = killerGroup.Points.Where(p => board[p] == Content.Empty);
-                Boolean sharedLiberty = ngroups.All(gr => gr.Liberties.Intersect(killerLiberties).Any());
+                Boolean sharedLiberty = ngroups.All(n => n.Liberties.Intersect(killerLiberties).Any());
                 if (!sharedLiberty)
                     return false;
             }
@@ -258,9 +257,9 @@ namespace Go
         public static List<Group> GetKillerGroupsForBothAlive(Board board, Content c = Content.Unknown)
         {
             List<Group> killerGroups = GroupHelper.GetKillerGroups(board, c);
-            if (killerGroups.Any(gr => gr.IsCoveredEye == null))
+            if (killerGroups.Any(n => n.IsCoveredEye == null))
                 CheckCoveredEyeInKillerGroup(board, killerGroups);
-            return killerGroups.Where(gr => !gr.IsCoveredEye.Value).ToList();
+            return killerGroups.Where(n => !n.IsCoveredEye.Value).ToList();
         }
 
         /// <summary>
@@ -298,7 +297,7 @@ namespace Go
                         group.IsCoveredEye = true;
                 }
             }
-            killerGroups.Where(gr => gr.IsCoveredEye == null).ToList().ForEach(gr => gr.IsCoveredEye = false);
+            killerGroups.Where(n => n.IsCoveredEye == null).ToList().ForEach(n => n.IsCoveredEye = false);
         }
 
         /// <summary>
