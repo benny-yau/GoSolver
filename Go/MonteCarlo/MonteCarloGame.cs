@@ -88,7 +88,7 @@ namespace Go
                 return ConfirmAliveResult.KoAlive;
 
             //return result with target killed or target survived
-            confirmAlive = LifeCheck.CheckIfTargetSurvivedOrKilled(confirmAlive, state.SurviveOrKill, state.Game);
+            confirmAlive = LifeCheck.CheckIfTargetSurvivedOrKilled(confirmAlive, state.SurviveOrKill, state.Game.Board);
             return confirmAlive;
         }
 

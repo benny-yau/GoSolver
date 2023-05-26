@@ -1167,7 +1167,7 @@
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_XuanXuanQiJing_Weiqi101_18497_5" />
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.GetPossibleLeapGroups(Go.Board,Go.Board,System.Collections.Generic.List{Go.Group})">
+        <member name="M:Go.LinkHelper.GetPossibleLeapGroups(Go.Board,Go.Board)">
             <summary>
             Get possible leap groups.
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30274" />
@@ -1266,6 +1266,11 @@
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q16902" /> 
             Captured eye point <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" />
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_Q18340" /> 
+            </summary>
+        </member>
+        <member name="M:Go.LinkHelper.CheckPossibleLink(Go.Board,Go.Group,Go.Group)">
+            <summary>
+            Check possible link.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.CheckTigerMouthExceptionsForLinks(Go.Board,Go.LinkedPoint{Go.Point})">
@@ -2367,12 +2372,12 @@
             Check if all target points are killed.
             </summary>
         </member>
-        <member name="M:Go.LifeCheck.CheckIfTargetSurvivedOrKilled(Go.ConfirmAliveResult,Go.SurviveOrKill,Go.Game)">
+        <member name="M:Go.LifeCheck.CheckIfTargetSurvivedOrKilled(Go.ConfirmAliveResult,Go.SurviveOrKill,Go.Board)">
             <summary>
             Includes target survived and target killed flags to prompt user.
             </summary>
         </member>
-        <member name="M:Go.LifeCheck.CheckIfDeadOrAlive(Go.SurviveOrKill,Go.Game)">
+        <member name="M:Go.LifeCheck.CheckIfDeadOrAlive(Go.SurviveOrKill,Go.Board)">
             <summary>
             Check if target group is dead or alive, including survival points check.
             </summary>

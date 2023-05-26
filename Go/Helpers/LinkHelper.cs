@@ -31,11 +31,11 @@ namespace Go
             //get all possible link groups
             List<Point> groupPoints = currentBoard.GetStoneAndDiagonalNeighbours(move).Where(n => currentBoard[n] == c).ToList();
             tryBoard.CapturedList.ForEach(q => groupPoints.AddRange(q.Neighbours.Where(n => currentBoard[n] == c && !n.Equals(move))));
-            List<Group> groups = currentBoard.GetGroupsFromPoints(groupPoints).ToList();
+            HashSet<Group> ngroups = currentBoard.GetGroupsFromPoints(groupPoints);
             //get leap groups
-            GetPossibleLeapGroups(tryBoard, currentBoard, groups);
-
+            HashSet<Group> leapGroups = GetPossibleLeapGroups(tryBoard, currentBoard);
             //find possible links between all groups
+            List<Group> groups = ngroups.Union(leapGroups).ToList();
             if (groups.Count > 1)
             {
                 for (int i = 0; i <= groups.Count - 2; i++)
@@ -44,9 +44,7 @@ namespace Go
                     {
                         if (groups[i] == groups[j]) continue;
                         Group groupI = tryBoard.GetCurrentGroup(groups[i]);
-                        groupI.LinkedPoint = groups[i].LinkedPoint;
                         Group groupJ = tryBoard.GetCurrentGroup(groups[j]);
-                        groupJ.LinkedPoint = groups[j].LinkedPoint;
                         //check if diagonal groups
                         if (tryBoard.CapturedList.Count == 0 && LinkHelper.GetDiagonalGroups(currentBoard, groups[i]).Any(n => n.Equals(groups[j])) && (!groupI.Equals(tryBoard.MoveGroup) || !groupJ.Equals(tryBoard.MoveGroup))) continue;
                         //check non killable groups
@@ -62,6 +60,9 @@ namespace Go
                             if (previousLinked) continue;
                             return true;
                         }
+                        //check leap groups
+                        if (leapGroups.Contains(groups[i]) && leapGroups.Contains(groups[j]))
+                            return true;
                     }
                 }
             }
@@ -110,22 +111,16 @@ namespace Go
         /// Get possible leap groups.
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30274" />
         /// </summary>
-        public static void GetPossibleLeapGroups(Board tryBoard, Board currentBoard, List<Group> groups)
+        public static HashSet<Group> GetPossibleLeapGroups(Board tryBoard, Board currentBoard)
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             List<Point> closestNeighbours = tryBoard.GetClosestPoints(move, c);
             //validate leap move
-            closestNeighbours = closestNeighbours.Where(leapMove => ValidateLeapMove(tryBoard, move, leapMove)).ToList();
-
-            //add to groups with linked point
-            foreach (Point p in closestNeighbours)
-            {
-                Group group = currentBoard.GetGroupAt(p);
-                if (groups.Contains(group)) continue;
-                group.LinkedPoint = new LinkedPoint<Point>(move, p);
-                groups.Add(group);
-            }
+            closestNeighbours = closestNeighbours.Where(n => !tryBoard.GetStoneAndDiagonalNeighbours().Contains(n) && ValidateLeapMove(tryBoard, move, n)).ToList();
+            HashSet<Group> leapGroups = new HashSet<Group>();
+            closestNeighbours.ForEach(n => leapGroups.Add(currentBoard.GetGroupAt(n)));
+            return leapGroups;
         }
 
         /// <summary>
@@ -478,16 +473,12 @@ namespace Go
             return isLinked && isLinked2;
         }
 
+        /// <summary>
+        /// Check possible link.
+        /// </summary>
         private static Boolean CheckPossibleLink(Board tryBoard, Group group, Group findGroup)
         {
-            Point move = tryBoard.Move.Value;
-            //check diagonal links
-            LinkedPoint<Point> diagonalLink = GetGroupLinkedDiagonals(tryBoard, group).FirstOrDefault(d => tryBoard.GetGroupAt(d.Move) == findGroup);
-            if (diagonalLink != null) return true;
-            //check leap moves
-            if (group.LinkedPoint != null && group.LinkedPoint.Move.Equals(move) && tryBoard.GetGroupAt(group.LinkedPoint.Move) == findGroup)
-                return true;
-            if (findGroup.LinkedPoint != null && findGroup.LinkedPoint.Move.Equals(move) && tryBoard.GetGroupAt(findGroup.LinkedPoint.Move) == group)
+            if (GetGroupLinkedDiagonals(tryBoard, group).Any(d => tryBoard.GetGroupAt(d.Move) == findGroup))
                 return true;
             return false;
         }

@@ -371,7 +371,7 @@ namespace Go
                 //check if game ended by confirm alive
                 SurviveOrKill surviveOrKill = childNode.State.SurviveOrKill;
                 Game g = childNode.State.Game;
-                ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(surviveOrKill, g);
+                ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(surviveOrKill, g.Board);
                 childNode.State.ConfirmAlive = confirmAlive;
                 if (confirmAlive != ConfirmAliveResult.Unknown && GameHelper.WinOrLose(surviveOrKill, confirmAlive, g.GameInfo))
                     childNode.State.WinOrLose = true;
@@ -453,10 +453,10 @@ namespace Go
                 return result;
 
             ConfirmAliveResult bestResult = ConfirmAliveResult.Alive;
-            //make single random move out of total possibilities
-            int totalPossibilities = tryMoves.Count;
-            if (totalPossibilities == 0) return bestResult;
-            int selectRandom = GlobalRandom.NextRange(0, totalPossibilities);
+            //make single random move out of possible moves
+            int possibleMoves = tryMoves.Count;
+            if (possibleMoves == 0) return bestResult;
+            int selectRandom = GlobalRandom.NextRange(0, possibleMoves);
             GameTryMove gameTryMove = tryMoves[selectRandom];
             Game tryGame = gameTryMove.TryGame;
             if (gameTryMove.MakeMoveResult == MakeMoveResult.Legal)
@@ -488,10 +488,10 @@ namespace Go
             if (result != ConfirmAliveResult.Unknown)
                 return result;
             ConfirmAliveResult bestResult = ConfirmAliveResult.Dead;
-            //make single random move out of total possibilities
-            int totalPossibilities = tryMoves.Count;
-            if (totalPossibilities == 0) return bestResult;
-            int selectRandom = GlobalRandom.NextRange(0, totalPossibilities);
+            //make single random move out of possible moves
+            int possibleMoves = tryMoves.Count;
+            if (possibleMoves == 0) return bestResult;
+            int selectRandom = GlobalRandom.NextRange(0, possibleMoves);
             GameTryMove gameTryMove = tryMoves[selectRandom];
             Game tryGame = gameTryMove.TryGame;
 
@@ -499,7 +499,7 @@ namespace Go
             if (gameTryMove.MakeMoveResult == MakeMoveResult.Legal)
             {
                 gameTryMove.ConfirmAlive = MonteCarloMakeKillMove(nextDepth, tryGame);
-                if (gameTryMove.ConfirmAlive == ConfirmAliveResult.Alive && gameTryMove.Move.Equals(Game.PassMove) && gameTryMove.TryGame.Board.KoGameCheck == KoCheck.None)
+                if (gameTryMove.ConfirmAlive == ConfirmAliveResult.Alive && gameTryMove.Move.Equals(Game.PassMove) && tryGame.Board.KoGameCheck == KoCheck.None)
                     gameTryMove.ConfirmAlive = ConfirmAliveResult.BothAlive;
             }
             else if (gameTryMove.MakeMoveResult == MakeMoveResult.KoBlocked)

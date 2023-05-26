@@ -242,9 +242,9 @@ namespace Go
         /// <summary>
         /// Includes target survived and target killed flags to prompt user.
         /// </summary>
-        public static ConfirmAliveResult CheckIfTargetSurvivedOrKilled(ConfirmAliveResult result, SurviveOrKill surviveOrKill, Game g)
+        public static ConfirmAliveResult CheckIfTargetSurvivedOrKilled(ConfirmAliveResult result, SurviveOrKill surviveOrKill, Board board)
         {
-            ConfirmAliveResult confirmAlive = CheckIfDeadOrAlive(surviveOrKill, g);
+            ConfirmAliveResult confirmAlive = CheckIfDeadOrAlive(surviveOrKill, board);
             if (confirmAlive == ConfirmAliveResult.Alive)
                 result |= ConfirmAliveResult.TargetSurvived;
             else if (confirmAlive == ConfirmAliveResult.Dead)
@@ -256,19 +256,19 @@ namespace Go
         /// <summary>
         /// Check if target group is dead or alive, including survival points check.
         /// </summary>
-        public static ConfirmAliveResult CheckIfDeadOrAlive(SurviveOrKill surviveOrKill, Game g)
+        public static ConfirmAliveResult CheckIfDeadOrAlive(SurviveOrKill surviveOrKill, Board board)
         {
             ConfirmAliveResult confirmAlive = ConfirmAliveResult.Unknown;
             //check for survival points
-            Boolean survivalPointsKilled = g.Board.CapturedPoints.Intersect(g.GameInfo.survivalPoints).Any();
+            Boolean survivalPointsKilled = board.CapturedPoints.Intersect(board.GameInfo.survivalPoints).Any();
             if (survivalPointsKilled)
                 return (surviveOrKill == SurviveOrKill.Survive) ? ConfirmAliveResult.Alive : ConfirmAliveResult.Dead;
 
             //check target dead or alive
             if (surviveOrKill == SurviveOrKill.Survive)
-                confirmAlive = LifeCheck.ConfirmAlive(g.Board);
+                confirmAlive = LifeCheck.ConfirmAlive(board);
             else
-                confirmAlive = LifeCheck.CheckIfTargetGroupKilled(g.Board);
+                confirmAlive = LifeCheck.CheckIfTargetGroupKilled(board);
             return confirmAlive;
         }
     }

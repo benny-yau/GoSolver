@@ -123,7 +123,7 @@ namespace Go
                     //check if game ended - target group survived
                     if (tryMove.TryGame.Board.MoveGroupLiberties > 1)
                     {
-                        ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Survive, tryMove.TryGame);
+                        ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Survive, tryMove.TryGame.Board);
                         if (confirmAlive == ConfirmAliveResult.Alive)
                             return (ConfirmAliveResult.Alive, new List<GameTryMove>() { tryMove }, null);
                     }
@@ -369,7 +369,7 @@ namespace Go
                 else if (tryMove.MakeMoveResult == MakeMoveResult.Legal)
                 {
                     //check if game ended - target group or survival points killed
-                    ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Kill, tryMove.TryGame);
+                    ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Kill, tryMove.TryGame.Board);
                     if (confirmAlive == ConfirmAliveResult.Dead)
                         return (ConfirmAliveResult.Dead, new List<GameTryMove>() { tryMove }, null);
                     //find redundant moves

@@ -385,7 +385,7 @@ namespace Go
             if (result.HasFlag(ConfirmAliveResult.KoAlive)) return result;
 
             SurviveOrKill surviveOrKill = GameHelper.KillOrSurvivalForNextMove(this.Board).Opposite();
-            result = LifeCheck.CheckIfTargetSurvivedOrKilled(result, surviveOrKill, this);
+            result = LifeCheck.CheckIfTargetSurvivedOrKilled(result, surviveOrKill, this.Board);
             return result;
         }
         #endregion
