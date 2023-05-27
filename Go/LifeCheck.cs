@@ -27,10 +27,10 @@ namespace Go
         /// </summary>
         public static ConfirmAliveResult ConfirmAlive(Board board, Group targetGroup)
         {
+            Content c = targetGroup.Content;
             List<Group> eyes = new List<Group>();
             List<LinkedPoint<Point>> tigerMouthList = new List<LinkedPoint<Point>>();
 
-            Content c = targetGroup.Content;
             //ensure at least two liberties
             if (targetGroup.Liberties.Count == 1) return ConfirmAliveResult.Unknown;
 
@@ -136,7 +136,7 @@ namespace Go
             Group threatGroup = LinkHelper.TigerMouthThreatGroup(board, tigerMouth, c);
             if (threatGroup != null)
             {
-                if (AtariHelper.AtariByGroup(board, threatGroup)) return true;
+                if (AtariHelper.AtariByGroup(b, b.MoveGroup)) return true;
                 if (LinkHelper.LinkWithThreatGroup(b, board, s => s == threatGroup))
                     return true;
             }
@@ -211,13 +211,13 @@ namespace Go
         /// </summary>
         public static List<Group> GetTargets(Board board, List<Point> target = null)
         {
-            Content content = Content.Unknown;
+            Content c = Content.Unknown;
             if (target == null)
             {
                 //get target from game info
                 target = board.GameInfo.targetPoints;
-                content = GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive);
-                return target.Where(t => board[t] == content).Select(t => board.GetGroupAt(t)).Distinct().ToList(); //get the target that is still alive
+                c = GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive);
+                return target.Where(t => board[t] == c).Select(t => board.GetGroupAt(t)).Distinct().ToList(); //get the target that is still alive
             }
             else //can specify another target
             {
@@ -232,8 +232,8 @@ namespace Go
         {
             GameInfo gameInfo = board.GameInfo;
             List<Point> targetGroup = gameInfo.targetPoints;
-            Content content = GameHelper.GetContentForSurviveOrKill(gameInfo, SurviveOrKill.Survive);
-            List<Point> killedPoints = targetGroup.Where(q => board[q] != content).ToList();
+            Content c = GameHelper.GetContentForSurviveOrKill(gameInfo, SurviveOrKill.Survive);
+            List<Point> killedPoints = targetGroup.Where(q => board[q] != c).ToList();
             if (killedPoints.Count > 0 && killedPoints.Count == targetGroup.Count)
                 return ConfirmAliveResult.Dead;
             return ConfirmAliveResult.Unknown;
@@ -260,8 +260,7 @@ namespace Go
         {
             ConfirmAliveResult confirmAlive = ConfirmAliveResult.Unknown;
             //check for survival points
-            Boolean survivalPointsKilled = board.CapturedPoints.Intersect(board.GameInfo.survivalPoints).Any();
-            if (survivalPointsKilled)
+            if (board.CapturedPoints.Intersect(board.GameInfo.survivalPoints).Any())
                 return (surviveOrKill == SurviveOrKill.Survive) ? ConfirmAliveResult.Alive : ConfirmAliveResult.Dead;
 
             //check target dead or alive

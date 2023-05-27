@@ -509,7 +509,7 @@ namespace Go
                 if (IsTigerMouthForLink(board, q, c))
                     tigerMouthList.Add(q);
             }
-            return tigerMouthList.ToList();
+            return tigerMouthList;
         }
 
         /// <summary>
@@ -687,14 +687,15 @@ namespace Go
             List<Group> groups = targetGroups.Where(t => board.GetGroupLiberties(t).Count == 2).ToList();
             if (groups.Count > 0)
             {
-                //get distinct liberties of target groups
-                List<Point> liberties = board.GetLibertiesOfGroups(groups).Distinct().ToList();
-
                 //double atari
+                HashSet<Point> liberties = board.GetLibertiesOfGroups(groups);
                 IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, liberties, c.Opposite(), true);
-                if (moveBoards.Any(b => AtariHelper.DoubleAtariWithoutEscape(b) || CaptureForCommonExceptions(board, b) || Board.ResolveAtari(board, b) || LinkWithThreatGroup(b, board) || MoveAtTigerMouth(b) || CheckForKoBreak(b)))
+                if (moveBoards.Any(b => AtariHelper.DoubleAtariWithoutEscape(b)))
+                    return true;
+                if (moveBoards.Any(b => CheckMoveGroupForTigerMouthExceptions(board, b)))
                     return true;
             }
+            //double connect and die
             if (DoubleConnectAndDieOnTargetGroups(board, targetGroups))
                 return true;
             return false;
@@ -710,22 +711,32 @@ namespace Go
             //get groups with three liberties only
             targetGroups = targetGroups.Where(t => board.GetGroupLiberties(t).Count == 3).ToList();
             if (targetGroups.Count == 0) return false;
-            //get distinct liberties of target groups
-            List<Point> liberties = board.GetLibertiesOfGroups(targetGroups).Distinct().ToList();
+
+            HashSet<Point> liberties = board.GetLibertiesOfGroups(targetGroups);
             IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, liberties, c.Opposite(), true);
             moveBoards = moveBoards.Where(b => targetGroups.Any(n => ImmovableHelper.CheckConnectAndDie(b, n))).ToList();
             //double connect and die
             if (moveBoards.Any(b => b.GetGroupsFromStoneNeighbours(b.Move.Value, c.Opposite()).Count(n => ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(b, n)) >= 2))
                 return true;
-            if (moveBoards.Any(b => CaptureForCommonExceptions(board, b) || Board.ResolveAtari(board, b) || LinkWithThreatGroup(b, board) || MoveAtTigerMouth(b) || CheckForKoBreak(b)))
+            if (moveBoards.Any(b => CheckMoveGroupForTigerMouthExceptions(board, b)))
                 return true;
             return false;
         }
 
         /// <summary>
-        /// Capture for common exceptions.
+        /// Check move group for tiger mouth exceptions.
         /// </summary>
-        public static Boolean CaptureForCommonExceptions(Board board, Board b)
+        public static Boolean CheckMoveGroupForTigerMouthExceptions(Board board, Board b)
+        {
+            if (CaptureForTigerMouthExceptions(board, b) || Board.ResolveAtari(board, b) || LinkWithThreatGroup(b, board) || MoveAtTigerMouth(b) || CheckForKoBreak(b))
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Capture for tiger mouth exceptions.
+        /// </summary>
+        public static Boolean CaptureForTigerMouthExceptions(Board board, Board b)
         {
             if (b.CapturedList.Any(n => board.GetNeighbourGroups(n).Any(s => s.Liberties.Count <= 2 && !WallHelper.IsNonKillableFromSetupMoves(board, s))))
                 return true;
@@ -826,7 +837,7 @@ namespace Go
         {
             Content c = b2.MoveGroup.Content;
             //check is negligible
-            Boolean notNegligible = LinkHelper.CaptureForCommonExceptions(b, b2) || Board.ResolveAtari(b, b2);
+            Boolean notNegligible = LinkHelper.CaptureForTigerMouthExceptions(b, b2) || Board.ResolveAtari(b, b2);
             if (notNegligible)
                 return true;
             //check for connect and die

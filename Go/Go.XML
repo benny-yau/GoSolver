@@ -1340,9 +1340,14 @@
             Double connect and die on target groups.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.CaptureForCommonExceptions(Go.Board,Go.Board)">
+        <member name="M:Go.LinkHelper.CheckMoveGroupForTigerMouthExceptions(Go.Board,Go.Board)">
             <summary>
-            Capture for common exceptions.
+            Check move group for tiger mouth exceptions.
+            </summary>
+        </member>
+        <member name="M:Go.LinkHelper.CaptureForTigerMouthExceptions(Go.Board,Go.Board)">
+            <summary>
+            Capture for tiger mouth exceptions.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.LinkWithThreatGroup(Go.Board,Go.Board,System.Func{Go.Group,System.Boolean})">
