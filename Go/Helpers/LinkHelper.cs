@@ -126,7 +126,6 @@ namespace Go
                 if (ValidateLeapMove(tryBoard, move, p))
                     leapGroups.Add(group);
             }
-            closestNeighbours.ForEach(n => leapGroups.Add(currentBoard.GetGroupAt(n)));
             return leapGroups;
         }
 
