@@ -116,9 +116,16 @@ namespace Go
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             List<Point> closestNeighbours = tryBoard.GetClosestPoints(move, c);
+            closestNeighbours = closestNeighbours.Except(tryBoard.GetStoneAndDiagonalNeighbours()).ToList();
             //validate leap move
-            closestNeighbours = closestNeighbours.Where(n => !tryBoard.GetStoneAndDiagonalNeighbours().Contains(n) && ValidateLeapMove(tryBoard, move, n)).ToList();
             HashSet<Group> leapGroups = new HashSet<Group>();
+            foreach (Point p in closestNeighbours)
+            {
+                Group group = currentBoard.GetGroupAt(p);
+                if (leapGroups.Contains(group)) continue;
+                if (ValidateLeapMove(tryBoard, move, p))
+                    leapGroups.Add(group);
+            }
             closestNeighbours.ForEach(n => leapGroups.Add(currentBoard.GetGroupAt(n)));
             return leapGroups;
         }
@@ -652,16 +659,9 @@ namespace Go
             List<Point> points = board.GetStoneNeighbours(tigerMouth).Where(n => board[n] == c.Opposite()).ToList();
             if (points.Count != 1) return null;
             Group threatGroup = board.GetGroupAt(points.First());
-            if (func == null)
-            {
-                if (threatGroup.Liberties.Count == 2)
-                    return threatGroup;
-            }
-            else
-            {
-                if (func(threatGroup))
-                    return threatGroup;
-            }
+            if (func == null) func = n => n.Liberties.Count == 2;
+            if (func(threatGroup))
+                return threatGroup;
             return null;
         }
 
