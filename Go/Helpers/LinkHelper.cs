@@ -45,17 +45,20 @@ namespace Go
                         if (groups[i] == groups[j]) continue;
                         Group groupI = tryBoard.GetCurrentGroup(groups[i]);
                         Group groupJ = tryBoard.GetCurrentGroup(groups[j]);
-                        //check if diagonal groups
-                        if (tryBoard.CapturedList.Count == 0 && LinkHelper.GetDiagonalGroups(currentBoard, groups[i]).Any(n => n.Equals(groups[j])) && (!groupI.Equals(tryBoard.MoveGroup) || !groupJ.Equals(tryBoard.MoveGroup))) continue;
                         //check non killable groups
                         if (WallHelper.IsNonKillableGroup(currentBoard, groups[i]) && WallHelper.IsNonKillableGroup(currentBoard, groups[j])) continue;
-                        //check ko link
-                        if (ImmovableHelper.IsSuicidalWithoutBaseLineKo(tryBoard, groupI) || ImmovableHelper.IsSuicidalWithoutBaseLineKo(tryBoard, groupJ))
-                            continue;
-                        //check opponent suicidal
-                        (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(move, c.Opposite(), currentBoard, true);
-                        if (suicidal && (b == null || b.MoveGroup.Points.Count == 1))
-                            continue;
+                        //check if diagonal groups
+                        if (tryBoard.CapturedList.Count == 0)
+                        {
+                            if (LinkHelper.GetDiagonalGroups(currentBoard, groups[i]).Any(n => n.Equals(groups[j])) && (!groupI.Equals(tryBoard.MoveGroup) || !groupJ.Equals(tryBoard.MoveGroup))) continue;
+                            //check ko link
+                            if (ImmovableHelper.IsSuicidalWithoutBaseLineKo(tryBoard, groupI) || ImmovableHelper.IsSuicidalWithoutBaseLineKo(tryBoard, groupJ))
+                                continue;
+                            //check opponent suicidal
+                            (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(move, c.Opposite(), currentBoard, true);
+                            if (suicidal && (b == null || b.MoveGroup.Points.Count == 1))
+                                continue;
+                        }
                         //check if currently linked
                         Boolean isLinked = (groupI == groupJ) || PossibleLinkToAnyGroup(tryBoard, groupI, groupJ);
                         if (isLinked)
