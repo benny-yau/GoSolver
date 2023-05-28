@@ -442,7 +442,11 @@ namespace Go
         private void CreateRandomMoveForKill(List<GameTryMove> tryMoves, Game currentGame)
         {
             Board board = currentGame.Board;
-            if (tryMoves.Count > 0) return;
+            if (tryMoves.Count > 0)
+            {
+                Boolean suicidal = tryMoves.Count == 1 && KillerFormationHelper.CheckKoFightAfterSuicidal(tryMoves.First().TryGame.Board);
+                if (!suicidal) return;
+            }
             //do not add move if last move is random or pass move
             Point? lastMove = board.LastMove;
             if (lastMove != null && (board.IsRandomMove || lastMove.Value.Equals(Game.PassMove))) return;

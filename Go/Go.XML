@@ -966,6 +966,12 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17154" />
             </summary>
         </member>
+        <member name="M:Go.KillerFormationHelper.CheckKoFightAfterSuicidal(Go.Board,Go.Board)">
+            <summary>
+            Check ko fight after suicidal.
+            <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31498" />
+            </summary>
+        </member>
         <member name="M:Go.KillerFormationHelper.SuicideForLibertyFight(Go.Board,Go.Board,System.Boolean)">
             <summary>
             Suicide for liberty fight.

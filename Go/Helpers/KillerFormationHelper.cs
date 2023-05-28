@@ -468,6 +468,21 @@ namespace Go
         }
 
         /// <summary>
+        /// Check ko fight after suicidal.
+        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31498" />
+        /// </summary>
+        public static Boolean CheckKoFightAfterSuicidal(Board tryBoard, Board capturedBoard = null)
+        {
+            if (tryBoard.MoveGroup.Points.Count == 1 || tryBoard.MoveGroupLiberties > 1) return false;
+            if (tryBoard.CapturedList.Count == 0) return false;
+            if (capturedBoard == null) capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
+            if (capturedBoard == null) return false;
+            if (!WallHelper.IsHostileNeighbourGroup(capturedBoard))
+                return true;
+            return false;
+        }
+
+        /// <summary>
         /// Suicide for liberty fight.
         /// Both alive <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_2" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_3" />

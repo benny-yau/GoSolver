@@ -1239,7 +1239,7 @@ namespace Go
             if (capturedBoard == null) return false;
 
             //capture at tryBoard
-            if (tryBoard.CapturedList.Count > 0 && !WallHelper.IsHostileNeighbourGroup(capturedBoard))
+            if (KillerFormationHelper.CheckKoFightAfterSuicidal(tryBoard, capturedBoard))
                 return false;
 
             //killer formations
