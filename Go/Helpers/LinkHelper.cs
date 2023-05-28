@@ -15,6 +15,7 @@ namespace Go
         /// <see cref="UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_XuanXuanGo_Q18358" />
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" />
         /// Check covered eye <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30274_2" />
+        /// Check ko link <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16738" />
         /// </summary>
         public static Boolean PossibleLinkForGroups(Board tryBoard, Board currentBoard)
         {
@@ -48,9 +49,8 @@ namespace Go
                         if (tryBoard.CapturedList.Count == 0 && LinkHelper.GetDiagonalGroups(currentBoard, groups[i]).Any(n => n.Equals(groups[j])) && (!groupI.Equals(tryBoard.MoveGroup) || !groupJ.Equals(tryBoard.MoveGroup))) continue;
                         //check non killable groups
                         if (WallHelper.IsNonKillableGroup(currentBoard, groups[i]) && WallHelper.IsNonKillableGroup(currentBoard, groups[j])) continue;
-                        //check liberties
-                        if (groups[i].Liberties.Count == 1 || groups[j].Liberties.Count == 1) continue;
-                        if (tryBoard.GetStoneNeighbours().All(n => tryBoard[n] == c) && currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).All(n => n.Liberties.Count > 1)) continue;
+                        //check ko link
+                        if (ImmovableHelper.IsSuicidalWithoutKo(tryBoard, groupI) || ImmovableHelper.IsSuicidalWithoutKo(tryBoard, groupJ)) continue;
                         //check if currently linked
                         Boolean isLinked = (groupI == groupJ) || PossibleLinkToAnyGroup(tryBoard, groupI, groupJ);
                         if (isLinked)
