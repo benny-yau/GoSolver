@@ -15,7 +15,7 @@ namespace Go
         /// <see cref="UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_XuanXuanGo_Q18358" />
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" />
         /// Check covered eye <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30274_2" />
-        /// Check ko link <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16738" />
+        /// Check ko link <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30274_3" />
         /// </summary>
         public static Boolean PossibleLinkForGroups(Board tryBoard, Board currentBoard)
         {
@@ -50,7 +50,12 @@ namespace Go
                         //check non killable groups
                         if (WallHelper.IsNonKillableGroup(currentBoard, groups[i]) && WallHelper.IsNonKillableGroup(currentBoard, groups[j])) continue;
                         //check ko link
-                        if (ImmovableHelper.IsSuicidalWithoutKo(tryBoard, groupI) || ImmovableHelper.IsSuicidalWithoutKo(tryBoard, groupJ)) continue;
+                        if (ImmovableHelper.IsSuicidalWithoutBaseLineKo(tryBoard, groupI) || ImmovableHelper.IsSuicidalWithoutBaseLineKo(tryBoard, groupJ))
+                            continue;
+                        //check opponent suicidal
+                        (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(move, c.Opposite(), currentBoard, true);
+                        if (suicidal && (b == null || b.MoveGroup.Points.Count == 1))
+                            continue;
                         //check if currently linked
                         Boolean isLinked = (groupI == groupJ) || PossibleLinkToAnyGroup(tryBoard, groupI, groupJ);
                         if (isLinked)
