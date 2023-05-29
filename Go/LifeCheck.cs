@@ -134,22 +134,19 @@ namespace Go
 
             //check for tiger mouth threat group
             Group threatGroup = LinkHelper.TigerMouthThreatGroup(board, tigerMouth, c);
-            if (threatGroup != null)
-            {
-                if (LinkHelper.LinkWithThreatGroup(b, board, s => s == threatGroup))
-                    return true;
-
-                //check for link breakage
-                if (LinkHelper.LinkBreakage(b, c))
-                {
-                    if (b.MoveGroupLiberties > 2 || CheckThreatGroupEscape(b, tigerMouth, new List<Point>() { b.Move.Value }))
-                        return true;
-                }
-            }
+            if (threatGroup != null && LinkHelper.LinkWithThreatGroup(b, board, s => s == threatGroup))
+                return true;
 
             //check for ko break
             if (LinkHelper.CheckForKoBreak(b))
                 return true;
+
+            //check for link breakage
+            if (LinkHelper.LinkBreakage(b, c))
+            {
+                if (b.MoveGroupLiberties > 2 || CheckThreatGroupEscape(b, tigerMouth, new List<Point>() { b.Move.Value }))
+                    return true;
+            }
 
             //check for another tiger mouth at move
             List<Point> tigerMouths = b.GetStoneNeighbours().Where(n => !n.Equals(tigerMouth) && LinkHelper.IsTigerMouthForLink(board, n, c, !lifeCheck)).ToList();
