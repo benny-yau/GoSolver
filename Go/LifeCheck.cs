@@ -136,21 +136,20 @@ namespace Go
             Group threatGroup = LinkHelper.TigerMouthThreatGroup(board, tigerMouth, c);
             if (threatGroup != null)
             {
-                if (AtariHelper.AtariByGroup(b, b.MoveGroup)) return true;
                 if (LinkHelper.LinkWithThreatGroup(b, board, s => s == threatGroup))
                     return true;
+
+                //check for link breakage
+                if (LinkHelper.LinkBreakage(b, c))
+                {
+                    if (b.MoveGroupLiberties > 2 || CheckThreatGroupEscape(b, tigerMouth, new List<Point>() { b.Move.Value }))
+                        return true;
+                }
             }
 
             //check for ko break
             if (LinkHelper.CheckForKoBreak(b))
                 return true;
-
-            //check for link breakage
-            if (LinkHelper.LinkBreakage(b, c))
-            {
-                if (b.MoveGroupLiberties > 2 || CheckThreatGroupEscape(b, tigerMouth, new List<Point>() { b.Move.Value }))
-                    return true;
-            }
 
             //check for another tiger mouth at move
             List<Point> tigerMouths = b.GetStoneNeighbours().Where(n => !n.Equals(tigerMouth) && LinkHelper.IsTigerMouthForLink(board, n, c, !lifeCheck)).ToList();
@@ -168,6 +167,8 @@ namespace Go
         public static Boolean CheckThreatGroupEscape(Board b, Point tigerMouth, List<Point> targetPoints = null)
         {
             Content c = b.MoveGroup.Content;
+            if (AtariHelper.AtariByGroup(b, b.MoveGroup))
+                return true;
 
             //fill tiger mouth
             Board b2 = b.MakeMoveOnNewBoard(tigerMouth, c.Opposite(), true);

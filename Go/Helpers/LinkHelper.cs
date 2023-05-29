@@ -36,42 +36,37 @@ namespace Go
             HashSet<Group> leapGroups = GetPossibleLeapGroups(tryBoard, currentBoard);
             //find possible links between all groups
             List<Group> groups = ngroups.Union(leapGroups).ToList();
-            if (groups.Count > 1)
+            if (groups.Count == 0) return false;
+            for (int i = 0; i <= groups.Count - 2; i++)
             {
-                for (int i = 0; i <= groups.Count - 2; i++)
+                for (int j = (i + 1); j <= groups.Count - 1; j++)
                 {
-                    for (int j = (i + 1); j <= groups.Count - 1; j++)
+                    if (groups[i] == groups[j]) continue;
+                    Group groupI = tryBoard.GetCurrentGroup(groups[i]);
+                    Group groupJ = tryBoard.GetCurrentGroup(groups[j]);
+                    //check if currently linked
+                    Boolean isLinked = (groupI == groupJ) || PossibleLinkToAnyGroup(tryBoard, groupI, groupJ);
+                    Boolean isLeapGroups = leapGroups.Contains(groups[i]) && leapGroups.Contains(groups[j]);
+                    if (!isLinked && !isLeapGroups) continue;
+                    //check if previously linked
+                    Boolean previousLinked = IsImmediateDiagonallyConnected(currentBoard, groups[i], groups[j]) || IsDiagonallyConnectedGroups(currentBoard, groups[i], groups[j]);
+                    if (previousLinked) continue;
+
+                    //check non killable groups
+                    if (WallHelper.IsNonKillableGroup(currentBoard, groups[i]) && WallHelper.IsNonKillableGroup(currentBoard, groups[j])) continue;
+                    if (tryBoard.CapturedList.Count == 0)
                     {
-                        if (groups[i] == groups[j]) continue;
-                        Group groupI = tryBoard.GetCurrentGroup(groups[i]);
-                        Group groupJ = tryBoard.GetCurrentGroup(groups[j]);
-                        //check non killable groups
-                        if (WallHelper.IsNonKillableGroup(currentBoard, groups[i]) && WallHelper.IsNonKillableGroup(currentBoard, groups[j])) continue;
                         //check if diagonal groups
-                        if (tryBoard.CapturedList.Count == 0)
-                        {
-                            if (LinkHelper.GetDiagonalGroups(currentBoard, groups[i]).Any(n => n.Equals(groups[j])) && (!groupI.Equals(tryBoard.MoveGroup) || !groupJ.Equals(tryBoard.MoveGroup))) continue;
-                            //check ko link
-                            if (ImmovableHelper.IsSuicidalWithoutBaseLineKo(tryBoard, groupI) || ImmovableHelper.IsSuicidalWithoutBaseLineKo(tryBoard, groupJ))
-                                continue;
-                            //check opponent suicidal
-                            (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(move, c.Opposite(), currentBoard, true);
-                            if (suicidal && (b == null || b.MoveGroup.Points.Count == 1))
-                                continue;
-                        }
-                        //check if currently linked
-                        Boolean isLinked = (groupI == groupJ) || PossibleLinkToAnyGroup(tryBoard, groupI, groupJ);
-                        if (isLinked)
-                        {
-                            //check if previously linked
-                            Boolean previousLinked = IsImmediateDiagonallyConnected(currentBoard, groups[i], groups[j]) || IsDiagonallyConnectedGroups(currentBoard, groups[i], groups[j]);
-                            if (previousLinked) continue;
-                            return true;
-                        }
-                        //check leap groups
-                        if (leapGroups.Contains(groups[i]) && leapGroups.Contains(groups[j]))
-                            return true;
+                        if (LinkHelper.GetDiagonalGroups(currentBoard, groups[i]).Any(n => n.Equals(groups[j])) && (!groupI.Equals(tryBoard.MoveGroup) || !groupJ.Equals(tryBoard.MoveGroup))) continue;
+                        //check ko link
+                        if (ImmovableHelper.IsSuicidalWithoutBaseLineKo(tryBoard, groupI) || ImmovableHelper.IsSuicidalWithoutBaseLineKo(tryBoard, groupJ))
+                            continue;
+                        //check opponent suicidal
+                        (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(move, c.Opposite(), currentBoard, true);
+                        if (suicidal && (b == null || b.MoveGroup.Points.Count == 1))
+                            continue;
                     }
+                    return true;
                 }
             }
 
