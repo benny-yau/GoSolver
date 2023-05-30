@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ConsoleGoSolver
 {
@@ -41,32 +39,14 @@ namespace ConsoleGoSolver
         {
             //select game set and level
             List<String> gameSetList = new List<String>();
-            foreach (GameSet gameSet in ScenarioHelper.GameSets)
-            {
-                if (gameSet.Name == "Problem-Set") continue;
-                if (gameSet.Levels == null || gameSet.Levels.Count == 0)
-                    gameSetList.Add(gameSet.Name);
-                else
-                    gameSet.Levels.ForEach(level => gameSetList.Add(gameSet.Name + " - " + level));
-            }
+            ScenarioHelper.VerifyForAllScenarios((gameSet, level) => gameSetList.Add(gameSet + " - " + level));
             Console.WriteLine("Select scenario:");
             for (int i = 0; i <= gameSetList.Count - 1; i++)
-            {
                 Console.WriteLine((i + 1).ToString().PadLeft(3, ' ') + ": " + gameSetList[i]);
-            }
+
             Console.WriteLine("\nSelect game set (1 to " + gameSetList.Count.ToString() + "):");
 
-            int gameSetSelected = 0;
-            do
-            {
-                String gameSetString = Console.ReadLine();
-                if (Int32.TryParse(gameSetString, out gameSetSelected))
-                {
-                    if (gameSetSelected > 0 && gameSetSelected <= gameSetList.Count)
-                        break;
-                }
-            } while (true);
-
+            int gameSetSelected = SelectFromList<String>(gameSetList);
             String selectedGameSet = gameSetList[gameSetSelected - 1];
             String[] gameSetLevel = selectedGameSet.Split(new string[] { " - " }, StringSplitOptions.None);
 
@@ -75,19 +55,24 @@ namespace ConsoleGoSolver
 
             //select scenario number
             Console.WriteLine("Select scenario number (1 to " + scenarioList.Count.ToString() + ") : ");
-            int scenarioSelected = 0;
-            do
-            {
-                String scenarioString = Console.ReadLine();
-                if (Int32.TryParse(scenarioString, out scenarioSelected))
-                {
-                    if (scenarioSelected > 0 && scenarioSelected <= scenarioList.Count)
-                        break;
-                }
-            } while (true);
+            int scenarioSelected = SelectFromList<Func<Scenario, Game>>(scenarioList);
 
             //return selected scenario
             return ScenarioHelper.GetScenarioFromList(scenarioList, scenarioSelected - 1);
+        }
+
+        static int SelectFromList<T>(List<T> list)
+        {
+            int selected = 0;
+            do
+            {
+                String input = Console.ReadLine();
+                if (Int32.TryParse(input, out selected))
+                {
+                    if (selected > 0 && selected <= list.Count)
+                        return selected;
+                }
+            } while (true);
         }
 
         static Boolean PlayOneRound(Game game)

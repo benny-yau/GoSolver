@@ -12,7 +12,7 @@ namespace Go
     {
         public int SizeY { get { return content.GetLength(0); } }
         public int SizeX { get { return content.GetLength(1); } }
-        private Content[,] content { get; set; }
+        protected Content[,] content { get; set; }
         private List<Group> GroupCache = new List<Group>();
         public Group[,] GroupCacheFromPoint { get; set; }
 

@@ -1065,6 +1065,7 @@
             Opponent break kill formation.
             <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
             <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16859_2" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2413_2" />
             </summary>
         </member>
         <member name="M:Go.KillerFormationHelper.PossibleEyesCreated(Go.Board,Go.Point,Go.Content)">

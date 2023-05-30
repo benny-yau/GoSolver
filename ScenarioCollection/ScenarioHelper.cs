@@ -29,7 +29,7 @@ namespace ScenarioCollection
     {
         private static List<GameSet> gameSets;
         /// <summary>
-        /// List of game set with description and levels. Problem set included for debug mode.
+        /// Game sets. 
         /// </summary>
         public static List<GameSet> GameSets
         {
@@ -43,6 +43,61 @@ namespace ScenarioCollection
                 }
                 return gameSets;
             }
+        }
+
+        /// <summary>
+        /// Verify for all scenarios.
+        /// </summary>
+        public static void VerifyForAllScenarios(Action<String, String> action)
+        {
+            for (int i = 0; i <= ScenarioHelper.GameSets.Count - 1; i++)
+            {
+                GameSet gameSet = ScenarioHelper.GameSets[i];
+                if (gameSet.Name == "Problem-Set") continue;
+                if (gameSet.Levels.Count == 0)
+                    action(gameSet.Name, "");
+                else
+                {
+                    for (int j = 0; j <= gameSet.Levels.Count - 1; j++)
+                    {
+                        String level = gameSet.Levels[j];
+                        action(gameSet.Name, level);
+                    }
+                }
+            }
+        }
+
+        private static Dictionary<String, List<Func<Scenario, Game>>> scenarioDelegates = new Dictionary<String, List<Func<Scenario, Game>>>();
+
+        /// <summary>
+        /// Get scenario delegates.
+        /// </summary>
+        public static List<Func<Scenario, Game>> GetScenarioDelegates(String gameSet, String level)
+        {
+            String key = gameSet + "|" + level;
+            if (scenarioDelegates.ContainsKey(key))
+                return scenarioDelegates[key];
+            else
+            {
+                List<Func<Scenario, Game>> scenarioList = ScenarioHelper.AddScenarios(gameSet, level);
+                scenarioDelegates.Add(key, scenarioList);
+                return scenarioList;
+            }
+        }
+
+        public static Dictionary<String, List<Func<Scenario, Game>>> GetScenarioDelegates(String gameSet, List<String> levels)
+        {
+            Dictionary<String, List<Func<Scenario, Game>>> scenarios = new Dictionary<String, List<Func<Scenario, Game>>>();
+            if (levels == null || levels.Count == 0)
+                levels = new List<string>() { String.Empty };
+
+            for (int i = 0; i <= levels.Count - 1; i++)
+            {
+                String level = levels[i];
+                List<Func<Scenario, Game>> scenarioList = GetScenarioDelegates(gameSet, level);
+                scenarios.Add(level, scenarioList);
+            }
+            return scenarios;
         }
 
         /// <summary>
