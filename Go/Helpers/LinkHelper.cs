@@ -34,16 +34,14 @@ namespace Go
             //get capture groups
             foreach (Group capturedGroup in tryBoard.CapturedList)
             {
-                foreach (Group ngroup in currentBoard.GetNeighbourGroups(capturedGroup))
+                List<Group> captureGroups = currentBoard.GetNeighbourGroups(capturedGroup);
+                foreach (Group gr in captureGroups)
                 {
-                    ngroups.Add(ngroup);
-                    if (ngroup.Liberties.Count == 1)
-                        ngroups.UnionWith(LinkHelper.GetDiagonalGroups(currentBoard, ngroup));
+                    ngroups.Add(gr);
+                    if (LinkHelper.GetDiagonalGroups(currentBoard, gr).Any(n => !captureGroups.Contains(n) && ImmovableHelper.CheckConnectAndDie(currentBoard, n) && !ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.GetCurrentGroup(n))))
+                        return true;
                 }
             }
-            //get atari resolved groups
-            foreach (Group resolvedGroup in currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).Where(n => n.Liberties.Count == 1))
-                ngroups.UnionWith(LinkHelper.GetDiagonalGroups(currentBoard, resolvedGroup));
 
             //get leap groups
             HashSet<Group> leapGroups = GetPossibleLeapGroups(tryBoard, currentBoard);
