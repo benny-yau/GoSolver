@@ -197,6 +197,7 @@ namespace Go
         public static (Boolean, Board) ThreeLibertyConnectAndDie(Board board, Point? p = null, Group targetGroup = null)
         {
             if (targetGroup == null) targetGroup = board.MoveGroup;
+            if (targetGroup.Liberties.Count != 3) return (false, null);
             Content c = targetGroup.Content;
 
             if (p == null)

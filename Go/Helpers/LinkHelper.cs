@@ -30,12 +30,26 @@ namespace Go
 
             //get all possible link groups
             List<Point> groupPoints = currentBoard.GetStoneAndDiagonalNeighbours(move).Where(n => currentBoard[n] == c).ToList();
-            tryBoard.CapturedList.ForEach(q => groupPoints.AddRange(q.Neighbours.Where(n => currentBoard[n] == c && !n.Equals(move))));
             HashSet<Group> ngroups = currentBoard.GetGroupsFromPoints(groupPoints);
+            //get capture groups
+            foreach (Group capturedGroup in tryBoard.CapturedList)
+            {
+                foreach (Group ngroup in currentBoard.GetNeighbourGroups(capturedGroup))
+                {
+                    ngroups.Add(ngroup);
+                    if (ngroup.Liberties.Count == 1)
+                        ngroups.UnionWith(LinkHelper.GetDiagonalGroups(currentBoard, ngroup));
+                }
+            }
+            //get atari resolved groups
+            foreach (Group resolvedGroup in currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).Where(n => n.Liberties.Count == 1))
+                ngroups.UnionWith(LinkHelper.GetDiagonalGroups(currentBoard, resolvedGroup));
+
             //get leap groups
             HashSet<Group> leapGroups = GetPossibleLeapGroups(tryBoard, currentBoard);
+            ngroups.UnionWith(leapGroups);
             //find possible links between all groups
-            List<Group> groups = ngroups.Union(leapGroups).ToList();
+            List<Group> groups = ngroups.ToList();
             if (groups.Count == 0) return false;
             for (int i = 0; i <= groups.Count - 2; i++)
             {
