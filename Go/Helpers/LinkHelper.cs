@@ -845,8 +845,9 @@ namespace Go
             Content c = b.MoveGroup.Content;
             List<Point> stoneNeighbours = LinkHelper.GetNeighboursDiagonallyLinked(b);
             List<Point> diagonals = b.GetDiagonalNeighbours().Where(n => b[n] != c && b.GetStoneNeighbours(n).Intersect(stoneNeighbours).Count() >= 2).ToList();
-            diagonals = diagonals.Where(n => !ImmovableHelper.IsImmovablePoint(b, n, c.Opposite())).ToList();
-            if (diagonals.Any() && b.GetGroupsFromPoints(stoneNeighbours).Any(s => !WallHelper.IsNonKillableGroup(b, s)))
+            if (!diagonals.Any()) return false;
+            HashSet<Group> groups = b.GetGroupsFromPoints(stoneNeighbours);
+            if (groups.Count > 1 && groups.Any(s => !WallHelper.IsNonKillableGroup(b, s)))
                 return true;
             return false;
         }
