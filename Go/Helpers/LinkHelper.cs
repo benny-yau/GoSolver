@@ -831,17 +831,21 @@ namespace Go
             HashSet<Group> tmGroups = b2.GetGroupsFromStoneNeighbours(tigerMouth, c.Opposite());
             if (CheckNegligibleForLinks(b2, b, n => !tmGroups.Contains(n)))
                 return true;
+            //check link breakage
+            if (LinkHelper.LinkBreakage(b2))
+                return true;
             return false;
         }
 
         /// <summary>
         /// Link breakage.
         /// </summary>
-        public static Boolean LinkBreakage(Board b, Content c)
+        public static Boolean LinkBreakage(Board b)
         {
+            Content c = b.MoveGroup.Content;
             List<Point> stoneNeighbours = LinkHelper.GetNeighboursDiagonallyLinked(b);
             List<Point> diagonals = b.GetDiagonalNeighbours().Where(n => b[n] != c && b.GetStoneNeighbours(n).Intersect(stoneNeighbours).Count() >= 2).ToList();
-            diagonals = diagonals.Where(n => !ImmovableHelper.IsImmovablePoint(b, n, c)).ToList();
+            diagonals = diagonals.Where(n => !ImmovableHelper.IsImmovablePoint(b, n, c.Opposite())).ToList();
             if (diagonals.Any() && b.GetGroupsFromPoints(stoneNeighbours).Any(s => !WallHelper.IsNonKillableGroup(b, s)))
                 return true;
             return false;

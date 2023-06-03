@@ -1377,7 +1377,7 @@
             Double ko break.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.LinkBreakage(Go.Board,Go.Content)">
+        <member name="M:Go.LinkHelper.LinkBreakage(Go.Board)">
             <summary>
             Link breakage.
             </summary>
