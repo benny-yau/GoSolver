@@ -38,7 +38,10 @@ namespace Go
                 foreach (Group gr in captureGroups)
                 {
                     ngroups.Add(gr);
-                    if (LinkHelper.GetDiagonalGroups(currentBoard, gr).Any(n => !captureGroups.Contains(n) && ImmovableHelper.CheckConnectAndDie(currentBoard, n) && !ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.GetCurrentGroup(n))))
+                    //check diagonal groups of capture groups
+                    List<Group> dgroups = LinkHelper.GetDiagonalGroups(currentBoard, gr).Where(n => !captureGroups.Contains(n) && ImmovableHelper.CheckConnectAndDie(currentBoard, n)).ToList();
+                    if (gr.Liberties.Count == 1) ngroups.UnionWith(dgroups);
+                    if (dgroups.Any(n => !ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.GetCurrentGroup(n))))
                         return true;
                 }
             }
