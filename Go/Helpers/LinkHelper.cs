@@ -38,11 +38,16 @@ namespace Go
                 foreach (Group gr in captureGroups)
                 {
                     ngroups.Add(gr);
-                    //check diagonal groups of capture groups
-                    List<Group> dgroups = LinkHelper.GetDiagonalGroups(currentBoard, gr).Where(n => !captureGroups.Contains(n) && ImmovableHelper.CheckConnectAndDie(currentBoard, n)).ToList();
-                    if (!dgroups.Any()) continue;
-                    if (gr.Liberties.Count == 1 || dgroups.Any(n => !ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.GetCurrentGroup(n))))
-                        return true;
+                    //check link at capture groups
+                    if (gr.Liberties.Count > 2) continue;
+                    foreach (Point liberty in gr.Liberties)
+                    {
+                        if (ImmovableHelper.IsSuicidalMove(currentBoard, liberty, c.Opposite(), true)) continue;
+                        Board b = currentBoard.MakeMoveOnNewBoard(liberty, c, true);
+                        if (b == null) continue;
+                        if (b.CapturedList.Count > 0 || PossibleLinkForGroups(b, currentBoard))
+                            return true;
+                    }
                 }
             }
 
@@ -767,7 +772,6 @@ namespace Go
         {
             Content c = b.MoveGroup.Content;
             if (b.MoveGroupLiberties <= 2) return false;
-            if (!LinkHelper.IsAbsoluteLinkForGroups(board, b)) return false;
             List<Group> groups = LinkHelper.GetPreviousMoveGroup(board, b).Where(n => n.Liberties.Count == 2).ToList();
             if (func != null) groups.RemoveAll(s => func(s));
             if (groups.Any(n => n.Liberties.Any(s => ImmovableHelper.FindEmptyTigerMouth(board, c.Opposite(), s))))
@@ -833,6 +837,9 @@ namespace Go
                 return true;
             //check link breakage
             if (LinkHelper.LinkBreakage(b2))
+                return true;
+            //check link with threat group
+            if (LinkHelper.LinkWithThreatGroup(b2, b))
                 return true;
             return false;
         }
