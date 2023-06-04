@@ -40,6 +40,7 @@ namespace Go
                     ngroups.Add(gr);
                     //check link at capture groups
                     if (gr.Liberties.Count > 2) continue;
+                    if (gr.Liberties.Count == 1) return true;
                     foreach (Point liberty in gr.Liberties)
                     {
                         if (ImmovableHelper.IsSuicidalMove(currentBoard, liberty, c.Opposite(), true)) continue;
