@@ -23,10 +23,10 @@ namespace Go
         public static Boolean FindEye(Board board, Point eye, Content c = Content.Unknown)
         {
             if (board[eye] != Content.Empty) return false;
-            List<Point> stoneNeighbours = board.GetStoneNeighbours(eye);
-            if (c == Content.Unknown) c = board[stoneNeighbours.First()];
+            List<Point> nstones = board.GetStoneNeighbours(eye);
+            if (c == Content.Unknown) c = board[nstones.First()];
             if (c == Content.Empty) return false;
-            if (stoneNeighbours.All(q => board[q] == c))
+            if (nstones.All(q => board[q] == c))
                 return true;
             return false;
         }
@@ -53,10 +53,10 @@ namespace Go
         /// </summary>
         public static Boolean CoveredMove(Board board, Point eye, Content c)
         {
-            List<Point> diagonalPoints = board.GetDiagonalNeighbours(eye);
-            List<Point> stonePoints = board.GetStoneNeighbours();
-            diagonalPoints = diagonalPoints.Intersect(stonePoints).ToList();
-            if (!diagonalPoints.All(p => board[p] == c.Opposite())) return false;
+            List<Point> diagonals = board.GetDiagonalNeighbours(eye);
+            List<Point> nstones = board.GetStoneNeighbours();
+            diagonals = diagonals.Intersect(nstones).ToList();
+            if (!diagonals.All(p => board[p] == c.Opposite())) return false;
             if (!IsCovered(board, eye, c)) return false;
             return true;
         }
@@ -66,12 +66,12 @@ namespace Go
         /// </summary>
         public static Boolean IsCovered(Board board, Point eye, Content c)
         {
-            List<Point> diagonalNeighbours = board.GetDiagonalNeighbours(eye).Where(q => board[q] == c.Opposite()).ToList();
-            List<Point> stonePoints = board.GetStoneNeighbours(eye).Where(n => board[n] == c).ToList();
+            List<Point> diagonals = board.GetDiagonalNeighbours(eye).Where(q => board[q] == c.Opposite()).ToList();
+            List<Point> nstones = board.GetStoneNeighbours(eye).Where(n => board[n] == c).ToList();
             if (board.PointWithinMiddleArea(eye))
-                return (stonePoints.Count >= 3 && diagonalNeighbours.Count >= 2);
+                return (nstones.Count >= 3 && diagonals.Count >= 2);
             else //side or corner
-                return (stonePoints.Count >= 2 && diagonalNeighbours.Count >= 1);
+                return (nstones.Count >= 2 && diagonals.Count >= 1);
         }
 
         /// <summary>

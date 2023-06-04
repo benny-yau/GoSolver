@@ -12,8 +12,8 @@ namespace Go
         public static Point? FindTigerMouth(Board board, Point p, Content c)
         {
             Content content = board[p];
-            List<Point> stoneNeighbours = board.GetStoneNeighbours(p);
-            if (stoneNeighbours.Count(n => board[n] == c) != stoneNeighbours.Count - 1) return null;
+            List<Point> nstones = board.GetStoneNeighbours(p);
+            if (nstones.Count(n => board[n] == c) != nstones.Count - 1) return null;
             if (content == Content.Empty)
             {
                 //make move into tiger mouth
@@ -138,9 +138,9 @@ namespace Go
                 return true;
 
             //check for reverse ko fight 
-            List<Point> stoneNeighbours = board.GetStoneNeighbours(q);
-            if (stoneNeighbours.Any(n => board[n] == c)) return false;
-            List<Point> eyeNeighbour = stoneNeighbours.Where(n => board[n] == Content.Empty).ToList();
+            List<Point> nstones = board.GetStoneNeighbours(q);
+            if (nstones.Any(n => board[n] == c)) return false;
+            List<Point> eyeNeighbour = nstones.Where(n => board[n] == Content.Empty).ToList();
             if (eyeNeighbour.Count == 1 && KoHelper.MakeKoFight(board, eyeNeighbour.First(), c.Opposite()))
                 return true;
             return false;
@@ -209,8 +209,8 @@ namespace Go
             else if (!ImmovableHelper.FindTigerMouth(board, c, p.Value)) return (false, null);
 
             //stone neighbours at diagonal of each other
-            List<Point> stoneNeighbours = LinkHelper.GetNeighboursDiagonallyLinked(board, p.Value, c);
-            if (!stoneNeighbours.Any()) return (false, null);
+            List<Point> nstones = LinkHelper.GetNeighboursDiagonallyLinked(board, p.Value, c);
+            if (!nstones.Any()) return (false, null);
 
             Board b = board.MakeMoveOnNewBoard(p.Value, c.Opposite());
             if (b == null || b.MoveGroupLiberties != 1) return (false, null);
@@ -537,8 +537,8 @@ namespace Go
             {
                 //check three opponent groups
                 if (!KillerFormationHelper.ThreeOpponentGroupsAtMove(board, eyePoint)) return false;
-                List<Point> stoneNeighbours = board.GetStoneNeighbours(eyePoint).Where(n => board[n] == c.Opposite()).ToList();
-                Point middleStone = stoneNeighbours.First(n => board.GetDiagonalNeighbours(n).Count(d => stoneNeighbours.Contains(d)) >= 2);
+                List<Point> nstones = board.GetStoneNeighbours(eyePoint).Where(n => board[n] == c.Opposite()).ToList();
+                Point middleStone = nstones.First(n => board.GetDiagonalNeighbours(n).Count(d => nstones.Contains(d)) >= 2);
                 Group target = board.GetGroupAt(middleStone);
                 if (CheckSnapback(board, target, eyeGroup))
                     return true;
@@ -569,11 +569,10 @@ namespace Go
             IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, target.Liberties, c.Opposite());
             foreach (Board b in moveBoards)
             {
-                if (!b.IsAtariMove) continue;
-                //capture suicide group
                 List<Group> groups = AtariHelper.AtariByGroup(target, b).Where(n => !n.Equals(b.GetCurrentGroup(eyeGroup))).ToList();
                 foreach (Group group in groups)
                 {
+                    //capture suicide group
                     Board b2 = ImmovableHelper.CaptureSuicideGroup(b, group);
                     if (b2 == null || b2.MoveGroup.Points.Count == 1 || b2.MoveGroupLiberties != 1) continue;
                     //capture eye group
@@ -641,9 +640,9 @@ namespace Go
         {
             if (c == Content.Unknown)
             {
-                List<Point> stoneNeighbours = capturedBoard.GetStoneNeighbours(p).Where(q => capturedBoard[q] != Content.Empty).ToList();
-                c = capturedBoard[stoneNeighbours.First()];
-                if (stoneNeighbours.Any(n => capturedBoard[n] != c))
+                List<Point> nstones = capturedBoard.GetStoneNeighbours(p).Where(q => capturedBoard[q] != Content.Empty).ToList();
+                c = capturedBoard[nstones.First()];
+                if (nstones.Any(n => capturedBoard[n] != c))
                     throw new Exception("Different content in connect and die.");
             }
             List<Group> ngroups = capturedBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).ToList();

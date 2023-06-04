@@ -193,7 +193,7 @@ namespace Go
             List<Group> ngroups = currentBoard.GetGroupsFromStoneNeighbours(capturePoint, c.Opposite()).ToList();
             ngroups = LinkHelper.GetAllDiagonalGroups(currentBoard, ngroups.First()).ToList();
             List<Group> targetGroups = new List<Group>();
-            ngroups.ForEach(ngroup => targetGroups.AddRange(KoHelper.GetKoTargetGroups(currentBoard, ngroup)));
+            ngroups.ForEach(n => targetGroups.AddRange(KoHelper.GetKoTargetGroups(currentBoard, n)));
             targetGroups = targetGroups.Distinct().ToList();
             if (targetGroups.Count >= 2)
             {
@@ -231,8 +231,8 @@ namespace Go
         public static Boolean NeutralPointDoubleKo(Board tryBoard, Board currentBoard)
         {
             Content c = tryBoard.MoveGroup.Content;
-            List<Point> stoneNeighbours = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindCoveredEye(tryBoard, n, c)).ToList();
-            foreach (Point p in stoneNeighbours)
+            List<Point> npoints = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindCoveredEye(tryBoard, n, c)).ToList();
+            foreach (Point p in npoints)
             {
                 List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).ToList();
                 ngroups = LinkHelper.GetAllDiagonalGroups(tryBoard, ngroups.First()).ToList();

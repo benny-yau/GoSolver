@@ -33,7 +33,7 @@ namespace Go
             if (tryMoves != null && tryMoves.Any(p => GroupHelper.GetKillerGroupFromCache(board, p.Move, c) == null)) return false;
             c = (c == Content.Unknown) ? GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive) : c;
             List<Group> killerGroups = GetKillerGroupsForBothAlive(board, c);
-            if (killerGroups.Any(killerGroup => CheckForBothAlive(board, killerGroup)))
+            if (killerGroups.Any(n => CheckForBothAlive(board, n)))
                 return true;
             return false;
         }
@@ -46,7 +46,7 @@ namespace Go
             Content c = board.MoveGroup.Content;
             List<Group> killerGroups = board.GetStoneAndDiagonalNeighbours().Where(n => board[n] != c).Select(n => GroupHelper.GetKillerGroupFromCache(board, n, c)).Distinct().ToList();
 
-            if (killerGroups.Any(killerGroup => killerGroup != null && CheckForBothAlive(board, killerGroup)))
+            if (killerGroups.Any(n => n != null && CheckForBothAlive(board, n)))
                 return true;
             return false;
         }
@@ -81,10 +81,10 @@ namespace Go
 
             List<Group> ngroups = GroupHelper.GetNeighbourGroupsOfKillerGroup(board, killerGroup);
             List<Group> killerGroups = GetKillerGroupsForBothAlive(board, c.Opposite());
-            List<Group> associatedKillerGroups = killerGroups.Where(n => !n.Equals(killerGroup) && board.GetNeighbourGroups(n).Any(gr => ngroups.Contains(gr))).ToList();
-            associatedKillerGroups.Insert(0, killerGroup);
+            List<Group> nkillerGroups = killerGroups.Where(n => !n.Equals(killerGroup) && board.GetNeighbourGroups(n).Any(gr => ngroups.Contains(gr))).ToList();
+            nkillerGroups.Insert(0, killerGroup);
 
-            if (associatedKillerGroups.Count == 1)  //simple seki
+            if (nkillerGroups.Count == 1)  //simple seki
             {
                 if (ngroups.Count > 2) return false;
                 //at least three content points in killer group
@@ -93,7 +93,7 @@ namespace Go
                 if (contentGroups.Any(n => n.Liberties.Count == 1)) return false;
                 return CheckSimpleSeki(board, filledBoard, ngroups, killerGroup, emptyPoints);
             }
-            else if (associatedKillerGroups.Count >= 2) //complex seki
+            else if (nkillerGroups.Count >= 2) //complex seki
             {
                 //two liberties for content group
                 Boolean oneLiberty = board.GetGroupsFromPoints(contentPoints).Any(n => n.Liberties.Count == 1);
@@ -106,18 +106,18 @@ namespace Go
                 //find diagonal cut
                 (_, List<Point> diagonals) = LinkHelper.FindDiagonalCut(board, killerGroup);
                 //check complex seki without diagonal cut
-                if (diagonals == null) return CheckComplexSeki(board, associatedKillerGroups, ngroups);
+                if (diagonals == null) return CheckComplexSeki(board, nkillerGroups, ngroups);
 
                 //check complex seki with diagonal cut
-                HashSet<Group> diagonalGroups = board.GetGroupsFromPoints(diagonals);
-                if (diagonalGroups.Any(n => ImmovableHelper.CheckConnectAndDie(board, n))) return false;
+                HashSet<Group> dgroups = board.GetGroupsFromPoints(diagonals);
+                if (dgroups.Any(n => ImmovableHelper.CheckConnectAndDie(board, n))) return false;
 
-                foreach (Group diagonalGroup in diagonalGroups)
+                foreach (Group dgroup in dgroups)
                 {
-                    Group diagonalKillerGroup = GroupHelper.GetKillerGroupFromCache(board, diagonalGroup.Points.First(), c);
-                    if (diagonalKillerGroup == null) continue;
-                    List<Group> cutKillerGroups = associatedKillerGroups.Where(n => diagonalKillerGroup.Points.Contains(n.Points.First())).ToList();
-                    List<Group> cutTargetGroups = ngroups.Where(n => diagonalKillerGroup.Points.Contains(n.Points.First())).ToList();
+                    Group dkillerGroup = GroupHelper.GetKillerGroupFromCache(board, dgroup.Points.First(), c);
+                    if (dkillerGroup == null) continue;
+                    List<Group> cutKillerGroups = nkillerGroups.Where(n => dkillerGroup.Points.Contains(n.Points.First())).ToList();
+                    List<Group> cutTargetGroups = ngroups.Where(n => dkillerGroup.Points.Contains(n.Points.First())).ToList();
                     if (CheckComplexSeki(board, cutKillerGroups, cutTargetGroups))
                         return true;
                 }

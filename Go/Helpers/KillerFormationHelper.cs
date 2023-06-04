@@ -185,13 +185,13 @@ namespace Go
 
             foreach (Group kgroup in killerGroups.Where(gr => gr != killerGroup))
             {
-                List<Group> nKillerGroups = captureBoard.GetNeighbourGroups(kgroup);
-                if (!nKillerGroups.Intersect(ngroups).Any()) continue;
+                List<Group> cgroups = captureBoard.GetNeighbourGroups(kgroup);
+                if (!cgroups.Intersect(ngroups).Any()) continue;
                 //real eye with one neighbour group only
-                if (nKillerGroups.Count == 1)
+                if (cgroups.Count == 1)
                     return true;
                 //find real eye
-                if (EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, kgroup) && WallHelper.StrongNeighbourGroups(captureBoard, nKillerGroups))
+                if (EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, kgroup) && WallHelper.StrongNeighbourGroups(captureBoard, cgroups))
                     return true;
                 if (EyeHelper.RealEyeOfDiagonallyConnectedGroups(captureBoard, kgroup))
                     return true;
@@ -1206,8 +1206,8 @@ namespace Go
         /// </summary>
         public static int PossibleEyesCreated(Board currentBoard, Point p, Content c)
         {
-            List<Point> stoneNeighbours = currentBoard.GetStoneNeighbours(p);
-            List<Point> possibleEyes = stoneNeighbours.Where(n => currentBoard[n] != c).ToList();
+            List<Point> nstones = currentBoard.GetStoneNeighbours(p);
+            List<Point> possibleEyes = nstones.Where(n => currentBoard[n] != c).ToList();
             return possibleEyes.Count;
         }
 

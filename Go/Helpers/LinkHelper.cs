@@ -29,8 +29,8 @@ namespace Go
             }
 
             //get all possible link groups
-            List<Point> groupPoints = currentBoard.GetStoneAndDiagonalNeighbours(move).Where(n => currentBoard[n] == c).ToList();
-            HashSet<Group> ngroups = currentBoard.GetGroupsFromPoints(groupPoints);
+            List<Point> npoints = currentBoard.GetStoneAndDiagonalNeighbours(move).Where(n => currentBoard[n] == c).ToList();
+            HashSet<Group> ngroups = currentBoard.GetGroupsFromPoints(npoints);
             //get capture groups
             foreach (Group capturedGroup in tryBoard.CapturedList)
             {
@@ -40,8 +40,8 @@ namespace Go
                     ngroups.Add(gr);
                     //check diagonal groups of capture groups
                     List<Group> dgroups = LinkHelper.GetDiagonalGroups(currentBoard, gr).Where(n => !captureGroups.Contains(n) && ImmovableHelper.CheckConnectAndDie(currentBoard, n)).ToList();
-                    if (gr.Liberties.Count == 1) ngroups.UnionWith(dgroups);
-                    if (dgroups.Any(n => !ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.GetCurrentGroup(n))))
+                    if (!dgroups.Any()) continue;
+                    if (gr.Liberties.Count == 1 || dgroups.Any(n => !ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.GetCurrentGroup(n))))
                         return true;
                 }
             }
@@ -106,12 +106,12 @@ namespace Go
             //ensure non killable group at point up
             List<Point> pointUp = tryBoard.GetStoneNeighbours().Where(n => tryBoard.PointWithinMiddleArea(n) && WallHelper.IsNonKillableGroup(tryBoard, n)).ToList();
             if (pointUp.Count != 1) return false;
-            List<Point> adjacentPoints = tryBoard.GetStoneAndDiagonalNeighbours().Where(n => tryBoard[n] == c).ToList();
-            if (adjacentPoints.Count == 0) return false;
-            if (adjacentPoints.Count > 1 && !tryBoard.GetStoneNeighbours(adjacentPoints[0]).Contains(adjacentPoints[1])) return false;
+            List<Point> npoints = tryBoard.GetStoneAndDiagonalNeighbours().Where(n => tryBoard[n] == c).ToList();
+            if (npoints.Count == 0) return false;
+            if (npoints.Count > 1 && !tryBoard.GetStoneNeighbours(npoints[0]).Contains(npoints[1])) return false;
 
             //get diagonal in leap direction
-            List<Point> diagonalInLeapDirection = tryBoard.GetDiagonalNeighbours().Where(n => tryBoard.PointWithinMiddleArea(n) && !adjacentPoints.Contains(n) && !tryBoard.GetStoneNeighbours(n).Any(s => adjacentPoints.Contains(s))).ToList();
+            List<Point> diagonalInLeapDirection = tryBoard.GetDiagonalNeighbours().Where(n => tryBoard.PointWithinMiddleArea(n) && !npoints.Contains(n) && !tryBoard.GetStoneNeighbours(n).Any(s => npoints.Contains(s))).ToList();
             if (diagonalInLeapDirection.Count != 1) return false;
             Point d = diagonalInLeapDirection.First();
 
@@ -133,11 +133,11 @@ namespace Go
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            List<Point> closestNeighbours = tryBoard.GetClosestPoints(move, c);
-            closestNeighbours = closestNeighbours.Except(tryBoard.GetStoneAndDiagonalNeighbours()).ToList();
+            List<Point> closestPoints = tryBoard.GetClosestPoints(move, c);
+            closestPoints = closestPoints.Except(tryBoard.GetStoneAndDiagonalNeighbours()).ToList();
             //validate leap move
             HashSet<Group> leapGroups = new HashSet<Group>();
-            foreach (Point p in closestNeighbours)
+            foreach (Point p in closestPoints)
             {
                 Group group = currentBoard.GetGroupAt(p);
                 if (leapGroups.Contains(group)) continue;
@@ -643,10 +643,10 @@ namespace Go
 
         public static List<Point> GetNeighboursDiagonallyLinked(Board board, Point p, Content c)
         {
-            List<Point> stoneNeighbours = board.GetStoneNeighbours(p).Where(n => board[n] == c).ToList();
-            if (stoneNeighbours.Count == 0) return stoneNeighbours;
-            stoneNeighbours = stoneNeighbours.Where(n => board.GetDiagonalNeighbours(n).Intersect(stoneNeighbours).Any()).ToList();
-            return stoneNeighbours;
+            List<Point> npoints = board.GetStoneNeighbours(p).Where(n => board[n] == c).ToList();
+            if (npoints.Count == 0) return npoints;
+            npoints = npoints.Where(n => board.GetDiagonalNeighbours(n).Intersect(npoints).Any()).ToList();
+            return npoints;
         }
 
         /// <summary>
@@ -673,9 +673,9 @@ namespace Go
         public static Group TigerMouthThreatGroup(Board board, Point tigerMouth, Content c, Func<Group, Boolean> func = null)
         {
             if (board[tigerMouth] != Content.Empty) return null;
-            List<Point> points = board.GetStoneNeighbours(tigerMouth).Where(n => board[n] == c.Opposite()).ToList();
-            if (points.Count != 1) return null;
-            Group threatGroup = board.GetGroupAt(points.First());
+            List<Point> npoints = board.GetStoneNeighbours(tigerMouth).Where(n => board[n] == c.Opposite()).ToList();
+            if (npoints.Count != 1) return null;
+            Group threatGroup = board.GetGroupAt(npoints.First());
             if (func == null) func = n => n.Liberties.Count == 2;
             if (func(threatGroup))
                 return threatGroup;
@@ -687,8 +687,8 @@ namespace Go
         /// </summary>
         public static Boolean CheckBaseLineLeapLink(Board tryBoard, Point eyePoint, Content c)
         {
-            List<Point> stoneNeighbours = tryBoard.GetStoneNeighbours(eyePoint).Where(n => tryBoard[n] == c && !n.Equals(tryBoard.Move.Value)).ToList();
-            if (stoneNeighbours.Count != 2 || stoneNeighbours.Any(n => tryBoard.PointWithinMiddleArea(n))) return false;
+            List<Point> npoints = tryBoard.GetStoneNeighbours(eyePoint).Where(n => tryBoard[n] == c && !n.Equals(tryBoard.Move.Value)).ToList();
+            if (npoints.Count != 2 || npoints.Any(n => tryBoard.PointWithinMiddleArea(n))) return false;
             return true;
         }
 
@@ -843,10 +843,10 @@ namespace Go
         public static Boolean LinkBreakage(Board b)
         {
             Content c = b.MoveGroup.Content;
-            List<Point> stoneNeighbours = LinkHelper.GetNeighboursDiagonallyLinked(b);
-            List<Point> diagonals = b.GetDiagonalNeighbours().Where(n => b[n] != c && b.GetStoneNeighbours(n).Intersect(stoneNeighbours).Count() >= 2).ToList();
+            List<Point> npoints = LinkHelper.GetNeighboursDiagonallyLinked(b);
+            List<Point> diagonals = b.GetDiagonalNeighbours().Where(n => b[n] != c && b.GetStoneNeighbours(n).Intersect(npoints).Count() >= 2).ToList();
             if (!diagonals.Any()) return false;
-            HashSet<Group> groups = b.GetGroupsFromPoints(stoneNeighbours);
+            HashSet<Group> groups = b.GetGroupsFromPoints(npoints);
             if (groups.Count > 1 && groups.Any(s => !WallHelper.IsNonKillableGroup(b, s)))
                 return true;
             return false;

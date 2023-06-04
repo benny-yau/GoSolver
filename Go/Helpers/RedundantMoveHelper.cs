@@ -871,21 +871,21 @@ namespace Go
                     return true;
 
                 //stone neighbours at diagonal of each other
-                List<Point> stoneNeighbours = LinkHelper.GetNeighboursDiagonallyLinked(tryBoard);
-                if (stoneNeighbours.Count == 2)
+                List<Point> npoints = LinkHelper.GetNeighboursDiagonallyLinked(tryBoard);
+                if (npoints.Count == 2)
                 {
                     //check diagonal at opposite corner of stone neighbours
                     List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(d => tryBoard[d] == c.Opposite()).ToList();
-                    if (diagonals.Any(d => !tryBoard.GetStoneNeighbours(d).Intersect(stoneNeighbours).Any()))
+                    if (diagonals.Any(d => !tryBoard.GetStoneNeighbours(d).Intersect(npoints).Any()))
                         return false;
 
                     //cut diagonal and kill
-                    List<Point> cutDiagonal = LinkHelper.PointsBetweenDiagonals(stoneNeighbours[0], stoneNeighbours[1]);
+                    List<Point> cutDiagonal = LinkHelper.PointsBetweenDiagonals(npoints[0], npoints[1]);
                     cutDiagonal.Remove(move);
                     Board b = tryBoard.MakeMoveOnNewBoard(cutDiagonal.First(), c, true);
-                    if (b != null && stoneNeighbours.Any(n => ImmovableHelper.CheckConnectAndDie(b, b.GetGroupAt(n))))
+                    if (b != null && npoints.Any(n => ImmovableHelper.CheckConnectAndDie(b, b.GetGroupAt(n))))
                         return false;
-                    if (b == null && tryBoard.GetGroupsFromPoints(stoneNeighbours).Count > 1 && stoneNeighbours.Any(n => ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.GetGroupAt(n))))
+                    if (b == null && tryBoard.GetGroupsFromPoints(npoints).Count > 1 && npoints.Any(n => ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.GetGroupAt(n))))
                         return false;
                     return true;
                 }
@@ -1012,7 +1012,7 @@ namespace Go
                 foreach (Board b in moveBoards)
                 {
                     //both players are suicidal at the liberty
-                    Point q = liberties.First(liberty => !liberty.Equals(b.Move));
+                    Point q = liberties.First(n => !n.Equals(b.Move));
                     if (GroupHelper.GetKillerGroupFromCache(tryBoard, q, c.Opposite()) == null) continue;
                     if (ImmovableHelper.IsSuicidalMoveForBothPlayers(b, q))
                     {
@@ -1034,7 +1034,7 @@ namespace Go
                     foreach (Board b in moveBoards)
                     {
                         //both players are suicidal at the liberty
-                        Point q = nLiberties.First(liberty => !liberty.Equals(b.Move));
+                        Point q = nLiberties.First(n => !n.Equals(b.Move));
                         if (ImmovableHelper.IsSuicidalMoveForBothPlayers(b, q))
                             return false;
                     }
@@ -1161,13 +1161,13 @@ namespace Go
             else
             {
                 //get diagonal neighbours that are non killable groups
-                List<Point> diagonalNeighbours = tryBoard.GetDiagonalNeighbours().Where(n => WallHelper.IsNonKillableGroup(tryBoard, n)).ToList();
-                Boolean nonKillableSuicide = tryBoard.PointWithinMiddleArea(move) ? diagonalNeighbours.Count >= 2 : diagonalNeighbours.Count >= 1;
+                List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(n => WallHelper.IsNonKillableGroup(tryBoard, n)).ToList();
+                Boolean nonKillableSuicide = tryBoard.PointWithinMiddleArea(move) ? diagonals.Count >= 2 : diagonals.Count >= 1;
                 if (!nonKillableSuicide) return false;
 
                 if (NeutralPointSuicidalMove(tryMove)) return false;
 
-                if (diagonalNeighbours.Any(n => LinkHelper.PointsBetweenDiagonals(move, n).Any(d => tryBoard[d] == Content.Empty)))
+                if (diagonals.Any(n => LinkHelper.PointsBetweenDiagonals(move, n).Any(d => tryBoard[d] == Content.Empty)))
                     return true;
 
                 //check real eye at diagonal without opposite content
