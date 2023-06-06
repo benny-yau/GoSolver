@@ -169,7 +169,7 @@ namespace Go
 
             //fill tiger mouth
             Board b2 = b.MakeMoveOnNewBoard(tigerMouth, c.Opposite(), true);
-            if (b2 == null || ImmovableHelper.CheckConnectAndDie(b2)) return true;
+            if (b2 == null) return true;
 
             //check non killable
             if (targetPoints != null && targetPoints.All(n => b2.GetGroupsFromStoneNeighbours(n, c).All(s => WallHelper.IsNonKillableGroup(b2, s))))
@@ -182,7 +182,7 @@ namespace Go
 
             //check double atari
             List<Group> ngroups = b2.GetNeighbourGroups(b.MoveGroup);
-            if (ngroups.Any(n => ImmovableHelper.CheckConnectAndDie(b2, n) || LinkHelper.DoubleAtariOnTargetGroups(b2, ngroups)))
+            if (ngroups.Any(n => ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(b2, n) || LinkHelper.DoubleAtariOnTargetGroups(b2, ngroups)))
                 return true;
 
             return false;

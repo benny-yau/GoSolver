@@ -578,6 +578,7 @@ namespace Go
                     //capture eye group
                     Board b3 = ImmovableHelper.CaptureSuicideGroup(b, eyeGroup);
                     if (b3 == null) continue;
+                    if (b3.MoveGroupLiberties == 1) return true;
                     //escape suicide group
                     Board escapeBoard = MakeMoveAtLiberty(b3, group, c.Opposite());
                     if (escapeBoard != null && LinkHelper.IsAbsoluteLinkForGroups(b3, escapeBoard))

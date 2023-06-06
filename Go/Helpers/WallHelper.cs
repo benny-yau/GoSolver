@@ -98,7 +98,7 @@ namespace Go
         /// </summary>
         public static Boolean StrongNeighbourGroups(Board board, IEnumerable<Group> ngroups)
         {
-            if (ngroups.Any(n => n.Liberties.Count < 2 || ImmovableHelper.CheckConnectAndDie(board, n)))
+            if (ngroups.Any(n => n.Liberties.Count < 2 || ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(board, n)))
                 return false;
             return true;
         }
