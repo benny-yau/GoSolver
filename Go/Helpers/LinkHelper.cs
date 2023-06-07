@@ -874,11 +874,12 @@ namespace Go
             //check for connect and die
             if (b.GetGroupsFromStoneNeighbours(b.Move.Value, c).Any(n => (func != null ? func(n) : true) && ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(b, n)))
                 return true;
+            //check double atari
             if (tigerMouth != null)
             {
                 Board b2 = b.MakeMoveOnNewBoard(tigerMouth.Value, c.Opposite(), true);
                 List<Group> ngroups = b2.GetGroupsFromStoneNeighbours(b.Move.Value, c.Opposite()).ToList();
-                if (b2 == null && LinkHelper.DoubleAtariOnTargetGroups(b2, ngroups, false))
+                if (b2 == null && LinkHelper.DoubleAtariOnTargetGroups(b2, ngroups))
                     return true;
             }
             return false;
