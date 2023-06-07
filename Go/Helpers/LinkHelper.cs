@@ -878,8 +878,9 @@ namespace Go
             if (tigerMouth != null)
             {
                 Board b2 = b.MakeMoveOnNewBoard(tigerMouth.Value, c.Opposite(), true);
+                if (b2 == null) return false;
                 List<Group> ngroups = b2.GetGroupsFromStoneNeighbours(b.Move.Value, c.Opposite()).ToList();
-                if (b2 == null && LinkHelper.DoubleAtariOnTargetGroups(b2, ngroups))
+                if (LinkHelper.DoubleAtariOnTargetGroups(b2, ngroups))
                     return true;
             }
             return false;
