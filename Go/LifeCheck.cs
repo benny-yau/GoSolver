@@ -129,7 +129,7 @@ namespace Go
 
             //check negligible for links
             HashSet<Group> tmGroups = b.GetGroupsFromStoneNeighbours(tigerMouth, c.Opposite());
-            if (LinkHelper.CheckNegligibleForLinks(b, board, t => !tmGroups.Contains(t)))
+            if (LinkHelper.CheckNegligibleForLinks(b, board, t => !tmGroups.Contains(t), tigerMouth))
                 return true;
 
             //check for tiger mouth threat group

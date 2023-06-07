@@ -252,7 +252,7 @@ namespace Go
 
                     //check negligible for links
                     if (immediateLink) continue;
-                    if (LinkHelper.CheckNegligibleForLinks(b, board, n => !n.Equals(b.GetGroupAt(pointA)) && !n.Equals(b.GetGroupAt(pointB))))
+                    if (LinkHelper.CheckNegligibleForLinks(b, board, n => !n.Equals(b.GetGroupAt(pointA)) && !n.Equals(b.GetGroupAt(pointB)), q))
                         return false;
                 }
                 return true;
@@ -702,7 +702,7 @@ namespace Go
         /// <summary>
         /// Double atari on target groups.
         /// </summary>
-        public static Boolean DoubleAtariOnTargetGroups(Board board, List<Group> targetGroups)
+        public static Boolean DoubleAtariOnTargetGroups(Board board, List<Group> targetGroups, Boolean checkTigerMouthExceptions = true)
         {
             if (targetGroups.Count == 0) return false;
             Content c = targetGroups.First().Content;
@@ -715,11 +715,12 @@ namespace Go
                 IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, liberties, c.Opposite(), true);
                 if (moveBoards.Any(b => AtariHelper.DoubleAtariWithoutEscape(b)))
                     return true;
-                if (moveBoards.Any(b => CheckMoveGroupForTigerMouthExceptions(board, b)))
+                //check tiger mouth exceptions
+                if (checkTigerMouthExceptions && moveBoards.Any(b => CheckMoveGroupForTigerMouthExceptions(board, b)))
                     return true;
             }
             //double connect and die
-            if (DoubleConnectAndDieOnTargetGroups(board, targetGroups))
+            if (DoubleConnectAndDieOnTargetGroups(board, targetGroups, checkTigerMouthExceptions))
                 return true;
             return false;
         }
@@ -727,21 +728,21 @@ namespace Go
         /// <summary>
         /// Double connect and die on target groups.
         /// </summary>
-        public static Boolean DoubleConnectAndDieOnTargetGroups(Board board, List<Group> targetGroups)
+        public static Boolean DoubleConnectAndDieOnTargetGroups(Board board, List<Group> targetGroups, Boolean checkTigerMouthExceptions = true)
         {
             if (targetGroups.Count == 0) return false;
             Content c = targetGroups.First().Content;
-            //get groups with three liberties only
-            targetGroups = targetGroups.Where(t => board.GetGroupLiberties(t).Count == 3).ToList();
+            targetGroups = targetGroups.Where(t => board.GetGroupLiberties(t).Count == 3 || board.GetGroupLiberties(t).Count == 4).ToList();
             if (targetGroups.Count == 0) return false;
 
             HashSet<Point> liberties = board.GetLibertiesOfGroups(targetGroups);
             IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, liberties, c.Opposite(), true);
-            moveBoards = moveBoards.Where(b => targetGroups.Any(n => ImmovableHelper.CheckConnectAndDie(b, n))).ToList();
+            moveBoards = moveBoards.Where(b => targetGroups.Any(n => ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(b, n))).ToList();
             //double connect and die
             if (moveBoards.Any(b => b.GetGroupsFromStoneNeighbours(b.Move.Value, c.Opposite()).Count(n => ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(b, n)) >= 2))
                 return true;
-            if (moveBoards.Any(b => CheckMoveGroupForTigerMouthExceptions(board, b)))
+            //check tiger mouth exceptions
+            if (checkTigerMouthExceptions && moveBoards.Any(b => CheckMoveGroupForTigerMouthExceptions(board, b)))
                 return true;
             return false;
         }
@@ -834,7 +835,7 @@ namespace Go
                 return true;
             //check negligible for links
             HashSet<Group> tmGroups = b2.GetGroupsFromStoneNeighbours(tigerMouth, c.Opposite());
-            if (CheckNegligibleForLinks(b2, b, n => !tmGroups.Contains(n)))
+            if (CheckNegligibleForLinks(b2, b, n => !tmGroups.Contains(n), tigerMouth))
                 return true;
             //check link breakage
             if (LinkHelper.LinkBreakage(b2))
@@ -863,16 +864,23 @@ namespace Go
         /// <summary>
         /// Check negligible for links.
         /// </summary>
-        public static Boolean CheckNegligibleForLinks(Board b2, Board b, Func<Group, Boolean> func = null)
+        public static Boolean CheckNegligibleForLinks(Board b, Board board, Func<Group, Boolean> func = null, Point? tigerMouth = null)
         {
-            Content c = b2.MoveGroup.Content;
+            Content c = b.MoveGroup.Content;
             //check is negligible
-            Boolean notNegligible = LinkHelper.CaptureForTigerMouthExceptions(b, b2) || Board.ResolveAtari(b, b2);
+            Boolean notNegligible = LinkHelper.CaptureForTigerMouthExceptions(board, b) || Board.ResolveAtari(board, b);
             if (notNegligible)
                 return true;
             //check for connect and die
-            if (b2.GetGroupsFromStoneNeighbours(b2.Move.Value, c).Any(n => (func != null ? func(n) : true) && ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(b2, n)))
+            if (b.GetGroupsFromStoneNeighbours(b.Move.Value, c).Any(n => (func != null ? func(n) : true) && ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(b, n)))
                 return true;
+            if (tigerMouth != null)
+            {
+                Board b2 = b.MakeMoveOnNewBoard(tigerMouth.Value, c.Opposite(), true);
+                List<Group> ngroups = b2.GetGroupsFromStoneNeighbours(b.Move.Value, c.Opposite()).ToList();
+                if (b2 == null && LinkHelper.DoubleAtariOnTargetGroups(b2, ngroups, false))
+                    return true;
+            }
             return false;
         }
     }

@@ -64,14 +64,21 @@ namespace Go
             foreach (Group targetGroup in board.AtariTargets)
             {
                 //check escape by capture
-                Board captureBoard = ImmovableHelper.EscapeByCapture(board, targetGroup, false);
-                if (captureBoard != null && !groups.Any(t => ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(captureBoard, t)) && !LinkHelper.DoubleAtariOnTargetGroups(captureBoard, groups))
-                    return false;
-
+                Board b = ImmovableHelper.EscapeByCapture(board, targetGroup, false);
+                if (b != null && !groups.Any(t => ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(b, t)))
+                {
+                    //check double atari on escape board
+                    if (!LinkHelper.DoubleAtariOnTargetGroups(b, groups))
+                        return false;
+                }
                 //make move at liberty
-                Board escapeBoard = ImmovableHelper.MakeMoveAtLiberty(board, targetGroup, targetGroup.Content);
-                if (escapeBoard != null && !groups.Any(t => ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(escapeBoard, t)) && !LinkHelper.DoubleAtariOnTargetGroups(escapeBoard, groups))
-                    return false;
+                Board b2 = ImmovableHelper.MakeMoveAtLiberty(board, targetGroup, targetGroup.Content);
+                if (b2 != null && !groups.Any(t => ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(b2, t)))
+                {
+                    //check double atari on escape board
+                    if (!LinkHelper.DoubleAtariOnTargetGroups(b2, groups))
+                        return false;
+                }
             }
             return true;
         }

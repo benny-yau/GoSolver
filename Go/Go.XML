@@ -1337,12 +1337,12 @@
             Check base line leap link.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.DoubleAtariOnTargetGroups(Go.Board,System.Collections.Generic.List{Go.Group})">
+        <member name="M:Go.LinkHelper.DoubleAtariOnTargetGroups(Go.Board,System.Collections.Generic.List{Go.Group},System.Boolean)">
             <summary>
             Double atari on target groups.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.DoubleConnectAndDieOnTargetGroups(Go.Board,System.Collections.Generic.List{Go.Group})">
+        <member name="M:Go.LinkHelper.DoubleConnectAndDieOnTargetGroups(Go.Board,System.Collections.Generic.List{Go.Group},System.Boolean)">
             <summary>
             Double connect and die on target groups.
             </summary>
@@ -1382,7 +1382,7 @@
             Link breakage.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.CheckNegligibleForLinks(Go.Board,Go.Board,System.Func{Go.Group,System.Boolean})">
+        <member name="M:Go.LinkHelper.CheckNegligibleForLinks(Go.Board,Go.Board,System.Func{Go.Group,System.Boolean},System.Nullable{Go.Point})">
             <summary>
             Check negligible for links.
             </summary>
