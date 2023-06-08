@@ -124,7 +124,7 @@ namespace Go
             //check eye for survival
             Point p = eyeGroup.Points.Count == 1 ? eyePoint : eyeGroup.Points.First(n => !n.Equals(eyePoint));
             List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, p, c).Where(n => !WallHelper.NoEyeForSurvival(tryBoard, n, c)).ToList();
-            if (diagonals.Any() && diagonals.Count(n => EyeHelper.FindRealEyeWithinEmptySpace(currentBoard, n, c)) != 1)
+            if (diagonals.Any() && diagonals.Count(n => EyeHelper.FindRealEyeWithinEmptySpace(currentBoard, n, c)) > 0)
                 return false;
 
 
@@ -2403,7 +2403,7 @@ namespace Go
 
             //real eye at diagonal
             List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, eyePoint.Value, c).Where(q => tryBoard[q] != c).ToList();
-            if (diagonals.Any() && diagonals.Count(d => EyeHelper.FindRealEyeWithinEmptySpace(opponentBoard, d, c)) != 1)
+            if (diagonals.Any() && diagonals.Count(d => EyeHelper.FindRealEyeWithinEmptySpace(opponentBoard, d, c)) > 0)
                 return false;
 
             //check break link
