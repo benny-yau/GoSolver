@@ -124,7 +124,7 @@ namespace Go
             //check eye for survival
             Point p = eyeGroup.Points.Count == 1 ? eyePoint : eyeGroup.Points.First(n => !n.Equals(eyePoint));
             List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, p, c).Where(n => !WallHelper.NoEyeForSurvival(tryBoard, n, c)).ToList();
-            if (diagonals.Any() && !diagonals.Any(n => EyeHelper.FindRealEyeWithinEmptySpace(currentBoard, n, c)))
+            if (diagonals.Any() && !FindRealEyeAtDiagonal(diagonals, currentBoard, c))
                 return false;
 
             //check kill opponent
@@ -2355,9 +2355,6 @@ namespace Go
         /// Check two liberty group <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanQiJing_A38_2" /> 
         /// Target with all non killable groups <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario2kyu18" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
-        /// Real eye at diagonal <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WuQingYuan_Q30982" /> 
-        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" /> 
-        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_2" /> 
         /// Suicide group ko fight <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanQiJing_A38_2" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q16693_2" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_x_2" /> 
@@ -2402,13 +2399,27 @@ namespace Go
 
             //real eye at diagonal
             List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, eyePoint.Value, c).Where(q => tryBoard[q] != c).ToList();
-            if (diagonals.Any() && !diagonals.Any(d => EyeHelper.FindRealEyeWithinEmptySpace(opponentBoard, d, c)))
+            if (diagonals.Any() && !FindRealEyeAtDiagonal(diagonals, opponentBoard, c))
                 return false;
 
             //check break link
             if (diagonals.Count == 0 && LinkHelper.CheckBaseLineLeapLink(tryBoard, eyePoint.Value, c))
                 return false;
             return true;
+        }
+
+        /// <summary>
+        /// Real eye at diagonal.
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30188" /> 
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WuQingYuan_Q30982" /> 
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" /> 
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_2" /> 
+        /// </summary>
+        private static Boolean FindRealEyeAtDiagonal(List<Point> diagonals, Board b, Content c)
+        {
+            if (diagonals.Any(d => EyeHelper.FindRealEyeWithinEmptySpace(b, d, c) && GroupHelper.GetKillerGroupFromCache(b, d, c).Points.Count <= 2))
+                return true;
+            return false;
         }
 
         #endregion
