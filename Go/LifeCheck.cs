@@ -180,9 +180,8 @@ namespace Go
             if (moveBoards.Any(n => n.MoveGroupLiberties > 1 || !GameTryMove.IsNegligibleForBoard(n, b2)))
                 return true;
 
-            //check double atari
-            List<Group> ngroups = b2.GetNeighbourGroups(b.MoveGroup);
-            if (ngroups.Any(n => ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(b2, n) || LinkHelper.DoubleAtariOnTargetGroups(b2, ngroups)))
+            //check killer group
+            if (GroupHelper.GetKillerGroupOfStrongNeighbourGroups(b2, b.Move.Value, c.Opposite()) == null)
                 return true;
 
             return false;

@@ -267,7 +267,7 @@ namespace Go
                     {
                         //check captured group
                         Group gr = TigerMouthThreatGroup(board, p, c, n => n.Liberties.Count == 1);
-                        if (gr == null || !DoubleAtariOnTargetGroups(board, board.GetNeighbourGroups(gr)))
+                        if (gr == null || GroupHelper.GetKillerGroupOfStrongNeighbourGroups(board, p, c) != null)
                             return true;
                         continue;
                     }
