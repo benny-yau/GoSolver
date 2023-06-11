@@ -164,9 +164,6 @@ namespace Go
         public static Boolean CheckThreatGroupEscape(Board b, Point tigerMouth, List<Point> targetPoints = null)
         {
             Content c = b.MoveGroup.Content;
-            if (AtariHelper.AtariByGroup(b, b.MoveGroup))
-                return true;
-
             //fill tiger mouth
             Board b2 = b.MakeMoveOnNewBoard(tigerMouth, c.Opposite(), true);
             if (b2 == null) return true;
@@ -175,13 +172,13 @@ namespace Go
             if (targetPoints != null && targetPoints.All(n => b2.GetGroupsFromStoneNeighbours(n, c).All(s => WallHelper.IsNonKillableGroup(b2, s))))
                 return false;
 
+            //check killer group
+            if (GroupHelper.GetKillerGroupOfStrongNeighbourGroups(b2, b.Move.Value, c.Opposite()) == null)
+                return true;
+
             //make second move
             IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(b2, b2.GetGroupLiberties(b.MoveGroup), c);
             if (moveBoards.Any(n => n.MoveGroupLiberties > 1 || !GameTryMove.IsNegligibleForBoard(n, b2)))
-                return true;
-
-            //check killer group
-            if (GroupHelper.GetKillerGroupOfStrongNeighbourGroups(b2, b.Move.Value, c.Opposite()) == null)
                 return true;
 
             return false;

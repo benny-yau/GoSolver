@@ -872,7 +872,7 @@ namespace Go
             if (notNegligible)
                 return true;
             //check for connect and die
-            if (b.GetGroupsFromStoneNeighbours(b.Move.Value, c).Any(n => (func != null ? func(n) : true) && ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(b, n)))
+            if (b.GetNeighbourGroups().Any(n => (func != null ? func(n) : true) && ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(b, n)))
                 return true;
             //check double atari
             if (tigerMouth != null)
