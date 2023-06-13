@@ -198,7 +198,7 @@ namespace Go
 
             if (p == null)
             {
-                Point liberty = targetGroup.Liberties.FirstOrDefault(n => ImmovableHelper.FindTigerMouth(board, c, n));
+                Point liberty = targetGroup.Liberties.FirstOrDefault(n => ImmovableHelper.FindTigerMouth(board, c, n) && EyeHelper.IsCovered(board, n, c));
                 if (!Convert.ToBoolean(liberty.NotEmpty)) return (false, null);
                 p = liberty;
             }
