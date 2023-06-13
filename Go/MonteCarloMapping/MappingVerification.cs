@@ -52,7 +52,7 @@ namespace Go
             if (move["ThirdLevel"] == null)
             {
                 //check if solution move available
-                Point? p = SolutionHelper.GetSolutionMove(game);
+                Point? p = SolutionHelper.GetSolutionMove(game.Board);
                 if (p != null)
                 {
                     if (game.GameInfo.UserFirst == PlayerOrComputer.Player)
@@ -81,7 +81,7 @@ namespace Go
                     continue;
 
                 //check if solution move available
-                if (SolutionHelper.GetSolutionMove(g) != null)
+                if (SolutionHelper.GetSolutionMove(g.Board) != null)
                 {
                     if (game.GameInfo.UserFirst == PlayerOrComputer.Player)
                         FinalVerification(g);

@@ -90,7 +90,7 @@ namespace Go
                 else //second move not mapped
                 {
                     //check if solution move available
-                    Point? solutionMove = SolutionHelper.GetSolutionMove(g);
+                    Point? solutionMove = SolutionHelper.GetSolutionMove(g.Board);
                     if (solutionMove != null)
                     {
                         //added solution move to json
@@ -154,7 +154,7 @@ namespace Go
                 if (secondLevelMove == null)
                 {
                     //check if solution move available
-                    Point? solutionMove = SolutionHelper.GetSolutionMove(g);
+                    Point? solutionMove = SolutionHelper.GetSolutionMove(g.Board);
                     if (solutionMove != null)
                     {
                         //added solution move to json
@@ -198,7 +198,7 @@ namespace Go
                     continue;
 
                 //if solution found then all three levels completed
-                if (SolutionHelper.GetSolutionMove(g) != null)
+                if (SolutionHelper.GetSolutionMove(g.Board) != null)
                     continue;
 
                 if (move != null && move["ThirdLevel"] != null)

@@ -34,10 +34,8 @@ namespace Go
         {
             int lastMoveMod = board.LastMoves.Count % 2;
             GameInfo gameInfo = board.GameInfo;
-            SurviveOrKill surviveOrKill = (gameInfo.Survival == SurviveOrKill.Kill || gameInfo.Survival == SurviveOrKill.KillWithKo) ? SurviveOrKill.Kill : SurviveOrKill.Survive;
-
-            //if current game is survival, next move returned is kill
-            if (surviveOrKill == SurviveOrKill.Kill && lastMoveMod == 0 || surviveOrKill == SurviveOrKill.Survive && lastMoveMod == 1)
+            Boolean isKill = IsSurviveOrKill(gameInfo, SurviveOrKill.Kill);
+            if (isKill && lastMoveMod == 0 || !isKill && lastMoveMod == 1)
                 return SurviveOrKill.Kill;
             else
                 return SurviveOrKill.Survive;
@@ -58,10 +56,22 @@ namespace Go
         /// </summary>
         public static Content GetContentForSurviveOrKill(GameInfo gameInfo, SurviveOrKill surviveOrKill)
         {
-            if (surviveOrKill == SurviveOrKill.Survive && (gameInfo.Survival == SurviveOrKill.Survive || gameInfo.Survival == SurviveOrKill.SurviveWithKo) || surviveOrKill == SurviveOrKill.Kill && (gameInfo.Survival == SurviveOrKill.Kill || gameInfo.Survival == SurviveOrKill.KillWithKo))
+            if (IsSurviveOrKill(gameInfo, surviveOrKill))
                 return gameInfo.StartContent;
             else
                 return gameInfo.StartContent.Opposite();
+        }
+
+        /// <summary>
+        /// Is survive or kill.
+        /// </summary>
+        public static Boolean IsSurviveOrKill(GameInfo gameInfo, SurviveOrKill surviveOrKill)
+        {
+            if (surviveOrKill == SurviveOrKill.Survive && (gameInfo.Survival == SurviveOrKill.Survive || gameInfo.Survival == SurviveOrKill.SurviveWithKo))
+                return true;
+            if (surviveOrKill == SurviveOrKill.Kill && (gameInfo.Survival == SurviveOrKill.Kill || gameInfo.Survival == SurviveOrKill.KillWithKo))
+                return true;
+            return false;
         }
 
         /// <summary>

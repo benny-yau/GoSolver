@@ -546,6 +546,11 @@
             Determine if content for kill or survival, based on start content.
             </summary>
         </member>
+        <member name="M:Go.GameHelper.IsSurviveOrKill(Go.GameInfo,Go.SurviveOrKill)">
+            <summary>
+            Is survive or kill.
+            </summary>
+        </member>
         <member name="M:Go.GameHelper.SetupMoveAvailable(Go.Board,Go.Point,Go.Content)">
             <summary>
             Determine if setup move is available for kill or survival.
@@ -669,7 +674,7 @@
             Is confirm tiger mouth.
             <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q16827" />
             Check connect and die on current board <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_2" />
-            Check all connect and die on captured board <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
+            Check connect and die on captured board <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario1dan21" />
             </summary>.
         </member>
@@ -2106,12 +2111,12 @@
             Get solution move and make move on the board.
             </summary>
         </member>
-        <member name="M:Go.SolutionHelper.GetSolutionMove(Go.Game)">
+        <member name="M:Go.SolutionHelper.GetSolutionMove(Go.Board)">
             <summary>
             Check if last moves followed any of the solutions and return the solution move.
             </summary>
         </member>
-        <member name="M:Go.SolutionHelper.CheckSolutionComplete(Go.Game)">
+        <member name="M:Go.SolutionHelper.CheckSolutionComplete(Go.Board)">
             <summary>
             Check if last moves followed any of the solutions and return confirm alive result.
             </summary>

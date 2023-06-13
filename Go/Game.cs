@@ -203,7 +203,7 @@ namespace Go
             {
                 if (this.GameInfo.solutionPoints.Count > 0)
                 {
-                    ConfirmAliveResult solutionComplete = SolutionHelper.CheckSolutionComplete(this);
+                    ConfirmAliveResult solutionComplete = SolutionHelper.CheckSolutionComplete(this.Board);
                     if (solutionComplete != ConfirmAliveResult.Unknown)
                         return solutionComplete | ConfirmAliveResult.Mapped;
                     else
@@ -212,7 +212,7 @@ namespace Go
                         if (SolutionHelper.UseSolutionPoints(this))
                         {
                             result = ConfirmAliveResult.Mapped | ConfirmAliveResult.UseSolution;
-                            solutionComplete = SolutionHelper.CheckSolutionComplete(this);
+                            solutionComplete = SolutionHelper.CheckSolutionComplete(this.Board);
                             if (solutionComplete != ConfirmAliveResult.Unknown)
                                 result |= solutionComplete;
                             return result;

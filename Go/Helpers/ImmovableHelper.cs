@@ -150,7 +150,7 @@ namespace Go
         /// Is confirm tiger mouth.
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q16827" />
         /// Check connect and die on current board <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_2" />
-        /// Check all connect and die on captured board <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
+        /// Check connect and die on captured board <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario1dan21" />
         /// </summary>.
         public static Board IsConfirmTigerMouth(Board currentBoard, Board tryBoard, Point? p = null)
@@ -171,16 +171,12 @@ namespace Go
             if (!WallHelper.StrongNeighbourGroups(currentBoard, p.Value, c))
                 return null;
 
-            //check all connect and die on captured board
-            if (AllConnectAndDie(capturedBoard, p.Value))
+            //check connect and die on captured board
+            if (!WallHelper.StrongNeighbourGroups(capturedBoard, p.Value, c))
                 return null;
 
             //check suicidal move at side of board
             if (SuicidalAfterMustHaveMove(currentBoard, tryBoard, libertyPoint.Value))
-                return null;
-
-            //three liberty connect and die
-            if (ThreeLibertyConnectAndDie(capturedBoard, p.Value).Item1)
                 return null;
 
             return capturedBoard;
