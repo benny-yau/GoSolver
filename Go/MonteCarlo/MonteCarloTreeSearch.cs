@@ -37,8 +37,8 @@ namespace Go
         /// <summary>
         /// Set the answer and end the search immediately.
         /// </summary>
-        Node answerNode;
-        public Node AnswerNode
+        protected Node answerNode;
+        public virtual Node AnswerNode
         {
             get
             {
@@ -83,7 +83,7 @@ namespace Go
         /// <see cref="UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario_GuanZiPu_A3" />
         /// <see cref="UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario3dan17" />
         /// </summary>
-        public virtual Tree FindNextMove(Node node)
+        public virtual void FindNextMove(Node node)
         {
             tree = new Tree();
             tree.Root = node;
@@ -142,22 +142,7 @@ namespace Go
                     break;
                 }
             } while (count <= maxIterations);
-            watch.Stop();
-            if (Game.debugMode)
-            {
-                DebugHelper.DebugWriteWithTab("End of mcts: " + tree.Root.GetLastMoves(), mctsDepth);
-                long timeTaken = watch.ElapsedMilliseconds;
-                elapsedTime = timeTaken;
-                if (tree.Root == tree.AbsoluteRoot)
-                {
-                    DebugHelper.DebugWriteWithTab("Root: " + tree.AbsoluteRoot.GetLastMoves(), mctsDepth);
-                    DebugHelper.DebugWriteWithTab(DebugHelper.PrintTimeTaken(timeTaken), mctsDepth);
-                    DebugHelper.DebugWriteWithTab("Total time taken (mcts): " + timeTaken + Environment.NewLine + Environment.NewLine, mctsDepth);
-                }
-                else
-                    DebugHelper.DebugWriteWithTab("Time taken (mcts): " + timeTaken, mctsDepth);
-            }
-            return tree;
+            PostProcess(node, watch);
         }
 
         private Boolean NodeToExpand(Node node)
@@ -304,7 +289,10 @@ namespace Go
             {
                 //top node reached and answer found
                 if (Game.debugMode)
-                    DebugHelper.DebugWriteWithTab("Answer move: " + node.State.Game.Board.Move, mctsDepth);
+                {
+                    String msg = (node.CurrentDepth == 1) ? "Answer move: " : "Answer move for " + node.GetLastMoves() + ": " + node.State.Game.Board.Move;
+                    DebugHelper.DebugWriteWithTab(msg, mctsDepth);
+                }
                 AnswerNode = node;
                 return true;
             }
@@ -314,7 +302,7 @@ namespace Go
         /// <summary>
         /// Prune node after verification and set pruned node in json map.
         /// </summary>
-        private void Pruning(Node pruneNode, Node verifyNode)
+        protected void Pruning(Node pruneNode, Node verifyNode)
         {
             if (pruneNode == null || pruneNode.Parent == null) return;
             if (MonteCarloMapping.mapMovesOrSearchAnswer && verifyNode != null)
@@ -512,5 +500,23 @@ namespace Go
             return bestResult;
         }
 
+        internal virtual void PostProcess(Node node, Stopwatch watch)
+        {
+            watch.Stop();
+            if (Game.debugMode)
+            {
+                DebugHelper.DebugWriteWithTab("End of mcts: " + tree.Root.GetLastMoves(), mctsDepth);
+                long timeTaken = watch.ElapsedMilliseconds;
+                elapsedTime = timeTaken;
+                if (tree.Root == tree.AbsoluteRoot)
+                {
+                    DebugHelper.DebugWriteWithTab("Root: " + tree.AbsoluteRoot.GetLastMoves(), mctsDepth);
+                    DebugHelper.DebugWriteWithTab(DebugHelper.PrintTimeTaken(timeTaken), mctsDepth);
+                    DebugHelper.DebugWriteWithTab("Total time taken (mcts): " + timeTaken + Environment.NewLine + Environment.NewLine, mctsDepth);
+                }
+                else
+                    DebugHelper.DebugWriteWithTab("Time taken (mcts): " + timeTaken, mctsDepth);
+            }
+        }
     }
 }

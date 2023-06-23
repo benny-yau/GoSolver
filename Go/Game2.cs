@@ -106,6 +106,7 @@ namespace Go
             for (int i = 0; i <= gameInfo.movablePoints.Count - 1; i++)
             {
                 Point p = gameInfo.movablePoints[i];
+                if (currentGame.Board[p] != Content.Empty) continue;
                 //create try moves
                 GameTryMove tryMove = new GameTryMove(currentGame);
                 tryMove.MakeMoveResult = tryMove.TryGame.Board.InternalMakeMove(p, c);
@@ -121,7 +122,7 @@ namespace Go
                 else if (tryMove.MakeMoveResult == MakeMoveResult.Legal)
                 {
                     //check if game ended - target group survived
-                    if (tryMove.TryGame.Board.MoveGroupLiberties > 1)
+                    if (tryMove.MoveGroupLiberties > 1)
                     {
                         ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Survive, tryMove.TryGame.Board);
                         if (confirmAlive == ConfirmAliveResult.Alive)
@@ -141,7 +142,7 @@ namespace Go
                 tryMoves.Where(e => e.IsRedundantMove).ToList().ForEach(t => { redundantTryMoves.Add(t); tryMoves.Remove(t); });
 
             //sort game try moves
-            tryMoves = (from tryMove in tryMoves orderby tryMove.AtariResolved descending, tryMove.AtariWithoutSuicide descending, tryMove.IncreasedKillerGroups descending, tryMove.TryGame.Board.MoveGroupLiberties descending select tryMove).ToList();
+            tryMoves = (from tryMove in tryMoves orderby tryMove.AtariResolved descending, tryMove.AtariWithoutSuicide descending, tryMove.Captured descending, tryMove.IncreasedKillerGroups descending, tryMove.TryGame.Board.MoveGroupLiberties descending select tryMove).ToList();
 
             //restore diagonal eye move
             if (tryMoves.Count == 0 && redundantTryMoves.Any(move => move.IsDiagonalEyeMove))
@@ -354,6 +355,7 @@ namespace Go
             for (int i = 0; i <= gameInfo.killMovablePoints.Count - 1; i++)
             {
                 Point p = gameInfo.killMovablePoints[i];
+                if (currentGame.Board[p] != Content.Empty) continue;
                 //create try moves
                 GameTryMove tryMove = new GameTryMove(currentGame);
                 tryMove.MakeMoveResult = tryMove.TryGame.Board.InternalMakeMove(p, c);
@@ -388,7 +390,7 @@ namespace Go
             }
 
             //sort game try moves
-            tryMoves = (from tryMove in tryMoves orderby tryMove.AtariResolved descending, tryMove.AtariWithoutSuicide descending, tryMove.TryGame.Board.MoveGroupLiberties descending select tryMove).ToList();
+            tryMoves = (from tryMove in tryMoves orderby tryMove.AtariResolved descending, tryMove.AtariWithoutSuicide descending, tryMove.Captured descending, tryMove.TryGame.Board.MoveGroupLiberties descending select tryMove).ToList();
 
             //create random move
             CreateRandomMoveForKill(tryMoves, currentGame);

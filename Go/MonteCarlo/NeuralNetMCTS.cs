@@ -2,14 +2,44 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Linq;
+using System.Diagnostics;
 
 namespace Go
 {
     public class NeuralNetMCTS : MonteCarloTreeSearch
     {
+        public static Boolean FirstRun = true;
+        public static List<Node> RemovedNodes = new List<Node>();
         public NeuralNetMCTS(int mctsDepth = 0)
         {
             this.mctsDepth = mctsDepth;
+        }
+
+        public override Node AnswerNode
+        {
+            get
+            {
+                return base.answerNode;
+            }
+            set
+            {
+                //validate answer after first run
+                if (FirstRun && this.tree.Root.CurrentDepth == 0)
+                {
+                    FirstRun = false;
+                    MonteCarloTreeSearch mcts = MonteCarloGame.InitializeMonteCarloComputerMove(value.State.Game);
+                    if (mcts.AnswerNode != null)
+                    {
+                        //first run not valid
+                        RemovedNodes.ForEach(n => n.Parent.ChildArray.Add(n));
+                        RemovedNodes.Clear();
+                        Pruning(value, mcts.AnswerNode);
+                        return;
+                    }
+                    DebugHelper.DebugWriteWithTab("Answer move: " + value.State.Game.Board.Move, 0);
+                }
+                base.answerNode = value;
+            }
         }
 
         internal override Boolean ExpandNode(Node node)
@@ -21,9 +51,22 @@ namespace Go
 
             foreach (Node childNode in node.ChildArray)
             {
-                Point move = childNode.State.Game.Board.Move.Value;
+                Board b = childNode.State.Game.Board;
+                Point move = b.Move.Value;
                 if (move.Equals(Game.PassMove)) continue;
                 childNode.State.WinScore = node.State.HeatMap[move.x, move.y];
+            }
+            //remove half of child nodes on first run
+            if (FirstRun && node.ChildArray.Count >= 6)
+            {
+                node.ChildArray = node.ChildArray.OrderByDescending(n => !GameTryMove.IsNegligibleForBoard(n.State.Game.Board, node.State.Game.Board)).ThenByDescending(n => n.State.WinScore).ToList();
+                int halfCount = Convert.ToInt32(Math.Ceiling(node.ChildArray.Count * 0.5));
+                for (int i = node.ChildArray.Count - 1; i > halfCount - 1; i--)
+                {
+                    Node removedNode = node.ChildArray[i];
+                    node.ChildArray.Remove(removedNode);
+                    RemovedNodes.Add(removedNode);
+                }
             }
             return true;
         }
@@ -60,6 +103,17 @@ namespace Go
                 return node.ChildArray.MaxObject(n => n.State.WinScore);
             else
                 return base.RandomChildNode(node);
+        }
+
+        internal override void PostProcess(Node node, Stopwatch watch)
+        {
+            if (NeuralNetMCTS.FirstRun && this.tree.Root.CurrentDepth == 0 && tree.Root.ChildArray.Count == 0)
+            {
+                NeuralNetMCTS.FirstRun = false;
+                MonteCarloTreeSearch mcts = MonteCarloGame.InitializeMonteCarloComputerMove(node.State.Game);
+                if (mcts.AnswerNode != null) this.AnswerNode = mcts.AnswerNode;
+            }
+            base.PostProcess(node, watch);
         }
     }
 }

@@ -6,8 +6,7 @@ using System.Text;
 namespace Go
 {
     /// <summary>
-    /// Possible try move made in board of TryGame with all associated properties of the move.
-    /// The new move is made on the board of the TryGame, while the old board is retained on the CurrentGame.
+    /// Game try move.
     /// </summary>
     public class GameTryMove
     {
@@ -62,14 +61,22 @@ namespace Go
             }
         }
 
+        /// <summary>
+        /// Captured.
+        /// </summary>
+        public bool Captured
+        {
+            get
+            {
+                return TryGame.Board.CapturedList.Count > 0;
+            }
+        }
+
         public Point Move
         {
             get
             {
-                if (TryGame != null)
-                    return TryGame.Board.Move.Value;
-                else
-                    return Game.PassMove;
+                return TryGame.Board.Move.Value;
             }
         }
 
@@ -77,8 +84,15 @@ namespace Go
         {
             get
             {
-                if (Move.Equals(Game.PassMove)) return Content.Unknown;
                 return TryGame.Board[Move];
+            }
+        }
+
+        public int MoveGroupLiberties
+        {
+            get
+            {
+                return TryGame.Board.MoveGroupLiberties;
             }
         }
 
@@ -111,8 +125,7 @@ namespace Go
         {
             get
             {
-                Board board = this.TryGame.Board;
-                return (board.CapturedList.Count == 0 && !AtariResolved && !AtariWithoutSuicide);
+                return (!Captured && !AtariResolved && !AtariWithoutSuicide);
             }
         }
 

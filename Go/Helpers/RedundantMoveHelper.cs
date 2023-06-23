@@ -340,7 +340,7 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
             Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.AtariTargets.Count != 1 || tryMove.AtariResolved || tryBoard.MoveGroupLiberties == 1 || tryBoard.CapturedList.Count > 0) return false;
+            if (tryBoard.AtariTargets.Count != 1 || tryMove.AtariResolved || tryBoard.MoveGroupLiberties == 1 || tryMove.Captured) return false;
             Group atariTarget = tryBoard.AtariTargets.First();
             Point atariPoint = tryBoard.GetStoneNeighbours().First(n => tryBoard[n] == c.Opposite() && tryBoard.GetGroupAt(n).Equals(atariTarget));
 
@@ -511,7 +511,7 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.MoveGroupLiberties == 1 || tryBoard.CapturedList.Count != 0 || tryMove.AtariResolved || tryBoard.AtariTargets.Count != 1) return false;
+            if (tryBoard.MoveGroupLiberties == 1 || tryMove.Captured || tryMove.AtariResolved || tryBoard.AtariTargets.Count != 1) return false;
 
             Group atariTarget = tryBoard.AtariTargets.First();
             if (tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty || (tryBoard[n] == c.Opposite() && !tryBoard.GetGroupAt(n).Equals(atariTarget)))) return false;
@@ -1362,7 +1362,7 @@ namespace Go
         {
             Content c = tryMove.MoveContent;
             Board tryBoard = tryMove.TryGame.Board;
-            if (tryMove.AtariResolved || tryBoard.CapturedList.Count > 0 || tryBoard.MoveGroupLiberties == 1) return true;
+            if (tryMove.AtariResolved || tryMove.Captured || tryBoard.MoveGroupLiberties == 1) return true;
             if (tryBoard.AtariTargets.Count != 1) return true;
 
             Group atariTarget = tryBoard.AtariTargets.First();
@@ -1585,7 +1585,7 @@ namespace Go
             if (neutralPointMoves.Count == 0) return;
             Content c = neutralPointMoves.First().MoveContent;
             //remove unnecessary moves
-            neutralPointMoves.RemoveAll(n => n.TryGame.Board.MoveGroupLiberties == 1 || GroupHelper.GetKillerGroupFromCache(n.TryGame.Board, n.Move) != null);
+            neutralPointMoves.RemoveAll(n => n.MoveGroupLiberties == 1 || GroupHelper.GetKillerGroupFromCache(n.TryGame.Board, n.Move) != null);
             neutralPointMoves.RemoveAll(n => !n.TryGame.Board.GetStoneAndDiagonalNeighbours().Any(s => n.TryGame.Board[s] == c.Opposite()));
             if (neutralPointMoves.Count == 0) return;
             GameTryMove genericNeutralMove = null;

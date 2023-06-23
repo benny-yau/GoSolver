@@ -204,8 +204,7 @@
         </member>
         <member name="T:Go.GameTryMove">
             <summary>
-            Possible try move made in board of TryGame with all associated properties of the move.
-            The new move is made on the board of the TryGame, while the old board is retained on the CurrentGame.
+            Game try move.
             </summary>
         </member>
         <member name="P:Go.GameTryMove.AtariResolved">
@@ -216,6 +215,11 @@
         <member name="P:Go.GameTryMove.AtariWithoutSuicide">
             <summary>
             Atari without suicide.
+            </summary>
+        </member>
+        <member name="P:Go.GameTryMove.Captured">
+            <summary>
+            Captured.
             </summary>
         </member>
         <member name="M:Go.GameTryMove.MakeKoMove(Go.Point,Go.SurviveOrKill)">
