@@ -28,15 +28,16 @@ namespace Go
                 if (FirstRun && this.tree.Root.CurrentDepth == 0)
                 {
                     FirstRun = false;
-                    MonteCarloTreeSearch mcts = MonteCarloGame.InitializeMonteCarloComputerMove(value.State.Game);
+                    RestoreNodes();
+                    DebugHelper.DebugWriteWithTab("First run completed" + Environment.NewLine + "Verifying answer...");
+                    MonteCarloTreeSearch mcts = MonteCarloGame.InitializeMonteCarloComputerMove(value.State.Game, value);
                     if (mcts.AnswerNode != null)
                     {
                         //first run not valid
-                        RestoreNodes();
                         Pruning(value, mcts.AnswerNode);
                         return;
                     }
-                    DebugHelper.DebugWriteWithTab("Answer move: " + value.State.Game.Board.Move, 0);
+                    DebugHelper.DebugWriteWithTab("Answer move: " + value.State.Game.Board.Move);
                 }
                 base.answerNode = value;
             }
@@ -73,10 +74,10 @@ namespace Go
             return true;
         }
 
-        protected override void Pruning(Node pruneNode, Node verifyNode)
+        protected override void Pruning(Node prunedNode, Node verifyNode)
         {
-            base.Pruning(pruneNode, verifyNode);
-            PrunedNodes.Add(pruneNode);
+            base.Pruning(prunedNode, verifyNode);
+            PrunedNodes.Add(prunedNode);
         }
 
         public static void GetHeatMap(Node node)
@@ -130,11 +131,12 @@ namespace Go
                 //rerun mcts
                 NeuralNetMCTS.FirstRun = false;
                 RestoreNodes();
+                DebugHelper.DebugWriteWithTab("First run completed" + Environment.NewLine + "Verifying answer...");
                 MonteCarloTreeSearch mcts = MonteCarloGame.InitializeMonteCarloComputerMove(rootNode.State.Game, rootNode);
                 if (mcts.AnswerNode != null)
                 {
                     this.AnswerNode = mcts.AnswerNode;
-                    DebugHelper.DebugWriteWithTab("Answer move: " + AnswerNode.State.Game.Board.Move, 0);
+                    DebugHelper.DebugWriteWithTab("Answer move: " + AnswerNode.State.Game.Board.Move);
                 }
             }
             base.PostProcess(rootNode, watch);

@@ -13,7 +13,7 @@ namespace Go
         /// <summary>
         /// Print debug statements with tabs in front.
         /// </summary>
-        public static void DebugWriteWithTab(String content, int gameDepth)
+        public static void DebugWriteWithTab(String content, int gameDepth = 0)
         {
             String tabs = (gameDepth == 0) ? "" : string.Concat(Enumerable.Repeat('\t', gameDepth));
             Debug.WriteLine(tabs + content);

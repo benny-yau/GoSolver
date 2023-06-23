@@ -210,18 +210,18 @@ namespace Go
         /// Prune node after verifying with exhaustive search and if result is a win then check if parent node is correct by trying to prune all child nodes.
         /// After all nodes are pruned, move up the level by recursion to check if current path is correct and the answer node will be the first node of the tree.
         /// </summary>
-        public Boolean PrunePromisingNode(Node pruneNode, Node verifyNode, Boolean winResult, Boolean recursion = false)
+        public Boolean PrunePromisingNode(Node prunedNode, Node verifyNode, Boolean winResult, Boolean recursion = false)
         {
-            Node parentNode = pruneNode.Parent;
-            if (pruneNode == null || parentNode == null) return false;
+            Node parentNode = prunedNode.Parent;
+            if (prunedNode == null || parentNode == null) return false;
 
             //prune node
-            Pruning(pruneNode, verifyNode);
+            Pruning(prunedNode, verifyNode);
 
-            if (pruneNode.CurrentDepth == this.tree.Root.CurrentDepth + 1)
+            if (prunedNode.CurrentDepth == this.tree.Root.CurrentDepth + 1)
             {
                 //return after hitting the top of tree
-                DebugHelper.DebugWriteWithTab("Hit top at level: " + pruneNode.CurrentDepth + " WinResult: " + winResult + " Recursion: " + recursion, mctsDepth);
+                DebugHelper.DebugWriteWithTab("Hit top at level: " + prunedNode.CurrentDepth + " WinResult: " + winResult + " Recursion: " + recursion, mctsDepth);
                 return true;
             }
 

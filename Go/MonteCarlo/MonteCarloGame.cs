@@ -122,21 +122,9 @@ namespace Go
             foreach (SetupMove move in g.GameInfo.SetupMoves)
                 ConvertAndMakeMoveInLeelaBoard(move.Move, move.Content);
 
-            if (g.GameInfo.SetupMoves.Count > 0)
-            {
-                if (g.GameInfo.StartContent == Content.Black)
-                {
-                    MonteCarloGame.inputWriter.WriteLine("play W Q16");
-                    MonteCarloGame.inputWriter.WriteLine("play W Q10");
-                    MonteCarloGame.inputWriter.WriteLine("play W Q4");
-                }
-                else
-                {
-                    MonteCarloGame.inputWriter.WriteLine("play B Q16");
-                    MonteCarloGame.inputWriter.WriteLine("play B Q10");
-                    MonteCarloGame.inputWriter.WriteLine("play B Q4");
-                }
-            }
+            List<String> playMoves = new List<String>() { "Q16", "Q10", "Q4", "K16", "K10", "D16", "D10" };
+            String contentToMove = (g.GameInfo.StartContent == Content.Black) ? "W" : "B";
+            playMoves.ForEach(n => MonteCarloGame.inputWriter.WriteLine("play " + contentToMove + " " + n));
         }
 
         /// <summary>
@@ -157,37 +145,36 @@ namespace Go
         {
             String line = e.Data;
             if (line == "" || line.StartsWith("=") || line.StartsWith("?")) return;
-            if (MonteCarloGame.isCheckHeatmap)
+            if (!MonteCarloGame.isCheckHeatmap)
             {
-                if (line.StartsWith("winrate:"))
-                {
-                    String winrate = line.Replace("winrate:", "");
-                    UCT.node.State.Winrate = Convert.ToDouble(winrate);
-                    //ensure all lines of heatmap collected
-                    if (heatMapLines.Count == 19)
-                    {
-                        //store entire heatmap to node state heatmap
-                        UCT.node.State.HeatMap = new int[19, 19];
-                        for (int y = 0; y <= heatMapLines.Count - 1; y++)
-                        {
-                            String heatMapLine = heatMapLines[y];
-                            char[] delimiterChars = { ' ' };
-                            String[] heatNumbers = heatMapLine.Split(delimiterChars, StringSplitOptions.RemoveEmptyEntries);
-                            for (int x = 0; x <= heatNumbers.Length - 1; x++)
-                                UCT.node.State.HeatMap[x, y] = Convert.ToInt32(heatNumbers[x]);
-                        }
-                        heatMapLines.Clear();
-                        //continue
-                        MonteCarloGame.checkHeatmap.Set();
-                    }
-                    return;
-                }
-                if (line.Length != 76) return;
-                heatMapLines.Add(line);
-
-            }
-            else
                 Console.WriteLine(line);
+                return;
+            }
+            if (line.StartsWith("winrate:"))
+            {
+                String winrate = line.Replace("winrate:", "");
+                UCT.node.State.Winrate = Convert.ToDouble(winrate);
+                //ensure all lines of heatmap collected
+                if (heatMapLines.Count == 19)
+                {
+                    //store entire heatmap to node state heatmap
+                    UCT.node.State.HeatMap = new int[19, 19];
+                    for (int y = 0; y <= heatMapLines.Count - 1; y++)
+                    {
+                        String heatMapLine = heatMapLines[y];
+                        char[] delimiterChars = { ' ' };
+                        String[] heatNumbers = heatMapLine.Split(delimiterChars, StringSplitOptions.RemoveEmptyEntries);
+                        for (int x = 0; x <= heatNumbers.Length - 1; x++)
+                            UCT.node.State.HeatMap[x, y] = Convert.ToInt32(heatNumbers[x]);
+                    }
+                    heatMapLines.Clear();
+                    //continue
+                    MonteCarloGame.checkHeatmap.Set();
+                }
+                return;
+            }
+            if (line.Length != 76) return;
+            heatMapLines.Add(line);
         }
         #endregion
     }
