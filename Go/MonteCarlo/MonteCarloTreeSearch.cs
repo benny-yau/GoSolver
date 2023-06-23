@@ -14,6 +14,7 @@ namespace Go
         public int mctsDepth = 0;
         public int maxIterations = MonteCarloMapping.mapMovesOrSearchAnswer ? Int32.MaxValue : 6000;
         public long? elapsedTime;
+        public static Random random = new Random();
 
         public static int mappingDepthToVerify = Convert.ToInt32(ConfigurationSettings.AppSettings["MAPPING_DEPTH_TO_VERIFY"]);
         public static int realTimeDepthToVerify = Convert.ToInt32(ConfigurationSettings.AppSettings["REALTIME_DEPTH_TO_VERIFY"]);
@@ -83,10 +84,10 @@ namespace Go
         /// <see cref="UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario_GuanZiPu_A3" />
         /// <see cref="UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario3dan17" />
         /// </summary>
-        public virtual void FindNextMove(Node node)
+        public virtual void FindNextMove(Node rootNode)
         {
             tree = new Tree();
-            tree.Root = node;
+            tree.Root = rootNode;
             if (Game.debugMode)
                 DebugHelper.DebugWriteWithTab("Start of mcts: " + tree.Root.GetLastMoves(), mctsDepth);
             Stopwatch watch = Stopwatch.StartNew();
@@ -136,13 +137,13 @@ namespace Go
                 if (AnswerNode != null || tree.Root.ChildArray.Count == 0)
                     break;
 
-                if (Game.TimeOut(node.State.Game))
+                if (Game.TimeOut(rootNode.State.Game))
                 {
                     if (Game.debugMode) Debug.WriteLine("Break real time...");
                     break;
                 }
             } while (count <= maxIterations);
-            PostProcess(node, watch);
+            PostProcess(rootNode, watch);
         }
 
         private Boolean NodeToExpand(Node node)
@@ -154,7 +155,7 @@ namespace Go
         {
             int count = node.ChildArray.Count;
             if (count == 0) return node;
-            int selectRandom = GlobalRandom.NextRange(0, count);
+            int selectRandom = random.Next(0, count);
             return node.ChildArray[selectRandom];
         }
 
@@ -302,15 +303,15 @@ namespace Go
         /// <summary>
         /// Prune node after verification and set pruned node in json map.
         /// </summary>
-        protected void Pruning(Node pruneNode, Node verifyNode)
+        protected virtual void Pruning(Node prunedNode, Node verifyNode)
         {
-            if (pruneNode == null || pruneNode.Parent == null) return;
+            if (prunedNode == null || prunedNode.Parent == null) return;
             if (MonteCarloMapping.mapMovesOrSearchAnswer && verifyNode != null)
             {
                 //set move of pruned node with corresponding answer from verifyNode in PrunedJson of parent node
                 Game verifyGame = verifyNode.State.Game;
                 Point verifyPoint = (verifyGame.Board.Move != null) ? verifyGame.Board.Move.Value : Game.PassMove;
-                JObject firstLevel = JsonHelper.FirstLevelMapping(pruneNode.Parent.PrunedJson, pruneNode.State.Game.Board.Move.Value, verifyPoint);
+                JObject firstLevel = JsonHelper.FirstLevelMapping(prunedNode.Parent.PrunedJson, prunedNode.State.Game.Board.Move.Value, verifyPoint);
 
                 //include PrunedJson of verifyNode in PrunedJson of parent node as second level
                 if (verifyNode.PrunedJson.Count > 0)
@@ -318,13 +319,13 @@ namespace Go
             }
 
             //remove node from parent
-            pruneNode.Parent.ChildArray.Remove(pruneNode);
+            prunedNode.Parent.ChildArray.Remove(prunedNode);
 
             //increase score for parent
-            BackPropagation(pruneNode.Parent, true, 20 * winScore);
+            BackPropagation(prunedNode.Parent, true, 20 * winScore);
 
             if (Game.debugMode)
-                DebugHelper.DebugWriteWithTab("Pruned node: " + pruneNode.GetLastMoves(), mctsDepth);
+                DebugHelper.DebugWriteWithTab("Pruned node: " + prunedNode.GetLastMoves(), mctsDepth);
 
         }
 
@@ -444,7 +445,7 @@ namespace Go
             //make single random move out of possible moves
             int possibleMoves = tryMoves.Count;
             if (possibleMoves == 0) return bestResult;
-            int selectRandom = GlobalRandom.NextRange(0, possibleMoves);
+            int selectRandom = random.Next(0, possibleMoves);
             GameTryMove gameTryMove = tryMoves[selectRandom];
             Game tryGame = gameTryMove.TryGame;
             if (gameTryMove.MakeMoveResult == MakeMoveResult.Legal)
@@ -479,7 +480,7 @@ namespace Go
             //make single random move out of possible moves
             int possibleMoves = tryMoves.Count;
             if (possibleMoves == 0) return bestResult;
-            int selectRandom = GlobalRandom.NextRange(0, possibleMoves);
+            int selectRandom = random.Next(0, possibleMoves);
             GameTryMove gameTryMove = tryMoves[selectRandom];
             Game tryGame = gameTryMove.TryGame;
 

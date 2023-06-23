@@ -107,7 +107,6 @@
     <Compile Include="MonteCarloMapping\MonteCarloMapping.cs" />
     <Compile Include="MonteCarlo\EnumerableExtensions.cs" />
     <Compile Include="LifeCheck.cs" />
-    <Compile Include="MonteCarlo\GlobalRandom.cs" />
     <Compile Include="MonteCarlo\MonteCarloGame.cs" />
     <Compile Include="MonteCarlo\MonteCarloTreeSearch.cs" />
     <Compile Include="MonteCarlo\NeuralNetMCTS.cs" />
