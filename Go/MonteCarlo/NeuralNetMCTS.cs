@@ -43,7 +43,7 @@ namespace Go
             }
         }
 
-        internal override Boolean ExpandNode(Node node)
+        protected override Boolean ExpandNode(Node node)
         {
             if (!base.ExpandNode(node)) return false;
 
@@ -106,7 +106,7 @@ namespace Go
             MonteCarloGame.isCheckHeatmap = false;
         }
 
-        internal override Node RandomChildNode(Node node)
+        protected override Node RandomChildNode(Node node)
         {
             if (node.ChildArray.Any(n => n.State.WinScore > 0))
                 return node.ChildArray.MaxObject(n => n.State.WinScore);
@@ -123,7 +123,7 @@ namespace Go
             PrunedNodes.Clear();
         }
 
-        internal override void PostProcess(Node rootNode, Stopwatch watch)
+        protected override void PostProcess(Node rootNode, Stopwatch watch)
         {
             //no answer found on first run
             if (NeuralNetMCTS.FirstRun && tree.Root.CurrentDepth == 0 && tree.Root.ChildArray.Count == 0)
