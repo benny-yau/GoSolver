@@ -117,14 +117,7 @@ namespace Go
                 if (ReachedDepthToVerify(promisingNode))
                 {
                     tree.HitDepthToVerify = true;
-                    Node verifyNode = (promisingNode.NoPossibleStates) ? promisingNode : promisingNode.Parent;
-                    Boolean winOrLose = VerifyOnDepthReached(verifyNode);
-                    if (winOrLose && AnswerFound(verifyNode))
-                        break;
-
-                    //prune node based on result from exhaustive search
-                    Boolean pruned = PruneBasedOnWinResult(verifyNode, winOrLose);
-                    if (pruned) continue;
+                    VerifyOnDepthReached(promisingNode);
                 }
 
                 //simulate random playout
@@ -165,22 +158,26 @@ namespace Go
         }
 
         /// <summary>
-        /// To prune node based on exhaustive search result or confirm alive result.
+        /// Verify on depth reached.
         /// </summary>
-        private Boolean PruneBasedOnWinResult(Node verifyNode, Boolean winOrLose)
+        protected virtual void VerifyOnDepthReached(Node promisingNode)
         {
-            Boolean pruned = false;
-            if (winOrLose)
-                pruned = PrunePromisingNode(verifyNode.Parent, verifyNode, winOrLose);
+            Node verifyNode = (promisingNode.NoPossibleStates) ? promisingNode : promisingNode.Parent;
+            Boolean isWin = VerifyWithExhaustiveSearch(verifyNode);
+            if (isWin && AnswerFound(verifyNode))
+                return;
+
+            //prune node based on result from exhaustive search
+            if (isWin)
+                PrunePromisingNode(verifyNode.Parent, verifyNode, isWin);
             else
-                pruned = PrunePromisingNode(verifyNode, null, winOrLose);
-            return pruned;
+                PrunePromisingNode(verifyNode, null, isWin);
         }
 
         /// <summary>
         /// Verify with exhaustive search on reaching specified depth.
         /// </summary>
-        public Boolean VerifyOnDepthReached(Node verifyNode)
+        public Boolean VerifyWithExhaustiveSearch(Node verifyNode)
         {
             if (verifyNode == null || verifyNode.Parent == null)
                 return false;
@@ -480,7 +477,7 @@ namespace Go
             (ConfirmAliveResult result, List<GameTryMove> tryMoves, GameTryMove koBlockedMove) = g.GetSurvivalMoves();
             if (koBlockedMove != null) tryMoves.Add(koBlockedMove);
             if (result != ConfirmAliveResult.Unknown)
-                return (result, board);
+                return (result, tryMoves.First().TryGame.Board);
             //make single random move out of possible moves
             int possibleMoves = tryMoves.Count;
             if (possibleMoves == 0) return (bestResult, board);
@@ -510,12 +507,10 @@ namespace Go
             watch.Stop();
             if (Game.debugMode)
             {
-                DebugHelper.DebugWriteWithTab("End of mcts: " + tree.Root.GetLastMoves(), mctsDepth);
                 long timeTaken = watch.ElapsedMilliseconds;
                 elapsedTime = timeTaken;
                 if (tree.Root == tree.AbsoluteRoot)
                 {
-                    DebugHelper.DebugWriteWithTab("Root: " + tree.AbsoluteRoot.GetLastMoves(), mctsDepth);
                     DebugHelper.DebugWriteWithTab(DebugHelper.PrintTimeTaken(timeTaken), mctsDepth);
                     DebugHelper.DebugWriteWithTab("Total time taken (mcts): " + timeTaken + Environment.NewLine + Environment.NewLine, mctsDepth);
                 }

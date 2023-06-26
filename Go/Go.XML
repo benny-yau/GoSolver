@@ -2469,12 +2469,12 @@
             <see cref="!:UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario3dan17" />
             </summary>
         </member>
-        <member name="M:Go.MonteCarloTreeSearch.PruneBasedOnWinResult(Go.Node,System.Boolean)">
+        <member name="M:Go.MonteCarloTreeSearch.VerifyOnDepthReached(Go.Node)">
             <summary>
-            To prune node based on exhaustive search result or confirm alive result.
+            Verify on depth reached.
             </summary>
         </member>
-        <member name="M:Go.MonteCarloTreeSearch.VerifyOnDepthReached(Go.Node)">
+        <member name="M:Go.MonteCarloTreeSearch.VerifyWithExhaustiveSearch(Go.Node)">
             <summary>
             Verify with exhaustive search on reaching specified depth.
             </summary>
