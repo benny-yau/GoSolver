@@ -22,8 +22,8 @@ namespace Go
             }
             set
             {
-                VerifyAnswerOnFirstRun(value);
-                base.answerNode = value;
+                if (VerifyAnswerOnFirstRun(value))
+                    base.answerNode = value;
             }
         }
 
@@ -38,9 +38,9 @@ namespace Go
             PrunedNodes.Clear();
         }
 
-        protected void VerifyAnswerOnFirstRun(Node node)
+        protected Boolean VerifyAnswerOnFirstRun(Node node)
         {
-            if (!FirstRunStrategy) return;
+            if (!FirstRunStrategy) return true;
             if (IsFirstRun && this.tree.Root.CurrentDepth == 0)
             {
                 IsFirstRun = false;
@@ -53,11 +53,12 @@ namespace Go
                     {
                         //first run not valid
                         Pruning(node, mcts.AnswerNode);
-                        return;
+                        return false;
                     }
                 }
                 DebugHelper.DebugWriteWithTab("Answer move: " + node.State.Game.Board.Move);
             }
+            return true;
         }
 
         protected void RemoveHalfOfNodes(Node node)
