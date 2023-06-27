@@ -18,7 +18,8 @@ namespace Go
         private Boolean winOrLose;
 
         private int[,] heatMap;
-        private double winrate;
+        private double heatValue;
+        private double winRate;
 
         public State()
         {
@@ -151,15 +152,27 @@ namespace Go
             }
         }
 
+        public double HeatValue
+        {
+            get
+            {
+                return heatValue;
+            }
+            set
+            {
+                this.heatValue = value;
+            }
+        }
+
         public double Winrate
         {
             get
             {
-                return winrate;
+                return winRate;
             }
             set
             {
-                this.winrate = value;
+                this.winRate = value;
             }
         }
         #endregion

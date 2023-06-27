@@ -8,6 +8,7 @@ namespace Go
 {
     public class NoExhaustiveSearchMCTS : MonteCarloTreeSearch
     {
+        const int simulationCount = 300;
         public NoExhaustiveSearchMCTS(Node rootNode, int mctsDepth = 0) : base(rootNode, mctsDepth)
         {
         }
@@ -20,16 +21,32 @@ namespace Go
         protected override Node SelectPromisingNode(Node rootNode)
         {
             Node node = rootNode;
+            Boolean hitSimulationCount = rootNode.ChildArray.Any(n => n.State.VisitCount > simulationCount);
             while (node.ChildArray.Count != 0)
             {
-                if (node.Parent != null)
-                {
-                    Node n = node.Parent.ChildArray.OrderBy(s => s.State.VisitCount).First();
-                    if (n.State.VisitCount <= (50 * (2 - n.CurrentDepth))) return n;
-                }
-                node = UCT.findBestNodeWithUCT(node);
+                if (!hitSimulationCount)
+                    node = SelectMoveByProbabilityDistribution(node);
+                else
+                    node = UCT.findBestNodeWithUCT(node);
+                if (node.CurrentDepth == 1)
+                    hitSimulationCount = (node.State.VisitCount > simulationCount);
             }
             return node;
+        }
+
+        private Node SelectMoveByProbabilityDistribution(Node node)
+        {
+            double sum = node.ChildArray.Sum(s => s.State.HeatValue);
+            double r = random.NextDouble() * sum;
+            Node n = node.ChildArray.First();
+            for (int i = 0; i <= node.ChildArray.Count - 1; i++)
+            {
+                n = node.ChildArray[i];
+                r -= n.State.HeatValue;
+                if (r <= 0)
+                    break;
+            }
+            return n;
         }
 
     }

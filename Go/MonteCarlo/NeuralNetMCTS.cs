@@ -28,8 +28,9 @@ namespace Go
                 Board b = childNode.State.Game.Board;
                 Point move = b.Move.Value;
                 if (move.Equals(Game.PassMove)) continue;
-                //set heatmap value in winscore
-                childNode.State.WinScore = node.State.HeatMap[move.x, move.y];
+                //set heatmap value
+                childNode.State.HeatValue = node.State.HeatMap[move.x, move.y];
+                childNode.State.WinScore = childNode.State.HeatValue;
             }
             base.ExpandNode(node);
         }
@@ -58,14 +59,6 @@ namespace Go
             MonteCarloGame.checkHeatmap.WaitOne();
 
             MonteCarloGame.isCheckHeatmap = false;
-        }
-
-        protected override Node RandomChildNode(Node node)
-        {
-            if (node.ChildArray.Any(n => n.State.WinScore > 0))
-                return node.ChildArray.MaxObject(n => n.State.WinScore);
-            else
-                return base.RandomChildNode(node);
         }
     }
 }
