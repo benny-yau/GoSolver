@@ -343,8 +343,14 @@ namespace Go
         /// Expansion phase - to expand all possible states as child nodes.
         /// Confirm alive for each possible state to check if game ended with objective reached already.
         /// </summary>
-        protected virtual Boolean ExpandNode(Node node)
+        protected virtual void ExpandNode(Node node)
         {
+            NodeExpansion(node);
+        }
+
+        protected void NodeExpansion(Node node)
+        {
+            if (node.Expanded) return;
             List<State> possibleStates = node.State.AllPossibleStates;
             for (int i = 0; i <= possibleStates.Count - 1; i++)
             {
@@ -364,7 +370,6 @@ namespace Go
             }
             node.Expanded = true;
             if (node.ChildArray.Count == 0) node.NoPossibleStates = true;
-            return (node.ChildArray.Count > 0);
         }
 
         /// <summary>

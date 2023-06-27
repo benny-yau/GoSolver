@@ -6,16 +6,20 @@ using System.Diagnostics;
 
 namespace Go
 {
-    public class NeuralNetMCTS : FirstRunMCTS
+    /// <summary>
+    /// Neural Net MCTS - neural net from Leela zero
+    /// Inherit NoExhaustiveSearchMCTS or FirstRunMCTS to use either strategy
+    /// </summary>
+    public class NeuralNetMCTS : NoExhaustiveSearchMCTS
     {
         public NeuralNetMCTS(int mctsDepth = 0)
         {
             this.mctsDepth = mctsDepth;
         }
 
-        protected override Boolean ExpandNode(Node node)
+        protected override void ExpandNode(Node node)
         {
-            if (!base.ExpandNode(node)) return false;
+            NodeExpansion(node);
 
             if (node.State.HeatMap == null)
                 GetHeatMap(node);
@@ -28,15 +32,7 @@ namespace Go
                 //set heatmap value in winscore
                 childNode.State.WinScore = node.State.HeatMap[move.x, move.y];
             }
-            if (NeuralNetMCTS.FirstRunStrategy)
-                RemoveHalfOfNodes(node);
-            return true;
-        }
-
-        protected override void Pruning(Node prunedNode, Node verifyNode)
-        {
-            base.Pruning(prunedNode, verifyNode);
-            PrunedNodes.Add(prunedNode);
+            base.ExpandNode(node);
         }
 
         public static void GetHeatMap(Node node)

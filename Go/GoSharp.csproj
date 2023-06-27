@@ -112,6 +112,7 @@
     <Compile Include="MonteCarlo\MonteCarloTreeSearch.cs" />
     <Compile Include="MonteCarlo\NeuralNetMCTS.cs" />
     <Compile Include="MonteCarlo\Node.cs" />
+    <Compile Include="MonteCarlo\NoExhaustiveSearchMCTS.cs" />
     <Compile Include="MonteCarlo\State.cs" />
     <Compile Include="MonteCarlo\Tree.cs" />
     <Compile Include="MonteCarlo\UCT.cs" />

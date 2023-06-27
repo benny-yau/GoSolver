@@ -2538,6 +2538,12 @@
             Include ko moves and set result as KoAlive if ko wins.
             </summary>
         </member>
+        <member name="T:Go.NeuralNetMCTS">
+            <summary>
+            Neural Net MCTS - neural net from Leela zero
+            Inherit NoExhaustiveSearchMCTS or FirstRunMCTS to use either strategy
+            </summary>
+        </member>
         <member name="M:Go.State.GetAllPossibleMoves(Go.Game)">
             <summary>
             Get all possible moves for mcts, including ko moves.

@@ -34,7 +34,7 @@ namespace Go
             if (useLeelaZero)
             {
                 mcts = new NeuralNetMCTS(mctsDepth);
-                NeuralNetMCTS.IsFirstRun = true;
+                FirstRunMCTS.IsFirstRun = true;
             }
             else
                 mcts = new MonteCarloTreeSearch(mctsDepth);

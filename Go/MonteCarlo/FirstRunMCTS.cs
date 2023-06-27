@@ -9,7 +9,6 @@ namespace Go
 {
     public class FirstRunMCTS : MonteCarloTreeSearch
     {
-        public static Boolean FirstRunStrategy = true;
         public static Boolean IsFirstRun = true;
         public static List<Node> RemovedNodes = new List<Node>();
         public static List<Node> PrunedNodes = new List<Node>();
@@ -27,10 +26,19 @@ namespace Go
             }
         }
 
+        protected override void ExpandNode(Node node)
+        {
+            RemoveHalfOfNodes(node);
+        }
+
+        protected override void Pruning(Node prunedNode, Node verifyNode)
+        {
+            base.Pruning(prunedNode, verifyNode);
+            PrunedNodes.Add(prunedNode);
+        }
 
         protected void RestoreNodes()
         {
-            if (!FirstRunStrategy) return;
             RemovedNodes.ForEach(n => n.Parent.ChildArray.Add(n));
             RemovedNodes.Clear();
             PrunedNodes.ForEach(n => n.Parent.ChildArray.Add(n));
@@ -40,7 +48,6 @@ namespace Go
 
         protected Boolean VerifyAnswerOnFirstRun(Node node)
         {
-            if (!FirstRunStrategy) return true;
             if (IsFirstRun && this.tree.Root.CurrentDepth == 0)
             {
                 IsFirstRun = false;
@@ -63,7 +70,6 @@ namespace Go
 
         protected void RemoveHalfOfNodes(Node node)
         {
-            if (!FirstRunStrategy) return;
             if (IsFirstRun && node.ChildArray.Count >= 6)
             {
                 node.ChildArray = node.ChildArray.OrderByDescending(n => n.State.WinScore).ToList();
@@ -79,7 +85,7 @@ namespace Go
 
         protected override void PostProcess(Node rootNode, Stopwatch watch)
         {
-            if (FirstRunStrategy && IsFirstRun && tree.Root.CurrentDepth == 0 && tree.Root.ChildArray.Count == 0)
+            if (IsFirstRun && tree.Root.CurrentDepth == 0 && tree.Root.ChildArray.Count == 0)
             {
                 //no answer found on first run, rerun mcts
                 IsFirstRun = false;
