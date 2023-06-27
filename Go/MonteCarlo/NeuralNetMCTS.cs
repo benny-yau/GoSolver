@@ -12,9 +12,8 @@ namespace Go
     /// </summary>
     public class NeuralNetMCTS : NoExhaustiveSearchMCTS
     {
-        public NeuralNetMCTS(int mctsDepth = 0) : base()
+        public NeuralNetMCTS(Node rootNode, int mctsDepth = 0) : base(rootNode, mctsDepth)
         {
-            this.mctsDepth = mctsDepth;
         }
 
         protected override void ExpandNode(Node node)

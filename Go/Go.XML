@@ -2461,7 +2461,7 @@
             Depth to start exhaustive search to verify.
             </summary>
         </member>
-        <member name="M:Go.MonteCarloTreeSearch.FindNextMove(Go.Node)">
+        <member name="M:Go.MonteCarloTreeSearch.FindNextMove">
             <summary>
             Start the mcts until answer is found or all nodes are pruned (or max iterations reached).
             <see cref="!:UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario2dan15" />

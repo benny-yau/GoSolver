@@ -32,10 +32,10 @@ namespace Go
             }
             MonteCarloTreeSearch mcts;
             if (useLeelaZero)
-                mcts = new NeuralNetMCTS(mctsDepth);
+                mcts = new NeuralNetMCTS(rootNode, mctsDepth);
             else
-                mcts = new MonteCarloTreeSearch(mctsDepth);
-            mcts.FindNextMove(rootNode);
+                mcts = new MonteCarloTreeSearch(rootNode, mctsDepth);
+            mcts.FindNextMove();
             return mcts;
         }
 

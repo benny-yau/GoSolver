@@ -8,6 +8,10 @@ namespace Go
 {
     public class NoExhaustiveSearchMCTS : MonteCarloTreeSearch
     {
+        public NoExhaustiveSearchMCTS(Node rootNode, int mctsDepth = 0) : base(rootNode, mctsDepth)
+        {
+        }
+
         protected override void VerifyOnDepthReached(Node promisingNode)
         {
             return;

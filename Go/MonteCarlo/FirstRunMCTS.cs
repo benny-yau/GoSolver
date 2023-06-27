@@ -13,11 +13,14 @@ namespace Go
         public static List<Node> RemovedNodes;
         public static List<Node> PrunedNodes;
 
-        public FirstRunMCTS()
+        public FirstRunMCTS(Node rootNode, int mctsDepth = 0) : base(rootNode, mctsDepth)
         {
-            IsFirstRun = true;
-            RemovedNodes = new List<Node>();
-            PrunedNodes = new List<Node>();
+            if (rootNode.CurrentDepth == 0)
+            {
+                IsFirstRun = true;
+                RemovedNodes = new List<Node>();
+                PrunedNodes = new List<Node>();
+            }
         }
 
         public override Node AnswerNode
@@ -90,7 +93,7 @@ namespace Go
             }
         }
 
-        protected override void PostProcess(Node rootNode, Stopwatch watch)
+        protected override void PostProcess(Stopwatch watch)
         {
             if (IsFirstRun && tree.Root.CurrentDepth == 0 && tree.Root.ChildArray.Count == 0)
             {
@@ -98,14 +101,14 @@ namespace Go
                 IsFirstRun = false;
                 RestoreNodes();
                 DebugHelper.DebugWriteWithTab("First run completed" + Environment.NewLine + "No answer found");
-                MonteCarloTreeSearch mcts = MonteCarloGame.InitializeMonteCarloComputerMove(rootNode.State.Game, rootNode);
+                MonteCarloTreeSearch mcts = MonteCarloGame.InitializeMonteCarloComputerMove(tree.Root.State.Game, tree.Root);
                 if (mcts.AnswerNode != null)
                 {
                     this.AnswerNode = mcts.AnswerNode;
                     DebugHelper.DebugWriteWithTab("Answer move: " + AnswerNode.State.Game.Board.Move);
                 }
             }
-            base.PostProcess(rootNode, watch);
+            base.PostProcess(watch);
         }
     }
 }

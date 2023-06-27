@@ -9,7 +9,7 @@ namespace Go
 {
     public class MonteCarloTreeSearch
     {
-        public Tree tree;
+        public Tree tree = new Tree();
         public const int winScore = 1;
         public int mctsDepth = 0;
         public int maxIterations = MonteCarloMapping.mapMovesOrSearchAnswer ? Int32.MaxValue : 6000;
@@ -73,8 +73,9 @@ namespace Go
             }
         }
 
-        public MonteCarloTreeSearch(int mctsDepth = 0)
+        public MonteCarloTreeSearch(Node rootNode, int mctsDepth = 0)
         {
+            tree.Root = rootNode;
             this.mctsDepth = mctsDepth;
         }
 
@@ -84,10 +85,8 @@ namespace Go
         /// <see cref="UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario_GuanZiPu_A3" />
         /// <see cref="UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario3dan17" />
         /// </summary>
-        public virtual void FindNextMove(Node rootNode)
+        public virtual void FindNextMove()
         {
-            tree = new Tree();
-            tree.Root = rootNode;
             if (Game.debugMode)
                 DebugHelper.DebugWriteWithTab("Start of mcts: " + tree.Root.GetLastMoves(), mctsDepth);
             Stopwatch watch = Stopwatch.StartNew();
@@ -130,13 +129,13 @@ namespace Go
                 if (AnswerNode != null || tree.Root.ChildArray.Count == 0)
                     break;
 
-                if (Game.TimeOut(rootNode.State.Game))
+                if (Game.TimeOut(tree.Root.State.Game))
                 {
                     if (Game.debugMode) Debug.WriteLine("Break real time...");
                     break;
                 }
             } while (count <= maxIterations);
-            PostProcess(rootNode, watch);
+            PostProcess(watch);
         }
 
         protected Boolean NodeToExpand(Node node)
@@ -507,7 +506,7 @@ namespace Go
             return (bestResult, board);
         }
 
-        protected virtual void PostProcess(Node node, Stopwatch watch)
+        protected virtual void PostProcess(Stopwatch watch)
         {
             watch.Stop();
             if (Game.debugMode)
