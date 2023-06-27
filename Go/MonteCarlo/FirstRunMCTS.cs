@@ -9,9 +9,16 @@ namespace Go
 {
     public class FirstRunMCTS : MonteCarloTreeSearch
     {
-        public static Boolean IsFirstRun = true;
-        public static List<Node> RemovedNodes = new List<Node>();
-        public static List<Node> PrunedNodes = new List<Node>();
+        public static Boolean IsFirstRun;
+        public static List<Node> RemovedNodes;
+        public static List<Node> PrunedNodes;
+
+        public FirstRunMCTS()
+        {
+            IsFirstRun = true;
+            RemovedNodes = new List<Node>();
+            PrunedNodes = new List<Node>();
+        }
 
         public override Node AnswerNode
         {

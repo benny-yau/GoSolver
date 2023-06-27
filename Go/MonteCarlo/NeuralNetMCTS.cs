@@ -12,7 +12,7 @@ namespace Go
     /// </summary>
     public class NeuralNetMCTS : NoExhaustiveSearchMCTS
     {
-        public NeuralNetMCTS(int mctsDepth = 0)
+        public NeuralNetMCTS(int mctsDepth = 0) : base()
         {
             this.mctsDepth = mctsDepth;
         }
