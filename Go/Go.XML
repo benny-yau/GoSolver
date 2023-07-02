@@ -2411,6 +2411,16 @@
             Check if target group is dead or alive, including survival points check.
             </summary>
         </member>
+        <member name="M:Go.FirstRunMCTS.VerifyFirstNode(Go.Node)">
+            <summary>
+            Verify first node. Set depth to verify to higher value for difficult scenarios.
+            </summary>
+        </member>
+        <member name="M:Go.FirstRunMCTS.DeepCopyHalfOfNodes(Go.Node,Go.Node)">
+            <summary>
+            Deep copy half of nodes.
+            </summary>
+        </member>
         <member name="M:Go.MonteCarloGame.InitializeMonteCarloComputerMove(Go.Game,Go.Node,System.Int32)">
             <summary>
             Create new mcts search tree and initialize search.
@@ -2541,7 +2551,16 @@
         <member name="T:Go.NeuralNetMCTS">
             <summary>
             Neural Net MCTS - neural net from Leela zero
-            Inherit NoExhaustiveSearchMCTS or FirstRunMCTS to use either strategy
+            </summary>
+        </member>
+        <member name="M:Go.NeuralNetMCTS.ExpandNode(Go.Node)">
+            <summary>
+            Expand node.
+            </summary>
+        </member>
+        <member name="M:Go.NeuralNetMCTS.GetHeatMap(Go.Node)">
+            <summary>
+            Get heat map.
             </summary>
         </member>
         <member name="M:Go.State.GetAllPossibleMoves(Go.Game)">

@@ -18,13 +18,23 @@ namespace Go
         public Node()
         {
             this.State = new State();
-            this.State.Node = this;
         }
 
         public Node(State state)
         {
             this.State = state;
-            this.State.Node = this;
+        }
+
+        public Node(Node node)
+        {
+            Game g = new Game(node.State.Game);
+            this.State = new State(g);
+            this.State.Depth = node.State.Depth;
+
+            this.expanded = node.expanded;
+            this.noPossibleStates = node.noPossibleStates;
+            if (node.prunedJson != null)
+                this.prunedJson = new JArray(node.prunedJson);
         }
 
         public virtual State State
@@ -111,6 +121,14 @@ namespace Go
             {
                 prunedJson = value;
             }
+        }
+
+        public Node FirstNode()
+        {
+            Node n = this;
+            while (n.CurrentDepth > 1)
+                n = n.Parent;
+            return n;
         }
 
         public String GetLastMoves()

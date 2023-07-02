@@ -9,13 +9,10 @@ namespace Go
     public class NoExhaustiveSearchMCTS : MonteCarloTreeSearch
     {
         const int simulationCount = 300;
+        static Boolean useFirstRunStrategy = true;
+
         public NoExhaustiveSearchMCTS(Node rootNode, int mctsDepth = 0) : base(rootNode, mctsDepth)
         {
-        }
-
-        protected override void VerifyOnDepthReached(Node promisingNode)
-        {
-            return;
         }
 
         protected override Node SelectPromisingNode(Node rootNode)
@@ -47,6 +44,29 @@ namespace Go
                     break;
             }
             return n;
+        }
+
+        protected override void VerifyOnDepthReached(Node promisingNode)
+        {
+            //formulate strategy here
+            if (useFirstRunStrategy)
+                FirstRunStrategy(promisingNode);
+        }
+
+        private void FirstRunStrategy(Node promisingNode)
+        {
+            Node firstNode = promisingNode.FirstNode();
+            if (FirstRunMCTS.VerifyOnCondition(firstNode))
+            {
+                (Boolean verify, Node answerNode) = FirstRunMCTS.VerifyFirstNode(firstNode);
+                if (verify)
+                {
+                    DebugHelper.DebugWriteWithTab("Answer on first run: " + firstNode.State.Game.Board.Move);
+                    this.AnswerNode = firstNode;
+                }
+                else
+                    Pruning(firstNode, answerNode);
+            }
         }
 
     }

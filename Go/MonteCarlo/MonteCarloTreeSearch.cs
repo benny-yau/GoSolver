@@ -113,7 +113,7 @@ namespace Go
                 }
 
                 //verify on depth reached or no possible states to expand
-                if (ReachedDepthToVerify(promisingNode))
+                if (ReachedDepthToVerify(promisingNode) || promisingNode.NoPossibleStates)
                 {
                     tree.HitDepthToVerify = true;
                     VerifyOnDepthReached(promisingNode);
@@ -153,7 +153,7 @@ namespace Go
 
         protected virtual Boolean ReachedDepthToVerify(Node node)
         {
-            return (node.Parent != null && node.Parent.CurrentDepth >= DepthToVerify) || node.NoPossibleStates;
+            return (node.Parent != null && node.Parent.CurrentDepth >= DepthToVerify);
         }
 
         /// <summary>
@@ -230,7 +230,8 @@ namespace Go
                     Node siblingNode = siblingNodes[i];
 
                     //initialize new mcts with sibling node, and loop the loop with each sibling node
-                    MonteCarloTreeSearch mcts = MonteCarloGame.InitializeMonteCarloComputerMove(siblingNode.State.Game, siblingNode, mctsDepth + 1);
+                    MonteCarloTreeSearch mcts = new MonteCarloTreeSearch(siblingNode, mctsDepth + 1);
+                    mcts.FindNextMove();
                     Boolean winOrLose = (mcts.AnswerNode == null);
                     if (!winOrLose)
                     {
@@ -334,6 +335,8 @@ namespace Go
             while (node.ChildArray.Count != 0)
             {
                 node = UCT.findBestNodeWithUCT(node);
+                if (ReachedDepthToVerify(node))
+                    break;
             }
             return node;
         }

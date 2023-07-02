@@ -8,7 +8,6 @@ namespace Go
 {
     /// <summary>
     /// Neural Net MCTS - neural net from Leela zero
-    /// Inherit NoExhaustiveSearchMCTS or FirstRunMCTS to use either strategy
     /// </summary>
     public class NeuralNetMCTS : NoExhaustiveSearchMCTS
     {
@@ -16,10 +15,14 @@ namespace Go
         {
         }
 
+        /// <summary>
+        /// Expand node.
+        /// </summary>
         protected override void ExpandNode(Node node)
         {
             NodeExpansion(node);
 
+            //get heat map
             if (node.State.HeatMap == null)
                 GetHeatMap(node);
 
@@ -35,6 +38,9 @@ namespace Go
             base.ExpandNode(node);
         }
 
+        /// <summary>
+        /// Get heat map.
+        /// </summary>
         public static void GetHeatMap(Node node)
         {
             MonteCarloGame.isCheckHeatmap = true;

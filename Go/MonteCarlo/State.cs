@@ -30,18 +30,6 @@ namespace Go
             this.game = game;
         }
 
-        public virtual Node Node
-        {
-            get
-            {
-                return node;
-            }
-            set
-            {
-                this.node = value;
-            }
-        }
-
         public virtual Game Game
         {
             get
