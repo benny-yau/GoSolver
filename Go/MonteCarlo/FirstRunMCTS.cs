@@ -9,7 +9,7 @@ namespace Go
 {
     public static class FirstRunMCTS
     {
-        const int simulationCount = 3009;
+        const int simulationCount = 3000;
 
         public static Boolean VerifyOnCondition(Node firstNode)
         {
@@ -25,6 +25,7 @@ namespace Go
             FirstRunMCTS.DeepCopyHalfOfNodes(firstNode, n);
 
             //start mcts
+            Debug.WriteLine("Verifying node " + firstNode.State.Game.Board.Move + " on first run...");
             MonteCarloTreeSearch mcts = new MonteCarloTreeSearch(n);
             mcts.FindNextMove();
             if (mcts.AnswerNode != null)
@@ -38,7 +39,7 @@ namespace Go
         /// </summary>
         public static void DeepCopyHalfOfNodes(Node rootNode, Node newNode)
         {
-            rootNode.ChildArray = rootNode.ChildArray.OrderByDescending(n => n.State.HeatValue).ToList();
+            rootNode.ChildArray = rootNode.ChildArray.OrderByDescending(n => UCT.uctValue(n)).ToList();
             int halfCount = Convert.ToInt32(Math.Ceiling(rootNode.ChildArray.Count * 0.5));
             for (int i = 0; i <= halfCount - 1; i++)
             {
@@ -47,6 +48,7 @@ namespace Go
                 newNode.ChildArray.Add(n);
                 n.Parent = newNode;
                 DeepCopyHalfOfNodes(childNode, n);
+                if (newNode.ChildArray.Count >= 5) break;
             }
         }
 
