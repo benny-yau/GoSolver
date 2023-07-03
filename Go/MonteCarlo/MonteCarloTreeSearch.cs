@@ -230,7 +230,7 @@ namespace Go
                     Node siblingNode = siblingNodes[i];
 
                     //initialize new mcts with sibling node, and loop the loop with each sibling node
-                    MonteCarloTreeSearch mcts = new MonteCarloTreeSearch(siblingNode, mctsDepth + 1);
+                    MonteCarloTreeSearch mcts = InitializeMCTSWithSiblingNode(siblingNode);
                     mcts.FindNextMove();
                     Boolean winOrLose = (mcts.AnswerNode == null);
                     if (!winOrLose)
@@ -257,6 +257,12 @@ namespace Go
 
             CheckAllChildNodesPruned(parentNode, winResult);
             return true;
+        }
+
+        protected virtual MonteCarloTreeSearch InitializeMCTSWithSiblingNode(Node siblingNode)
+        {
+            MonteCarloTreeSearch mcts = new MonteCarloTreeSearch(siblingNode, mctsDepth + 1);
+            return mcts;
         }
 
         /// <summary>

@@ -7,13 +7,33 @@ using System.Threading.Tasks;
 
 namespace Go
 {
-    public static class FirstRunMCTS
+    public class FirstRunMCTS : MonteCarloTreeSearch
     {
         const int simulationCount = 3000;
+
+        public FirstRunMCTS(Node rootNode, int mctsDepth = 0) : base(rootNode, mctsDepth)
+        {
+        }
 
         public static Boolean VerifyOnCondition(Node firstNode)
         {
             return firstNode.State.VisitCount > simulationCount;
+        }
+
+        protected override MonteCarloTreeSearch InitializeMCTSWithSiblingNode(Node siblingNode)
+        {
+            FirstRunMCTS mcts = new FirstRunMCTS(siblingNode, mctsDepth + 1);
+            return mcts;
+        }
+
+        protected override void ExpandNode(Node node)
+        {
+            NodeExpansion(node);
+
+            Node n = new Node(node);
+            DeepCopyHalfOfNodes(node, n);
+            node.ChildArray.Clear();
+            n.ChildArray.ForEach(s => { node.ChildArray.Add(s); s.Parent = node; });
         }
 
         /// <summary>
@@ -26,7 +46,7 @@ namespace Go
 
             //start mcts
             Debug.WriteLine("Verifying node " + firstNode.State.Game.Board.Move + " on first run...");
-            MonteCarloTreeSearch mcts = new MonteCarloTreeSearch(n);
+            FirstRunMCTS mcts = new FirstRunMCTS(n);
             mcts.FindNextMove();
             if (mcts.AnswerNode != null)
                 return (false, mcts.AnswerNode);
@@ -43,13 +63,13 @@ namespace Go
             int halfCount = Convert.ToInt32(Math.Ceiling(rootNode.ChildArray.Count * 0.5));
             for (int i = 0; i <= rootNode.ChildArray.Count - 1; i++)
             {
-                if (halfCount >= 5 && i > halfCount) break;
+                if (halfCount >= 3 && i > halfCount) break;
                 Node childNode = rootNode.ChildArray[i];
                 Node n = new Node(childNode);
                 newNode.ChildArray.Add(n);
                 n.Parent = newNode;
                 DeepCopyHalfOfNodes(childNode, n);
-                if (newNode.ChildArray.Count >= 6) break;
+                if (newNode.ChildArray.Count >= 5) break;
             }
         }
 
