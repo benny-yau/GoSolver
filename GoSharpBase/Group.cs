@@ -8,6 +8,7 @@ namespace Go
     /// <summary>
     /// Represents a group of stones (black, white, or empty spaces) on a board.
     /// </summary>
+    [Serializable]
     public class Group
     {
         private HashSet<Point> points = new HashSet<Point>();

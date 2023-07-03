@@ -9,6 +9,7 @@ namespace Go
     /// <summary>
     /// Represents a pair of board coordinates - x and y.
     /// </summary>
+    [Serializable]
     public struct Point
     {
         public int x { get; set; }

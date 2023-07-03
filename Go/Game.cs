@@ -10,6 +10,7 @@ namespace Go
     /// <summary>
     /// Contains core of methods for game play. The root of a specified game may be obtained using the Root property.
     /// </summary>
+    [Serializable]
     public partial class Game
     {
         public Game Root { get; private set; }
@@ -65,6 +66,7 @@ namespace Go
             }
         }
 
+        [NonSerialized]
         Stopwatch runTimeStopWatch;
         /// <summary>
         /// Stop watch for run time.

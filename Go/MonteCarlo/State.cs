@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Go
 {
+    [Serializable]
     public class State
     {
         private Node node;

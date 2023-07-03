@@ -41,14 +41,15 @@ namespace Go
         {
             rootNode.ChildArray = rootNode.ChildArray.OrderByDescending(n => UCT.uctValue(n)).ToList();
             int halfCount = Convert.ToInt32(Math.Ceiling(rootNode.ChildArray.Count * 0.5));
-            for (int i = 0; i <= halfCount - 1; i++)
+            for (int i = 0; i <= rootNode.ChildArray.Count - 1; i++)
             {
+                if (halfCount >= 5 && i > halfCount) break;
                 Node childNode = rootNode.ChildArray[i];
                 Node n = new Node(childNode);
                 newNode.ChildArray.Add(n);
                 n.Parent = newNode;
                 DeepCopyHalfOfNodes(childNode, n);
-                if (newNode.ChildArray.Count >= 5) break;
+                if (newNode.ChildArray.Count >= 6) break;
             }
         }
 

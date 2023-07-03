@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Go
 {
+    [Serializable]
     public class Node
     {
         private State state;
@@ -13,6 +14,7 @@ namespace Go
         private List<Node> childArray;
         private bool expanded = false;
         private bool noPossibleStates = false;
+        [NonSerialized]
         private JArray prunedJson;
 
         public Node()

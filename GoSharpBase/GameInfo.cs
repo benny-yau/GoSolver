@@ -10,6 +10,7 @@ namespace Go
     /// <summary>
     /// Provides setup information used in the game.
     /// </summary>
+    [Serializable]
     public class GameInfo
     {
         public int BoardSizeX { get; set; }
@@ -84,6 +85,7 @@ namespace Go
             }
         }
 
+        [NonSerialized]
         private dynamic playerMoveJson;
         /// <summary>
         /// Mapped json for player move first for two levels.
@@ -107,6 +109,7 @@ namespace Go
             }
         }
 
+        [NonSerialized]
         private dynamic playerMoveJsonExtension;
         /// <summary>
         /// Mapped json for player move first for three levels.
@@ -130,6 +133,7 @@ namespace Go
             }
         }
 
+        [NonSerialized]
         private dynamic challengeMoveJson;
         /// <summary>
         /// Mapped json for computer move first for two levels.
@@ -153,6 +157,7 @@ namespace Go
             }
         }
 
+        [NonSerialized]
         private dynamic challengeMoveJsonExtension;
         /// <summary>
         /// Mapped json for computer move first for three levels.
@@ -215,7 +220,6 @@ namespace Go
             }
         }
 
-
         public static readonly object _lockFullLoading = new object();
         private static Boolean enableFullLoading = true;
 
@@ -250,6 +254,7 @@ namespace Go
         }
     }
 
+    [Serializable]
     public class SetupMove
     {
         public Point Move { get; set; }
@@ -267,6 +272,7 @@ namespace Go
         }
     }
 
+    [Serializable]
     public class CorrectedList : List<Point>
     {
         public CorrectedList(IEnumerable<Point> points) : base(points) { }
