@@ -32,6 +32,7 @@ namespace Go
             Game g = new Game(node.State.Game);
             this.State = new State(g);
             this.State.Depth = node.State.Depth;
+            this.State.ConfirmAlive = node.State.ConfirmAlive;
             this.State.WinOrLose = node.State.WinOrLose;
 
             this.expanded = node.expanded;

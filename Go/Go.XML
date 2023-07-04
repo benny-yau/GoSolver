@@ -2563,6 +2563,21 @@
             Get heat map.
             </summary>
         </member>
+        <member name="M:Go.NoExhaustiveSearchMCTS.SelectPromisingNode(Go.Node)">
+            <summary>
+            Select promising node.
+            </summary>
+        </member>
+        <member name="M:Go.NoExhaustiveSearchMCTS.SelectMoveByProbabilityDistribution(Go.Node)">
+            <summary>
+            Select move by probability distribution.
+            </summary>
+        </member>
+        <member name="M:Go.NoExhaustiveSearchMCTS.VerifyOnDepthReached(Go.Node)">
+            <summary>
+            Verify on depth reached.
+            </summary>
+        </member>
         <member name="M:Go.State.GetAllPossibleMoves(Go.Game)">
             <summary>
             Get all possible moves for mcts, including ko moves.

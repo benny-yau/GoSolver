@@ -15,6 +15,9 @@ namespace Go
         {
         }
 
+        /// <summary>
+        /// Select promising node.
+        /// </summary>
         protected override Node SelectPromisingNode(Node rootNode)
         {
             Node node = rootNode;
@@ -31,6 +34,9 @@ namespace Go
             return node;
         }
 
+        /// <summary>
+        /// Select move by probability distribution.
+        /// </summary>
         private Node SelectMoveByProbabilityDistribution(Node node)
         {
             double sum = node.ChildArray.Sum(s => s.State.HeatValue);
@@ -46,6 +52,9 @@ namespace Go
             return n;
         }
 
+        /// <summary>
+        /// Verify on depth reached.
+        /// </summary>
         protected override void VerifyOnDepthReached(Node promisingNode)
         {
             //formulate strategy here
