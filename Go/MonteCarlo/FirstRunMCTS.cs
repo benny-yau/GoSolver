@@ -64,16 +64,22 @@ namespace Go
             }
         }
 
+        /// <summary>
+        /// Get half of nodes.
+        /// </summary>
         public static IEnumerable<Node> GetHalfOfNodes(Node rootNode)
         {
             rootNode.ChildArray = rootNode.ChildArray.OrderByDescending(n => UCT.uctValue(n)).ToList();
             int halfCount = Convert.ToInt32(Math.Ceiling(rootNode.ChildArray.Count * 0.5));
             for (int i = 0; i <= rootNode.ChildArray.Count - 1; i++)
             {
-                //set minimum count
-                if (halfCount >= 3 && i > halfCount) break;
-                //set maximum count
-                if (i > 5) break;
+                if (rootNode.CurrentDepth <= 3)
+                {
+                    //set minimum count
+                    if (halfCount >= 3 && i > halfCount) break;
+                    //set maximum count
+                    if (i > 5) break;
+                }
                 yield return rootNode.ChildArray[i];
             }
         }

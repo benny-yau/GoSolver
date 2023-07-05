@@ -2421,6 +2421,11 @@
             Deep copy half of nodes.
             </summary>
         </member>
+        <member name="M:Go.FirstRunMCTS.GetHalfOfNodes(Go.Node)">
+            <summary>
+            Get half of nodes.
+            </summary>
+        </member>
         <member name="M:Go.MonteCarloGame.InitializeMonteCarloComputerMove(Go.Game,Go.Node,System.Int32)">
             <summary>
             Create new mcts search tree and initialize search.
