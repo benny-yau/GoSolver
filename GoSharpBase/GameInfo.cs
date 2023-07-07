@@ -181,6 +181,7 @@ namespace Go
             }
         }
 
+        [NonSerialized]
         private dynamic runtimeScript_KillMove;
         /// <summary>
         /// Runtime script for removing kill moves dynamically. Previously used to remove neutral point moves.
@@ -200,6 +201,7 @@ namespace Go
             }
         }
 
+        [NonSerialized]
         private dynamic runtimeScript_SurvivalMove;
 
         /// <summary>

@@ -7,29 +7,13 @@ using System.Threading.Tasks;
 
 namespace Go
 {
-    public class FirstRunMCTS : MonteCarloTreeSearch
+    public class FirstRunMCTS
     {
         const int simulationCount = 3000;
-
-        public FirstRunMCTS(Node rootNode, int mctsDepth = 0) : base(rootNode, mctsDepth)
-        {
-        }
 
         public static Boolean VerifyOnCondition(Node firstNode)
         {
             return firstNode.State.VisitCount > simulationCount;
-        }
-
-        protected override MonteCarloTreeSearch InitializeMCTSWithSiblingNode(Node siblingNode)
-        {
-            FirstRunMCTS mcts = new FirstRunMCTS(siblingNode, mctsDepth + 1);
-            return mcts;
-        }
-
-        protected override void ExpandNode(Node node)
-        {
-            NodeExpansion(node);
-            node.ChildArray = GetHalfOfNodes(node).ToList();
         }
 
         /// <summary>
@@ -42,7 +26,7 @@ namespace Go
 
             //start mcts
             Debug.WriteLine("Verifying node " + firstNode.State.Game.Board.Move + " on first run...");
-            FirstRunMCTS mcts = new FirstRunMCTS(n);
+            MonteCarloTreeSearch mcts = new MonteCarloTreeSearch(n);
             mcts.FindNextMove();
             if (mcts.AnswerNode != null)
                 return (false, mcts.AnswerNode);
@@ -69,7 +53,7 @@ namespace Go
         /// </summary>
         public static IEnumerable<Node> GetHalfOfNodes(Node rootNode)
         {
-            rootNode.ChildArray = rootNode.ChildArray.OrderByDescending(n => UCT.uctValue(n)).ToList();
+            rootNode.ChildArray = rootNode.ChildArray.OrderByDescending(n => n.State.VisitCount).ToList();
             int halfCount = Convert.ToInt32(Math.Ceiling(rootNode.ChildArray.Count * 0.5));
             for (int i = 0; i <= rootNode.ChildArray.Count - 1; i++)
             {
