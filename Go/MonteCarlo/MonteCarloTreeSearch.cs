@@ -123,7 +123,7 @@ namespace Go
                 SimulateRandomPlayout(promisingNode);
 
                 if (Game.debugMode && count % 60 == 0)
-                    DebugHelper.DebugWriteWithTab("Count: " + count + " | Depth: " + promisingNode.CurrentDepth + " | Last moves: " + promisingNode.GetLastMoves(), mctsDepth);
+                    DebugHelper.DebugWriteWithTab("Count: " + count + " | Last moves: " + promisingNode.GetLastMoves(), mctsDepth);
 
                 //break on answer found or no answer
                 if (AnswerNode != null || tree.Root.ChildArray.Count == 0)
@@ -140,7 +140,7 @@ namespace Go
 
         protected Boolean NodeToExpand(Node node)
         {
-            return !node.Expanded && node.State.Depth > 0;
+            return !node.Expanded && (node.State.Depth > 0 || node.State.SurviveOrKill == SurviveOrKill.Survive);
         }
 
         protected virtual Node RandomChildNode(Node node)
@@ -224,7 +224,7 @@ namespace Go
             //recursive search through siblings of pruned node to check if parent node is correct
             if (winResult)
             {
-                List<Node> siblingNodes = parentNode.ChildArray.OrderBy(m => UCT.uctValue(m)).ToList();
+                List<Node> siblingNodes = parentNode.ChildArray.OrderBy(n => n.State.VisitCount).ToList();
                 for (int i = siblingNodes.Count - 1; i >= 0; i--)
                 {
                     Node siblingNode = siblingNodes[i];
@@ -381,7 +381,7 @@ namespace Go
         {
             while (node != null)
             {
-                node.State.IncrementVisit(Convert.ToInt32(winScore));
+                node.State.IncrementVisit(winScore);
 
                 if (winOrLose)
                     node.State.AddScore(incrementScore);
@@ -443,7 +443,7 @@ namespace Go
         private (ConfirmAliveResult, Board) MonteCarloMakeKillMove(int depth, Game g)
         {
             ConfirmAliveResult bestResult = ConfirmAliveResult.Alive;
-            Board board = g.Board;
+            Board b = g.Board;
             (ConfirmAliveResult result, List<GameTryMove> tryMoves, GameTryMove koBlockedMove) = g.GetKillMoves();
             if (koBlockedMove != null) tryMoves.Add(koBlockedMove);
             if (result != ConfirmAliveResult.Unknown)
@@ -451,22 +451,22 @@ namespace Go
 
             //make single random move out of possible moves
             int possibleMoves = tryMoves.Count;
-            if (possibleMoves == 0) return (bestResult, board);
+            if (possibleMoves == 0) return (bestResult, b);
             int selectRandom = random.Next(0, possibleMoves);
             GameTryMove gameTryMove = tryMoves[selectRandom];
             Game tryGame = gameTryMove.TryGame;
             if (gameTryMove.MakeMoveResult == MakeMoveResult.Legal)
             {
-                (gameTryMove.ConfirmAlive, board) = MonteCarloMakeSurvivalMove(depth - 1, tryGame);
+                (gameTryMove.ConfirmAlive, b) = MonteCarloMakeSurvivalMove(depth - 1, tryGame);
             }
             else if (gameTryMove.MakeMoveResult == MakeMoveResult.KoBlocked)
             {
-                (gameTryMove.ConfirmAlive, board) = MonteCarloMakeSurvivalMove(depth, tryGame);
+                (gameTryMove.ConfirmAlive, b) = MonteCarloMakeSurvivalMove(depth, tryGame);
                 if (GameHelper.WinOrLose(SurviveOrKill.Kill, result, tryGame.GameInfo))
                     gameTryMove.ConfirmAlive = ConfirmAliveResult.KoAlive;
             }
             bestResult = gameTryMove.ConfirmAlive;
-            return (bestResult, board);
+            return (bestResult, b);
         }
 
 
@@ -477,9 +477,9 @@ namespace Go
         private (ConfirmAliveResult, Board) MonteCarloMakeSurvivalMove(int depth, Game g)
         {
             ConfirmAliveResult bestResult = ConfirmAliveResult.Dead;
-            Board board = g.Board;
+            Board b = g.Board;
             if (depth <= 0)
-                return (ConfirmAliveResult.Dead, board);
+                return (ConfirmAliveResult.Dead, b);
 
             (ConfirmAliveResult result, List<GameTryMove> tryMoves, GameTryMove koBlockedMove) = g.GetSurvivalMoves();
             if (koBlockedMove != null) tryMoves.Add(koBlockedMove);
@@ -487,7 +487,7 @@ namespace Go
                 return (result, tryMoves.First().TryGame.Board);
             //make single random move out of possible moves
             int possibleMoves = tryMoves.Count;
-            if (possibleMoves == 0) return (bestResult, board);
+            if (possibleMoves == 0) return (bestResult, b);
             int selectRandom = random.Next(0, possibleMoves);
             GameTryMove gameTryMove = tryMoves[selectRandom];
             Game tryGame = gameTryMove.TryGame;
@@ -495,18 +495,18 @@ namespace Go
             int nextDepth = gameTryMove.Move.Equals(Game.PassMove) ? depth : depth - 1;
             if (gameTryMove.MakeMoveResult == MakeMoveResult.Legal)
             {
-                (gameTryMove.ConfirmAlive, board) = MonteCarloMakeKillMove(nextDepth, tryGame);
+                (gameTryMove.ConfirmAlive, b) = MonteCarloMakeKillMove(nextDepth, tryGame);
                 if (gameTryMove.ConfirmAlive == ConfirmAliveResult.Alive && gameTryMove.Move.Equals(Game.PassMove) && tryGame.Board.KoGameCheck == KoCheck.None)
                     gameTryMove.ConfirmAlive = ConfirmAliveResult.BothAlive;
             }
             else if (gameTryMove.MakeMoveResult == MakeMoveResult.KoBlocked)
             {
-                (gameTryMove.ConfirmAlive, board) = MonteCarloMakeKillMove(depth, tryGame);
+                (gameTryMove.ConfirmAlive, b) = MonteCarloMakeKillMove(depth, tryGame);
                 if (GameHelper.WinOrLose(SurviveOrKill.Survive, result, tryGame.GameInfo))
                     gameTryMove.ConfirmAlive = ConfirmAliveResult.KoAlive;
             }
             bestResult = gameTryMove.ConfirmAlive;
-            return (bestResult, board);
+            return (bestResult, b);
         }
 
         protected virtual void PostProcess(Stopwatch watch)

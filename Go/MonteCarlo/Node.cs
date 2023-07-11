@@ -34,6 +34,7 @@ namespace Go
             this.State.Depth = node.State.Depth;
             this.State.ConfirmAlive = node.State.ConfirmAlive;
             this.State.WinOrLose = node.State.WinOrLose;
+            this.State.SurviveOrKill = node.State.SurviveOrKill;
 
             this.expanded = node.expanded;
             this.noPossibleStates = node.noPossibleStates;
