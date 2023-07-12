@@ -31,7 +31,7 @@ namespace Go
             if (mcts.AnswerNode != null)
                 return (false, mcts.AnswerNode);
             else
-                return (true, null);
+                return (true, mcts.tree.Root);
         }
 
         /// <summary>

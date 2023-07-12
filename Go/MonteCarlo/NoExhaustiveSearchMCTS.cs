@@ -71,7 +71,7 @@ namespace Go
                 if (verify)
                 {
                     DebugHelper.DebugWriteWithTab("Answer on first run: " + firstNode.State.Game.Board.Move);
-                    this.AnswerNode = firstNode;
+                    this.AnswerNode = answerNode;
                 }
                 else
                     Pruning(firstNode, answerNode);

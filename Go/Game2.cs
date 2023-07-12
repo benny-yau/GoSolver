@@ -268,11 +268,8 @@ namespace Go
                     watch = Stopwatch.StartNew();
                 }
 
-                //ignore pass move for depth
-                int nextDepth = gameTryMove.Move.Equals(Game.PassMove) ? depth : depth - 1;
-
                 //make next opponent move
-                (gameTryMove.ConfirmAlive, gameTryMove.OpponentBestMove) = MakeKillMove(nextDepth, gameTryMove.TryGame);
+                (gameTryMove.ConfirmAlive, gameTryMove.OpponentBestMove) = MakeKillMove(depth - 1, gameTryMove.TryGame);
 
                 if (watch != null)
                 {

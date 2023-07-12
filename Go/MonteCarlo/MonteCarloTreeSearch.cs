@@ -288,7 +288,7 @@ namespace Go
                 //top node reached and answer found
                 if (Game.debugMode)
                 {
-                    String msg = (node.CurrentDepth == 1) ? "Answer move: " + node.State.Game.Board.Move : "Answer move for " + node.GetLastMoves() + ": " + node.State.Game.Board.Move;
+                    String msg = (node.CurrentDepth == 1) ? "Answer move: " + node.State.Game.Board.Move : "Answer move for " + this.tree.Root.GetLastMoves() + ": " + node.State.Game.Board.Move;
                     DebugHelper.DebugWriteWithTab(msg, mctsDepth);
                 }
                 AnswerNode = node;
@@ -492,10 +492,9 @@ namespace Go
             GameTryMove gameTryMove = tryMoves[selectRandom];
             Game tryGame = gameTryMove.TryGame;
 
-            int nextDepth = gameTryMove.Move.Equals(Game.PassMove) ? depth : depth - 1;
             if (gameTryMove.MakeMoveResult == MakeMoveResult.Legal)
             {
-                (gameTryMove.ConfirmAlive, b) = MonteCarloMakeKillMove(nextDepth, tryGame);
+                (gameTryMove.ConfirmAlive, b) = MonteCarloMakeKillMove(depth - 1, tryGame);
                 if (gameTryMove.ConfirmAlive == ConfirmAliveResult.Alive && gameTryMove.Move.Equals(Game.PassMove) && tryGame.Board.KoGameCheck == KoCheck.None)
                     gameTryMove.ConfirmAlive = ConfirmAliveResult.BothAlive;
             }
