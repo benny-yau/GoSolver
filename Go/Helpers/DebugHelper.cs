@@ -15,6 +15,7 @@ namespace Go
         /// </summary>
         public static void DebugWriteWithTab(String content, int gameDepth = 0)
         {
+            if (!Game.debugMode) return;
             String tabs = (gameDepth == 0) ? "" : string.Concat(Enumerable.Repeat('\t', gameDepth));
             Debug.WriteLine(tabs + content);
         }

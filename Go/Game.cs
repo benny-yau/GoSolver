@@ -19,6 +19,8 @@ namespace Go
         public static int LookAheadDepth = 8;
         public static Boolean breakRealTime = Convert.ToBoolean(ConfigurationSettings.AppSettings["BREAK_REAL_TIME"]);
         public static int runTimeStop = 20000; //20 seconds default for real-time moves
+        [NonSerialized]
+        Stopwatch RunTimeStopWatch;
 
         GameInfo gameInfo;
         /// <summary>
@@ -66,25 +68,6 @@ namespace Go
             }
         }
 
-        [NonSerialized]
-        Stopwatch runTimeStopWatch;
-        /// <summary>
-        /// Stop watch for run time.
-        /// </summary>
-        public Stopwatch RunTimeStopWatch
-        {
-            get
-            {
-                Stopwatch stopWatch = this.Root.runTimeStopWatch;
-                if (stopWatch == null)
-                    stopWatch = new Stopwatch();
-                return stopWatch;
-            }
-            set
-            {
-                this.Root.runTimeStopWatch = value;
-            }
-        }
 
         /// <summary>
         /// Time out if stop watch exceeds time limit set at runTimeStop.
@@ -418,7 +401,7 @@ namespace Go
         public void PrintGameMoveList(List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves, Game currentGame)
         {
             int gameDepth = GameDepth(currentGame);
-            if (IsExhaustiveMode(gameDepth))
+            if (DebugPrintMode(gameDepth))
             {
                 String msg = "";
                 foreach (GameTryMove g in tryMoves)
@@ -439,7 +422,7 @@ namespace Go
         /// <summary>
         /// To print debug statements on exhaustive mode.
         /// </summary>
-        public Boolean IsExhaustiveMode(int gameDepth)
+        public Boolean DebugPrintMode(int gameDepth)
         {
             return (debugMode && !useMonteCarloRuntime && gameDepth <= 3);
         }

@@ -25,11 +25,6 @@
             Enable or disable break on real-time move.
             </summary>
         </member>
-        <member name="P:Go.Game.RunTimeStopWatch">
-            <summary>
-            Stop watch for run time.
-            </summary>
-        </member>
         <member name="M:Go.Game.TimeOut(Go.Game)">
             <summary>
             Time out if stop watch exceeds time limit set at runTimeStop.
@@ -120,7 +115,7 @@
             Print game moves on exhaustive mode.
             </summary>
         </member>
-        <member name="M:Go.Game.IsExhaustiveMode(System.Int32)">
+        <member name="M:Go.Game.DebugPrintMode(System.Int32)">
             <summary>
             To print debug statements on exhaustive mode.
             </summary>
@@ -2461,9 +2456,9 @@
             Retrieve neural network heatmap and other output data from leelaz.
             </summary>
         </member>
-        <member name="F:Go.MonteCarloTreeSearch.visitCount">
+        <member name="P:Go.MonteCarloTreeSearch.VisitCountMinReq">
             <summary>
-            Set the visit count required to reach before moving down the tree to the child node. Reduce required count after hitting depth to verify.
+            Set the visit count required to reach before moving down the tree to the child node.
             </summary>
         </member>
         <member name="F:Go.MonteCarloTreeSearch.answerNode">

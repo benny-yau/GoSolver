@@ -36,8 +36,7 @@ namespace Go
                         confirmAlive = MonteCarloGame.MonteCarloRealTimeMove(this).Item1;
                     result |= confirmAlive;
 
-                    if (debugMode)
-                        Debug.WriteLine("Final move: " + this.Board.Move + " | Final result: " + confirmAlive.ToString() + " | Reached end of depth: " + (this.Root.reachedEndOfDepth > 0).ToString());
+                    DebugHelper.DebugWriteWithTab("Final move: " + this.Board.Move + " | Final result: " + confirmAlive.ToString() + " | Reached end of depth: " + (this.Root.reachedEndOfDepth > 0).ToString());
                 }
                 else
                 {
@@ -261,7 +260,7 @@ namespace Go
                 GameTryMove gameTryMove = tryMoves[i];
                 Stopwatch watch = null;
                 int gameDepth = GameDepth(currentGame);
-                if (IsExhaustiveMode(gameDepth))
+                if (DebugPrintMode(gameDepth))
                 {
                     if (gameDepth == 0) Debug.WriteLine(Environment.NewLine);
                     DebugHelper.DebugWriteWithTab("Trying game move at (" + gameTryMove.Move.x + ", " + gameTryMove.Move.y + ") at depth " + depth + " (" + (i + 1) + " out of " + tryMoves.Count + ") | Last moves: " + currentGame.Board.GetLastMoves(), gameDepth);
@@ -309,7 +308,7 @@ namespace Go
             Point move = koTryMove.Move;
             Stopwatch watch = null;
             int gameDepth = GameDepth(currentGame);
-            if (IsExhaustiveMode(gameDepth))
+            if (DebugPrintMode(gameDepth))
             {
                 if (gameDepth == 0) Debug.WriteLine(Environment.NewLine);
                 DebugHelper.DebugWriteWithTab("Trying Ko game move at (" + move.x + ", " + move.y + ") at depth " + depth + " | Last moves: " + g.Board.GetLastMoves(), gameDepth);
@@ -532,7 +531,7 @@ namespace Go
                 GameTryMove gameTryMove = tryMoves[i];
                 Stopwatch watch = null;
                 int gameDepth = GameDepth(currentGame);
-                if (IsExhaustiveMode(gameDepth))
+                if (DebugPrintMode(gameDepth))
                 {
                     if (gameDepth == 0) Debug.WriteLine(Environment.NewLine);
                     DebugHelper.DebugWriteWithTab("Trying game move at (" + gameTryMove.Move.x + ", " + gameTryMove.Move.y + ") at depth " + depth + " (" + (i + 1) + " out of " + tryMoves.Count + ") | Last moves: " + currentGame.Board.GetLastMoves(), gameDepth);

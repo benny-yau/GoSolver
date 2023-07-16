@@ -20,18 +20,13 @@ namespace Go
         public static int realTimeDepthToVerify = Convert.ToInt32(ConfigurationSettings.AppSettings["REALTIME_DEPTH_TO_VERIFY"]);
 
         /// <summary>
-        /// Set the visit count required to reach before moving down the tree to the child node. Reduce required count after hitting depth to verify.
+        /// Set the visit count required to reach before moving down the tree to the child node.
         /// </summary>
-        int? visitCount;
         public virtual int VisitCountMinReq
         {
             get
             {
-                if (visitCount != null) return visitCount.Value;
-                if (MonteCarloMapping.mapMovesOrSearchAnswer)
-                    return (tree.HitDepthToVerify) ? 3 : 5;
-                else
-                    return 10;
+                return (MonteCarloMapping.mapMovesOrSearchAnswer) ? 5 : 10;
             }
         }
 
@@ -87,8 +82,7 @@ namespace Go
         /// </summary>
         public virtual void FindNextMove()
         {
-            if (Game.debugMode)
-                DebugHelper.DebugWriteWithTab("Start of mcts: " + tree.Root.GetLastMoves(), mctsDepth);
+            DebugHelper.DebugWriteWithTab("Start of mcts: " + tree.Root.GetLastMoves(), mctsDepth);
             Stopwatch watch = Stopwatch.StartNew();
             int count = 0;
             do
@@ -114,15 +108,12 @@ namespace Go
 
                 //verify on depth reached or no possible states to expand
                 if (ReachedDepthToVerify(promisingNode) || promisingNode.NoPossibleStates)
-                {
-                    tree.HitDepthToVerify = true;
                     VerifyOnDepthReached(promisingNode);
-                }
 
                 //simulate random playout
                 SimulateRandomPlayout(promisingNode);
 
-                if (Game.debugMode && count % 60 == 0)
+                if (count % 60 == 0)
                     DebugHelper.DebugWriteWithTab("Count: " + count + " | Last moves: " + promisingNode.GetLastMoves(), mctsDepth);
 
                 //break on answer found or no answer
@@ -131,7 +122,7 @@ namespace Go
 
                 if (Game.TimeOut(tree.Root.State.Game))
                 {
-                    if (Game.debugMode) Debug.WriteLine("Break real time...");
+                    DebugHelper.DebugWriteWithTab("Break real time...");
                     break;
                 }
             } while (count <= maxIterations);
@@ -182,22 +173,19 @@ namespace Go
                 return false;
 
             Game verifyGame = new Game(verifyNode.State.Game);
-            if (Game.debugMode)
-                DebugHelper.DebugWriteWithTab("Verifying game: " + verifyGame.Board.GetLastMoves(), mctsDepth);
+            DebugHelper.DebugWriteWithTab("Verifying game: " + verifyGame.Board.GetLastMoves(), mctsDepth);
 
             //exhaustive search to find definite result
             ConfirmAliveResult verifyResult = verifyGame.MakeExhaustiveSearch();
 
             if (GameHelper.WinOrLose(verifyNode.State.SurviveOrKill, verifyResult, verifyGame.GameInfo))
             {
-                if (Game.debugMode)
-                    DebugHelper.DebugWriteWithTab("Verified: " + verifyNode.GetLastMoves(), mctsDepth);
+                DebugHelper.DebugWriteWithTab("Verified: " + verifyNode.GetLastMoves(), mctsDepth);
                 return true;
             }
             else
             {
-                if (Game.debugMode)
-                    DebugHelper.DebugWriteWithTab("Not verified: " + verifyNode.GetLastMoves(), mctsDepth);
+                DebugHelper.DebugWriteWithTab("Not verified: " + verifyNode.GetLastMoves(), mctsDepth);
                 return false;
             }
         }
@@ -321,8 +309,7 @@ namespace Go
             //increase score for parent
             BackPropagation(prunedNode.Parent, true, 20 * winScore);
 
-            if (Game.debugMode)
-                DebugHelper.DebugWriteWithTab("Pruned node: " + prunedNode.GetLastMoves(), mctsDepth);
+            DebugHelper.DebugWriteWithTab("Pruned node: " + prunedNode.GetLastMoves(), mctsDepth);
 
         }
 
@@ -511,18 +498,15 @@ namespace Go
         protected virtual void PostProcess(Stopwatch watch)
         {
             watch.Stop();
-            if (Game.debugMode)
+            long timeTaken = watch.ElapsedMilliseconds;
+            elapsedTime = timeTaken;
+            if (tree.Root == tree.AbsoluteRoot)
             {
-                long timeTaken = watch.ElapsedMilliseconds;
-                elapsedTime = timeTaken;
-                if (tree.Root == tree.AbsoluteRoot)
-                {
-                    DebugHelper.DebugWriteWithTab(DebugHelper.PrintTimeTaken(timeTaken), mctsDepth);
-                    DebugHelper.DebugWriteWithTab("Total time taken (mcts): " + timeTaken + Environment.NewLine + Environment.NewLine, mctsDepth);
-                }
-                else
-                    DebugHelper.DebugWriteWithTab("Time taken (mcts): " + timeTaken, mctsDepth);
+                DebugHelper.DebugWriteWithTab(DebugHelper.PrintTimeTaken(timeTaken), mctsDepth);
+                DebugHelper.DebugWriteWithTab("Total time taken (mcts): " + timeTaken + Environment.NewLine + Environment.NewLine, mctsDepth);
             }
+            else
+                DebugHelper.DebugWriteWithTab("Time taken (mcts): " + timeTaken, mctsDepth);
         }
     }
 }
