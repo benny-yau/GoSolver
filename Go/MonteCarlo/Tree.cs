@@ -8,7 +8,6 @@ namespace Go
     public class Tree
     {
         private Node root;
-        public Boolean HitDepthToVerify = false;
 
         public Tree()
         {

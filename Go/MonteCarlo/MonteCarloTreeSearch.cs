@@ -385,10 +385,10 @@ namespace Go
         /// </summary>
         public virtual (ConfirmAliveResult, Board) SimulateRandomPlayout(Node node)
         {
-            //Monte Carlo random playout
             (ConfirmAliveResult result, Board board) = InitializeMonteCarloPlayout(node);
             Boolean winLose = GameHelper.WinOrLose(node.State.SurviveOrKill, result, node.State.Game.GameInfo);
-            BackPropagation(node, winLose);
+            int incrementScore = (winLose && node.State.SurviveOrKill == SurviveOrKill.Survive) ? 10 : 1;
+            BackPropagation(node, winLose, incrementScore);
             return (result, board);
         }
 

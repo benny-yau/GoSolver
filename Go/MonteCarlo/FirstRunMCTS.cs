@@ -57,7 +57,7 @@ namespace Go
             int halfCount = Convert.ToInt32(Math.Ceiling(rootNode.ChildArray.Count * 0.5));
             for (int i = 0; i <= rootNode.ChildArray.Count - 1; i++)
             {
-                if (rootNode.CurrentDepth == 1 && rootNode.State.VisitCount >= 100)
+                if (rootNode.CurrentDepth == 1)
                 {
                     //half count
                     if (i > halfCount) break;
