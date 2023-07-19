@@ -18,8 +18,7 @@ namespace Go
             int totalVisitCount = 0;
             node.Parent.ChildArray.ForEach(m => totalVisitCount += m.State.VisitCount);
 
-            return (node.State.WinScore / (double)node.State.VisitCount) + 0.44 * Math.Sqrt(Math.Log(totalVisitCount) / (double)node.State.VisitCount);// 0.44 or 1.41
-
+            return (node.State.WinScore / (double)node.State.VisitCount) + 1.41 * Math.Sqrt(Math.Log(totalVisitCount) / (double)node.State.VisitCount);// 0.44 or 1.41
         }
 
         /// <summary>

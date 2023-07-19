@@ -377,6 +377,7 @@ namespace Go
                     break;
                 node = node.Parent;
                 winOrLose = !winOrLose;
+                if (incrementScore > 1) incrementScore--;
             }
         }
 
