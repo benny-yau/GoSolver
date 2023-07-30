@@ -604,11 +604,12 @@ namespace Go
                 if (!GameHelper.SetupMoveAvailable(board, liberty)) continue;
                 (_, Board b) = ImmovableHelper.IsSuicidalMoveForConnectAndDie(liberty, c.Opposite(), board, koEnabled);
                 if (b == null) continue;
-                int neighbourCount = b.GetStoneNeighbours().Count(n => b[n] != c.Opposite());
-                killBoards.Add(new KeyValuePair<LinkedPoint<Point>, Board>(new LinkedPoint<Point>(liberty, neighbourCount), b));
+                int moveLiberties = KillerFormationHelper.GetLibertiesAtMove(b).Count();
+                int moveGroupLiberties = b.MoveGroupLiberties;
+                killBoards.Add(new KeyValuePair<LinkedPoint<Point>, Board>(new LinkedPoint<Point>(liberty, new { moveLiberties, moveGroupLiberties }), b));
             }
 
-            foreach (KeyValuePair<LinkedPoint<Point>, Board> kvp in killBoards.OrderByDescending(b => (int)b.Key.CheckMove))
+            foreach (KeyValuePair<LinkedPoint<Point>, Board> kvp in killBoards.OrderByDescending(b => ((dynamic)b.Key.CheckMove).moveLiberties).ThenByDescending(b => ((dynamic)b.Key.CheckMove).moveGroupLiberties))
             {
                 Board b = kvp.Value;
                 //check if captured

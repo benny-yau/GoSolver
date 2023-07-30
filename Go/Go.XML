@@ -1534,7 +1534,7 @@
             Check for suicidal at other end <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16867" />
             Check for both alive <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_TianLongTu_Q16827" />
             Check link for groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30358_3" />
-            Set neutral point move <see cref="!:UnitTestProject.MonteCarloRuntimeTest.MonteCarloRuntimeTest_Scenario_WuQingYuan_Q31499" />
+            Set diagonal eye move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie4_4" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.KoFightAtBloatedEye(Go.Board,Go.Board)">
@@ -1638,6 +1638,11 @@
             Check for three neighbour groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30198" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16605" />
             Check killer formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499_3" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CheckCaptureAtAllNonKillableGroups(Go.Board,Go.Group)">
+            <summary>
+            Check capture at all non killable groups.
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SinglePointSuicidalMove(Go.GameTryMove,Go.GameTryMove)">

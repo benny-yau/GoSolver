@@ -289,9 +289,6 @@ namespace Go
                     return false;
             }
 
-            //set diagonal eye move
-            if (tryBoard.GetDiagonalNeighbours().Any(n => EyeHelper.FindEye(currentBoard, n, c) && !ImmovableHelper.IsImmovablePoint(currentBoard, move, c)))
-                tryMove.IsDiagonalEyeMove = true;
             return true;
         }
 
@@ -503,7 +500,7 @@ namespace Go
         /// Check for suicidal at other end <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16867" />
         /// Check for both alive <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_TianLongTu_Q16827" />
         /// Check link for groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30358_3" />
-        /// Set neutral point move <see cref="UnitTestProject.MonteCarloRuntimeTest.MonteCarloRuntimeTest_Scenario_WuQingYuan_Q31499" />
+        /// Set diagonal eye move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie4_4" />
         /// </summary>
         private static Boolean MultiPointOpponentSuicidalMove(GameTryMove tryMove, GameTryMove opponentMove)
         {
@@ -545,6 +542,10 @@ namespace Go
             //set neutral point move
             if (WallHelper.IsNonKillableGroup(tryBoard))
                 tryMove.IsNeutralPoint = true;
+
+            //set diagonal eye move
+            if (tryBoard.GetDiagonalNeighbours().Any(n => EyeHelper.FindEye(currentBoard, n, c)) && ImmovableHelper.IsImmovablePoint(currentBoard, move, c))
+                tryMove.IsDiagonalEyeMove = true;
             return true;
         }
 
@@ -658,6 +659,10 @@ namespace Go
 
             //check diagonals
             if (CheckDiagonalForSuicidalConnectAndDie(tryMove, captureBoard))
+                return true;
+
+            //capture at all non killable groups
+            if (CheckCaptureAtAllNonKillableGroups(captureBoard, tryBoard.MoveGroup))
                 return true;
 
             if (tryBoard.MoveGroup.Points.Count <= 4)
@@ -924,6 +929,41 @@ namespace Go
 
             return true;
         }
+
+        /// <summary>
+        /// Check capture at all non killable groups.
+        /// </summary>
+        public static Boolean CheckCaptureAtAllNonKillableGroups(Board board, Group group)
+        {
+            Content c = group.Content;
+            if (AtariHelper.AtariByGroup(group, board).Any())
+                return false;
+            Board escapeBoard = ImmovableHelper.MakeMoveAtLiberty(board, group, c);
+            if (escapeBoard == null)
+            {
+                if (board.GetNeighbourGroups(group).All(n => WallHelper.IsNonKillableGroup(board, n)))
+                {
+                    if (EyeHelper.CheckCoveredEyeAtSuicideGroup(board, group)) return false;
+                    return true;
+                }
+            }
+            else if (escapeBoard.MoveGroupLiberties == 1)
+            {
+                Board captureBoard = ImmovableHelper.CaptureSuicideGroup(escapeBoard);
+                if (captureBoard.GetNeighbourGroups(escapeBoard.MoveGroup).All(n => WallHelper.IsNonKillableGroup(captureBoard, n)))
+                {
+                    if (EyeHelper.CheckCoveredEyeAtSuicideGroup(escapeBoard)) return false;
+                    return true;
+                }
+            }
+            else if (escapeBoard.MoveGroupLiberties == 2)
+            {
+                (_, Board b) = ImmovableHelper.ConnectAndDie(escapeBoard, escapeBoard.MoveGroup, false);
+                return CheckCaptureAtAllNonKillableGroups(b, escapeBoard.MoveGroup);
+            }
+            return false;
+        }
+
 
         /// <summary>
         /// Single point suicide.
