@@ -1131,6 +1131,7 @@
             <summary>
             Reverse ko for neutral point move.
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A80" />
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20230813" />
             </summary>
         </member>
         <member name="M:Go.KoHelper.GetKoTargetGroups(Go.Board,Go.Group,Go.Group)">
