@@ -377,7 +377,7 @@ namespace Go
 
         #region suicidal move
         /// <summary>
-        /// Suicidal moves are moves that have liberty of one only.
+        /// Suicidal redundant move.
         /// </summary>
         public static Boolean SuicidalRedundantMove(GameTryMove tryMove)
         {
@@ -590,7 +590,6 @@ namespace Go
                     //continue escape
                     if (escapeGroup.Liberties.Count == 2 && !WallHelper.IsHostileNeighbourGroup(captureBoard, escapeGroup))
                         return true;
-                    return false;
                 }
             }
 
@@ -1543,7 +1542,7 @@ namespace Go
             {
                 (_, List<Point> diagonals) = LinkHelper.FindDiagonalCut(currentBoard, gr);
                 if (diagonals == null) continue;
-                if (diagonals.Any(n => ImmovableHelper.CheckConnectAndDie(currentBoard, currentBoard.GetGroupAt(n), false)))
+                if (diagonals.Any(n => ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(currentBoard, currentBoard.GetGroupAt(n))))
                     continue;
                 return true;
             }
