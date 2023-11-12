@@ -1504,7 +1504,7 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.SuicidalRedundantMove(Go.GameTryMove)">
             <summary>
-            Suicidal moves are moves that have liberty of one only.
+            Suicidal redundant move.
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SuicidalMoveWithinNonKillableGroup(Go.GameTryMove,Go.GameTryMove)">
