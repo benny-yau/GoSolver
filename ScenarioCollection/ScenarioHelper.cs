@@ -10,7 +10,7 @@ namespace ScenarioCollection
     {
         public String Name;
         public String Description;
-        public List<String> Levels; 
+        public List<String> Levels;
 
         public GameSet(String name, List<String> levels, String description = null)
         {
@@ -39,7 +39,16 @@ namespace ScenarioCollection
                 {
                     gameSets = new List<GameSet>();
                     gameSets.Add(new GameSet("Demo", new List<String>() { "Level 1", "Level 2", "Level 3" }));
+                    gameSets.Add(new GameSet("Fundamentals-Corner", new List<String>() { "Attack", "Defense" }));
+                    gameSets.Add(new GameSet("Fundamentals-Side", new List<String>() { "Attack", "Defense" }));
                     gameSets.Add(new GameSet("Classics-A", new List<String>(), "Classics-A  (Xuanxuan Qijing)"));
+                    gameSets.Add(new GameSet("Classics-B", new List<String>(), "Classics-B  (GuanZi Pu)"));
+                    gameSets.Add(new GameSet("Classics-C", new List<String>(), "Classics-C  (Go Seigen)"));
+                    gameSets.Add(new GameSet("Classics-D", new List<String>(), "Classics-D  (Hashimoto Utaro)"));
+                    gameSets.Add(new GameSet("Classics-E", new List<String>(), "Classics-E  (Kweon Kab-yong)"));
+
+                    if (Game.debugMode)
+                        gameSets.Add(new GameSet("Problem-Set", new List<String>() { "Fundamentals-Corner", "XuanXuanGo", "GuanZiPu", "GoSeigen", "HashimotoUtaro", "KweonKabyong" }));
                 }
                 return gameSets;
             }
@@ -123,9 +132,21 @@ namespace ScenarioCollection
             List<Func<Scenario, Game>> scenarioList = new List<Func<Scenario, Game>>();
             if (gameSet == "Demo")
                 AddDemoSet_Release(scenarioList, level);
+            else if (gameSet == "Fundamentals-Corner")
+                AddFundamentalsCornerSet(scenarioList, level);
+            else if (gameSet == "Fundamentals-Side")
+                AddFundamentalsSideSet(scenarioList, level);
             else if (gameSet == "Classics-A")
                 AddXuanXuanGoSet_Release(scenarioList);
-            
+            else if (gameSet == "Classics-B")
+                AddGuanZiPuSet_Release(scenarioList);
+            else if (gameSet == "Classics-C")
+                AddWuQingYuanSet_Release(scenarioList);
+            else if (gameSet == "Classics-D")
+                AddWindAndTimeSet(scenarioList);
+            else if (gameSet == "Classics-E")
+                AddTianLongTuSet_Release(scenarioList);
+
             return scenarioList;
         }
 
@@ -218,6 +239,201 @@ namespace ScenarioCollection
                 scenarioList.Add(x => x.Scenario_Corner_A128());
                 scenarioList.Add(x => x.Scenario_Corner_A132());
                 scenarioList.Add(x => x.Scenario_Corner_A136());
+            }
+        }
+
+
+        private static void AddFundamentalsCornerSet(List<Func<Scenario, Game>> scenarioList, String level)
+        {
+            if (level == "Attack")
+            {
+                scenarioList.Add(x => x.Scenario_Corner_A1());
+                scenarioList.Add(x => x.Scenario_Corner_A3());
+                scenarioList.Add(x => x.Scenario_Corner_A4());
+                scenarioList.Add(x => x.Scenario_Corner_A5());
+                scenarioList.Add(x => x.Scenario_Corner_A6());
+                scenarioList.Add(x => x.Scenario_Corner_A8());
+                scenarioList.Add(x => x.Scenario_Corner_A9_Ext());
+                scenarioList.Add(x => x.Scenario_Corner_A11());
+                scenarioList.Add(x => x.Scenario_Corner_A12());
+                scenarioList.Add(x => x.Scenario_Corner_A23());
+                scenarioList.Add(x => x.Scenario_Phenomena_Q25112());
+                scenarioList.Add(x => x.Scenario_Corner_A27());
+                scenarioList.Add(x => x.Scenario_Corner_A28());
+                scenarioList.Add(x => x.Scenario_SiHuoDaQuan_CornerA29());
+                scenarioList.Add(x => x.Scenario_Corner_A30());
+                scenarioList.Add(x => x.Scenario_Corner_A33());
+                scenarioList.Add(x => x.Scenario_Corner_A34());
+                scenarioList.Add(x => x.Scenario_Corner_A35());
+                scenarioList.Add(x => x.Scenario_Corner_A36());
+                scenarioList.Add(x => x.Scenario_Corner_A37());
+                scenarioList.Add(x => x.Scenario_Corner_A38());
+                scenarioList.Add(x => x.Scenario_Corner_A39());
+                scenarioList.Add(x => x.Scenario_Corner_A40());
+                scenarioList.Add(x => x.Scenario_Corner_A41());
+                scenarioList.Add(x => x.Scenario_Corner_A42());
+                scenarioList.Add(x => x.Scenario_Corner_A43());
+                scenarioList.Add(x => x.Scenario_Corner_A45());
+                scenarioList.Add(x => x.Scenario_Nie32());
+                scenarioList.Add(x => x.Scenario_Nie4());
+                scenarioList.Add(x => x.Scenario_XuanXuanQiJing_A33());
+                scenarioList.Add(x => x.Scenario_Corner_A49());
+                scenarioList.Add(x => x.Scenario_Corner_A50());
+                scenarioList.Add(x => x.Scenario_Corner_A51());
+                scenarioList.Add(x => x.Scenario_Corner_A52());
+                scenarioList.Add(x => x.Scenario_Corner_A53());
+                scenarioList.Add(x => x.Scenario_Corner_A55());
+                scenarioList.Add(x => x.Scenario_Corner_A56());
+                scenarioList.Add(x => x.Scenario_Corner_A58());
+                scenarioList.Add(x => x.Scenario_Corner_A59());
+                scenarioList.Add(x => x.Scenario_Corner_A60());
+                scenarioList.Add(x => x.Scenario_Corner_A61());
+                scenarioList.Add(x => x.Scenario_Corner_A62());
+                scenarioList.Add(x => x.Scenario_Corner_A63());
+                scenarioList.Add(x => x.Scenario_Corner_A64());
+                scenarioList.Add(x => x.Scenario_Corner_A65());
+                scenarioList.Add(x => x.Scenario_Corner_A67());
+                scenarioList.Add(x => x.Scenario_Corner_A68());
+                scenarioList.Add(x => x.Scenario_Corner_A69());
+                scenarioList.Add(x => x.Scenario_Corner_A71());
+                scenarioList.Add(x => x.Scenario_Corner_A72());
+                scenarioList.Add(x => x.Scenario_Corner_A74());
+                scenarioList.Add(x => x.Scenario_Corner_A75());
+                scenarioList.Add(x => x.Scenario_Corner_A79());
+                scenarioList.Add(x => x.Scenario_Corner_A80());
+                scenarioList.Add(x => x.Scenario_Corner_A82());
+                scenarioList.Add(x => x.Scenario_XuanXuanGo_A6());
+                scenarioList.Add(x => x.Scenario_Corner_A84());
+                scenarioList.Add(x => x.Scenario_Corner_A85());
+                scenarioList.Add(x => x.Scenario_Corner_A86());
+                scenarioList.Add(x => x.Scenario_Corner_A87());
+                scenarioList.Add(x => x.Scenario_Corner_A94());
+                scenarioList.Add(x => x.Scenario_Corner_A95());
+                scenarioList.Add(x => x.Scenario_Corner_A20());
+                scenarioList.Add(x => x.Scenario_Corner_A21());
+                scenarioList.Add(x => x.Scenario_Corner_A108());
+                scenarioList.Add(x => x.Scenario_Corner_A109());
+                scenarioList.Add(x => x.Scenario_Corner_A113());
+                scenarioList.Add(x => x.Scenario_SiHuoDaQuan_CornerA117());
+                scenarioList.Add(x => x.Scenario_XuanXuanGo_A15());
+                scenarioList.Add(x => x.Scenario_Corner_A120());
+                scenarioList.Add(x => x.Scenario_Corner_A123());
+                scenarioList.Add(x => x.Scenario_Corner_A124());
+                scenarioList.Add(x => x.Scenario_Corner_A125());
+            }
+            else if (level == "Defense")
+            {
+                scenarioList.Add(x => x.Scenario_Corner_B2());
+                scenarioList.Add(x => x.Scenario_Corner_B4());
+                scenarioList.Add(x => x.Scenario_Corner_B5());
+                scenarioList.Add(x => x.Scenario_Corner_B6());
+                scenarioList.Add(x => x.Scenario_Corner_B7());
+                scenarioList.Add(x => x.Scenario_Corner_B8());
+                scenarioList.Add(x => x.Scenario_Corner_B9());
+                scenarioList.Add(x => x.Scenario_Corner_B11());
+                scenarioList.Add(x => x.Scenario_Corner_B12());
+                scenarioList.Add(x => x.Scenario_Corner_B13());
+                scenarioList.Add(x => x.Scenario_Corner_B15());
+                scenarioList.Add(x => x.Scenario_Corner_B16());
+                scenarioList.Add(x => x.Scenario_Phenomena_B6());
+                scenarioList.Add(x => x.Scenario_Phenomena_B8());
+                scenarioList.Add(x => x.Scenario_Corner_B20());
+                scenarioList.Add(x => x.Scenario_Corner_B21());
+                scenarioList.Add(x => x.Scenario_Corner_A73_Ext1());
+                scenarioList.Add(x => x.Scenario_Corner_B22());
+                scenarioList.Add(x => x.Scenario_Corner_B23());
+                scenarioList.Add(x => x.Scenario_Phenomena_B7());
+                scenarioList.Add(x => x.Scenario_Corner_B24());
+                scenarioList.Add(x => x.Scenario_Corner_B25());
+                scenarioList.Add(x => x.Scenario_Corner_B28());
+                scenarioList.Add(x => x.Scenario_Phenomena_Q25182());
+                scenarioList.Add(x => x.Scenario_Phenomena_Q25185());
+                scenarioList.Add(x => x.Scenario_Phenomena_B12());
+                scenarioList.Add(x => x.Scenario_Corner_B29());
+                scenarioList.Add(x => x.Scenario_Corner_B30());
+                scenarioList.Add(x => x.Scenario_Corner_B31());
+                scenarioList.Add(x => x.Scenario_Phenomena_B18());
+                scenarioList.Add(x => x.Scenario_Corner_B33());
+                scenarioList.Add(x => x.Scenario_Corner_B34());
+                scenarioList.Add(x => x.Scenario_Corner_B36());
+                scenarioList.Add(x => x.Scenario_Corner_B39());
+                scenarioList.Add(x => x.Scenario_Corner_B40());
+                scenarioList.Add(x => x.Scenario_Corner_B41());
+                scenarioList.Add(x => x.Scenario_Corner_B42());
+                scenarioList.Add(x => x.Scenario_Corner_B43());
+            }
+        }
+
+        private static void AddFundamentalsSideSet(List<Func<Scenario, Game>> scenarioList, String level)
+        {
+            if (level == "Attack")
+            {
+                scenarioList.Add(x => x.Scenario_Side_A1());
+                scenarioList.Add(x => x.Scenario_Side_A2());
+                scenarioList.Add(x => x.Scenario_Side_A3());
+                scenarioList.Add(x => x.Scenario_Side_A4());
+                scenarioList.Add(x => x.Scenario_Side_A5());
+                scenarioList.Add(x => x.Scenario_Side_A6());
+                scenarioList.Add(x => x.Scenario_Side_A7());
+                scenarioList.Add(x => x.Scenario_Side_A8());
+                scenarioList.Add(x => x.Scenario_Side_A9());
+                scenarioList.Add(x => x.Scenario_Side_A10());
+                scenarioList.Add(x => x.Scenario_Side_A11());
+                scenarioList.Add(x => x.Scenario_Side_A12());
+                scenarioList.Add(x => x.Scenario_Side_A13());
+                scenarioList.Add(x => x.Scenario_Side_A14());
+                scenarioList.Add(x => x.Scenario_Side_A15());
+                scenarioList.Add(x => x.Scenario_Side_A19());
+                scenarioList.Add(x => x.Scenario_Side_A20());
+                scenarioList.Add(x => x.Scenario_Side_A21());
+                scenarioList.Add(x => x.Scenario_Side_A22());
+                scenarioList.Add(x => x.Scenario_Side_A28());
+                scenarioList.Add(x => x.Scenario_Side_A23());
+                scenarioList.Add(x => x.Scenario_Side_A24());
+                scenarioList.Add(x => x.Scenario_Side_A25());
+                scenarioList.Add(x => x.Scenario_Side_A26());
+                scenarioList.Add(x => x.Scenario_Side_A27());
+            }
+            else if (level == "Defense")
+            {
+                scenarioList.Add(x => x.Scenario_Side_B1());
+                scenarioList.Add(x => x.Scenario_Side_B2());
+                scenarioList.Add(x => x.Scenario_Side_B3());
+                scenarioList.Add(x => x.Scenario_Side_B4());
+                scenarioList.Add(x => x.Scenario_Side_B5());
+                scenarioList.Add(x => x.Scenario_Side_B6());
+                scenarioList.Add(x => x.Scenario_Side_B7());
+                scenarioList.Add(x => x.Scenario_Side_B8());
+                scenarioList.Add(x => x.Scenario_Side_B9());
+                scenarioList.Add(x => x.Scenario_Side_B10());
+                scenarioList.Add(x => x.Scenario_Side_B11());
+                scenarioList.Add(x => x.Scenario_Side_B12());
+                scenarioList.Add(x => x.Scenario_Side_B13());
+                scenarioList.Add(x => x.Scenario_Side_B14());
+                scenarioList.Add(x => x.Scenario_Side_B15());
+                scenarioList.Add(x => x.Scenario_Side_B16());
+                scenarioList.Add(x => x.Scenario_Side_B17());
+                scenarioList.Add(x => x.Scenario_Side_B18());
+                scenarioList.Add(x => x.Scenario_Side_B19());
+                scenarioList.Add(x => x.Scenario_Side_B20());
+                scenarioList.Add(x => x.Scenario_Side_B21());
+                scenarioList.Add(x => x.Scenario_Side_B22());
+                scenarioList.Add(x => x.Scenario_Side_B23());
+                scenarioList.Add(x => x.Scenario_Side_B24());
+                scenarioList.Add(x => x.Scenario_Side_B25());
+                scenarioList.Add(x => x.Scenario_Side_B26());
+                scenarioList.Add(x => x.Scenario_Side_B28());
+                scenarioList.Add(x => x.Scenario_Side_B29());
+                scenarioList.Add(x => x.Scenario_Side_B30());
+                scenarioList.Add(x => x.Scenario_Side_B31());
+                scenarioList.Add(x => x.Scenario_Side_B32());
+                scenarioList.Add(x => x.Scenario_Phenomena_B35());
+                scenarioList.Add(x => x.Scenario_Side_B33());
+                scenarioList.Add(x => x.Scenario_Side_B34());
+                scenarioList.Add(x => x.Scenario_Side_B35());
+                scenarioList.Add(x => x.Scenario_Side_B36());
+                scenarioList.Add(x => x.Scenario_Side_B37());
+                scenarioList.Add(x => x.Scenario_Side_B38());
             }
         }
 

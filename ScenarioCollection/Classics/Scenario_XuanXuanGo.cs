@@ -248,7 +248,7 @@ namespace ScenarioCollection
             gi.killMovablePoints.Add(new Point(0, 14));
             gi.solutionPoints.Add(new List<Point>() { new Point(0, 17), new Point(0, 16), new Point(4, 18), new Point(3, 18), new Point(3, 16), new Point(3, 17), new Point(2, 17), new Point(2, 18), new Point(1, 17) });
             gi.solutionPoints.Add(new List<Point>() { new Point(0, 17), new Point(0, 16), new Point(3, 16), new Point(3, 17), new Point(4, 18) });
-
+            
             gi.solutionPoints.Add(new List<Point>() { new Point(3, 16), new Point(3, 17), new Point(0, 17) });
             gi.solutionPoints.Add(new List<Point>() { new Point(3, 16), new Point(3, 17), new Point(4, 18) });
             gi.solutionPoints.Add(new List<Point>() { new Point(4, 18), new Point(3, 17), new Point(0, 17) });
@@ -500,7 +500,7 @@ namespace ScenarioCollection
 
             gi.PlayerMoveJson = gi.PlayerMoveJsonExtension = ResourceHelper.GetXuanXuanQiJingMappedJsonExtensionString("Scenario_XuanXuanGo_A17_PlayerMoveExtension");
             gi.ChallengeMoveJson = gi.ChallengeMoveJsonExtension = ResourceHelper.GetXuanXuanQiJingMappedJsonExtensionString("Scenario_XuanXuanGo_A17_ChallengeMoveExtension");
-
+            
             return g;
         }
 
@@ -2414,7 +2414,7 @@ namespace ScenarioCollection
 
             gi.solutionPoints.Add(new List<Point>() { new Point(5, 18), new Point(3, 16), new Point(4, 18), new Point(3, 18), new Point(2, 16), new Point(6, 18), new Point(2, 17) });
             gi.solutionPoints.Add(new List<Point>() { new Point(5, 18), new Point(3, 16), new Point(3, 18), new Point(3, 17), new Point(2, 18), new Point(4, 18), new Point(0, 16) });
-
+            
             gi.PlayerMoveJson = gi.PlayerMoveJsonExtension = ResourceHelper.GetXuanXuanQiJingMappedJsonExtensionString("Scenario_XuanXuanQiJing_Weiqi101_7245_PlayerMoveExtension");
             gi.ChallengeMoveJson = gi.ChallengeMoveJsonExtension = ResourceHelper.GetXuanXuanQiJingMappedJsonExtensionString("Scenario_XuanXuanQiJing_Weiqi101_7245_ChallengeMoveExtension");
             return g;

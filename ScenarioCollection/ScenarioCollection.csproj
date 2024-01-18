@@ -51,11 +51,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classics\Scenario_GuanZiPu.cs" />
+    <Compile Include="Classics\Scenario_TianLongTu.cs" />
+    <Compile Include="Classics\Scenario_WindAndTime.cs" />
+    <Compile Include="Classics\Scenario_WuQingYuan.cs" />
     <Compile Include="Classics\Scenario_XuanXuanGo.cs" />
     <Compile Include="Demo\Scenario_Level1.cs" />
     <Compile Include="Demo\Scenario_Level2.cs" />
     <Compile Include="Demo\Scenario_Level3.cs" />
+    <Compile Include="Fundamentals\Scenario_Corner_Attack.cs" />
+    <Compile Include="Fundamentals\Scenario_Corner_Defense.cs" />
+    <Compile Include="Fundamentals\Scenario_Side_Attack.cs" />
+    <Compile Include="Fundamentals\Scenario_Side_Defense.cs" />
     <Compile Include="GameSetHelper.cs" />
+    <Compile Include="Resources\GoSeigen_MappedJsonExtension.Designer.cs" />
+    <Compile Include="Resources\GuanZiPu_MappedJsonExtension.Designer.cs" />
+    <Compile Include="Resources\HashimotoUtaro_MappedJsonExtension.Designer.cs" />
+    <Compile Include="Resources\KweonKabYong_MappedJsonExtension.Designer.cs" />
     <Compile Include="Resources\MappedJsonExtension.Designer.cs">
       <DependentUpon>MappedJsonExtension.resx</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -78,6 +90,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\GoSeigen_MappedJsonExtension.resx" />
+    <EmbeddedResource Include="Resources\GuanZiPu_MappedJsonExtension.resx" />
+    <EmbeddedResource Include="Resources\HashimotoUtaro_MappedJsonExtension.resx" />
+    <EmbeddedResource Include="Resources\KweonKabYong_MappedJsonExtension.resx" />
     <EmbeddedResource Include="Resources\MappedJsonExtension.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>MappedJsonExtension.Designer.cs</LastGenOutput>
