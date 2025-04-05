@@ -439,7 +439,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Find real eye for any killer group. Within three points at FindRealEyeWithinEmptySpace and more than three points at FindRealEyeWithinEmptySpace.
+        /// Find real eye for any killer group. Within three points at FindRealEyeWithinEmptySpace and more than three points at RealEyeOfDiagonallyConnectedGroups.
         /// </summary>
         public static Boolean FindRealEyeOfAnyKillerGroup(Board board, Group killerGroup)
         {

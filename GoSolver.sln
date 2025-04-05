@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleGoSolver", "ConsoleG
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoSharpBase", "GoSharpBase\GoSharpBase.csproj", "{070868AA-6C88-496C-A800-849998ED4405}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestProject", "..\GoSolverTest\UnitTestProject.csproj", "{4582F9E7-7416-4317-942F-9136180E7F65}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,10 @@ Global
 		{070868AA-6C88-496C-A800-849998ED4405}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{070868AA-6C88-496C-A800-849998ED4405}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{070868AA-6C88-496C-A800-849998ED4405}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4582F9E7-7416-4317-942F-9136180E7F65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4582F9E7-7416-4317-942F-9136180E7F65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4582F9E7-7416-4317-942F-9136180E7F65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4582F9E7-7416-4317-942F-9136180E7F65}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

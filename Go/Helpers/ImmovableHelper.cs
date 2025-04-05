@@ -358,8 +358,18 @@ namespace Go
             return IsSuicidalMove(p, c, tryBoard, overrideKo).Item1;
         }
 
+        /// <summary>
+        /// Suicidal move for connect and die <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_A80" />
+        /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_A80_2" />
+        /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WuQingYuan_Q31503" />
+        /// </summary>
         public static (Boolean, Board) IsSuicidalMove(Point p, Content c, Board tryBoard, Boolean overrideKo = false)
         {
+            if (EyeHelper.FindEye(tryBoard, p, c.Opposite()))
+            {
+                List<Group> eyeGroups = tryBoard.GetGroupsFromStoneNeighbours(p, c).ToList();
+                if (eyeGroups.All(n => n.Liberties.Count > 1)) return (true, null);
+            }
             Board board = tryBoard.MakeMoveOnNewBoard(p, c, overrideKo);
             if (board == null) return (true, null);
             if (board.MoveGroupLiberties != 1) return (false, board);
@@ -384,25 +394,6 @@ namespace Go
             if (KoHelper.IsKoFight(tryBoard, targetGroup) && !tryBoard.PointWithinMiddleArea(targetGroup.Liberties.First()))
                 return false;
             return true;
-        }
-
-        /// <summary>
-        /// Suicidal move for connect and die.
-        /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_A80" />
-        /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_A80_2" />
-        /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WuQingYuan_Q31503" />
-        /// </summary>
-        public static (Boolean, Board) IsSuicidalMoveForConnectAndDie(Point p, Content c, Board tryBoard, Boolean koEnabled = false)
-        {
-            Board board = tryBoard.MakeMoveOnNewBoard(p, c, koEnabled);
-            if (board == null) return (true, null);
-            if (board.MoveGroupLiberties != 1) return (false, board);
-            if (KoHelper.IsKoFight(board))
-            {
-                if (koEnabled) return (false, board);
-                return (true, null);
-            }
-            return (true, board);
         }
 
         /// <summary>
@@ -602,7 +593,7 @@ namespace Go
             foreach (Point liberty in group.Liberties)
             {
                 if (!GameHelper.SetupMoveAvailable(board, liberty)) continue;
-                (_, Board b) = ImmovableHelper.IsSuicidalMoveForConnectAndDie(liberty, c.Opposite(), board, koEnabled);
+                (_, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board, koEnabled);
                 if (b == null) continue;
                 int moveLiberties = KillerFormationHelper.GetLibertiesAtMove(b).Count();
                 int moveGroupLiberties = b.MoveGroupLiberties;

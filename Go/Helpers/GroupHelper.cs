@@ -49,22 +49,19 @@ namespace Go
             foreach (Group group in groups)
             {
                 //find killer groups with no liberties left or surrounded by non movable points
-                if (group.Liberties.Count == 0 || (!isKill && group.Liberties.All(n => gameInfo.IsMovablePoint[n.x, n.y] == false) && !LifeCheck.GetTargets(board).Any(t => group.Points.Contains(t.Points.First()))))
-                {
-                    (Boolean isKillerGroup, _) = CheckNeighbourGroupsOfKillerGroup(filledBoard, group, true);
-                    if (!isKillerGroup) continue;
+                if (group.Liberties.Count == 0 || (!isKill && group.Liberties.All(n => gameInfo.IsMovablePoint[n.x, n.y] == false)))
                     killerGroups.Add(group);
-                }
             }
             return killerGroups;
         }
 
         /// <summary>
         /// Ensure neighbour groups of killer group are diagonal groups, not separated from one another.
+        /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_SimpleSeki_2" />
         /// </summary>
-        public static (Boolean, List<Group>) CheckNeighbourGroupsOfKillerGroup(Board board, Group killerGroup, Boolean isFilledBoard = false)
+        public static (Boolean, List<Group>) CheckNeighbourGroupsOfKillerGroup(Board board, Group killerGroup)
         {
-            List<Group> ngroups = GetNeighbourGroupsOfKillerGroup(board, killerGroup, isFilledBoard);
+            List<Group> ngroups = GetNeighbourGroupsOfKillerGroup(board, killerGroup);
             if (ngroups.Count == 0) return (false, null);
             if (ngroups.Count == 1) return (true, ngroups);
 
@@ -77,20 +74,18 @@ namespace Go
         /// <summary>
         /// Get neighbour groups of killer group that are not surrounded within the killer group.
         /// </summary>
-        public static List<Group> GetNeighbourGroupsOfKillerGroup(Board board, Group killerGroup, Boolean isFilledBoard = false)
+        public static List<Group> GetNeighbourGroupsOfKillerGroup(Board board, Group killerGroup)
         {
+            Content c = killerGroup.Content;
             List<Group> ngroups = board.GetNeighbourGroups(killerGroup);
-            if (isFilledBoard)
-                ngroups.RemoveAll(gr => gr.Neighbours.All(n => board[n] == killerGroup.Content && board.GetGroupAt(n) == killerGroup));
-            else
-                ngroups.RemoveAll(gr => gr.Neighbours.All(n => killerGroup.Points.Contains(n)));
+            ngroups.RemoveAll(gr => gr.Neighbours.All(n => GroupHelper.GetKillerGroupFromCache(board, n, c.Opposite()) == killerGroup));     
             return ngroups;
         }
 
-        /// <summary>
-        /// Get killer group cached in board for single point.
-        /// </summary>
-        public static Group GetKillerGroupFromCache(Board board, Point p, Content c = Content.Unknown)
+    /// <summary>
+    /// Get killer group cached in board for single point.
+    /// </summary>
+    public static Group GetKillerGroupFromCache(Board board, Point p, Content c = Content.Unknown)
         {
             c = (c == Content.Unknown) ? GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive) : c;
             List<Group> groups = GetKillerGroups(board, c);

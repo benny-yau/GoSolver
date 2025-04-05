@@ -559,8 +559,6 @@ namespace Go
         /// Two-point suicide at covered eye. 
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31469" />
         /// Make move at the other empty point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B57" />
-        /// Check for killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16424_2" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499_2" />
         /// </summary>
         public static Boolean TwoPointSuicideAtCoveredEye(Board capturedBoard, Board tryBoard)
         {
@@ -568,7 +566,6 @@ namespace Go
             Point move = tryBoard.Move.Value;
             Content c = capturedBoard.MoveGroup.Content;
             if (tryBoard.MoveGroup.Points.Count != 2) return false;
-            Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, move, c);
             foreach (Group group in capturedBoard.CapturedList)
             {
                 if (group.Points.Count != 2) continue;
@@ -578,8 +575,6 @@ namespace Go
                 //capture move and find covered eye
                 if (EyeHelper.FindCoveredEyeByCapture(b))
                     return true;
-                //check for killer group
-                if (killerGroup == null) continue;
                 if (!GetLibertiesAtMove(tryBoard).Any()) continue;
                 //make move at the other empty point
                 Point move2 = group.Points.First(p => !p.Equals(move));

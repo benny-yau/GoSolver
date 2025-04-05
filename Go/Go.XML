@@ -347,12 +347,7 @@
         <member name="M:Go.BothAliveHelper.GetKillerGroupsForBothAlive(Go.Board,Go.Content)">
             <summary>
             Get killer groups for both alive.
-            </summary>
-        </member>
-        <member name="M:Go.BothAliveHelper.CheckCoveredEyeInKillerGroup(Go.Board,System.Collections.Generic.List{Go.Group})">
-            <summary>
-            Check covered eye in killer group.
-            <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30005" />
+            Check covered eye in killer group <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30005" />
             Not covered eye <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A123" />
             <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30213" />
             </summary>
@@ -517,7 +512,7 @@
         </member>
         <member name="M:Go.EyeHelper.FindRealEyeOfAnyKillerGroup(Go.Board,Go.Group)">
             <summary>
-            Find real eye for any killer group. Within three points at FindRealEyeWithinEmptySpace and more than three points at FindRealEyeWithinEmptySpace.
+            Find real eye for any killer group. Within three points at FindRealEyeWithinEmptySpace and more than three points at RealEyeOfDiagonallyConnectedGroups.
             </summary>
         </member>
         <member name="M:Go.EyeHelper.NoEyeForOpponentWithinKillerGroup(Go.Board,Go.Point,Go.Content)">
@@ -598,12 +593,13 @@
             Get killer groups fully surrounded by opponent.
             </summary>
         </member>
-        <member name="M:Go.GroupHelper.CheckNeighbourGroupsOfKillerGroup(Go.Board,Go.Group,System.Boolean)">
+        <member name="M:Go.GroupHelper.CheckNeighbourGroupsOfKillerGroup(Go.Board,Go.Group)">
             <summary>
             Ensure neighbour groups of killer group are diagonal groups, not separated from one another.
+            <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_SimpleSeki_2" />
             </summary>
         </member>
-        <member name="M:Go.GroupHelper.GetNeighbourGroupsOfKillerGroup(Go.Board,Go.Group,System.Boolean)">
+        <member name="M:Go.GroupHelper.GetNeighbourGroupsOfKillerGroup(Go.Board,Go.Group)">
             <summary>
             Get neighbour groups of killer group that are not surrounded within the killer group.
             </summary>
@@ -735,10 +731,9 @@
             Is suicidal move.
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.IsSuicidalMoveForConnectAndDie(Go.Point,Go.Content,Go.Board,System.Boolean)">
+        <member name="M:Go.ImmovableHelper.IsSuicidalMove(Go.Point,Go.Content,Go.Board,System.Boolean)">
             <summary>
-            Suicidal move for connect and die.
-            <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_A80" />
+            Suicidal move for connect and die <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_A80" />
             <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_A80_2" />
             <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WuQingYuan_Q31503" />
             </summary>
@@ -994,8 +989,6 @@
             Two-point suicide at covered eye. 
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31469" />
             Make move at the other empty point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B57" />
-            Check for killer group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16424_2" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499_2" />
             </summary>
         </member>
         <member name="M:Go.KillerFormationHelper.TwoPointAtariMove(Go.Board,Go.Board)">
@@ -1399,6 +1392,7 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113_2" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A18" />
+            Double atari <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20250326_8" /> 
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.RedundantCoveredEyeMove(Go.GameTryMove)">

@@ -13,6 +13,7 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A18" />
+        /// Double atari <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20250326_8" /> 
         /// </summary>
         public static Boolean FindPotentialEye(GameTryMove tryMove)
         {
@@ -28,6 +29,17 @@ namespace Go
                 //check for killer formations
                 if (tryBoard.MoveGroupLiberties == 1 && KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard))
                     return false;
+
+                //double atari
+                List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).ToList();
+                foreach (Group g in eyeGroups.Where(e => e.Liberties.Count == 2))
+                {
+                    Point p = g.Liberties.First(n => !n.Equals(move));
+                    if (!currentBoard.GetDiagonalNeighbours(move).Contains(p)) continue;
+                    if (!currentBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Except(eyeGroups).Any(n => n.Liberties.Count == 2)) continue;
+                    if (ImmovableHelper.IsSuicidalMove(currentBoard, p, c.Opposite(), true)) continue;
+                    return false;
+                }
             }
             else
             {
@@ -236,8 +248,8 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
-            //ensure is fill eye
-            if (!EyeHelper.FindEye(currentBoard, move, c)) return false;
+            //ensure is fill covered eye
+            if (!EyeHelper.FindCoveredEye(currentBoard, move, c)) return false;
 
             (Boolean connectAndDie, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard, tryBoard.MoveGroup, false);
             if (connectAndDie)

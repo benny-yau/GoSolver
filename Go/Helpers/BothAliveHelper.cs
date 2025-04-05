@@ -32,7 +32,7 @@ namespace Go
         {
             if (tryMoves != null && tryMoves.Any(p => GroupHelper.GetKillerGroupFromCache(board, p.Move, c) == null)) return false;
             c = (c == Content.Unknown) ? GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive) : c;
-            List<Group> killerGroups = GetKillerGroupsForBothAlive(board, c);
+            IEnumerable<Group> killerGroups = GetKillerGroupsForBothAlive(board, c);
             if (killerGroups.Any(n => CheckForBothAlive(board, n)))
                 return true;
             return false;
@@ -80,11 +80,9 @@ namespace Go
             if (contentGroups.Count > 2 || (contentGroups.Count == 2 && emptyPoints.Count != 2)) return false;
 
             List<Group> ngroups = GroupHelper.GetNeighbourGroupsOfKillerGroup(board, killerGroup);
-            List<Group> killerGroups = GetKillerGroupsForBothAlive(board, c.Opposite());
-            List<Group> nkillerGroups = killerGroups.Where(n => !n.Equals(killerGroup) && board.GetNeighbourGroups(n).Any(gr => ngroups.Contains(gr))).ToList();
-            nkillerGroups.Insert(0, killerGroup);
+            List<Group> killerGroups = GetKillerGroupsForBothAlive(board, c.Opposite()).ToList();
 
-            if (nkillerGroups.Count == 1)  //simple seki
+            if (killerGroups.Count == 1)  //simple seki
             {
                 if (ngroups.Count > 2) return false;
                 //at least three content points in killer group
@@ -93,7 +91,7 @@ namespace Go
                 if (contentGroups.Any(n => n.Liberties.Count == 1)) return false;
                 return CheckSimpleSeki(board, filledBoard, ngroups, killerGroup, emptyPoints);
             }
-            else if (nkillerGroups.Count >= 2) //complex seki
+            else if (killerGroups.Count >= 2) //complex seki
             {
                 //two liberties for content group
                 Boolean oneLiberty = board.GetGroupsFromPoints(contentPoints).Any(n => n.Liberties.Count == 1);
@@ -106,7 +104,7 @@ namespace Go
                 //find diagonal cut
                 (_, List<Point> diagonals) = LinkHelper.FindDiagonalCut(board, killerGroup);
                 //check complex seki without diagonal cut
-                if (diagonals == null) return CheckComplexSeki(board, nkillerGroups, ngroups);
+                if (diagonals == null) return CheckComplexSeki(board, killerGroups, ngroups);
 
                 //check complex seki with diagonal cut
                 HashSet<Group> dgroups = board.GetGroupsFromPoints(diagonals);
@@ -116,7 +114,7 @@ namespace Go
                 {
                     Group dkillerGroup = GroupHelper.GetKillerGroupFromCache(board, dgroup.Points.First(), c);
                     if (dkillerGroup == null) continue;
-                    List<Group> cutKillerGroups = nkillerGroups.Where(n => dkillerGroup.Points.Contains(n.Points.First())).ToList();
+                    List<Group> cutKillerGroups = killerGroups.Where(n => dkillerGroup.Points.Contains(n.Points.First())).ToList();
                     List<Group> cutTargetGroups = ngroups.Where(n => dkillerGroup.Points.Contains(n.Points.First())).ToList();
                     if (CheckComplexSeki(board, cutKillerGroups, cutTargetGroups))
                         return true;
@@ -253,51 +251,31 @@ namespace Go
 
         /// <summary>
         /// Get killer groups for both alive.
-        /// </summary>
-        public static List<Group> GetKillerGroupsForBothAlive(Board board, Content c = Content.Unknown)
-        {
-            List<Group> killerGroups = GroupHelper.GetKillerGroups(board, c);
-            if (killerGroups.Any(n => n.IsCoveredEye == null))
-                CheckCoveredEyeInKillerGroup(board, killerGroups);
-            return killerGroups.Where(n => !n.IsCoveredEye.Value).ToList();
-        }
-
-        /// <summary>
-        /// Check covered eye in killer group.
-        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30005" />
+        /// Check covered eye in killer group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30005" />
         /// Not covered eye <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A123" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30213" />
         /// </summary>
-        private static void CheckCoveredEyeInKillerGroup(Board board, List<Group> killerGroups)
+        public static IEnumerable<Group> GetKillerGroupsForBothAlive(Board board, Content c = Content.Unknown)
         {
-            if (killerGroups.Any(n => n.Points.Count <= 2))
+            List<Group> killerGroups = GroupHelper.GetKillerGroups(board, c).Where(n => GroupHelper.CheckNeighbourGroupsOfKillerGroup(board, n).Item1).ToList();
+            foreach (Group group in killerGroups)
             {
-                //find immovable groups
-                List<Group> immovableGroups = new List<Group>();
-                foreach (Group killerGroup in killerGroups)
+                if (group.Points.Count <= 2 && !EyeHelper.FindRealEyeWithinEmptySpace(board, group, EyeType.UnCoveredEye))
                 {
-                    List<Point> emptyPoints = killerGroup.Points.Where(p => board[p] == Content.Empty).ToList();
-                    if (emptyPoints.Count != 2) continue;
-                    if (emptyPoints.All(p => ImmovableHelper.IsSuicidalMoveForBothPlayers(board, p)))
-                        immovableGroups.Add(killerGroup);
+                    Board b = new Board(board);
+                    List<LinkedPoint<Point>> rc = LinkHelper.GetGroupDiagonals(board, group);
+                    foreach (LinkedPoint<Point> p in rc)
+                    {
+                        Group killerGroup = GroupHelper.GetKillerGroupFromCache(board, p.Move, c);
+                        if (!killerGroups.Contains(killerGroup)) continue;
+                        b[p.Move] = Content.Empty;
+                        if (EyeHelper.FindRealEyeWithinEmptySpace(b, group, EyeType.UnCoveredEye))
+                            yield return group;
+                    }
                 }
-
-                //clear immovable groups with empty points
-                Board b = board;
-                if (immovableGroups.Any())
-                {
-                    b = new Board(board);
-                    immovableGroups.ForEach(n => n.Points.ToList().ForEach(p => b[p] = Content.Empty));
-                }
-                //find uncovered eye
-                foreach (Group group in killerGroups)
-                {
-                    Boolean unCoveredEye = group.Points.Count > 2 || EyeHelper.FindRealEyeWithinEmptySpace(b, group, EyeType.UnCoveredEye);
-                    if (!unCoveredEye)
-                        group.IsCoveredEye = true;
-                }
+                else
+                    yield return group;
             }
-            killerGroups.Where(n => n.IsCoveredEye == null).ToList().ForEach(n => n.IsCoveredEye = false);
         }
 
         /// <summary>
