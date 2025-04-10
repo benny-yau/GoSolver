@@ -15,42 +15,46 @@ namespace Go
             if (c == Content.Unknown)
                 c = GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive);
             if (board.KillerGroups == null || !board.KillerGroups.ContainsKey(c))
-            {
-                //get killer groups
                 killerGroups = GetAllKillerGroups(board, c);
-
-                //cache groups in board
-                if (board.KillerGroups == null) board.KillerGroups = new Dictionary<Content, List<Group>>();
-                board.KillerGroups.Add(c, killerGroups);
-            }
             else
-            {
-                //retrieve from cache
-                killerGroups = board.KillerGroups[c];
-            }
+                killerGroups = board.KillerGroups[c]; //retrieve from cache
             return killerGroups;
         }
 
         /// <summary>
         /// Get killer groups fully surrounded by opponent.
         /// </summary>
-        public static List<Group> GetAllKillerGroups(Board board, Content content)
+        private static List<Group> GetAllKillerGroups(Board board, Content c)
         {
             List<Group> killerGroups = new List<Group>();
             Board filledBoard = new Board(board);
+
+            //cache groups in board
+            if (board.KillerGroups == null) board.KillerGroups = new Dictionary<Content, List<Group>>();
+            board.KillerGroups.Add(c, killerGroups);
+            Group[,] cache = new Group[board.SizeX, board.SizeY];
+            if (c == Content.Black)
+                board.BlackKillerGroupCache = cache;
+            else
+                board.WhiteKillerGroupCache = cache;
+
             //cover all empty points
             GameInfo gameInfo = board.GameInfo;
-            Boolean isKill = (GameHelper.GetContentForSurviveOrKill(gameInfo, SurviveOrKill.Kill) == content.Opposite());
+            Boolean isKill = (GameHelper.GetContentForSurviveOrKill(gameInfo, SurviveOrKill.Kill) == c.Opposite());
             List<Point> coverPoints = (isKill) ? gameInfo.killMovablePoints : gameInfo.movablePoints;
             List<Point> emptyPoints = coverPoints.Where(p => filledBoard[p] == Content.Empty).ToList();
-            emptyPoints.ForEach(p => filledBoard[p] = content.Opposite());
+            emptyPoints.ForEach(p => filledBoard[p] = c.Opposite());
 
             HashSet<Group> groups = filledBoard.GetGroupsFromPoints(emptyPoints);
             foreach (Group group in groups)
             {
                 //find killer groups with no liberties left or surrounded by non movable points
                 if (group.Liberties.Count == 0 || (!isKill && group.Liberties.All(n => gameInfo.IsMovablePoint[n.x, n.y] == false)))
+                {
                     killerGroups.Add(group);
+                    foreach (Point p in group.Points)
+                        cache[p.x, p.y] = group;
+                }
             }
             return killerGroups;
         }
@@ -78,20 +82,19 @@ namespace Go
         {
             Content c = killerGroup.Content;
             List<Group> ngroups = board.GetNeighbourGroups(killerGroup);
-            ngroups.RemoveAll(gr => gr.Neighbours.All(n => GroupHelper.GetKillerGroupFromCache(board, n, c.Opposite()) == killerGroup));     
+            ngroups.RemoveAll(gr => gr.Neighbours.All(n => GroupHelper.GetKillerGroupFromCache(board, n, c.Opposite()) == killerGroup));
             return ngroups;
         }
 
-    /// <summary>
-    /// Get killer group cached in board for single point.
-    /// </summary>
-    public static Group GetKillerGroupFromCache(Board board, Point p, Content c = Content.Unknown)
+        /// <summary>
+        /// Get killer group cached in board for single point.
+        /// </summary>
+        public static Group GetKillerGroupFromCache(Board board, Point p, Content c = Content.Unknown)
         {
             c = (c == Content.Unknown) ? GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive) : c;
             List<Group> groups = GetKillerGroups(board, c);
-            Group group = groups.FirstOrDefault(g => g.Points.Contains(p));
-            if (group == null) return null;
-            return (c == group.Content.Opposite()) ? group : null;
+            Group[,] cache = (c == Content.Black) ? board.BlackKillerGroupCache : board.WhiteKillerGroupCache;
+            return cache[p.x, p.y];
         }
 
         /// <summary>
@@ -127,9 +130,10 @@ namespace Go
         public static Boolean IsSingleGroupWithinKillerGroup(Board tryBoard, Group group = null, Boolean checkLiberties = true)
         {
             if (group == null) group = tryBoard.MoveGroup;
+            else group = tryBoard.GetCurrentGroup(group);
             Content c = group.Content;
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, group.Points.First(), c.Opposite());
-            if (killerGroup == null || killerGroup.Points.Any(p => tryBoard[p] == c && !group.Points.Contains(p))) return false;
+            if (killerGroup == null || killerGroup.Points.Any(p => tryBoard[p] == c && tryBoard.GetGroupAt(p) != group)) return false;
             if (checkLiberties && tryBoard.GetNeighbourGroups(killerGroup).Any(gr => gr.Liberties.Count == 1)) return false;
             return true;
         }

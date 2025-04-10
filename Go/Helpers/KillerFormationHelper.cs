@@ -513,7 +513,7 @@ namespace Go
             //get external liberty
             foreach (Group targetGroup in targetGroups)
             {
-                List<Point> externalLiberties = targetGroup.Liberties.Except(killerGroup.Points).ToList();
+                List<Point> externalLiberties = targetGroup.Liberties.Where(n => GroupHelper.GetKillerGroupFromCache(currentBoard, n, c.Opposite()) != killerGroup).ToList();
                 if (externalLiberties.Count != 1) continue;
                 Point liberty = externalLiberties.First();
                 if (KoHelper.IsKoFight(tryBoard, liberty, c.Opposite()).Item1)
@@ -541,7 +541,7 @@ namespace Go
             //ko move on external liberty (optional)
             foreach (Group targetGroup in targetGroups)
             {
-                List<Point> externalLiberties = targetGroup.Liberties.Except(killerGroup.Points).ToList();
+                List<Point> externalLiberties = targetGroup.Liberties.Where(n => GroupHelper.GetKillerGroupFromCache(currentBoard, n, c.Opposite()) != killerGroup).ToList();
                 if (externalLiberties.Count != 1) continue;
                 Point liberty = externalLiberties.First();
                 Board b = currentBoard.MakeMoveOnNewBoard(liberty, c, true);
@@ -1222,7 +1222,7 @@ namespace Go
                 List<Point> movePoints = b.MoveGroup.Points.ToList();
                 int maxLengthOfGrid = MaxLengthOfGrid(movePoints);
                 int maxIntersect = movePoints.Max(q => b.GetStoneNeighbours(q).Intersect(movePoints).Count());
-                int moveGroupLiberties = b.MoveGroup.Liberties.Count;
+                int moveGroupLiberties = b.MoveGroupLiberties;
                 list.Add(new LinkedPoint<Point>(p, new { maxLengthOfGrid, maxIntersect, moveGroupLiberties, b }));
             }
             //order by grid length then by max of intersection then by move group liberties

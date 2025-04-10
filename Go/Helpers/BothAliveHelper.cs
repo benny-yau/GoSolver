@@ -114,8 +114,8 @@ namespace Go
                 {
                     Group dkillerGroup = GroupHelper.GetKillerGroupFromCache(board, dgroup.Points.First(), c);
                     if (dkillerGroup == null) continue;
-                    List<Group> cutKillerGroups = killerGroups.Where(n => dkillerGroup.Points.Contains(n.Points.First())).ToList();
-                    List<Group> cutTargetGroups = ngroups.Where(n => dkillerGroup.Points.Contains(n.Points.First())).ToList();
+                    List<Group> cutKillerGroups = killerGroups.Where(n => GroupHelper.GetKillerGroupFromCache(board, n.Points.First(), c) == dkillerGroup).ToList();
+                    List<Group> cutTargetGroups = ngroups.Where(n => GroupHelper.GetKillerGroupFromCache(board, n.Points.First(), c) == dkillerGroup).ToList();
                     if (CheckComplexSeki(board, cutKillerGroups, cutTargetGroups))
                         return true;
                 }
@@ -137,7 +137,7 @@ namespace Go
         {
             Content c = killerGroup.Content;
             //ensure at least two liberties within killer group in survival neighbour group
-            if (ngroups.Any(n => n.Liberties.Count(p => killerGroup.Points.Contains(p) || BothAliveDiagonalEye(board, killerGroup, p)) < 2))
+            if (ngroups.Any(n => n.Liberties.Count(p => GroupHelper.GetKillerGroupFromCache(board, p, c.Opposite()) == killerGroup || BothAliveDiagonalEye(board, killerGroup, p)) < 2))
                 return false;
 
             int emptyPointCount = killerGroup.Points.Count(k => filledBoard[k] == Content.Empty);
@@ -185,7 +185,7 @@ namespace Go
             Content c = killerGroup.Content;
             if (EyeHelper.FindEye(board, eye, c.Opposite()) && board.GetStoneNeighbours(eye).All(n => board.GetGroupAt(n).Liberties.Count > 1))
             {
-                if (board.GetDiagonalNeighbours(eye).Any(n => killerGroup.Points.Contains(n)))
+                if (board.GetDiagonalNeighbours(eye).Any(n => GroupHelper.GetKillerGroupFromCache(board, n, c.Opposite()) == killerGroup))
                     return true;
             }
             return false;

@@ -803,7 +803,7 @@ namespace Go
             {
                 if (b[p] != Content.Empty) continue;
                 if (func != null && func(p)) continue;
-                if (!ImmovableHelper.FindTigerMouth(b, c, p)) continue;
+                if (ImmovableHelper.FindTigerMouth(b, p, c) == null) continue;
                 Point q = b.GetStoneNeighbours(p).First(n => b[n] != c);
                 if (!ImmovableHelper.FindEmptyTigerMouth(b, c.Opposite(), q)) continue;
                 return true;

@@ -23,27 +23,15 @@ namespace Go
             }
             else if (content == c.Opposite())
             {
-                Board b = ImmovableHelper.CaptureSuicideGroup(board, board.GetGroupAt(p));
+                Board b = ImmovableHelper.CaptureSuicideGroup(p, board);
                 if (b != null) return b.Move;
             }
             return null;
         }
 
-        public static Boolean FindTigerMouth(Board board, Content c, Point p)
+        public static Boolean FindEmptyTigerMouth(Board board, Content c, Point p)
         {
-            return (FindTigerMouth(board, p, c) != null);
-        }
-
-        public static Boolean FindEmptyTigerMouth(Board board, Content c, Point p, Boolean checkNonKillable = true)
-        {
-            if (board[p] != Content.Empty || FindTigerMouth(board, p, c) == null) return false;
-            if (checkNonKillable)
-            {
-                HashSet<Group> groups = board.GetGroupsFromStoneNeighbours(p, c.Opposite());
-                if (groups.Count == 1 || groups.All(n => WallHelper.IsNonKillableGroup(board, n)))
-                    return false;
-            }
-            return true;
+            return (board[p] == Content.Empty && FindTigerMouth(board, p, c) != null);
         }
 
         /// <summary>
@@ -198,11 +186,11 @@ namespace Go
 
             if (p == null)
             {
-                Point liberty = targetGroup.Liberties.FirstOrDefault(n => ImmovableHelper.FindTigerMouth(board, c, n) && EyeHelper.IsCovered(board, n, c));
+                Point liberty = targetGroup.Liberties.FirstOrDefault(n => ImmovableHelper.FindEmptyTigerMouth(board, c, n) && EyeHelper.IsCovered(board, n, c));
                 if (!Convert.ToBoolean(liberty.NotEmpty)) return (false, null);
                 p = liberty;
             }
-            else if (!ImmovableHelper.FindTigerMouth(board, c, p.Value)) return (false, null);
+            else if (!ImmovableHelper.FindEmptyTigerMouth(board, c, p.Value)) return (false, null);
 
             //stone neighbours at diagonal of each other
             List<Point> nstones = LinkHelper.GetNeighboursDiagonallyLinked(board, p.Value, c);
@@ -355,6 +343,10 @@ namespace Go
         /// </summary>
         public static Boolean IsSuicidalMove(Board tryBoard, Point p, Content c, Boolean overrideKo = false)
         {
+            if (tryBoard.GetStoneNeighbours(p).Count(n => tryBoard[n] == Content.Empty) >= 2)
+                return false;
+            if (tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Any(n => n.Liberties.Count >= 3))
+                return false;
             return IsSuicidalMove(p, c, tryBoard, overrideKo).Item1;
         }
 

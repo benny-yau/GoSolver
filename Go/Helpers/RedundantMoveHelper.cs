@@ -127,7 +127,7 @@ namespace Go
                     eyeGroup = tryBoard.CapturedList.First();
             }
             if (eyeGroup == null) return false;
-            if (tryBoard.CapturedList.Any(gr => !eyeGroup.Points.Contains(gr.Points.First()))) return false;
+            if (!tryBoard.IsCapturedGroup(eyeGroup)) return false;
 
             //check no eye for survival
             if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(tryBoard))
@@ -486,7 +486,7 @@ namespace Go
                         if (opponentTryMove != null && EyeHelper.IsCovered(tryBoard, move, c.Opposite()))
                             continue;
                         //check for weak group
-                        if (!b.CapturedList.Any(n => n.Points.Contains(tryBoard.MoveGroup.Points.First())) && AtariHelper.IsWeakNeighbourGroup(b, tryBoard.MoveGroup))
+                        if (!b.IsCapturedGroup(tryBoard.MoveGroup) && AtariHelper.IsWeakNeighbourGroup(b, tryBoard.MoveGroup))
                             continue;
                         return true;
                     }
@@ -1483,7 +1483,7 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryBoard.MoveGroup.Content;
             if (tryBoard.PointWithinMiddleArea()) return false;
-            if (tryBoard.GetDiagonalNeighbours().Any(d => tryBoard[d] == c.Opposite() && tryBoard.GetGroupAt(d).Points.Count <= 2 && tryBoard.GetStoneNeighbours(d).Any(n => tryBoard[n] == Content.Empty && ImmovableHelper.FindTigerMouth(tryBoard, c.Opposite(), n))))
+            if (tryBoard.GetDiagonalNeighbours().Any(d => tryBoard[d] == c.Opposite() && tryBoard.GetGroupAt(d).Points.Count <= 2 && tryBoard.GetStoneNeighbours(d).Any(n => ImmovableHelper.FindEmptyTigerMouth(tryBoard, c.Opposite(), n))))
                 return true;
             return false;
         }
@@ -1505,7 +1505,7 @@ namespace Go
 
             Point suicideMove = suicideBoard.Move.Value;
             //liberties more than one
-            if (suicideBoard.MoveGroup.Liberties.Count > 1)
+            if (suicideBoard.MoveGroupLiberties > 1)
                 return true;
 
             //strong groups at tiger mouth
@@ -2006,7 +2006,7 @@ namespace Go
                 return false;
 
             //check for killer group
-            if (!GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard, tryBoard.MoveGroup, false))
+            if (!GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard, tryBoard.MoveGroup))
                 return false;
             return true;
         }
@@ -2303,7 +2303,7 @@ namespace Go
 
             //check multiple groups
             List<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, emptyPoints, c.Opposite()).ToList();
-            List<Board> multipleGroups = moveBoards.Where(b => !GroupHelper.IsSingleGroupWithinKillerGroup(b, b.MoveGroup, false)).ToList();
+            List<Board> multipleGroups = moveBoards.Where(b => !GroupHelper.IsSingleGroupWithinKillerGroup(b, b.MoveGroup)).ToList();
             if (multipleGroups.Any(b => !ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false))) return false;
 
             //check for dead formation

@@ -24,6 +24,10 @@ namespace Go
         public List<Group> CapturedList = new List<Group>();
         public List<Point> LastMoves = new List<Point>();
 
+        public Dictionary<Content, List<Group>> KillerGroups { get; set; }
+        public Group[,] BlackKillerGroupCache { get; set; }
+        public Group[,] WhiteKillerGroupCache { get; set; }
+
         private List<Group> atariTargets;
         public List<Group> AtariTargets
         {
@@ -42,7 +46,6 @@ namespace Go
             }
         }
 
-        public Dictionary<Content, List<Group>> KillerGroups { get; set; }
         public GameInfo GameInfo { get; set; }
         public static readonly Point PassMove = new Point(-1, -1);
 
@@ -323,7 +326,11 @@ namespace Go
         public HashSet<Group> GetGroupsFromPoints(List<Point> points)
         {
             HashSet<Group> groups = new HashSet<Group>();
-            points.ForEach(p => groups.Add(this.GetGroupAt(p)));
+            foreach (Point p in points)
+            {
+                Group group = this.GetGroupAt(p);
+                if (!groups.Contains(group)) groups.Add(group);
+            }
             return groups;
         }
 
@@ -357,6 +364,8 @@ namespace Go
             GroupCache.Clear();
             GroupCacheFromPoint = null;
             KillerGroups = null;
+            BlackKillerGroupCache = null;
+            WhiteKillerGroupCache = null;
             AtariTargets = null;
             CapturedList.Clear();
         }
