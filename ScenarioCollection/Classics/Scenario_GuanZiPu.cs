@@ -202,7 +202,7 @@ namespace ScenarioCollection
             gi.targetPoints = new List<Point>() { new Point(3, 18) };
             for (int x = 0; x <= 3; x++)
             {
-                for (int y = 16; y <= 18; y++)
+                for (int y = 15; y <= 18; y++)
                     gi.movablePoints.Add(new Point(x, y));
             }
             gi.killMovablePoints.AddRange(gi.movablePoints);

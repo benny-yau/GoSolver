@@ -86,12 +86,12 @@ namespace Go
         /// <summary>
         /// Is weak neighbour group.
         /// </summary>
-        public static Boolean IsWeakNeighbourGroup(Board tryBoard, Group moveGroup)
+        public static Boolean IsWeakNeighbourGroup(Board tryBoard, Group suicideGroup)
         {
-            if (WallHelper.IsNonKillableFromSetupMoves(tryBoard, moveGroup))
+            if (WallHelper.IsNonKillableFromSetupMoves(tryBoard, suicideGroup))
                 return false;
 
-            if (tryBoard.GetNeighbourGroups(moveGroup).Any(gr => IsWeakGroup(tryBoard, gr)))
+            if (tryBoard.GetNeighbourGroups(suicideGroup).Any(ngroup => IsWeakGroup(tryBoard, ngroup)))
                 return true;
             return false;
         }
@@ -99,14 +99,14 @@ namespace Go
         /// <summary>
         /// Is weak group.
         /// </summary>
-        public static Boolean IsWeakGroup(Board tryBoard, Group group)
+        public static Boolean IsWeakGroup(Board tryBoard, Group ngroup)
         {
-            if (group.Liberties.Count > 2) return false;
-            foreach (Point liberty in group.Liberties)
+            if (ngroup.Liberties.Count != 2) return false;
+            foreach (Point liberty in ngroup.Liberties)
             {
-                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, group.Content.Opposite(), tryBoard, true);
+                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, ngroup.Content.Opposite(), tryBoard, true);
                 if (suicidal) continue;
-                if (group.Liberties.Count == 2 && (WallHelper.IsNonKillableGroup(b) || KoHelper.IsNonKillableGroupKoFight(b, b.MoveGroup))) continue;
+                if (WallHelper.IsNonKillableGroup(b) || KoHelper.IsNonKillableGroupKoFight(b, b.MoveGroup)) continue;
                 return true;
             }
             return false;

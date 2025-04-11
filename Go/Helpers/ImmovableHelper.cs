@@ -641,7 +641,7 @@ namespace Go
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_TianLongTu_Q16827_2" />
         /// Check for opponent survival move <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q29475" /> 
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245_2" />
-        /// Unstoppable group <see cref="UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_XuanXuanQiJing_A53" /> 
+        /// <see cref="UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_XuanXuanQiJing_A53" /> 
         /// </summary>
         public static (Boolean, Board) SuicideAtBigTigerMouth(GameTryMove tryMove)
         {
@@ -660,7 +660,7 @@ namespace Go
                 if (ImmovableHelper.CheckConnectAndDie(b))
                     return (true, b);
 
-                if (b.MoveGroup.Liberties.Count != 2) continue;
+                if (b.MoveGroupLiberties != 2) continue;
                 Point liberty2 = b.MoveGroup.Liberties.First(n => !n.Equals(move));
                 //check for groups at liberty
                 List<Group> ngroups = b.GetGroupsFromStoneNeighbours(liberty2, c.Opposite()).Where(n => !n.Equals(b.MoveGroup)).ToList();
@@ -674,18 +674,9 @@ namespace Go
                 //check for opponent survival move
                 if (b.MoveGroup.Points.Count >= 3)
                 {
-                    if (b2.GetStoneNeighbours().Where(n => b2[n] != c.Opposite()).Select(n => GroupHelper.GetKillerGroupOfNeighbourGroups(b2, n, c.Opposite())).Any(n => n != null && n.Points.Count >= 3))
-                        return (true, b);
-
-                    Board b3 = currentBoard.MakeMoveOnNewBoard(liberty, c.Opposite(), true);
-                    if (b3 != null && b3.GetNeighbourGroups(eyeGroup).Any(n => b3.GetGroupsFromStoneNeighbours(liberty, c).Count > 1 && !WallHelper.IsHostileNeighbourGroup(b3, n)))
+                    if (b2.GetStoneNeighbours().Where(n => b2[n] != c.Opposite()).Select(n => GroupHelper.GetKillerGroupFromCache(b2, n, c)).Any(n => n != null && n.Points.Count >= 3))
                         return (true, b);
                 }
-
-                //unstoppable group
-                b2[move] = c;
-                if (b2.GetGroupsFromStoneNeighbours(liberty, c).Count > 1 && !WallHelper.IsHostileNeighbourGroup(b2, b2.MoveGroup))
-                    return (true, b);
             }
 
             //check three liberty group

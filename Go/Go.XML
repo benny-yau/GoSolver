@@ -819,7 +819,7 @@
             <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_TianLongTu_Q16827_2" />
             Check for opponent survival move <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q29475" /> 
             <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245_2" />
-            Unstoppable group <see cref="!:UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_XuanXuanQiJing_A53" /> 
+            <see cref="!:UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_XuanXuanQiJing_A53" /> 
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.CheckThreeLibertyGroupAtBigTigerMouth(Go.GameTryMove)">
@@ -1110,16 +1110,6 @@
             Make ko fight.
             </summary>
         </member>
-        <member name="M:Go.KoHelper.IsCaptureKoFight(Go.Board,Go.Group,System.Boolean)">
-            <summary>
-            Is ko fight after capture.
-            </summary>
-        </member>
-        <member name="M:Go.KoHelper.IsCaptureKoFight(Go.Board,Go.Point,Go.Content,System.Boolean)">
-            <summary>
-            Is ko fight at eye point.
-            </summary>
-        </member>
         <member name="M:Go.KoHelper.CheckReverseKoForNeutralPoint(Go.Board)">
             <summary>
             Reverse ko for neutral point move.
@@ -1395,6 +1385,11 @@
             Double atari <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20250326_8" /> 
             </summary>
         </member>
+        <member name="M:Go.RedundantMoveHelper.EyeDoubleAtari(Go.GameTryMove)">
+            <summary>
+            Eye double atari <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20250326_8" /> 
+            </summary>
+        </member>
         <member name="M:Go.RedundantMoveHelper.RedundantCoveredEyeMove(Go.GameTryMove)">
             <summary>
             Redundant covered eye move.
@@ -1546,6 +1541,7 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16604_4" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B32_2" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A67_3" />
+            Check one liberty <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A67_3" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SuicidalConnectAndDie(Go.GameTryMove)">
@@ -1571,7 +1567,7 @@
             Ensure all strong neighbour groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_7" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.CheckWeakGroupInConnectAndDie(Go.Board,Go.Group)">
+        <member name="M:Go.RedundantMoveHelper.CheckWeakGroup(Go.Board,Go.Group)">
             <summary>
             Check for weak group with two or less liberties in connect and die.
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_x" />
@@ -1580,6 +1576,12 @@
             Check for double atari for one-point move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29481" />
             Check killable group with two or less liberties <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B6" />
             Check for weak group capturing atari group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B17" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CheckWeakGroupInConnectAndDie(Go.GameTryMove,Go.Board)">
+            <summary>
+            Check weak group in connect and die.
+            Check three liberty weak group <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20250311_8" /> 
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.FindBloatedEyeSuicide(Go.GameTryMove,Go.Board)">

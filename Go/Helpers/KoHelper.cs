@@ -88,27 +88,6 @@ namespace Go
         }
 
         /// <summary>
-        /// Is ko fight after capture.
-        /// </summary>
-        public static Board IsCaptureKoFight(Board board, Group group, Boolean overrideKo = false)
-        {
-            if (!KoHelper.IsKoFight(board, group)) return null;
-            Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(board, group, overrideKo);
-            return capturedBoard;
-        }
-
-        /// <summary>
-        /// Is ko fight at eye point.
-        /// </summary>
-        public static Board IsCaptureKoFight(Board board, Point eye, Content c, Boolean overrideKo = false)
-        {
-            (Boolean isKoFight, Group koGroup) = KoHelper.IsKoFight(board, eye, c);
-            if (!isKoFight) return null;
-            Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(board, koGroup, overrideKo);
-            return capturedBoard;
-        }
-
-        /// <summary>
         /// Reverse ko for neutral point move.
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A80" />
         /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20230813" />

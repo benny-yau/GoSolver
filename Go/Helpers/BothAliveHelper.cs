@@ -236,9 +236,8 @@ namespace Go
         public static Board FillEyePointsBoard(Board board, Group killerGroup)
         {
             Content c = killerGroup.Content;
-            IEnumerable<Point> killerLiberties = killerGroup.Points.Where(p => board[p] == Content.Empty);
             //ensure only one killer group with or without eye
-            List<Point> eyePoints = killerLiberties.Where(t => EyeHelper.FindEye(board, t, c)).ToList();
+            List<Point> eyePoints = killerGroup.Points.Where(t => EyeHelper.FindEye(board, t, c)).ToList();
             Board filledBoard = board;
             if (eyePoints.Count > 0)
             {
@@ -266,8 +265,9 @@ namespace Go
                     List<LinkedPoint<Point>> rc = LinkHelper.GetGroupDiagonals(board, group);
                     foreach (LinkedPoint<Point> p in rc)
                     {
+                        if (b[p.Move] != c.Opposite()) continue;
                         Group killerGroup = GroupHelper.GetKillerGroupFromCache(board, p.Move, c);
-                        if (!killerGroups.Contains(killerGroup)) continue;
+                        if (!killerGroups.Contains(killerGroup)) continue;          
                         b[p.Move] = Content.Empty;
                         if (EyeHelper.FindRealEyeWithinEmptySpace(b, group, EyeType.UnCoveredEye))
                             yield return group;
