@@ -91,6 +91,7 @@ namespace Go
         /// Reverse ko for neutral point move.
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A80" />
         /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20230813" />
+        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_20221229_7" />
         /// </summary>
         public static Boolean CheckReverseKoForNeutralPoint(Board tryBoard)
         {
@@ -111,8 +112,7 @@ namespace Go
                 Point e = tryBoard.GetDiagonalNeighbours(lib).Intersect(tryBoard.GetStoneNeighbours(lib2)).First();
                 if (tryBoard[e] != Content.Empty || WallHelper.NoEyeForSurvival(tryBoard, e)) continue;
                 //make survival move to create ko
-                (Boolean suicidal2, Board b2) = ImmovableHelper.IsSuicidalMove(lib2, c, tryBoard);
-                if (suicidal2) continue;
+                if (ImmovableHelper.IsSuicidalMove(tryBoard, lib2, c)) continue;
                 return true;
             }
             return false;

@@ -1115,6 +1115,7 @@
             Reverse ko for neutral point move.
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A80" />
             <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20230813" />
+            <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_20221229_7" />
             </summary>
         </member>
         <member name="M:Go.KoHelper.GetKoTargetGroups(Go.Board,Go.Group,Go.Group)">
@@ -1758,9 +1759,9 @@
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_Q18500_2" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.NeutralPointSuicidalMove(Go.GameTryMove)">
+        <member name="M:Go.RedundantMoveHelper.CoveredPointSuicidalMove(Go.GameTryMove)">
             <summary>
-            Neutral point suicidal move.
+            Covered point suicidal move.
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221214_5" />
             </summary>
         </member>
@@ -1795,12 +1796,6 @@
             <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Corner_A67" />
             Two must have neutral moves <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_GuanZiPu_Weiqi101_19138" />
             Generic neutral move with must have neutral move <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Corner_A68_2" />
-            </summary>
-        </member>
-        <member name="M:Go.RedundantMoveHelper.MustHaveMoveAtKoFight(Go.GameTryMove)">
-            <summary>
-            Must have move at ko fight.
-            <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_20221229_7" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.MustHaveMoveAtBigTigerMouth(Go.Board,Go.GameTryMove)">
@@ -1902,6 +1897,7 @@
             More than one neighbour group <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario5dan27_2" />
             Get all extended groups <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_XuanXuanGo_Q18340" />
             Get all groups including eyes <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario4dan17_2" />
+            Check covered eye <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18410" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.RedundantTigerMouthMove(Go.GameTryMove)">

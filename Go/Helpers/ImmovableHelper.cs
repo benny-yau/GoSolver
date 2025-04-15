@@ -56,6 +56,8 @@ namespace Go
         {
             if (board[p] == Content.Empty) //empty point
             {
+                if (PrecheckNotSuicidal(board, p, c.Opposite()))
+                    return (false, null);
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board, true);
                 if (!suicidal)
                     return (false, null);
@@ -278,8 +280,7 @@ namespace Go
             (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(libertyPoint, c, currentBoard);
             if (suicidal) return false;
 
-            (Boolean suicidal2, Board b2) = ImmovableHelper.IsSuicidalMove(move, c.Opposite(), b);
-            if (suicidal2)
+            if (ImmovableHelper.IsSuicidalMove(b, move, c.Opposite()))
                 return true;
 
             return false;
@@ -338,14 +339,21 @@ namespace Go
             return null;
         }
 
+        public static Boolean PrecheckNotSuicidal(Board tryBoard, Point p, Content c)
+        {
+            if (tryBoard.GetStoneNeighbours(p).Count(n => tryBoard[n] == Content.Empty) >= 2)
+                return true;
+            if (tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Any(n => n.Liberties.Count >= 3))
+                return true;
+            return false;
+        }
+
         /// <summary>
         /// Is suicidal move.
         /// </summary>
         public static Boolean IsSuicidalMove(Board tryBoard, Point p, Content c, Boolean overrideKo = false)
         {
-            if (tryBoard.GetStoneNeighbours(p).Count(n => tryBoard[n] == Content.Empty) >= 2)
-                return false;
-            if (tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Any(n => n.Liberties.Count >= 3))
+            if (PrecheckNotSuicidal(tryBoard, p, c))
                 return false;
             return IsSuicidalMove(p, c, tryBoard, overrideKo).Item1;
         }
@@ -484,15 +492,15 @@ namespace Go
         /// </summary>
         public static Boolean IsSuicidalMoveForBothPlayers(Board tryBoard, Point p, Boolean connectAndDie = false)
         {
-            (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, Content.Black, tryBoard);
-            (Boolean suicidal2, Board b2) = ImmovableHelper.IsSuicidalMove(p, Content.White, tryBoard);
             if (!connectAndDie)
             {
-                if (suicidal && suicidal2)
+                if (ImmovableHelper.IsSuicidalMove(tryBoard, p, Content.Black) && ImmovableHelper.IsSuicidalMove(tryBoard, p, Content.White))
                     return true;
             }
             else
             {
+                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, Content.Black, tryBoard);
+                (Boolean suicidal2, Board b2) = ImmovableHelper.IsSuicidalMove(p, Content.White, tryBoard);
                 if ((suicidal || ImmovableHelper.CheckConnectAndDie(b)) && (suicidal2 || ImmovableHelper.CheckConnectAndDie(b2)))
                     return true;
             }

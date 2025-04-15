@@ -65,7 +65,7 @@ namespace Go
         public static List<Group> GetTwoPossibleEyes(Board board, Group targetGroup)
         {
             Content c = targetGroup.Content;
-            List<Group> killerGroups = GroupHelper.GetKillerGroups(board, c).OrderBy(gr => gr.Points.Count).ToList();
+            List<Group> killerGroups = GroupHelper.GetKillerGroups(board, c).ToList();
             if (killerGroups.Count < 2) return null;
             //get extended groups from target group
             HashSet<Group> groups = LinkHelper.GetAllDiagonalConnectedGroups(board, targetGroup);
@@ -124,8 +124,8 @@ namespace Go
                 return true;
 
             //make move at liberty
-            Board b = board.MakeMoveOnNewBoard(libertyPoint, c.Opposite(), true);
-            if (b == null || b.MoveGroupLiberties == 1) return false;
+            (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(libertyPoint, c.Opposite(), board);
+            if (suicidal) return false;
 
             //check negligible for links
             HashSet<Group> tmGroups = b.GetGroupsFromStoneNeighbours(tigerMouth, c.Opposite());

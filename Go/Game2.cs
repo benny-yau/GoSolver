@@ -143,10 +143,6 @@ namespace Go
             //sort game try moves
             tryMoves = (from tryMove in tryMoves orderby tryMove.AtariResolved descending, tryMove.AtariWithoutSuicide descending, tryMove.Captured descending, tryMove.IncreasedKillerGroups descending, tryMove.TryGame.Board.MoveGroupLiberties descending select tryMove).ToList();
 
-            //restore diagonal eye move
-            if (tryMoves.Count == 0 && redundantTryMoves.Any(move => move.IsDiagonalEyeMove))
-                tryMoves.Add(redundantTryMoves.First(move => move.IsDiagonalEyeMove));
-
             //check for both alive
             BothAliveHelper.EnablePassMoveForBothAlive(currentGame, tryMoves, SurviveOrKill.Survive);
 
@@ -188,9 +184,6 @@ namespace Go
             tryMove.IsRedundantTigerMouth = RedundantMoveHelper.RedundantTigerMouthMove(tryMove);
             if (tryMove.IsRedundantTigerMouth)
                 return;
-            tryMove.IsRedundantEyeFiller = RedundantMoveHelper.SurvivalEyeFillerMove(tryMove);
-            if (tryMove.IsRedundantEyeFiller)
-                return;
             tryMove.IsAtariRedundant = RedundantMoveHelper.AtariRedundantMove(tryMove);
             if (tryMove.IsAtariRedundant)
                 return;
@@ -225,9 +218,6 @@ namespace Go
                 return;
             tryMove.IsRedundantTigerMouth = RedundantMoveHelper.RedundantTigerMouthMove(tryMove);
             if (tryMove.IsRedundantTigerMouth)
-                return;
-            tryMove.IsRedundantEyeFiller = RedundantMoveHelper.KillEyeFillerMove(tryMove);
-            if (tryMove.IsRedundantEyeFiller)
                 return;
             tryMove.IsAtariRedundant = RedundantMoveHelper.AtariRedundantMove(tryMove);
             if (tryMove.IsAtariRedundant)
