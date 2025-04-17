@@ -77,8 +77,6 @@ namespace Go
 
         /// <summary>
         /// Check tiger mouth exceptions.
-        /// Possible corner three formation <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A139_2" />
-        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31503" />
         /// Suicidal at tiger mouth  <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31177" />
         /// Tiger mouth escape with atari <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150" />
         /// Double tiger mouth <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_B3" />
@@ -91,9 +89,6 @@ namespace Go
                 if (libertyPoint == null) continue;
                 if (board[libertyPoint.Value] != Content.Empty)
                     continue;
-                //possible corner three formation
-                if (lifeCheck && KillerFormationHelper.PossibleCornerThreeFormation(board, tigerMouth, c))
-                    return true;
 
                 if (CommonTigerMouthExceptions(board, c, tigerMouth, libertyPoint.Value, lifeCheck))
                     return true;
