@@ -53,8 +53,8 @@ namespace Go
 
         /// <summary>
         /// Check for both alive.
-        /// For simple seki which is usually the case, find one killer group with at least two liberties, and one survival neighbour group with at least two liberties. Simple seki <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_SimpleSeki" />
-        /// In most cases, there is only one killer group and one neighbour survival group, but there can also be two neighbour survival groups. Simple seki with two neighbour survival groups <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
+        /// Simple seki <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_SimpleSeki" />
+        /// Simple seki with two neighbour survival groups <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan16" />
         /// Get target groups not within killer group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_2" />
         /// Fill eye points with content <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A27" />
@@ -77,7 +77,7 @@ namespace Go
             List<Point> contentPoints = killerGroup.Points.Where(n => board[n] == c).ToList();
             List<Group> contentGroups = filledBoard.GetGroupsFromPoints(contentPoints).ToList();
             //more than one content group
-            if (contentGroups.Count > 2 || (contentGroups.Count == 2 && emptyPoints.Count != 2)) return false;
+            if (contentGroups.Count > 2) return false;
 
             List<Group> ngroups = GroupHelper.GetNeighbourGroupsOfKillerGroup(board, killerGroup);
             List<Group> killerGroups = GetKillerGroupsForBothAlive(board, c.Opposite()).ToList();
@@ -125,29 +125,34 @@ namespace Go
 
         /// <summary>
         /// Check simple seki.
-        /// Ensure at least two liberties in survival neighbour group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A87" />
+        /// Ensure at least two liberties within killer group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A87" />
         /// Cover eye point <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_B43" />
         /// Check killer formation for two liberties <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Side_A23_2" />
         /// Check killer formation for three or more liberties <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31493_4" />
         /// Ensure killer group does not have real eye <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_TianLongTu_Q16424_2" />
         /// Check for increased killer groups <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31445_2" />
         /// Check content group connect and die <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_TianLongTu_Q16424_3" />
+        /// Ensure no external liberty for two groups <see cref="UnitTestProject.BothAliveTest.BothAliveTest_20230430_8_2" />
         /// </summary>
         private static Boolean CheckSimpleSeki(Board board, Board filledBoard, List<Group> ngroups, Group killerGroup, List<Point> emptyPoints)
         {
             Content c = killerGroup.Content;
-            //ensure at least two liberties within killer group in survival neighbour group
+            //ensure at least two liberties within killer group
             if (ngroups.Any(n => n.Liberties.Count(p => GroupHelper.GetKillerGroupFromCache(board, p, c.Opposite()) == killerGroup || BothAliveDiagonalEye(board, killerGroup, p)) < 2))
                 return false;
 
+            int groupCount = filledBoard.GetGroupsFromPoints(killerGroup.Points.Where(p => board[p] == c).ToList()).Count();
             int emptyPointCount = killerGroup.Points.Count(k => filledBoard[k] == Content.Empty);
             if (emptyPointCount >= 3)
             {
-                if (!WallHelper.StrongNeighbourGroups(board, ngroups))
-                    return false;
-                //check killer formation for three or more liberties
-                if (!KillerFormationHelper.DeadFormationInBothAlive(filledBoard, killerGroup, emptyPointCount, 2))
-                    return false;
+                if (groupCount == 1)
+                {
+                    if (!WallHelper.StrongNeighbourGroups(board, ngroups))
+                        return false;
+                    //check killer formation for three or more liberties
+                    if (!KillerFormationHelper.DeadFormationInBothAlive(filledBoard, killerGroup, emptyPointCount, 2))
+                        return false;
+                }
             }
             //check killer formation for two liberties
             else if (KillerFormationHelper.DeadFormationInBothAlive(filledBoard, killerGroup, emptyPointCount))
@@ -173,6 +178,10 @@ namespace Go
                         return false;
                 }
             }
+
+            //ensure no external liberty for two groups
+            if (groupCount == 2 && board.GetNeighbourGroups(killerGroup).Any(n => n.Liberties.Any(r => GroupHelper.GetKillerGroupFromCache(board, r, c.Opposite()) != killerGroup)))
+                return false;
             return true;
         }
 

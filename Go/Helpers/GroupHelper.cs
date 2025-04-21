@@ -139,12 +139,16 @@ namespace Go
         }
 
         /// <summary>
-        /// Liberty group requires at least two content points and two empty points.
+        /// Is liberty group.
         /// </summary>
-        public static Boolean IsLibertyGroup(Group group, Board board)
+        public static Boolean IsLibertyGroup(Group killerGroup, Board board)
         {
-            if (group.Content == Content.Empty || group.Points.Count < 4) return false;
-            return (group.Points.Count(t => board[t] == group.Content) >= 2 && group.Points.Count(t => board[t] == Content.Empty) >= 2);
+            if (killerGroup.Content == Content.Empty || killerGroup.Points.Count < 4) return false;
+            List<Point> contentPoints = killerGroup.Points.Where(t => board[t] == killerGroup.Content).ToList();
+            if (contentPoints.Count < 2) return false;
+            if (killerGroup.Points.Count(t => board[t] == Content.Empty) < 2) return false;
+            if (board.GetGroupsFromPoints(contentPoints).Any(n => n.Liberties.Count == 1 && !KoHelper.IsKoFight(board, n))) return false;
+            return true;
         }
 
         /// <summary>
