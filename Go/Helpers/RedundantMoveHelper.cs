@@ -503,12 +503,12 @@ namespace Go
                     }
                 }
             }
-            if (KillMoveWithinNonKillableGroup(tryMove))
+            if (MoveNextToNonKillableGroup(tryMove))
                 return true;
             return false;
         }
 
-        public static Boolean KillMoveWithinNonKillableGroup(GameTryMove tryMove)
+        public static Boolean MoveNextToNonKillableGroup(GameTryMove tryMove)
         {
             Board tryBoard = tryMove.TryGame.Board;
             Content c = GameHelper.GetContentForSurviveOrKill(tryBoard.GameInfo, SurviveOrKill.Kill);
@@ -542,6 +542,7 @@ namespace Go
         /// Check for both alive <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_TianLongTu_Q16827" />
         /// Check link for groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30358_3" />
         /// Set diagonal eye move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie4_4" />
+        /// <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_XuanXuanGo_A16" />
         /// </summary>
         private static Boolean MultiPointOpponentSuicidalMove(GameTryMove tryMove, GameTryMove opponentMove)
         {
@@ -583,6 +584,10 @@ namespace Go
             //set neutral point move
             if (WallHelper.IsNonKillableGroup(tryBoard))
                 tryMove.IsNeutralPoint = true;
+
+            //set diagonal eye move
+            if (tryBoard.GetDiagonalNeighbours().Any(n => EyeHelper.FindEye(currentBoard, n, c)) && ImmovableHelper.IsImmovablePoint(currentBoard, move, c))
+                tryMove.IsDiagonalEyeMove = true;
             return true;
         }
 
