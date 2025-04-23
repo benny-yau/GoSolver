@@ -474,6 +474,11 @@
             Find if any of the two empty points is a real eye and return only the first one found.
             </summary>
         </member>
+        <member name="M:Go.EyeHelper.FindRealEyesWithinTwoEmptyPoints2(Go.Board,Go.Group,Go.EyeType)">
+            <summary>
+            Find if any of the two empty points is a real eye and return only the first one found.
+            </summary>
+        </member>
         <member name="M:Go.EyeHelper.FindRealEyeWithinEmptySpace(Go.Board,Go.Group,Go.EyeType)">
             <summary>
             Find if killer group of three points or less can produce real eye. 

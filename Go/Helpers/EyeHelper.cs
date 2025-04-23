@@ -213,6 +213,7 @@ namespace Go
 
         /// <summary>
         /// Find if any of the two empty points is a real eye and return only the first one found.
+        /// Check killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2413_2" /> 
         /// </summary>
         public static Board FindRealEyesWithinTwoEmptyPoints(Board board, Group eyeGroup, EyeType eyeType = EyeType.RealSolidEye)
         {
@@ -221,11 +222,18 @@ namespace Go
             Point otherEye = eyeGroup.Points.First(p => !p.Equals(eye));
             Content c = eyeGroup.Content.Opposite();
             Board b = board.MakeMoveOnNewBoard(eye, c);
-            if (b != null && EyeHelper.FindRealEyeWithinEmptySpace(b, otherEye, c, eyeType))
-                return b;
             Board b2 = board.MakeMoveOnNewBoard(otherEye, c);
+            if (b != null && EyeHelper.FindRealEyeWithinEmptySpace(b, otherEye, c, eyeType))
+            {
+                //check killer formation
+                if (b2 != null && !KillerFormationHelper.IsKillerFormationFromFunc(b2))
+                    return b;
+            }
             if (b2 != null && EyeHelper.FindRealEyeWithinEmptySpace(b2, eye, c, eyeType))
-                return b2;
+            {
+                if (b != null && !KillerFormationHelper.IsKillerFormationFromFunc(b))
+                    return b2;
+            }
             return null;
         }
 

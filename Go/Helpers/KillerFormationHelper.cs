@@ -23,8 +23,9 @@ namespace Go
             }
         }
 
-        public static Boolean IsKillerFormationFromFunc(Board tryBoard, Group group)
+        public static Boolean IsKillerFormationFromFunc(Board tryBoard, Group group = null)
         {
+            if (group == null) group = tryBoard.MoveGroup;
             int contentCount = group.Points.Count;
             if (!KillerFormationFuncs.ContainsKey(contentCount)) return false;
             List<Func<Board, Group, Boolean>> funcs = KillerFormationFuncs[contentCount];
@@ -58,7 +59,7 @@ namespace Go
             IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, emptyPoints, c);
             foreach (Board b in moveBoards)
             {
-                if (IsKillerFormationFromFunc(b, b.MoveGroup))
+                if (IsKillerFormationFromFunc(b))
                 {
                     count++;
                     if (count >= requiredCount)
@@ -167,7 +168,7 @@ namespace Go
                 return false;
 
             //check for corner six
-            if (CornerSixFormation(tryBoard, tryBoard.MoveGroup))
+            if (CornerSixFormation(tryBoard))
                 return false;
 
             //bent three
@@ -220,6 +221,7 @@ namespace Go
         /// Corner five formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A67_4" />
         /// Flower six formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16859" />
         /// Flower seven formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B3" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2413_2" /> 
         /// Knife six formation <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31682" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31682_3" />
         /// - Two-by-four side formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31682" />
@@ -277,7 +279,7 @@ namespace Go
                     return true;
 
                 //corner three formation
-                if (CornerThreeFormation(tryBoard, tryBoard.MoveGroup))
+                if (CornerThreeFormation(tryBoard))
                     return true;
 
                 //bent three
@@ -290,7 +292,7 @@ namespace Go
             else
             {
                 //check killer formation from functions
-                if (IsKillerFormationFromFunc(tryBoard, tryBoard.MoveGroup))
+                if (IsKillerFormationFromFunc(tryBoard))
                 {
                     //check kill group extension
                     if (CheckRedundantKillGroupExtension(tryBoard, currentBoard))
@@ -332,7 +334,7 @@ namespace Go
             }
 
             //bent four corner formation
-            if (BentFourCornerFormation(tryBoard, tryBoard.MoveGroup) && UniquePatternsHelper.CheckForBentFour(currentBoard))
+            if (BentFourCornerFormation(tryBoard) && UniquePatternsHelper.CheckForBentFour(currentBoard))
                 return true;
 
             Group previousGroup = previousGroups.First();
@@ -346,7 +348,7 @@ namespace Go
             }
 
             //check previous group for killer formation
-            if (tryBoard.MoveGroupLiberties == 1 && IsKillerFormationFromFunc(currentBoard, previousGroup) && !KillerFormationHelper.CornerSixFormation(tryBoard, tryBoard.MoveGroup))
+            if (tryBoard.MoveGroupLiberties == 1 && IsKillerFormationFromFunc(currentBoard, previousGroup) && !KillerFormationHelper.CornerSixFormation(tryBoard))
                 return true;
 
             //atari target
@@ -448,7 +450,7 @@ namespace Go
             if (!linkGroups.Except(groups).Any()) return false;
             //check connect and die
             if (ImmovableHelper.CheckConnectAndDie(linkBoard)) return false;
-            if (CornerThreeFormation(tryBoard, tryBoard.MoveGroup)) return false;
+            if (CornerThreeFormation(tryBoard)) return false;
             if (TwoPointAtariMove(tryBoard, captureBoard)) return false;
             //saved groups
             List<Group> savedGroups = linkGroups.Intersect(groups).ToList();
@@ -927,10 +929,10 @@ namespace Go
  17 X . . . . . . . . . . X . . . . X . . 
  18 . . . . . . . . . . . . . . . . . . . 
         
-15 . . . . X . . . . . . . . . . . . . .
-16 . . . X X X X X . . . . . . . . . . . 
-17 . . . . X . . . . . . . . . . . . . . 
-18 . . . . . . . . . . . . . . . . . . . 
+15 . . . . . . . . . . . . . x . . . . .
+16 x x . . . . . . . . . . x x x x x . . 
+17 x x x . . . . . . . . . . x . . . . . 
+18 . x x . . . . . . . . . . . . . . . . 
          */
         public static Boolean FlowerSevenFormation(Board tryBoard, Group moveGroup)
         {
@@ -938,12 +940,12 @@ namespace Go
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 7) return false;
             IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
-
-            if (pointIntersect.Count(p => p.intersectCount == 4) >= 1)
+            if (pointIntersect.Count(p => p.intersectCount == 4) == 1)
             {
-                if (CheckAnyEndPointCovered(tryBoard, moveGroup))
+                if (pointIntersect.Count(p => p.intersectCount == 2) == 6)
                     return true;
-
+                else if (CheckAnyEndPointCovered(tryBoard, moveGroup))
+                    return true;
             }
             return false;
         }
@@ -1071,8 +1073,9 @@ namespace Go
     17 X . . . . . . . . . . . . . . . . . . 
     18 X X . . . . . . . . . . . . . . . . . 
         */
-        public static Boolean CornerThreeFormation(Board tryBoard, Group moveGroup)
+        public static Boolean CornerThreeFormation(Board tryBoard, Group moveGroup = null)
         {
+            if (moveGroup == null) moveGroup = tryBoard.MoveGroup;
             Content c = moveGroup.Content;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 3 || tryBoard.MoveGroupLiberties != 1) return false;
@@ -1088,8 +1091,9 @@ namespace Go
     17 X X . . . . . . . . . . . . . . . . . 
     18 X X X . . . . . . . . . . . . . . . . 
         */
-        public static Boolean CornerSixFormation(Board tryBoard, Group moveGroup)
+        public static Boolean CornerSixFormation(Board tryBoard, Group moveGroup = null)
         {
+            if (moveGroup == null) moveGroup = tryBoard.MoveGroup;
             Content c = moveGroup.Content;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 6) return false;
@@ -1106,8 +1110,9 @@ namespace Go
     17 X . . . . . . . . . . . . . . . . . . 
     18 X X . . . . . . . . . . . . . . . . . 
         */
-        public static Boolean BentFourCornerFormation(Board tryBoard, Group moveGroup)
+        public static Boolean BentFourCornerFormation(Board tryBoard, Group moveGroup = null)
         {
+            if (moveGroup == null) moveGroup = tryBoard.MoveGroup;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 4) return false;
             if (!contentPoints.Any(p => tryBoard.CornerPoint(p)) || contentPoints.Any(p => tryBoard.PointWithinMiddleArea(p))) return false;
