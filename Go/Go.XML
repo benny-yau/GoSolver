@@ -472,11 +472,7 @@
         <member name="M:Go.EyeHelper.FindRealEyesWithinTwoEmptyPoints(Go.Board,Go.Group,Go.EyeType)">
             <summary>
             Find if any of the two empty points is a real eye and return only the first one found.
-            </summary>
-        </member>
-        <member name="M:Go.EyeHelper.FindRealEyesWithinTwoEmptyPoints2(Go.Board,Go.Group,Go.EyeType)">
-            <summary>
-            Find if any of the two empty points is a real eye and return only the first one found.
+            Check killer formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2413_2" /> 
             </summary>
         </member>
         <member name="M:Go.EyeHelper.FindRealEyeWithinEmptySpace(Go.Board,Go.Group,Go.EyeType)">
@@ -912,6 +908,7 @@
             Corner five formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A67_4" />
             Flower six formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16859" />
             Flower seven formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B3" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2413_2" /> 
             Knife six formation <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31682" />
             <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31682_3" />
             - Two-by-four side formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31682" />

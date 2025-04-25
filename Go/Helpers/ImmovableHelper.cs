@@ -753,14 +753,13 @@ namespace Go
         {
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
-            Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            IEnumerable<Group> targetGroups = tryBoard.GetGroupsFromStoneNeighbours(move).Where(gr => gr.Liberties.Count == 2);
+            IEnumerable<Group> targetGroups = tryBoard.GetGroupsFromStoneNeighbours().Where(gr => gr.Liberties.Count == 2);
             foreach (Group targetGroup in targetGroups)
             {
                 //check connect and die
                 (_, Board board) = ConnectAndDie(tryBoard, targetGroup);
-                if (board != null && board.MoveGroup.Points.Count == 1 && board.GetGroupsFromStoneNeighbours(board.Move.Value, c).Count > 1 && EscapeLink(tryBoard, targetGroup))
+                if (board != null && board.MoveGroup.Points.Count == 1 && board.GetGroupsFromStoneNeighbours().Count > 1 && EscapeLink(tryBoard, targetGroup))
                     return true;
 
                 //check unescapable group       

@@ -147,7 +147,6 @@ namespace Go
             List<Point> contentPoints = killerGroup.Points.Where(t => board[t] == killerGroup.Content).ToList();
             if (contentPoints.Count < 2) return false;
             if (killerGroup.Points.Count(t => board[t] == Content.Empty) < 2) return false;
-            if (board.GetGroupsFromPoints(contentPoints).Any(n => n.Liberties.Count == 1 && !KoHelper.IsKoFight(board, n))) return false;
             return true;
         }
 

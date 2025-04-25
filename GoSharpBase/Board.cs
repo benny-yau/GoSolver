@@ -315,9 +315,10 @@ namespace Go
             return this.GetGroupsFromPoints(stoneNeighbours);
         }
 
-        public List<Group> GetGroupsFromStoneNeighbours(Point p)
+        public List<Group> GetGroupsFromStoneNeighbours(Point? p = null)
         {
-            return GetGroupsFromStoneNeighbours(p, this[p]).ToList();
+            if (p == null) p = this.Move.Value;
+            return GetGroupsFromStoneNeighbours(p.Value, this[p.Value]).ToList();
         }
 
         /// <summary>
