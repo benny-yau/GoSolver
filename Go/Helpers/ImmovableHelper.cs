@@ -44,7 +44,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Immovable point to check for links and diagonal points in semi solid eye. For empty point, return if point is immovable which can be a suicide point or tiger's mouth. If not empty point, then check if opponent can escape. Return if immovable and liberty point at tiger mouth.
+        /// Immovable point to check for links and diagonal points in semi solid eye. 
         /// Empty point <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_GuanZiPu_A3" />
         /// Check connect and die <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A28" />
         /// Check filled point connect and die <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_TianLongTu_Q16975" />
@@ -288,7 +288,7 @@ namespace Go
 
         /// <summary>
         /// Unescapable group. Ensure target group cannot escape by moving at liberty point or capturing neighbour groups.   
-        /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A85" />
+        /// <see cref="UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_Scenario_Corner_A85" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q14981" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A12" />
         /// Check killer ko within killer group <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_A28_101Weiqi" />
@@ -510,7 +510,7 @@ namespace Go
         /// <summary>
         /// Check snapback from move.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234" />
-        /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A55" />
+        /// <see cref="UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_Scenario_Corner_A55" />
         /// Check base line move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16851" /> 
         /// </summary>
         public static Boolean CheckSnapbackFromMove(Board board, Point? eyePoint = null)
@@ -739,15 +739,12 @@ namespace Go
 
         /// <summary>
         /// Pre-atari move that targets group with liberty of two. Next atari move will capture the group.
-        /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16594" />
-        /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_WuQingYuan_Q31154" />
-        /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_A55" />
-        /// Check target group <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_WindAndTime_Q30370" />
-        /// <see cref="UnitTestProject.SpecificNeutralMoveTest.CheckForRecursionTest_Scenario_XuanXuanGo_A28_101Weiqi_2" />
-        /// Check if any liberty is suicidal <see cref="UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18410" />
-        /// Rare scenario <see cref="UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_WindAndTime_Q30275" />
-        /// Check unescapable group <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A85" />
-        /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_WuQingYuan_Q31154" />
+        /// <see cref="UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_ScenarioHighLevel18" />
+        /// <see cref="UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_Scenario_TianLongTu_Q16594" />
+        /// Check target group <see cref="UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_Scenario_WindAndTime_Q30370" />
+        /// Check unescapable group <see cref="UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_Scenario_Corner_A85" />
+        /// <see cref="UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_Scenario_WuQingYuan_Q31154" />
+        /// Two pre-atari moves <see cref="UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_Scenario_Corner_A55" />
         /// </summary>
         public static Boolean PreAtariMove(GameTryMove tryMove)
         {

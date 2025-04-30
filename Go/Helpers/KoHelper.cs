@@ -56,8 +56,9 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
         /// </summary>
-        public static Boolean IsNonKillableGroupKoFight(Board tryBoard, Group koGroup)
+        public static Boolean IsNonKillableGroupKoFight(Board tryBoard, Group koGroup = null)
         {
+            if (koGroup == null) koGroup = tryBoard.MoveGroup;
             Content c = koGroup.Content;
             if (!IsKoFight(tryBoard, koGroup)) return false;
             Point eye = tryBoard.GetStoneNeighbours(koGroup.Points.First()).First(n => tryBoard[n] == Content.Empty);
@@ -175,7 +176,7 @@ namespace Go
             if (targetGroups.Count >= 2)
             {
                 List<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, targetGroups.Select(gr => gr.Liberties.First()), c).ToList();
-                moveBoards.RemoveAll(n => IsNonKillableGroupKoFight(n, n.MoveGroup));
+                moveBoards.RemoveAll(n => IsNonKillableGroupKoFight(n));
                 moveBoards.RemoveAll(n => ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, capturePoint, c).All(d => n[d] == c, true) && WallHelper.TargetWithAllNonKillableGroups(n) && !Board.ResolveAtari(currentBoard, n));
                 if (moveBoards.Count(k => !RedundantMoveHelper.CheckRedundantKoMove(k, currentBoard)) >= 2)
                     return true;
@@ -192,7 +193,7 @@ namespace Go
             if (koGroups.Count >= 2)
             {
                 List<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, koGroups.Select(gr => gr.Liberties.First()), c).ToList();
-                moveBoards.RemoveAll(n => ImmovableHelper.GetDiagonalsOfTigerMouth(n, n.Move.Value, c.Opposite()).All(d => n[d] == c.Opposite(), true) && IsNonKillableGroupKoFight(n, n.MoveGroup) && !n.IsAtariMove);
+                moveBoards.RemoveAll(n => ImmovableHelper.GetDiagonalsOfTigerMouth(n, n.Move.Value, c.Opposite()).All(d => n[d] == c.Opposite(), true) && IsNonKillableGroupKoFight(n) && !n.IsAtariMove);
                 if (moveBoards.Count(k => !RedundantMoveHelper.CheckRedundantKoMove(k, currentBoard)) >= 2)
                     return true;
             }

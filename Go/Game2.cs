@@ -182,7 +182,7 @@ namespace Go
             tryMove.IsDiagonalEyeMove = RedundantMoveHelper.SurvivalEyeDiagonalMove(tryMove);
             if (tryMove.IsDiagonalEyeMove)
                 return;
-            tryMove.IsRedundantKo = RedundantMoveHelper.RedundantSurvivalPreKoMove(tryMove);
+            tryMove.IsRedundantKo = RedundantMoveHelper.RedundantSurvivalKoMove(tryMove);
             if (tryMove.IsRedundantKo)
                 return;
             tryMove.IsRedundantTigerMouth = RedundantMoveHelper.RedundantTigerMouthMove(tryMove);
@@ -217,7 +217,7 @@ namespace Go
             tryMove.IsNeutralPoint = RedundantMoveHelper.KillEyeDiagonalMove(tryMove);
             if (tryMove.IsNeutralPoint)
                 return;
-            tryMove.IsRedundantKo = RedundantMoveHelper.RedundantKillerPreKoMove(tryMove);
+            tryMove.IsRedundantKo = RedundantMoveHelper.RedundantSurvivalKoMove(tryMove);
             if (tryMove.IsRedundantKo)
                 return;
             tryMove.IsRedundantTigerMouth = RedundantMoveHelper.RedundantTigerMouthMove(tryMove);
@@ -353,7 +353,7 @@ namespace Go
                 {
                     //ko moves
                     tryMove.MakeKoMove(p, SurviveOrKill.Kill);
-                    tryMove.IsRedundantKo = RedundantMoveHelper.RedundantKillerKoMove(tryMove);
+                    tryMove.IsRedundantKo = RedundantMoveHelper.RedundantSurvivalKoMove(tryMove);
                     if (tryMove.IsRedundantKo) redundantTryMoves.Add(tryMove);
                     if (KoHelper.KoContentEnabled(c, gameInfo) && (!tryMove.IsRedundantKo || mappingRange))
                         koBlockedMove = tryMove;
@@ -413,7 +413,7 @@ namespace Go
                 Board tryBoard = koMove.TryGame.Board;
                 Content c = tryBoard.MoveGroup.Content;
                 if (koMove.AtariResolved) continue;
-                if (KoHelper.IsNonKillableGroupKoFight(tryBoard, tryBoard.MoveGroup))
+                if (KoHelper.IsNonKillableGroupKoFight(tryBoard))
                     continue;
                 //killer ko within killer group 
                 if (tryBoard.AtariTargets.Any(t => GroupHelper.GetKillerGroupFromCache(tryBoard, t.Points.First(), c) != null && !ImmovableHelper.CheckConnectAndDie(currentBoard, currentBoard.GetGroupAt(t.Points.First()), false)))

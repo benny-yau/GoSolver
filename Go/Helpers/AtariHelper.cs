@@ -104,7 +104,7 @@ namespace Go
             {
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, ngroup.Content.Opposite(), tryBoard, true);
                 if (suicidal) continue;
-                if (WallHelper.IsNonKillableGroup(b) || KoHelper.IsNonKillableGroupKoFight(b, b.MoveGroup)) continue;
+                if (WallHelper.IsNonKillableGroup(b) || KoHelper.IsNonKillableGroupKoFight(b)) continue;
                 return true;
             }
             return false;
