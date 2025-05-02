@@ -222,7 +222,7 @@ namespace Go
         /// <summary>
         /// Escape link.
         /// </summary>
-        public static Boolean EscapeLink(Board board, Group targetGroup)
+        public static Boolean EscapePreAtari(Board board, Group targetGroup)
         {
             IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, targetGroup.Liberties, targetGroup.Content);
             foreach (Board b in moveBoards)
@@ -682,7 +682,8 @@ namespace Go
                 //check for opponent survival move
                 if (b.MoveGroup.Points.Count >= 3)
                 {
-                    if (b2.GetStoneNeighbours().Where(n => b2[n] != c.Opposite()).Select(n => GroupHelper.GetKillerGroupFromCache(b2, n, c)).Any(n => n != null && n.Points.Count >= 3))
+                    List<Point> npoints = b2.GetStoneNeighbours().Where(n => b2[n] != c.Opposite() && !n.Equals(b.Move.Value)).ToList();
+                    if (npoints.Select(n => GroupHelper.GetKillerGroupFromCache(b2, n, c)).Any(n => n != null && n.Points.Count >= 3))
                         return (true, b);
                 }
             }
@@ -738,10 +739,11 @@ namespace Go
         }
 
         /// <summary>
-        /// Pre-atari move that targets group with liberty of two. Next atari move will capture the group.
+        /// Pre-atari move. 
         /// <see cref="UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_ScenarioHighLevel18" />
         /// <see cref="UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_Scenario_TianLongTu_Q16594" />
-        /// Check target group <see cref="UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_Scenario_WindAndTime_Q30370" />
+        /// <see cref="UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_Scenario_WindAndTime_Q30370" />
+        /// <see cref="UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_Scenario_TianLongTu_Q16747" />
         /// Check unescapable group <see cref="UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_Scenario_Corner_A85" />
         /// <see cref="UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_Scenario_WuQingYuan_Q31154" />
         /// Two pre-atari moves <see cref="UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_Scenario_Corner_A55" />
@@ -754,10 +756,14 @@ namespace Go
             IEnumerable<Group> targetGroups = tryBoard.GetGroupsFromStoneNeighbours().Where(gr => gr.Liberties.Count == 2);
             foreach (Group targetGroup in targetGroups)
             {
-                //check connect and die
-                (_, Board board) = ConnectAndDie(tryBoard, targetGroup);
-                if (board != null && board.MoveGroup.Points.Count == 1 && board.GetGroupsFromStoneNeighbours().Count > 1 && EscapeLink(tryBoard, targetGroup))
-                    return true;
+                //check connect and die at each liberty
+                IEnumerable<Board> killBoards = GameHelper.GetMoveBoards(tryBoard, targetGroup.Liberties, c);
+                foreach (Board b in killBoards)
+                {
+                    if (!UnescapableGroup(b, targetGroup).Item1) continue;
+                    if (b.MoveGroup.Points.Count == 1 && b.GetGroupsFromStoneNeighbours().Count > 1 && EscapePreAtari(tryBoard, targetGroup))
+                        return true;
+                }
 
                 //check unescapable group       
                 IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, currentBoard.GetGroupLiberties(targetGroup), c.Opposite());

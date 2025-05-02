@@ -91,7 +91,6 @@ namespace Go
         /// Check kill opponent <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A34" />
         /// Check possible links <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
-        /// Set neutral point for opponent <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_B21" />
         /// </summary>
         public static Boolean FindCoveredEyeMove(GameTryMove tryMove, GameTryMove opponentTryMove = null)
         {
@@ -146,10 +145,6 @@ namespace Go
             if (LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard))
                 return false;
 
-            //check for double ko
-            if (KoHelper.NeutralPointDoubleKo(tryBoard, currentBoard))
-                return false;
-
             //check liberty fight
             if (CheckLibertyFightAtCoveredEye(currentBoard, eyePoint, c))
                 return false;
@@ -164,10 +159,6 @@ namespace Go
                 //check must-have move
                 if (!StrongGroupsAtMustHaveMove(opponentBoard, eyePoint))
                     return false;
-
-                //set neutral point for opponent
-                if (WallHelper.IsNonKillableGroup(opponentBoard))
-                    opponentTryMove.IsNeutralPoint = true;
             }
             return true;
         }
@@ -290,8 +281,8 @@ namespace Go
 
         /// <summary>
         /// Suicide group near capture.
-        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_B21" /> 
-        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WuQingYuan_Q6150" /> 
+        /// <see cref="UnitTestProject.NeutralPointMoveTest.RestoreNeutralMoveTest_Scenario_Corner_B21" /> 
+        /// <see cref="UnitTestProject.NeutralPointMoveTest.RestoreNeutralMoveTest_Scenario_WuQingYuan_Q6150" /> 
         /// </summary>
         private static Boolean SuicideGroupNearCapture(Board board)
         {
@@ -318,7 +309,6 @@ namespace Go
         /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A9_Ext" />
         /// Ensure more than one liberty for move group <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A68" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16748" />
-        /// Check for weak groups <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WuQingYuan_Q31503" />
         /// Check capture secure <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WindAndTime_Q30225_2" />
         /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WindAndTime_Q30225_3" />
         /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Side_A23" />
@@ -358,11 +348,6 @@ namespace Go
             //ensure the other move can capture atari target as well
             if (!ImmovableHelper.CheckCaptureSecure(board, target, true))
                 return false;
-
-            //check weak group
-            if (currentBoard.GetNeighbourGroups(currentBoard.GetGroupAt(atariPoint)).Count > 1 && !WallHelper.IsHostileNeighbourGroup(tryBoard))
-                return false;
-
             return true;
         }
 
@@ -547,10 +532,6 @@ namespace Go
             //check link for groups
             if (LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard))
                 return false;
-
-            //set neutral point move
-            if (WallHelper.IsNonKillableGroup(tryBoard))
-                tryMove.IsNeutralPoint = true;
 
             //set diagonal eye move
             if (tryBoard.GetDiagonalNeighbours().Any(n => EyeHelper.FindEye(currentBoard, n, c)) && ImmovableHelper.IsImmovablePoint(currentBoard, move, c))
@@ -1173,7 +1154,6 @@ namespace Go
         /// Opponent suicide <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16490" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A55" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_Nie67" />
-        /// Check connect end move <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16738_7" />
         /// Check real eye at diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17132_3" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B25_2" />
         /// Without opposite content <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B4" />
@@ -1205,9 +1185,6 @@ namespace Go
                 {
                     //check connect and die
                     Boolean connectAndDie = ImmovableHelper.AllConnectAndDie(capturedBoard, move);
-                    //check connect end move
-                    if (opponentTryMove != null && !connectAndDie && EyeHelper.IsCovered(tryBoard, move, c.Opposite()))
-                        return false;
                     return !connectAndDie;
                 }
             }
@@ -1450,7 +1427,7 @@ namespace Go
 
             //neutral point at small tiger mouth
             List<Point> eyePoint = opponentBoard.GetStoneNeighbours().Where(n => EyeHelper.FindEye(opponentBoard, n, c.Opposite())).ToList();
-            if (eyePoint.Any(n => !StrongGroupsAtMustHaveMove(tryBoard, n) || EyeHelper.FindUncoveredEyeAtDiagonal(tryBoard, n)))
+            if (eyePoint.Any(n => !StrongGroupsAtMustHaveMove(tryBoard, n)))
                 return true;
             //neutral point at big tiger mouth
             (Boolean suicide, Board suicideBoard) = ImmovableHelper.SuicideAtBigTigerMouth(tryMove);
