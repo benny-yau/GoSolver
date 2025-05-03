@@ -134,11 +134,12 @@ namespace Go
 
             //check kill opponent
             List<Point> opponentPoints = tryBoard.GetStoneAndDiagonalNeighbours().Except(tryBoard.GetStoneNeighbours(eyePoint)).ToList();
+            opponentPoints.Remove(eyePoint);
             if (opponentPoints.Any(n => !WallHelper.NoEyeForSurvival(currentBoard, n, c.Opposite()) && !tryBoard.GetGroupsFromStoneNeighbours(n, c).Any(s => WallHelper.IsNonKillableGroup(tryBoard, s))))
                 return false;
 
             //check two liberty group to capture neighbour
-            if (currentBoard.GetNeighbourGroups(eyeGroup).Any(n => CheckTwoLibertyGroupToCaptureNeighbour(currentBoard, tryBoard, n, eyePoint)))
+            if (currentBoard.GetNeighbourGroups(eyeGroup).Any(n => CheckTwoLibertyGroupToCaptureNeighbour(currentBoard, tryBoard, n)))
                 return false;
 
             //check possible links
@@ -172,7 +173,7 @@ namespace Go
         /// Capture opponent groups <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q17154" />
         /// Check escape capture link <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_3" />
         /// </summary>
-        private static Boolean CheckTwoLibertyGroupToCaptureNeighbour(Board currentBoard, Board tryBoard, Group group, Point capturePoint)
+        private static Boolean CheckTwoLibertyGroupToCaptureNeighbour(Board currentBoard, Board tryBoard, Group group)
         {
             Content c = group.Content;
             if (group.Liberties.Count != 2) return false;
@@ -187,7 +188,7 @@ namespace Go
                 if (!tryBoard.GetGroupsFromStoneNeighbours(liberty, c).Any(n => n.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(tryBoard, n)))
                     continue;
                 //check escape capture link
-                if (ImmovableHelper.EscapeCaptureLink(currentBoard, group, capturePoint))
+                if (ImmovableHelper.EscapeCaptureLink(currentBoard, group))
                     continue;
                 return true;
             }
@@ -240,7 +241,7 @@ namespace Go
                 return false;
 
             //ensure group more than one point have more than one liberty
-            if (eyeGroups.Any(e => e.Points.Count > 1 && e.Liberties.Count == 1)) 
+            if (eyeGroups.Any(e => e.Points.Count > 1 && e.Liberties.Count == 1))
                 return false;
 
             //double atari
@@ -1106,7 +1107,7 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
             //real solid eye
-            if (EyeHelper.FindRealSolidEye(move, c.Opposite(), captureBoard)) 
+            if (EyeHelper.FindRealSolidEye(move, c.Opposite(), captureBoard))
                 return true;
             //get diagonals next to atari target
             List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] != c.Opposite() && tryBoard.GetGroupsFromStoneNeighbours(n, c).Intersect(tryBoard.AtariTargets).Any()).ToList();
@@ -1400,9 +1401,9 @@ namespace Go
 
             //check neighbour groups
             Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, atariTarget, true);
-            if (b == null || WallHelper.StrongNeighbourGroups(b)) 
+            if (b == null || WallHelper.StrongNeighbourGroups(b))
                 return false;
-            if (EyeHelper.FindUncoveredEyeAtDiagonal(b)) 
+            if (EyeHelper.FindUncoveredEyeAtDiagonal(b))
                 return false;
             return true;
         }
@@ -2002,7 +2003,7 @@ namespace Go
             if (opponentMove == null) return false;
             Board opponentBoard = opponentMove.TryGame.Board;
             //check diagonals are real eyes
-            if (!diagonals.All(eye => EyeHelper.FindRealEyeWithinEmptySpace(opponentBoard, eye, c))) 
+            if (!diagonals.All(eye => EyeHelper.FindRealEyeWithinEmptySpace(opponentBoard, eye, c)))
                 return false;
             //ensure no weak groups
             if (diagonals.Count > 1 && opponentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).Count(n => n.Liberties.Count <= 2) >= 2)
@@ -2338,10 +2339,10 @@ namespace Go
                     return true;
                 if (!WallHelper.StrongNeighbourGroups(tryBoard)) return false;
                 //check liberty fight
-                if (CheckLibertyFightAtMustHaveMove(tryBoard)) 
+                if (CheckLibertyFightAtMustHaveMove(tryBoard))
                     return false;
                 //check two liberty group
-                if (ngroups.Any(n => CheckTwoLibertyGroupToCaptureNeighbour(tryBoard, currentBoard, n, eyePoint.Value)))
+                if (ngroups.Any(n => CheckTwoLibertyGroupToCaptureNeighbour(tryBoard, currentBoard, n)))
                     return false;
                 if (EyeHelper.FindUncoveredEyeAtDiagonal(tryBoard))
                     return false;

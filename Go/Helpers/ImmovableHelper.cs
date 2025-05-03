@@ -237,26 +237,13 @@ namespace Go
         /// <summary>
         /// Escape capture link. Check if escapable for target group to obtain more than two liberties or become non killable.
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_3" />
-        /// Check for atari target <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q17154" />
         /// </summary>
-        public static Boolean EscapeCaptureLink(Board board, Group targetGroup, Point? capturePoint = null)
+        public static Boolean EscapeCaptureLink(Board board, Group targetGroup)
         {
-            //check if absolute link at liberty
             IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, targetGroup.Liberties, targetGroup.Content);
             foreach (Board b in moveBoards)
             {
                 if (!LinkHelper.IsAbsoluteLinkForGroups(board, b)) continue;
-                Group target = b.GetCurrentGroup(targetGroup);
-                if (target.Liberties.Count > 2 || WallHelper.IsNonKillableGroup(b, target))
-                    return true;
-            }
-            //check for atari target group other than capture point
-            List<Group> ngroups = AtariHelper.AtariByGroup(targetGroup, board);
-            foreach (Group ngroup in ngroups)
-            {
-                if (capturePoint != null && ngroup.Points.Contains(capturePoint.Value)) continue;
-                (_, Board b) = ImmovableHelper.IsSuicidalOnCapture(board, ngroup);
-                if (b == null) continue;
                 Group target = b.GetCurrentGroup(targetGroup);
                 if (target.Liberties.Count > 2 || WallHelper.IsNonKillableGroup(b, target))
                     return true;
@@ -282,7 +269,6 @@ namespace Go
 
             if (ImmovableHelper.IsSuicidalMove(b, move, c.Opposite()))
                 return true;
-
             return false;
         }
 

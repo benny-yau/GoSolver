@@ -54,15 +54,11 @@ namespace Go
         /// <summary>
         /// Check for both alive.
         /// Simple seki <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_SimpleSeki" />
-        /// Simple seki with two neighbour survival groups <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
-        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan16" />
-        /// Get target groups not within killer group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_2" />
         /// Fill eye points with content <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A27" />
-        /// Two liberties for content group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_B43" />
-        /// More than one content group in simple seki <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31646" />
+        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_B43" />
+        /// More than one content group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31646" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_20230430_8" />
-        /// Ensure shared liberty suicidal for killer <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
-        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31445" />
+        /// Complex seki <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_2" />
         /// </summary>
         private static Boolean CheckForBothAlive(Board board, Group killerGroup)
         {
@@ -85,25 +81,20 @@ namespace Go
             if (killerGroups.Count == 1)  //simple seki
             {
                 if (ngroups.Count > 2) return false;
-                //at least three content points in killer group
                 if (contentPoints.Count < 3) return false;
-                //at least two liberties for content groups in filled board
                 if (contentGroups.Any(n => n.Liberties.Count == 1)) return false;
                 return CheckSimpleSeki(board, filledBoard, ngroups, killerGroup, emptyPoints);
             }
             else if (killerGroups.Count >= 2) //complex seki
             {
-                //two liberties for content group
                 Boolean oneLiberty = board.GetGroupsFromPoints(contentPoints).Any(n => n.Liberties.Count == 1);
                 if (oneLiberty) return false;
 
-                //ensure shared liberty suicidal for killer
                 if (!emptyPoints.Any(p => ImmovableHelper.IsSuicidalMove(board, p, c)))
                     return false;
 
-                //find diagonal cut
-                (_, List<Point> diagonals) = LinkHelper.FindDiagonalCut(board, killerGroup);
                 //check complex seki without diagonal cut
+                (_, List<Point> diagonals) = LinkHelper.FindDiagonalCut(board, killerGroup);
                 if (diagonals == null) return CheckComplexSeki(board, killerGroups, ngroups);
 
                 //check complex seki with diagonal cut
@@ -125,14 +116,12 @@ namespace Go
 
         /// <summary>
         /// Check simple seki.
-        /// Ensure at least two liberties within killer group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A87" />
-        /// Cover eye point <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_B43" />
-        /// Check killer formation for two liberties <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Side_A23_2" />
-        /// Check killer formation for three or more liberties <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31493_4" />
-        /// Ensure killer group does not have real eye <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_TianLongTu_Q16424_2" />
+        /// Check for two liberty formation <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Side_A23_2" />
+        /// Check for three or more liberty formation <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31493_4" />
+        /// Ensure no real eye <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_TianLongTu_Q16424_2" />
         /// Check for increased killer groups <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31445_2" />
         /// Check content group connect and die <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_TianLongTu_Q16424_3" />
-        /// Ensure no external liberty for two groups <see cref="UnitTestProject.BothAliveTest.BothAliveTest_20230430_8_2" />
+        /// Check for two groups <see cref="UnitTestProject.BothAliveTest.BothAliveTest_20230430_8_2" />
         /// </summary>
         private static Boolean CheckSimpleSeki(Board board, Board filledBoard, List<Group> ngroups, Group killerGroup, List<Point> emptyPoints)
         {
@@ -149,16 +138,16 @@ namespace Go
                 {
                     if (!WallHelper.StrongNeighbourGroups(board, ngroups))
                         return false;
-                    //check killer formation for three or more liberties
+                    //check for three or more liberty formation
                     if (!KillerFormationHelper.DeadFormationInBothAlive(filledBoard, killerGroup, emptyPointCount, 2))
                         return false;
                 }
             }
-            //check killer formation for two liberties
+            //check for two liberty formation
             else if (KillerFormationHelper.DeadFormationInBothAlive(filledBoard, killerGroup, emptyPointCount))
                 return false;
 
-            //ensure killer group does not have real eye
+            //ensure no real eye
             if (emptyPoints.Any(p => EyeHelper.FindRealEyeWithinEmptySpace(board, p, c)))
                 return false;
 
@@ -178,10 +167,6 @@ namespace Go
                         return false;
                 }
             }
-
-            //ensure no external liberty for two groups
-            if (groupCount == 2 && board.GetNeighbourGroups(killerGroup).Any(n => n.Liberties.Any(r => GroupHelper.GetKillerGroupFromCache(board, r, c.Opposite()) != killerGroup)))
-                return false;
             return true;
         }
 
@@ -205,30 +190,30 @@ namespace Go
         /// With diagonal group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan22" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_20230422_8" />
         /// Without diagonal group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A123" />
-        /// Check suicidal for both players and covered eye move at liberty <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18" />
-        /// Find uncovered eye <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_ComplexSeki" />
-        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan22" />
-        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18_2" />
-        /// Clear all killer groups with empty points <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30213" />
-        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A123" />
+        /// Check covered eye <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
+        /// Ensure shared liberty <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A28_101Weiqi_3" />
         /// </summary>
         private static Boolean CheckComplexSeki(Board board, List<Group> killerGroups, List<Group> ngroups)
         {
             if (killerGroups.Count == 0) return false;
             Content c = killerGroups.First().Content;
 
-            //ensure at least two liberties within killer group in survival neighbour group
+            //ensure at least two liberties
             if (ngroups.Any(n => n.Liberties.Count(p => GroupHelper.GetKillerGroupFromCache(board, p, c.Opposite()) != null) < 2))
                 return false;
 
-            //check suicidal for both players and covered eye move at liberty
+            //ensure suicidal move
             HashSet<Point> liberties = board.GetLibertiesOfGroups(ngroups);
             Boolean suicidalForBothPlayers = liberties.Any(n => ImmovableHelper.IsSuicidalMoveForBothPlayers(board, n));
-            if (!suicidalForBothPlayers && !liberties.Any(n => board.GetGroupsFromStoneNeighbours(n, c.Opposite()).Any(gr => gr.Liberties.Any(s => EyeHelper.FindCoveredEyeWithLiberties(board, s, c)))))
-                return false;
+            if (!suicidalForBothPlayers)
+            {
+                //check covered eye
+                if (!killerGroups.Any(kgroup => kgroup.Points.Any(n => EyeHelper.FindCoveredEyeWithLiberties(board, n, c))))
+                    return false;
+            }
 
-            //ensure at least one liberty shared with killer group
+            //ensure shared liberty
             foreach (Group killerGroup in killerGroups)
             {
                 IEnumerable<Point> killerLiberties = killerGroup.Points.Where(p => board[p] == Content.Empty);
@@ -276,7 +261,7 @@ namespace Go
                     {
                         if (b[p.Move] != c.Opposite()) continue;
                         Group killerGroup = GroupHelper.GetKillerGroupFromCache(board, p.Move, c);
-                        if (!killerGroups.Contains(killerGroup)) continue;          
+                        if (!killerGroups.Contains(killerGroup)) continue;
                         b[p.Move] = Content.Empty;
                         if (EyeHelper.FindRealEyeWithinEmptySpace(b, group, EyeType.UnCoveredEye))
                             yield return group;
