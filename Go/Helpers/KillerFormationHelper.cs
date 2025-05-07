@@ -481,7 +481,6 @@ namespace Go
             if (tryBoard.MoveGroup.Points.Count == 1 || tryBoard.MoveGroupLiberties > 1) return false;
             if (tryBoard.CapturedList.Count == 0) return false;
             if (capturedBoard == null) capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
-            if (capturedBoard == null) return false;
             if (!WallHelper.IsHostileNeighbourGroup(capturedBoard))
                 return true;
             return false;
@@ -498,7 +497,7 @@ namespace Go
         /// Check killer ko within killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_2" />
         /// Ko move on external liberty (optional) <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20221024_5" />
         /// </summary>
-        public static Boolean SuicideForLibertyFight(Board tryBoard, Board currentBoard, Boolean removeOnePoint = true)
+        public static Boolean SuicideForLibertyFight(Board tryBoard, Board currentBoard)
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
@@ -509,7 +508,7 @@ namespace Go
 
             List<Group> targetGroups = currentBoard.GetNeighbourGroups(killerGroup);
             //get only one move within killer group
-            if (removeOnePoint && targetGroups.Count == 1)
+            if (tryBoard.MoveGroup.Points.Count > 1 && targetGroups.Count == 1)
             {
                 Boolean firstPoint = killerGroup.Points.FirstOrDefault(p => currentBoard[p] == Content.Empty).Equals(move);
                 if (!firstPoint) return false;

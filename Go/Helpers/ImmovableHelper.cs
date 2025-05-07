@@ -202,7 +202,7 @@ namespace Go
             if (b == null || b.MoveGroupLiberties != 1) return (false, null);
 
             Board b2 = ImmovableHelper.CaptureSuicideGroup(b);
-            if (b2 == null || b2.MoveGroupLiberties != 2) return (false, null);
+            if (b2.MoveGroupLiberties != 2) return (false, null);
             if (!EyeHelper.FindCoveredEye(b2, p.Value, c)) return (false, null);
             if (CheckConnectAndDie(b2, targetGroup))
                 return (true, b2);
@@ -547,7 +547,7 @@ namespace Go
                 {
                     //capture suicide group
                     Board b2 = ImmovableHelper.CaptureSuicideGroup(b, group);
-                    if (b2 == null || b2.MoveGroup.Points.Count == 1 || b2.MoveGroupLiberties != 1) continue;
+                    if (b2.MoveGroup.Points.Count == 1 || b2.MoveGroupLiberties != 1) continue;
                     //capture eye group
                     Board b3 = ImmovableHelper.CaptureSuicideGroup(b, eyeGroup);
                     if (b3 == null) continue;
@@ -716,7 +716,7 @@ namespace Go
                         if (ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(currentBoard, group, liberty))
                             return true;
                         //check covered eye suicidal group
-                        if (EyeHelper.FindCoveredEye(currentBoard, liberty, c) && EyeHelper.FindCoveredEyeWithLiberties(currentBoard, move, c))
+                        if (EyeHelper.FindCoveredEye(currentBoard, liberty, c) && EyeHelper.FindCoveredEye(currentBoard, move, c))
                             return true;
                     }
                 }

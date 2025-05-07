@@ -942,7 +942,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31225()
         {
             //https://www.101weiqi.com/book/wuqingyuan/16788/31225/
-            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black, 28);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 

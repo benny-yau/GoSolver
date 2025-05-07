@@ -297,7 +297,7 @@
             Simple seki <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_SimpleSeki" />
             Fill eye points with content <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A27" />
             <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_B43" />
-            More than one content group <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31646" />
+            Two content groups <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31646" />
             <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_20230430_8" />
             Complex seki <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_2" />
             </summary>
@@ -432,11 +432,6 @@
         <member name="M:Go.EyeHelper.CheckCoveredEyeAtSuicideGroup(Go.Board,Go.Group)">
             <summary>
             Check for two-point covered eye for suicide group.
-            </summary>
-        </member>
-        <member name="M:Go.EyeHelper.FindUncoveredEyeAtDiagonal(Go.Board,System.Nullable{Go.Point})">
-            <summary>
-            Find uncovered eye at diagonal.
             </summary>
         </member>
         <member name="M:Go.EyeHelper.FindNonSemiSolidEye(Go.Board,Go.Point,Go.Content)">
@@ -964,7 +959,7 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935_2" />
             </summary>
         </member>
-        <member name="M:Go.KillerFormationHelper.SuicideForLibertyFight(Go.Board,Go.Board,System.Boolean)">
+        <member name="M:Go.KillerFormationHelper.SuicideForLibertyFight(Go.Board,Go.Board)">
             <summary>
             Suicide for liberty fight.
             Both alive <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_2" />
@@ -1121,7 +1116,7 @@
             Get ko eye point.
             </summary>
         </member>
-        <member name="M:Go.KoHelper.PossibilityOfDoubleKo(Go.GameTryMove)">
+        <member name="M:Go.KoHelper.PossibilityOfDoubleKo(Go.Board,Go.Board)">
             <summary>
             Check for possibility of double ko, for both survival and kill.
             Survival double ko <see cref="!:UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_TianLongTu_Q16446" />
@@ -1500,7 +1495,7 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16604_4" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B32_2" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A67_3" />
-            Check one liberty <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A67_3" />
+            Check suicidal for both <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A67_3" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SuicidalConnectAndDie(Go.GameTryMove)">
@@ -1969,10 +1964,10 @@
         <member name="M:Go.RedundantMoveHelper.FindRealEyeAtDiagonal(System.Collections.Generic.List{Go.Point},Go.Board,Go.Content)">
             <summary>
             Real eye at diagonal.
-            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30188" /> 
-            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WuQingYuan_Q30982" /> 
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" /> 
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_2" /> 
+            Three point real eye <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30188" /> 
+            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WuQingYuan_Q30982" /> 
             </summary>
         </member>
         <member name="M:Go.ResultHelper.GameEndedMessage(Go.ConfirmAliveResult,Go.Game)">

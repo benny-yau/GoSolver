@@ -56,7 +56,7 @@ namespace Go
         /// Simple seki <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_SimpleSeki" />
         /// Fill eye points with content <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A27" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_B43" />
-        /// More than one content group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31646" />
+        /// Two content groups <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31646" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_20230430_8" />
         /// Complex seki <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_2" />
         /// </summary>
@@ -72,7 +72,7 @@ namespace Go
 
             List<Point> contentPoints = killerGroup.Points.Where(n => board[n] == c).ToList();
             List<Group> contentGroups = filledBoard.GetGroupsFromPoints(contentPoints).ToList();
-            //more than one content group
+            //two content groups
             if (contentGroups.Count > 2) return false;
 
             List<Group> ngroups = GroupHelper.GetNeighbourGroupsOfKillerGroup(board, killerGroup);
@@ -209,7 +209,7 @@ namespace Go
             if (!suicidalForBothPlayers)
             {
                 //check covered eye
-                if (!killerGroups.Any(kgroup => kgroup.Points.Any(n => EyeHelper.FindCoveredEyeWithLiberties(board, n, c))))
+                if (!killerGroups.Any(kgroup => kgroup.Points.Any(n => EyeHelper.FindCoveredEye(board, n, c))))
                     return false;
             }
 

@@ -87,13 +87,6 @@ namespace Go
             return false;
         }
 
-        public static Boolean FindCoveredEyeWithLiberties(Board board, Point eye, Content c)
-        {
-            if (FindCoveredEye(board, eye, c) && board.GetGroupsFromStoneNeighbours(eye, c.Opposite()).All(e => e.Liberties.Count > 1))
-                return true;
-            return false;
-        }
-
         /// <summary>
         /// Find covered eye within empty space after capture.
         /// </summary>
@@ -127,18 +120,6 @@ namespace Go
 
             if (group.Points.Count != 2) return false;
             if (group.Points.Any(p => tryBoard.GetDiagonalNeighbours(p).Count(q => tryBoard[q] == c && LinkHelper.PointsBetweenDiagonals(p, q).All(r => tryBoard[r] == c.Opposite())) == (tryBoard.PointWithinMiddleArea(p) ? 2 : 1)))
-                return true;
-            return false;
-        }
-
-        /// <summary>
-        /// Find uncovered eye at diagonal.
-        /// </summary>
-        public static Boolean FindUncoveredEyeAtDiagonal(Board tryBoard, Point? move = null)
-        {
-            if (move == null) move = tryBoard.Move.Value;
-            Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.GetDiagonalNeighbours(move).Any(d => EyeHelper.FindNonSemiSolidEye(tryBoard, d, c.Opposite())))
                 return true;
             return false;
         }

@@ -83,6 +83,7 @@ namespace Go
         /// </summary>
         public static Boolean MakeKoFight(Board tryBoard, Point p, Content c)
         {
+            if (tryBoard[p] != Content.Empty) return false;
             Board board = tryBoard.MakeMoveOnNewBoard(p, c, true);
             if (board == null) return false;
             return IsForwardOrReverseKoFight(board);
@@ -135,13 +136,10 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             if (tryBoard.singlePointCapture != null) //ko moves
                 return tryBoard.singlePointCapture.Value;
-            else
-            {
-                //pre ko moves
-                List<Point> eyePoints = tryBoard.GetStoneNeighbours().Where(n => IsKoFight(tryBoard, n, c).Item1).ToList();
-                if (eyePoints.Count != 1) return null;
-                return eyePoints.First();
-            }
+            //pre ko moves
+            List<Point> eyePoints = tryBoard.GetStoneNeighbours().Where(n => IsKoFight(tryBoard, n, c).Item1).ToList();
+            if (eyePoints.Count == 1) return eyePoints.First();
+            return null;
         }
 
 
@@ -154,13 +152,6 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WuQingYuan_Q30982_2" />
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_2" /> 
         /// </summary>
-        public static Boolean PossibilityOfDoubleKo(GameTryMove tryMove)
-        {
-            Board currentBoard = tryMove.CurrentGame.Board;
-            Board tryBoard = tryMove.TryGame.Board;
-            return PossibilityOfDoubleKo(tryBoard, currentBoard);
-        }
-
         public static Boolean PossibilityOfDoubleKo(Board tryBoard, Board currentBoard)
         {
             Point move = tryBoard.Move.Value;

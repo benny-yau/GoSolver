@@ -313,7 +313,7 @@ namespace Go
 
                 //make opponent move at diagonal
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board, true);
-                if (suicidal || b == null) continue;
+                if (suicidal) continue;
                 if (!KillerFormationHelper.ThreeOpponentGroupsAtMove(b, p)) continue;
                 opponentStones = b.GetStoneNeighbours(p).Where(n => b[n] == c).ToList();
                 if (b.GetGroupsFromPoints(opponentStones).Count < 3) continue;
