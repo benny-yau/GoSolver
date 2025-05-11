@@ -444,7 +444,7 @@ namespace Go
             List<Group> groups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
             if (groups.Count >= 3) return false;
 
-            HashSet<Group> linkGroups = currentBoard.GetGroupsFromStoneNeighbours(linkBoard.Move.Value, c.Opposite());
+            List<Group> linkGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, linkBoard);
             //connected to external group not from previous move group
             if (!linkGroups.Except(groups).Any()) return false;
             //check connect and die

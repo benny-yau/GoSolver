@@ -262,7 +262,7 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             Point eyePoint = currentBoard.GetDiagonalNeighbours(move).FirstOrDefault(n => EyeHelper.FindCoveredEye(currentBoard, n, c.Opposite()));
             if (!Convert.ToBoolean(eyePoint.NotEmpty)) return false;
-            if (!currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).All(n => n.Liberties.Count <= 2)) return false;
+            if (!LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).All(n => n.Liberties.Count <= 2)) return false;
 
             (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(libertyPoint, c, currentBoard);
             if (suicidal) return false;
@@ -644,7 +644,7 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Board currentBoard = tryMove.CurrentGame.Board;
             Content c = tryMove.MoveContent;
-            List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).ToList();
+            List<Group> eyeGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
             foreach (Group eyeGroup in eyeGroups)
             {
                 if (eyeGroup.Liberties.Count != 2) continue;
@@ -695,7 +695,7 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Board currentBoard = tryMove.CurrentGame.Board;
             Content c = tryMove.MoveContent;
-            List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).ToList();
+            List<Group> eyeGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
             foreach (Group eyeGroup in eyeGroups)
             {
                 if (eyeGroup.Liberties.Count != 3) continue;

@@ -98,7 +98,7 @@ namespace Go
         /// </summary>
         public static Boolean StrongGroups(Board board, IEnumerable<Group> ngroups)
         {
-            if (ngroups.Any(n => n.Liberties.Count < 2 || ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(board, n)))
+            if (ngroups.Any(n => !IsStrongGroup(board, n)))
                 return false;
             return true;
         }

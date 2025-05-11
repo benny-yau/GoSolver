@@ -1360,7 +1360,7 @@
             Link breakage.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.CheckNegligibleForLinks(Go.Board,Go.Board,System.Func{Go.Group,System.Boolean},System.Nullable{Go.Point})">
+        <member name="M:Go.LinkHelper.CheckNegligibleForLinks(Go.Board,Go.Board,System.Func{Go.Group,System.Boolean})">
             <summary>
             Check negligible for links.
             </summary>

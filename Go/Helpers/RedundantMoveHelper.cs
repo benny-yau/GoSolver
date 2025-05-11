@@ -34,7 +34,7 @@ namespace Go
             else
             {
                 //covered eye with more than two liberties
-                if (currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).Any(n => n.Liberties.Count <= 2))
+                if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Any(n => n.Liberties.Count <= 2))
                     return false;
                 //check three liberty group
                 if (ImmovableHelper.CheckThreeLibertyGroupAtBigTigerMouth(tryMove))
@@ -50,8 +50,9 @@ namespace Go
         {
             Point move = tryMove.Move;
             Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
-            List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).ToList();
+            List<Group> eyeGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
             foreach (Group g in eyeGroups.Where(e => e.Liberties.Count == 2))
             {
                 Point p = g.Liberties.First(n => !n.Equals(move));
@@ -236,7 +237,7 @@ namespace Go
             }
 
             //not ko enabled
-            List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).ToList();
+            List<Group> eyeGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
             if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo) && eyeGroups.Any(e => KoHelper.IsKoFight(currentBoard, e)))
                 return false;
 
@@ -1462,7 +1463,7 @@ namespace Go
                 return true;
 
             //capture at liberty
-            List<Group> eyeGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).Where(e => e.Liberties.Count == 2).ToList();
+            List<Group> eyeGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Where(e => e.Liberties.Count == 2).ToList();
             IEnumerable<Point> moves = eyeGroups.Select(e => e.Liberties.First(n => !n.Equals(move)));
             if (moves.Any(p => tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Any(n => !n.Equals(tryBoard.MoveGroup) && n.Liberties.Count == 1)))
                 return true;
@@ -2026,7 +2027,7 @@ namespace Go
             if (!diagonals.All(eye => EyeHelper.FindRealEyeWithinEmptySpace(opponentBoard, eye, c)))
                 return false;
             //ensure no weak groups
-            if (diagonals.Count > 1 && opponentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).Count(n => n.Liberties.Count <= 2) >= 2)
+            if (diagonals.Count > 1 && LinkHelper.GetPreviousMoveGroup(currentBoard, opponentBoard).Count(n => n.Liberties.Count <= 2) >= 2)
                 return false;
 
             //check other surrounding points are not possible eyes

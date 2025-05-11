@@ -215,7 +215,7 @@ namespace Go
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             if (tryBoard.MoveGroup.Points.Count == 1) return false;
-            List<Group> linkedGroups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).ToList();
+            List<Group> linkedGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
             return (linkedGroups.Count > 1);
         }
 
@@ -252,7 +252,7 @@ namespace Go
 
                     //check negligible for links
                     if (immediateLink) continue;
-                    if (LinkHelper.CheckNegligibleForLinks(b, board, n => !n.Equals(b.GetGroupAt(pointA)) && !n.Equals(b.GetGroupAt(pointB)), q))
+                    if (LinkHelper.CheckNegligibleForLinks(b, board, n => !n.Equals(b.GetGroupAt(pointA)) && !n.Equals(b.GetGroupAt(pointB))))
                         return false;
                 }
                 return true;
@@ -835,7 +835,7 @@ namespace Go
                 return true;
             //check negligible for links
             HashSet<Group> tmGroups = b2.GetGroupsFromStoneNeighbours(tigerMouth, c.Opposite());
-            if (CheckNegligibleForLinks(b2, b, n => !tmGroups.Contains(n), tigerMouth))
+            if (CheckNegligibleForLinks(b2, b, n => !tmGroups.Contains(n)))
                 return true;
             //check link breakage
             if (LinkHelper.LinkBreakage(b2))
@@ -864,7 +864,7 @@ namespace Go
         /// <summary>
         /// Check negligible for links.
         /// </summary>
-        public static Boolean CheckNegligibleForLinks(Board b, Board board, Func<Group, Boolean> func = null, Point? tigerMouth = null)
+        public static Boolean CheckNegligibleForLinks(Board b, Board board, Func<Group, Boolean> func = null)
         {
             Content c = b.MoveGroup.Content;
             //check is negligible
@@ -874,15 +874,6 @@ namespace Go
             //check for connect and die
             if (b.GetNeighbourGroups().Any(n => (func != null ? func(n) : true) && !WallHelper.IsStrongGroup(b, n)))
                 return true;
-            //check double atari
-            if (tigerMouth != null)
-            {
-                Board b2 = b.MakeMoveOnNewBoard(tigerMouth.Value, c.Opposite(), true);
-                if (b2 == null) return false;
-                List<Group> ngroups = b2.GetGroupsFromStoneNeighbours(b.Move.Value, c.Opposite()).ToList();
-                if (LinkHelper.DoubleAtariOnTargetGroups(b2, ngroups))
-                    return true;
-            }
             return false;
         }
     }
