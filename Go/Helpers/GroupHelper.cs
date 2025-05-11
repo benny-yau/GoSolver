@@ -119,7 +119,7 @@ namespace Go
             if (killerGroup == null) return null;
 
             List<Group> groups = board.GetNeighbourGroups(killerGroup);
-            if (!WallHelper.StrongNeighbourGroups(board, groups)) return null;
+            if (!WallHelper.StrongGroups(board, groups)) return null;
             if (LinkHelper.DoubleAtariOnTargetGroups(board, groups)) return null;
             return killerGroup;
         }

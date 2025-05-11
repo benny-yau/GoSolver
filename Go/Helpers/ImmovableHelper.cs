@@ -636,6 +636,7 @@ namespace Go
         /// Check for opponent survival move <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q29475" /> 
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245_2" />
         /// <see cref="UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_XuanXuanQiJing_A53" /> 
+        /// Check covered eye survival <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_20230422_8" /> 
         /// </summary>
         public static (Boolean, Board) SuicideAtBigTigerMouth(GameTryMove tryMove)
         {
@@ -650,6 +651,7 @@ namespace Go
                 Point liberty = eyeGroup.Liberties.First(n => !n.Equals(move));
                 Board b = currentBoard.MakeMoveOnNewBoard(liberty, c, true);
                 if (b == null || WallHelper.TargetWithAllNonKillableGroups(b)) continue;
+                //check covered eye survival 
                 if (b.GetGroupsFromStoneNeighbours(move, c.Opposite()).Count == 1 && EyeHelper.FindEye(b, move, c)) continue;
                 if (ImmovableHelper.CheckConnectAndDie(b))
                     return (true, b);
@@ -658,7 +660,7 @@ namespace Go
                 Point liberty2 = b.MoveGroup.Liberties.First(n => !n.Equals(move));
                 //check for groups at liberty
                 List<Group> ngroups = b.GetGroupsFromStoneNeighbours(liberty2, c.Opposite()).Where(n => !n.Equals(b.MoveGroup)).ToList();
-                if (!WallHelper.StrongNeighbourGroups(b, ngroups))
+                if (!WallHelper.StrongGroups(b, ngroups))
                     return (true, b);
 
                 //make block move

@@ -806,6 +806,7 @@
             Check for opponent survival move <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q29475" /> 
             <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245_2" />
             <see cref="!:UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_XuanXuanQiJing_A53" /> 
+            Check covered eye survival <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_20230422_8" /> 
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.CheckThreeLibertyGroupAtBigTigerMouth(Go.GameTryMove)">
@@ -1425,13 +1426,6 @@
             <see cref = "!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_2" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.SuicideGroupNearCapture(Go.Board)">
-            <summary>
-            Suicide group near capture.
-            <see cref="!:UnitTestProject.NeutralPointMoveTest.RestoreNeutralMoveTest_Scenario_Corner_B21" /> 
-            <see cref="!:UnitTestProject.NeutralPointMoveTest.RestoreNeutralMoveTest_Scenario_WuQingYuan_Q6150" /> 
-            </summary>
-        </member>
         <member name="M:Go.RedundantMoveHelper.AtariRedundantMove(Go.GameTryMove)">
             <summary>
             Redundant atari move.
@@ -1449,7 +1443,7 @@
             Suicidal redundant move.
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.SuicidalMoveWithinNonKillableGroup(Go.GameTryMove,Go.GameTryMove)">
+        <member name="M:Go.RedundantMoveHelper.MoveWithinNonKillableGroup(Go.GameTryMove,Go.GameTryMove)">
             <summary>
             Suicidal move within non killable group.
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3dan17" />
@@ -1459,7 +1453,14 @@
             Check for covered eye <see cref="!:UnitTestProject.RedundantTigerMouthMove.RedundantTigerMouthMove_Scenario_WindAndTime_Q30225_2" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.MultiPointOpponentSuicidalMove(Go.GameTryMove,Go.GameTryMove)">
+        <member name="M:Go.RedundantMoveHelper.MoveNextToNonKillableGroup(Go.GameTryMove)">
+            <summary>
+            Move next to non killable group.
+            <see cref="!:UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario4dan17" />
+            Check strong groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17241" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.MultiPointOpponentSuicidalMove(Go.GameTryMove)">
             <summary>
             Multi point opponent suicidal move.
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A26" />
@@ -1758,8 +1759,16 @@
         <member name="M:Go.RedundantMoveHelper.ConnectAndDieEndMove(Go.Board)">
             <summary>
             Connect and die end move.
-            <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
-            <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16490" />
+            <see cref="!:UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario_Side_A25" />
+            More than three point suicide group <see cref="!:UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario4dan17" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.SuicideGroupNearCapture(Go.Board)">
+            <summary>
+            Suicide group near capture.
+            <see cref="!:UnitTestProject.NeutralPointMoveTest.RestoreNeutralMoveTest_Scenario_Corner_B21" /> 
+            <see cref="!:UnitTestProject.NeutralPointMoveTest.RestoreNeutralMoveTest_Scenario_WuQingYuan_Q6150" /> 
+            <see cref="!:UnitTestProject.NeutralPointMoveTest.RestoreNeutralMoveTest_Scenario_TianLongTu_Q16490" /> 
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.GetSpecificNeutralMove(Go.Game,System.Collections.Generic.List{Go.GameTryMove})">
@@ -2070,9 +2079,9 @@
             Check if non-killable at neighbour points that are empty.
             </summary>
         </member>
-        <member name="M:Go.WallHelper.StrongNeighbourGroups(Go.Board,System.Collections.Generic.IEnumerable{Go.Group})">
+        <member name="M:Go.WallHelper.StrongGroups(Go.Board,System.Collections.Generic.IEnumerable{Go.Group})">
             <summary>
-            Strong neighbour groups that cannot be captured by connect and die.
+            Strong groups that cannot be captured by connect and die.
             </summary>
         </member>
         <member name="M:Go.WallHelper.HostileNeighbourGroups(Go.Board,Go.Point,Go.Content)">

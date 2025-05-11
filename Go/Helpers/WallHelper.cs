@@ -94,11 +94,19 @@ namespace Go
         }
 
         /// <summary>
-        /// Strong neighbour groups that cannot be captured by connect and die.
+        /// Strong groups that cannot be captured by connect and die.
         /// </summary>
-        public static Boolean StrongNeighbourGroups(Board board, IEnumerable<Group> ngroups)
+        public static Boolean StrongGroups(Board board, IEnumerable<Group> ngroups)
         {
             if (ngroups.Any(n => n.Liberties.Count < 2 || ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(board, n)))
+                return false;
+            return true;
+        }
+
+        public static Boolean IsStrongGroup(Board board, Group group = null)
+        {
+            if (group == null) group = board.MoveGroup;
+            if (group.Liberties.Count < 2 || ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(board, group))
                 return false;
             return true;
         }
@@ -106,14 +114,14 @@ namespace Go
         public static Boolean StrongNeighbourGroups(Board board, Point move, Content c)
         {
             HashSet<Group> ngroups = board.GetGroupsFromStoneNeighbours(move, c);
-            return StrongNeighbourGroups(board, ngroups);
+            return StrongGroups(board, ngroups);
         }
 
         public static Boolean StrongNeighbourGroups(Board board, Group group = null)
         {
             if (group == null) group = board.MoveGroup;
             List<Group> ngroups = board.GetNeighbourGroups(group);
-            return StrongNeighbourGroups(board, ngroups);
+            return StrongGroups(board, ngroups);
         }
 
         /// <summary>
@@ -195,7 +203,7 @@ namespace Go
                 coveredBoard[p] = c.Opposite();
             }
             //check for connect and die
-            if (groups.Select(n => coveredBoard.GetCurrentGroup(n)).Any(n => n.Liberties.Count < 2 || ImmovableHelper.CheckConnectAndDie(coveredBoard, n))) return false;
+            if (groups.Select(n => coveredBoard.GetCurrentGroup(n)).Any(n => !IsStrongGroup(coveredBoard, n))) return false;
             return true;
         }
     }

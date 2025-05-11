@@ -136,7 +136,7 @@ namespace Go
             {
                 if (groupCount == 1)
                 {
-                    if (!WallHelper.StrongNeighbourGroups(board, ngroups))
+                    if (!WallHelper.StrongGroups(board, ngroups))
                         return false;
                     //check for three or more liberty formation
                     if (!KillerFormationHelper.DeadFormationInBothAlive(filledBoard, killerGroup, emptyPointCount, 2))

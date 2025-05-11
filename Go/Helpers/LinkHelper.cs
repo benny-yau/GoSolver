@@ -737,9 +737,9 @@ namespace Go
 
             HashSet<Point> liberties = board.GetLibertiesOfGroups(targetGroups);
             IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, liberties, c.Opposite(), true);
-            moveBoards = moveBoards.Where(b => targetGroups.Any(n => ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(b, n))).ToList();
+            moveBoards = moveBoards.Where(b => !WallHelper.StrongGroups(b, targetGroups)).ToList();
             //double connect and die
-            if (moveBoards.Any(b => b.GetGroupsFromStoneNeighbours(b.Move.Value, c.Opposite()).Count(n => ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(b, n)) >= 2))
+            if (moveBoards.Any(b => b.GetGroupsFromStoneNeighbours().Count(n => !WallHelper.IsStrongGroup(b, n)) >= 2))
                 return true;
             //check tiger mouth exceptions
             if (checkTigerMouthExceptions && moveBoards.Any(b => CheckMoveGroupForTigerMouthExceptions(board, b)))
@@ -872,7 +872,7 @@ namespace Go
             if (notNegligible)
                 return true;
             //check for connect and die
-            if (b.GetNeighbourGroups().Any(n => (func != null ? func(n) : true) && ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(b, n)))
+            if (b.GetNeighbourGroups().Any(n => (func != null ? func(n) : true) && !WallHelper.IsStrongGroup(b, n)))
                 return true;
             //check double atari
             if (tigerMouth != null)

@@ -54,7 +54,7 @@ namespace Go
         {
             if (ImmovableHelper.IsSuicidalWithoutKo(board)) return false;
             if (board.AtariTargets.Count == 0) return false;
-            List<Group> groups = board.GetGroupsFromStoneNeighbours().Where(n => n.Liberties.Count >= 2 && n.Liberties.Count <= 3 && ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(board, n)).ToList();
+            List<Group> groups = board.GetGroupsFromStoneNeighbours().Where(n => !WallHelper.IsStrongGroup(board, n)).ToList();
             groups = groups.Union(board.AtariTargets).ToList();
             if (groups.Count < 2) return false;
 
@@ -63,7 +63,7 @@ namespace Go
             {
                 //check escape by capture
                 Board b = ImmovableHelper.EscapeByCapture(board, targetGroup, false);
-                if (b != null && !groups.Any(t => ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(b, t)))
+                if (b != null && WallHelper.StrongGroups(b, groups))
                 {
                     //check double atari on escape board
                     if (!LinkHelper.DoubleAtariOnTargetGroups(b, groups))
@@ -71,7 +71,7 @@ namespace Go
                 }
                 //make move at liberty
                 Board b2 = ImmovableHelper.MakeMoveAtLiberty(board, targetGroup, targetGroup.Content);
-                if (b2 != null && !groups.Any(t => ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(b2, t)))
+                if (b2 != null && WallHelper.StrongGroups(b2, groups))
                 {
                     //check double atari on escape board
                     if (!LinkHelper.DoubleAtariOnTargetGroups(b2, groups))

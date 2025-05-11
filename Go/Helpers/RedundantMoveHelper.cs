@@ -279,28 +279,6 @@ namespace Go
 
             return true;
         }
-
-        /// <summary>
-        /// Suicide group near capture.
-        /// <see cref="UnitTestProject.NeutralPointMoveTest.RestoreNeutralMoveTest_Scenario_Corner_B21" /> 
-        /// <see cref="UnitTestProject.NeutralPointMoveTest.RestoreNeutralMoveTest_Scenario_WuQingYuan_Q6150" /> 
-        /// </summary>
-        private static Boolean SuicideGroupNearCapture(Board board)
-        {
-            if (board.MoveGroupLiberties < 2 || board.MoveGroupLiberties > 3) return false;
-            if (ImmovableHelper.CheckConnectAndDie(board, board.MoveGroup, false)) return false;
-            foreach (Group ngroup in board.GetNeighbourGroups())
-            {
-                if (ngroup.Liberties.Count > 2 || WallHelper.IsNonKillableGroup(board, ngroup)) continue;
-                foreach (Group targetGroup in AtariHelper.AtariByGroup(ngroup, board))
-                {
-                    Board b = ImmovableHelper.CaptureSuicideGroup(board, targetGroup);
-                    if (ImmovableHelper.CheckConnectAndDie(b, board.MoveGroup))
-                        return true;
-                }
-            }
-            return false;
-        }
         #endregion
 
         #region atari redundant move
@@ -374,7 +352,7 @@ namespace Go
                 if (SuicidalConnectAndDie(tryMove))
                     return true;
             }
-            if (SuicidalMoveWithinNonKillableGroup(tryMove))
+            if (SuicidalMoveAtNonKillableGroup(tryMove))
                 return true;
 
             //test if opponent move at same point is suicidal
@@ -386,11 +364,20 @@ namespace Go
                 Boolean singlePoint = opponentTryBoard.MoveGroup.Points.Count == 1;
                 if (singlePoint && SinglePointSuicidalMove(opponentMove, tryMove))
                     return true;
-                if (!singlePoint && MultiPointOpponentSuicidalMove(tryMove, opponentMove))
+                if (!singlePoint && MultiPointOpponentSuicidalMove(tryMove))
                     return true;
             }
 
-            if (SuicidalMoveWithinNonKillableGroup(opponentMove, tryMove))
+            if (SuicidalMoveAtNonKillableGroup(opponentMove, tryMove))
+                return true;
+            return false;
+        }
+
+        private static Boolean SuicidalMoveAtNonKillableGroup(GameTryMove tryMove, GameTryMove opponentTryMove = null)
+        {
+            if (MoveWithinNonKillableGroup(tryMove, opponentTryMove))
+                return true;
+            if (opponentTryMove == null && MoveNextToNonKillableGroup(tryMove))
                 return true;
             return false;
         }
@@ -403,7 +390,7 @@ namespace Go
         /// Check any is non killable <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30370" />
         /// Check for covered eye <see cref="UnitTestProject.RedundantTigerMouthMove.RedundantTigerMouthMove_Scenario_WindAndTime_Q30225_2" />
         /// </summary>
-        private static Boolean SuicidalMoveWithinNonKillableGroup(GameTryMove tryMove, GameTryMove opponentTryMove = null)
+        private static Boolean MoveWithinNonKillableGroup(GameTryMove tryMove, GameTryMove opponentTryMove = null)
         {
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
@@ -456,23 +443,32 @@ namespace Go
                     }
                 }
             }
-            if (MoveNextToNonKillableGroup(tryMove))
-                return true;
             return false;
         }
 
+        /// <summary>
+        /// Move next to non killable group.
+        /// <see cref="UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario4dan17" />
+        /// Check strong groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17241" />
+        /// </summary>
         public static Boolean MoveNextToNonKillableGroup(GameTryMove tryMove)
         {
+            Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryBoard.Move.Value;
             Content c = GameHelper.GetContentForSurviveOrKill(tryBoard.GameInfo, SurviveOrKill.Kill);
 
-            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite()))
+            if (currentBoard.GetStoneAndDiagonalNeighbours(move).Any(n => currentBoard[n] == c.Opposite()))
                 return false;
 
-            if (!tryBoard.GetStoneNeighbours().Any(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
+            if (!currentBoard.GetStoneNeighbours(move).Any(n => WallHelper.IsNonKillableGroup(currentBoard, n)))
                 return false;
 
-            if (tryBoard.GetStoneAndDiagonalNeighbours().Count(n => tryBoard[n] == c && WallHelper.IsNonKillableGroup(tryBoard, n)) >= 2)
+            //check strong groups
+            if (!WallHelper.StrongGroups(tryBoard, tryBoard.GetGroupsFromStoneNeighbours()))
+                return false;
+
+            if (currentBoard.GetStoneAndDiagonalNeighbours(move).Count(n => currentBoard[n] == c && WallHelper.IsNonKillableGroup(currentBoard, n)) >= 2)
                 return true;
             return false;
         }
@@ -497,7 +493,7 @@ namespace Go
         /// Set diagonal eye move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie4_4" />
         /// <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_XuanXuanGo_A16" />
         /// </summary>
-        private static Boolean MultiPointOpponentSuicidalMove(GameTryMove tryMove, GameTryMove opponentMove)
+        private static Boolean MultiPointOpponentSuicidalMove(GameTryMove tryMove)
         {
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
@@ -792,7 +788,7 @@ namespace Go
             //check for eye at corner point
             if (tryBoard.MoveGroup.Liberties.Any(n => tryBoard.CornerPoint(n) && tryBoard.GetStoneNeighbours(n).Intersect(tryBoard.MoveGroup.Points).Count() >= 2))
             {
-                if (KillerFormationHelper.TwoByTwoFormation(tryBoard, tryBoard.MoveGroup.Points) || LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Count > 1)
+                if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Count > 1)
                     return false;
             }
 
@@ -1507,7 +1503,7 @@ namespace Go
             {
                 (_, List<Point> diagonals) = LinkHelper.FindDiagonalCut(currentBoard, gr);
                 if (diagonals == null) continue;
-                if (diagonals.Any(n => ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(currentBoard, currentBoard.GetGroupAt(n))))
+                if (diagonals.Any(n => !WallHelper.IsStrongGroup(currentBoard, currentBoard.GetGroupAt(n))))
                     continue;
                 return true;
             }
@@ -1628,8 +1624,8 @@ namespace Go
 
         /// <summary>
         /// Connect and die end move.
-        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
-        /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16490" />
+        /// <see cref="UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario_Side_A25" />
+        /// More than three point suicide group <see cref="UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario4dan17" />
         /// </summary>
         private static Boolean ConnectAndDieEndMove(Board tryBoard)
         {
@@ -1641,7 +1637,32 @@ namespace Go
                 Board b = ImmovableHelper.MakeMoveAtLiberty(captureBoard, tryBoard.MoveGroup, c);
                 if (b == null) return true;
             }
-            if (tryBoard.MoveGroup.Points.Count > 1) return true;
+            //more than three point suicide group
+            if (tryBoard.MoveGroup.Points.Count > 3)
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Suicide group near capture.
+        /// <see cref="UnitTestProject.NeutralPointMoveTest.RestoreNeutralMoveTest_Scenario_Corner_B21" /> 
+        /// <see cref="UnitTestProject.NeutralPointMoveTest.RestoreNeutralMoveTest_Scenario_WuQingYuan_Q6150" /> 
+        /// <see cref="UnitTestProject.NeutralPointMoveTest.RestoreNeutralMoveTest_Scenario_TianLongTu_Q16490" /> 
+        /// </summary>
+        private static Boolean SuicideGroupNearCapture(Board board)
+        {
+            if (board.MoveGroupLiberties < 2 || board.MoveGroupLiberties > 3) return false;
+            if (!WallHelper.IsStrongGroup(board)) return false;
+            foreach (Group ngroup in board.GetNeighbourGroups())
+            {
+                if (ngroup.Liberties.Count > 2 || WallHelper.IsNonKillableGroup(board, ngroup)) continue;
+                foreach (Group targetGroup in AtariHelper.AtariByGroup(ngroup, board))
+                {
+                    Board b = ImmovableHelper.CaptureSuicideGroup(board, targetGroup);
+                    if (!WallHelper.IsStrongGroup(b, board.MoveGroup))
+                        return true;
+                }
+            }
             return false;
         }
 

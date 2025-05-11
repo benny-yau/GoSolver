@@ -191,7 +191,7 @@ namespace Go
                 if (cgroups.Count == 1)
                     return true;
                 //find real eye
-                if (EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, kgroup) && WallHelper.StrongNeighbourGroups(captureBoard, cgroups))
+                if (EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, kgroup) && WallHelper.StrongGroups(captureBoard, cgroups))
                     return true;
                 if (EyeHelper.RealEyeOfDiagonallyConnectedGroups(captureBoard, kgroup))
                     return true;
@@ -508,7 +508,7 @@ namespace Go
 
             List<Group> targetGroups = currentBoard.GetNeighbourGroups(killerGroup);
             //get only one move within killer group
-            if (tryBoard.MoveGroup.Points.Count > 1 && targetGroups.Count == 1)
+            if (targetGroups.Count == 1)
             {
                 Boolean firstPoint = killerGroup.Points.FirstOrDefault(p => currentBoard[p] == Content.Empty).Equals(move);
                 if (!firstPoint) return false;
