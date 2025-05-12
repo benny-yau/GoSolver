@@ -252,7 +252,7 @@ namespace Go
 
                     //check negligible for links
                     if (immediateLink) continue;
-                    if (LinkHelper.CheckNegligibleForLinks(b, board, n => !n.Equals(b.GetGroupAt(pointA)) && !n.Equals(b.GetGroupAt(pointB))))
+                    if (LinkHelper.CheckNegligibleForLinks(b, n => !n.Equals(b.GetGroupAt(pointA)) && !n.Equals(b.GetGroupAt(pointB))))
                         return false;
                 }
                 return true;
@@ -737,7 +737,7 @@ namespace Go
 
             HashSet<Point> liberties = board.GetLibertiesOfGroups(targetGroups);
             IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, liberties, c.Opposite(), true);
-            moveBoards = moveBoards.Where(b => !WallHelper.StrongGroups(b, targetGroups)).ToList();
+            moveBoards = moveBoards.Where(b => !WallHelper.StrongGroups(b, targetGroups));
             //double connect and die
             if (moveBoards.Any(b => b.GetGroupsFromStoneNeighbours().Count(n => !WallHelper.IsStrongGroup(b, n)) >= 2))
                 return true;
@@ -752,17 +752,7 @@ namespace Go
         /// </summary>
         public static Boolean CheckMoveGroupForTigerMouthExceptions(Board board, Board b)
         {
-            if (CaptureForTigerMouthExceptions(board, b) || Board.ResolveAtari(board, b) || LinkWithThreatGroup(b, board) || MoveAtTigerMouth(b) || CheckForKoBreak(b))
-                return true;
-            return false;
-        }
-
-        /// <summary>
-        /// Capture for tiger mouth exceptions.
-        /// </summary>
-        public static Boolean CaptureForTigerMouthExceptions(Board board, Board b)
-        {
-            if (b.CapturedList.Any(n => board.GetNeighbourGroups(n).Any(s => s.Liberties.Count <= 2 && !WallHelper.IsNonKillableFromSetupMoves(board, s))))
+            if (b.CapturedList.Any() || Board.ResolveAtari(board, b) || LinkWithThreatGroup(b, board) || MoveAtTigerMouth(b) || CheckForKoBreak(b))
                 return true;
             return false;
         }
@@ -835,7 +825,7 @@ namespace Go
                 return true;
             //check negligible for links
             HashSet<Group> tmGroups = b2.GetGroupsFromStoneNeighbours(tigerMouth, c.Opposite());
-            if (CheckNegligibleForLinks(b2, b, n => !tmGroups.Contains(n)))
+            if (CheckNegligibleForLinks(b2, n => !tmGroups.Contains(n)))
                 return true;
             //check link breakage
             if (LinkHelper.LinkBreakage(b2))
@@ -864,13 +854,8 @@ namespace Go
         /// <summary>
         /// Check negligible for links.
         /// </summary>
-        public static Boolean CheckNegligibleForLinks(Board b, Board board, Func<Group, Boolean> func = null)
+        public static Boolean CheckNegligibleForLinks(Board b, Func<Group, Boolean> func = null)
         {
-            Content c = b.MoveGroup.Content;
-            //check is negligible
-            Boolean notNegligible = LinkHelper.CaptureForTigerMouthExceptions(board, b) || Board.ResolveAtari(board, b);
-            if (notNegligible)
-                return true;
             //check for connect and die
             if (b.GetNeighbourGroups().Any(n => (func != null ? func(n) : true) && !WallHelper.IsStrongGroup(b, n)))
                 return true;

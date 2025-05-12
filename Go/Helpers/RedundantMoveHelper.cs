@@ -1626,7 +1626,8 @@ namespace Go
         /// <summary>
         /// Connect and die end move.
         /// <see cref="UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario_Side_A25" />
-        /// More than three point suicide group <see cref="UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario4dan17" />
+        /// <see cref="UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario4dan17" />
+        /// <see cref="UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario_XuanXuanGo_A26" />
         /// </summary>
         private static Boolean ConnectAndDieEndMove(Board tryBoard)
         {
@@ -1638,8 +1639,7 @@ namespace Go
                 Board b = ImmovableHelper.MakeMoveAtLiberty(captureBoard, tryBoard.MoveGroup, c);
                 if (b == null) return true;
             }
-            //more than three point suicide group
-            if (tryBoard.MoveGroup.Points.Count > 3)
+            if (tryBoard.MoveGroup.Points.Count > 1)
                 return true;
             return false;
         }

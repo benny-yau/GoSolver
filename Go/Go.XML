@@ -1330,11 +1330,6 @@
             Check move group for tiger mouth exceptions.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.CaptureForTigerMouthExceptions(Go.Board,Go.Board)">
-            <summary>
-            Capture for tiger mouth exceptions.
-            </summary>
-        </member>
         <member name="M:Go.LinkHelper.LinkWithThreatGroup(Go.Board,Go.Board,System.Func{Go.Group,System.Boolean})">
             <summary>
             Link with threat group.
@@ -1360,7 +1355,7 @@
             Link breakage.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.CheckNegligibleForLinks(Go.Board,Go.Board,System.Func{Go.Group,System.Boolean})">
+        <member name="M:Go.LinkHelper.CheckNegligibleForLinks(Go.Board,System.Func{Go.Group,System.Boolean})">
             <summary>
             Check negligible for links.
             </summary>
@@ -1760,7 +1755,8 @@
             <summary>
             Connect and die end move.
             <see cref="!:UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario_Side_A25" />
-            More than three point suicide group <see cref="!:UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario4dan17" />
+            <see cref="!:UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario4dan17" />
+            <see cref="!:UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario_XuanXuanGo_A26" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SuicideGroupNearCapture(Go.Board)">

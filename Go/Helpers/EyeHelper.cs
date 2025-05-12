@@ -67,6 +67,7 @@ namespace Go
         public static Boolean IsCovered(Board board, Point eye, Content c)
         {
             List<Point> diagonals = board.GetDiagonalNeighbours(eye).Where(q => board[q] == c.Opposite()).ToList();
+            if (diagonals.All(n => ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt(n)))) return false;
             List<Point> nstones = board.GetStoneNeighbours(eye).Where(n => board[n] == c).ToList();
             if (board.PointWithinMiddleArea(eye))
                 return (nstones.Count >= 3 && diagonals.Count >= 2);
