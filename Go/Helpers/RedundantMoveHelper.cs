@@ -799,6 +799,31 @@ namespace Go
         }
 
         /// <summary>
+        /// Check redundant corner point.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
+        /// Check for kill formation <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
+        /// Multipoint snapback <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_B43" />
+        /// Two point kill <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q16508" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A6" />
+        /// </summary>
+        private static Boolean CheckRedundantCornerPoint(GameTryMove tryMove, Board captureBoard)
+        {
+            Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard[move];
+            if (tryBoard.MoveGroup.Points.Count != 1 || !tryBoard.CornerPoint() || !tryMove.IsNegligible) return false;
+
+            //check for kill formation
+            Boolean killFormation = (tryBoard.GetClosestPoints(move, c.Opposite()).Count >= 3 && !tryBoard.GetClosestPoints(move, c).Any());
+            if (killFormation) return false;
+
+            //multipoint snapback
+            if (captureBoard.GetNeighbourGroups(tryBoard.MoveGroup).Any(gr => gr.Points.Count > 1 && ImmovableHelper.CheckConnectAndDie(captureBoard, gr)))
+                return false;
+            return true;
+        }
+
+        /// <summary>
         /// Check for real eye in neighbour groups.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3_3" />
         /// </summary>
@@ -871,7 +896,7 @@ namespace Go
                     return true;
 
                 //stone neighbours at diagonal of each other
-                List<Point> npoints = LinkHelper.GetNeighboursDiagonallyLinked(tryBoard);
+                List<Point> npoints = LinkHelper.GetDiagonalPoints(tryBoard);
                 if (npoints.Count == 2)
                 {
                     //check diagonal at opposite corner of stone neighbours
@@ -1573,7 +1598,7 @@ namespace Go
             if (neutralPointMoves.Count == 0) return;
             Content c = neutralPointMoves.First().MoveContent;
             //remove unnecessary moves
-            neutralPointMoves.RemoveAll(n => n.MoveGroupLiberties == 1 || GroupHelper.GetKillerGroupFromCache(n.TryGame.Board, n.Move) != null);
+            neutralPointMoves.RemoveAll(n => n.MoveGroupLiberties == 1);
             neutralPointMoves.RemoveAll(n => !n.TryGame.Board.GetStoneAndDiagonalNeighbours().Any(s => n.TryGame.Board[s] == c.Opposite()));
             if (neutralPointMoves.Count == 0) return;
             GameTryMove genericNeutralMove = null;
@@ -2192,31 +2217,6 @@ namespace Go
                     return true;
             }
             return false;
-        }
-
-        /// <summary>
-        /// Check redundant corner point.
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
-        /// Check for kill formation <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
-        /// Multipoint snapback <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_B43" />
-        /// Two point kill <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q16508" />
-        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A6" />
-        /// </summary>
-        private static Boolean CheckRedundantCornerPoint(GameTryMove tryMove, Board captureBoard)
-        {
-            Board tryBoard = tryMove.TryGame.Board;
-            Point move = tryBoard.Move.Value;
-            Content c = tryBoard[move];
-            if (tryBoard.MoveGroup.Points.Count != 1 || !tryBoard.CornerPoint() || !tryMove.IsNegligible) return false;
-
-            //check for kill formation
-            Boolean killFormation = (tryBoard.GetClosestPoints(move, c.Opposite()).Count >= 3 && !tryBoard.GetClosestPoints(move, c).Any());
-            if (killFormation) return false;
-
-            //multipoint snapback
-            if (captureBoard.GetNeighbourGroups(tryBoard.MoveGroup).Any(gr => gr.Points.Count > 1 && ImmovableHelper.CheckConnectAndDie(captureBoard, gr)))
-                return false;
-            return true;
         }
 
         /// <summary>

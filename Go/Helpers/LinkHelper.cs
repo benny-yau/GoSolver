@@ -536,7 +536,7 @@ namespace Go
             List<Point> tigerMouthList = new List<Point>();
             foreach (Point q in LinkHelper.PointsBetweenDiagonals(diagonalPoint))
             {
-                if (IsTigerMouthForLink(board, q, c))
+                if (ImmovableHelper.FindEmptyTigerMouth(board, c, q))
                     tigerMouthList.Add(q);
             }
             return tigerMouthList;
@@ -638,39 +638,20 @@ namespace Go
         }
 
         /// <summary>
-        /// Get stone neighbours at diagonal of each other.
+        /// Get diagonal points.
         /// </summary>
-        public static List<Point> GetNeighboursDiagonallyLinked(Board board)
-        {
-            Point move = board.Move.Value;
-            Content c = board.MoveGroup.Content;
-            return GetNeighboursDiagonallyLinked(board, move, c.Opposite());
-        }
 
-        public static List<Point> GetNeighboursDiagonallyLinked(Board board, Point p, Content c)
+        public static List<Point> GetDiagonalPoints(Board board, Point? p = null, Content c = Content.Unknown)
         {
-            List<Point> npoints = board.GetStoneNeighbours(p).Where(n => board[n] == c).ToList();
+            if (p == null)
+            {
+                p = board.Move.Value;
+                c = board.MoveGroup.Content.Opposite();
+            }
+            List<Point> npoints = board.GetStoneNeighbours(p.Value).Where(n => board[n] == c).ToList();
             if (npoints.Count == 0) return npoints;
             npoints = npoints.Where(n => board.GetDiagonalNeighbours(n).Intersect(npoints).Any()).ToList();
             return npoints;
-        }
-
-        /// <summary>
-        /// Is tiger mouth for link. Check diagonal only for links, not for confirm alive.
-        /// </summary>
-        public static Boolean IsTigerMouthForLink(Board board, Point p, Content c, Boolean checkDiagonals = true)
-        {
-            if (!ImmovableHelper.FindEmptyTigerMouth(board, c, p)) return false;
-            //check if diagonals are immovable
-            if (checkDiagonals)
-            {
-                List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(board, p, c);
-                List<Point> immovablePoints = diagonals.Where(d => ImmovableHelper.IsImmovablePoint(board, d, c)).ToList();
-                if (immovablePoints.Count != 1) return true;
-                if (!diagonals.Except(immovablePoints).All(n => board[n] == c)) return true;
-                return false;
-            }
-            return true;
         }
 
         /// <summary>
@@ -693,7 +674,8 @@ namespace Go
         /// </summary>
         public static Boolean CheckBaseLineLeapLink(Board tryBoard, Point eyePoint, Content c)
         {
-            List<Point> npoints = tryBoard.GetStoneNeighbours(eyePoint).Where(n => tryBoard[n] == c && !n.Equals(tryBoard.Move.Value)).ToList();
+            Point move = tryBoard.Move.Value;
+            List<Point> npoints = tryBoard.GetStoneNeighbours(eyePoint).Where(n => tryBoard[n] == c && !n.Equals(move)).ToList();
             if (npoints.Count != 2 || npoints.Any(n => tryBoard.PointWithinMiddleArea(n))) return false;
             return true;
         }
@@ -789,10 +771,10 @@ namespace Go
             foreach (Point p in b.GetStoneNeighbours())
             {
                 if (b[p] != Content.Empty) continue;
-                if (func != null && func(p)) continue;
+                if (func != null && !func(p)) continue;
                 if (ImmovableHelper.FindTigerMouth(b, p, c) == null) continue;
                 Point q = b.GetStoneNeighbours(p).First(n => b[n] != c);
-                if (!ImmovableHelper.FindEmptyTigerMouth(b, c.Opposite(), q)) continue;
+                if (!KoHelper.MakeKoFight(b, q, c)) continue;
                 return true;
             }
             return false;
@@ -814,21 +796,10 @@ namespace Go
             (_, Board b2) = ImmovableHelper.IsSuicidalMove(q, c.Opposite(), b, true);
             if (b2 == null) return false;
             //make ko move
-            Board koTryBoard = b2.MakeMoveOnNewBoard(tigerMouth, c.Opposite());
-            if (koTryBoard == null || !KoHelper.IsKoFight(koTryBoard))
+            if (!KoHelper.MakeKoFight(b2, tigerMouth, c.Opposite()))
                 return false;
             //check for another ko
-            if (CheckForKoBreak(b2, s => s.Equals(p)))
-                return true;
-            //check negligible for links
-            HashSet<Group> tmGroups = b2.GetGroupsFromStoneNeighbours(tigerMouth, c.Opposite());
-            if (CheckNegligibleForLinks(b2, b, n => !tmGroups.Contains(n)))
-                return true;
-            //check link breakage
-            if (LinkHelper.LinkBreakage(b2))
-                return true;
-            //check link with threat group
-            if (LinkHelper.LinkWithThreatGroup(b2, b))
+            if (CheckForKoBreak(b2, s => !s.Equals(p)))
                 return true;
             return false;
         }
@@ -839,7 +810,7 @@ namespace Go
         public static Boolean LinkBreakage(Board b)
         {
             Content c = b.MoveGroup.Content;
-            List<Point> npoints = LinkHelper.GetNeighboursDiagonallyLinked(b);
+            List<Point> npoints = LinkHelper.GetDiagonalPoints(b);
             List<Point> diagonals = b.GetDiagonalNeighbours().Where(n => b[n] != c && b.GetStoneNeighbours(n).Intersect(npoints).Count() >= 2).ToList();
             if (!diagonals.Any()) return false;
             HashSet<Group> groups = b.GetGroupsFromPoints(npoints);

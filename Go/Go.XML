@@ -1290,14 +1290,9 @@
             Get stones within move group on current board.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.GetNeighboursDiagonallyLinked(Go.Board)">
+        <member name="M:Go.LinkHelper.GetDiagonalPoints(Go.Board,System.Nullable{Go.Point},Go.Content)">
             <summary>
-            Get stone neighbours at diagonal of each other.
-            </summary>
-        </member>
-        <member name="M:Go.LinkHelper.IsTigerMouthForLink(Go.Board,Go.Point,Go.Content,System.Boolean)">
-            <summary>
-            Is tiger mouth for link. Check diagonal only for links, not for confirm alive.
+            Get diagonal points.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.TigerMouthThreatGroup(Go.Board,Go.Point,Go.Content,System.Func{Go.Group,System.Boolean})">
@@ -1528,6 +1523,16 @@
             Check killer formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113_4" />
             Check reverse ko fight <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A30" />
             Check for eye at corner point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A67_2" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CheckRedundantCornerPoint(Go.GameTryMove,Go.Board)">
+            <summary>
+            Check redundant corner point.
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
+            Check for kill formation <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
+            Multipoint snapback <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_B43" />
+            Two point kill <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q16508" />
+            <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A6" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckAnyRealEyeInSuicidalConnectAndDie(Go.Board,Go.Board)">
@@ -1905,16 +1910,6 @@
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.CheckRedundantCornerPoint(Go.GameTryMove,Go.Board)">
-            <summary>
-            Check redundant corner point.
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2834" />
-            Check for kill formation <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
-            Multipoint snapback <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_B43" />
-            Two point kill <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q16508" />
-            <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A6" />
-            </summary>
-        </member>
         <member name="M:Go.RedundantMoveHelper.SpecificEyeFillerMove(Go.GameTryMove,System.Boolean)">
             <summary>
             Return specific survival or killer move if killer group contains five points or less. 
@@ -2221,15 +2216,14 @@
             Get two possible eyes.
             </summary>
         </member>
-        <member name="M:Go.LifeCheck.CheckTigerMouthExceptions(Go.Board,System.Collections.Generic.IEnumerable{Go.Point},Go.Content,System.Boolean)">
+        <member name="M:Go.LifeCheck.CheckTigerMouthExceptions(Go.Board,System.Collections.Generic.IEnumerable{Go.Point},Go.Content)">
             <summary>
             Check tiger mouth exceptions.
-            Suicidal at tiger mouth  <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31177" />
             Tiger mouth escape with atari <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150" />
             Double tiger mouth <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_B3" />
             </summary>
         </member>
-        <member name="M:Go.LifeCheck.CommonTigerMouthExceptions(Go.Board,Go.Content,Go.Point,Go.Point,System.Boolean)">
+        <member name="M:Go.LifeCheck.CommonTigerMouthExceptions(Go.Board,Go.Content,Go.Point,Go.Point)">
             <summary>
             Common tiger mouth exceptions.
             Check for atari at tiger mouth <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_4" />

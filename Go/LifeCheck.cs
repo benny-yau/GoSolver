@@ -49,9 +49,11 @@ namespace Go
                 if (eyes.Count + killerGroups.Count - 1 - i < 2)
                     break;
             }
-            if (eyes.Count < 2) return ConfirmAliveResult.Unknown;
+            if (eyes.Count < 2) 
+                return ConfirmAliveResult.Unknown;
             //check for tiger mouth exception
-            if (CheckTigerMouthExceptions(board, tigerMouthList.Select(t => t.Move), c, true)) return ConfirmAliveResult.Unknown;
+            if (CheckTigerMouthExceptions(board, tigerMouthList.Select(t => t.Move), c)) 
+                return ConfirmAliveResult.Unknown;
 
             //two real eyes to confirm alive
             if (eyes.Count >= 2)
@@ -77,11 +79,10 @@ namespace Go
 
         /// <summary>
         /// Check tiger mouth exceptions.
-        /// Suicidal at tiger mouth  <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31177" />
         /// Tiger mouth escape with atari <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150" />
         /// Double tiger mouth <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_B3" />
         /// </summary>
-        public static Boolean CheckTigerMouthExceptions(Board board, IEnumerable<Point> tigerMouthList, Content c, Boolean lifeCheck = false)
+        public static Boolean CheckTigerMouthExceptions(Board board, IEnumerable<Point> tigerMouthList, Content c)
         {
             foreach (Point tigerMouth in tigerMouthList)
             {
@@ -90,7 +91,7 @@ namespace Go
                 if (board[libertyPoint.Value] != Content.Empty)
                     continue;
 
-                if (CommonTigerMouthExceptions(board, c, tigerMouth, libertyPoint.Value, lifeCheck))
+                if (CommonTigerMouthExceptions(board, c, tigerMouth, libertyPoint.Value))
                     return true;
             }
             return false;
@@ -112,7 +113,7 @@ namespace Go
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150" />
         /// Double ko break <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_y" />
         /// </summary>
-        public static Boolean CommonTigerMouthExceptions(Board board, Content c, Point tigerMouth, Point libertyPoint, Boolean lifeCheck = false)
+        public static Boolean CommonTigerMouthExceptions(Board board, Content c, Point tigerMouth, Point libertyPoint)
         {
             //double ko break
             if (LinkHelper.DoubleKoBreak(board, tigerMouth, c))
@@ -144,7 +145,7 @@ namespace Go
             }
 
             //check for another tiger mouth at move
-            List<Point> tigerMouths = b.GetStoneNeighbours().Where(n => !n.Equals(tigerMouth) && LinkHelper.IsTigerMouthForLink(board, n, c, !lifeCheck)).ToList();
+            List<Point> tigerMouths = b.GetStoneNeighbours().Where(n => !n.Equals(tigerMouth) && ImmovableHelper.FindEmptyTigerMouth(board, c, n)).ToList();
             if (tigerMouths.Any())
             {
                 if (b.MoveGroupLiberties > 3 || CheckThreatGroupEscape(b, tigerMouth, tigerMouths))
@@ -190,7 +191,7 @@ namespace Go
             List<LinkedPoint<Point>> diagonalPoints = LinkHelper.GetGroupDiagonals(board, eye);
             foreach (LinkedPoint<Point> p in diagonalPoints)
             {
-                if (LinkHelper.IsTigerMouthForLink(board, p.Move, c.Opposite(), false))
+                if (ImmovableHelper.FindEmptyTigerMouth(board, c.Opposite(), p.Move))
                     tigerMouthList.Add(p);
             }
         }

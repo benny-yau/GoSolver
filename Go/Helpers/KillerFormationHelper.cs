@@ -1063,7 +1063,7 @@ namespace Go
                 List<Point> nEndPoint = tryBoard.GetStoneNeighbours(endPoint).Where(n => tryBoard[n] != c && !tryBoard.GetDiagonalNeighbours(n).Intersect(moveGroup.Points).Any()).ToList();
                 if (nEndPoint.Count != 1) return false;
                 List<Point> nPoints = tryBoard.GetStoneNeighbours(nEndPoint.First());
-                if (nPoints.Count(n => tryBoard[n] == c) >= nPoints.Count - 1 && LinkHelper.GetNeighboursDiagonallyLinked(tryBoard, nEndPoint.First(), c).Any())
+                if (nPoints.Count(n => tryBoard[n] == c) >= nPoints.Count - 1 && LinkHelper.GetDiagonalPoints(tryBoard, nEndPoint.First(), c).Any())
                     return true;
             }
             return false;

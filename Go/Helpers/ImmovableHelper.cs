@@ -195,7 +195,7 @@ namespace Go
             else if (!ImmovableHelper.FindEmptyTigerMouth(board, c, p.Value)) return (false, null);
 
             //stone neighbours at diagonal of each other
-            List<Point> nstones = LinkHelper.GetNeighboursDiagonallyLinked(board, p.Value, c);
+            List<Point> nstones = LinkHelper.GetDiagonalPoints(board, p.Value, c);
             if (!nstones.Any()) return (false, null);
 
             Board b = board.MakeMoveOnNewBoard(p.Value, c.Opposite());
