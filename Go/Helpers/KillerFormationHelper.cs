@@ -1182,7 +1182,8 @@ namespace Go
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.GetStoneAndDiagonalNeighbours().Count(n => tryBoard[n] == c.Opposite()) < 4) return false;
+            List<Group> groups = tryBoard.GetGroupsFromStoneNeighbours();
+            if (groups.Count == 0 || groups.All(n => n.Points.Count < 4)) return false;
             if (KillerFormationHelper.TryKillFormation(currentBoard, c.Opposite(), new List<Point>() { move }))
                 return true;
             return false;

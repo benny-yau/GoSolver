@@ -98,24 +98,11 @@ namespace Go
         }
 
         /// <summary>
-        /// Get killer group of neighbour groups.
-        /// </summary>
-        public static Group GetKillerGroupOfNeighbourGroups(Board board, Point p, Content c)
-        {
-            Group killerGroup = GroupHelper.GetKillerGroupFromCache(board, p, c);
-            if (killerGroup == null) return null;
-            HashSet<Group> ngroups = board.GetGroupsFromStoneNeighbours(p, c.Opposite());
-            if (GroupHelper.GetNeighbourGroupsOfKillerGroup(board, killerGroup).Any(n => ngroups.Contains(n)))
-                return killerGroup;
-            return null;
-        }
-
-        /// <summary>
         /// Get killer group of strong neighbour groups.
         /// </summary>
         public static Group GetKillerGroupOfStrongNeighbourGroups(Board board, Point p, Content c)
         {
-            Group killerGroup = GroupHelper.GetKillerGroupOfNeighbourGroups(board, p, c);
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(board, p, c);
             if (killerGroup == null) return null;
 
             List<Group> groups = board.GetNeighbourGroups(killerGroup);

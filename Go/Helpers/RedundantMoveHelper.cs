@@ -308,7 +308,7 @@ namespace Go
             if (!KillerFormationHelper.IsFirstPoint(currentBoard, q, move)) return false;
 
             //check killer group
-            Group killerGroup = GroupHelper.GetKillerGroupOfNeighbourGroups(currentBoard, atariPoint, c);
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, atariPoint, c);
             if (killerGroup == null || currentBoard.GetNeighbourGroups(killerGroup).Any(n => n.Liberties.Count <= 2))
                 return false;
 
@@ -1108,7 +1108,7 @@ namespace Go
             //get diagonals next to atari target
             List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] != c.Opposite() && tryBoard.GetGroupsFromStoneNeighbours(n, c).Intersect(tryBoard.AtariTargets).Any()).ToList();
             //check killer group
-            if (diagonals.Any(d => GroupHelper.GetKillerGroupOfNeighbourGroups(tryBoard, d, c.Opposite()) != null))
+            if (diagonals.Any(d => GroupHelper.GetKillerGroupFromCache(tryBoard, d, c.Opposite()) != null))
                 return true;
             return false;
         }
@@ -1639,7 +1639,10 @@ namespace Go
                 Board b = ImmovableHelper.MakeMoveAtLiberty(captureBoard, tryBoard.MoveGroup, c);
                 if (b == null) return true;
             }
-            if (tryBoard.MoveGroup.Points.Count > 1)
+            Boolean eyeFound = tryBoard.MoveGroup.Liberties.Any(n => EyeHelper.FindEye(tryBoard, n));
+            if (eyeFound && tryBoard.MoveGroup.Points.Count > 1)
+                return true;
+            if (!eyeFound && tryBoard.MoveGroup.Points.Count > 3)
                 return true;
             return false;
         }
@@ -1908,10 +1911,10 @@ namespace Go
                         return true;
                 }
                 //check killer groups
-                Group diagonalKillerGroup = GroupHelper.GetKillerGroupOfStrongNeighbourGroups(currentBoard, d, c.Opposite());
+                Group diagonalKillerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, d, c.Opposite());
                 if (diagonalKillerGroup == null) continue;
 
-                Group moveKillerGroup = GroupHelper.GetKillerGroupOfNeighbourGroups(currentBoard, move, c.Opposite());
+                Group moveKillerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
                 if (moveKillerGroup != null) continue;
 
                 //find immovable point at diagonal
@@ -2016,7 +2019,7 @@ namespace Go
             List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(q => tryBoard[q] != c).ToList();
             diagonals = diagonals.Where(eye => LinkHelper.PointsBetweenDiagonals(eye, move).All(d => tryBoard[d] == c)).ToList();
             if (diagonals.Count == 0) return false;
-            diagonals.RemoveAll(d => GroupHelper.GetKillerGroupOfNeighbourGroups(currentBoard, d, c) == null);
+            diagonals.RemoveAll(d => GroupHelper.GetKillerGroupFromCache(currentBoard, d, c) == null);
             if (diagonals.Count == 0) return false;
 
             //make opponent move
@@ -2243,7 +2246,7 @@ namespace Go
             if (!tryMove.IsNegligible) return false;
 
             //check killer group
-            Group killerGroup = GroupHelper.GetKillerGroupOfNeighbourGroups(currentBoard, move, c);
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c);
             if (killerGroup == null || currentBoard.GetNeighbourGroups(killerGroup).Any(n => n.Liberties.Count <= 2)) return false;
 
             //no neighbour group

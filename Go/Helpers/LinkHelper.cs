@@ -252,7 +252,7 @@ namespace Go
 
                     //check negligible for links
                     if (immediateLink) continue;
-                    if (LinkHelper.CheckNegligibleForLinks(b, n => !n.Equals(b.GetGroupAt(pointA)) && !n.Equals(b.GetGroupAt(pointB))))
+                    if (LinkHelper.CheckNegligibleForLinks(b, board, n => !n.Equals(b.GetGroupAt(pointA)) && !n.Equals(b.GetGroupAt(pointB))))
                         return false;
                 }
                 return true;
@@ -702,11 +702,10 @@ namespace Go
         /// <summary>
         /// Double atari on target groups.
         /// </summary>
-        public static Boolean DoubleAtariOnTargetGroups(Board board, List<Group> targetGroups, Boolean checkTigerMouthExceptions = true)
+        public static Boolean DoubleAtariOnTargetGroups(Board board, List<Group> targetGroups)
         {
             if (targetGroups.Count == 0) return false;
             Content c = targetGroups.First().Content;
-            //get groups with two liberties only
             List<Group> groups = targetGroups.Where(t => board.GetGroupLiberties(t).Count == 2).ToList();
             if (groups.Count > 0)
             {
@@ -715,12 +714,11 @@ namespace Go
                 IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, liberties, c.Opposite(), true);
                 if (moveBoards.Any(b => AtariHelper.DoubleAtariWithoutEscape(b)))
                     return true;
-                //check tiger mouth exceptions
-                if (checkTigerMouthExceptions && moveBoards.Any(b => CheckMoveGroupForTigerMouthExceptions(board, b)))
+                if (moveBoards.Any(b => CheckMoveGroupForTigerMouthExceptions(board, b)))
                     return true;
             }
             //double connect and die
-            if (DoubleConnectAndDieOnTargetGroups(board, targetGroups, checkTigerMouthExceptions))
+            if (DoubleConnectAndDieOnTargetGroups(board, targetGroups))
                 return true;
             return false;
         }
@@ -728,7 +726,7 @@ namespace Go
         /// <summary>
         /// Double connect and die on target groups.
         /// </summary>
-        public static Boolean DoubleConnectAndDieOnTargetGroups(Board board, List<Group> targetGroups, Boolean checkTigerMouthExceptions = true)
+        public static Boolean DoubleConnectAndDieOnTargetGroups(Board board, List<Group> targetGroups)
         {
             if (targetGroups.Count == 0) return false;
             Content c = targetGroups.First().Content;
@@ -741,8 +739,7 @@ namespace Go
             //double connect and die
             if (moveBoards.Any(b => b.GetGroupsFromStoneNeighbours().Count(n => !WallHelper.IsStrongGroup(b, n)) >= 2))
                 return true;
-            //check tiger mouth exceptions
-            if (checkTigerMouthExceptions && moveBoards.Any(b => CheckMoveGroupForTigerMouthExceptions(board, b)))
+            if (moveBoards.Any(b => CheckMoveGroupForTigerMouthExceptions(board, b)))
                 return true;
             return false;
         }
@@ -825,7 +822,7 @@ namespace Go
                 return true;
             //check negligible for links
             HashSet<Group> tmGroups = b2.GetGroupsFromStoneNeighbours(tigerMouth, c.Opposite());
-            if (CheckNegligibleForLinks(b2, n => !tmGroups.Contains(n)))
+            if (CheckNegligibleForLinks(b2, b, n => !tmGroups.Contains(n)))
                 return true;
             //check link breakage
             if (LinkHelper.LinkBreakage(b2))
@@ -854,9 +851,10 @@ namespace Go
         /// <summary>
         /// Check negligible for links.
         /// </summary>
-        public static Boolean CheckNegligibleForLinks(Board b, Func<Group, Boolean> func = null)
+        public static Boolean CheckNegligibleForLinks(Board b, Board board, Func<Group, Boolean> func = null)
         {
-            //check for connect and die
+            if (b.CapturedList.Any() || Board.ResolveAtari(board, b))
+                return true;
             if (b.GetNeighbourGroups().Any(n => (func != null ? func(n) : true) && !WallHelper.IsStrongGroup(b, n)))
                 return true;
             return false;

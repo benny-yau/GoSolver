@@ -596,11 +596,6 @@
             Get killer group cached in board for single point.
             </summary>
         </member>
-        <member name="M:Go.GroupHelper.GetKillerGroupOfNeighbourGroups(Go.Board,Go.Point,Go.Content)">
-            <summary>
-            Get killer group of neighbour groups.
-            </summary>
-        </member>
         <member name="M:Go.GroupHelper.GetKillerGroupOfStrongNeighbourGroups(Go.Board,Go.Point,Go.Content)">
             <summary>
             Get killer group of strong neighbour groups.
@@ -1315,12 +1310,12 @@
             Check base line leap link.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.DoubleAtariOnTargetGroups(Go.Board,System.Collections.Generic.List{Go.Group},System.Boolean)">
+        <member name="M:Go.LinkHelper.DoubleAtariOnTargetGroups(Go.Board,System.Collections.Generic.List{Go.Group})">
             <summary>
             Double atari on target groups.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.DoubleConnectAndDieOnTargetGroups(Go.Board,System.Collections.Generic.List{Go.Group},System.Boolean)">
+        <member name="M:Go.LinkHelper.DoubleConnectAndDieOnTargetGroups(Go.Board,System.Collections.Generic.List{Go.Group})">
             <summary>
             Double connect and die on target groups.
             </summary>
@@ -1355,7 +1350,7 @@
             Link breakage.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.CheckNegligibleForLinks(Go.Board,System.Func{Go.Group,System.Boolean})">
+        <member name="M:Go.LinkHelper.CheckNegligibleForLinks(Go.Board,Go.Board,System.Func{Go.Group,System.Boolean})">
             <summary>
             Check negligible for links.
             </summary>
