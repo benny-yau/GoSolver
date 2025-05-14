@@ -99,12 +99,13 @@ namespace Go
         /// </summary>
         public static Boolean IsWeakGroup(Board tryBoard, Group ngroup)
         {
+            Content c = ngroup.Content;
             if (ngroup.Liberties.Count != 2) return false;
             foreach (Point liberty in ngroup.Liberties)
             {
-                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, ngroup.Content.Opposite(), tryBoard, true);
+                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), tryBoard, true);
                 if (suicidal) continue;
-                if (WallHelper.IsNonKillableGroup(b) || KoHelper.IsNonKillableGroupKoFight(b)) continue;
+                if (WallHelper.IsNonKillableOrKo(b)) continue;
                 return true;
             }
             return false;

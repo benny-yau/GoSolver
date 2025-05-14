@@ -2355,7 +2355,7 @@ namespace Go
             if (KoHelper.IsNonKillableGroupKoFight(tryBoard))
             {
                 List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours();
-                if (LifeCheck.GetTargets(tryBoard).All(t => ngroups.Contains(t) && WallHelper.AllTargetWithinNonKillableGroups(tryBoard, t)))
+                if (LifeCheck.GetTargets(tryBoard).All(t => ngroups.Contains(t) && WallHelper.TargetWithAllNonKillableGroups(tryBoard, t)))
                     return true;
                 if (!WallHelper.StrongNeighbourGroups(tryBoard))
                     return false;

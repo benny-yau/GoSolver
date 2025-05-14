@@ -212,8 +212,6 @@ namespace Go
         /// </summary>
         public static Boolean IsAbsoluteLinkForGroups(Board currentBoard, Board tryBoard)
         {
-            Point move = tryBoard.Move.Value;
-            Content c = tryBoard.MoveGroup.Content;
             if (tryBoard.MoveGroup.Points.Count == 1) return false;
             List<Group> linkedGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
             return (linkedGroups.Count > 1);
@@ -562,30 +560,6 @@ namespace Go
                 GetAllDiagonalGroups(board, g, func, groups);
             }
             return groups;
-        }
-
-        /// <summary>
-        /// Check all diagonal groups.
-        /// </summary>
-        public static Boolean CheckAllDiagonalGroups(Board board, Group group, Func<Group, Boolean> func, List<Group> groups = null)
-        {
-            if (groups == null)
-            {
-                groups = new List<Group>();
-                groups.Add(group);
-                if (func(group)) return true;
-            }
-            //get all diagonal points
-            foreach (Group g in GetDiagonalGroups(board, group))
-            {
-                if (groups.Contains(g)) continue;
-                if (func(g)) return true;
-                groups.Add(g);
-                //check all diagonal groups by recursion
-                Boolean result = CheckAllDiagonalGroups(board, g, func, groups);
-                if (result) return true;
-            }
-            return false;
         }
 
         /// <summary>

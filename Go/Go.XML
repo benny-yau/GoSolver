@@ -1270,11 +1270,6 @@
             Get all diagonal groups by recursion.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.CheckAllDiagonalGroups(Go.Board,Go.Group,System.Func{Go.Group,System.Boolean},System.Collections.Generic.List{Go.Group})">
-            <summary>
-            Check all diagonal groups.
-            </summary>
-        </member>
         <member name="M:Go.LinkHelper.PointsBetweenDiagonals(Go.Point,Go.Point)">
             <summary>
             Get the opposite diagonals of the two diagonal points.
@@ -2083,16 +2078,6 @@
         <member name="M:Go.WallHelper.TargetWithAnyNonKillableGroup(Go.Board,Go.Group)">
             <summary>
             Target with any non killable group.
-            </summary>
-        </member>
-        <member name="M:Go.WallHelper.TargetWithKoFightAtAllNonKillableGroups(Go.Board,Go.Group)">
-            <summary>
-            Target with ko fight at all non killable groups.
-            </summary>
-        </member>
-        <member name="M:Go.WallHelper.AllTargetWithinNonKillableGroups(Go.Board,Go.Group)">
-            <summary>
-            All target within non killable groups.
             </summary>
         </member>
         <member name="M:Go.WallHelper.StrongGroupsAtCoveredBoard(Go.Board,Go.Group)">

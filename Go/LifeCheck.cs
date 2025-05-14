@@ -87,9 +87,7 @@ namespace Go
             foreach (Point tigerMouth in tigerMouthList)
             {
                 Point? libertyPoint = ImmovableHelper.FindTigerMouth(board, tigerMouth, c);
-                if (libertyPoint == null) continue;
-                if (board[libertyPoint.Value] != Content.Empty)
-                    continue;
+                if (libertyPoint == null || board[libertyPoint.Value] != Content.Empty) continue;
 
                 if (CommonTigerMouthExceptions(board, c, tigerMouth, libertyPoint.Value))
                     return true;
@@ -115,10 +113,6 @@ namespace Go
         /// </summary>
         public static Boolean CommonTigerMouthExceptions(Board board, Content c, Point tigerMouth, Point libertyPoint)
         {
-            //double ko break
-            if (LinkHelper.DoubleKoBreak(board, tigerMouth, c))
-                return true;
-
             //make move at liberty
             (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(libertyPoint, c.Opposite(), board);
             if (suicidal) return false;
@@ -131,10 +125,6 @@ namespace Go
             //check for tiger mouth threat group
             Group threatGroup = LinkHelper.TigerMouthThreatGroup(board, tigerMouth, c);
             if (threatGroup != null && LinkHelper.LinkWithThreatGroup(b, board, s => s == threatGroup))
-                return true;
-
-            //check for ko break
-            if (LinkHelper.CheckForKoBreak(b))
                 return true;
 
             //check for link breakage
@@ -151,30 +141,40 @@ namespace Go
                 if (b.MoveGroupLiberties > 3 || CheckThreatGroupEscape(b, tigerMouth, tigerMouths))
                     return true;
             }
+
+            //check for ko break
+            if (LinkHelper.CheckForKoBreak(b))
+                return true;
+
+            //double ko break
+            if (LinkHelper.DoubleKoBreak(board, tigerMouth, c))
+                return true;
+
             return false;
         }
 
         /// <summary>
         /// Check threat group escape.
         /// </summary>
-        public static Boolean CheckThreatGroupEscape(Board b, Point tigerMouth, List<Point> targetPoints = null)
+        public static Boolean CheckThreatGroupEscape(Board board, Point tigerMouth, List<Point> targetPoints = null)
         {
-            Content c = b.MoveGroup.Content;
+            Point move = board.Move.Value;
+            Content c = board.MoveGroup.Content;
             //fill tiger mouth
-            Board b2 = b.MakeMoveOnNewBoard(tigerMouth, c.Opposite(), true);
-            if (b2 == null) return true;
+            Board b = board.MakeMoveOnNewBoard(tigerMouth, c.Opposite(), true);
+            if (b == null) return true;
 
             //check non killable
-            if (targetPoints != null && targetPoints.All(n => b2.GetGroupsFromStoneNeighbours(n, c).All(s => WallHelper.IsNonKillableGroup(b2, s))))
+            if (targetPoints != null && targetPoints.All(n => b.GetGroupsFromStoneNeighbours(n, c).All(s => WallHelper.IsNonKillableGroup(b, s))))
                 return false;
 
             //check killer group
-            if (GroupHelper.GetKillerGroupOfStrongNeighbourGroups(b2, b.Move.Value, c.Opposite()) == null)
+            if (GroupHelper.GetKillerGroupOfStrongNeighbourGroups(b, move, c.Opposite()) == null)
                 return true;
 
             //make second move
-            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(b2, b2.GetGroupLiberties(b.MoveGroup), c);
-            if (moveBoards.Any(n => n.MoveGroupLiberties > 1 || !GameTryMove.IsNegligibleForBoard(n, b2)))
+            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(b, b.GetGroupLiberties(board.MoveGroup), c);
+            if (moveBoards.Any(n => n.MoveGroupLiberties > 1 || !GameTryMove.IsNegligibleForBoard(n, b)))
                 return true;
 
             return false;
@@ -220,9 +220,9 @@ namespace Go
         /// </summary>
         public static ConfirmAliveResult CheckIfTargetGroupKilled(Board board)
         {
-            GameInfo gameInfo = board.GameInfo;
-            List<Point> targetGroup = gameInfo.targetPoints;
-            Content c = GameHelper.GetContentForSurviveOrKill(gameInfo, SurviveOrKill.Survive);
+            GameInfo gi = board.GameInfo;
+            List<Point> targetGroup = gi.targetPoints;
+            Content c = GameHelper.GetContentForSurviveOrKill(gi, SurviveOrKill.Survive);
             List<Point> killedPoints = targetGroup.Where(q => board[q] != c).ToList();
             if (killedPoints.Count > 0 && killedPoints.Count == targetGroup.Count)
                 return ConfirmAliveResult.Dead;

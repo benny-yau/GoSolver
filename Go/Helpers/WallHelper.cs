@@ -150,9 +150,15 @@ namespace Go
         public static Boolean TargetWithAllNonKillableGroups(Board board, Group group = null)
         {
             if (group == null) group = board.MoveGroup;
-            if (board.GetNeighbourGroups(group).All(n => WallHelper.IsNonKillableGroup(board, n)))
+            if (board.GetNeighbourGroups(group).All(n => IsNonKillableOrKo(board, n)))
                 return true;
             return false;
+        }
+
+        public static Boolean IsNonKillableOrKo(Board board, Group group = null)
+        {
+            if (group == null) group = board.MoveGroup;
+            return WallHelper.IsNonKillableGroup(board, group) || KoHelper.IsNonKillableGroupKoFight(board, group);
         }
 
         /// <summary>
@@ -164,27 +170,6 @@ namespace Go
             if (board.GetNeighbourGroups(group).Any(n => WallHelper.IsNonKillableGroup(board, n)))
                 return true;
             return false;
-        }
-
-        /// <summary>
-        /// Target with ko fight at all non killable groups.
-        /// </summary>
-        public static Boolean TargetWithKoFightAtAllNonKillableGroups(Board board, Group group = null)
-        {
-            if (group == null) group = board.MoveGroup;
-            if (board.GetNeighbourGroups(group).All(n => WallHelper.IsNonKillableGroup(board, n) || KoHelper.IsNonKillableGroupKoFight(board, n)))
-                return true;
-            return false;
-        }
-
-        /// <summary>
-        /// All target within non killable groups.
-        /// </summary>
-        public static Boolean AllTargetWithinNonKillableGroups(Board board, Group targetGroup)
-        {
-            if (LinkHelper.CheckAllDiagonalGroups(board, targetGroup, t => !WallHelper.TargetWithKoFightAtAllNonKillableGroups(board, t)))
-                return false;
-            return true;
         }
 
         /// <summary>
