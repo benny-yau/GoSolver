@@ -630,6 +630,8 @@ namespace Go
 
         /// <summary>
         /// Get tiger mouth threat group.
+        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_7" />
+        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_6" />
         /// </summary>
         public static Group TigerMouthThreatGroup(Board board, Point tigerMouth, Content c, Func<Group, Boolean> func = null)
         {
@@ -708,7 +710,7 @@ namespace Go
             if (Board.ResolveAtari(board, b) || b.CapturedList.Any(n => CheckImmovableNeighbourGroups(board, n).Any()))
                 return true;
 
-            if (LinkWithThreatGroup(b, board) || MoveAtTigerMouth(b) || CheckForKoBreak(b) || LinkBreakage(b))
+            if (LinkWithThreatGroup(b, board) || MoveAtTigerMouth(b, board).Any() || CheckForKoBreak(b) || LinkBreakage(b))
                 return true;
             return false;
         }
@@ -729,14 +731,14 @@ namespace Go
 
         /// <summary>
         /// Move at tiger mouth.
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_B3" />
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571" />
+        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571" />
         /// </summary>
-        public static Boolean MoveAtTigerMouth(Board b)
+        public static List<Point> MoveAtTigerMouth(Board b, Board board)
         {
             Content c = b.MoveGroup.Content;
-            if (b.MoveGroupLiberties <= 2) return false;
-            if (b.GetStoneNeighbours().Any(n => ImmovableHelper.FindTigerMouthForLink(b, n, c.Opposite())))
-                return true;
-            return false;
+            return b.GetStoneNeighbours().Where(n => ImmovableHelper.FindTigerMouthForLink(board, n, c.Opposite())).ToList();
         }
 
         /// <summary>
@@ -758,6 +760,7 @@ namespace Go
 
         /// <summary>
         /// Double ko break.
+        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_y" />
         /// </summary>
         public static Boolean DoubleKoBreak(Board b, Point tigerMouth, Content c)
         {
@@ -782,6 +785,8 @@ namespace Go
 
         /// <summary>
         /// Link breakage.
+        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_2" />
+        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_Nie60_2" /> 
         /// </summary>
         public static Boolean LinkBreakage(Board b)
         {
@@ -789,23 +794,33 @@ namespace Go
             List<Point> npoints = LinkHelper.GetDiagonalPoints(b);
             List<Point> diagonals = b.GetDiagonalNeighbours().Where(n => b[n] == Content.Empty && b.GetStoneNeighbours(n).Intersect(npoints).Count() >= 2).ToList();
             if (!diagonals.Any()) return false;
-            if (diagonals.All(n => ImmovableHelper.IsSuicidalMove(b, n, c, true))) return false;
-            HashSet<Group> groups = b.GetGroupsFromPoints(npoints);
-            if (groups.Any(n => n.Liberties.Count == 1)) return false;
-            if (groups.Count > 1 && groups.Any(s => !WallHelper.IsNonKillableGroup(b, s)))
-                return true;
+            foreach (Point d in diagonals)
+            {
+                if (ImmovableHelper.IsSuicidalMove(b, d, c, true)) continue;
+                HashSet<Group> ngroups = b.GetGroupsFromStoneNeighbours(d, c);
+                if (ngroups.Count == 1) continue;
+                if (ngroups.Any(n => n.Liberties.Count == 1)) continue;
+                if (ngroups.Any(n => !WallHelper.IsNonKillableGroup(b, n)))
+                    return true;
+            }
             return false;
         }
 
         /// <summary>
         /// Check negligible for links.
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_4" />
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150" />
+        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_9" />
         /// </summary>
         public static Boolean CheckNegligibleForLinks(Board b, Board board, Func<Group, Boolean> func = null)
         {
             if (Board.ResolveAtari(board, b) || b.CapturedList.Any(n => CheckImmovableNeighbourGroups(board, n).Any()))
                 return true;
-            if (b.GetNeighbourGroups().Any(n => (func != null ? func(n) : true) && !WallHelper.IsStrongGroup(b, n)))
+
+            List<Group> ngroups = b.GetNeighbourGroups().Where(n => (func != null ? func(n) : true)).ToList();
+            if (ngroups.Any(n => ImmovableHelper.CheckConnectAndDie(b, n) && !ImmovableHelper.CheckConnectAndDie(board, n, false)))
                 return true;
+            
             return false;
         }
 

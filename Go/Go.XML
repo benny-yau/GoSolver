@@ -1298,6 +1298,8 @@
         <member name="M:Go.LinkHelper.TigerMouthThreatGroup(Go.Board,Go.Point,Go.Content,System.Func{Go.Group,System.Boolean})">
             <summary>
             Get tiger mouth threat group.
+            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_7" />
+            Check for two threat groups <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_6" />
             </summary>
         </member>
         <member name="M:Go.LinkHelper.CheckBaseLineLeapLink(Go.Board,Go.Point,Go.Content)">
@@ -1325,9 +1327,12 @@
             Link with threat group.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.MoveAtTigerMouth(Go.Board)">
+        <member name="M:Go.LinkHelper.MoveAtTigerMouth(Go.Board,Go.Board)">
             <summary>
             Move at tiger mouth.
+            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_B3" />
+            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571" />
+            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571" />
             </summary>
         </member>
         <member name="M:Go.LinkHelper.CheckForKoBreak(Go.Board,System.Func{Go.Point,System.Boolean})">
@@ -1338,16 +1343,22 @@
         <member name="M:Go.LinkHelper.DoubleKoBreak(Go.Board,Go.Point,Go.Content)">
             <summary>
             Double ko break.
+            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_y" />
             </summary>
         </member>
         <member name="M:Go.LinkHelper.LinkBreakage(Go.Board)">
             <summary>
             Link breakage.
+            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_2" />
+            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_Nie60_2" /> 
             </summary>
         </member>
         <member name="M:Go.LinkHelper.CheckNegligibleForLinks(Go.Board,Go.Board,System.Func{Go.Group,System.Boolean})">
             <summary>
             Check negligible for links.
+            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_4" />
+            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150" />
+            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_9" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.FindPotentialEye(Go.GameTryMove)">
@@ -2209,26 +2220,11 @@
         <member name="M:Go.LifeCheck.CheckTigerMouthExceptions(Go.Board,System.Collections.Generic.IEnumerable{Go.Point},Go.Content)">
             <summary>
             Check tiger mouth exceptions.
-            Tiger mouth escape with atari <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150" />
-            Double tiger mouth <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_B3" />
             </summary>
         </member>
         <member name="M:Go.LifeCheck.CommonTigerMouthExceptions(Go.Board,Go.Content,Go.Point,Go.Point)">
             <summary>
             Common tiger mouth exceptions.
-            Check for atari at tiger mouth <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_4" />
-            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150_2" />
-            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_9" />
-            Check for tiger mouth threat group  
-            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_7" />
-            Check for two threat groups <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_6" />
-            Check for link breakage <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_2" />
-            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_Nie60_2" /> 
-            Check for another tiger mouth at move <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_10" />
-            Check double tiger mouth at move <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571" />
-            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571" />
-            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150" />
-            Double ko break <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_y" />
             </summary>
         </member>
         <member name="M:Go.LifeCheck.CheckThreatGroupEscape(Go.Board,Go.Point,System.Collections.Generic.List{Go.Point})">

@@ -79,8 +79,6 @@ namespace Go
 
         /// <summary>
         /// Check tiger mouth exceptions.
-        /// Tiger mouth escape with atari <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150" />
-        /// Double tiger mouth <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_B3" />
         /// </summary>
         public static Boolean CheckTigerMouthExceptions(Board board, IEnumerable<Point> tigerMouthList, Content c)
         {
@@ -97,23 +95,10 @@ namespace Go
 
         /// <summary>
         /// Common tiger mouth exceptions.
-        /// Check for atari at tiger mouth <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_4" />
-        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150_2" />
-        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_9" />
-        /// Check for tiger mouth threat group  
-        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_7" />
-        /// Check for two threat groups <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_6" />
-        /// Check for link breakage <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_2" />
-        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_Nie60_2" /> 
-        /// Check for another tiger mouth at move <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_10" />
-        /// Check double tiger mouth at move <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571" />
-        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571" />
-        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150" />
-        /// Double ko break <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_y" />
         /// </summary>
         public static Boolean CommonTigerMouthExceptions(Board board, Content c, Point tigerMouth, Point libertyPoint)
         {
-            //make move at liberty
+            //make move at liberty point
             (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(libertyPoint, c.Opposite(), board);
             if (suicidal) return false;
 
@@ -135,7 +120,7 @@ namespace Go
             }
 
             //check for another tiger mouth at move
-            List<Point> tigerMouths = b.GetStoneNeighbours().Where(n => !n.Equals(tigerMouth) && ImmovableHelper.FindTigerMouthForLink(board, n, c)).ToList();
+            List<Point> tigerMouths = LinkHelper.MoveAtTigerMouth(b, board).Where(n => !n.Equals(tigerMouth)).ToList();
             if (tigerMouths.Any())
             {
                 if (b.MoveGroupLiberties > 3 || CheckThreatGroupEscape(b, tigerMouth, tigerMouths))
