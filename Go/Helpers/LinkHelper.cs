@@ -534,7 +534,7 @@ namespace Go
             List<Point> tigerMouthList = new List<Point>();
             foreach (Point q in LinkHelper.PointsBetweenDiagonals(diagonalPoint))
             {
-                if (ImmovableHelper.FindEmptyTigerMouth(board, c, q))
+                if (ImmovableHelper.FindTigerMouthForLink(board, q, c))
                     tigerMouthList.Add(q);
             }
             return tigerMouthList;
@@ -705,7 +705,10 @@ namespace Go
         /// </summary>
         public static Boolean CheckMoveGroupForTigerMouthExceptions(Board board, Board b)
         {
-            if (b.CapturedList.Any() || Board.ResolveAtari(board, b) || LinkWithThreatGroup(b, board) || MoveAtTigerMouth(b) || CheckForKoBreak(b))
+            if (Board.ResolveAtari(board, b) || b.CapturedList.Any(n => CheckImmovableNeighbourGroups(board, n).Any()))
+                return true;
+
+            if (LinkWithThreatGroup(b, board) || MoveAtTigerMouth(b) || CheckForKoBreak(b) || LinkBreakage(b))
                 return true;
             return false;
         }
@@ -719,7 +722,7 @@ namespace Go
             if (b.MoveGroupLiberties <= 2) return false;
             List<Group> groups = LinkHelper.GetPreviousMoveGroup(board, b).Where(n => n.Liberties.Count == 2).ToList();
             if (func != null) groups.RemoveAll(s => func(s));
-            if (groups.Any(n => n.Liberties.Any(s => ImmovableHelper.FindEmptyTigerMouth(board, c.Opposite(), s))))
+            if (groups.Any(n => n.Liberties.Any(s => ImmovableHelper.FindTigerMouthForLink(board, s, c.Opposite()))))
                 return true;
             return false;
         }
@@ -731,7 +734,7 @@ namespace Go
         {
             Content c = b.MoveGroup.Content;
             if (b.MoveGroupLiberties <= 2) return false;
-            if (b.GetStoneNeighbours().Any(n => ImmovableHelper.FindEmptyTigerMouth(b, c.Opposite(), n)))
+            if (b.GetStoneNeighbours().Any(n => ImmovableHelper.FindTigerMouthForLink(b, n, c.Opposite())))
                 return true;
             return false;
         }
@@ -744,9 +747,8 @@ namespace Go
             Content c = b.MoveGroup.Content;
             foreach (Point p in b.GetStoneNeighbours())
             {
-                if (b[p] != Content.Empty) continue;
+                if (!ImmovableHelper.FindTigerMouthForLink(b, p, c)) continue;
                 if (func != null && !func(p)) continue;
-                if (ImmovableHelper.FindTigerMouth(b, p, c) == null) continue;
                 Point q = b.GetStoneNeighbours(p).First(n => b[n] != c);
                 if (!KoHelper.MakeKoFight(b, q, c)) continue;
                 return true;
@@ -785,9 +787,11 @@ namespace Go
         {
             Content c = b.MoveGroup.Content;
             List<Point> npoints = LinkHelper.GetDiagonalPoints(b);
-            List<Point> diagonals = b.GetDiagonalNeighbours().Where(n => b[n] != c && b.GetStoneNeighbours(n).Intersect(npoints).Count() >= 2).ToList();
+            List<Point> diagonals = b.GetDiagonalNeighbours().Where(n => b[n] == Content.Empty && b.GetStoneNeighbours(n).Intersect(npoints).Count() >= 2).ToList();
             if (!diagonals.Any()) return false;
+            if (diagonals.All(n => ImmovableHelper.IsSuicidalMove(b, n, c, true))) return false;
             HashSet<Group> groups = b.GetGroupsFromPoints(npoints);
+            if (groups.Any(n => n.Liberties.Count == 1)) return false;
             if (groups.Count > 1 && groups.Any(s => !WallHelper.IsNonKillableGroup(b, s)))
                 return true;
             return false;
@@ -798,11 +802,28 @@ namespace Go
         /// </summary>
         public static Boolean CheckNegligibleForLinks(Board b, Board board, Func<Group, Boolean> func = null)
         {
-            if (b.CapturedList.Any() || Board.ResolveAtari(board, b))
+            if (Board.ResolveAtari(board, b) || b.CapturedList.Any(n => CheckImmovableNeighbourGroups(board, n).Any()))
                 return true;
             if (b.GetNeighbourGroups().Any(n => (func != null ? func(n) : true) && !WallHelper.IsStrongGroup(b, n)))
                 return true;
             return false;
+        }
+
+        public static IEnumerable<Group> CheckImmovableNeighbourGroups(Board board, Group group)
+        {
+            Content c = group.Content;
+            List<Group> ngroups = board.GetNeighbourGroups(group).Where(g => g.Liberties.Count <= 2).ToList();
+            return CheckImmovableGroups(board, ngroups);
+        }
+
+        public static IEnumerable<Group> CheckImmovableGroups(Board board, List<Group> groups)
+        {
+            foreach (Group group in groups)
+            {
+                Content c = group.Content;
+                if (group.Liberties.Any(n => ImmovableHelper.IsSuicidalMove(board, n, c)))
+                    yield return group;
+            }
         }
     }
 }

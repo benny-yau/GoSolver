@@ -618,7 +618,12 @@
         </member>
         <member name="M:Go.ImmovableHelper.FindTigerMouth(Go.Board,Go.Point,Go.Content)">
             <summary>
-            Find tiger mouth where mouth point is empty or filled. Content in parameter represents content of stones forming the tiger mouth. 
+            Find tiger mouth.
+            </summary>
+        </member>
+        <member name="M:Go.ImmovableHelper.FindTigerMouthForLink(Go.Board,Go.Point,Go.Content)">
+            <summary>
+            Find tiger mouth for link.
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.GetDiagonalsOfTigerMouth(Go.Board,Go.Point,Go.Content)">

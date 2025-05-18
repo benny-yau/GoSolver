@@ -7,7 +7,7 @@ namespace Go
     public class ImmovableHelper
     {
         /// <summary>
-        /// Find tiger mouth where mouth point is empty or filled. Content in parameter represents content of stones forming the tiger mouth. 
+        /// Find tiger mouth.
         /// </summary>
         public static Point? FindTigerMouth(Board board, Point p, Content c)
         {
@@ -29,9 +29,21 @@ namespace Go
             return null;
         }
 
-        public static Boolean FindEmptyTigerMouth(Board board, Content c, Point p)
+        public static Boolean FindEmptyTigerMouth(Board board, Point p, Content c)
         {
             return (board[p] == Content.Empty && FindTigerMouth(board, p, c) != null);
+        }
+
+        /// <summary>
+        /// Find tiger mouth for link.
+        /// </summary>
+        public static Boolean FindTigerMouthForLink(Board board, Point p, Content c)
+        {
+            if (!ImmovableHelper.FindEmptyTigerMouth(board, p, c)) return false;
+            HashSet<Group> groups = board.GetGroupsFromStoneNeighbours(p, c.Opposite());
+            if (groups.Count == 1 || groups.All(n => WallHelper.IsNonKillableGroup(board, n)))
+                return false;
+            return true;
         }
 
         /// <summary>
@@ -188,11 +200,11 @@ namespace Go
 
             if (p == null)
             {
-                Point liberty = targetGroup.Liberties.FirstOrDefault(n => ImmovableHelper.FindEmptyTigerMouth(board, c, n) && EyeHelper.IsCovered(board, n, c));
+                Point liberty = targetGroup.Liberties.FirstOrDefault(n => ImmovableHelper.FindEmptyTigerMouth(board, n, c) && EyeHelper.IsCovered(board, n, c));
                 if (!Convert.ToBoolean(liberty.NotEmpty)) return (false, null);
                 p = liberty;
             }
-            else if (!ImmovableHelper.FindEmptyTigerMouth(board, c, p.Value)) return (false, null);
+            else if (!ImmovableHelper.FindEmptyTigerMouth(board, p.Value, c)) return (false, null);
 
             //stone neighbours at diagonal of each other
             List<Point> nstones = LinkHelper.GetDiagonalPoints(board, p.Value, c);

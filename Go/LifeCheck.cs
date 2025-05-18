@@ -49,10 +49,10 @@ namespace Go
                 if (eyes.Count + killerGroups.Count - 1 - i < 2)
                     break;
             }
-            if (eyes.Count < 2) 
+            if (eyes.Count < 2)
                 return ConfirmAliveResult.Unknown;
             //check for tiger mouth exception
-            if (CheckTigerMouthExceptions(board, tigerMouthList.Select(t => t.Move), c)) 
+            if (CheckTigerMouthExceptions(board, tigerMouthList.Select(t => t.Move), c))
                 return ConfirmAliveResult.Unknown;
 
             //two real eyes to confirm alive
@@ -135,7 +135,7 @@ namespace Go
             }
 
             //check for another tiger mouth at move
-            List<Point> tigerMouths = b.GetStoneNeighbours().Where(n => !n.Equals(tigerMouth) && ImmovableHelper.FindEmptyTigerMouth(board, c, n)).ToList();
+            List<Point> tigerMouths = b.GetStoneNeighbours().Where(n => !n.Equals(tigerMouth) && ImmovableHelper.FindTigerMouthForLink(board, n, c)).ToList();
             if (tigerMouths.Any())
             {
                 if (b.MoveGroupLiberties > 3 || CheckThreatGroupEscape(b, tigerMouth, tigerMouths))
@@ -191,7 +191,7 @@ namespace Go
             List<LinkedPoint<Point>> diagonalPoints = LinkHelper.GetGroupDiagonals(board, eye);
             foreach (LinkedPoint<Point> p in diagonalPoints)
             {
-                if (ImmovableHelper.FindEmptyTigerMouth(board, c.Opposite(), p.Move))
+                if (ImmovableHelper.FindTigerMouthForLink(board, p.Move, c.Opposite()))
                     tigerMouthList.Add(p);
             }
         }
