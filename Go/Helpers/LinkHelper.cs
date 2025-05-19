@@ -220,11 +220,10 @@ namespace Go
         /// <summary>
         /// Check if diagonals are linked.
         /// Both diagonals empty <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_4" />
-        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_2" />
-        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q17078" />
-        /// Check not negligible <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_8" />
-        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_4" />
-        /// Check any diagonal separated by opposite content <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_5" />
+        /// Check negligible for links <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_4" />
+        /// Check any diagonal separated by opposite content <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571" />
+        /// Check threat group <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150" />
+        /// Check capture secure <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_2" />
         /// </summary>
         public static Boolean CheckIsDiagonalLinked(Point pointA, Point pointB, Board board, Boolean immediateLink = false)
         {
@@ -263,7 +262,7 @@ namespace Go
                 {
                     if (board[p] == Content.Empty)
                     {
-                        //check captured group
+                        //check threat group
                         Group gr = TigerMouthThreatGroup(board, p, c, n => n.Liberties.Count == 1);
                         if (gr == null || GroupHelper.GetKillerGroupOfStrongNeighbourGroups(board, p, c) != null)
                             return true;
@@ -295,9 +294,7 @@ namespace Go
 
         /// <summary>
         /// Check for double linkage.
-        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_2" />
-        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_3" />
-        /// Check double atari at link <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_DoubleAtariOnLinkage" />
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_8" />
         /// </summary>
         private static Boolean CheckDoubleLinkage(Board board, LinkedPoint<Point> diagonalLink)
         {
@@ -324,9 +321,7 @@ namespace Go
 
         /// <summary>
         /// Check double atari for links.
-        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_7" />
-        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_5" />
-        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_Nie60" />
+        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_DoubleAtariOnSemiSolidEye" />
         /// </summary>
         private static Boolean CheckDoubleAtariForLinks(Board board, LinkedPoint<Point> diagonalPoint)
         {
@@ -342,8 +337,6 @@ namespace Go
 
         /// <summary>
         /// Get all diagonal connected groups.
-        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_Nie60" />
-        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_3" />
         /// </summary>
         public static HashSet<Group> GetAllDiagonalConnectedGroups(Board board, Group group, Func<Group, Boolean> func = null)
         {
@@ -513,8 +506,6 @@ namespace Go
 
         /// <summary>
         /// Check tiger mouth exceptions for links.
-        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_2" /> 
-        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_3" /> 
         /// </summary>
         public static Boolean CheckTigerMouthExceptionsForLinks(Board board, LinkedPoint<Point> diagonalPoint)
         {
@@ -761,6 +752,7 @@ namespace Go
         /// <summary>
         /// Double ko break.
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_y" />
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A139_2" />
         /// </summary>
         public static Boolean DoubleKoBreak(Board b, Point tigerMouth, Content c)
         {
@@ -786,10 +778,10 @@ namespace Go
         /// <summary>
         /// Link breakage.
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_2" />
-        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_Nie60_2" /> 
         /// </summary>
         public static Boolean LinkBreakage(Board b)
         {
+            Point move = b.Move.Value;
             Content c = b.MoveGroup.Content;
             List<Point> npoints = LinkHelper.GetDiagonalPoints(b);
             List<Point> diagonals = b.GetDiagonalNeighbours().Where(n => b[n] == Content.Empty && b.GetStoneNeighbours(n).Intersect(npoints).Count() >= 2).ToList();
@@ -797,7 +789,7 @@ namespace Go
             foreach (Point d in diagonals)
             {
                 if (ImmovableHelper.IsSuicidalMove(b, d, c, true)) continue;
-                HashSet<Group> ngroups = b.GetGroupsFromStoneNeighbours(d, c);
+                HashSet<Group> ngroups = b.GetGroupsFromPoints(LinkHelper.PointsBetweenDiagonals(move, d));
                 if (ngroups.Count == 1) continue;
                 if (ngroups.Any(n => n.Liberties.Count == 1)) continue;
                 if (ngroups.Any(n => !WallHelper.IsNonKillableGroup(b, n)))

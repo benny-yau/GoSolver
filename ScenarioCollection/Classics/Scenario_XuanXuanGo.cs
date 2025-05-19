@@ -3517,7 +3517,7 @@ namespace ScenarioCollection
         public Game Scenario_XuanXuanGo_A28_101Weiqi()
         {
             //https://www.101weiqi.com/book/1349/3037/18345/
-            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black, 26);
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black, 36);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 

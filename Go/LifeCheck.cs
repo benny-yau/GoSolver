@@ -86,7 +86,6 @@ namespace Go
             {
                 Point? libertyPoint = ImmovableHelper.FindTigerMouth(board, tigerMouth, c);
                 if (libertyPoint == null || board[libertyPoint.Value] != Content.Empty) continue;
-
                 if (CommonTigerMouthExceptions(board, c, tigerMouth, libertyPoint.Value))
                     return true;
             }
@@ -99,8 +98,12 @@ namespace Go
         public static Boolean CommonTigerMouthExceptions(Board board, Content c, Point tigerMouth, Point libertyPoint)
         {
             //make move at liberty point
-            (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(libertyPoint, c.Opposite(), board);
-            if (suicidal) return false;
+            Board b = board.MakeMoveOnNewBoard(libertyPoint, c.Opposite());
+            if (ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false))
+            {
+                if (!KillerFormationHelper.PossibleCornerThreeFormation(board, tigerMouth, c))
+                    return false;
+            }
 
             //check negligible for links
             HashSet<Group> tmGroups = b.GetGroupsFromStoneNeighbours(tigerMouth, c.Opposite());
@@ -114,18 +117,12 @@ namespace Go
 
             //check for link breakage
             if (LinkHelper.LinkBreakage(b))
-            {
-                if (b.MoveGroupLiberties > 2 || CheckThreatGroupEscape(b, tigerMouth, new List<Point>() { b.Move.Value }))
-                    return true;
-            }
+                return true;
 
             //check for another tiger mouth at move
             List<Point> tigerMouths = LinkHelper.MoveAtTigerMouth(b, board).Where(n => !n.Equals(tigerMouth)).ToList();
-            if (tigerMouths.Any())
-            {
-                if (b.MoveGroupLiberties > 3 || CheckThreatGroupEscape(b, tigerMouth, tigerMouths))
-                    return true;
-            }
+            if (tigerMouths.Any() && CheckThreatGroupEscape(b, tigerMouth, tigerMouths))
+                return true;
 
             //check for ko break
             if (LinkHelper.CheckForKoBreak(b))
@@ -141,21 +138,21 @@ namespace Go
         /// <summary>
         /// Check threat group escape.
         /// </summary>
-        public static Boolean CheckThreatGroupEscape(Board board, Point tigerMouth, List<Point> targetPoints = null)
+        public static Boolean CheckThreatGroupEscape(Board board, Point tigerMouth, List<Point> targetPoints)
         {
             Point move = board.Move.Value;
             Content c = board.MoveGroup.Content;
+            if (board.MoveGroupLiberties > 3) return true;
             //fill tiger mouth
             Board b = board.MakeMoveOnNewBoard(tigerMouth, c.Opposite(), true);
-            if (b == null) return true;
 
             //check non killable
-            if (targetPoints != null && targetPoints.All(n => b.GetGroupsFromStoneNeighbours(n, c).All(s => WallHelper.IsNonKillableGroup(b, s))))
+            if (targetPoints.All(n => b.GetGroupsFromStoneNeighbours(n, c).All(s => WallHelper.IsNonKillableGroup(b, s))))
                 return false;
 
-            //check killer group
-            if (GroupHelper.GetKillerGroupOfStrongNeighbourGroups(b, move, c.Opposite()) == null)
-                return true;
+            Group moveGroup = b.GetCurrentGroup(board.MoveGroup);
+            if (moveGroup.Liberties.Count == 2 && moveGroup.Liberties.All(n => ImmovableHelper.IsSuicidalMove(b, n, c)))
+                return false;
 
             //make second move
             IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(b, b.GetGroupLiberties(board.MoveGroup), c);
@@ -167,8 +164,6 @@ namespace Go
 
         /// <summary>
         /// Get tiger mouth of eye groups.
-        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_2" />
-        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_3" />
         /// </summary>
         private static void GetTigerMouthsOfEyeGroups(Board board, Group eye, List<LinkedPoint<Point>> tigerMouthList)
         {

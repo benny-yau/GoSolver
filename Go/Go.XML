@@ -1021,6 +1021,12 @@
             <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_20230121_8" />
             </summary>
         </member>
+        <member name="M:Go.KillerFormationHelper.PossibleCornerThreeFormation(Go.Board,Go.Point,Go.Content)">
+            <summary>
+            Possible corner three formation. 
+            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A139_2" />
+            </summary>
+        </member>
         <member name="M:Go.KillerFormationHelper.GetPointIntersect(Go.Board,System.Collections.Generic.IEnumerable{Go.Point})">
             <summary>
             Get point intersect.
@@ -1172,11 +1178,10 @@
             <summary>
             Check if diagonals are linked.
             Both diagonals empty <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_4" />
-            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_2" />
-            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q17078" />
-            Check not negligible <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_8" />
-            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_4" />
-            Check any diagonal separated by opposite content <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_5" />
+            Check negligible for links <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_4" />
+            Check any diagonal separated by opposite content <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571" />
+            Check threat group <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150" />
+            Check capture secure <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_2" />
             </summary>
         </member>
         <member name="M:Go.LinkHelper.CheckIsDiagonalLinked(Go.LinkedPoint{Go.Point},Go.Board,System.Boolean)">
@@ -1187,24 +1192,18 @@
         <member name="M:Go.LinkHelper.CheckDoubleLinkage(Go.Board,Go.LinkedPoint{Go.Point})">
             <summary>
             Check for double linkage.
-            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_2" />
-            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_3" />
-            Check double atari at link <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_DoubleAtariOnLinkage" />
+            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_8" />
             </summary>
         </member>
         <member name="M:Go.LinkHelper.CheckDoubleAtariForLinks(Go.Board,Go.LinkedPoint{Go.Point})">
             <summary>
             Check double atari for links.
-            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_7" />
-            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_5" />
-            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_Nie60" />
+            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_DoubleAtariOnSemiSolidEye" />
             </summary>
         </member>
         <member name="M:Go.LinkHelper.GetAllDiagonalConnectedGroups(Go.Board,Go.Group,System.Func{Go.Group,System.Boolean})">
             <summary>
             Get all diagonal connected groups.
-            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_Nie60" />
-            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_3" />
             </summary>
         </member>
         <member name="M:Go.LinkHelper.GetGroupLinkedDiagonals(Go.Board,Go.Group,System.Boolean)">
@@ -1261,8 +1260,6 @@
         <member name="M:Go.LinkHelper.CheckTigerMouthExceptionsForLinks(Go.Board,Go.LinkedPoint{Go.Point})">
             <summary>
             Check tiger mouth exceptions for links.
-            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_2" /> 
-            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_3" /> 
             </summary>
         </member>
         <member name="M:Go.LinkHelper.GetTigerMouthsOfLinks(Go.Board,Go.LinkedPoint{Go.Point})">
@@ -1299,7 +1296,7 @@
             <summary>
             Get tiger mouth threat group.
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_7" />
-            Check for two threat groups <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_6" />
+            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_6" />
             </summary>
         </member>
         <member name="M:Go.LinkHelper.CheckBaseLineLeapLink(Go.Board,Go.Point,Go.Content)">
@@ -1344,13 +1341,13 @@
             <summary>
             Double ko break.
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_y" />
+            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A139_2" />
             </summary>
         </member>
         <member name="M:Go.LinkHelper.LinkBreakage(Go.Board)">
             <summary>
             Link breakage.
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_2" />
-            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_Nie60_2" /> 
             </summary>
         </member>
         <member name="M:Go.LinkHelper.CheckNegligibleForLinks(Go.Board,Go.Board,System.Func{Go.Group,System.Boolean})">
@@ -2235,8 +2232,6 @@
         <member name="M:Go.LifeCheck.GetTigerMouthsOfEyeGroups(Go.Board,Go.Group,System.Collections.Generic.List{Go.LinkedPoint{Go.Point}})">
             <summary>
             Get tiger mouth of eye groups.
-            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_2" />
-            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_3" />
             </summary>
         </member>
         <member name="M:Go.LifeCheck.GetTargets(Go.Board,System.Collections.Generic.List{Go.Point})">

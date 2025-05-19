@@ -1087,6 +1087,25 @@ namespace Go
             return true;
         }
 
+
+        /// <summary>
+        /// Possible corner three formation. 
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A139_2" />
+        /// </summary>
+        public static Boolean PossibleCornerThreeFormation(Board currentBoard, Point p, Content c)
+        {
+            Point corner = currentBoard.GetStoneNeighbours(p).FirstOrDefault(n => currentBoard.CornerPoint(n));
+            if (!Convert.ToBoolean(corner.NotEmpty) || currentBoard[corner] != Content.Empty) return false;
+            if (currentBoard.GetStoneNeighbours(corner).Any(n => currentBoard[n] != Content.Empty)) return false;
+            if (currentBoard.GetDiagonalNeighbours(p).Any(n => currentBoard.PointWithinMiddleArea(n) && EyeHelper.FindRealEyeWithinEmptySpace(currentBoard, n, c)))
+            {
+                IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, currentBoard.GetStoneNeighbours(corner), c.Opposite());
+                if (moveBoards.Any(b => !ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false)))
+                    return true;
+            }
+            return false;
+        }
+
         /*
     15 . . . . . . . . . . . . . . . . . . .
     16 X . . . . . . . . . . . . . . . . . . 
