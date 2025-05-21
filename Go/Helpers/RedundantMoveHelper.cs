@@ -2342,7 +2342,7 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanQiJing_A38_2" /> 
         /// Target with all non killable groups <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q16693_2" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_x_2" /> 
-        /// Check break link <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30152_2" /> 
+        /// Check link for groups <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30152_2" /> 
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q30152" /> 
         /// </summary>
         public static Boolean CheckRedundantKo(Board tryBoard, Board currentBoard)
@@ -2377,9 +2377,10 @@ namespace Go
             if (diagonals.Any() && !FindRealEyeAtDiagonal(diagonals, currentBoard, c))
                 return false;
 
-            //check break link
-            if (diagonals.Count == 0 && LinkHelper.CheckBaseLineLeapLink(tryBoard, eyePoint.Value, c))
+            //check link for groups
+            if (LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard))
                 return false;
+
             return true;
         }
 

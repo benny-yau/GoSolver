@@ -8,14 +8,15 @@ namespace Go
 {
     public class LinkHelper
     {
-
         /// <summary>
         /// Possible link for groups. For neutral point move, covered eye move, and eye diagonal move.
         /// <see cref="UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario5dan25" />
         /// <see cref="UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_XuanXuanGo_Q18358" />
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" />
+        /// Check captured groups <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_XuanXuanQiJing_Weiqi101_18497_3" />
         /// Check covered eye <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30274_2" />
         /// Check ko link <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30274_3" />
+        /// Check opponent suicidal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B35" />
         /// </summary>
         public static Boolean PossibleLinkForGroups(Board tryBoard, Board currentBoard)
         {
@@ -31,25 +32,15 @@ namespace Go
             //get all possible link groups
             List<Point> npoints = currentBoard.GetStoneAndDiagonalNeighbours(move).Where(n => currentBoard[n] == c).ToList();
             HashSet<Group> ngroups = currentBoard.GetGroupsFromPoints(npoints);
-            //get capture groups
-            foreach (Group capturedGroup in tryBoard.CapturedList)
+
+            //check captured groups
+            if (tryBoard.CapturedList.Any())
             {
-                List<Group> captureGroups = currentBoard.GetNeighbourGroups(capturedGroup);
-                foreach (Group gr in captureGroups)
-                {
-                    ngroups.Add(gr);
-                    //check link at capture groups
-                    if (gr.Liberties.Count > 2) continue;
-                    if (gr.Liberties.Count == 1) return true;
-                    foreach (Point liberty in gr.Liberties)
-                    {
-                        if (ImmovableHelper.IsSuicidalMove(currentBoard, liberty, c.Opposite(), true)) continue;
-                        Board b = currentBoard.MakeMoveOnNewBoard(liberty, c, true);
-                        if (b == null) continue;
-                        if (b.CapturedList.Count > 0 || PossibleLinkForGroups(b, currentBoard))
-                            return true;
-                    }
-                }
+                if (tryBoard.CapturedList.Count > 1)
+                    return true;
+                Group capturedGroup = tryBoard.CapturedList.First();
+                if (currentBoard.GetNeighbourGroups(capturedGroup).Count > 1 && !ImmovableHelper.UnescapableGroup(currentBoard, capturedGroup).Item1)
+                    return true;
             }
 
             //get leap groups
@@ -70,23 +61,21 @@ namespace Go
                     Boolean isLeapGroups = leapGroups.Contains(groups[i]) && leapGroups.Contains(groups[j]);
                     if (!isLinked && !isLeapGroups) continue;
                     //check if previously linked
-                    Boolean previousLinked = IsImmediateDiagonallyConnected(currentBoard, groups[i], groups[j]) || IsDiagonallyConnectedGroups(currentBoard, groups[i], groups[j]);
+                    Boolean previousLinked = IsImmediateDiagonallyConnected(currentBoard, groups[i], groups[j]);
                     if (previousLinked) continue;
 
                     //check non killable groups
                     if (WallHelper.IsNonKillableGroup(currentBoard, groups[i]) && WallHelper.IsNonKillableGroup(currentBoard, groups[j])) continue;
-                    if (tryBoard.CapturedList.Count == 0)
-                    {
-                        //check if diagonal groups
-                        if (LinkHelper.GetDiagonalGroups(currentBoard, groups[i]).Any(n => n.Equals(groups[j])) && (!groupI.Equals(tryBoard.MoveGroup) || !groupJ.Equals(tryBoard.MoveGroup))) continue;
-                        //check ko link
-                        if (ImmovableHelper.IsSuicidalWithoutBaseLineKo(tryBoard, groupI) || ImmovableHelper.IsSuicidalWithoutBaseLineKo(tryBoard, groupJ))
-                            continue;
-                        //check opponent suicidal
-                        (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(move, c.Opposite(), currentBoard, true);
-                        if (suicidal && (b == null || b.MoveGroup.Points.Count == 1))
-                            continue;
-                    }
+                    //check if diagonal groups
+                    if (LinkHelper.GetDiagonalGroups(currentBoard, groups[i]).Any(n => n.Equals(groups[j])) && (!groupI.Equals(tryBoard.MoveGroup) || !groupJ.Equals(tryBoard.MoveGroup)))
+                        continue;
+                    //check ko link
+                    if (ImmovableHelper.IsSuicidalWithoutKo(tryBoard, groupI) || ImmovableHelper.IsSuicidalWithoutKo(tryBoard, groupJ))
+                        continue;
+                    //check opponent suicidal
+                    (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(move, c.Opposite(), currentBoard, true);
+                    if (suicidal && (b == null || b.MoveGroup.Points.Count == 1))
+                        continue;
                     return true;
                 }
             }
@@ -197,8 +186,11 @@ namespace Go
             middlePoints.RemoveAll(n => !tryBoard.PointWithinBoard(n));
             if (middlePoints.Count == 0 || middlePoints.Any(t => tryBoard[t] == c)) return false;
             //check for opposite content at middle points
-            if (middlePoints.Count(n => tryBoard[n] == c.Opposite()) >= 2)
+            middlePoints = middlePoints.Where(n => tryBoard[n] == c.Opposite()).ToList();
+            if (middlePoints.Count() >= 2)
             {
+                if (tryBoard.GetGroupsFromPoints(middlePoints).Any(n => ImmovableHelper.UnescapableGroup(tryBoard, n).Item1))
+                    return true;
                 Boolean leapOnSameLine = p.y.Equals(q.y) || p.x.Equals(q.x);
                 if (!leapOnSameLine) return false;
                 if (middlePoints.Any(n => n.x == p.x || n.y == p.y))
@@ -258,8 +250,8 @@ namespace Go
             foreach (Point p in diagonals)
             {
                 if (!ImmovableHelper.IsImmovablePoint(board, p, c)) continue;
-                if (!immediateLink)
-                {
+                if (immediateLink) return true;
+                else {
                     if (board[p] == Content.Empty)
                     {
                         //check threat group
@@ -637,18 +629,6 @@ namespace Go
         }
 
         /// <summary>
-        /// Check base line leap link.
-        /// </summary>
-        public static Boolean CheckBaseLineLeapLink(Board tryBoard, Point eyePoint, Content c)
-        {
-            Point move = tryBoard.Move.Value;
-            List<Point> npoints = tryBoard.GetStoneNeighbours(eyePoint).Where(n => tryBoard[n] == c && !n.Equals(move)).ToList();
-            if (npoints.Count != 2 || npoints.Any(n => tryBoard.PointWithinMiddleArea(n))) return false;
-            return true;
-        }
-
-
-        /// <summary>
         /// Double atari on target groups.
         /// </summary>
         public static Boolean DoubleAtariOnTargetGroups(Board board, List<Group> targetGroups)
@@ -818,7 +798,6 @@ namespace Go
 
         public static IEnumerable<Group> CheckImmovableNeighbourGroups(Board board, Group group)
         {
-            Content c = group.Content;
             List<Group> ngroups = board.GetNeighbourGroups(group).Where(g => g.Liberties.Count <= 2).ToList();
             return CheckImmovableGroups(board, ngroups);
         }

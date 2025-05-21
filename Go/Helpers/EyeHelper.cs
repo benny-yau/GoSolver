@@ -374,6 +374,7 @@ namespace Go
         /// Check connect and die <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126" /> 
         /// Check for covered eye killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_4" />
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30315" /> 
+        /// Possible corner six formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" /> 
         /// Ensure all groups are connected <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_ScenarioHighLevel28" /> 
         /// </summary>
         public static Boolean RealEyeOfDiagonallyConnectedGroups(Board board, Group killerGroup)
@@ -411,6 +412,10 @@ namespace Go
             //check for covered eye killer group
             if (killerGroup.Points.Any(p => EyeHelper.IsCovered(board, p, c.Opposite()))) return false;
 
+            //possible corner six formation
+            if (KillerFormationHelper.OneByThreeFormation(board, killerGroup) && killerGroup.Points.Any(n => board.CornerPoint(n)))
+                return false;
+
             //check opponent stones within killer group
             List<Point> opponentStones = killerGroup.Points.Where(p => board[p] == c).ToList();
             if (!opponentStones.Any()) return true;
@@ -425,6 +430,7 @@ namespace Go
 
             if (WallHelper.TargetWithAnyNonKillableGroup(board, killerGroup))
                 return true;
+
             return false;
         }
 

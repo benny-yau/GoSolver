@@ -385,15 +385,6 @@ namespace Go
             return targetGroup.Liberties.Count == 1 && !KoHelper.IsKoFight(tryBoard, targetGroup);
         }
 
-        public static Boolean IsSuicidalWithoutBaseLineKo(Board tryBoard, Group targetGroup = null)
-        {
-            if (targetGroup == null) targetGroup = tryBoard.MoveGroup;
-            if (targetGroup.Liberties.Count != 1) return false;
-            if (KoHelper.IsKoFight(tryBoard, targetGroup) && !tryBoard.PointWithinMiddleArea(targetGroup.Liberties.First()))
-                return false;
-            return true;
-        }
-
         /// <summary>
         /// Is suicide move on capture.
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_B28_2" />
