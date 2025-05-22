@@ -1300,7 +1300,7 @@
             Get diagonal points.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.TigerMouthThreatGroup(Go.Board,Go.Point,Go.Content,System.Func{Go.Group,System.Boolean})">
+        <member name="M:Go.LinkHelper.TigerMouthThreatGroup(Go.Board,Go.Point,Go.Content)">
             <summary>
             Get tiger mouth threat group.
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_7" />
@@ -1322,9 +1322,9 @@
             Check move group for tiger mouth exceptions.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.LinkWithThreatGroup(Go.Board,Go.Board,System.Func{Go.Group,System.Boolean})">
+        <member name="M:Go.LinkHelper.LinkWithImmovableGroup(Go.Board,Go.Board,System.Func{Go.Group,System.Boolean})">
             <summary>
-            Link with threat group.
+            Link with immovable group.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.MoveAtTigerMouth(Go.Board,Go.Board)">

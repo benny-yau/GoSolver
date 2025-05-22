@@ -112,7 +112,7 @@ namespace Go
 
             //check for tiger mouth threat group
             Group threatGroup = LinkHelper.TigerMouthThreatGroup(board, tigerMouth, c);
-            if (threatGroup != null && LinkHelper.LinkWithThreatGroup(b, board, s => s == threatGroup))
+            if (threatGroup != null && LinkHelper.LinkWithImmovableGroup(b, board, s => s == threatGroup))
                 return true;
 
             //check for link breakage
@@ -153,13 +153,7 @@ namespace Go
             Group moveGroup = b.GetCurrentGroup(board.MoveGroup);
             if (moveGroup.Liberties.Count == 2 && moveGroup.Liberties.All(n => ImmovableHelper.IsSuicidalMove(b, n, c)))
                 return false;
-
-            //make second move
-            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(b, b.GetGroupLiberties(board.MoveGroup), c);
-            if (moveBoards.Any(n => n.MoveGroupLiberties > 1 || !GameTryMove.IsNegligibleForBoard(n, b)))
-                return true;
-
-            return false;
+            return true;
         }
 
         /// <summary>

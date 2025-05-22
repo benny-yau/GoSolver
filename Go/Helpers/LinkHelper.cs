@@ -248,26 +248,10 @@ namespace Go
             {
                 if (!ImmovableHelper.IsImmovablePoint(board, p, c)) continue;
                 if (immediateLink) return true;
-                else {
-                    //check killer group
-                    Group killerGroup = GroupHelper.GetKillerGroupOfStrongNeighbourGroups(board, p, c);
-                    if (killerGroup == null)
-                        continue;
 
-                    if (board[p] == Content.Empty)
-                    {
-                        //check threat group
-                        Group gr = TigerMouthThreatGroup(board, p, c, n => n.Liberties.Count == 1);
-                        if (gr != null) continue;
-                    }
-                    else
-                    {
-                        //check capture secure
-                        if (!ImmovableHelper.CheckCaptureSecureForSingleGroup(board, board.GetGroupAt(p)))
-                            continue;
-                    }
-                    return true;
-                }
+                Group killerGroup = GroupHelper.GetKillerGroupOfStrongNeighbourGroups(board, p, c);
+                if (killerGroup == null) continue;
+                return true;
             }
             return false;
         }
@@ -617,14 +601,13 @@ namespace Go
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_7" />
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_6" />
         /// </summary>
-        public static Group TigerMouthThreatGroup(Board board, Point tigerMouth, Content c, Func<Group, Boolean> func = null)
+        public static Group TigerMouthThreatGroup(Board board, Point tigerMouth, Content c)
         {
             if (board[tigerMouth] != Content.Empty) return null;
             List<Point> npoints = board.GetStoneNeighbours(tigerMouth).Where(n => board[n] == c.Opposite()).ToList();
             if (npoints.Count != 1) return null;
             Group threatGroup = board.GetGroupAt(npoints.First());
-            if (func == null) func = n => n.Liberties.Count == 2;
-            if (func(threatGroup))
+            if (threatGroup.Liberties.Count == 2)
                 return threatGroup;
             return null;
         }
@@ -682,15 +665,15 @@ namespace Go
             if (Board.ResolveAtari(board, b) || b.CapturedList.Any(n => CheckImmovableNeighbourGroups(board, n).Any()))
                 return true;
 
-            if (LinkWithThreatGroup(b, board) || MoveAtTigerMouth(b, board).Any() || CheckForKoBreak(b) || LinkBreakage(b))
+            if (LinkWithImmovableGroup(b, board) || MoveAtTigerMouth(b, board).Any() || CheckForKoBreak(b) || LinkBreakage(b))
                 return true;
             return false;
         }
 
         /// <summary>
-        /// Link with threat group.
+        /// Link with immovable group.
         /// </summary>
-        public static Boolean LinkWithThreatGroup(Board b, Board board, Func<Group, Boolean> func = null)
+        public static Boolean LinkWithImmovableGroup(Board b, Board board, Func<Group, Boolean> func = null)
         {
             Content c = b.MoveGroup.Content;
             if (b.MoveGroupLiberties <= 2) return false;
