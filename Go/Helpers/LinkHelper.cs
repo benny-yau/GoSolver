@@ -187,15 +187,12 @@ namespace Go
             if (middlePoints.Count == 0 || middlePoints.Any(t => tryBoard[t] == c)) return false;
             //check for opposite content at middle points
             middlePoints = middlePoints.Where(n => tryBoard[n] == c.Opposite()).ToList();
-            if (middlePoints.Count() >= 2)
-            {
-                if (tryBoard.GetGroupsFromPoints(middlePoints).Any(n => ImmovableHelper.UnescapableGroup(tryBoard, n).Item1))
-                    return true;
-                Boolean leapOnSameLine = p.y.Equals(q.y) || p.x.Equals(q.x);
-                if (!leapOnSameLine) return false;
-                if (middlePoints.Any(n => n.x == p.x || n.y == p.y))
-                    return false;
-            }
+            if (middlePoints.Count() <= 1) return true;
+            
+            Boolean leapOnSameLine = p.y.Equals(q.y) || p.x.Equals(q.x);
+            if (!leapOnSameLine) return false;
+            if (middlePoints.Any(n => n.x == p.x || n.y == p.y))
+                return false;
             return true;
         }
 
@@ -212,12 +209,12 @@ namespace Go
         /// <summary>
         /// Check if diagonals are linked.
         /// Both diagonals empty <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_4" />
-        /// Check negligible for links <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_4" />
+        /// Check negligible for links <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q17078" />
         /// Check any diagonal separated by opposite content <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571" />
         /// Check threat group <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150" />
         /// Check capture secure <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_2" />
         /// </summary>
-        public static Boolean CheckIsDiagonalLinked(Point pointA, Point pointB, Board board, Boolean immediateLink = false)
+        public static Boolean CheckIsDiagonalLinked(Point pointA, Point pointB, Board board, Boolean immediateLink = true)
         {
             Content c = board[pointA];
             List<Point> diagonals = LinkHelper.PointsBetweenDiagonals(pointA, pointB);
@@ -252,23 +249,24 @@ namespace Go
                 if (!ImmovableHelper.IsImmovablePoint(board, p, c)) continue;
                 if (immediateLink) return true;
                 else {
+                    //check killer group
+                    Group killerGroup = GroupHelper.GetKillerGroupOfStrongNeighbourGroups(board, p, c);
+                    if (killerGroup == null)
+                        continue;
+
                     if (board[p] == Content.Empty)
                     {
                         //check threat group
                         Group gr = TigerMouthThreatGroup(board, p, c, n => n.Liberties.Count == 1);
-                        if (gr == null || GroupHelper.GetKillerGroupOfStrongNeighbourGroups(board, p, c) != null)
-                            return true;
-                        continue;
+                        if (gr != null) continue;
                     }
                     else
                     {
                         //check capture secure
-                        if (!ImmovableHelper.CheckCaptureSecureForSingleGroup(board, board.GetGroupAt(p))) continue;
-                        //check killer group
-                        Group killerGroup = GroupHelper.GetKillerGroupOfStrongNeighbourGroups(board, p, c);
-                        if (killerGroup == null) continue;
-                        return true;
+                        if (!ImmovableHelper.CheckCaptureSecureForSingleGroup(board, board.GetGroupAt(p)))
+                            continue;
                     }
+                    return true;
                 }
             }
             return false;
@@ -277,7 +275,7 @@ namespace Go
         /// <summary>
         /// Check is diagonal linked.
         /// </summary>
-        public static Boolean CheckIsDiagonalLinked(LinkedPoint<Point> diagonal, Board board, Boolean immediateLink = false)
+        public static Boolean CheckIsDiagonalLinked(LinkedPoint<Point> diagonal, Board board, Boolean immediateLink = true)
         {
             if (CheckIsDiagonalLinked(diagonal.Move, (Point)diagonal.CheckMove, board, immediateLink))
                 return true;
@@ -299,11 +297,14 @@ namespace Go
                 if (opponentStones.Count < 3) continue;
 
                 //make opponent move at diagonal
-                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board, true);
-                if (suicidal) continue;
-                if (!KillerFormationHelper.ThreeOpponentGroupsAtMove(b, p)) continue;
+                Board b = board.MakeMoveOnNewBoard(p, c.Opposite(), true);
+                if (b == null) continue;
                 opponentStones = b.GetStoneNeighbours(p).Where(n => b[n] == c).ToList();
                 if (b.GetGroupsFromPoints(opponentStones).Count < 3) continue;
+                if (!KillerFormationHelper.ThreeOpponentGroupsAtMove(b, p)) continue;
+                if (ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false)) continue;
+
+                //check diagonal links
                 Point middleStone = opponentStones.First(n => b.GetDiagonalNeighbours(n).Count(d => opponentStones.Contains(d)) >= 2);
                 if (opponentStones.Where(n => !n.Equals(middleStone)).All(n => !CheckIsDiagonalLinked(middleStone, n, b)))
                     return true;
@@ -418,7 +419,7 @@ namespace Go
                 if (g.Liberties.Count == 1 || allConnectedGroups.Contains(g)) continue;
 
                 //check if diagonally linked
-                if (!CheckIsDiagonalLinked(diagonalPoint, board))
+                if (!CheckIsDiagonalLinked(diagonalPoint, board, false))
                     continue;
 
                 //check tiger mouth exceptions
@@ -693,9 +694,11 @@ namespace Go
         {
             Content c = b.MoveGroup.Content;
             if (b.MoveGroupLiberties <= 2) return false;
-            List<Group> groups = LinkHelper.GetPreviousMoveGroup(board, b).Where(n => n.Liberties.Count == 2).ToList();
+            List<Group> groups = LinkHelper.GetPreviousMoveGroup(board, b);
+            if (groups.Count == 1) return false;
+            groups = groups.Where(n => n.Liberties.Count == 2).ToList();
             if (func != null) groups.RemoveAll(s => func(s));
-            if (groups.Any(n => n.Liberties.Any(s => ImmovableHelper.FindTigerMouthForLink(board, s, c.Opposite()))))
+            if (CheckImmovableGroups(board, groups).Any())
                 return true;
             return false;
         }
@@ -792,7 +795,7 @@ namespace Go
             List<Group> ngroups = b.GetNeighbourGroups().Where(n => (func != null ? func(n) : true)).ToList();
             if (ngroups.Any(n => ImmovableHelper.CheckConnectAndDie(b, n) && !ImmovableHelper.CheckConnectAndDie(board, n, false)))
                 return true;
-            
+
             return false;
         }
 

@@ -674,7 +674,7 @@ namespace Go
                 if (b.MoveGroup.Points.Count >= 3)
                 {
                     List<Point> npoints = b2.GetStoneNeighbours().Where(n => b2[n] != c.Opposite() && !n.Equals(b.Move.Value)).ToList();
-                    if (npoints.Select(n => GroupHelper.GetKillerGroupFromCache(b2, n, c)).Any(n => n != null && n.Points.Count >= 3))
+                    if (npoints.Select(n => GroupHelper.GetKillerGroupOfDirectNeighbourGroups(b2, n, c.Opposite())).Any(n => n != null && n.Points.Count >= 3))
                         return (true, b);
                 }
             }

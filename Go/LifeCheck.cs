@@ -98,7 +98,7 @@ namespace Go
         public static Boolean CommonTigerMouthExceptions(Board board, Content c, Point tigerMouth, Point libertyPoint)
         {
             //make move at liberty point
-            Board b = board.MakeMoveOnNewBoard(libertyPoint, c.Opposite());
+            Board b = board.MakeMoveOnNewBoard(libertyPoint, c.Opposite(), true);
             if (ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false))
             {
                 if (!KillerFormationHelper.PossibleCornerThreeFormation(board, tigerMouth, c))

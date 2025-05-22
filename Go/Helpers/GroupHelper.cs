@@ -6,6 +6,18 @@ namespace Go
 {
     public class GroupHelper
     {
+        #region get killer groups
+        /// <summary>
+        /// Get killer group cached in board for single point.
+        /// </summary>
+        public static Group GetKillerGroupFromCache(Board board, Point p, Content c = Content.Unknown)
+        {
+            c = (c == Content.Unknown) ? GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive) : c;
+            List<Group> groups = GetKillerGroups(board, c);
+            Group[,] cache = (c == Content.Black) ? board.BlackKillerGroupCache : board.WhiteKillerGroupCache;
+            return cache[p.x, p.y];
+        }
+
         /// <summary>
         /// Get killer group fully surrounded by survival stones. Content in parameter refer to target content (usually survival). 
         /// </summary>
@@ -58,7 +70,9 @@ namespace Go
             }
             return killerGroups;
         }
+        #endregion
 
+        #region check neighbour groups
         /// <summary>
         /// Ensure neighbour groups of killer group are diagonal groups, not separated from one another.
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_SimpleSeki_2" />
@@ -85,16 +99,20 @@ namespace Go
             ngroups.RemoveAll(gr => gr.Neighbours.All(n => GroupHelper.GetKillerGroupFromCache(board, n, c.Opposite()) == killerGroup));
             return ngroups;
         }
+        #endregion
 
+        #region get killer group of direct neighbour groups
         /// <summary>
-        /// Get killer group cached in board for single point.
+        /// Get killer group of direct neighbour groups.
         /// </summary>
-        public static Group GetKillerGroupFromCache(Board board, Point p, Content c = Content.Unknown)
+        public static Group GetKillerGroupOfDirectNeighbourGroups(Board board, Point p, Content c)
         {
-            c = (c == Content.Unknown) ? GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive) : c;
-            List<Group> groups = GetKillerGroups(board, c);
-            Group[,] cache = (c == Content.Black) ? board.BlackKillerGroupCache : board.WhiteKillerGroupCache;
-            return cache[p.x, p.y];
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(board, p, c);
+            if (killerGroup == null) return null;
+            HashSet<Group> ngroups = board.GetGroupsFromStoneNeighbours(p, c.Opposite());
+            if (GroupHelper.GetNeighbourGroupsOfKillerGroup(board, killerGroup).Any(n => ngroups.Contains(n)))
+                return killerGroup;
+            return null;
         }
 
         /// <summary>
@@ -102,7 +120,7 @@ namespace Go
         /// </summary>
         public static Group GetKillerGroupOfStrongNeighbourGroups(Board board, Point p, Content c)
         {
-            Group killerGroup = GroupHelper.GetKillerGroupFromCache(board, p, c);
+            Group killerGroup = GroupHelper.GetKillerGroupOfDirectNeighbourGroups(board, p, c);
             if (killerGroup == null) return null;
 
             List<Group> groups = board.GetNeighbourGroups(killerGroup);
@@ -110,18 +128,19 @@ namespace Go
             if (LinkHelper.DoubleAtariOnTargetGroups(board, groups)) return null;
             return killerGroup;
         }
+        #endregion
 
         /// <summary>
         /// Is single group within killer group.
         /// </summary>
-        public static Boolean IsSingleGroupWithinKillerGroup(Board tryBoard, Group group = null, Boolean checkLiberties = true)
+        public static Boolean IsSingleGroupWithinKillerGroup(Board tryBoard, Group group = null)
         {
             if (group == null) group = tryBoard.MoveGroup;
             else group = tryBoard.GetCurrentGroup(group);
             Content c = group.Content;
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, group.Points.First(), c.Opposite());
             if (killerGroup == null || killerGroup.Points.Any(p => tryBoard[p] == c && tryBoard.GetGroupAt(p) != group)) return false;
-            if (checkLiberties && tryBoard.GetNeighbourGroups(killerGroup).Any(gr => gr.Liberties.Count == 1)) return false;
+            if (tryBoard.GetNeighbourGroups(killerGroup).Any(gr => gr.Liberties.Count == 1)) return false;
             return true;
         }
 
