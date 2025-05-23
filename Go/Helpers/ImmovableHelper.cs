@@ -453,15 +453,13 @@ namespace Go
         public static Boolean CheckCaptureSecure(Board board, Group group, Boolean immovable = false)
         {
             Content c = group.Content;
+            if (board.GetGroupLiberties(group).Count > 1) return false;
             Board escapeBoard = ImmovableHelper.MakeMoveAtLiberty(board, group, c);
             if (immovable)
             {
                 if (escapeBoard != null) return false;
             }
             else if (escapeBoard != null && escapeBoard.MoveGroupLiberties > 1)
-                return false;
-
-            if (AtariHelper.AtariByGroup(group, board).Any())
                 return false;
             return true;
         }
@@ -674,7 +672,7 @@ namespace Go
                 if (b.MoveGroup.Points.Count >= 3)
                 {
                     List<Point> npoints = b2.GetStoneNeighbours().Where(n => b2[n] != c.Opposite() && !n.Equals(b.Move.Value)).ToList();
-                    if (npoints.Select(n => GroupHelper.GetKillerGroupOfDirectNeighbourGroups(b2, n, c.Opposite())).Any(n => n != null && n.Points.Count >= 3))
+                    if (npoints.Any(n => !WallHelper.NoEyeForSurvival(b, n, c.Opposite())))
                         return (true, b);
                 }
             }

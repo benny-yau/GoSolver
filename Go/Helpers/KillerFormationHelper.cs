@@ -597,9 +597,6 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q15017" />
         /// Check snapback <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31469" />
-        /// Check for ko fight 
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31672" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31428" />
         /// </summary>
         public static Boolean TwoPointAtariMove(Board tryBoard, Board captureBoard = null)
         {
@@ -610,24 +607,34 @@ namespace Go
             //check for three groups
             if (ThreeOpponentGroupsAtMove(tryBoard)) return true;
 
-            Board board = captureBoard.MakeMoveOnNewBoard(move, c);
-            if (board == null || board.AtariTargets.Count == 0) return false;
+            Board b = captureBoard.MakeMoveOnNewBoard(move, c);
+            if (b == null || b.AtariTargets.Count == 0) return false;
             //check snapback
-            if (board.GetDiagonalNeighbours().Any(n => board[n] == c) && ImmovableHelper.IsSuicidalOnCapture(board).Item1)
+            if (b.GetDiagonalNeighbours().Any(n => b[n] == c) && ImmovableHelper.IsSuicidalOnCapture(b).Item1)
                 return true;
-            //check for ko fight
-            if (board.AtariTargets.Count != 1) return false;
-            Group atariTarget = board.AtariTargets.First();
+            //check one point atari move
+            return OnePointAtariMove(b, captureBoard);
+        }
+
+        /// <summary>
+        /// Check one point atari move
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31672" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31428" />
+        /// </summary>
+        public static Boolean OnePointAtariMove(Board b, Board board)
+        {
+            Content c = b.MoveGroup.Content;
+            if (b.AtariTargets.Count != 1) return false;
+            Group atariTarget = b.AtariTargets.First();
             if (atariTarget.Points.Count != 1) return false;
             Point q = atariTarget.Liberties.First();
-            if (EyeHelper.FindNonSemiSolidEye(captureBoard, q, c.Opposite()))
+            if (EyeHelper.FindNonSemiSolidEye(board, q, c.Opposite()))
                 return true;
-
-            List<Point> emptyPoints = board.GetStoneNeighbours(q).Where(n => board[n] == Content.Empty).ToList();
+            List<Point> emptyPoints = b.GetStoneNeighbours(q).Where(n => b[n] == Content.Empty).ToList();
             if (emptyPoints.Count != 1) return false;
 
-            Group killerGroup = GroupHelper.GetKillerGroupFromCache(board, q, c.Opposite());
-            if (killerGroup != null && killerGroup.Points.Count == 2 && EyeHelper.IsCovered(board, emptyPoints.First(), c.Opposite()))
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(b, q, c.Opposite());
+            if (killerGroup != null && killerGroup.Points.Count == 2 && EyeHelper.IsCovered(b, emptyPoints.First(), c.Opposite()))
                 return true;
             return false;
         }

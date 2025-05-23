@@ -1892,15 +1892,12 @@ namespace Go
         }
 
         /// <summary>
-        /// Check killer groups <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_XuanXuanGo_B31" />
-        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WuQingYuan_Q15126" />
+        /// Redundant tiger mouth.
+        /// Check killer groups <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WuQingYuan_Q15126" />
+        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_XuanXuanGo_B31" />
+        /// Check one point atari move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31428" />
         /// Opponent move at tiger mouth <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A151_101Weiqi" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_Nie67" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30370" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31428" />
-        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16738_2" />
-        /// Check for suicide at big tiger mouth <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_Corner_A87" />
-        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_TianLongTu_Q16470" />
         /// </summary>
         private static Boolean RedundantTigerMouth(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
@@ -1921,32 +1918,36 @@ namespace Go
 
             foreach (Point d in diagonalPoints)
             {
-                if (CoveredPointSuicidalMove(tryMove))
-                    continue;
-                //kill covered eye at diagonal point
-                if (KillCoveredEyeAtDiagonal(tryBoard, currentBoard))
-                    continue;
-
-                //opponent move at tiger mouth
-                if (opponentMove != null)
-                {
-                    if (ImmovableHelper.SuicideAtBigTigerMouth(opponentMove).Item1 || BothAliveHelper.CheckForBothAliveAtMove(opponentMove.TryGame.Board))
-                        continue;
-                    if (ImmovableHelper.IsImmovablePoint(currentBoard, d, c.Opposite()))
-                        return true;
-                }
-                //check killer groups
-                Group diagonalKillerGroup = GroupHelper.GetKillerGroupOfStrongNeighbourGroups(currentBoard, d, c.Opposite());
-                if (diagonalKillerGroup == null) continue;
-
-                Group moveKillerGroup = GroupHelper.GetKillerGroupOfDirectNeighbourGroups(currentBoard, move, c.Opposite());
-                if (moveKillerGroup != null) continue;
-
                 //find immovable point at diagonal
-                if (ImmovableHelper.IsImmovablePoint(currentBoard, d, c.Opposite()))
+                if (!ImmovableHelper.IsImmovablePoint(currentBoard, d, c.Opposite()))
+                    continue;
+
+                if (opponentMove == null)
                 {
-                    if (currentBoard[d] == Content.Empty || (currentBoard[d] == c && ImmovableHelper.CheckCaptureSecureForSingleGroup(currentBoard, currentBoard.GetGroupAt(d))))
-                        return true;
+                    //check killer groups
+                    Group diagonalKillerGroup = GroupHelper.GetKillerGroupOfDirectNeighbourGroups(currentBoard, d, c.Opposite());
+                    if (diagonalKillerGroup == null)
+                        continue;
+                    HashSet<Group> opponentGroups = currentBoard.GetGroupsFromPoints(diagonalKillerGroup.Points.Where(n => currentBoard[n] == c).ToList());
+                    if (opponentGroups.Any(n => !ImmovableHelper.CheckCaptureSecure(currentBoard, n)))
+                        continue;
+
+                    //check one point atari move
+                    if (KillerFormationHelper.OnePointAtariMove(tryBoard, currentBoard)) 
+                        continue;
+
+                    if (CoveredPointSuicidalMove(tryMove))
+                        continue;
+                    if (KillCoveredEyeAtDiagonal(tryBoard, currentBoard))
+                        continue;
+                    return true;
+                }
+                else
+                {
+                    //opponent move at tiger mouth
+                    if (BothAliveHelper.CheckForBothAliveAtMove(opponentMove.TryGame.Board))
+                        continue;
+                    return true;
                 }
             }
 
