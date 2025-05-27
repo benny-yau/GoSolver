@@ -1736,8 +1736,6 @@
         <member name="M:Go.RedundantMoveHelper.StrongGroupsAtMustHaveMove(Go.Board,Go.Point)">
             <summary>
             Strong neighbour groups at tiger mouth for must-have move.
-            <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario5dan27_3" />
-            <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_20221024_4" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckLibertyFightAtCoveredEye(Go.Board,Go.Point,Go.Content)">
@@ -1746,11 +1744,6 @@
             <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_20221128_2" />
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_x" />
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_x_2" />
-            </summary>
-        </member>
-        <member name="M:Go.RedundantMoveHelper.CheckLibertyFightAtMustHaveMove(Go.Board)">
-            <summary>
-            Check liberty fight at must have move.
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.ValidateNeutralPoint(Go.GameTryMove)">
@@ -1848,10 +1841,9 @@
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q30225" />
             Check for three groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q1970" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935" />
-            Check for strong neighbour groups <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario3dan22" />
-            <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A28" />
-            Check for liberty fight <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221220_7" />
+            Check for strong neighbour groups <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20230604_2" />
             Check for killer group <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20230505_8" />
+            <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221220_7" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.KillCoveredEyeAtDiagonal(Go.Board,Go.Board)">

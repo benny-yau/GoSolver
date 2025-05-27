@@ -66,7 +66,7 @@ namespace Go
         /// </summary>
         public static (Boolean, Point?) IsImmovablePoint(Point p, Content c, Board board)
         {
-            if (board[p] == Content.Empty) //empty point
+            if (board[p] == Content.Empty)
             {
                 if (PrecheckNotSuicidal(board, p, c.Opposite()))
                     return (false, null);
@@ -76,17 +76,14 @@ namespace Go
 
                 if (b == null)
                 {
-                    //check connect and die
-                    if (!WallHelper.StrongNeighbourGroups(board, p, c.Opposite()))
-                        return (false, null);
-                    return (true, null);
+                    Boolean strongGroups = WallHelper.StrongNeighbourGroups(board, p, c.Opposite());
+                    return (strongGroups, null);
                 }
-                //ensure tiger mouth without ko or snapback
                 Board b2 = IsConfirmTigerMouth(board, b);
                 if (b2 != null)
                     return (true, b2.Move);
             }
-            else //filled point
+            else
             {
                 if (board[p] == c) return (true, null);
 
@@ -95,16 +92,14 @@ namespace Go
                 if (!unEscapable)
                     return (false, null);
 
-                //check filled point connect and die
                 if (!WallHelper.StrongNeighbourGroups(board, targetGroup))
                     return (false, null);
 
-                //check for ko possibility
-                Point? q = ImmovableHelper.GetLibertyPoint(board, targetGroup);
-                if (q != null && CheckForKoInImmovablePoint(board, targetGroup, q.Value))
+                Point liberty = targetGroup.Liberties.First();
+                if (CheckForKoInImmovablePoint(board, targetGroup, liberty))
                     return (false, null);
 
-                return (true, q);
+                return (true, liberty);
             }
             return (false, null);
         }
@@ -165,19 +160,13 @@ namespace Go
 
             Board capturedBoard = CaptureSuicideGroup(p.Value, tryBoard);
             if (capturedBoard == null) return null;
-            //ensure not ko
-            if (KoHelper.IsKoFight(capturedBoard))
-                return null;
 
-            //check connect and die on current board
             if (!WallHelper.StrongNeighbourGroups(currentBoard, p.Value, c))
                 return null;
 
-            //check connect and die on captured board
             if (!WallHelper.StrongNeighbourGroups(capturedBoard, p.Value, c))
                 return null;
 
-            //check suicidal move at side of board
             if (SuicidalAfterMustHaveMove(currentBoard, tryBoard, libertyPoint.Value))
                 return null;
 
@@ -195,6 +184,7 @@ namespace Go
         public static (Boolean, Board) ThreeLibertyConnectAndDie(Board board, Point? p = null, Group targetGroup = null)
         {
             if (targetGroup == null) targetGroup = board.MoveGroup;
+            else targetGroup = board.GetCurrentGroup(targetGroup);
             if (targetGroup.Liberties.Count != 3) return (false, null);
             Content c = targetGroup.Content;
 
@@ -419,9 +409,8 @@ namespace Go
         {
             if (group == null) group = board.MoveGroup;
             Content c = group.Content.Opposite();
-            Point? p = GetLibertyPoint(board, group);
-            if (p == null) return null;
-            return board.MakeMoveOnNewBoard(p.Value, c, overrideKo);
+            if (group.Liberties.Count != 1) return null;
+            return board.MakeMoveOnNewBoard(group.Liberties.First(), c, overrideKo);
         }
 
         /// <summary>
@@ -543,22 +532,34 @@ namespace Go
             IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, target.Liberties, c.Opposite());
             foreach (Board b in moveBoards)
             {
-                List<Group> groups = AtariHelper.AtariByGroup(target, b).Where(n => !n.Equals(b.GetCurrentGroup(eyeGroup))).ToList();
-                foreach (Group group in groups)
+                if (b.MoveGroup.Points.Count == 1)
                 {
-                    //capture suicide group
-                    Board b2 = ImmovableHelper.CaptureSuicideGroup(b, group);
-                    if (b2.MoveGroup.Points.Count == 1 || b2.MoveGroupLiberties != 1) continue;
-                    //capture eye group
-                    Board b3 = ImmovableHelper.CaptureSuicideGroup(b, eyeGroup);
-                    if (b3 == null) continue;
-                    if (b3.MoveGroupLiberties == 1) return true;
-                    //escape suicide group
-                    Board escapeBoard = MakeMoveAtLiberty(b3, group, c.Opposite());
-                    if (escapeBoard != null && LinkHelper.IsAbsoluteLinkForGroups(b3, escapeBoard))
+                    if (IsSnapback(b, eyeGroup, b.MoveGroup))
+                        return true;
+                }
+                else
+                {
+                    List<Group> groups = AtariHelper.AtariByGroup(target, b).Where(n => !n.Equals(b.GetCurrentGroup(eyeGroup))).ToList();
+                    if (groups.Any(n => IsSnapback(b, eyeGroup, n)))
                         return true;
                 }
             }
+            return false;
+        }
+
+        public static Boolean IsSnapback(Board board, Group eyeGroup, Group suicideGroup)
+        {
+            //capture suicide group
+            if (suicideGroup.Liberties.Count != 1) return false;
+            Board b = ImmovableHelper.CaptureSuicideGroup(board, suicideGroup);
+            if (b.MoveGroup.Points.Count == 1 || b.MoveGroupLiberties != 1) return false;
+            //capture eye group
+            Board b2 = ImmovableHelper.CaptureSuicideGroup(board, eyeGroup);
+            if (b2 == null) return false;
+            if (b2.MoveGroupLiberties == 1) return true;
+            //escape suicide group
+            if (!ImmovableHelper.UnescapableGroup(b2, suicideGroup).Item1)
+                return true;
             return false;
         }
 

@@ -1490,26 +1490,24 @@ namespace Go
             //capture at liberty
             List<Group> eyeGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Where(e => e.Liberties.Count == 2).ToList();
             IEnumerable<Point> moves = eyeGroups.Select(e => e.Liberties.First(n => !n.Equals(move)));
-            if (moves.Any(p => tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Any(n => !n.Equals(tryBoard.MoveGroup) && n.Liberties.Count == 1)))
+            if (moves.Any(p => tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Any(n => n.Points.Count >= 3 && n.Liberties.Count == 1)))
                 return true;
             return false;
         }
 
         /// <summary>
         /// Strong neighbour groups at tiger mouth for must-have move.
-        /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario5dan27_3" />
-        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_20221024_4" />
         /// </summary>
         private static Boolean StrongGroupsAtMustHaveMove(Board tryBoard, Point tigerMouth)
         {
             Content c = tryBoard.MoveGroup.Content;
-            Board board = tryBoard.MakeMoveOnNewBoard(tigerMouth, c);
-            if (board == null) board = tryBoard;
-            if (!WallHelper.StrongNeighbourGroups(board, tigerMouth, c))
-                return false;
-
-            //check liberty fight
-            if (CheckLibertyFightAtMustHaveMove(board))
+            Board b = tryBoard;
+            if (tryBoard[tigerMouth] == Content.Empty)
+            {
+                b = tryBoard.MakeMoveOnNewBoard(tigerMouth, c);
+                if (b == null) return true;
+            }
+            if (!WallHelper.StrongNeighbourGroups(b, tigerMouth, c))
                 return false;
             return true;
         }
@@ -1520,16 +1518,16 @@ namespace Go
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_x" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_x_2" />
         /// </summary>
-        private static Boolean CheckLibertyFightAtCoveredEye(Board currentBoard, Point eye, Content c)
+        private static Boolean CheckLibertyFightAtCoveredEye(Board board, Point eye, Content c)
         {
-            Group group = currentBoard.GetGroupsFromStoneNeighbours(eye, c.Opposite()).FirstOrDefault();
+            Group group = board.GetGroupsFromStoneNeighbours(eye, c.Opposite()).FirstOrDefault();
             if (group == null) return false;
-            List<Group> groups = LinkHelper.GetAllDiagonalGroups(currentBoard, group).ToList();
+            List<Group> groups = LinkHelper.GetAllDiagonalGroups(board, group).ToList();
             foreach (Group gr in groups)
             {
-                (_, List<Point> diagonals) = LinkHelper.FindDiagonalCut(currentBoard, gr);
+                (_, List<Point> diagonals) = LinkHelper.FindDiagonalCut(board, gr);
                 if (diagonals == null) continue;
-                if (diagonals.Any(n => !WallHelper.IsStrongGroup(currentBoard, currentBoard.GetGroupAt(n))))
+                if (diagonals.Any(n => !WallHelper.IsStrongGroup(board, board.GetGroupAt(n))))
                     continue;
                 return true;
             }
@@ -1544,16 +1542,6 @@ namespace Go
             if (tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindCoveredEye(tryBoard, n, c) && CheckLibertyFightAtCoveredEye(currentBoard, n, c)))
                 return true;
             return false;
-        }
-
-        /// <summary>
-        /// Check liberty fight at must have move.
-        /// </summary>
-        private static Boolean CheckLibertyFightAtMustHaveMove(Board board)
-        {
-            Content c = board.MoveGroup.Content;
-            Point move = board.Move.Value;
-            return CheckLibertyFightAtCoveredEye(board, move, c.Opposite());
         }
 
         /// <summary>
@@ -1958,48 +1946,35 @@ namespace Go
             return false;
         }
 
-
         /// <summary>
         /// Redundant tiger mouth without diagonal mouth.
         /// Check for covered eye <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16738" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q30225" />
         /// Check for three groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q1970" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935" />
-        /// Check for strong neighbour groups <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario3dan22" />
-        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A28" />
-        /// Check for liberty fight <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221220_7" />
+        /// Check for strong neighbour groups <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20230604_2" />
         /// Check for killer group <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20230505_8" />
+        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221220_7" />
         /// </summary>
         private static Boolean TigerMouthWithoutDiagonalMouth(GameTryMove tryMove, Board capturedBoard)
         {
             Point move = tryMove.Move;
-            Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
-
             //suicide within real eye at suicidal redundant move
             if (EyeHelper.FindSemiSolidEye(move, capturedBoard, c.Opposite()).Item1)
                 return false;
             //check for covered eye
             if (EyeHelper.IsCovered(tryBoard, move, c.Opposite()))
                 return false;
-
             //check for three groups
             if (KillerFormationHelper.ThreeOpponentGroupsAtMove(tryBoard))
                 return false;
-
             //check for strong neighbour groups
-            Boolean strongGroups = WallHelper.HostileNeighbourGroups(currentBoard, move, c) && capturedBoard.MoveGroupLiberties > 2;
-            if (!strongGroups)
+            if (!WallHelper.StrongNeighbourGroups(tryBoard))
                 return false;
-
-            //check for liberty fight
-            List<Group> groups = LinkHelper.GetAllDiagonalGroups(capturedBoard, capturedBoard.MoveGroup).ToList();
-            if (groups.Any(n => LinkHelper.FindDiagonalCut(capturedBoard, n).Item1 != null))
-                return false;
-
             //check for killer group
-            if (!GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard, tryBoard.MoveGroup))
+            if (!GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard))
                 return false;
             return true;
         }
@@ -2348,6 +2323,7 @@ namespace Go
         /// </summary>
         public static Boolean CheckRedundantKo(Board tryBoard, Board currentBoard)
         {
+            Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             Point? eyePoint = KoHelper.GetKoEyePoint(tryBoard);
             if (eyePoint == null) return false;
@@ -2356,12 +2332,12 @@ namespace Go
             if (KoHelper.IsNonKillableGroupKoFight(tryBoard))
             {
                 List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours();
-                if (LifeCheck.GetTargets(tryBoard).All(t => ngroups.Contains(t) && WallHelper.TargetWithAllNonKillableGroups(tryBoard, t)))
+                if (ngroups.All(t => WallHelper.TargetWithAllNonKillableGroups(tryBoard, t)))
                     return true;
                 if (!WallHelper.StrongNeighbourGroups(tryBoard))
                     return false;
                 //check liberty fight
-                if (CheckLibertyFightAtMustHaveMove(tryBoard))
+                if (CheckLibertyFightAtCoveredEye(tryBoard, move, c.Opposite()))
                     return false;
                 //check two liberty group
                 if (ngroups.Any(n => CheckTwoLibertyGroupToCaptureNeighbour(tryBoard, currentBoard, n)))
