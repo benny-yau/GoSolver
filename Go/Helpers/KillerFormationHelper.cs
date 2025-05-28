@@ -148,20 +148,15 @@ namespace Go
         /// <summary>
         /// Check if real eye found in neighbour groups.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_3" />
-        /// Allow two-point group without real eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18472" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17183" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18472" />
         /// Check for corner six <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
+        /// Find real eye with strong groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B25" />
         /// </summary>
         public static Boolean CheckRealEyeInNeighbourGroups(Board tryBoard, Board captureBoard)
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            //check for covered eye
-            if (EyeHelper.CheckCoveredEyeAtSuicideGroup(tryBoard))
-                return false;
-
-            //allow two-point group without real eye
+            //real eye at move killer group
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite());
             if (killerGroup != null && killerGroup.Points.Count <= 2 && !EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, killerGroup))
                 return false;
@@ -174,12 +169,10 @@ namespace Go
             if (BentThreeSuicideAtCoveredEye(tryBoard, captureBoard))
                 return false;
 
-            if (killerGroup == null) killerGroup = tryBoard.MoveGroup;
-
             //get all killer groups except move killer group
             List<Group> killerGroups = GroupHelper.GetKillerGroups(captureBoard, c.Opposite());
+            if (killerGroup == null) killerGroup = tryBoard.MoveGroup;
             List<Group> ngroups = captureBoard.GetNeighbourGroups(killerGroup);
-
             if (ngroups.Any(n => WallHelper.IsNonKillableGroup(captureBoard, n)))
                 return true;
 
@@ -190,7 +183,7 @@ namespace Go
                 //real eye with one neighbour group only
                 if (cgroups.Count == 1)
                     return true;
-                //find real eye
+                //find real eye with strong groups
                 if (EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, kgroup) && WallHelper.StrongGroups(captureBoard, cgroups))
                     return true;
                 if (EyeHelper.RealEyeOfDiagonallyConnectedGroups(captureBoard, kgroup))

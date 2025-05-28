@@ -71,7 +71,7 @@ namespace Go
             List<Point> nstones = board.GetStoneNeighbours(eye).Where(n => board[n] == c).ToList();
             if (board.PointWithinMiddleArea(eye))
                 return (nstones.Count >= 3 && diagonals.Count >= 2);
-            else //side or corner
+            else
                 return (nstones.Count >= 2 && diagonals.Count >= 1);
         }
 
@@ -115,12 +115,11 @@ namespace Go
             if (group == null) group = tryBoard.MoveGroup;
             Point move = tryBoard.Move.Value;
             Content c = group.Content;
-
             if (FindCoveredEyeByCapture(tryBoard, group))
                 return true;
 
             if (group.Points.Count != 2) return false;
-            if (group.Points.Any(p => tryBoard.GetDiagonalNeighbours(p).Count(q => tryBoard[q] == c && LinkHelper.PointsBetweenDiagonals(p, q).All(r => tryBoard[r] == c.Opposite())) == (tryBoard.PointWithinMiddleArea(p) ? 2 : 1)))
+            if (group.Points.Any(p => IsCovered(tryBoard, p, c.Opposite())))
                 return true;
             return false;
         }

@@ -64,64 +64,51 @@ namespace Go
         /// <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_TianLongTu_Q14992_2" />
         /// Check for ko possibility <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q30986" />
         /// </summary>
-        public static (Boolean, Point?) IsImmovablePoint(Point p, Content c, Board board)
+        public static Boolean IsImmovablePoint(Board board, Point p, Content c)
         {
             if (board[p] == Content.Empty)
             {
                 if (PrecheckNotSuicidal(board, p, c.Opposite()))
-                    return (false, null);
+                    return false;
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c.Opposite(), board, true);
                 if (!suicidal)
-                    return (false, null);
-
+                    return false;
                 if (b == null)
-                {
-                    Boolean strongGroups = WallHelper.StrongNeighbourGroups(board, p, c.Opposite());
-                    return (strongGroups, null);
-                }
-                Board b2 = IsConfirmTigerMouth(board, b);
-                if (b2 != null)
-                    return (true, b2.Move);
+                    return WallHelper.StrongNeighbourGroups(board, p, c.Opposite());
+                if (IsConfirmTigerMouth(board, b) != null)
+                    return true;
             }
             else
             {
-                if (board[p] == c) return (true, null);
-
                 Group targetGroup = board.GetGroupAt(p);
-                (Boolean unEscapable, _) = UnescapableGroup(board, targetGroup);
-                if (!unEscapable)
-                    return (false, null);
-
+                if (!UnescapableGroup(board, targetGroup).Item1)
+                    return false;
                 if (!WallHelper.StrongNeighbourGroups(board, targetGroup))
-                    return (false, null);
-
-                Point liberty = targetGroup.Liberties.First();
-                if (CheckForKoInImmovablePoint(board, targetGroup, liberty))
-                    return (false, null);
-
-                return (true, liberty);
+                    return false;
+                if (CheckForKoInImmovablePoint(board, targetGroup))
+                    return false;
+                return true;
             }
-            return (false, null);
-        }
-
-        public static Boolean IsImmovablePoint(Board board, Point p, Content c)
-        {
-            return IsImmovablePoint(p, c, board).Item1;
+            return false;
         }
 
         /// <summary>
         /// Check for ko in immovable point.
-        /// Check for ko by capture neighbour groups <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q30986" />
+        /// Check capture neighbour groups <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q30986" />
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q29998_2" />
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16446" />
         /// Check for reverse ko fight <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q29998" />
         /// </summary>
-        private static Boolean CheckForKoInImmovablePoint(Board board, Group targetGroup, Point q)
+        private static Boolean CheckForKoInImmovablePoint(Board board, Group targetGroup)
         {
             if (targetGroup.Points.Count != 1 || targetGroup.Liberties.Count != 1) return false;
             Content c = targetGroup.Content.Opposite();
-            //check for ko by capture neighbour groups
-            List<Group> ngroups = board.GetGroupsFromStoneNeighbours(q, c).Where(n => n.Liberties.Count == 1).ToList();
+            Point liberty = targetGroup.Liberties.First();
+
+            if (KoHelper.IsKoFight(board, targetGroup))
+                return true;
+            //check capture neighbour groups
+            List<Group> ngroups = board.GetGroupsFromStoneNeighbours(liberty, c).Where(n => n.Liberties.Count == 1).ToList();
             if (ngroups.Count > 1)
             {
                 foreach (Group group in ngroups)
@@ -131,11 +118,9 @@ namespace Go
                         return true;
                 }
             }
-            else if (KoHelper.IsKoFight(board, targetGroup))
-                return true;
 
             //check for reverse ko fight 
-            List<Point> nstones = board.GetStoneNeighbours(q);
+            List<Point> nstones = board.GetStoneNeighbours(liberty);
             if (nstones.Any(n => board[n] == c)) return false;
             List<Point> eyeNeighbour = nstones.Where(n => board[n] == Content.Empty).ToList();
             if (eyeNeighbour.Count == 1 && KoHelper.MakeKoFight(board, eyeNeighbour.First(), c.Opposite()))
@@ -163,16 +148,12 @@ namespace Go
 
             if (!WallHelper.StrongNeighbourGroups(currentBoard, p.Value, c))
                 return null;
-
             if (!WallHelper.StrongNeighbourGroups(capturedBoard, p.Value, c))
                 return null;
-
             if (SuicidalAfterMustHaveMove(currentBoard, tryBoard, libertyPoint.Value))
                 return null;
-
             return capturedBoard;
         }
-
 
         /// <summary>
         /// Three liberty connect and die.
@@ -414,26 +395,13 @@ namespace Go
         }
 
         /// <summary>
-        /// Get liberty point.
-        /// </summary>
-        public static Point? GetLibertyPoint(Board tryBoard, Group group = null)
-        {
-            if (group == null) group = tryBoard.MoveGroup;
-            List<Point> liberties = tryBoard.GetGroupLiberties(group);
-            if (liberties.Count == 1)
-                return liberties.First();
-            return null;
-        }
-
-        /// <summary>
         /// Make move at liberty.
         /// </summary>
         public static Board MakeMoveAtLiberty(Board tryBoard, Group group, Content c)
         {
-            Point? libertyPoint = ImmovableHelper.GetLibertyPoint(tryBoard, group);
-            if (libertyPoint == null) return null;
-            Board board = tryBoard.MakeMoveOnNewBoard(libertyPoint.Value, c);
-            return board;
+            List<Point> liberties = tryBoard.GetGroupLiberties(group);
+            if (liberties.Count != 1) return null;
+            return tryBoard.MakeMoveOnNewBoard(liberties.First(), c);
         }
 
         /// <summary>
@@ -450,16 +418,6 @@ namespace Go
             }
             else if (escapeBoard != null && escapeBoard.MoveGroupLiberties > 1)
                 return false;
-            return true;
-        }
-
-        /// <summary>
-        /// Check capture secure for single group within killer group.
-        /// </summary>
-        public static Boolean CheckCaptureSecureForSingleGroup(Board board, Group group)
-        {
-            if (!GroupHelper.IsSingleGroupWithinKillerGroup(board, group)) return false;
-            if (!ImmovableHelper.CheckCaptureSecure(board, group)) return false;
             return true;
         }
 

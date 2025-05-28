@@ -637,7 +637,7 @@
             Get diagonals of tiger mouth.
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.IsImmovablePoint(Go.Point,Go.Content,Go.Board)">
+        <member name="M:Go.ImmovableHelper.IsImmovablePoint(Go.Board,Go.Point,Go.Content)">
             <summary>
             Immovable point to check for links and diagonal points in semi solid eye. 
             Empty point <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_GuanZiPu_A3" />
@@ -648,10 +648,10 @@
             Check for ko possibility <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q30986" />
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.CheckForKoInImmovablePoint(Go.Board,Go.Group,Go.Point)">
+        <member name="M:Go.ImmovableHelper.CheckForKoInImmovablePoint(Go.Board,Go.Group)">
             <summary>
             Check for ko in immovable point.
-            Check for ko by capture neighbour groups <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q30986" />
+            Check capture neighbour groups <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q30986" />
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q29998_2" />
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16446" />
             Check for reverse ko fight <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q29998" />
@@ -741,11 +741,6 @@
             Capture group that has liberty of one only and return the board.
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.GetLibertyPoint(Go.Board,Go.Group)">
-            <summary>
-            Get liberty point.
-            </summary>
-        </member>
         <member name="M:Go.ImmovableHelper.MakeMoveAtLiberty(Go.Board,Go.Group,Go.Content)">
             <summary>
             Make move at liberty.
@@ -754,11 +749,6 @@
         <member name="M:Go.ImmovableHelper.CheckCaptureSecure(Go.Board,Go.Group,System.Boolean)">
             <summary>
             Check capture secure.
-            </summary>
-        </member>
-        <member name="M:Go.ImmovableHelper.CheckCaptureSecureForSingleGroup(Go.Board,Go.Group)">
-            <summary>
-            Check capture secure for single group within killer group.
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.IsSuicidalMoveForBothPlayers(Go.Board,Go.Point,System.Boolean)">
@@ -868,10 +858,9 @@
             <summary>
             Check if real eye found in neighbour groups.
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_3" />
-            Allow two-point group without real eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18472" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17183" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18472" />
             Check for corner six <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
+            Find real eye with strong groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B25" />
             </summary>
         </member>
         <member name="M:Go.KillerFormationHelper.FindSuicidalKillerFormation(Go.Board,Go.Board,Go.Board)">
@@ -1589,6 +1578,7 @@
         <member name="M:Go.RedundantMoveHelper.CheckCaptureAtAllNonKillableGroups(Go.Board,Go.Group)">
             <summary>
             Check capture at all non killable groups.
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_3" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SinglePointSuicidalMove(Go.GameTryMove,Go.GameTryMove)">

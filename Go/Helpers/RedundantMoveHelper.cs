@@ -953,6 +953,7 @@ namespace Go
 
         /// <summary>
         /// Check capture at all non killable groups.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_3" />
         /// </summary>
         public static Boolean CheckCaptureAtAllNonKillableGroups(Board board, Group group)
         {
@@ -962,7 +963,7 @@ namespace Go
             Board escapeBoard = ImmovableHelper.MakeMoveAtLiberty(board, group, c);
             if (escapeBoard == null)
             {
-                if (board.GetNeighbourGroups(group).All(n => WallHelper.IsNonKillableGroup(board, n)))
+                if (WallHelper.TargetWithAllNonKillableGroups(board, group))
                 {
                     if (EyeHelper.CheckCoveredEyeAtSuicideGroup(board, group)) return false;
                     return true;
@@ -971,7 +972,7 @@ namespace Go
             else if (escapeBoard.MoveGroupLiberties == 1)
             {
                 Board captureBoard = ImmovableHelper.CaptureSuicideGroup(escapeBoard);
-                if (captureBoard.GetNeighbourGroups(escapeBoard.MoveGroup).All(n => WallHelper.IsNonKillableGroup(captureBoard, n)))
+                if (WallHelper.TargetWithAllNonKillableGroups(captureBoard, escapeBoard.MoveGroup))
                 {
                     if (EyeHelper.CheckCoveredEyeAtSuicideGroup(escapeBoard)) return false;
                     return true;

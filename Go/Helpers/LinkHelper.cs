@@ -94,8 +94,6 @@ namespace Go
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-
-            //ensure base line move
             if (tryBoard.PointWithinMiddleArea(move)) return false;
 
             //ensure non killable group at point up
@@ -106,11 +104,9 @@ namespace Go
             if (npoints.Count > 1 && !tryBoard.GetStoneNeighbours(npoints[0]).Contains(npoints[1])) return false;
 
             //get diagonal in leap direction
-            List<Point> diagonalInLeapDirection = tryBoard.GetDiagonalNeighbours().Where(n => tryBoard.PointWithinMiddleArea(n) && !npoints.Contains(n) && !tryBoard.GetStoneNeighbours(n).Any(s => npoints.Contains(s))).ToList();
-            if (diagonalInLeapDirection.Count != 1) return false;
-            Point d = diagonalInLeapDirection.First();
-
-            //ensure movable point at diagonal
+            List<Point> moveDiagonal = tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] == Content.Empty && !tryBoard.GetStoneNeighbours(n).Intersect(npoints).Any()).ToList();
+            if (moveDiagonal.Count != 1) return false;
+            Point d = moveDiagonal.First();
             if (!tryBoard.GameInfo.IsMovablePoint[d.x, d.y]) return false;
 
             //make block move
