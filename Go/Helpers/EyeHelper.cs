@@ -18,7 +18,7 @@ namespace Go
     {
 
         /// <summary>
-        /// An eye is a point where all direct connected points are black or white as specified.
+        /// Find eye.
         /// </summary>
         public static Boolean FindEye(Board board, Point eye, Content c = Content.Unknown)
         {
@@ -32,7 +32,7 @@ namespace Go
         }
 
         /// <summary>
-        /// An uncovered eye is a point where none or only one diagonal point covered by opposite content if point is in the middle area, and no diagonal point covered by opposite content if point is at the side or at the corner.
+        /// Find uncovered eye.
         /// </summary>
         public static Boolean FindUncoveredEye(Board board, Point eye, Content c)
         {
@@ -76,7 +76,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Find false eye which has one or more diagonal points covered by opposite content.
+        /// Find covered eye.
         /// </summary>
         public static Boolean FindCoveredEye(Board board, Point eye, Content c)
         {
@@ -108,7 +108,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Check for two-point covered eye for suicide group.
+        /// Check covered eye at suicide group.
         /// </summary>
         public static Boolean CheckCoveredEyeAtSuicideGroup(Board tryBoard, Group group = null)
         {
@@ -125,7 +125,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Find eye that is not semi solid eye.
+        /// Find non semi solid eye.
         /// </summary>
         public static Boolean FindNonSemiSolidEye(Board board, Point eye, Content c)
         {
@@ -133,7 +133,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Semi solid eyes are real eyes that can have diagonals with immovable points.
+        /// Find semi solid eye.
         /// </summary>
         public static (Boolean, List<Point>) FindSemiSolidEye(Point eye, Board board, Content c)
         {
@@ -160,7 +160,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get all immovable points at eye point diagonals.
+        /// Get all immovable points.
         /// </summary>
         private static List<Point> GetImmovablePoints(Point eyePoint, Board board, Content c)
         {
@@ -176,7 +176,7 @@ namespace Go
 
 
         /// <summary>
-        /// Find real solid eyes, filled with same content at the diagonals, not immovable points.
+        /// Find real solid eye.
         /// </summary>
         public static Boolean FindRealSolidEye(Point eye, Content c, Board board)
         {
@@ -186,9 +186,9 @@ namespace Go
             List<Point> diagonals = board.GetDiagonalNeighbours(eye);
             int stoneCount = diagonals.Count(d => board[d] == c);
             int diagonalCount = diagonals.Count;
-            if (board.PointWithinMiddleArea(eye)) //middle area
+            if (board.PointWithinMiddleArea(eye))
                 return (stoneCount >= diagonalCount - 1);
-            else //side or corner
+            else
                 return (stoneCount == diagonalCount);
         }
 
@@ -386,8 +386,7 @@ namespace Go
             if (!isKillerGroup)
                 return false;
 
-            //ensure killer group neighbours are not disconnected
-            if (board.GetNeighbourGroups(killerGroup).Any(n => !diagonalGroups.Contains(n)))
+            if (!WallHelper.StrongGroups(board, diagonalGroups))
                 return false;
 
             List<LinkedPoint<Point>> checkedDiagonals = new List<LinkedPoint<Point>>();
@@ -403,9 +402,6 @@ namespace Go
                         return false;
                     checkedDiagonals.Add(diagonal);
                 }
-                //check connect and die
-                if (ImmovableHelper.CheckConnectAndDie(board, diagonalGroup))
-                    return false;
             }
 
             //check for covered eye killer group

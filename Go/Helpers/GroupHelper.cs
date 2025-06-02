@@ -101,11 +101,11 @@ namespace Go
         }
         #endregion
 
-        #region get killer group of direct neighbour groups
+        #region get direct killer group
         /// <summary>
         /// Get killer group of direct neighbour groups.
         /// </summary>
-        public static Group GetKillerGroupOfDirectNeighbourGroups(Board board, Point p, Content c)
+        public static Group GetDirectKillerGroup(Board board, Point p, Content c)
         {
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(board, p, c);
             if (killerGroup == null) return null;
@@ -120,7 +120,7 @@ namespace Go
         /// </summary>
         public static Group GetKillerGroupOfStrongNeighbourGroups(Board board, Point p, Content c)
         {
-            Group killerGroup = GroupHelper.GetKillerGroupOfDirectNeighbourGroups(board, p, c);
+            Group killerGroup = GroupHelper.GetDirectKillerGroup(board, p, c);
             if (killerGroup == null) return null;
 
             List<Group> groups = board.GetNeighbourGroups(killerGroup);

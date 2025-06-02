@@ -488,7 +488,7 @@ namespace Go
         /// Two target groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30215_3" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18_4" />
         /// Check killer ko within killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_2" />
-        /// Ko move on external liberty (optional) <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20221024_5" />
+        /// Ko move on external liberty <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20221024_5" />
         /// </summary>
         public static Boolean SuicideForLibertyFight(Board tryBoard, Board currentBoard)
         {
@@ -532,21 +532,6 @@ namespace Go
                     if (groups.Any(n => ImmovableHelper.EscapeCaptureLink(currentBoard, n)))
                         continue;
                     return true;
-                }
-            }
-
-            //ko move on external liberty (optional)
-            foreach (Group targetGroup in targetGroups)
-            {
-                List<Point> externalLiberties = targetGroup.Liberties.Where(n => GroupHelper.GetKillerGroupFromCache(currentBoard, n, c.Opposite()) != killerGroup).ToList();
-                if (externalLiberties.Count != 1) continue;
-                Point liberty = externalLiberties.First();
-                Board b = currentBoard.MakeMoveOnNewBoard(liberty, c, true);
-                if (b != null && KoHelper.IsKoFight(b))
-                {
-                    Point? eye = KoHelper.GetKoEyePoint(b);
-                    if (eye != null && ImmovableHelper.IsSuicidalMoveForBothPlayers(b, eye.Value, true))
-                        return true;
                 }
             }
             return false;

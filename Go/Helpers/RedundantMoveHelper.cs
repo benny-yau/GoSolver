@@ -308,7 +308,7 @@ namespace Go
             if (!KillerFormationHelper.IsFirstPoint(currentBoard, q, move)) return false;
 
             //check killer group
-            Group killerGroup = GroupHelper.GetKillerGroupOfDirectNeighbourGroups(currentBoard, atariPoint, c);
+            Group killerGroup = GroupHelper.GetDirectKillerGroup(currentBoard, atariPoint, c);
             if (killerGroup == null || currentBoard.GetNeighbourGroups(killerGroup).Any(n => n.Liberties.Count <= 2))
                 return false;
 
@@ -632,10 +632,6 @@ namespace Go
                     return false;
             }
 
-            //check weak group
-            if (CheckWeakGroupInConnectAndDie(tryMove, captureBoard))
-                return false;
-
             //find bloated eye suicide
             if (FindBloatedEyeSuicide(tryMove, captureBoard))
                 return true;
@@ -643,6 +639,10 @@ namespace Go
             //check redundant corner point
             if (CheckRedundantCornerPoint(tryMove, captureBoard))
                 return true;
+
+            //check weak group
+            if (CheckWeakGroupInConnectAndDie(tryMove, captureBoard))
+                return false;
 
             //check diagonals
             if (CheckDiagonalForSuicidalConnectAndDie(tryMove, captureBoard))
@@ -744,7 +744,8 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             if (!tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty) && !Board.ResolveAtari(currentBoard, tryBoard))
                 return false;
-            if (CheckWeakGroup(tryBoard, tryBoard.MoveGroup)) return true;
+            if (CheckWeakGroup(tryBoard, tryBoard.MoveGroup))
+                return true;
 
             //check three liberty weak group
             if (captureBoard.MoveGroupLiberties == 3)
@@ -1072,7 +1073,7 @@ namespace Go
                 {
                     //both players are suicidal at the liberty
                     Point q = liberties.First(n => !n.Equals(b.Move));
-                    if (GroupHelper.GetKillerGroupFromCache(tryBoard, q, c.Opposite()) == null) continue;
+                    if (GroupHelper.GetDirectKillerGroup(tryBoard, q, c.Opposite()) == null) continue;
                     if (ImmovableHelper.IsSuicidalMoveForBothPlayers(b, q))
                     {
                         HashSet<Group> groups = currentBoard.GetGroupsFromStoneNeighbours(q, c.Opposite());
@@ -1134,7 +1135,7 @@ namespace Go
             //get diagonals next to atari target
             List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] != c.Opposite() && tryBoard.GetGroupsFromStoneNeighbours(n, c).Intersect(tryBoard.AtariTargets).Any()).ToList();
             //check killer group
-            if (diagonals.Any(d => GroupHelper.GetKillerGroupOfDirectNeighbourGroups(tryBoard, d, c.Opposite()) != null))
+            if (diagonals.Any(d => GroupHelper.GetDirectKillerGroup(tryBoard, d, c.Opposite()) != null))
                 return true;
             return false;
         }
@@ -1398,9 +1399,9 @@ namespace Go
             foreach (Point p in tryBoard.GetDiagonalNeighbours())
             {
                 if (tryBoard[p] == c.Opposite()) continue;
-                Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, p, c.Opposite());
+                Group killerGroup = GroupHelper.GetDirectKillerGroup(tryBoard, p, c.Opposite());
                 if (killerGroup == null) continue;
-                if (killerGroup == GroupHelper.GetKillerGroupFromCache(tryBoard, tryMove.Move, c.Opposite())) continue;
+                if (killerGroup == GroupHelper.GetDirectKillerGroup(tryBoard, tryMove.Move, c.Opposite())) continue;
 
                 if (tryBoard.GetGroupsFromPoints(coveredPoints).Any(n => ImmovableHelper.CheckConnectAndDie(tryBoard, n)))
                     continue;
@@ -1710,13 +1711,13 @@ namespace Go
             foreach (Group killerGroup in killerGroups)
             {
                 Content c = killerGroup.Content;
-                if (!GroupHelper.IsLibertyGroup(killerGroup, g.Board)) continue;
                 List<Group> ngroups = g.Board.GetNeighbourGroups(killerGroup).Where(n => n.Liberties.Count == 3).ToList();
                 foreach (Group ngroup in ngroups)
                 {
-                    List<Point> killerLiberties = ngroup.Liberties.Where(n => GroupHelper.GetKillerGroupFromCache(g.Board, n, c.Opposite()) == killerGroup).ToList();
-                    if (killerLiberties.Count >= 1 || killerLiberties.Count <= 2)
-                        yield return killerGroup;
+                    List<Point> killerLiberties = ngroup.Liberties.Where(n => GroupHelper.GetDirectKillerGroup(g.Board, n, c.Opposite()) == killerGroup).ToList();
+                    if (killerLiberties.Count < 1 || killerLiberties.Count > 2) continue;
+                    if (!GroupHelper.IsLibertyGroup(killerGroup, g.Board)) continue;
+                    yield return killerGroup;
                 }
             }
         }
@@ -1914,7 +1915,7 @@ namespace Go
                 if (opponentMove == null)
                 {
                     //check killer groups
-                    Group diagonalKillerGroup = GroupHelper.GetKillerGroupOfDirectNeighbourGroups(currentBoard, d, c.Opposite());
+                    Group diagonalKillerGroup = GroupHelper.GetDirectKillerGroup(currentBoard, d, c.Opposite());
                     if (diagonalKillerGroup == null)
                         continue;
                     HashSet<Group> opponentGroups = currentBoard.GetGroupsFromPoints(diagonalKillerGroup.Points.Where(n => currentBoard[n] == c).ToList());
@@ -2021,7 +2022,7 @@ namespace Go
             List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(q => tryBoard[q] != c).ToList();
             diagonals = diagonals.Where(eye => LinkHelper.PointsBetweenDiagonals(eye, move).All(d => tryBoard[d] == c)).ToList();
             if (diagonals.Count == 0) return false;
-            diagonals.RemoveAll(d => GroupHelper.GetKillerGroupOfDirectNeighbourGroups(currentBoard, d, c) == null);
+            diagonals.RemoveAll(d => GroupHelper.GetDirectKillerGroup(currentBoard, d, c) == null);
             if (diagonals.Count == 0) return false;
 
             //make opponent move
@@ -2223,7 +2224,7 @@ namespace Go
             if (!tryMove.IsNegligible) return false;
 
             //check killer group
-            Group killerGroup = GroupHelper.GetKillerGroupOfDirectNeighbourGroups(currentBoard, move, c);
+            Group killerGroup = GroupHelper.GetDirectKillerGroup(currentBoard, move, c);
             if (killerGroup == null || currentBoard.GetNeighbourGroups(killerGroup).Any(n => n.Liberties.Count <= 2)) return false;
 
             //no neighbour group

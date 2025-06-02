@@ -30,7 +30,7 @@ namespace Go
 
         public static Boolean EnableCheckForPassMove(Board board, Content c = Content.Unknown, List<GameTryMove> tryMoves = null)
         {
-            if (tryMoves != null && tryMoves.Any(p => GroupHelper.GetKillerGroupFromCache(board, p.Move, c) == null)) return false;
+            if (tryMoves != null && tryMoves.Any(p => GroupHelper.GetDirectKillerGroup(board, p.Move, c) == null)) return false;
             c = (c == Content.Unknown) ? GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive) : c;
             IEnumerable<Group> killerGroups = GetKillerGroupsForBothAlive(board, c);
             if (killerGroups.Any(n => CheckForBothAlive(board, n)))
@@ -44,7 +44,7 @@ namespace Go
         public static Boolean CheckForBothAliveAtMove(Board board)
         {
             Content c = board.MoveGroup.Content;
-            List<Group> killerGroups = board.GetStoneAndDiagonalNeighbours().Where(n => board[n] != c).Select(n => GroupHelper.GetKillerGroupFromCache(board, n, c)).Distinct().ToList();
+            List<Group> killerGroups = board.GetStoneAndDiagonalNeighbours().Where(n => board[n] != c).Select(n => GroupHelper.GetDirectKillerGroup(board, n, c)).Distinct().ToList();
 
             if (killerGroups.Any(n => n != null && CheckForBothAlive(board, n)))
                 return true;

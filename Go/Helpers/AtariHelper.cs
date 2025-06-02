@@ -89,7 +89,7 @@ namespace Go
             if (WallHelper.IsNonKillableFromSetupMoves(tryBoard, suicideGroup))
                 return false;
 
-            if (tryBoard.GetNeighbourGroups(suicideGroup).Any(ngroup => IsWeakGroup(tryBoard, ngroup)))
+            if (tryBoard.GetNeighbourGroups(suicideGroup).Any(n => IsWeakGroup(tryBoard, n)))
                 return true;
             return false;
         }
@@ -103,8 +103,9 @@ namespace Go
             if (ngroup.Liberties.Count != 2) return false;
             foreach (Point liberty in ngroup.Liberties)
             {
-                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), tryBoard, true);
-                if (suicidal) continue;
+                Board b = tryBoard.MakeMoveOnNewBoard(liberty, c.Opposite(), true);
+                if (b == null) continue;
+                if (ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false)) continue;
                 if (WallHelper.IsNonKillableOrKo(b)) continue;
                 return true;
             }

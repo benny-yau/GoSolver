@@ -401,12 +401,12 @@
         </member>
         <member name="M:Go.EyeHelper.FindEye(Go.Board,Go.Point,Go.Content)">
             <summary>
-            An eye is a point where all direct connected points are black or white as specified.
+            Find eye.
             </summary>
         </member>
         <member name="M:Go.EyeHelper.FindUncoveredEye(Go.Board,Go.Point,Go.Content)">
             <summary>
-            An uncovered eye is a point where none or only one diagonal point covered by opposite content if point is in the middle area, and no diagonal point covered by opposite content if point is at the side or at the corner.
+            Find uncovered eye.
             </summary>
         </member>
         <member name="M:Go.EyeHelper.CoveredMove(Go.Board,Go.Point,Go.Content)">
@@ -421,7 +421,7 @@
         </member>
         <member name="M:Go.EyeHelper.FindCoveredEye(Go.Board,Go.Point,Go.Content)">
             <summary>
-            Find false eye which has one or more diagonal points covered by opposite content.
+            Find covered eye.
             </summary>
         </member>
         <member name="M:Go.EyeHelper.FindCoveredEyeAfterCapture(Go.Board,Go.Group)">
@@ -431,27 +431,27 @@
         </member>
         <member name="M:Go.EyeHelper.CheckCoveredEyeAtSuicideGroup(Go.Board,Go.Group)">
             <summary>
-            Check for two-point covered eye for suicide group.
+            Check covered eye at suicide group.
             </summary>
         </member>
         <member name="M:Go.EyeHelper.FindNonSemiSolidEye(Go.Board,Go.Point,Go.Content)">
             <summary>
-            Find eye that is not semi solid eye.
+            Find non semi solid eye.
             </summary>
         </member>
         <member name="M:Go.EyeHelper.FindSemiSolidEye(Go.Point,Go.Board,Go.Content)">
             <summary>
-            Semi solid eyes are real eyes that can have diagonals with immovable points.
+            Find semi solid eye.
             </summary>
         </member>
         <member name="M:Go.EyeHelper.GetImmovablePoints(Go.Point,Go.Board,Go.Content)">
             <summary>
-            Get all immovable points at eye point diagonals.
+            Get all immovable points.
             </summary>
         </member>
         <member name="M:Go.EyeHelper.FindRealSolidEye(Go.Point,Go.Content,Go.Board)">
             <summary>
-            Find real solid eyes, filled with same content at the diagonals, not immovable points.
+            Find real solid eye.
             </summary>
         </member>
         <member name="M:Go.EyeHelper.FindRealEyesWithinTwoEmptyPoints(Go.Board,Go.Group,Go.EyeType)">
@@ -965,7 +965,7 @@
             Two target groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30215_3" />
             <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18_4" />
             Check killer ko within killer group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_2" />
-            Ko move on external liberty (optional) <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221024_5" />
+            Ko move on external liberty <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221024_5" />
             </summary>
         </member>
         <member name="M:Go.KillerFormationHelper.TwoPointSuicideAtCoveredEye(Go.Board,Go.Board)">
