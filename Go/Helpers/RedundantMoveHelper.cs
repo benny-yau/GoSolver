@@ -385,7 +385,6 @@ namespace Go
 
         /// <summary>
         /// Suicidal move within non killable group.
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3dan17" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3kyu28_2" />
         /// Check for negligible in opponent move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" />
         /// Check any is non killable <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30370" />
@@ -406,8 +405,6 @@ namespace Go
 
             if (LifeCheck.GetTargets(tryBoard).Any(t => GroupHelper.GetKillerGroupFromCache(tryBoard, t.Points.First(), c.Opposite()) == killerGroup)) return false;
 
-            if (LinkHelper.FindDiagonalCut(tryBoard, tryBoard.MoveGroup).Item1 != null) return false;
-
             //all neighbour groups are non-killable
             List<Group> ngroups = tryBoard.GetNeighbourGroups(killerGroup);
             if (ngroups.All(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
@@ -419,12 +416,11 @@ namespace Go
 
             foreach (Group ngroup in ngroups)
             {
-                List<LinkedPoint<Point>> diagonalPoints = LinkHelper.GetGroupLinkedDiagonals(tryBoard, ngroup);
-                foreach (LinkedPoint<Point> p in diagonalPoints)
+                List<LinkedPoint<Point>> linkedPoints = LinkHelper.GetGroupLinkedDiagonals(tryBoard, ngroup);
+                foreach (LinkedPoint<Point> p in linkedPoints)
                 {
-                    if (LinkHelper.CheckIsDiagonalLinked(p, tryBoard)) continue;
                     List<Point> diagonals = LinkHelper.PointsBetweenDiagonals(p.Move, (Point)p.CheckMove);
-                    diagonals = diagonals.Where(q => GroupHelper.GetKillerGroupFromCache(tryBoard, q, c.Opposite()) == killerGroup).ToList();
+                    diagonals = diagonals.Where(q => GroupHelper.GetDirectKillerGroup(tryBoard, q, c.Opposite()) == killerGroup).ToList();
                     if (diagonals.Count == 0) continue;
                     Point d = diagonals.First();
                     Board b = null;
@@ -432,9 +428,9 @@ namespace Go
                         b = tryBoard.MakeMoveOnNewBoard(d, c.Opposite());
                     else //capture opponent at diagonal
                         b = ImmovableHelper.CaptureSuicideGroup(d, tryBoard);
+                    if (b == null) continue;
                     //check if all changed to non killable groups
-                    if (b == null || !diagonalPoints.All(n => LinkHelper.CheckIsDiagonalLinked(n, b))) continue;
-                    Group kgroup = GroupHelper.GetKillerGroupFromCache(b, move, c.Opposite());
+                    Group kgroup = GroupHelper.GetDirectKillerGroup(b, move, c.Opposite());
                     if (kgroup != null && WallHelper.TargetWithAllNonKillableGroups(b, kgroup))
                     {
                         //check for covered eye

@@ -64,10 +64,10 @@ namespace Go
             return IsNonKillableGroup(board, board.GetGroupAt(p));
         }
 
-        public static Boolean IsNonKillableGroup(Board board, Group targetGroup = null)
+        public static Boolean IsNonKillableGroup(Board board, Group group = null)
         {
-            if (targetGroup == null) targetGroup = board.MoveGroup;
-            Group group = board.GetCurrentGroup(targetGroup);
+            if (group == null) group = board.MoveGroup;
+            else group = board.GetCurrentGroup(group);
             if (GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Kill) != group.Content) return false;
             if (group.IsNonKillable != null) return group.IsNonKillable.Value;
 
@@ -106,6 +106,7 @@ namespace Go
         public static Boolean IsStrongGroup(Board board, Group group = null)
         {
             if (group == null) group = board.MoveGroup;
+            else group = board.GetCurrentGroup(group);
             if (group.Liberties.Count < 2 || ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(board, group))
                 return false;
             return true;
@@ -134,10 +135,10 @@ namespace Go
             return true;
         }
 
-        public static Boolean IsHostileNeighbourGroup(Board board, Group targetGroup = null)
+        public static Boolean IsHostileNeighbourGroup(Board board, Group group = null)
         {
-            if (targetGroup == null) targetGroup = board.MoveGroup;
-            Group group = board.GetCurrentGroup(targetGroup);
+            if (group == null) group = board.MoveGroup;
+            else group = board.GetCurrentGroup(group);
             if (group.Liberties.Count > 2) return true;
             if (group.Liberties.Count == 2 && group.Liberties.All(liberty => ImmovableHelper.IsSuicidalMove(board, liberty, group.Content.Opposite(), true)))
                 return true;
@@ -158,6 +159,7 @@ namespace Go
         public static Boolean IsNonKillableOrKo(Board board, Group group = null)
         {
             if (group == null) group = board.MoveGroup;
+            else group = board.GetCurrentGroup(group);
             return WallHelper.IsNonKillableGroup(board, group) || KoHelper.IsNonKillableGroupKoFight(board, group);
         }
 

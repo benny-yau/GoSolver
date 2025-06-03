@@ -597,7 +597,7 @@
             Get neighbour groups of killer group that are not surrounded within the killer group.
             </summary>
         </member>
-        <member name="M:Go.GroupHelper.GetKillerGroupOfDirectNeighbourGroups(Go.Board,Go.Point,Go.Content)">
+        <member name="M:Go.GroupHelper.GetDirectKillerGroup(Go.Board,Go.Point,Go.Content)">
             <summary>
             Get killer group of direct neighbour groups.
             </summary>
@@ -1435,7 +1435,6 @@
         <member name="M:Go.RedundantMoveHelper.MoveWithinNonKillableGroup(Go.GameTryMove,Go.GameTryMove)">
             <summary>
             Suicidal move within non killable group.
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3dan17" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3kyu28_2" />
             Check for negligible in opponent move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" />
             Check any is non killable <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30370" />

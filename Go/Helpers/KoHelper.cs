@@ -33,10 +33,10 @@ namespace Go
         /// <summary>
         /// Is ko fight, including both pre-ko and ko.
         /// </summary>
-        public static Boolean IsKoFight(Board board, Group targetGroup = null)
+        public static Boolean IsKoFight(Board board, Group group = null)
         {
-            if (targetGroup == null) targetGroup = board.MoveGroup;
-            Group group = board.GetCurrentGroup(targetGroup);
+            if (group == null) group = board.MoveGroup;
+            else group = board.GetCurrentGroup(group);
             if (group.Points.Count != 1 || group.Liberties.Count != 1) return false;
             return IsKoFight(board, group.Liberties.First(), group.Content).Item1;
         }
@@ -56,14 +56,15 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
         /// </summary>
-        public static Boolean IsNonKillableGroupKoFight(Board tryBoard, Group koGroup = null)
+        public static Boolean IsNonKillableGroupKoFight(Board tryBoard, Group group = null)
         {
-            if (koGroup == null) koGroup = tryBoard.MoveGroup;
-            Content c = koGroup.Content;
-            if (!IsKoFight(tryBoard, koGroup)) return false;
-            Point eye = tryBoard.GetStoneNeighbours(koGroup.Points.First()).First(n => tryBoard[n] == Content.Empty);
+            if (group == null) group = tryBoard.MoveGroup;
+            else group = tryBoard.GetCurrentGroup(group);
+            Content c = group.Content;
+            if (!IsKoFight(tryBoard, group)) return false;
+            Point eye = tryBoard.GetStoneNeighbours(group.Points.First()).First(n => tryBoard[n] == Content.Empty);
             List<Group> eyeGroups = tryBoard.GetGroupsFromStoneNeighbours(eye, c.Opposite()).ToList();
-            if (eyeGroups.Where(n => !n.Equals(koGroup)).All(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
+            if (eyeGroups.Where(n => !n.Equals(group)).All(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
                 return true;
             return false;
         }

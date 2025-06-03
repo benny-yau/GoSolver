@@ -350,10 +350,11 @@ namespace Go
             return (true, board);
         }
 
-        public static Boolean IsSuicidalWithoutKo(Board tryBoard, Group targetGroup = null)
+        public static Boolean IsSuicidalWithoutKo(Board tryBoard, Group group = null)
         {
-            if (targetGroup == null) targetGroup = tryBoard.MoveGroup;
-            return targetGroup.Liberties.Count == 1 && !KoHelper.IsKoFight(tryBoard, targetGroup);
+            if (group == null) group = tryBoard.MoveGroup;
+            else group = tryBoard.GetCurrentGroup(group);
+            return group.Liberties.Count == 1 && !KoHelper.IsKoFight(tryBoard, group);
         }
 
         /// <summary>
@@ -389,6 +390,7 @@ namespace Go
         public static Board CaptureSuicideGroup(Board board, Group group = null, Boolean overrideKo = true)
         {
             if (group == null) group = board.MoveGroup;
+            else group = board.GetCurrentGroup(group);
             Content c = group.Content.Opposite();
             if (group.Liberties.Count != 1) return null;
             return board.MakeMoveOnNewBoard(group.Liberties.First(), c, overrideKo);
@@ -528,11 +530,11 @@ namespace Go
         /// Suicidal capture <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B25" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A55" />
         /// </summary>
-        public static (Boolean, Board) ConnectAndDie(Board board, Group targetGroup = null, Boolean koEnabled = true)
+        public static (Boolean, Board) ConnectAndDie(Board board, Group group = null, Boolean koEnabled = true)
         {
-            targetGroup = (targetGroup) ?? board.MoveGroup;
-            Content c = targetGroup.Content;
-            Group group = board.GetCurrentGroup(targetGroup);
+            if (group == null) group = board.MoveGroup;
+            else group = board.GetCurrentGroup(group);
+            Content c = group.Content;
             if (group.Liberties.Count > 2) return (false, null);
 
             List<KeyValuePair<LinkedPoint<Point>, Board>> killBoards = new List<KeyValuePair<LinkedPoint<Point>, Board>>();

@@ -173,9 +173,6 @@ namespace Go
             tryMove.IsFillKoEyeMove = RedundantMoveHelper.FillKoEyeMove(tryMove);
             if (tryMove.IsFillKoEyeMove)
                 return;
-            tryMove.IsSuicidal = RedundantMoveHelper.SuicidalRedundantMove(tryMove);
-            if (tryMove.IsSuicidal)
-                return;
             tryMove.IsNeutralPoint = RedundantMoveHelper.NeutralPointSurvivalMove(tryMove);
             if (tryMove.IsNeutralPoint)
                 return;
@@ -190,6 +187,9 @@ namespace Go
                 return;
             tryMove.IsAtariRedundant = RedundantMoveHelper.AtariRedundantMove(tryMove);
             if (tryMove.IsAtariRedundant)
+                return;
+            tryMove.IsSuicidal = RedundantMoveHelper.SuicidalRedundantMove(tryMove);
+            if (tryMove.IsSuicidal)
                 return;
         }
 
@@ -208,9 +208,6 @@ namespace Go
             tryMove.IsFillKoEyeMove = RedundantMoveHelper.FillKoEyeMove(tryMove);
             if (tryMove.IsFillKoEyeMove)
                 return;
-            tryMove.IsSuicidal = RedundantMoveHelper.SuicidalRedundantMove(tryMove);
-            if (tryMove.IsSuicidal)
-                return;
             tryMove.IsNeutralPoint = RedundantMoveHelper.NeutralPointKillMove(tryMove);
             if (tryMove.IsNeutralPoint)
                 return;
@@ -225,6 +222,9 @@ namespace Go
                 return;
             tryMove.IsAtariRedundant = RedundantMoveHelper.AtariRedundantMove(tryMove);
             if (tryMove.IsAtariRedundant)
+                return;
+            tryMove.IsSuicidal = RedundantMoveHelper.SuicidalRedundantMove(tryMove);
+            if (tryMove.IsSuicidal)
                 return;
         }
 

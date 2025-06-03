@@ -26,6 +26,7 @@ namespace Go
         public static Boolean IsKillerFormationFromFunc(Board tryBoard, Group group = null)
         {
             if (group == null) group = tryBoard.MoveGroup;
+            else group = tryBoard.GetCurrentGroup(group);
             int contentCount = group.Points.Count;
             if (!KillerFormationFuncs.ContainsKey(contentCount)) return false;
             List<Func<Board, Group, Boolean>> funcs = KillerFormationFuncs[contentCount];
@@ -1063,6 +1064,7 @@ namespace Go
         public static Boolean CornerThreeFormation(Board tryBoard, Group moveGroup = null)
         {
             if (moveGroup == null) moveGroup = tryBoard.MoveGroup;
+            else moveGroup = tryBoard.GetCurrentGroup(moveGroup);
             Content c = moveGroup.Content;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 3 || tryBoard.MoveGroupLiberties != 1) return false;
@@ -1100,6 +1102,7 @@ namespace Go
         public static Boolean CornerSixFormation(Board tryBoard, Group moveGroup = null)
         {
             if (moveGroup == null) moveGroup = tryBoard.MoveGroup;
+            else moveGroup = tryBoard.GetCurrentGroup(moveGroup);
             Content c = moveGroup.Content;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 6) return false;
@@ -1119,6 +1122,7 @@ namespace Go
         public static Boolean BentFourCornerFormation(Board tryBoard, Group moveGroup = null)
         {
             if (moveGroup == null) moveGroup = tryBoard.MoveGroup;
+            else moveGroup = tryBoard.GetCurrentGroup(moveGroup);
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 4) return false;
             if (!contentPoints.Any(p => tryBoard.CornerPoint(p)) || contentPoints.Any(p => tryBoard.PointWithinMiddleArea(p))) return false;

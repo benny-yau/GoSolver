@@ -101,6 +101,7 @@ namespace Go
         public static Boolean FindCoveredEyeByCapture(Board board, Group group = null)
         {
             if (group == null) group = board.MoveGroup;
+            else group = board.GetCurrentGroup(group);
             Board b = ImmovableHelper.CaptureSuicideGroup(board, group);
             if (b != null && FindCoveredEyeAfterCapture(b, group))
                 return true;
@@ -113,6 +114,7 @@ namespace Go
         public static Boolean CheckCoveredEyeAtSuicideGroup(Board tryBoard, Group group = null)
         {
             if (group == null) group = tryBoard.MoveGroup;
+            else group = tryBoard.GetCurrentGroup(group);
             Point move = tryBoard.Move.Value;
             Content c = group.Content;
             if (FindCoveredEyeByCapture(tryBoard, group))
