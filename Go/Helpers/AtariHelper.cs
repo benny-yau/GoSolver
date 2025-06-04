@@ -103,6 +103,7 @@ namespace Go
             if (ngroup.Liberties.Count != 2) return false;
             foreach (Point liberty in ngroup.Liberties)
             {
+                if (!GameHelper.SetupMoveAvailable(tryBoard, liberty, c.Opposite())) continue;
                 Board b = tryBoard.MakeMoveOnNewBoard(liberty, c.Opposite(), true);
                 if (b == null) continue;
                 if (ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false)) continue;

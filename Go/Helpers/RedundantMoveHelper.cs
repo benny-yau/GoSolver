@@ -462,7 +462,7 @@ namespace Go
                 return false;
 
             //check strong groups
-            if (!WallHelper.StrongGroups(tryBoard, tryBoard.GetGroupsFromStoneNeighbours()))
+            if (!WallHelper.StrongGroups(tryBoard, tryBoard.GetGroupsFromStoneNeighbours())) 
                 return false;
 
             if (currentBoard.GetStoneAndDiagonalNeighbours(move).Count(n => currentBoard[n] == c && WallHelper.IsNonKillableGroup(currentBoard, n)) >= 2)
@@ -950,13 +950,15 @@ namespace Go
 
         /// <summary>
         /// Check capture at all non killable groups.
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_3" />
+        /// Check ko fight <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_4" />
+        /// Check covered eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_3" />
         /// </summary>
         public static Boolean CheckCaptureAtAllNonKillableGroups(Board board, Group group)
         {
             Content c = group.Content;
-            if (AtariHelper.AtariByGroup(group, board).Any())
+            if (KoHelper.IsKoFight(board, group))
                 return false;
+
             Board escapeBoard = ImmovableHelper.MakeMoveAtLiberty(board, group, c);
             if (escapeBoard == null)
             {
