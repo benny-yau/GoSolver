@@ -49,10 +49,12 @@ namespace Go
         /// <summary>
         /// Get diagonals of tiger mouth.
         /// </summary>
-        public static List<Point> GetDiagonalsOfTigerMouth(Board board, Point p, Content c)
+        public static List<Point> GetDiagonalsOfTigerMouth(Board board, Point p, Content c, Boolean checkContent = false)
         {
             List<Point> opponentStones = board.GetStoneNeighbours(p).Where(n => board[n] == c).ToList();
-            return board.GetDiagonalNeighbours(p).Where(n => board.GetStoneNeighbours(n).Intersect(opponentStones).Count() >= 2).ToList();
+            List<Point> diagonals = board.GetDiagonalNeighbours(p).Where(n => board.GetStoneNeighbours(n).Intersect(opponentStones).Count() >= 2).ToList();
+            if (checkContent) return diagonals.Where(d => board[d] != c).ToList();
+            return diagonals;
         }
 
         /// <summary>

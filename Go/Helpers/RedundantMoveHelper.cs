@@ -129,7 +129,7 @@ namespace Go
 
             //check eye for survival
             Point p = eyeGroup.Points.Count == 1 ? eyePoint : eyeGroup.Points.First(n => !n.Equals(eyePoint));
-            List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, p, c).Where(n => !WallHelper.NoEyeForSurvival(tryBoard, n, c)).ToList();
+            List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, p, c, true).Where(n => !WallHelper.NoEyeForSurvival(tryBoard, n, c)).ToList();
             if (diagonals.Any() && !FindRealEyeAtDiagonal(diagonals, currentBoard, c))
                 return false;
 
@@ -462,7 +462,7 @@ namespace Go
                 return false;
 
             //check strong groups
-            if (!WallHelper.StrongGroups(tryBoard, tryBoard.GetGroupsFromStoneNeighbours())) 
+            if (!WallHelper.StrongGroups(tryBoard, tryBoard.GetGroupsFromStoneNeighbours()))
                 return false;
 
             if (currentBoard.GetStoneAndDiagonalNeighbours(move).Count(n => currentBoard[n] == c && WallHelper.IsNonKillableGroup(currentBoard, n)) >= 2)
@@ -642,10 +642,6 @@ namespace Go
 
             //check diagonals
             if (CheckDiagonalForSuicidalConnectAndDie(tryMove, captureBoard))
-                return true;
-
-            //capture at all non killable groups
-            if (CheckCaptureAtAllNonKillableGroups(captureBoard, tryBoard.MoveGroup))
                 return true;
 
             if (tryBoard.MoveGroup.Points.Count <= 4)
@@ -946,43 +942,6 @@ namespace Go
                 return false;
 
             return true;
-        }
-
-        /// <summary>
-        /// Check capture at all non killable groups.
-        /// Check ko fight <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_4" />
-        /// Check covered eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_3" />
-        /// </summary>
-        public static Boolean CheckCaptureAtAllNonKillableGroups(Board board, Group group)
-        {
-            Content c = group.Content;
-            if (KoHelper.IsKoFight(board, group))
-                return false;
-
-            Board escapeBoard = ImmovableHelper.MakeMoveAtLiberty(board, group, c);
-            if (escapeBoard == null)
-            {
-                if (WallHelper.TargetWithAllNonKillableGroups(board, group))
-                {
-                    if (EyeHelper.CheckCoveredEyeAtSuicideGroup(board, group)) return false;
-                    return true;
-                }
-            }
-            else if (escapeBoard.MoveGroupLiberties == 1)
-            {
-                Board captureBoard = ImmovableHelper.CaptureSuicideGroup(escapeBoard);
-                if (WallHelper.TargetWithAllNonKillableGroups(captureBoard, escapeBoard.MoveGroup))
-                {
-                    if (EyeHelper.CheckCoveredEyeAtSuicideGroup(escapeBoard)) return false;
-                    return true;
-                }
-            }
-            else if (escapeBoard.MoveGroupLiberties == 2)
-            {
-                (_, Board b) = ImmovableHelper.ConnectAndDie(escapeBoard, escapeBoard.MoveGroup, false);
-                return CheckCaptureAtAllNonKillableGroups(b, escapeBoard.MoveGroup);
-            }
-            return false;
         }
 
         /// <summary>
@@ -1898,7 +1857,7 @@ namespace Go
             if (ImmovableHelper.IsConfirmTigerMouth(currentBoard, tryBoard) == null) return false;
 
             //check eye points at diagonals of tiger mouth
-            List<Point> diagonalPoints = ImmovableHelper.GetDiagonalsOfTigerMouth(tryBoard, move, c.Opposite()).Where(e => tryBoard[e] != c.Opposite()).ToList();
+            List<Point> diagonalPoints = ImmovableHelper.GetDiagonalsOfTigerMouth(tryBoard, move, c.Opposite(), true);
             if (diagonalPoints.Count == 0) return false;
 
             (Boolean suicidal, Board capturedBoard) = ImmovableHelper.IsSuicidalOnCapture(tryBoard);
@@ -1921,7 +1880,7 @@ namespace Go
                         continue;
 
                     //check one point atari move
-                    if (KillerFormationHelper.OnePointAtariMove(tryBoard, currentBoard)) 
+                    if (KillerFormationHelper.OnePointAtariMove(tryBoard, currentBoard))
                         continue;
 
                     if (CoveredPointSuicidalMove(tryMove))
@@ -2350,7 +2309,7 @@ namespace Go
                 return false;
 
             //real eye at diagonal
-            List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, eyePoint.Value, c).Where(q => tryBoard[q] != c).ToList();
+            List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, eyePoint.Value, c, true);
             if (diagonals.Any() && !FindRealEyeAtDiagonal(diagonals, currentBoard, c))
                 return false;
 
@@ -2370,15 +2329,9 @@ namespace Go
         /// </summary>
         private static Boolean FindRealEyeAtDiagonal(List<Point> diagonals, Board b, Content c)
         {
-            foreach (Point d in diagonals)
-            {
-                Group killerGroup = GroupHelper.GetKillerGroupFromCache(b, d, c);
-                if (killerGroup == null || killerGroup.Points.Count > 2) continue;
-                if (EyeHelper.FindRealEyeWithinEmptySpace(b, d, c)) return true;
-            }
-            return false;
+            List<Group> killerGroups = diagonals.Select(d => GroupHelper.GetKillerGroupFromCache(b, d, c)).Where(n => n != null).ToList();
+            return killerGroups.All(n => EyeHelper.FindRealEyeOfAnyKillerGroup(b, n));
         }
-
         #endregion
     }
 }

@@ -635,8 +635,8 @@ namespace Go
             Content c = tryBoard[eyePoint.Value];
             if (tryBoard.GetStoneNeighbours(eyePoint).Count(n => tryBoard[n] == c.Opposite()) > 2)
             {
-                List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(tryBoard, eyePoint.Value, c.Opposite());
-                if (diagonals.All(d => tryBoard[d] != c.Opposite()))
+                List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(tryBoard, eyePoint.Value, c.Opposite(), true);
+                if (diagonals.Any())
                     return true;
             }
             return false;

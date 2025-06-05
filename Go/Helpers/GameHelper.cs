@@ -158,6 +158,7 @@ namespace Go
         {
             foreach (Point p in moves)
             {
+                if (!GameHelper.SetupMoveAvailable(currentBoard, p, c)) continue;
                 Board b = currentBoard.MakeMoveOnNewBoard(p, c, true);
                 if (b == null) continue;
                 if (checkSuicidal && ImmovableHelper.IsSuicidalWithoutKo(b)) continue;

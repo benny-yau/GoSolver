@@ -632,7 +632,7 @@
             Find tiger mouth for link.
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.GetDiagonalsOfTigerMouth(Go.Board,Go.Point,Go.Content)">
+        <member name="M:Go.ImmovableHelper.GetDiagonalsOfTigerMouth(Go.Board,Go.Point,Go.Content,System.Boolean)">
             <summary>
             Get diagonals of tiger mouth.
             </summary>
@@ -1572,13 +1572,6 @@
             Check for three neighbour groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30198" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16605" />
             Check killer formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499_3" />
-            </summary>
-        </member>
-        <member name="M:Go.RedundantMoveHelper.CheckCaptureAtAllNonKillableGroups(Go.Board,Go.Group)">
-            <summary>
-            Check capture at all non killable groups.
-            Check ko fight <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_4" />
-            Check covered eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_3" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SinglePointSuicidalMove(Go.GameTryMove,Go.GameTryMove)">
