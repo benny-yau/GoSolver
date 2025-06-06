@@ -295,8 +295,6 @@
             <summary>
             Check for both alive.
             Simple seki <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_SimpleSeki" />
-            Fill eye points with content <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A27" />
-            <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_B43" />
             Two content groups <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31646" />
             <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_20230430_8" />
             Complex seki <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_2" />
@@ -313,12 +311,6 @@
             Check for two groups <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_20230430_8_2" />
             </summary>
         </member>
-        <member name="M:Go.BothAliveHelper.BothAliveDiagonalEye(Go.Board,Go.Group,Go.Point)">
-            <summary>
-            Check if eye at diagonal of killer group for both alive.
-            <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275" />
-            </summary>
-        </member>
         <member name="M:Go.BothAliveHelper.CheckComplexSeki(Go.Board,System.Collections.Generic.List{Go.Group},System.Collections.Generic.List{Go.Group})">
             <summary>
             Check complex seki.
@@ -333,6 +325,9 @@
         <member name="M:Go.BothAliveHelper.FillEyePointsBoard(Go.Board,Go.Group)">
             <summary>
             Fill eye points with stone of same content.
+            Fill eye point in killer group <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A27" />
+            <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_B43" />
+            Fill eye point in neighbour group <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275" />
             </summary>
         </member>
         <member name="M:Go.BothAliveHelper.GetKillerGroupsForBothAlive(Go.Board,Go.Content)">

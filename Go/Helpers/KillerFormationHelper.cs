@@ -497,7 +497,7 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             if (tryBoard.MoveGroupLiberties != 1) return false;
             //suicide within killer group
-            Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
+            Group killerGroup = GroupHelper.GetDirectKillerGroup(currentBoard, move, c.Opposite());
             if (killerGroup == null || killerGroup.Points.Count != tryBoard.MoveGroup.Points.Count + 1) return false;
 
             List<Group> targetGroups = currentBoard.GetNeighbourGroups(killerGroup);
@@ -511,7 +511,7 @@ namespace Go
             //get external liberty
             foreach (Group targetGroup in targetGroups)
             {
-                List<Point> externalLiberties = targetGroup.Liberties.Where(n => GroupHelper.GetKillerGroupFromCache(currentBoard, n, c.Opposite()) != killerGroup).ToList();
+                List<Point> externalLiberties = targetGroup.Liberties.Where(n => GroupHelper.GetDirectKillerGroup(currentBoard, n, c.Opposite()) != killerGroup).ToList();
                 if (externalLiberties.Count != 1) continue;
                 Point liberty = externalLiberties.First();
                 if (KoHelper.IsKoFight(tryBoard, liberty, c.Opposite()).Item1)
@@ -612,7 +612,7 @@ namespace Go
             List<Point> emptyPoints = b.GetStoneNeighbours(q).Where(n => b[n] == Content.Empty).ToList();
             if (emptyPoints.Count != 1) return false;
 
-            Group killerGroup = GroupHelper.GetKillerGroupFromCache(b, q, c.Opposite());
+            Group killerGroup = GroupHelper.GetDirectKillerGroup(b, q, c.Opposite());
             if (killerGroup != null && killerGroup.Points.Count == 2 && EyeHelper.IsCovered(b, emptyPoints.First(), c.Opposite()))
                 return true;
             return false;

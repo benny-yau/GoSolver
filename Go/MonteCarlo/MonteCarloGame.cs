@@ -98,7 +98,8 @@ namespace Go
         private static Boolean ResultBothAlive(Game g)
         {
             List<Group> targets = LifeCheck.GetTargets(g.Board);
-            if (targets.Any(t => t.Liberties.All(liberty => GroupHelper.GetKillerGroupFromCache(g.Board, liberty) != null)))
+            Content c = GameHelper.GetContentForSurviveOrKill(g.Board.GameInfo, SurviveOrKill.Survive);
+            if (targets.Any(t => t.Liberties.All(liberty => GroupHelper.GetDirectKillerGroup(g.Board, liberty, c) != null)))
                 return true;
             return false;
         }

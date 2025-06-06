@@ -2851,7 +2851,7 @@ namespace ScenarioCollection
         public Game Scenario_GuanZiPu_Q14971()
         {
             //https://www.101weiqi.com/book/30126/21825/14971/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 28);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 

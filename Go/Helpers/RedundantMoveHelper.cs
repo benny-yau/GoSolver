@@ -994,7 +994,7 @@ namespace Go
                 return false;
 
             //remove one point from two-point empty group
-            Group eyeGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
+            Group eyeGroup = GroupHelper.GetDirectKillerGroup(currentBoard, move, c.Opposite());
             Board board = EyeHelper.FindRealEyesWithinTwoEmptyPoints(currentBoard, eyeGroup);
             if (board != null && !move.Equals(board.Move.Value))
                 return true;
@@ -1187,7 +1187,7 @@ namespace Go
                 {
                     if (capturedBoard[d] != Content.Empty) continue;
                     if (!EyeHelper.FindRealEyeWithinEmptySpace(capturedBoard, d, c.Opposite())) continue;
-                    if (!GroupHelper.GetKillerGroupFromCache(capturedBoard, d, c.Opposite()).Points.Any(p => capturedBoard[p] == c))
+                    if (!GroupHelper.GetDirectKillerGroup(capturedBoard, d, c.Opposite()).Points.Any(p => capturedBoard[p] == c))
                         return true;
                 }
             }
@@ -2329,7 +2329,7 @@ namespace Go
         /// </summary>
         private static Boolean FindRealEyeAtDiagonal(List<Point> diagonals, Board b, Content c)
         {
-            List<Group> killerGroups = diagonals.Select(d => GroupHelper.GetKillerGroupFromCache(b, d, c)).Where(n => n != null).ToList();
+            List<Group> killerGroups = diagonals.Select(d => GroupHelper.GetDirectKillerGroup(b, d, c)).Where(n => n != null).ToList();
             return killerGroups.All(n => EyeHelper.FindRealEyeOfAnyKillerGroup(b, n));
         }
         #endregion
