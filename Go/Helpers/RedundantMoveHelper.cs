@@ -1479,16 +1479,11 @@ namespace Go
         /// </summary>
         private static Boolean CheckLibertyFightAtCoveredEye(Board board, Point eye, Content c)
         {
-            Group group = board.GetGroupsFromStoneNeighbours(eye, c.Opposite()).FirstOrDefault();
-            if (group == null) return false;
-            List<Group> groups = LinkHelper.GetAllDiagonalGroups(board, group).ToList();
-            foreach (Group gr in groups)
+            foreach (Group group in board.GetGroupsFromStoneNeighbours(eye, c.Opposite()))
             {
-                (_, List<Point> diagonals) = LinkHelper.FindDiagonalCut(board, gr);
-                if (diagonals == null) continue;
-                if (diagonals.Any(n => !WallHelper.IsStrongGroup(board, board.GetGroupAt(n))))
-                    continue;
-                return true;
+                List<Group> dgroups = LinkHelper.GetAllDiagonalGroups(board, group).ToList();
+                if (dgroups.Any(n => LinkHelper.FindDiagonalCut(board, n).Item1 != null))
+                    return true;
             }
             return false;
         }
@@ -2329,7 +2324,7 @@ namespace Go
         /// </summary>
         private static Boolean FindRealEyeAtDiagonal(List<Point> diagonals, Board b, Content c)
         {
-            List<Group> killerGroups = diagonals.Select(d => GroupHelper.GetDirectKillerGroup(b, d, c)).Where(n => n != null).ToList();
+            List<Group> killerGroups = diagonals.Select(d => GroupHelper.GetDirectKillerGroup(b, d, c)).Where(n => n != null).Distinct().ToList();
             return killerGroups.All(n => EyeHelper.FindRealEyeOfAnyKillerGroup(b, n));
         }
         #endregion

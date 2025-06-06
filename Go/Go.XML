@@ -295,17 +295,17 @@
             <summary>
             Check for both alive.
             Simple seki <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_SimpleSeki" />
-            Two content groups <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31646" />
-            <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_20230430_8" />
             Complex seki <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_2" />
             </summary>
         </member>
-        <member name="M:Go.BothAliveHelper.CheckSimpleSeki(Go.Board,Go.Board,System.Collections.Generic.List{Go.Group},Go.Group,System.Collections.Generic.List{Go.Point})">
+        <member name="M:Go.BothAliveHelper.CheckSimpleSeki(Go.Board,Go.Group)">
             <summary>
             Check simple seki.
+            Ensure no real eye <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_TianLongTu_Q16424_2" />
+            Two content groups <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31646" />
+            <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_20230430_8" />
             Check for two liberty formation <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Side_A23_2" />
             Check for three or more liberty formation <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31493_4" />
-            Ensure no real eye <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_TianLongTu_Q16424_2" />
             Check for increased killer groups <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31445_2" />
             Check content group connect and die <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_TianLongTu_Q16424_3" />
             Check for two groups <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_20230430_8_2" />

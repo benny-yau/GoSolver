@@ -559,12 +559,12 @@ namespace Go
                 if (ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt(diagonal.Move))) continue;
                 if (ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt((Point)diagonal.CheckMove))) continue;
                 List<Point> diagonals = PointsBetweenDiagonals(diagonal);
-                if (diagonals.All(d => board[d] == c.Opposite() && !ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt(d))))
+                if (diagonals.All(d => board[d] == c.Opposite() && WallHelper.IsStrongGroup(board, board.GetGroupAt(d))))
                     return (diagonal.Move, diagonals);
             }
             return (null, null);
         }
-
+        
         /// <summary>
         /// Get stones within move group on current board.
         /// </summary>
