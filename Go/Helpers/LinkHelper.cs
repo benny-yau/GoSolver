@@ -184,7 +184,7 @@ namespace Go
             //check for opposite content at middle points
             middlePoints = middlePoints.Where(n => tryBoard[n] == c.Opposite()).ToList();
             if (middlePoints.Count() <= 1) return true;
-            
+
             Boolean leapOnSameLine = p.y.Equals(q.y) || p.x.Equals(q.x);
             if (!leapOnSameLine) return false;
             if (middlePoints.Any(n => n.x == p.x || n.y == p.y))
@@ -554,25 +554,25 @@ namespace Go
         public static (Point?, List<Point>) FindDiagonalCut(Board board, Group group)
         {
             Content c = group.Content;
-            foreach (LinkedPoint<Point> diagonal in GetGroupLinkedDiagonals(board, group))
+            foreach (LinkedPoint<Point> p in GetGroupLinkedDiagonals(board, group))
             {
-                if (ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt(diagonal.Move))) continue;
-                if (ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt((Point)diagonal.CheckMove))) continue;
-                List<Point> diagonals = PointsBetweenDiagonals(diagonal);
+                if (ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt(p.Move))) continue;
+                if (ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt((Point)p.CheckMove))) continue;
+                List<Point> diagonals = PointsBetweenDiagonals(p);
                 if (diagonals.All(d => board[d] == c.Opposite() && WallHelper.IsStrongGroup(board, board.GetGroupAt(d))))
-                    return (diagonal.Move, diagonals);
+                    return (p.Move, diagonals);
             }
             return (null, null);
         }
-        
+
         /// <summary>
         /// Get stones within move group on current board.
         /// </summary>
         public static List<Group> GetPreviousMoveGroup(Board currentBoard, Board tryBoard)
         {
-            Point p = tryBoard.Move.Value;
+            Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            return currentBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).ToList();
+            return currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).ToList();
         }
 
         /// <summary>
@@ -752,8 +752,7 @@ namespace Go
             {
                 if (ImmovableHelper.IsSuicidalMove(b, d, c, true)) continue;
                 HashSet<Group> ngroups = b.GetGroupsFromPoints(LinkHelper.PointsBetweenDiagonals(move, d));
-                if (ngroups.Count == 1) continue;
-                if (ngroups.Any(n => n.Liberties.Count == 1)) continue;
+                if (ngroups.Count == 1 || ngroups.Any(n => n.Liberties.Count == 1)) continue;
                 if (ngroups.Any(n => !WallHelper.IsNonKillableGroup(b, n)))
                     return true;
             }

@@ -60,8 +60,10 @@ namespace Go
         {
             Content c = killerGroup.Content;
             List<Point> emptyPoints = killerGroup.Points.Where(n => board[n] == Content.Empty).ToList();
-            //two to four liberties for both alive
             if (emptyPoints.Count < 2 || emptyPoints.Count > 4) return false;
+
+            List<Group> ngroups = GroupHelper.GetNeighbourGroupsOfKillerGroup(board, killerGroup);
+            if (!WallHelper.StrongGroups(board, ngroups)) return false;
 
             //simple seki
             if (CheckSimpleSeki(board, killerGroup))
@@ -77,7 +79,6 @@ namespace Go
                 return false;
 
             //check complex seki without diagonal cut
-            List<Group> ngroups = GroupHelper.GetNeighbourGroupsOfKillerGroup(board, killerGroup);
             (_, List<Point> diagonals) = LinkHelper.FindDiagonalCut(board, killerGroup);
             if (diagonals == null) return CheckComplexSeki(board, killerGroups, ngroups);
 
@@ -124,10 +125,9 @@ namespace Go
             //two content groups
             List<Group> contentGroups = filledBoard.GetGroupsFromPoints(contentPoints).ToList();
             if (contentGroups.Count > 2 || contentGroups.Any(n => n.Liberties.Count == 1)) return false;
-            List<Group> ngroups = GroupHelper.GetNeighbourGroupsOfKillerGroup(filledBoard, killerGroup);
-            if (ngroups.Count > 2 || !WallHelper.StrongGroups(board, ngroups)) return false;
 
             //ensure at least two liberties within killer group
+            List<Group> ngroups = GroupHelper.GetNeighbourGroupsOfKillerGroup(filledBoard, killerGroup);
             if (ngroups.Any(n => n.Liberties.Count(p => GroupHelper.GetDirectKillerGroup(filledBoard, p, c.Opposite()) == killerGroup) < 2))
                 return false;
 

@@ -7,9 +7,8 @@ namespace Go
 {
     public class WallHelper
     {
-
         /// <summary>
-        /// Check if move creates eye for survival. If all stone and diagonal neighbours is same content or is wall then move is redundant neutral point.
+        /// No eye for survival. Check if all stone and diagonal neighbours is same content or is wall.
         /// </summary>
         public static Boolean NoEyeForSurvival(Board board, Point eyePoint, Content c = Content.Unknown)
         {
@@ -32,19 +31,19 @@ namespace Go
         }
 
         /// <summary>
-        /// Check no eye for survival.
+        /// No eye for survival at neighbour points.
         /// </summary>
         public static Boolean NoEyeForSurvivalAtNeighbourPoints(Board tryBoard)
         {
-            IEnumerable<Point> neighbourPts = tryBoard.GetStoneAndDiagonalNeighbours();
             Content c = tryBoard.MoveGroup.Content;
+            IEnumerable<Point> neighbourPts = tryBoard.GetStoneAndDiagonalNeighbours();
             if (!WallHelper.IsNonKillableGroup(tryBoard) && neighbourPts.Any(q => !NoEyeForSurvival(tryBoard, q, c)))
                 return false;
             return true;
         }
 
         /// <summary>
-        /// Wall is either non killable or is empty point or opponent point which is not movable.
+        /// Is wall.
         /// </summary>
         public static Boolean IsWall(Board board, Point p, Content c = Content.Unknown)
         {
@@ -56,7 +55,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Non killable group cannot be surrounded and killed as neighbour points are not movable.
+        /// Is non killable group. Cannot be surrounded and killed as neighbour points are not movable.
         /// </summary>
         public static Boolean IsNonKillableGroup(Board board, Point p)
         {
@@ -86,7 +85,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Check if non-killable at neighbour points that are empty.
+        /// Is non killable from setup moves.
         /// </summary>
         public static Boolean IsNonKillableFromSetupMoves(Board board, Group group)
         {
@@ -94,7 +93,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Strong groups that cannot be captured by connect and die.
+        /// Strong groups.
         /// </summary>
         public static Boolean StrongGroups(Board board, IEnumerable<Group> ngroups)
         {
@@ -126,15 +125,8 @@ namespace Go
         }
 
         /// <summary>
-        /// Hostile neighbour groups with two liberties that are suicidal to opponent.
+        /// Hostile neighbour group with two liberties that are suicidal to opponent.
         /// </summary>
-        public static Boolean HostileNeighbourGroups(Board board, Point move, Content c)
-        {
-            HashSet<Group> ngroups = board.GetGroupsFromStoneNeighbours(move, c);
-            if (ngroups.Any(n => !IsHostileNeighbourGroup(board, n))) return false;
-            return true;
-        }
-
         public static Boolean IsHostileNeighbourGroup(Board board, Group group = null)
         {
             if (group == null) group = board.MoveGroup;
@@ -175,23 +167,22 @@ namespace Go
         }
 
         /// <summary>
-        /// Strong groups at covered board.
+        /// Strong groups at covered board. Applies only to covered eye survival.
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_20230422_8" />
         /// </summary>
         public static Boolean StrongGroupsAtCoveredBoard(Board board, Group targetGroup)
         {
             Content c = targetGroup.Content;
             List<Group> groups = LinkHelper.GetAllDiagonalGroups(board, targetGroup).ToList();
             Board coveredBoard = new Board(board);
-            //cover external liberties
+            //cover external liberties only
             foreach (Point p in board.GetLibertiesOfGroups(groups))
             {
                 Group killerGroup = GroupHelper.GetDirectKillerGroup(board, p, c);
                 if (killerGroup != null && killerGroup.Points.Count <= 3) continue;
                 coveredBoard[p] = c.Opposite();
             }
-            //check for connect and die
-            if (groups.Select(n => coveredBoard.GetCurrentGroup(n)).Any(n => !IsStrongGroup(coveredBoard, n))) return false;
-            return true;
+            return StrongGroups(coveredBoard, groups);
         }
     }
 }

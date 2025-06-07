@@ -341,15 +341,15 @@ namespace Go
                 List<Group> eyeGroups = tryBoard.GetGroupsFromStoneNeighbours(p, c).ToList();
                 if (eyeGroups.All(n => n.Liberties.Count > 1)) return (true, null);
             }
-            Board board = tryBoard.MakeMoveOnNewBoard(p, c, overrideKo);
-            if (board == null) return (true, null);
-            if (board.MoveGroupLiberties != 1) return (false, board);
-            if (KoHelper.IsKoFight(board))
+            Board b = tryBoard.MakeMoveOnNewBoard(p, c, overrideKo);
+            if (b == null) return (true, null);
+            if (b.MoveGroupLiberties != 1) return (false, b);
+            if (KoHelper.IsKoFight(b))
             {
-                if (overrideKo) return (false, board);
+                if (overrideKo) return (false, b);
                 return (true, null);
             }
-            return (true, board);
+            return (true, b);
         }
 
         public static Boolean IsSuicidalWithoutKo(Board tryBoard, Group group = null)
@@ -365,19 +365,19 @@ namespace Go
         /// </summary>
         public static (Boolean, Board) IsSuicidalOnCapture(Board tryBoard, Group targetGroup = null, Boolean koEnabled = false)
         {
-            Board board = ImmovableHelper.CaptureSuicideGroup(tryBoard, targetGroup, koEnabled);
-            if (board == null)
+            Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, targetGroup, koEnabled);
+            if (b == null)
             {
                 if (KoHelper.IsKoFight(tryBoard, targetGroup)) return (true, null);
                 return (false, null);
             }
-            if (board.MoveGroupLiberties != 1) return (false, board);
-            if (KoHelper.IsKoFight(board))
+            if (b.MoveGroupLiberties != 1) return (false, b);
+            if (KoHelper.IsKoFight(b))
             {
-                if (koEnabled) return (false, board);
+                if (koEnabled) return (false, b);
                 return (true, null);
             }
-            return (true, board);
+            return (true, b);
         }
 
         /// <summary>

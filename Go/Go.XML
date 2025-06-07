@@ -1595,7 +1595,7 @@
             Check for non two-point group.
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B31_3" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario4dan17_2" />
-            Check semi solid eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31536" />
+            Check eye groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31536" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A139" />
             </summary>
         </member>
@@ -2022,37 +2022,37 @@
         </member>
         <member name="M:Go.WallHelper.NoEyeForSurvival(Go.Board,Go.Point,Go.Content)">
             <summary>
-            Check if move creates eye for survival. If all stone and diagonal neighbours is same content or is wall then move is redundant neutral point.
+            No eye for survival. Check if all stone and diagonal neighbours is same content or is wall.
             </summary>
         </member>
         <member name="M:Go.WallHelper.NoEyeForSurvivalAtNeighbourPoints(Go.Board)">
             <summary>
-            Check no eye for survival.
+            No eye for survival at neighbour points.
             </summary>
         </member>
         <member name="M:Go.WallHelper.IsWall(Go.Board,Go.Point,Go.Content)">
             <summary>
-            Wall is either non killable or is empty point or opponent point which is not movable.
+            Is wall.
             </summary>
         </member>
         <member name="M:Go.WallHelper.IsNonKillableGroup(Go.Board,Go.Point)">
             <summary>
-            Non killable group cannot be surrounded and killed as neighbour points are not movable.
+            Is non killable group. Cannot be surrounded and killed as neighbour points are not movable.
             </summary>
         </member>
         <member name="M:Go.WallHelper.IsNonKillableFromSetupMoves(Go.Board,Go.Group)">
             <summary>
-            Check if non-killable at neighbour points that are empty.
+            Is non killable from setup moves.
             </summary>
         </member>
         <member name="M:Go.WallHelper.StrongGroups(Go.Board,System.Collections.Generic.IEnumerable{Go.Group})">
             <summary>
-            Strong groups that cannot be captured by connect and die.
+            Strong groups.
             </summary>
         </member>
-        <member name="M:Go.WallHelper.HostileNeighbourGroups(Go.Board,Go.Point,Go.Content)">
+        <member name="M:Go.WallHelper.IsHostileNeighbourGroup(Go.Board,Go.Group)">
             <summary>
-            Hostile neighbour groups with two liberties that are suicidal to opponent.
+            Hostile neighbour group with two liberties that are suicidal to opponent.
             </summary>
         </member>
         <member name="M:Go.WallHelper.TargetWithAllNonKillableGroups(Go.Board,Go.Group)">
@@ -2067,7 +2067,8 @@
         </member>
         <member name="M:Go.WallHelper.StrongGroupsAtCoveredBoard(Go.Board,Go.Group)">
             <summary>
-            Strong groups at covered board.
+            Strong groups at covered board. Applies only to covered eye survival.
+            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_20230422_8" />
             </summary>
         </member>
         <member name="M:Go.GameMapping.GetMappedJson(Go.Game)">
