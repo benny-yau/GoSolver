@@ -1076,24 +1076,33 @@ namespace Go
         /// Check for non two-point group.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B31_3" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario4dan17_2" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario4dan17_2" />
-        /// Not redundant <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31536" />
+        /// Check semi solid eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31536" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A139" />
-        /// Real solid eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario1dan4_3" />
         /// </summary>
         private static Boolean CheckNonTwoPointGroupInSuicideRealEye(GameTryMove tryMove, Board captureBoard)
         {
             Point move = tryMove.Move;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
-            //real solid eye
+
             if (EyeHelper.FindRealSolidEye(move, c.Opposite(), captureBoard))
                 return true;
+
+            //check semi solid eye
+            if (EyeHelper.FindSemiSolidEye(move, captureBoard, c.Opposite()).Item1)
+            {
+                if (captureBoard.GetGroupsFromStoneNeighbours(move, c).All(n => n.Liberties.Count > 2))
+                    return true;
+                if (captureBoard.GetDiagonalNeighbours(move).Where(d => captureBoard[d] == Content.Empty).All(n => !captureBoard.GetStoneAndDiagonalNeighbours(n).Any(s => captureBoard[s] == c), true))
+                    return true;
+            }
+
             //get diagonals next to atari target
-            List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] != c.Opposite() && tryBoard.GetGroupsFromStoneNeighbours(n, c).Intersect(tryBoard.AtariTargets).Any()).ToList();
+                List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] != c.Opposite() && tryBoard.GetGroupsFromStoneNeighbours(n, c).Intersect(tryBoard.AtariTargets).Any()).ToList();
             //check killer group
             if (diagonals.Any(d => GroupHelper.GetDirectKillerGroup(tryBoard, d, c.Opposite()) != null))
                 return true;
+
             return false;
         }
 
@@ -1163,11 +1172,7 @@ namespace Go
             if (GameHelper.GetContentForSurviveOrKill(tryBoard.GameInfo, SurviveOrKill.Survive) == c)
             {
                 if (WallHelper.TargetWithAnyNonKillableGroup(tryBoard))
-                {
-                    //check connect and die
-                    Boolean connectAndDie = ImmovableHelper.AllConnectAndDie(capturedBoard, move);
-                    return !connectAndDie;
-                }
+                    return WallHelper.StrongGroups(capturedBoard, capturedBoard.GetGroupsFromStoneNeighbours(move, c));
             }
             else
             {
@@ -1182,7 +1187,7 @@ namespace Go
                     return true;
 
                 //check real eye at diagonal without opposite content
-                if (ImmovableHelper.AllConnectAndDie(capturedBoard, move, c.Opposite())) return false;
+                if (!WallHelper.StrongGroups(capturedBoard, capturedBoard.GetGroupsFromStoneNeighbours(move, c))) return false;
                 foreach (Point d in capturedBoard.GetDiagonalNeighbours(move))
                 {
                     if (capturedBoard[d] != Content.Empty) continue;
@@ -1479,12 +1484,11 @@ namespace Go
         /// </summary>
         private static Boolean CheckLibertyFightAtCoveredEye(Board board, Point eye, Content c)
         {
-            foreach (Group group in board.GetGroupsFromStoneNeighbours(eye, c.Opposite()))
-            {
-                List<Group> dgroups = LinkHelper.GetAllDiagonalGroups(board, group).ToList();
-                if (dgroups.Any(n => LinkHelper.FindDiagonalCut(board, n).Item1 != null))
-                    return true;
-            }
+            Group group = board.GetGroupsFromStoneNeighbours(eye, c.Opposite()).FirstOrDefault();
+            if (group == null) return false;
+            List<Group> dgroups = LinkHelper.GetAllDiagonalGroups(board, group).ToList();
+            if (dgroups.Any(n => LinkHelper.FindDiagonalCut(board, n).Item1 != null))
+                return true;
             return false;
         }
 

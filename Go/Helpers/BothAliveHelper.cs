@@ -222,7 +222,7 @@ namespace Go
             Board filledBoard = null;
 
             //fill eye point in killer group
-            List<Point> eyePoints = killerGroup.Points.Where(t => EyeHelper.FindEye(board, t, c)).ToList();
+            List<Point> eyePoints = killerGroup.Points.Where(t => EyeHelper.FindCoveredEye(board, t, c)).ToList();
             if (eyePoints.Count > 0)
             {
                 filledBoard = new Board(board);
