@@ -171,9 +171,9 @@ namespace Go
         /// <summary>
         /// Depth of game starting from zero.
         /// </summary>
-        public int GameDepth(Game currentGame)
+        public int GameDepth(Game g)
         {
-            return currentGame.Board.LastMoves.Count - this.Board.LastMoves.Count;
+            return g.Board.LastMoves.Count - this.Board.LastMoves.Count;
         }
 
         #region mapped moves
@@ -398,22 +398,22 @@ namespace Go
         /// <summary>
         /// Print game moves on exhaustive mode.
         /// </summary>
-        public void PrintGameMoveList(List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves, Game currentGame)
+        public void PrintGameMoveList(List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves, Game g)
         {
-            int gameDepth = GameDepth(currentGame);
+            int gameDepth = GameDepth(g);
             if (DebugPrintMode(gameDepth))
             {
                 String msg = "";
-                foreach (GameTryMove g in tryMoves)
+                foreach (GameTryMove tryMove in tryMoves)
                 {
                     if (msg != "") msg += ",";
-                    msg += "(" + g.Move.x + "," + g.Move.y + ")";
+                    msg += "(" + tryMove.Move.x + "," + tryMove.Move.y + ")";
                 }
                 DebugHelper.DebugWriteWithTab("Game try moves: " + msg, gameDepth);
 
                 if (new StackTrace().GetFrame(3).GetMethod().Name == "btnPrintMoves_Click")
                 {
-                    String content = DebugHelper.PrintGameTryMoves(currentGame, tryMoves, redundantTryMoves);
+                    String content = DebugHelper.PrintGameTryMoves(g, tryMoves, redundantTryMoves);
                     Debug.WriteLine(content);
                 }
             }

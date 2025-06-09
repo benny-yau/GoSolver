@@ -89,7 +89,8 @@ namespace Go
         /// </summary>
         public static Boolean IsNonKillableFromSetupMoves(Board board, Group group)
         {
-            return group.Neighbours.Any(p => board[p] == Content.Empty && board.GameInfo.IsKillMovablePoint[p.x, p.y] != true);
+            Content c = group.Content;
+            return group.Neighbours.Any(p => board[p] == Content.Empty && !GameHelper.SetupMoveAvailable(board, p, c.Opposite()));
         }
 
         /// <summary>
@@ -131,8 +132,10 @@ namespace Go
         {
             if (group == null) group = board.MoveGroup;
             else group = board.GetCurrentGroup(group);
+            Content c = group.Content;
             if (group.Liberties.Count > 2) return true;
-            if (group.Liberties.Count == 2 && group.Liberties.All(liberty => ImmovableHelper.IsSuicidalMove(board, liberty, group.Content.Opposite(), true)))
+            if (group.Liberties.Count != 2) return false;
+            if (group.Liberties.All(n => ImmovableHelper.IsSuicidalMove(board, n, c.Opposite(), true) || !GameHelper.SetupMoveAvailable(board, n, c.Opposite())))
                 return true;
             return false;
         }

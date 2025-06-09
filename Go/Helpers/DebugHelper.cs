@@ -24,9 +24,9 @@ namespace Go
         /// Print game try moves and redundant try moves on exhaustive search mode.
         /// </summary>
         /// <returns></returns>
-        public static String PrintGameTryMoves(Game currentGame, List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves)
+        public static String PrintGameTryMoves(Game g, List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves)
         {
-            String content = currentGame.Board.ToString() + Environment.NewLine + "Scenario: " + currentGame.GameInfo.ScenarioName + Environment.NewLine + "Last moves: " + currentGame.Board.GetLastMoves() + Environment.NewLine;
+            String content = g.Board.ToString() + Environment.NewLine + "Scenario: " + g.GameInfo.ScenarioName + Environment.NewLine + "Last moves: " + g.Board.GetLastMoves() + Environment.NewLine;
 
             String msg = "";
             foreach (GameTryMove tryMove in tryMoves)
@@ -58,9 +58,16 @@ namespace Go
             Debug.WriteLine(content);
         }
 
-        public static void PrintGameTryMovesToText(Game currentGame, List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves)
+        public static void PrintBoardToText(Board board, String info, String fileName)
         {
-            String content = PrintGameTryMoves(currentGame, tryMoves, redundantTryMoves);
+            String content = board.ToString() + Environment.NewLine + board.GameInfo.ScenarioName + Environment.NewLine + board.GetLastMoves() + Environment.NewLine + info + Environment.NewLine;
+            File.AppendAllText(Directory.GetCurrentDirectory() + "\\" + fileName, content);
+            Debug.WriteLine(content);
+        }
+
+        public static void PrintGameTryMovesToText(Game g, List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves)
+        {
+            String content = PrintGameTryMoves(g, tryMoves, redundantTryMoves);
             File.AppendAllText(Directory.GetCurrentDirectory() + "\\GameBoards.txt", content);
             Debug.WriteLine(content);
         }

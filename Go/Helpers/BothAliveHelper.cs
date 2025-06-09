@@ -9,21 +9,21 @@ namespace Go
         /// <summary>
         /// Enable pass move for both alive.
         /// </summary>
-        public static void EnablePassMoveForBothAlive(Game currentGame, List<GameTryMove> tryMoves, SurviveOrKill surviveOrKill)
+        public static void EnablePassMoveForBothAlive(Game g, List<GameTryMove> tryMoves, SurviveOrKill surviveOrKill)
         {
-            Board board = currentGame.Board;
-            Content c = GameHelper.GetContentForSurviveOrKill(currentGame.GameInfo, surviveOrKill);
+            Board board = g.Board;
+            Content c = GameHelper.GetContentForSurviveOrKill(g.GameInfo, surviveOrKill);
             if (surviveOrKill == SurviveOrKill.Survive)
             {
                 if (!EnableCheckForPassMove(board, c, tryMoves)) return;
-                tryMoves.Add(BothAliveHelper.AddPassMove(currentGame));
+                tryMoves.Add(BothAliveHelper.AddPassMove(g));
             }
             else
             {
                 if (board.LastMove != null && board.LastMove.Value.Equals(Game.PassMove)) return;
                 if (tryMoves.Count == 1 && tryMoves.Select(n => n.TryGame.Board).Any(b => b.IsRandomMove)) return;
                 if (!EnableCheckForPassMove(board, c, tryMoves)) return;
-                GameTryMove tryMove = Game.GetRandomMove(currentGame);
+                GameTryMove tryMove = Game.GetRandomMove(g);
                 if (tryMove != null) tryMoves.Add(tryMove);
             }
         }
@@ -70,28 +70,10 @@ namespace Go
                 return true;
 
             //complex seki
-            List<Group> killerGroups = GetKillerGroupsForBothAlive(board, c.Opposite()).ToList();
-            if (killerGroups.Count < 2) return false;
-            List<Point> contentPoints = killerGroup.Points.Where(n => board[n] == c).ToList();
-            if (board.GetGroupsFromPoints(contentPoints).Any(n => n.Liberties.Count == 1)) return false;
-
             if (!emptyPoints.Any(p => ImmovableHelper.IsSuicidalMove(board, p, c)))
                 return false;
-
-            //check complex seki without diagonal cut
-            (_, List<Point> diagonals) = LinkHelper.FindDiagonalCut(board, killerGroup);
-            if (diagonals == null) return CheckComplexSeki(board, killerGroups, ngroups);
-
-            //check complex seki with diagonal cut
-            foreach (Point d in diagonals)
-            {
-                Group dkillerGroup = GroupHelper.GetDirectKillerGroup(board, d, c);
-                if (dkillerGroup == null) continue;
-                List<Group> cutKillerGroups = killerGroups.Where(n => GroupHelper.GetKillerGroupFromCache(board, n.Points.First(), c) == dkillerGroup).ToList();
-                List<Group> cutTargetGroups = ngroups.Where(n => GroupHelper.GetKillerGroupFromCache(board, n.Points.First(), c) == dkillerGroup).ToList();
-                if (CheckComplexSeki(board, cutKillerGroups, cutTargetGroups))
-                    return true;
-            }
+            if (CheckComplexSeki(board, killerGroup, ngroups))
+                return true;
             return false;
         }
 
@@ -173,14 +155,42 @@ namespace Go
 
         /// <summary>
         /// Check complex seki.
-        /// With diagonal group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan22" />
+        /// With diagonal cut <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan22" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_20230422_8" />
-        /// Without diagonal group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A123" />
+        /// Without diagonal cut <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A123" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18" />
+        /// </summary>
+        private static Boolean CheckComplexSeki(Board board, Group killerGroup, List<Group> ngroups)
+        {
+            Content c = killerGroup.Content;
+            List<Group> killerGroups = GetKillerGroupsForBothAlive(board, c.Opposite()).ToList();
+            if (killerGroups.Count < 2) return false;
+            List<Point> contentPoints = killerGroup.Points.Where(n => board[n] == c).ToList();
+            if (board.GetGroupsFromPoints(contentPoints).Any(n => n.Liberties.Count == 1)) return false;
+
+            //check complex seki without diagonal cut
+            (_, List<Point> diagonals) = LinkHelper.FindDiagonalCut(board, killerGroup);
+            if (diagonals == null) return IsComplexSeki(board, killerGroups, ngroups);
+
+            //check complex seki with diagonal cut
+            foreach (Point d in diagonals)
+            {
+                Group dkillerGroup = GroupHelper.GetDirectKillerGroup(board, d, c);
+                if (dkillerGroup == null) continue;
+                List<Group> cutKillerGroups = killerGroups.Where(n => GroupHelper.GetKillerGroupFromCache(board, n.Points.First(), c) == dkillerGroup).ToList();
+                List<Group> cutTargetGroups = ngroups.Where(n => GroupHelper.GetKillerGroupFromCache(board, n.Points.First(), c) == dkillerGroup).ToList();
+                if (IsComplexSeki(board, cutKillerGroups, cutTargetGroups))
+                    return true;
+            }
+            return false;
+        }
+        
+        /// <summary>
+        /// Is complex seki.
         /// Check covered eye <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
         /// Ensure shared liberty <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A28_101Weiqi_3" />
         /// </summary>
-        private static Boolean CheckComplexSeki(Board board, List<Group> killerGroups, List<Group> ngroups)
+        private static Boolean IsComplexSeki(Board board, List<Group> killerGroups, List<Group> ngroups)
         {
             if (killerGroups.Count == 0) return false;
             Content c = killerGroups.First().Content;
@@ -274,9 +284,9 @@ namespace Go
         /// <summary>
         /// Add pass move for game try move.
         /// </summary>
-        public static GameTryMove AddPassMove(Game currentGame)
+        public static GameTryMove AddPassMove(Game g)
         {
-            GameTryMove tryMove = new GameTryMove(currentGame);
+            GameTryMove tryMove = new GameTryMove(g);
             tryMove.TryGame.Board.Move = Game.PassMove;
             tryMove.MakeMoveResult = MakeMoveResult.Legal;
             tryMove.TryGame.Board.LastMoves.Add(Game.PassMove);

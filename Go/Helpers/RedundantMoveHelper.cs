@@ -1535,7 +1535,7 @@ namespace Go
         /// Neutral points for kill moves have to be restored on end game in order to kill survival group.
         /// No try moves left <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Side_A20" />
         /// </summary>
-        public static void RestoreNeutralMove(Game currentGame, List<GameTryMove> tryMoves, List<GameTryMove> neutralPointMoves)
+        public static void RestoreNeutralMove(Game g, List<GameTryMove> tryMoves, List<GameTryMove> neutralPointMoves)
         {
             if (neutralPointMoves.Count == 0) return;
             Content c = neutralPointMoves.First().MoveContent;
@@ -1545,7 +1545,7 @@ namespace Go
             if (neutralPointMoves.Count == 0) return;
             GameTryMove genericNeutralMove = null;
             //specific neutral point
-            GameTryMove specificNeutralMove = GetSpecificNeutralMove(currentGame, neutralPointMoves);
+            GameTryMove specificNeutralMove = GetSpecificNeutralMove(g, neutralPointMoves);
             if (specificNeutralMove != null)
             {
                 tryMoves.Add(specificNeutralMove);
@@ -1567,7 +1567,7 @@ namespace Go
                 if (!preAtariAdded)
                 {
                     //generic neutral point
-                    genericNeutralMove = GetGenericNeutralMove(currentGame, neutralPointMoves);
+                    genericNeutralMove = GetGenericNeutralMove(g, neutralPointMoves);
                     if (genericNeutralMove != null)
                     {
                         tryMoves.Add(genericNeutralMove);
@@ -1780,14 +1780,15 @@ namespace Go
         {
             if (neutralPointMoves.Count == 0) return null;
             Content c = neutralPointMoves.First().MoveContent;
-            List<Group> killerGroups = GroupHelper.GetKillerGroups(g.Board);
+
+            List<Group> killerGroups = GroupHelper.GetKillerGroups(g.Board).Where(n => GroupHelper.IsLibertyGroup(n, g.Board)).ToList();
+            if (killerGroups.Count == 0) return null;
+            //cover all neutral points
+            Board coveredBoard = new Board(g.Board);
+            neutralPointMoves.ForEach(m => coveredBoard[m.Move] = c);
+
             foreach (Group killerGroup in killerGroups)
             {
-                if (!GroupHelper.IsLibertyGroup(killerGroup, g.Board)) continue;
-                //cover all neutral points
-                Board coveredBoard = new Board(g.Board);
-                neutralPointMoves.ForEach(m => coveredBoard[m.Move] = c);
-
                 //order by liberties
                 List<Group> orderedGroups = g.Board.GetNeighbourGroups(killerGroup).OrderBy(n => coveredBoard.GetGroupLiberties(n).Count).ToList();
                 foreach (Point p in g.Board.GetLibertiesOfGroups(orderedGroups))
@@ -1803,12 +1804,9 @@ namespace Go
                         return neutralMove;
 
                     //check for diagonal cut
-                    foreach (Point q in killerGroup.Points)
-                    {
-                        if (g.Board[q] != killerGroup.Content) continue;
-                        if (!g.Board.GetGroupsFromStoneNeighbours(q).Any(n => LinkHelper.FindDiagonalCut(g.Board, n).Item1 != null)) continue;
+                    Board b = neutralMove.TryGame.Board;
+                    if (b.GetGroupsFromStoneNeighbours().Any(n => LinkHelper.FindDiagonalCut(b, n).Item1 != null))
                         return neutralMove;
-                    }
                 }
             }
             return null;
