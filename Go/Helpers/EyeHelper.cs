@@ -66,13 +66,13 @@ namespace Go
         /// </summary>
         public static Boolean IsCovered(Board board, Point eye, Content c)
         {
-            List<Point> diagonals = board.GetDiagonalNeighbours(eye).Where(q => board[q] == c.Opposite()).ToList();
-            if (diagonals.All(n => ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt(n)))) return false;
-            List<Point> nstones = board.GetStoneNeighbours(eye).Where(n => board[n] == c).ToList();
+            List<Point> npoints = LinkHelper.GetDiagonalPoints(board, eye, c);
+            List<Point> diagonals = board.GetDiagonalNeighbours(eye).Where(n => board[n] == c.Opposite() && board.GetStoneNeighbours(n).Intersect(npoints).Count() >= 2).ToList();
+            if (diagonals.All(n => ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt(n)), true)) return false;
             if (board.PointWithinMiddleArea(eye))
-                return (nstones.Count >= 3 && diagonals.Count >= 2);
+                return (diagonals.Count >= 2);
             else
-                return (nstones.Count >= 2 && diagonals.Count >= 1);
+                return (diagonals.Count >= 1);
         }
 
         /// <summary>

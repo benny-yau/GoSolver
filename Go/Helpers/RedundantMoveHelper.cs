@@ -416,8 +416,7 @@ namespace Go
 
             foreach (Group ngroup in ngroups)
             {
-                List<LinkedPoint<Point>> linkedPoints = LinkHelper.GetGroupLinkedDiagonals(tryBoard, ngroup);
-                foreach (LinkedPoint<Point> p in linkedPoints)
+                foreach (LinkedPoint<Point> p in LinkHelper.GetGroupLinkedDiagonals(tryBoard, ngroup))
                 {
                     List<Point> diagonals = LinkHelper.PointsBetweenDiagonals(p.Move, (Point)p.CheckMove);
                     diagonals = diagonals.Where(q => GroupHelper.GetDirectKillerGroup(tryBoard, q, c.Opposite()) == killerGroup).ToList();
@@ -580,7 +579,7 @@ namespace Go
             }
 
             //escape at liberty point
-            Board b = ImmovableHelper.MakeMoveAtLiberty(tryBoard, atariTarget, c.Opposite());
+            Board b = ImmovableHelper.MakeMoveAtLiberty(tryBoard, atariTarget);
             if (b == null) return true;
             //check weak group
             if (AtariHelper.IsWeakNeighbourGroup(b, b.MoveGroup))
@@ -696,7 +695,6 @@ namespace Go
         /// </summary>
         private static Boolean CheckWeakGroup(Board tryBoard, Group targetGroup)
         {
-            Content c = targetGroup.Content;
             Group group = tryBoard.GetCurrentGroup(targetGroup);
 
             //capture move
@@ -708,7 +706,7 @@ namespace Go
                 return true;
 
             //escape move at liberty
-            Board b2 = ImmovableHelper.MakeMoveAtLiberty(b, group, c);
+            Board b2 = ImmovableHelper.MakeMoveAtLiberty(b, group);
             if (b2 != null && b2.MoveGroupLiberties == 2 && CheckWeakGroup(b2, group))
                 return true;
 
@@ -1218,7 +1216,7 @@ namespace Go
                 Group atariTarget = tryBoard.AtariTargets.First();
                 if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c))
                 {
-                    Board b = ImmovableHelper.MakeMoveAtLiberty(tryBoard, atariTarget, c.Opposite());
+                    Board b = ImmovableHelper.MakeMoveAtLiberty(tryBoard, atariTarget);
                     if (b != null && b.MoveGroupLiberties > 1)
                         return true;
                 }
@@ -1439,12 +1437,12 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Content c = tryMove.MoveContent;
 
-            Point suicideMove = suicideBoard.Move.Value;
             //liberties more than one
             if (suicideBoard.MoveGroupLiberties > 1)
                 return true;
 
             //strong groups at tiger mouth
+            Point suicideMove = suicideBoard.Move.Value;
             if (!StrongGroupsAtMustHaveMove(tryBoard, suicideMove))
                 return true;
 
@@ -1499,7 +1497,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Validate neutral point by checking if move creates eye for survival at any of the stone and diagonal neighbours.
+        /// Validate neutral point.
         /// Check link for groups <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" />
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
         /// </summary>
@@ -1514,7 +1512,7 @@ namespace Go
             if (LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard))
                 return false;
             //check for double ko
-            if (KoHelper.NeutralPointDoubleKo(tryBoard, currentBoard))
+            if (KoHelper.NeutralPointDoubleKo(tryBoard))
                 return false;
             //check reverse ko for neutral point
             if (KoHelper.CheckReverseKoForNeutralPoint(tryBoard))
@@ -1598,12 +1596,11 @@ namespace Go
         /// </summary>
         private static Boolean ConnectAndDieEndMove(Board tryBoard)
         {
-            Content c = tryBoard.MoveGroup.Content;
             (_, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
             if (captureBoard == null) return false;
             if (tryBoard.MoveGroupLiberties == 2)
             {
-                Board b = ImmovableHelper.MakeMoveAtLiberty(captureBoard, tryBoard.MoveGroup, c);
+                Board b = ImmovableHelper.MakeMoveAtLiberty(captureBoard, tryBoard.MoveGroup);
                 if (b == null) return true;
             }
             Boolean eyeFound = tryBoard.MoveGroup.Liberties.Any(n => EyeHelper.FindEye(tryBoard, n));
@@ -2229,8 +2226,7 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Content c = tryBoard.MoveGroup.Content;
             if (!KoHelper.IsKoFight(tryBoard)) return false;
-            Boolean koEnabled = KoHelper.KoContentEnabled(c, tryBoard.GameInfo);
-            if (!koEnabled)
+            if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo))
             {
                 //check pre-ko moves
                 if (tryBoard.singlePointCapture == null) return false;

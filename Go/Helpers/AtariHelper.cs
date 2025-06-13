@@ -70,7 +70,7 @@ namespace Go
                         return false;
                 }
                 //make move at liberty
-                Board b2 = ImmovableHelper.MakeMoveAtLiberty(board, targetGroup, targetGroup.Content);
+                Board b2 = ImmovableHelper.MakeMoveAtLiberty(board, targetGroup);
                 if (b2 != null && WallHelper.StrongGroups(b2, groups))
                 {
                     //check double atari on escape board

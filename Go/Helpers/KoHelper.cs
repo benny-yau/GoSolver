@@ -8,7 +8,6 @@ namespace Go
 {
     public class KoHelper
     {
-
         /// <summary>
         /// Ko survival enabled.
         /// </summary>
@@ -122,11 +121,11 @@ namespace Go
         }
 
         /// <summary>
-        /// Get ko atari groups.
+        /// Get ko target groups.
         /// </summary>
-        public static IEnumerable<Group> GetKoTargetGroups(Board currentBoard, Group group, Group excludeGroup = null)
+        public static IEnumerable<Group> GetKoTargetGroups(Board board, Group group, Group excludeGroup = null)
         {
-            return currentBoard.GetNeighbourGroups(group).Where(gr => gr != excludeGroup && KoHelper.IsKoFight(currentBoard, gr));
+            return board.GetNeighbourGroups(group).Where(gr => gr != excludeGroup && KoHelper.IsKoFight(board, gr));
         }
 
         /// <summary>
@@ -198,16 +197,19 @@ namespace Go
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_4" />
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B41_2" />
         /// </summary>
-        public static Boolean NeutralPointDoubleKo(Board tryBoard, Board currentBoard)
+        public static Boolean NeutralPointDoubleKo(Board board)
         {
-            Content c = tryBoard.MoveGroup.Content;
-            List<Point> npoints = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindCoveredEye(tryBoard, n, c)).ToList();
-            foreach (Point p in npoints)
+            Content c = board.MoveGroup.Content;
+            Point p = board.GetStoneNeighbours().FirstOrDefault(n => EyeHelper.FindCoveredEye(board, n, c));
+            if (!Convert.ToBoolean(p.NotEmpty)) return false;
+            foreach (Group ngroup in LinkHelper.GetAllDiagonalGroups(board, board.MoveGroup))
             {
-                List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).ToList();
-                ngroups = LinkHelper.GetAllDiagonalGroups(tryBoard, ngroups.First()).ToList();
-                if (ngroups.Any(n => KoHelper.GetKoTargetGroups(tryBoard, n).Any()))
-                    return true;
+                foreach (Group gr in KoHelper.GetKoTargetGroups(board, ngroup))
+                {
+                    Board b = ImmovableHelper.CaptureSuicideGroup(board, gr);
+                    if (!WallHelper.StrongNeighbourGroups(b))
+                        return true;
+                }
             }
             return false;
         }

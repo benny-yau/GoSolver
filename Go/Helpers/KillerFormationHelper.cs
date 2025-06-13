@@ -174,8 +174,6 @@ namespace Go
             List<Group> killerGroups = GroupHelper.GetKillerGroups(captureBoard, c.Opposite());
             if (killerGroup == null) killerGroup = tryBoard.MoveGroup;
             List<Group> ngroups = captureBoard.GetNeighbourGroups(killerGroup);
-            if (ngroups.Any(n => WallHelper.IsNonKillableGroup(captureBoard, n)))
-                return true;
 
             foreach (Group kgroup in killerGroups.Where(gr => gr != killerGroup))
             {
@@ -660,7 +658,7 @@ namespace Go
                 IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, tryBoard.MoveGroup.Points);
                 List<Point> endPoints = pointIntersect.Where(p => p.intersectCount == 1).Select(p => (Point)p.point).ToList();
                 //check for covered eye
-                if (endPoints.Any(p => !p.Equals(move) && EyeHelper.IsCovered(b, p, c.Opposite())))
+                if (endPoints.Any(p => !p.Equals(move) && WallHelper.NoEyeForSurvival(b, p, c.Opposite())))
                     return true;
             }
             return false;

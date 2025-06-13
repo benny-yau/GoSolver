@@ -666,7 +666,7 @@
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario1dan21" />
             </summary>.
         </member>
-        <member name="M:Go.ImmovableHelper.ThreeLibertyConnectAndDie(Go.Board,System.Nullable{Go.Point},Go.Group)">
+        <member name="M:Go.ImmovableHelper.ThreeLibertyConnectAndDie(Go.Board,Go.Group)">
             <summary>
             Three liberty connect and die.
             <see cref="!:UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_TianLongTu_Q14992_2" />
@@ -675,7 +675,7 @@
             Check if escapable <see cref="!:UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_Corner_A86" />
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(Go.Board,Go.Group,System.Nullable{Go.Point})">
+        <member name="M:Go.ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(Go.Board,Go.Group)">
             <summary>
             Two and three liberties connect and die.
             </summary>
@@ -741,7 +741,7 @@
             Capture group that has liberty of one only and return the board.
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.MakeMoveAtLiberty(Go.Board,Go.Group,Go.Content)">
+        <member name="M:Go.ImmovableHelper.MakeMoveAtLiberty(Go.Board,Go.Group)">
             <summary>
             Make move at liberty.
             </summary>
@@ -1114,7 +1114,7 @@
         </member>
         <member name="M:Go.KoHelper.GetKoTargetGroups(Go.Board,Go.Group,Go.Group)">
             <summary>
-            Get ko atari groups.
+            Get ko target groups.
             </summary>
         </member>
         <member name="M:Go.KoHelper.GetKoEyePoint(Go.Board)">
@@ -1133,7 +1133,7 @@
             <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_2" /> 
             </summary>
         </member>
-        <member name="M:Go.KoHelper.NeutralPointDoubleKo(Go.Board,Go.Board)">
+        <member name="M:Go.KoHelper.NeutralPointDoubleKo(Go.Board)">
             <summary>
             Double ko for neutral point.
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
@@ -1729,7 +1729,7 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.ValidateNeutralPoint(Go.GameTryMove)">
             <summary>
-            Validate neutral point by checking if move creates eye for survival at any of the stone and diagonal neighbours.
+            Validate neutral point.
             Check link for groups <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" />
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
             </summary>
