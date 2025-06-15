@@ -159,7 +159,7 @@ namespace Go
                     return false;
 
                 //check must-have move
-                if (!StrongGroupsAtMustHaveMove(opponentBoard, eyePoint))
+                if (!RedundantAtMustHaveMove(opponentBoard, eyePoint))
                     return false;
             }
             return true;
@@ -1408,7 +1408,7 @@ namespace Go
 
             //neutral point at small tiger mouth
             List<Point> eyePoint = opponentBoard.GetStoneNeighbours().Where(n => EyeHelper.FindEye(opponentBoard, n, c.Opposite())).ToList();
-            if (eyePoint.Any(n => !StrongGroupsAtMustHaveMove(tryBoard, n)))
+            if (eyePoint.Any(n => !RedundantAtMustHaveMove(tryBoard, n)))
                 return true;
             //neutral point at big tiger mouth
             (Boolean suicide, Board suicideBoard) = ImmovableHelper.SuicideAtBigTigerMouth(tryMove);
@@ -1441,9 +1441,9 @@ namespace Go
             if (suicideBoard.MoveGroupLiberties > 1)
                 return true;
 
-            //strong groups at tiger mouth
+            //check if redundant
             Point suicideMove = suicideBoard.Move.Value;
-            if (!StrongGroupsAtMustHaveMove(tryBoard, suicideMove))
+            if (!RedundantAtMustHaveMove(tryBoard, suicideMove))
                 return true;
 
             //capture at liberty
@@ -1455,9 +1455,9 @@ namespace Go
         }
 
         /// <summary>
-        /// Strong neighbour groups at tiger mouth for must-have move.
+        /// Redundant at must have move.
         /// </summary>
-        private static Boolean StrongGroupsAtMustHaveMove(Board tryBoard, Point tigerMouth)
+        private static Boolean RedundantAtMustHaveMove(Board tryBoard, Point tigerMouth)
         {
             Content c = tryBoard.MoveGroup.Content;
             Board b = tryBoard;
@@ -1466,9 +1466,17 @@ namespace Go
                 b = tryBoard.MakeMoveOnNewBoard(tigerMouth, c);
                 if (b == null) return true;
             }
-            if (!WallHelper.StrongNeighbourGroups(b, tigerMouth, c))
-                return false;
-            return true;
+
+            //check strong neighbour groups
+            if (WallHelper.StrongNeighbourGroups(b, tigerMouth, c)) return true;
+
+            //check one neighbour group
+            List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(tigerMouth, c).ToList();
+            if (ngroups.Count > 1) return false;
+            Group killerGroup = ngroups.First().Liberties.Select(n => GroupHelper.GetDirectKillerGroup(tryBoard, n, c.Opposite())).FirstOrDefault(n => n != null);
+            if (killerGroup != null && GroupHelper.GetNeighbourGroupsOfKillerGroup(tryBoard, killerGroup).Count == 1)
+                return true;
+            return false;
         }
 
         /// <summary>
@@ -1635,7 +1643,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get specific neutral move to target survival groups with limited liberties.
+        /// Get specific neutral move to target survival groups.
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B51" />
         /// </summary>
         public static GameTryMove GetSpecificNeutralMove(Game g, List<GameTryMove> neutralPointMoves)
@@ -1769,7 +1777,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get generic neutral moves that are not specific. Killer group required.
+        /// Get generic neutral move. Killer group required.
         /// <see cref="UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_XuanXuanGo_A55" />
         /// Check covered eye <see cref="UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18410" />
         /// </summary>

@@ -29,6 +29,9 @@ namespace Go
             return null;
         }
 
+        /// <summary>
+        /// Find empty tiger mouth.
+        /// </summary>
         public static Boolean FindEmptyTigerMouth(Board board, Point p, Content c)
         {
             return (board[p] == Content.Empty && FindTigerMouth(board, p, c) != null);
@@ -132,8 +135,8 @@ namespace Go
 
         /// <summary>
         /// Is confirm tiger mouth.
-        /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q16827" />
-        /// Check connect and die on current board <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_2" />
+        /// Check connect and die on current board <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q16827" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_2" />
         /// Check connect and die on captured board <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario1dan21" />
         /// </summary>.
@@ -158,10 +161,31 @@ namespace Go
         }
 
         /// <summary>
+        /// Suicide move after must have move.
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_Q18500" />
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario1dan21" />
+        /// </summary>
+        public static Boolean SuicidalAfterMustHaveMove(Board currentBoard, Board tryBoard, Point libertyPoint)
+        {
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            Point eyePoint = currentBoard.GetDiagonalNeighbours(move).FirstOrDefault(n => EyeHelper.FindCoveredEye(currentBoard, n, c.Opposite()));
+            if (!Convert.ToBoolean(eyePoint.NotEmpty)) return false;
+            if (!LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).All(n => n.Liberties.Count <= 2)) return false;
+
+            (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(libertyPoint, c, currentBoard);
+            if (suicidal) return false;
+
+            if (ImmovableHelper.IsSuicidalMove(b, move, c.Opposite()))
+                return true;
+            return false;
+        }
+
+        /// <summary>
         /// Three liberty connect and die.
         /// <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_TianLongTu_Q14992_2" />
         /// <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_TianLongTu_Q14992" />
-        /// Stone neighbours at diagonal of each other <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_Side_B19" />
+        /// Check is covered <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_Side_B19" />
         /// Check if escapable <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_Corner_A86" />
         /// </summary>
         public static (Boolean, Board) ThreeLibertyConnectAndDie(Board board, Group targetGroup = null)
@@ -173,9 +197,6 @@ namespace Go
             List<Point> liberties = targetGroup.Liberties.Where(n => ImmovableHelper.FindEmptyTigerMouth(board, n, c) && EyeHelper.IsCovered(board, n, c)).ToList();
             foreach (Point p in liberties)
             {
-                //stone neighbours at diagonal of each other
-                List<Point> nstones = LinkHelper.GetDiagonalPoints(board, p, c);
-                if (!nstones.Any()) continue;
                 Board b = board.MakeMoveOnNewBoard(p, c.Opposite());
                 if (b == null || b.MoveGroupLiberties != 1) continue;
 
@@ -214,7 +235,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Escape capture link. Check if escapable for target group to obtain more than two liberties or become non killable.
+        /// Escape capture link.
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_3" />
         /// </summary>
         public static Boolean EscapeCaptureLink(Board board, Group targetGroup)
@@ -227,27 +248,6 @@ namespace Go
                 if (target.Liberties.Count > 2 || WallHelper.IsNonKillableGroup(b, target))
                     return true;
             }
-            return false;
-        }
-
-        /// <summary>
-        /// Suicide move for survival after must-have neutral move at side of the board.
-        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_Q18500" />
-        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario1dan21" />
-        /// </summary>
-        public static Boolean SuicidalAfterMustHaveMove(Board currentBoard, Board tryBoard, Point libertyPoint)
-        {
-            Point move = tryBoard.Move.Value;
-            Content c = tryBoard.MoveGroup.Content;
-            Point eyePoint = currentBoard.GetDiagonalNeighbours(move).FirstOrDefault(n => EyeHelper.FindCoveredEye(currentBoard, n, c.Opposite()));
-            if (!Convert.ToBoolean(eyePoint.NotEmpty)) return false;
-            if (!LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).All(n => n.Liberties.Count <= 2)) return false;
-
-            (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(libertyPoint, c, currentBoard);
-            if (suicidal) return false;
-
-            if (ImmovableHelper.IsSuicidalMove(b, move, c.Opposite()))
-                return true;
             return false;
         }
 
@@ -323,7 +323,8 @@ namespace Go
         }
 
         /// <summary>
-        /// Suicidal move for connect and die <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_A80" />
+        /// Is suicidal move.
+        /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_A80" />
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_A80_2" />
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WuQingYuan_Q31503" />
         /// </summary>
@@ -345,6 +346,9 @@ namespace Go
             return (true, b);
         }
 
+        /// <summary>
+        /// Is suicidal without ko.
+        /// </summary>
         public static Boolean IsSuicidalWithoutKo(Board tryBoard, Group group = null)
         {
             if (group == null) group = tryBoard.MoveGroup;
@@ -374,7 +378,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Capture group that has liberty of one only and return the board.
+        /// Capture suicide group.
         /// </summary>
         public static Board CaptureSuicideGroup(Point p, Board board, Boolean overrideKo = true)
         {
@@ -419,7 +423,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Is suicide move for both players.
+        /// Is suicidal move for both players.
         /// </summary>
         public static Boolean IsSuicidalMoveForBothPlayers(Board tryBoard, Point p, Boolean connectAndDie = false)
         {
@@ -519,7 +523,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Check for connect and die on board with captured suicide stone.
+        /// Connect and die.
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_A80" />
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
         /// Suicidal capture <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B25" />
@@ -557,13 +561,13 @@ namespace Go
             return (false, null);
         }
 
+        /// <summary>
+        /// Check connect and die.
+        /// </summary>
         public static Boolean CheckConnectAndDie(Board board, Group targetGroup = null, Boolean koEnabled = true)
         {
-            targetGroup = (targetGroup) ?? board.MoveGroup;
-            if (board.GetGroupLiberties(targetGroup).Count == 1) return true;
             return ConnectAndDie(board, targetGroup, koEnabled).Item1;
         }
-
 
         /// <summary>
         /// Check connect and die for captured board.

@@ -28,7 +28,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Determine if next move is kill or survival, based on count of last moves and initial objective.
+        /// Determine if next move is kill or survival.
         /// </summary>
         public static SurviveOrKill KillOrSurvivalForNextMove(Board board)
         {
@@ -42,17 +42,19 @@ namespace Go
         }
 
         /// <summary>
-        /// Determine content for next move, based on count of last moves and start content.
+        /// Get content for next move.
         /// </summary>
         public static Content GetContentForNextMove(Board board)
         {
+            if (board.LastMove != null && !board.Move.Equals(Game.PassMove))
+                return board.MoveGroup.Content.Opposite();
             Content startContent = board.GameInfo.StartContent;
             int lastMoveMod = board.LastMoves.Count % 2;
             return (lastMoveMod == 0) ? startContent : startContent.Opposite();
         }
 
         /// <summary>
-        /// Determine if content for kill or survival, based on start content.
+        /// Get content for kill or survival.
         /// </summary>
         public static Content GetContentForSurviveOrKill(GameInfo gameInfo, SurviveOrKill surviveOrKill)
         {

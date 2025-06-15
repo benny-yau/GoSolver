@@ -9,7 +9,7 @@ namespace Go
     public class LinkHelper
     {
         /// <summary>
-        /// Possible link for groups. For neutral point move, covered eye move, and eye diagonal move.
+        /// Possible link for groups.
         /// <see cref="UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario5dan25" />
         /// <see cref="UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_XuanXuanGo_Q18358" />
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" />
@@ -69,8 +69,8 @@ namespace Go
                     //check if diagonal groups
                     if (LinkHelper.GetDiagonalGroups(currentBoard, groups[i]).Any(n => n.Equals(groups[j])) && (!groupI.Equals(tryBoard.MoveGroup) || !groupJ.Equals(tryBoard.MoveGroup)))
                         continue;
-                    //check ko link
-                    if (ImmovableHelper.IsSuicidalWithoutKo(tryBoard, groupI) || ImmovableHelper.IsSuicidalWithoutKo(tryBoard, groupJ))
+                    //check connect and die
+                    if (ImmovableHelper.CheckConnectAndDie(tryBoard, groupI, false) || ImmovableHelper.CheckConnectAndDie(tryBoard, groupJ, false))
                         continue;
                     //check opponent suicidal
                     (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(move, c.Opposite(), currentBoard, true);
@@ -193,7 +193,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Is absolute link by stone only.
+        /// Is absolute link for groups.
         /// </summary>
         public static Boolean IsAbsoluteLinkForGroups(Board currentBoard, Board tryBoard)
         {
@@ -203,7 +203,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Check if diagonals are linked.
+        /// Check is diagonal linked.
         /// Both diagonals empty <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_4" />
         /// Check negligible for links <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q17078" />
         /// Check any diagonal separated by opposite content <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571" />
@@ -549,7 +549,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Diagonal cut between two neighbour groups.
+        /// Find diagonal cut.
         /// </summary>
         public static (Point?, List<Point>) FindDiagonalCut(Board board, Group group)
         {
@@ -566,7 +566,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get stones within move group on current board.
+        /// Get previous move group.
         /// </summary>
         public static List<Group> GetPreviousMoveGroup(Board currentBoard, Board tryBoard)
         {
@@ -777,12 +777,18 @@ namespace Go
             return false;
         }
 
+        /// <summary>
+        /// Check immovable neighbour groups.
+        /// </summary>
         public static IEnumerable<Group> CheckImmovableNeighbourGroups(Board board, Group group)
         {
             List<Group> ngroups = board.GetNeighbourGroups(group).Where(g => g.Liberties.Count <= 2).ToList();
             return CheckImmovableGroups(board, ngroups);
         }
 
+        /// <summary>
+        /// Check immovable groups.
+        /// </summary>
         public static IEnumerable<Group> CheckImmovableGroups(Board board, List<Group> groups)
         {
             foreach (Group group in groups)

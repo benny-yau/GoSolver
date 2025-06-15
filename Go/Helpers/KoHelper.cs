@@ -30,7 +30,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Is ko fight, including both pre-ko and ko.
+        /// Is ko fight.
         /// </summary>
         public static Boolean IsKoFight(Board board, Group group = null)
         {
@@ -204,12 +204,8 @@ namespace Go
             if (!Convert.ToBoolean(p.NotEmpty)) return false;
             foreach (Group ngroup in LinkHelper.GetAllDiagonalGroups(board, board.MoveGroup))
             {
-                foreach (Group gr in KoHelper.GetKoTargetGroups(board, ngroup))
-                {
-                    Board b = ImmovableHelper.CaptureSuicideGroup(board, gr);
-                    if (!WallHelper.StrongNeighbourGroups(b))
-                        return true;
-                }
+                if (KoHelper.GetKoTargetGroups(board, ngroup).Any(n => ImmovableHelper.UnescapableGroup(board, n).Item1))
+                    return true;
             }
             return false;
         }
