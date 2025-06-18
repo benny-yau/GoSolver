@@ -4,9 +4,6 @@ using System.Linq;
 
 namespace Go
 {
-    /// <summary>
-    /// Represents a board position containing current move and associated properties, without any game context.
-    /// </summary>
     [Serializable]
     public class Board
     {
@@ -60,7 +57,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Creates new board based from last board.
+        /// Create a new board based on last board.
         /// </summary>
         public Board(Board fromBoard)
         {
@@ -83,7 +80,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get and set content of the point on the board.
+        /// Get and set content of a point on the board.
         /// </summary>
         public Content this[int x, int y]
         {
@@ -115,7 +112,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Check for point within board coordinates. Set content on board and clear group cache.
+        /// Set content on board and clear group cache.
         /// </summary>
         private void SetContentAt(int x, int y, Content c)
         {
@@ -159,8 +156,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Create group and obtain group points by recursively adding direct connected points.
-        /// Store group in cache and retrieve from cache on the next call.
+        /// Get group at point.
         /// </summary>
         public Group GetGroupAt(Point p)
         {
@@ -178,8 +174,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Add direct connected point recursively to form the group.
-        /// If point is not of same content then add to neighbour.
+        /// Recursive add point to group.
         /// </summary>
         public void RecursiveAddPoint(Group group, Point p)
         {
@@ -206,7 +201,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get total count of liberties of move group.
+        /// Get move group liberties.
         /// </summary>
         public int MoveGroupLiberties
         {
@@ -218,13 +213,16 @@ namespace Go
         }
 
         /// <summary>
-        /// Get liberty points of group.
+        /// Get group liberties.
         /// </summary>
         public List<Point> GetGroupLiberties(Group group)
         {
             return this.GetCurrentGroup(group).Liberties.ToList();
         }
 
+        /// <summary>
+        /// Get liberties of groups.
+        /// </summary>
         public HashSet<Point> GetLibertiesOfGroups(List<Group> targetGroups)
         {
             HashSet<Point> libertyPoints = new HashSet<Point>();
@@ -233,7 +231,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get all groups that are captured by current move.
+        /// Get captured groups.
         /// </summary>
         public HashSet<Group> GetCapturedGroups(Point p)
         {
@@ -282,7 +280,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get all surrounding points, both stone and diagonal neighbours.
+        /// Get stone and diagonal neighbours.
         /// </summary>
         public List<Point> GetStoneAndDiagonalNeighbours(Point? p = null)
         {
@@ -348,7 +346,7 @@ namespace Go
 
 
         /// <summary>
-        /// Set points to empty for captured groups.
+        /// Clear board for captured groups.
         /// </summary>
         private List<Group> Capture(IEnumerable<Group> captures)
         {
@@ -360,6 +358,9 @@ namespace Go
             return captures.ToList();
         }
 
+        /// <summary>
+        /// Clear group cache.
+        /// </summary>
         public void ClearGroupCache()
         {
             GroupCache.Clear();
@@ -383,7 +384,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Makes move on board internally. Returns result as MakeMoveResult.
+        /// Internal make move.
         /// </summary>
         public MakeMoveResult InternalMakeMove(Point p, Content c, Boolean overrideKo = false)
         {
@@ -460,6 +461,9 @@ namespace Go
             return (x > 0 && x < SizeX - 1 && y > 0 && y < SizeY - 1);
         }
 
+        /// <summary>
+        /// Corner point.
+        /// </summary>
         public Boolean CornerPoint(Point? p = null)
         {
             if (p == null) p = this.Move.Value;
@@ -481,8 +485,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Atari can be resolved by capturing stones or escaping atari group.
-        /// Resolve atari by capturing stones <see cref="UnitTestProject.FindAndResolveAtariTest.FindAndResolveAtariTest_Scenario_TianLongTu_Q15618" />
+        /// Resolve atari by capturing stones or escaping atari group.
         /// </summary>
         public static Boolean ResolveAtari(Board currentBoard, Board tryBoard)
         {
@@ -532,7 +535,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Draws board.
+        /// Print board.
         /// </summary>
         public override string ToString()
         {
@@ -575,7 +578,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Compares between two boards to check for recursions or superkos. 
+        /// Compare two boards to check for recursion. 
         /// </summary>
         public override bool Equals(object value)
         {

@@ -1498,8 +1498,9 @@ namespace ScenarioCollection
                 for (int y = 16; y <= 18; y++)
                     gi.movablePoints.Add(new Point(x, y));
             }
+            gi.movablePoints.Add(new Point(2, 18));
             gi.killMovablePoints.AddRange(gi.movablePoints);
-            gi.killMovablePoints.Add(new Point(2, 18));
+            gi.killMovablePoints.Add(new Point(1, 18));
             gi.killMovablePoints.Add(new Point(11, 18));
 
             gi.solutionPoints.Add(new List<Point>() { new Point(6, 17), new Point(4, 17), new Point(6, 16), new Point(5, 17), new Point(6, 18), new Point(5, 18), new Point(8, 18), new Point(9, 18), new Point(7, 16) });

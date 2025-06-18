@@ -4,19 +4,14 @@
         <name>GoSharp</name>
     </assembly>
     <members>
-        <member name="T:Go.Game">
-            <summary>
-            Contains core of methods for game play. The root of a specified game may be obtained using the Root property.
-            </summary>
-        </member>
         <member name="P:Go.Game.GameInfo">
             <summary>
-            Retrieves the game info is stored in the root of the game.
+            Game info.
             </summary>
         </member>
         <member name="M:Go.Game.GetStartingDepth">
             <summary>
-            Depth to start with. Pass move not counted.
+            Get starting depth, excluding pass move.
             Look ahead depth is minimum depth to start with.
             </summary>
         </member>
@@ -62,22 +57,22 @@
         </member>
         <member name="M:Go.Game.InternalMakeMove(System.Int32,System.Int32,System.Boolean)">
             <summary>
-            Makes move on board internally. Returns result as MakeMoveResult.
+            Internal make move.
             </summary>
         </member>
         <member name="M:Go.Game.GameDepth(Go.Game)">
             <summary>
-            Depth of game starting from zero.
+            Game depth.
             </summary>
         </member>
         <member name="M:Go.Game.CheckSolutionAndMappedPoints">
             <summary>
-            Check if move is present in solution or json map. Solution moves can end either on player or computer move, so check if solution is completed before and after making move.
+            Check solution and mapped points. 
             </summary>
         </member>
         <member name="M:Go.Game.UseDictatePoints(Go.ConfirmAliveResult)">
             <summary>
-            Use dictate points specified which by-pass the mapped points. This allow for path correction and extension of mapped points beyond sixth move where much calculation time is required.
+            Use dictate points specified to by-pass mapped points and reduce calculation time.
             </summary>
         </member>
         <member name="M:Go.Game.FindSecondMoveMapped(System.Object)">
@@ -578,17 +573,17 @@
         </member>
         <member name="M:Go.GroupHelper.GetKillerGroups(Go.Board,Go.Content)">
             <summary>
-            Get killer group fully surrounded by survival stones. Content in parameter refer to target content (usually survival). 
+            Get killer groups. 
             </summary>
         </member>
-        <member name="M:Go.GroupHelper.GetAllKillerGroups(Go.Board,Go.Content)">
+        <member name="M:Go.GroupHelper.FindKillerGroups(Go.Board,Go.Content)">
             <summary>
-            Get killer groups fully surrounded by opponent.
+            Find killer groups.
             </summary>
         </member>
         <member name="M:Go.GroupHelper.CheckNeighbourGroupsOfKillerGroup(Go.Board,Go.Group)">
             <summary>
-            Ensure neighbour groups of killer group are diagonal groups, not separated from one another.
+            Check neighbour groups of killer group are diagonal groups, not separated from one another.
             <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_SimpleSeki_2" />
             </summary>
         </member>
@@ -1157,6 +1152,12 @@
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B41_2" />
             </summary>
         </member>
+        <member name="M:Go.KoHelper.IsCoveredEyeDoubleKo(Go.Board)">
+            <summary>
+            Double ko for covered eye.
+            <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_7" />
+            </summary>
+        </member>
         <member name="M:Go.LinkHelper.PossibleLinkForGroups(Go.Board,Go.Board)">
             <summary>
             Possible link for groups.
@@ -1382,7 +1383,7 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.FindPotentialEye(Go.GameTryMove)">
             <summary>
-            Find potential eye that should not be filled. 
+            Find potential eye. 
             Check for killer formations 
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113_2" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
@@ -1430,7 +1431,7 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" /> 
             Check both alive <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_SimpleSeki" /> 
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_2" /> 
-            Ensure group more than one point have more than one liberty <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Nie20" /> 
+            ensure eye groups not suicidal <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Nie20" /> 
             Check for killer formation <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A67" />
             Check weak group in connect and die <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_XuanXuanGo_B6" /> 
             Check suicide at tiger mouth <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16867" /> 
@@ -1445,7 +1446,7 @@
             <summary>
             Redundant atari move.
             <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A9_Ext" />
-            Ensure more than one liberty for move group <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A68" />
+            One liberty move group <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A68" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16748" />
             Check capture secure <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WindAndTime_Q30225_2" />
             <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WindAndTime_Q30225_3" />
@@ -1456,6 +1457,11 @@
         <member name="M:Go.RedundantMoveHelper.SuicidalRedundantMove(Go.GameTryMove)">
             <summary>
             Suicidal redundant move.
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.SuicidalMoveAtNonKillableGroup(Go.GameTryMove,Go.GameTryMove)">
+            <summary>
+            Suicidal move at non killable group.
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.MoveWithinNonKillableGroup(Go.GameTryMove,Go.GameTryMove)">
@@ -1564,9 +1570,9 @@
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A6" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.CheckAnyRealEyeInSuicidalConnectAndDie(Go.Board,Go.Board)">
+        <member name="M:Go.RedundantMoveHelper.CheckRealEyeInSuicidalConnectAndDie(Go.Board,Go.Board)">
             <summary>
-            Check for real eye in neighbour groups.
+            Check for real eye.
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3_3" />
             </summary>
         </member>

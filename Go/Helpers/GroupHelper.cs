@@ -19,7 +19,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get killer group fully surrounded by survival stones. Content in parameter refer to target content (usually survival). 
+        /// Get killer groups. 
         /// </summary>
         public static List<Group> GetKillerGroups(Board board, Content c = Content.Unknown)
         {
@@ -27,16 +27,16 @@ namespace Go
             if (c == Content.Unknown)
                 c = GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive);
             if (board.KillerGroups == null || !board.KillerGroups.ContainsKey(c))
-                killerGroups = GetAllKillerGroups(board, c);
+                killerGroups = FindKillerGroups(board, c);
             else
                 killerGroups = board.KillerGroups[c]; //retrieve from cache
             return killerGroups;
         }
 
         /// <summary>
-        /// Get killer groups fully surrounded by opponent.
+        /// Find killer groups.
         /// </summary>
-        private static List<Group> GetAllKillerGroups(Board board, Content c)
+        private static List<Group> FindKillerGroups(Board board, Content c)
         {
             List<Group> killerGroups = new List<Group>();
             Board filledBoard = new Board(board);
@@ -74,7 +74,7 @@ namespace Go
 
         #region check neighbour groups
         /// <summary>
-        /// Ensure neighbour groups of killer group are diagonal groups, not separated from one another.
+        /// Check neighbour groups of killer group are diagonal groups, not separated from one another.
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_SimpleSeki_2" />
         /// </summary>
         public static (Boolean, List<Group>) CheckNeighbourGroupsOfKillerGroup(Board board, Group killerGroup)

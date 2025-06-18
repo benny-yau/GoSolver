@@ -168,7 +168,7 @@ namespace Go
             {
                 List<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, targetGroups.Select(gr => gr.Liberties.First()), c).ToList();
                 moveBoards.RemoveAll(n => IsNonKillableGroupKoFight(n));
-                moveBoards.RemoveAll(n => ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, capturePoint, c).All(d => n[d] == c, true) && WallHelper.TargetWithAllNonKillableGroups(n) && !Board.ResolveAtari(currentBoard, n));
+                moveBoards.RemoveAll(n => ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, capturePoint, c).All(d => n[d] == c, true) && !Board.ResolveAtari(currentBoard, n) && !LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard));
                 if (moveBoards.Count(k => !RedundantMoveHelper.CheckRedundantKoMove(k, currentBoard)) >= 2)
                     return true;
             }
@@ -184,7 +184,7 @@ namespace Go
             if (koGroups.Count >= 2)
             {
                 List<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, koGroups.Select(gr => gr.Liberties.First()), c).ToList();
-                moveBoards.RemoveAll(n => ImmovableHelper.GetDiagonalsOfTigerMouth(n, n.Move.Value, c.Opposite()).All(d => n[d] == c.Opposite(), true) && IsNonKillableGroupKoFight(n) && !n.IsAtariMove);
+                moveBoards.RemoveAll(n => ImmovableHelper.GetDiagonalsOfTigerMouth(n, n.Move.Value, c.Opposite()).All(d => n[d] == c.Opposite(), true) && !n.IsAtariMove && !LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard));
                 if (moveBoards.Count(k => !RedundantMoveHelper.CheckRedundantKoMove(k, currentBoard)) >= 2)
                     return true;
             }
@@ -202,10 +202,27 @@ namespace Go
             Content c = board.MoveGroup.Content;
             Point p = board.GetStoneNeighbours().FirstOrDefault(n => EyeHelper.FindCoveredEye(board, n, c));
             if (!Convert.ToBoolean(p.NotEmpty)) return false;
+            return IsCoveredEyeDoubleKo(board);
+        }
+
+        /// <summary>
+        /// Double ko for covered eye.
+        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_7" />
+        /// </summary>
+        public static Boolean IsCoveredEyeDoubleKo(Board board)
+        {
+            Content c = board.MoveGroup.Content;
             foreach (Group ngroup in LinkHelper.GetAllDiagonalGroups(board, board.MoveGroup))
             {
-                if (KoHelper.GetKoTargetGroups(board, ngroup).Any(n => ImmovableHelper.UnescapableGroup(board, n).Item1))
+                foreach (Group koGroup in KoHelper.GetKoTargetGroups(board, ngroup))
+                {
+                    if (!ImmovableHelper.UnescapableGroup(board, koGroup).Item1) continue;
+                    Point eye = koGroup.Liberties.First();
+                    HashSet<Group> ngroups = board.GetGroupsFromStoneNeighbours(eye, c);
+                    if (ngroups.Any(n => n != koGroup && ImmovableHelper.CheckConnectAndDie(board, n, false)))
+                        continue;
                     return true;
+                }
             }
             return false;
         }

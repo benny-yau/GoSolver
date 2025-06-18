@@ -7,9 +7,6 @@ using Newtonsoft.Json.Linq;
 
 namespace Go
 {
-    /// <summary>
-    /// Contains core of methods for game play. The root of a specified game may be obtained using the Root property.
-    /// </summary>
     [Serializable]
     public partial class Game
     {
@@ -24,7 +21,7 @@ namespace Go
 
         GameInfo gameInfo;
         /// <summary>
-        /// Retrieves the game info is stored in the root of the game.
+        /// Game info.
         /// </summary>
         public GameInfo GameInfo
         {
@@ -39,7 +36,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Depth to start with. Pass move not counted.
+        /// Get starting depth, excluding pass move.
         /// Look ahead depth is minimum depth to start with.
         /// </summary>
         public int GetStartingDepth()
@@ -160,7 +157,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Makes move on board internally. Returns result as MakeMoveResult.
+        /// Internal make move.
         /// </summary>
         public MakeMoveResult InternalMakeMove(int x, int y, Boolean overrideKo = false)
         {
@@ -169,7 +166,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Depth of game starting from zero.
+        /// Game depth.
         /// </summary>
         public int GameDepth(Game g)
         {
@@ -178,7 +175,7 @@ namespace Go
 
         #region mapped moves
         /// <summary>
-        /// Check if move is present in solution or json map. Solution moves can end either on player or computer move, so check if solution is completed before and after making move.
+        /// Check solution and mapped points. 
         /// </summary>
         public ConfirmAliveResult CheckSolutionAndMappedPoints()
         {
@@ -248,7 +245,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Use dictate points specified which by-pass the mapped points. This allow for path correction and extension of mapped points beyond sixth move where much calculation time is required.
+        /// Use dictate points specified to by-pass mapped points and reduce calculation time.
         /// </summary>
         private ConfirmAliveResult UseDictatePoints(ConfirmAliveResult result)
         {

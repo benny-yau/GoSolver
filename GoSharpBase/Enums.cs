@@ -28,7 +28,7 @@ namespace Go
     }
 
     /// <summary>
-    /// Represents the content of a board position, or the color of territory.
+    /// Content of a board position.
     /// </summary>
     public enum Content
     {
@@ -39,7 +39,7 @@ namespace Go
     }
 
     /// <summary>
-    /// Represents if current ko move is kill or survive
+    /// Check ko type.
     /// </summary>
     public enum KoCheck
     {
@@ -49,7 +49,7 @@ namespace Go
     }
 
     /// <summary>
-    /// Result for make move.
+    /// Make move result.
     /// </summary>
     public enum MakeMoveResult
     {
@@ -62,7 +62,7 @@ namespace Go
     }
 
     /// <summary>
-    /// Result on confirm alive, including user prompts and messages.
+    /// Confirm alive result, including user prompts and messages.
     /// </summary>
     public enum ConfirmAliveResult
     {

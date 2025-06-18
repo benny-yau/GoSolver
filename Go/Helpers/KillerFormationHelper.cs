@@ -157,6 +157,7 @@ namespace Go
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
+
             //real eye at move killer group
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite());
             if (killerGroup != null && killerGroup.Points.Count <= 2 && !EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, killerGroup))
@@ -170,7 +171,7 @@ namespace Go
             if (BentThreeSuicideAtCoveredEye(tryBoard, captureBoard))
                 return false;
 
-            //get all killer groups except move killer group
+            //find real eye in neighbour killer groups
             List<Group> killerGroups = GroupHelper.GetKillerGroups(captureBoard, c.Opposite());
             if (killerGroup == null) killerGroup = tryBoard.MoveGroup;
             List<Group> ngroups = captureBoard.GetNeighbourGroups(killerGroup);
@@ -179,13 +180,9 @@ namespace Go
             {
                 List<Group> cgroups = captureBoard.GetNeighbourGroups(kgroup);
                 if (!cgroups.Intersect(ngroups).Any()) continue;
-                //real eye with one neighbour group only
-                if (cgroups.Count == 1)
-                    return true;
-                //find real eye with strong groups
-                if (EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, kgroup) && WallHelper.StrongGroups(captureBoard, cgroups))
-                    return true;
-                if (EyeHelper.RealEyeOfDiagonallyConnectedGroups(captureBoard, kgroup))
+                if (cgroups.Count == 1) return true;
+                if (!WallHelper.StrongGroups(captureBoard, cgroups)) continue;
+                if (EyeHelper.FindRealEyeOfAnyKillerGroup(captureBoard, kgroup))
                     return true;
             }
             return false;
@@ -257,6 +254,7 @@ namespace Go
                 if (SuicideForLibertyFight(tryBoard, currentBoard))
                     return true;
 
+                //suicidal end move
                 if (SuicidalEndMove(tryBoard, currentBoard))
                     return true;
             }
@@ -277,6 +275,7 @@ namespace Go
                 if (BentThreeSuicideAtCoveredEye(tryBoard, captureBoard))
                     return true;
 
+                //suicidal end move
                 if (SuicidalEndMove(tryBoard, currentBoard))
                     return true;
             }
@@ -328,7 +327,6 @@ namespace Go
             if (BentFourCornerFormation(tryBoard) && UniquePatternsHelper.CheckForBentFour(currentBoard))
                 return true;
 
-            Group previousGroup = previousGroups.First();
             //whole group dying
             if (WholeGroupDying(tryBoard))
             {
@@ -339,6 +337,7 @@ namespace Go
             }
 
             //check previous group for killer formation
+            Group previousGroup = previousGroups.First();
             if (tryBoard.MoveGroupLiberties == 1 && IsKillerFormationFromFunc(currentBoard, previousGroup) && !KillerFormationHelper.CornerSixFormation(tryBoard))
                 return true;
 

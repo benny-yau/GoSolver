@@ -8,7 +8,7 @@ namespace Go
     {
         #region find potential eye
         /// <summary>
-        /// Find potential eye that should not be filled. 
+        /// Find potential eye. 
         /// Check for killer formations 
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
@@ -151,6 +151,10 @@ namespace Go
             if (CheckLibertyFightAtCoveredEye(currentBoard, eyePoint, c))
                 return false;
 
+            //check double ko
+            if (KoHelper.IsCoveredEyeDoubleKo(tryBoard))
+                return false;
+
             if (opponentTryMove != null)
             {
                 //check no eye for survival for opponent
@@ -205,7 +209,7 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" /> 
         /// Check both alive <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_SimpleSeki" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_2" /> 
-        /// Ensure group more than one point have more than one liberty <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Nie20" /> 
+        /// ensure eye groups not suicidal <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Nie20" /> 
         /// Check for killer formation <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A67" />
         /// Check weak group in connect and die <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_XuanXuanGo_B6" /> 
         /// Check suicide at tiger mouth <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16867" /> 
@@ -221,7 +225,7 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
-            //ensure is fill covered eye
+            //ensure is covered eye
             if (!EyeHelper.FindCoveredEye(currentBoard, move, c)) return false;
 
             (Boolean connectAndDie, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard, tryBoard.MoveGroup, false);
@@ -242,7 +246,7 @@ namespace Go
             if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo) && isKoFight)
                 return false;
 
-            //ensure group more than one point have more than one liberty
+            //ensure eye groups not suicidal
             if (eyeGroups.Any(e => e.Points.Count > 1 && e.Liberties.Count == 1))
                 return false;
 
@@ -264,6 +268,7 @@ namespace Go
             //two covered eyes
             if (eyeGroups.Any(e => e.Liberties.Count == 2 && e.Liberties.All(n => EyeHelper.FindCoveredEye(currentBoard, n, c))))
             {
+                //check covered eye survival
                 if (!WallHelper.StrongGroupsAtCoveredBoard(currentBoard, eyeGroups.First()))
                     return false;
             }
@@ -287,7 +292,7 @@ namespace Go
         /// <summary>
         /// Redundant atari move.
         /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A9_Ext" />
-        /// Ensure more than one liberty for move group <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A68" />
+        /// One liberty move group <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A68" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16748" />
         /// Check capture secure <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WindAndTime_Q30225_2" />
         /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WindAndTime_Q30225_3" />
@@ -315,7 +320,7 @@ namespace Go
             if (!GroupHelper.IsSingleGroupWithinKillerGroup(currentBoard, atariTarget))
                 return false;
 
-            //ensure target group cannot escape
+            //ensure capture secure
             if (!ImmovableHelper.CheckCaptureSecure(tryBoard, atariTarget, true))
                 return false;
 
@@ -325,7 +330,7 @@ namespace Go
             Group target = board.GetGroupAt(atariPoint);
             if (!GameTryMove.IsNegligibleForBoard(board, currentBoard, n => !n.Equals(target))) return false;
 
-            //ensure the other move can capture atari target as well
+            //ensure capture secure
             if (!ImmovableHelper.CheckCaptureSecure(board, target, true))
                 return false;
             return true;
@@ -374,6 +379,9 @@ namespace Go
             return false;
         }
 
+        /// <summary>
+        /// Suicidal move at non killable group.
+        /// </summary>
         private static Boolean SuicidalMoveAtNonKillableGroup(GameTryMove tryMove, GameTryMove opponentTryMove = null)
         {
             if (MoveWithinNonKillableGroup(tryMove, opponentTryMove))
@@ -645,8 +653,8 @@ namespace Go
 
             if (tryBoard.MoveGroup.Points.Count <= 4)
             {
-                //check for real eye in neighbour groups
-                return CheckAnyRealEyeInSuicidalConnectAndDie(tryBoard, captureBoard);
+                //check for real eye
+                return CheckRealEyeInSuicidalConnectAndDie(tryBoard, captureBoard);
             }
             //check killer formation
             else if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, captureBoard))
@@ -815,13 +823,16 @@ namespace Go
         }
 
         /// <summary>
-        /// Check for real eye in neighbour groups.
+        /// Check for real eye.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3_3" />
         /// </summary>
-        private static Boolean CheckAnyRealEyeInSuicidalConnectAndDie(Board tryBoard, Board captureBoard)
+        private static Boolean CheckRealEyeInSuicidalConnectAndDie(Board tryBoard, Board captureBoard)
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
+            if (tryBoard.MoveGroup.Points.Count > 2 && WallHelper.TargetWithAnyNonKillableGroup(tryBoard))
+                return true;
+
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite());
             if (killerGroup == null) return false;
             if (!EyeHelper.FindRealEyeOfAnyKillerGroup(captureBoard, killerGroup)) return false;

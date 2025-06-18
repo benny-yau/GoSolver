@@ -7,9 +7,6 @@ using System.Text;
 
 namespace Go
 {
-    /// <summary>
-    /// Provides setup information used in the game.
-    /// </summary>
     [Serializable]
     public class GameInfo
     {
@@ -243,8 +240,7 @@ namespace Go
         }
 
         /// <summary>
-        ///  Constructs a default GameInfo object, 19x19 board, black as the starting player, and objective of game as survive.
-        ///  As rule of thumb, set search depth at 14 for typical scenarios for initial mapping and increase it to 18 or more on mapping verification. 
+        /// Game info. 
         /// </summary>
         public GameInfo(SurviveOrKill survive = SurviveOrKill.Survive, Content start = Content.Black, int searchDepth = 14)
         {

@@ -52,7 +52,7 @@ namespace Go
         /// </summary>
         public static Boolean DoubleAtariWithoutEscape(Board board)
         {
-            if (ImmovableHelper.IsSuicidalWithoutKo(board)) return false;
+            if (ImmovableHelper.CheckConnectAndDie(board, board.MoveGroup, false)) return false;
             if (board.AtariTargets.Count == 0) return false;
             List<Group> groups = board.GetGroupsFromStoneNeighbours().Where(n => !WallHelper.IsStrongGroup(board, n)).ToList();
             groups = groups.Union(board.AtariTargets).ToList();
