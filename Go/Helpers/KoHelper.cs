@@ -101,20 +101,19 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             if (tryBoard.PointWithinMiddleArea(move)) return false;
             if (tryBoard.MoveGroup.Points.Count != 1 || tryBoard.MoveGroupLiberties != 2) return false;
-            foreach (Point diagonal in tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] == c))
+            foreach (Point d in tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] == c))
             {
-                if (tryBoard.GetGroupAt(diagonal).Points.Count != 1) continue;
-                List<Point> pointsBetweenDiagonals = LinkHelper.PointsBetweenDiagonals(move, diagonal);
-                List<Point> liberties = pointsBetweenDiagonals.Where(p => tryBoard[p] == Content.Empty && !tryBoard.PointWithinMiddleArea(p)).ToList();
-                if (liberties.Count != 1) continue;
-                Point lib = liberties.First();
-                List<Point> liberties2 = tryBoard.GetStoneNeighbours(lib).Where(p => tryBoard[p] == Content.Empty).ToList();
-                if (liberties2.Count != 1) continue;
-                Point lib2 = liberties2.First();
+                Group dgroup = tryBoard.GetGroupAt(d);
+                if (dgroup.Points.Count != 1) continue;
+                Point lib = tryBoard.GetStoneNeighbours(d).FirstOrDefault(p => tryBoard[p] == Content.Empty && !tryBoard.PointWithinMiddleArea(p));
+                if (!Convert.ToBoolean(lib.NotEmpty)) continue;
+                Point lib2 = tryBoard.GetStoneNeighbours(lib).FirstOrDefault(p => tryBoard[p] == Content.Empty);
+                if (!Convert.ToBoolean(lib2.NotEmpty)) continue;
                 Point e = tryBoard.GetDiagonalNeighbours(lib).Intersect(tryBoard.GetStoneNeighbours(lib2)).First();
                 if (tryBoard[e] != Content.Empty || WallHelper.NoEyeForSurvival(tryBoard, e)) continue;
-                //make survival move to create ko
-                if (ImmovableHelper.IsSuicidalMove(tryBoard, lib2, c)) continue;
+                Board b = tryBoard.MakeMoveOnNewBoard(lib2, c);
+                if (b != null && ImmovableHelper.CheckConnectAndDie(b, dgroup))
+                    continue;
                 return true;
             }
             return false;
@@ -168,7 +167,6 @@ namespace Go
             {
                 List<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, targetGroups.Select(gr => gr.Liberties.First()), c).ToList();
                 moveBoards.RemoveAll(n => IsNonKillableGroupKoFight(n));
-                moveBoards.RemoveAll(n => ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, capturePoint, c).All(d => n[d] == c, true) && !Board.ResolveAtari(currentBoard, n) && !LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard));
                 if (moveBoards.Count(k => !RedundantMoveHelper.CheckRedundantKoMove(k, currentBoard)) >= 2)
                     return true;
             }
@@ -184,7 +182,6 @@ namespace Go
             if (koGroups.Count >= 2)
             {
                 List<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, koGroups.Select(gr => gr.Liberties.First()), c).ToList();
-                moveBoards.RemoveAll(n => ImmovableHelper.GetDiagonalsOfTigerMouth(n, n.Move.Value, c.Opposite()).All(d => n[d] == c.Opposite(), true) && !n.IsAtariMove && !LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard));
                 if (moveBoards.Count(k => !RedundantMoveHelper.CheckRedundantKoMove(k, currentBoard)) >= 2)
                     return true;
             }
