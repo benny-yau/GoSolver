@@ -68,7 +68,7 @@ namespace Go
         {
             List<Point> npoints = LinkHelper.GetDiagonalPoints(board, eye, c);
             List<Point> diagonals = board.GetDiagonalNeighbours(eye).Where(n => board[n] == c.Opposite() && board.GetStoneNeighbours(n).Intersect(npoints).Count() >= 2).ToList();
-            if (diagonals.All(n => ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt(n)), true)) return false;
+            if (diagonals.All(n => ImmovableHelper.CheckConnectAndDie(board, board.GetGroupAt(n), false))) return false;
             if (board.PointWithinMiddleArea(eye))
                 return (diagonals.Count >= 2);
             else

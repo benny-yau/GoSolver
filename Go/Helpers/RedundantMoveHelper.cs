@@ -1034,16 +1034,14 @@ namespace Go
             else if (liberties.Count == 2 && !liberties.Any(n => EyeHelper.FindEye(capturedBoard, n, c.Opposite())))
             {
                 //two liberties - suicide for both players
-                IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(capturedBoard, liberties, c);
-                foreach (Board b in moveBoards)
+                foreach (Board b in GameHelper.GetMoveBoards(capturedBoard, liberties, c))
                 {
                     //both players are suicidal at the liberty
                     Point q = liberties.First(n => !n.Equals(b.Move));
                     if (GroupHelper.GetDirectKillerGroup(tryBoard, q, c.Opposite()) == null) continue;
                     if (ImmovableHelper.IsSuicidalMoveForBothPlayers(b, q))
                     {
-                        HashSet<Group> groups = currentBoard.GetGroupsFromStoneNeighbours(q, c.Opposite());
-                        if (groups.Any(n => ImmovableHelper.EscapeCaptureLink(currentBoard, n)))
+                        if (b.GetNeighbourGroups(tryBoard.MoveGroup).All(n => LinkHelper.FindDiagonalCut(b, n).Item1 == null))
                             continue;
                         return false;
                     }
@@ -1056,8 +1054,7 @@ namespace Go
                 {
                     List<Point> nLiberties = ngroup.Liberties.Where(n => !n.Equals(move)).ToList();
                     if (nLiberties.Count != 2) continue;
-                    IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(capturedBoard, nLiberties, c);
-                    foreach (Board b in moveBoards)
+                    foreach (Board b in GameHelper.GetMoveBoards(capturedBoard, nLiberties, c))
                     {
                         //both players are suicidal at the liberty
                         Point q = nLiberties.First(n => !n.Equals(b.Move));
@@ -1483,9 +1480,7 @@ namespace Go
 
             //check one neighbour group
             List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(tigerMouth, c).ToList();
-            if (ngroups.Count > 1) return false;
-            Group killerGroup = ngroups.First().Liberties.Select(n => GroupHelper.GetDirectKillerGroup(tryBoard, n, c.Opposite())).FirstOrDefault(n => n != null);
-            if (killerGroup != null && GroupHelper.GetNeighbourGroupsOfKillerGroup(tryBoard, killerGroup).Count == 1)
+            if (ngroups.Count == 1)
                 return true;
             return false;
         }
