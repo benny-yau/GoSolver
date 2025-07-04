@@ -653,8 +653,7 @@ namespace Go
 
             if (tryBoard.MoveGroup.Points.Count <= 4)
             {
-                //check for real eye
-                return CheckRealEyeInSuicidalConnectAndDie(tryBoard, captureBoard);
+                return CheckRedundantInSuicidalConnectAndDie(tryMove, captureBoard);
             }
             //check killer formation
             else if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, captureBoard))
@@ -811,6 +810,7 @@ namespace Go
             Point move = tryBoard.Move.Value;
             Content c = tryBoard[move];
             if (tryBoard.MoveGroup.Points.Count != 1 || !tryBoard.CornerPoint() || !tryMove.IsNegligible) return false;
+            if (!tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite())) return false;
 
             //check for kill formation
             Boolean killFormation = (tryBoard.GetClosestPoints(move, c.Opposite()).Count >= 3 && !tryBoard.GetClosestPoints(move, c).Any());
@@ -823,15 +823,24 @@ namespace Go
         }
 
         /// <summary>
-        /// Check for real eye.
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3_3" />
+        /// Check redundant in suicidal connect and die.
+        /// Check for real eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3_3" />
         /// </summary>
-        private static Boolean CheckRealEyeInSuicidalConnectAndDie(Board tryBoard, Board captureBoard)
+        private static Boolean CheckRedundantInSuicidalConnectAndDie(GameTryMove tryMove, Board captureBoard)
         {
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.MoveGroup.Points.Count > 2 && WallHelper.TargetWithAnyNonKillableGroup(tryBoard))
+
+            if (tryBoard.MoveGroup.Points.Count >= 2 && WallHelper.TargetWithAnyNonKillableGroup(tryBoard))
                 return true;
+
+            if (!tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty) && (tryBoard.MoveGroup.Points.Count == 2 || tryBoard.MoveGroup.Points.Count == 3))
+            {
+                if (!KillerFormationHelper.ThreeOpponentGroupsAtMove(tryBoard) && !LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryBoard))
+                    return true;
+            }
 
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite());
             if (killerGroup == null) return false;
@@ -1031,7 +1040,7 @@ namespace Go
                 if (KillerFormationHelper.SuicideForLibertyFight(tryBoard, currentBoard))
                     return false;
             }
-            else if (liberties.Count == 2 && !liberties.Any(n => EyeHelper.FindEye(capturedBoard, n, c.Opposite())))
+            else if (liberties.Count == 2)
             {
                 //two liberties - suicide for both players
                 foreach (Board b in GameHelper.GetMoveBoards(capturedBoard, liberties, c))
@@ -1047,7 +1056,7 @@ namespace Go
                     }
                 }
             }
-            else if (liberties.Count == 3 && !liberties.Any(n => EyeHelper.FindEye(capturedBoard, n, c.Opposite())))
+            else if (liberties.Count == 3)
             {
                 //three liberties - suicide for both players
                 foreach (Group ngroup in ngroups)
@@ -1117,21 +1126,11 @@ namespace Go
         /// </summary>
         private static Boolean CheckTwoPointGroupInSuicideRealEye(GameTryMove tryMove, Board capturedBoard)
         {
-            Point move = tryMove.Move;
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
-            //capture group
             Point liberty = tryBoard.MoveGroup.Liberties.First();
             if (currentBoard.GetGroupsFromStoneNeighbours(liberty, c).Any(n => n.Liberties.Count == 1))
-                return true;
-
-            //check for liberty fight
-            List<Group> eyeGroups = capturedBoard.GetGroupsFromStoneNeighbours();
-            if (eyeGroups.Count() != 1) return false;
-            Group eyeGroup = eyeGroups.First();
-            List<Point> liberties = eyeGroup.Liberties.Where(n => !n.Equals(move)).ToList();
-            if (liberties.Count > 2)
                 return true;
             return false;
         }

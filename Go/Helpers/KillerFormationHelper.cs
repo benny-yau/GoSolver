@@ -514,7 +514,6 @@ namespace Go
                 if (KoHelper.IsKoFight(tryBoard, liberty, c.Opposite()).Item1)
                 {
                     //check killer ko within killer group
-                    if (GroupHelper.GetKillerGroupFromCache(tryBoard, targetGroup.Points.First(), c) == null) continue;
                     if (WallHelper.TargetWithAnyNonKillableGroup(tryBoard, targetGroup)) continue;
                 }
                 else
@@ -629,8 +628,19 @@ namespace Go
         public static Boolean ThreeOpponentGroupsAtMove(Board tryBoard, Point? eyePoint = null)
         {
             if (eyePoint == null) eyePoint = tryBoard.Move.Value;
+            if (tryBoard.GetGroupsFromStoneNeighbours(eyePoint).Count >= 3)
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Three opponent stones at move.
+        /// </summary>
+        public static Boolean ThreeOpponentStonesAtMove(Board tryBoard, Point? eyePoint = null)
+        {
+            if (eyePoint == null) eyePoint = tryBoard.Move.Value;
             Content c = tryBoard[eyePoint.Value];
-            if (tryBoard.GetStoneNeighbours(eyePoint).Count(n => tryBoard[n] == c.Opposite()) > 2)
+            if (tryBoard.GetStoneNeighbours(eyePoint).Count(n => tryBoard[n] == c.Opposite()) >= 3)
             {
                 List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(tryBoard, eyePoint.Value, c.Opposite(), true);
                 if (diagonals.Any())

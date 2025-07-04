@@ -457,8 +457,8 @@ namespace Go
 
             if (board.PointWithinMiddleArea(eyePoint.Value))
             {
-                //check three opponent groups
-                if (!KillerFormationHelper.ThreeOpponentGroupsAtMove(board, eyePoint)) return false;
+                //check three opponent stones
+                if (!KillerFormationHelper.ThreeOpponentStonesAtMove(board, eyePoint)) return false;
                 List<Point> nstones = board.GetStoneNeighbours(eyePoint).Where(n => board[n] == c.Opposite()).ToList();
                 Point middleStone = nstones.First(n => board.GetDiagonalNeighbours(n).Count(d => nstones.Contains(d)) >= 2);
                 Group target = board.GetGroupAt(middleStone);
@@ -542,12 +542,15 @@ namespace Go
                 if (!GameHelper.SetupMoveAvailable(board, liberty)) continue;
                 (_, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board, koEnabled);
                 if (b == null) continue;
+                Boolean resolveAtari = Board.ResolveAtari(board, b);
+                Boolean captured = b.CapturedList.Any();
                 int moveLiberties = KillerFormationHelper.GetLibertiesAtMove(b).Count();
                 int moveGroupLiberties = b.MoveGroupLiberties;
-                killBoards.Add(new KeyValuePair<LinkedPoint<Point>, Board>(new LinkedPoint<Point>(liberty, new { moveLiberties, moveGroupLiberties }), b));
+                killBoards.Add(new KeyValuePair<LinkedPoint<Point>, Board>(new LinkedPoint<Point>(liberty, new { resolveAtari, captured, moveLiberties, moveGroupLiberties }), b));
             }
 
-            foreach (KeyValuePair<LinkedPoint<Point>, Board> kvp in killBoards.OrderByDescending(b => ((dynamic)b.Key.CheckMove).moveLiberties).ThenByDescending(b => ((dynamic)b.Key.CheckMove).moveGroupLiberties))
+            killBoards = killBoards.OrderByDescending(b => ((dynamic)b.Key.CheckMove).resolveAtari).ThenByDescending(b => ((dynamic)b.Key.CheckMove).captured).ThenByDescending(b => ((dynamic)b.Key.CheckMove).moveLiberties).ThenByDescending(b => ((dynamic)b.Key.CheckMove).moveGroupLiberties).ToList();
+            foreach (KeyValuePair<LinkedPoint<Point>, Board> kvp in killBoards)
             {
                 Board b = kvp.Value;
                 //check if captured

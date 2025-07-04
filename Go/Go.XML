@@ -1013,6 +1013,11 @@
             Three opponent groups at move.
             </summary>
         </member>
+        <member name="M:Go.KillerFormationHelper.ThreeOpponentStonesAtMove(Go.Board,System.Nullable{Go.Point})">
+            <summary>
+            Three opponent stones at move.
+            </summary>
+        </member>
         <member name="M:Go.KillerFormationHelper.BentThreeSuicideAtCoveredEye(Go.Board,Go.Board)">
             <summary>
             Bent three suicide at covered eye.
@@ -1226,7 +1231,7 @@
         </member>
         <member name="M:Go.LinkHelper.GetGroupLinkedDiagonals(Go.Board,Go.Group,System.Boolean)">
             <summary>
-            Get group linked diagonals.
+            Get group diagonals with same content.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.GetDiagonalGroups(Go.Board,Go.Group)">
@@ -1236,7 +1241,7 @@
         </member>
         <member name="M:Go.LinkHelper.GetGroupDiagonals(Go.Board,Go.Group)">
             <summary>
-            Get all diagonals of group regardless of content.
+            Get group diagonals regardless of content.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.GetMoveDiagonals(Go.Board)">
@@ -1570,10 +1575,10 @@
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A6" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.CheckRealEyeInSuicidalConnectAndDie(Go.Board,Go.Board)">
+        <member name="M:Go.RedundantMoveHelper.CheckRedundantInSuicidalConnectAndDie(Go.GameTryMove,Go.Board)">
             <summary>
-            Check for real eye.
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3_3" />
+            Check redundant in suicidal connect and die.
+            Check for real eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3_3" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckDiagonalForSuicidalConnectAndDie(Go.GameTryMove,Go.Board)">

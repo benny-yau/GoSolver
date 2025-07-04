@@ -197,9 +197,8 @@ namespace Go
         /// </summary>
         public static Boolean IsAbsoluteLinkForGroups(Board currentBoard, Board tryBoard)
         {
-            if (tryBoard.MoveGroup.Points.Count == 1) return false;
-            List<Group> linkedGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
-            return (linkedGroups.Count > 1);
+            if (tryBoard.MoveGroup.Points.Count <= 2) return false;
+            return (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Count > 1);
         }
 
         /// <summary>
@@ -319,7 +318,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get group linked diagonals.
+        /// Get group diagonals with same content.
         /// </summary>
         public static List<LinkedPoint<Point>> GetGroupLinkedDiagonals(Board board, Group group = null, Boolean checkLinked = false)
         {
@@ -352,7 +351,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get all diagonals of group regardless of content.
+        /// Get group diagonals regardless of content.
         /// </summary>
         public static List<LinkedPoint<Point>> GetGroupDiagonals(Board board, Group group)
         {
