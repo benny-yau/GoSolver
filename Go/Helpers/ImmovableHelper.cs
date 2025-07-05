@@ -303,9 +303,12 @@ namespace Go
             return null;
         }
 
+        /// <summary>
+        /// Precheck not suicidal.
+        /// </summary>
         public static Boolean PrecheckNotSuicidal(Board tryBoard, Point p, Content c)
         {
-            if (tryBoard.GetStoneNeighbours(p).Count(n => tryBoard[n] == Content.Empty) >= 2)
+            if (tryBoard.GetMoveLiberties(p).Count() >= 2)
                 return true;
             if (tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Any(n => n.Liberties.Count >= 3))
                 return true;
@@ -536,7 +539,7 @@ namespace Go
             Content c = group.Content;
             if (group.Liberties.Count > 2) return (false, null);
 
-            List<KeyValuePair<LinkedPoint<Point>, Board>> killBoards = new List<KeyValuePair<LinkedPoint<Point>, Board>>();
+            List<dynamic> killBoards = new List<dynamic>();
             foreach (Point liberty in group.Liberties)
             {
                 if (!GameHelper.SetupMoveAvailable(board, liberty)) continue;
@@ -544,15 +547,15 @@ namespace Go
                 if (b == null) continue;
                 Boolean resolveAtari = Board.ResolveAtari(board, b);
                 Boolean captured = b.CapturedList.Any();
-                int moveLiberties = KillerFormationHelper.GetLibertiesAtMove(b).Count();
+                int moveLiberties = b.GetMoveLiberties().Count;
                 int moveGroupLiberties = b.MoveGroupLiberties;
-                killBoards.Add(new KeyValuePair<LinkedPoint<Point>, Board>(new LinkedPoint<Point>(liberty, new { resolveAtari, captured, moveLiberties, moveGroupLiberties }), b));
+                killBoards.Add(new { b = b, resolveAtari = resolveAtari, captured = captured, moveLiberties = moveLiberties, moveGroupLiberties = moveGroupLiberties });
             }
 
-            killBoards = killBoards.OrderByDescending(b => ((dynamic)b.Key.CheckMove).resolveAtari).ThenByDescending(b => ((dynamic)b.Key.CheckMove).captured).ThenByDescending(b => ((dynamic)b.Key.CheckMove).moveLiberties).ThenByDescending(b => ((dynamic)b.Key.CheckMove).moveGroupLiberties).ToList();
-            foreach (KeyValuePair<LinkedPoint<Point>, Board> kvp in killBoards)
+            killBoards = killBoards.OrderByDescending(k => ((dynamic)k).resolveAtari).ThenByDescending(k => ((dynamic)k).captured).ThenByDescending(k => ((dynamic)k).moveLiberties).ThenByDescending(k => ((dynamic)k).moveGroupLiberties).ToList();
+            foreach (dynamic k in killBoards)
             {
-                Board b = kvp.Value;
+                Board b = ((dynamic)k).b;
                 //check if captured
                 if (b.IsCapturedGroup(group))
                     return (true, b);

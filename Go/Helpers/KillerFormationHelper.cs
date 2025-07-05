@@ -23,6 +23,9 @@ namespace Go
             }
         }
 
+        /// <summary>
+        /// Is killer formation from func.
+        /// </summary>
         public static Boolean IsKillerFormationFromFunc(Board tryBoard, Group group = null)
         {
             if (group == null) group = tryBoard.MoveGroup;
@@ -37,7 +40,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Formations that are essentially dead and do not require a pass move to test for both alive.
+        /// Dead formation in both alive.
         /// </summary>
         public static Boolean DeadFormationInBothAlive(Board board, Group killerGroup, int libertyCount = 2, int requiredCount = 1)
         {
@@ -52,7 +55,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Make move at each of the empty points to test if formation created.
+        /// Try kill formation. Make move at each of the empty points to test if formation created.
         /// </summary>
         public static Boolean TryKillFormation(Board board, Content c, List<Point> emptyPoints, int requiredCount = 1)
         {
@@ -71,7 +74,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Suicidal killer formations within survival group without any real eye.
+        /// Suicidal killer formations.
         /// Check suicide at eye point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B19" />
         /// Check if real eye found in neighbour groups <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario5dan27" />
         /// Check covered eye at non-killable group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
@@ -147,7 +150,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Check if real eye found in neighbour groups.
+        /// Check real eye in neighbour groups.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_3" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18472" />
         /// Check for corner six <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
@@ -189,6 +192,7 @@ namespace Go
         }
 
         /// <summary>
+        /// Find suicidal killer formation.
         /// Two-point move with empty point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A48" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17250" />
@@ -238,7 +242,7 @@ namespace Go
                     return TwoPointSuicideAtCoveredEye(captureBoard, tryBoard);
 
                 //two-point move with empty point
-                if (GetLibertiesAtMove(tryBoard).Any())
+                if (tryBoard.GetMoveLiberties().Any())
                 {
                     if (tryBoard.MoveGroupLiberties == 2 || SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                         return true;
@@ -295,7 +299,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Redundant extension of kill group.
+        /// Check redundant kill group extension.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A8" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A113" />
         /// Empty point neighbour <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_8" />
@@ -315,7 +319,7 @@ namespace Go
             if (previousGroups.Count > 1)
                 return false;
             //empty point neighbour
-            if (GetLibertiesAtMove(tryBoard).Any())
+            if (tryBoard.GetMoveLiberties().Any())
             {
                 if (tryBoard.MoveGroupLiberties == 2 || SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                     return false;
@@ -399,7 +403,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Suicide move with one empty space surrounded by opponent stones.
+        /// Suicide move valid with one empty space, surrounded by opponent stones.
         /// Move group with three points <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario1kyu29" />
         /// Move group binding <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B19_2" />
         /// </summary>
@@ -407,13 +411,13 @@ namespace Go
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            if (GetLibertiesAtMove(tryBoard).Any(n => tryBoard.GetStoneNeighbours(n).Where(q => !q.Equals(move)).All(q => tryBoard[q] == c.Opposite())))
+            if (tryBoard.GetMoveLiberties().Any(n => tryBoard.GetStoneNeighbours(n).Where(q => !q.Equals(move)).All(q => tryBoard[q] == c.Opposite())))
                 return true;
             return false;
         }
 
         /// <summary>
-        /// Ensure link is connected to both stones from previous move group and to external group.
+        /// Is link to external group.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16520_2" />
         /// Check connect and die <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30403" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi_2" />
@@ -472,7 +476,7 @@ namespace Go
             if (tryBoard.MoveGroup.Points.Count == 1 || tryBoard.MoveGroupLiberties > 1) return false;
             if (tryBoard.CapturedList.Count == 0) return false;
             if (capturedBoard == null) capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
-            if (!WallHelper.IsHostileNeighbourGroup(capturedBoard))
+            if (!WallHelper.IsHostileGroup(capturedBoard))
                 return true;
             return false;
         }
@@ -554,7 +558,7 @@ namespace Go
                 //capture move and find covered eye
                 if (EyeHelper.FindCoveredEyeByCapture(b))
                     return true;
-                if (!GetLibertiesAtMove(tryBoard).Any()) continue;
+                if (!tryBoard.GetMoveLiberties().Any()) continue;
                 //make move at the other empty point
                 Point move2 = group.Points.First(p => !p.Equals(move));
                 Board b2 = capturedBoard.MakeMoveOnNewBoard(move2, c.Opposite());
@@ -592,7 +596,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Check one point atari move
+        /// One point atari move.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31672" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31428" />
         /// </summary>
@@ -605,21 +609,13 @@ namespace Go
             Point q = atariTarget.Liberties.First();
             if (EyeHelper.FindNonSemiSolidEye(board, q, c.Opposite()))
                 return true;
-            List<Point> emptyPoints = b.GetStoneNeighbours(q).Where(n => b[n] == Content.Empty).ToList();
+            List<Point> emptyPoints = b.GetMoveLiberties(q);
             if (emptyPoints.Count != 1) return false;
 
             Group killerGroup = GroupHelper.GetDirectKillerGroup(b, q, c.Opposite());
             if (killerGroup != null && killerGroup.Points.Count == 2 && EyeHelper.IsCovered(b, emptyPoints.First(), c.Opposite()))
                 return true;
             return false;
-        }
-
-        /// <summary>
-        /// Get liberties at move.
-        /// </summary>
-        public static IEnumerable<Point> GetLibertiesAtMove(Board tryBoard)
-        {
-            return tryBoard.GetStoneNeighbours().Where(p => tryBoard[p] == Content.Empty);
         }
 
         /// <summary>
@@ -1043,14 +1039,14 @@ namespace Go
             if (moveGroup.Liberties.Count == 2)
             {
                 if (diagonals.Any(d => tryBoard[d] == c.Opposite())) return false;
-                if (tryBoard.GetStoneNeighbours(endPoint).Any(n => tryBoard[n] == Content.Empty)) return false;
+                if (tryBoard.GetMoveLiberties(endPoint).Any()) return false;
                 return true;
             }
             else if (moveGroup.Liberties.Count == 1)
             {
                 if (diagonals.Any(d => tryBoard[d] != c)) return false;
                 //suicide move with one empty space or connect groups
-                if (tryBoard.Move != null && tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c) < 2 && !tryBoard.GetStoneNeighbours().Any(n => tryBoard[n] == Content.Empty)) return false;
+                if (tryBoard.Move != null && tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c) < 2 && !tryBoard.GetMoveLiberties().Any()) return false;
 
                 //get neighbour of end point
                 List<Point> nEndPoint = tryBoard.GetStoneNeighbours(endPoint).Where(n => tryBoard[n] != c && !tryBoard.GetDiagonalNeighbours(n).Intersect(moveGroup.Points).Any()).ToList();

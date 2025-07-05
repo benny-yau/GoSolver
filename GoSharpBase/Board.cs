@@ -80,7 +80,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get and set content of a point on the board.
+        /// Get and set content.
         /// </summary>
         public Content this[int x, int y]
         {
@@ -133,13 +133,13 @@ namespace Go
         }
 
         /// <summary>
-        /// Get all captured points from captured list.
+        /// Get captured points.
         /// </summary>
         public IEnumerable<Point> CapturedPoints
         {
             get
             {
-                foreach (Group group in CapturedList.OrderByDescending(group => group.Points.Count))
+                foreach (Group group in CapturedList)
                 {
                     foreach (Point p in group.Points)
                         yield return p;
@@ -164,7 +164,7 @@ namespace Go
             Group group = GroupCacheFromPoint[p.x, p.y];
             if (group == null)
             {
-                group = new Group(content[p.x, p.y]);
+                group = new Group(this[p]);
                 if (group.Content == Content.Empty)
                     throw new Exception("Group content cannot be empty.");
                 RecursiveAddPoint(group, p);
@@ -210,6 +210,15 @@ namespace Go
                 if (this.MoveGroup == null) return 0;
                 return this.MoveGroup.Liberties.Count;
             }
+        }
+
+        /// <summary>
+        /// Get move liberties.
+        /// </summary>
+        public List<Point> GetMoveLiberties(Point? p = null)
+        {
+            if (p == null) p = this.Move.Value;
+            return GetStoneNeighbours(p).Where(n => this[n] == Content.Empty).ToList();
         }
 
         /// <summary>
@@ -320,7 +329,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get distinct groups from list of points.
+        /// Get groups from points.
         /// </summary>
         public HashSet<Group> GetGroupsFromPoints(List<Point> points)
         {
@@ -346,7 +355,7 @@ namespace Go
 
 
         /// <summary>
-        /// Clear board for captured groups.
+        /// Capture.
         /// </summary>
         private List<Group> Capture(IEnumerable<Group> captures)
         {
@@ -472,14 +481,13 @@ namespace Go
         }
 
         /// <summary>
-        /// Find atari targets for last move on board and set to AtariTargets.
+        /// Find atari.
         /// </summary>
         public static List<Group> FindAtari(Board board)
         {
             Point move = board.Move.Value;
             Content c = board[move];
 
-            //set atari targets in board 
             board.AtariTargets = board.GetGroupsFromStoneNeighbours(move, c).Where(n => n.Liberties.Count == 1).ToList();
             return board.AtariTargets;
         }
@@ -495,7 +503,7 @@ namespace Go
             if (tryBoard.CapturedList.Any(n => currentBoard.GetNeighbourGroups(n).Any(g => g.Liberties.Count == 1)))
                 return true;
 
-            //check neighbour points with group liberty increased from one.
+            //check group liberty
             if (tryBoard.MoveGroupLiberties == 1) return false;
             HashSet<Group> groups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite());
             if (groups.Any(n => n.Liberties.Count == 1))

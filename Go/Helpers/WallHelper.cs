@@ -103,6 +103,9 @@ namespace Go
             return true;
         }
 
+        /// <summary>
+        /// Is strong group.
+        /// </summary>
         public static Boolean IsStrongGroup(Board board, Group group = null)
         {
             if (group == null) group = board.MoveGroup;
@@ -112,6 +115,9 @@ namespace Go
             return true;
         }
 
+        /// <summary>
+        /// Strong neighbour groups.
+        /// </summary>
         public static Boolean StrongNeighbourGroups(Board board, Point move, Content c)
         {
             HashSet<Group> ngroups = board.GetGroupsFromStoneNeighbours(move, c);
@@ -126,9 +132,9 @@ namespace Go
         }
 
         /// <summary>
-        /// Hostile neighbour group with two liberties that are suicidal to opponent.
+        /// Is hostile group. Two liberties suicidal to opponent.
         /// </summary>
-        public static Boolean IsHostileNeighbourGroup(Board board, Group group = null)
+        public static Boolean IsHostileGroup(Board board, Group group = null)
         {
             if (group == null) group = board.MoveGroup;
             else group = board.GetCurrentGroup(group);
