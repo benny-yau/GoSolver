@@ -718,6 +718,11 @@
             Connect and die for move group <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_GuanZiPu_A3" />
             </summary>
         </member>
+        <member name="M:Go.ImmovableHelper.PrecheckNotSuicidal(Go.Board,Go.Point,Go.Content)">
+            <summary>
+            Precheck not suicidal.
+            </summary>
+        </member>
         <member name="M:Go.ImmovableHelper.IsSuicidalMove(Go.Board,Go.Point,Go.Content,System.Boolean)">
             <summary>
             Is suicidal move.
@@ -837,19 +842,24 @@
             Two pre-atari moves <see cref="!:UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_Scenario_Corner_A55" />
             </summary>
         </member>
+        <member name="M:Go.KillerFormationHelper.IsKillerFormationFromFunc(Go.Board,Go.Group)">
+            <summary>
+            Is killer formation from func.
+            </summary>
+        </member>
         <member name="M:Go.KillerFormationHelper.DeadFormationInBothAlive(Go.Board,Go.Group,System.Int32,System.Int32)">
             <summary>
-            Formations that are essentially dead and do not require a pass move to test for both alive.
+            Dead formation in both alive.
             </summary>
         </member>
         <member name="M:Go.KillerFormationHelper.TryKillFormation(Go.Board,Go.Content,System.Collections.Generic.List{Go.Point},System.Int32)">
             <summary>
-            Make move at each of the empty points to test if formation created.
+            Try kill formation. Make move at each of the empty points to test if formation created.
             </summary>
         </member>
         <member name="M:Go.KillerFormationHelper.SuicidalKillerFormations(Go.Board,Go.Board,Go.Board)">
             <summary>
-            Suicidal killer formations within survival group without any real eye.
+            Suicidal killer formations.
             Check suicide at eye point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B19" />
             Check if real eye found in neighbour groups <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario5dan27" />
             Check covered eye at non-killable group <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
@@ -867,7 +877,7 @@
         </member>
         <member name="M:Go.KillerFormationHelper.CheckRealEyeInNeighbourGroups(Go.Board,Go.Board)">
             <summary>
-            Check if real eye found in neighbour groups.
+            Check real eye in neighbour groups.
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_3" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18472" />
             Check for corner six <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
@@ -876,6 +886,7 @@
         </member>
         <member name="M:Go.KillerFormationHelper.FindSuicidalKillerFormation(Go.Board,Go.Board,Go.Board)">
             <summary>
+            Find suicidal killer formation.
             Two-point move with empty point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A48" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17250" />
@@ -909,7 +920,7 @@
         </member>
         <member name="M:Go.KillerFormationHelper.CheckRedundantKillGroupExtension(Go.Board,Go.Board)">
             <summary>
-            Redundant extension of kill group.
+            Check redundant kill group extension.
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A8" />
             <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A113" />
             Empty point neighbour <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_8" />
@@ -939,14 +950,14 @@
         </member>
         <member name="M:Go.KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(Go.Board)">
             <summary>
-            Suicide move with one empty space surrounded by opponent stones.
+            Suicide move valid with one empty space, surrounded by opponent stones.
             Move group with three points <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario1kyu29" />
             Move group binding <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B19_2" />
             </summary>
         </member>
         <member name="M:Go.KillerFormationHelper.IsLinkToExternalGroup(Go.Board,Go.Board,Go.Board)">
             <summary>
-            Ensure link is connected to both stones from previous move group and to external group.
+            Is link to external group.
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16520_2" />
             Check connect and die <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30403" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi_2" />
@@ -998,7 +1009,7 @@
         </member>
         <member name="M:Go.KillerFormationHelper.OnePointAtariMove(Go.Board,Go.Board)">
             <summary>
-            Check one point atari move
+            One point atari move.
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31672" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31428" />
             </summary>
@@ -1384,15 +1395,15 @@
         <member name="M:Go.RedundantMoveHelper.FindPotentialEye(Go.GameTryMove)">
             <summary>
             Find potential eye. 
-            Check for killer formations 
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113_2" />
+            Check for killer formations <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113_2" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A18" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.EyeDoubleAtari(Go.GameTryMove)">
             <summary>
-            Eye double atari <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20250326_8" /> 
+            Eye double atari.
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20250326_8" /> 
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.RedundantCoveredEyeMove(Go.GameTryMove)">
@@ -1404,7 +1415,7 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.FindCoveredEyeMove(Go.GameTryMove,Go.GameTryMove)">
             <summary>
-            Find covered eye.
+            Find covered eye move.
             Check eye for survival <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q29277" /> 
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_B25" /> 
             Check kill opponent <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A34" />
@@ -1444,7 +1455,7 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.AtariRedundantMove(Go.GameTryMove)">
             <summary>
-            Redundant atari move.
+            Atari redundant move.
             <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A9_Ext" />
             One liberty move group <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A68" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16748" />
@@ -1466,7 +1477,7 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.MoveWithinNonKillableGroup(Go.GameTryMove,Go.GameTryMove)">
             <summary>
-            Suicidal move within non killable group.
+            Move within non killable group.
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3kyu28_2" />
             Check for negligible in opponent move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" />
             Check any is non killable <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30370" />
@@ -1484,8 +1495,6 @@
             <summary>
             Multi point opponent suicidal move.
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A26" />
-            Check weak group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14916_2" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A67" />
             Check for suicide at big tiger mouth <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A55_2" />
             Check for both alive <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_TianLongTu_Q16827" />
             Check link for groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B35" />
@@ -1504,16 +1513,17 @@
         <member name="M:Go.RedundantMoveHelper.CheckWeakGroupInOpponentSuicide(Go.Board,Go.Group)">
             <summary>
             Check weak group in opponent suicide.
-            <see cref = "!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16604_3" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16604_4" />
+            Check weak group <see cref = "!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16604_3" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B32_2" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A67_3" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14916_2" />
             Check suicidal for both <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A67_3" />
+            Continue escape <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A14" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SuicidalConnectAndDie(Go.GameTryMove)">
             <summary>
-            Check for connect and die moves. <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738" />
+            Suicidal connect and die. 
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738" />
             Check capture moves <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A75_101Weiqi" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.CheckForRecursionTest_Scenario_Corner_B41" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113_3" />
@@ -1525,14 +1535,19 @@
         <member name="M:Go.RedundantMoveHelper.RedundantOnePointMoveInConnectAndDie(Go.GameTryMove,Go.Board)">
             <summary>
             Redundant one point move in connect and die.
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_4" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3_3" />
+            Check move next to covered point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17132_4" />
             Ensure killer group contains only try move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16594" />
             Ensure all strong neighbour groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_7" />
+            Cut diagonal and kill <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_3" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17081_2" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A61" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_20230603_4" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckWeakGroup(Go.Board,Go.Group)">
             <summary>
-            Check for weak group with two or less liberties in connect and die.
+            Check weak group.
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_x" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B6" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B17" />
@@ -1546,7 +1561,8 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.FindBloatedEyeSuicide(Go.GameTryMove,Go.Board)">
             <summary>
-            Find bloated eye suicide <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_GuanZiPu_A35" />
+            Find bloated eye suicide.
+            <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_GuanZiPu_A35" />
             Check killer formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113_4" />
             Check reverse ko fight <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A30" />
             Check for eye at corner point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A67_2" />
@@ -1570,7 +1586,7 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckDiagonalForSuicidalConnectAndDie(Go.GameTryMove,Go.Board)">
             <summary>
-            Check for suicidal moves depending on diagonal groups.
+            Check diagonal for suicidal connect and die.
             Ensure no diagonal at move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18796_2" />
             Ensure no diagonal groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A55" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
@@ -1579,19 +1595,12 @@
             <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q15082" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16748" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" />
-            Stone neighbours at diagonal of each other <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q2757" />
-            Check diagonal at opposite corner of stone neighbours <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31493" />
-            Cut diagonal and kill <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_3" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17081_2" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A61" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_20230603_4" />
-            Check move next to covered point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17132_4" />
-            Check killer move non killable group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31563" />
+            Check non killable group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31563" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckNoDiagonalAndNoLibertyAtMove(Go.GameTryMove,Go.Board)">
             <summary>
-            Check for no diagonals and no liberties at move.
+            Check no diagonal and liberty at move.
             Ensure no liberties <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
             Check for three neighbour groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30198" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16605" />
@@ -1600,7 +1609,7 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.SinglePointSuicidalMove(Go.GameTryMove,Go.GameTryMove)">
             <summary>
-            Single point suicide.
+            Single point suicidal move.
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SuicideWithinRealEye(Go.GameTryMove,Go.Board)">
@@ -1621,7 +1630,7 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckNonTwoPointGroupInSuicideRealEye(Go.GameTryMove,Go.Board)">
             <summary>
-            Check for non two-point group.
+            Check non two-point group in suicide real eye.
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B31_3" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario4dan17_2" />
             Check eye groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31536" />
@@ -1630,7 +1639,7 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckTwoPointGroupInSuicideRealEye(Go.GameTryMove,Go.Board)">
             <summary>
-            Check for two-point group.
+            Check two-point group in suicide real eye.
             Check connect and die <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q15126" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_1887" />
             Check for liberty fight <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18796" />
@@ -1653,7 +1662,8 @@
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CornerPointSuicide(Go.GameTryMove,Go.Board)">
-            Check corner point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A26_2" />
+            Corner point suicide.
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A26_2" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_5" />
             One point target <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A84_2" />
             <see cref="!:UnitTestProject.KoTest.KoTest_Scenario_WuQingYuan_Q31680" />
@@ -1662,7 +1672,7 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.MultiPointSuicidalMove(Go.GameTryMove)">
             <summary>
-            Multi point suicide move.
+            Multi point suicidal move.
             Captured more than move group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A42" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31682" />
             Four-point group scenario <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16604" />
@@ -1682,7 +1692,7 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.SurvivalLeapMove(Go.GameTryMove)">
             <summary>
-            Leap moves are moves two spaces away from the closest neighbour stone of same content.
+            Survival leap move.
             <see cref="!:UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_XuanXuanQiJing_A1" />
             Check non killable group <see cref="!:UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_XuanXuanGo_A23" />
             Check for kill move by survival <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_GuanZiPu_B3" />
@@ -1691,13 +1701,13 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.NeutralPointSurvivalMove(Go.GameTryMove,Go.GameTryMove)">
             <summary>
-            Neutral points are moves that cannot create eye for the survival group. 
+            Neutral point survival move. Survival group cannot create eye. 
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WuQingYuan_Q30935" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.NeutralPointKillMove(Go.GameTryMove)">
             <summary>
-            Neutral point kill moves - Check if neutral point from point of view of survival
+            Neutral point kill move.
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_B12_2" />
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_Q18500_2" />
             </summary>
@@ -1760,7 +1770,7 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.RestoreNeutralMove(Go.Game,System.Collections.Generic.List{Go.GameTryMove},System.Collections.Generic.List{Go.GameTryMove})">
             <summary>
-            Neutral points for kill moves have to be restored on end game in order to kill survival group.
+            Restore neutral move. Move restored on end game to kill survival group.
             No try moves left <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Side_A20" />
             </summary>
         </member>
@@ -1788,6 +1798,7 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.IsImmovableKill(Go.Game,System.Collections.Generic.List{Go.Group})">
             <summary>
+            Is immovable kill.
             Conditions for specific kill with immovable points. <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_A54" />
             Covered eye liberty <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_A54_3" />
             One liberty <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827_4" />
@@ -1941,7 +1952,8 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.RedundantSurvivalKoMove(Go.GameTryMove)">
             <summary>
-            Redundant survival ko moves <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
+            Redundant survival ko move.
+            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_SimpleSeki" />
             </summary>
         </member>
@@ -1967,7 +1979,7 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.FindRealEyeAtDiagonal(System.Collections.Generic.List{Go.Point},Go.Board,Go.Content)">
             <summary>
-            Real eye at diagonal.
+            Find real eye at diagonal.
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" /> 
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_2" /> 
             Three point real eye <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30188" /> 
@@ -2079,9 +2091,19 @@
             Strong groups.
             </summary>
         </member>
+        <member name="M:Go.WallHelper.IsStrongGroup(Go.Board,Go.Group)">
+            <summary>
+            Is strong group.
+            </summary>
+        </member>
+        <member name="M:Go.WallHelper.StrongNeighbourGroups(Go.Board,Go.Point,Go.Content)">
+            <summary>
+            Strong neighbour groups.
+            </summary>
+        </member>
         <member name="M:Go.WallHelper.IsHostileGroup(Go.Board,Go.Group)">
             <summary>
-            Hostile group with two liberties that are suicidal to opponent.
+            Is hostile group. Two liberties suicidal to opponent.
             </summary>
         </member>
         <member name="M:Go.WallHelper.TargetWithAllNonKillableGroups(Go.Board,Go.Group)">
