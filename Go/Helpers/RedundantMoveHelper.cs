@@ -561,7 +561,7 @@ namespace Go
             Board b = ImmovableHelper.MakeMoveAtLiberty(tryBoard, atariTarget);
             if (b == null) return false;
             //check weak group
-            if (AtariHelper.IsWeakNeighbourGroup(b, b.MoveGroup))
+            if (AtariHelper.IsWeakNeighbourGroup(b))
                 return true;
             //check suicidal for both
             List<Point> liberties = b.GetGroupLiberties(atariTarget);
@@ -668,6 +668,7 @@ namespace Go
             List<Point> npoints = LinkHelper.GetDiagonalPoints(tryBoard);
             if (npoints.Count == 2)
             {
+                //opponent at stone and diagonal
                 HashSet<Group> ngroups = tryBoard.GetGroupsFromPoints(npoints);
                 if (ngroups.Count == 1)
                     return true;
@@ -677,6 +678,16 @@ namespace Go
                 q.Remove(move);
                 Boolean suicidalAtDiagonal = tryBoard[q.First()] == Content.Empty && ImmovableHelper.IsSuicidalMove(tryBoard, q.First(), c, true);
                 if (suicidalAtDiagonal && ngroups.All(n => WallHelper.IsStrongGroup(tryBoard, n)))
+                    return true;
+            }
+
+            //empty points at stone and diagonal
+            List<Point> epoints = LinkHelper.GetDiagonalPoints(tryBoard, move, Content.Empty);
+            if (epoints.Count == 2)
+            {
+                List<Point> q = LinkHelper.PointsBetweenDiagonals(epoints[0], epoints[1]);
+                q.Remove(move);
+                if (tryBoard[q.First()] == Content.Empty && tryBoard.GetGroupsFromStoneNeighbours().Count == 1)
                     return true;
             }
 
@@ -693,16 +704,16 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B6" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B17" />
         /// </summary>
-        private static Boolean CheckWeakGroup(Board tryBoard, Group targetGroup)
+        private static Boolean CheckWeakGroup(Board tryBoard, Group group = null)
         {
-            Group group = tryBoard.GetCurrentGroup(targetGroup);
-
+            if (group == null) group = tryBoard.MoveGroup;
+            else group = tryBoard.GetCurrentGroup(group);
             //capture move
             (_, Board b) = ImmovableHelper.ConnectAndDie(tryBoard, group, false);
             if (b == null || b.MoveGroupLiberties == 1 || b.IsCapturedGroup(group)) return false;
 
             //check weak group
-            if (AtariHelper.IsWeakNeighbourGroup(b, b.GetCurrentGroup(group)))
+            if (AtariHelper.IsWeakNeighbourGroup(b, group))
                 return true;
 
             //escape move at liberty
@@ -717,7 +728,7 @@ namespace Go
                 Group target = b3.GetCurrentGroup(group);
                 if (target.Liberties.Count == 2 && CheckWeakGroup(b3, target))
                     return true;
-                if (!b3.MoveGroup.Equals(target) && AtariHelper.IsWeakNeighbourGroup(b, b3.MoveGroup))
+                if (!b3.MoveGroup.Equals(target) && AtariHelper.IsWeakNeighbourGroup(b3))
                     return true;
             }
             return false;
@@ -734,7 +745,7 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             if (!tryBoard.GetMoveLiberties().Any() && !Board.ResolveAtari(currentBoard, tryBoard))
                 return false;
-            if (CheckWeakGroup(tryBoard, tryBoard.MoveGroup))
+            if (CheckWeakGroup(tryBoard))
                 return true;
 
             //check three liberty weak group
@@ -911,7 +922,7 @@ namespace Go
                 return false;
 
             //ensure no diagonal at move
-            if (LinkHelper.GetMoveDiagonals(tryBoard).Any()) 
+            if (LinkHelper.GetMoveDiagonals(tryBoard).Any())
                 return false;
 
             //check for three neighbour groups

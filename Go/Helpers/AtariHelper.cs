@@ -84,12 +84,14 @@ namespace Go
         /// <summary>
         /// Is weak neighbour group.
         /// </summary>
-        public static Boolean IsWeakNeighbourGroup(Board tryBoard, Group suicideGroup)
+        public static Boolean IsWeakNeighbourGroup(Board tryBoard, Group group = null)
         {
-            if (WallHelper.IsNonKillableFromSetupMoves(tryBoard, suicideGroup))
+            if (group == null) group = tryBoard.MoveGroup;
+            else group = tryBoard.GetCurrentGroup(group);
+            if (WallHelper.IsNonKillableFromSetupMoves(tryBoard, group))
                 return false;
 
-            if (tryBoard.GetNeighbourGroups(suicideGroup).Any(n => IsWeakGroup(tryBoard, n)))
+            if (tryBoard.GetNeighbourGroups(group).Any(n => IsWeakGroup(tryBoard, n)))
                 return true;
             return false;
         }

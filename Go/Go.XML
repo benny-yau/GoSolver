@@ -424,11 +424,6 @@
             Find covered eye within empty space after capture.
             </summary>
         </member>
-        <member name="M:Go.EyeHelper.CheckCoveredEyeAtSuicideGroup(Go.Board,Go.Group)">
-            <summary>
-            Check covered eye at suicide group.
-            </summary>
-        </member>
         <member name="M:Go.EyeHelper.FindNonSemiSolidEye(Go.Board,Go.Point,Go.Content)">
             <summary>
             Find non semi solid eye.
@@ -854,7 +849,7 @@
         </member>
         <member name="M:Go.KillerFormationHelper.TryKillFormation(Go.Board,Go.Content,System.Collections.Generic.List{Go.Point},System.Int32)">
             <summary>
-            Try kill formation. Make move at each of the empty points to test if formation created.
+            Try kill formation. Make move at each liberty to test if formation created.
             </summary>
         </member>
         <member name="M:Go.KillerFormationHelper.SuicidalKillerFormations(Go.Board,Go.Board,Go.Board)">
@@ -990,11 +985,12 @@
             Ko move on external liberty <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221024_5" />
             </summary>
         </member>
-        <member name="M:Go.KillerFormationHelper.TwoPointSuicideAtCoveredEye(Go.Board,Go.Board)">
+        <member name="M:Go.KillerFormationHelper.TwoPointSuicideAtCoveredEye(Go.Board)">
             <summary>
             Two-point suicide at covered eye. 
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31469" />
-            Make move at the other empty point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B57" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B57" />
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20250420_7" />
             </summary>
         </member>
         <member name="M:Go.KillerFormationHelper.TwoPointAtariMove(Go.Board,Go.Board)">

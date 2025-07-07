@@ -48,6 +48,8 @@ namespace Go
             List<Point> emptyPoints = killerGroup.Points.Where(t => board[t] == Content.Empty).ToList();
             if (emptyPoints.Count != libertyCount)
                 return false;
+            if (emptyPoints.Any(n => !board.GetStoneNeighbours(n).Any(s => board[s] == c)))
+                return false;
 
             if (TryKillFormation(board, c, emptyPoints, requiredCount))
                 return true;
@@ -55,13 +57,12 @@ namespace Go
         }
 
         /// <summary>
-        /// Try kill formation. Make move at each of the empty points to test if formation created.
+        /// Try kill formation. Make move at each liberty to test if formation created.
         /// </summary>
         public static Boolean TryKillFormation(Board board, Content c, List<Point> emptyPoints, int requiredCount = 1)
         {
             int count = 0;
-            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, emptyPoints, c);
-            foreach (Board b in moveBoards)
+            foreach (Board b in GameHelper.GetMoveBoards(board, emptyPoints, c))
             {
                 if (IsKillerFormationFromFunc(b))
                 {
@@ -238,8 +239,8 @@ namespace Go
                     return true;
 
                 //covered eye
-                if (EyeHelper.CheckCoveredEyeAtSuicideGroup(tryBoard))
-                    return TwoPointSuicideAtCoveredEye(captureBoard, tryBoard);
+                if (TwoPointSuicideAtCoveredEye(tryBoard))
+                    return true;
 
                 //two-point move with empty point
                 if (tryBoard.GetMoveLiberties().Any())
@@ -541,31 +542,15 @@ namespace Go
         /// <summary>
         /// Two-point suicide at covered eye. 
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31469" />
-        /// Make move at the other empty point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B57" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B57" />
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20250420_7" />
         /// </summary>
-        public static Boolean TwoPointSuicideAtCoveredEye(Board capturedBoard, Board tryBoard)
+        public static Boolean TwoPointSuicideAtCoveredEye(Board tryBoard)
         {
-            if (capturedBoard == null || tryBoard == null) return false;
-            Point move = tryBoard.Move.Value;
-            Content c = capturedBoard.MoveGroup.Content;
+            Content c = tryBoard.MoveGroup.Content;
             if (tryBoard.MoveGroup.Points.Count != 2) return false;
-            foreach (Group group in capturedBoard.CapturedList)
-            {
-                if (group.Points.Count != 2) continue;
-                //make move again at last move
-                Board b = capturedBoard.MakeMoveOnNewBoard(move, c.Opposite());
-                if (b == null) continue;
-                //capture move and find covered eye
-                if (EyeHelper.FindCoveredEyeByCapture(b))
-                    return true;
-                if (!tryBoard.GetMoveLiberties().Any()) continue;
-                //make move at the other empty point
-                Point move2 = group.Points.First(p => !p.Equals(move));
-                Board b2 = capturedBoard.MakeMoveOnNewBoard(move2, c.Opposite());
-                if (b2 == null) continue;
-                if (EyeHelper.FindCoveredEyeByCapture(b2))
-                    return true;
-            }
+            if (tryBoard.MoveGroup.Points.Any(p => EyeHelper.IsCovered(tryBoard, p, c.Opposite())))
+                return true;
             return false;
         }
 
