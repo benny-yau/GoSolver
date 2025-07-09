@@ -664,8 +664,7 @@ namespace Go
             if (!WallHelper.StrongNeighbourGroups(captureBoard, move, c))
                 return false;
 
-            //stone neighbours at diagonal of each other
-            List<Point> npoints = LinkHelper.GetDiagonalPoints(tryBoard);
+            List<Point> npoints = LinkHelper.GetDiagonalsAtStoneNeighbours(tryBoard);
             if (npoints.Count == 2)
             {
                 //opponent at stone and diagonal
@@ -682,7 +681,7 @@ namespace Go
             }
 
             //empty points at stone and diagonal
-            List<Point> epoints = LinkHelper.GetDiagonalPoints(tryBoard, move, Content.Empty);
+            List<Point> epoints = LinkHelper.GetDiagonalsAtStoneNeighbours(tryBoard, move, Content.Empty);
             if (epoints.Count == 2)
             {
                 List<Point> q = LinkHelper.PointsBetweenDiagonals(epoints[0], epoints[1]);
@@ -1529,7 +1528,6 @@ namespace Go
             neutralPointMoves.RemoveAll(n => n.MoveGroupLiberties == 1);
             neutralPointMoves.RemoveAll(n => !n.TryGame.Board.GetStoneAndDiagonalNeighbours().Any(s => n.TryGame.Board[s] == c.Opposite()));
             if (neutralPointMoves.Count == 0) return;
-            GameTryMove genericNeutralMove = null;
             //specific neutral point
             GameTryMove specificNeutralMove = GetSpecificNeutralMove(g, neutralPointMoves);
             if (specificNeutralMove != null)
@@ -1553,7 +1551,7 @@ namespace Go
                 if (!preAtariAdded)
                 {
                     //generic neutral point
-                    genericNeutralMove = GetGenericNeutralMove(g, neutralPointMoves);
+                    GameTryMove genericNeutralMove = GetGenericNeutralMove(g, neutralPointMoves);
                     if (genericNeutralMove != null)
                     {
                         tryMoves.Add(genericNeutralMove);
@@ -1601,9 +1599,9 @@ namespace Go
 
         /// <summary>
         /// Suicide group near capture.
-        /// <see cref="UnitTestProject.NeutralPointMoveTest.RestoreNeutralMoveTest_Scenario_Corner_B21" /> 
-        /// <see cref="UnitTestProject.NeutralPointMoveTest.RestoreNeutralMoveTest_Scenario_WuQingYuan_Q6150" /> 
-        /// <see cref="UnitTestProject.NeutralPointMoveTest.RestoreNeutralMoveTest_Scenario_TianLongTu_Q16490" /> 
+        /// <see cref="UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario_Corner_B21" /> 
+        /// <see cref="UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario_WuQingYuan_Q6150" /> 
+        /// <see cref="UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario_TianLongTu_Q16490" /> 
         /// </summary>
         private static Boolean SuicideGroupNearCapture(Board board)
         {
@@ -1662,9 +1660,9 @@ namespace Go
 
         /// <summary>
         /// Specific kill with immovable points.
-        /// Survival group has liberty less or equals to two <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario5dan27" />
+        /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario5dan27" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16735" />
-        /// At least one liberty shared with killer group <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_A54_2" />
+        /// One shared liberty <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_A54_2" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_A54" />
         /// Check one liberty group <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B51_2" />
         /// </summary>
@@ -1679,12 +1677,13 @@ namespace Go
             {
                 GameTryMove neutralPointMove = neutralPointMoves[i];
                 Board tryBoard = neutralPointMove.TryGame.Board;
-                IEnumerable<Group> targetGroups = tryBoard.GetGroupsFromStoneNeighbours();
-                foreach (Group group in targetGroups)
+                foreach (Group group in tryBoard.GetGroupsFromStoneNeighbours())
                 {
                     if (groups.Contains(group)) continue;
                     groups.Add(group);
                     if (group.Liberties.Count != 2) continue;
+
+                    //shared liberty within killer group
                     List<Point> sharedLiberties = group.Liberties.Intersect(killerLiberties).ToList();
                     if (!(sharedLiberties.Count >= 1 && sharedLiberties.Count <= 2)) continue;
                     if (sharedLiberties.All(p => ImmovableHelper.IsSuicidalMove(tryBoard, p, c.Opposite())))

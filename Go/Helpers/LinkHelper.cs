@@ -328,10 +328,9 @@ namespace Go
             foreach (Point p in group.Points)
             {
                 if (board[p] != c) continue;
-                foreach (Point q in board.GetDiagonalNeighbours(p))
+                foreach (Point q in GetDiagonalPoint(board, p))
                 {
                     if (board[q] != c) continue;
-                    if (PointsBetweenDiagonals(p, q).Any(r => board[r] == c)) continue;
                     if (board.GetGroupAt(p) == board.GetGroupAt(q)) continue;
 
                     //ensure diagonal is linked
@@ -356,16 +355,21 @@ namespace Go
         public static List<LinkedPoint<Point>> GetGroupDiagonals(Board board, Group group)
         {
             List<LinkedPoint<Point>> rc = new List<LinkedPoint<Point>>();
-            Content c = group.Content;
             foreach (Point p in group.Points)
             {
-                foreach (Point q in board.GetDiagonalNeighbours(p))
-                {
-                    if (PointsBetweenDiagonals(p, q).Any(r => board[r] == c)) continue;
+                foreach (Point q in GetDiagonalPoint(board, p))
                     rc.Add(new LinkedPoint<Point>(q, p));
-                }
             }
             return rc;
+        }
+
+        /// <summary>
+        /// Get diagonal point.
+        /// </summary>
+        public static List<Point> GetDiagonalPoint(Board board, Point p)
+        {
+            Content c = board[p];
+            return board.GetDiagonalNeighbours(p).Where(q => !PointsBetweenDiagonals(p, q).Any(r => board[r] == c)).ToList();
         }
 
         /// <summary>
@@ -575,10 +579,9 @@ namespace Go
         }
 
         /// <summary>
-        /// Get diagonal points.
+        /// Get diagonals at stone neighbours.
         /// </summary>
-
-        public static List<Point> GetDiagonalPoints(Board board, Point? p = null, Content c = Content.Unknown)
+        public static List<Point> GetDiagonalsAtStoneNeighbours(Board board, Point? p = null, Content c = Content.Unknown)
         {
             if (p == null)
             {
@@ -744,7 +747,7 @@ namespace Go
         {
             Point move = b.Move.Value;
             Content c = b.MoveGroup.Content;
-            List<Point> npoints = LinkHelper.GetDiagonalPoints(b);
+            List<Point> npoints = LinkHelper.GetDiagonalsAtStoneNeighbours(b);
             List<Point> diagonals = b.GetDiagonalNeighbours().Where(n => b[n] == Content.Empty && b.GetStoneNeighbours(n).Intersect(npoints).Count() >= 2).ToList();
             if (!diagonals.Any()) return false;
             foreach (Point d in diagonals)

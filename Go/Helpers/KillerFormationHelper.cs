@@ -64,12 +64,10 @@ namespace Go
             int count = 0;
             foreach (Board b in GameHelper.GetMoveBoards(board, emptyPoints, c))
             {
-                if (IsKillerFormationFromFunc(b))
-                {
-                    count++;
-                    if (count >= requiredCount)
-                        return true;
-                }
+                if (!IsKillerFormationFromFunc(b)) continue;
+                count++;
+                if (count >= requiredCount)
+                    return true;
             }
             return false;
         }
@@ -391,16 +389,13 @@ namespace Go
         public static Boolean WholeGroupDying(Board tryBoard)
         {
             Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.MoveGroupLiberties == 1 && tryBoard.IsAtariMove)
-            {
-                List<Group> ngroups = tryBoard.GetNeighbourGroups();
-                if (ngroups.Count != 1) return false;
-                Point liberty = tryBoard.MoveGroup.Liberties.First();
-                if (tryBoard.GetGroupsFromStoneNeighbours(liberty, c).Except(ngroups).Any()) return false;
-                if (tryBoard.GetStoneNeighbours(liberty).Except(tryBoard.MoveGroup.Points).All(n => tryBoard[n] == c.Opposite()))
-                    return true;
-            }
-            return false;
+            if (tryBoard.MoveGroupLiberties != 1 || !tryBoard.IsAtariMove) return false;
+            List<Group> ngroups = tryBoard.GetNeighbourGroups();
+            if (ngroups.Count != 1) return false;
+            Point liberty = tryBoard.MoveGroup.Liberties.First();
+            if (tryBoard.GetGroupsFromStoneNeighbours(liberty, c).Except(ngroups).Any()) return false;
+            if (tryBoard.GetGroupsFromStoneNeighbours(liberty, c.Opposite()).Any(n => !n.Equals(tryBoard.MoveGroup))) return false;
+            return true;
         }
 
         /// <summary>
@@ -729,7 +724,7 @@ namespace Go
             IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
             if (pointIntersect.Count(p => p.intersectCount == 2) == 2)
             {
-                if (contentPoints.GroupBy(p => p.x).Where(gr => gr.Count() == 2).Count() == 2 || contentPoints.GroupBy(p => p.y).Where(gr => gr.Count() == 2).Count() == 2)
+                if (contentPoints.GroupBy(p => p.x).Count(gr => gr.Count() == 2) == 2 || contentPoints.GroupBy(p => p.y).Count(gr => gr.Count() == 2) == 2)
                     return true;
             }
             return false;
@@ -764,7 +759,7 @@ namespace Go
             IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
             if (pointIntersect.Count(p => p.intersectCount == 2) == 2)
             {
-                if (contentPoints.GroupBy(p => p.x).Where(gr => gr.Count() == 3).Count() == 1 || contentPoints.GroupBy(p => p.y).Where(gr => gr.Count() == 3).Count() == 1)
+                if (contentPoints.GroupBy(p => p.x).Count(gr => gr.Count() == 3) == 1 || contentPoints.GroupBy(p => p.y).Count(gr => gr.Count() == 3) == 1)
                     return true;
             }
             return false;
@@ -800,7 +795,6 @@ namespace Go
         {
             if (CrowbarFormation(tryBoard, moveGroup))
             {
-                Content c = moveGroup.Content;
                 if (tryBoard.GetNeighbourGroups(moveGroup).Count <= 1) return false;
                 //check end point covered
                 if (CheckAnyEndPointCovered(tryBoard, moveGroup))
@@ -836,7 +830,6 @@ namespace Go
          */
         public static Boolean KnifeFiveFormation(Board tryBoard, Group moveGroup)
         {
-            Content c = moveGroup.Content;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 5) return false;
             //knife five formation
@@ -861,7 +854,6 @@ namespace Go
          */
         public static Boolean FlowerSixFormation(Board tryBoard, Group moveGroup)
         {
-            Content c = moveGroup.Content;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 6) return false;
             IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
@@ -884,7 +876,6 @@ namespace Go
          */
         public static Boolean OddSevenFormation(Board tryBoard, Group moveGroup)
         {
-            Content c = moveGroup.Content;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 7) return false;
 
@@ -912,7 +903,6 @@ namespace Go
          */
         public static Boolean FlowerSevenFormation(Board tryBoard, Group moveGroup)
         {
-            Content c = moveGroup.Content;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 7) return false;
             IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
@@ -940,7 +930,6 @@ namespace Go
         public static Boolean KnifeSixFormation(Board tryBoard, Group moveGroup)
         {
             //includes two-by-four formation
-            Content c = moveGroup.Content;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 6) return false;
             IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
@@ -962,7 +951,6 @@ namespace Go
         public static Boolean BentFiveFormation(Board tryBoard, Group moveGroup)
         {
             //includes T formation, one-by-four formation
-            Content c = moveGroup.Content;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 5) return false;
 
@@ -983,7 +971,6 @@ namespace Go
         public static Boolean CrowbarFiveFormation(Board tryBoard, Group moveGroup)
         {
             //includes three-by-two side formation
-            Content c = moveGroup.Content;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 5) return false;
 
@@ -1008,18 +995,15 @@ namespace Go
         /// </summary>
         private static Boolean CheckAnyEndPointCovered(Board tryBoard, Group moveGroup)
         {
-            Content c = moveGroup.Content;
             if (moveGroup.Liberties.Count > 2) return false;
-            IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, moveGroup.Points);
-            List<Point> endPoints = pointIntersect.Where(p => p.intersectCount == 1).Select(p => (Point)p.point).ToList();
-            return endPoints.Any(q => EndPointCovered(q, tryBoard, moveGroup));
+            IEnumerable<dynamic> endPoints = GetPointIntersect(tryBoard, moveGroup.Points).Where(p => p.intersectCount == 1);
+            return endPoints.Any(q => EndPointCovered((Point)q.point, tryBoard, moveGroup));
         }
 
-        public static Boolean EndPointCovered(Point endPoint, Board tryBoard, Group moveGroup)
+        private static Boolean EndPointCovered(Point endPoint, Board tryBoard, Group moveGroup)
         {
             Content c = moveGroup.Content;
-            Point p = tryBoard.GetStoneNeighbours(endPoint).First(n => tryBoard[n] == c);
-            List<Point> diagonals = tryBoard.GetDiagonalNeighbours(endPoint).Where(d => !tryBoard.GetStoneNeighbours(p).Any(n => n.Equals(d))).ToList();
+            List<Point> diagonals = LinkHelper.GetDiagonalPoint(tryBoard, endPoint);
             if (diagonals.Count == 0) return false;
             if (moveGroup.Liberties.Count == 2)
             {
@@ -1031,14 +1015,9 @@ namespace Go
             {
                 if (diagonals.Any(d => tryBoard[d] != c)) return false;
                 //suicide move with one empty space or connect groups
-                if (tryBoard.Move != null && tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c) < 2 && !tryBoard.GetMoveLiberties().Any()) return false;
-
-                //get neighbour of end point
-                List<Point> nEndPoint = tryBoard.GetStoneNeighbours(endPoint).Where(n => tryBoard[n] != c && !tryBoard.GetDiagonalNeighbours(n).Intersect(moveGroup.Points).Any()).ToList();
-                if (nEndPoint.Count != 1) return false;
-                List<Point> nPoints = tryBoard.GetStoneNeighbours(nEndPoint.First());
-                if (nPoints.Count(n => tryBoard[n] == c) >= nPoints.Count - 1 && LinkHelper.GetDiagonalPoints(tryBoard, nEndPoint.First(), c).Any())
-                    return true;
+                if (tryBoard.Move != null && tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c) == 1 && !tryBoard.GetMoveLiberties().Any())
+                    return false;
+                return true;
             }
             return false;
         }
@@ -1053,7 +1032,6 @@ namespace Go
         {
             if (moveGroup == null) moveGroup = tryBoard.MoveGroup;
             else moveGroup = tryBoard.GetCurrentGroup(moveGroup);
-            Content c = moveGroup.Content;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 3 || tryBoard.MoveGroupLiberties != 1) return false;
             if (!contentPoints.Any(p => tryBoard.CornerPoint(p)) || contentPoints.Any(p => tryBoard.PointWithinMiddleArea(p))) return false;
@@ -1091,11 +1069,9 @@ namespace Go
         {
             if (moveGroup == null) moveGroup = tryBoard.MoveGroup;
             else moveGroup = tryBoard.GetCurrentGroup(moveGroup);
-            Content c = moveGroup.Content;
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 6) return false;
-            if (!contentPoints.Any(p => tryBoard.CornerPoint(p))) return false;
-            if (contentPoints.Where(p => tryBoard.PointWithinMiddleArea(p)).Count() != 1) return false;
+            if (!contentPoints.Any(p => tryBoard.CornerPoint(p)) || contentPoints.Where(p => tryBoard.PointWithinMiddleArea(p)).Count() != 1) return false;
             IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
             if (pointIntersect.Count(p => p.intersectCount == 3) != 2) return false;
             return (MaxLengthOfGrid(moveGroup.Points) == 2);
@@ -1125,8 +1101,7 @@ namespace Go
         /// </summary>
         public static IEnumerable<dynamic> GetPointIntersect(Board tryBoard, IEnumerable<Point> contentPoints)
         {
-            IEnumerable<dynamic> pointIntersect = contentPoints.Select(p => new { point = p, intersectCount = tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() });
-            return pointIntersect;
+            return contentPoints.Select(p => new { point = p, intersectCount = tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() });
         }
 
         /// <summary>
