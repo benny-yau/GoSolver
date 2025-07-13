@@ -1024,6 +1024,13 @@
             Three opponent stones at move.
             </summary>
         </member>
+        <member name="M:Go.KillerFormationHelper.ThreePointMoveBinding(Go.Board,Go.Board)">
+            <summary>
+            Three point move binding.
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29487" />
+            Check covered eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18402_2" />
+            </summary>
+        </member>
         <member name="M:Go.KillerFormationHelper.BentThreeSuicideAtCoveredEye(Go.Board,Go.Board)">
             <summary>
             Bent three suicide at covered eye.

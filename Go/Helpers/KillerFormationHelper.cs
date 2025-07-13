@@ -263,11 +263,11 @@ namespace Go
             }
             else if (moveCount == 3)
             {
-                //move group binding
-                if (tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c) > 1)
+                if (SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                     return true;
 
-                if (SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
+                //move group binding
+                if (ThreePointMoveBinding(tryBoard, currentBoard))
                     return true;
 
                 //corner three formation
@@ -622,6 +622,33 @@ namespace Go
                 if (diagonals.Any())
                     return true;
             }
+            return false;
+        }
+
+        /// <summary>
+        /// Three point move binding.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29487" />
+        /// Check covered eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18402_2" />
+        /// </summary>
+        public static Boolean ThreePointMoveBinding(Board tryBoard, Board currentBoard)
+        {
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            //move binding
+            if (tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c) == 1) return false;
+            //check diagonals
+            List<Point> epoints = LinkHelper.GetDiagonalsAtStoneNeighbours(tryBoard, move, c);
+            if (epoints.Count != 2) return true;
+            Point q = LinkHelper.PointsBetweenDiagonals(epoints[0], epoints[1]).First(n => !n.Equals(move));
+            if (tryBoard[q] != Content.Empty) return true;
+            //make move at other point
+            Board b = currentBoard.MakeMoveOnNewBoard(q, c);
+            Boolean isEye = EyeHelper.FindEye(currentBoard, q, c);
+            if (b.MoveGroupLiberties == 1 && !isEye)
+                return true;
+            //check covered eye
+            if (isEye && b.MoveGroup.Liberties.Any(n => EyeHelper.IsCovered(b, n, c)) && ImmovableHelper.CheckConnectAndDie(b))
+                return true;
             return false;
         }
 
@@ -1009,6 +1036,11 @@ namespace Go
             {
                 if (diagonals.Any(d => tryBoard[d] == c.Opposite())) return false;
                 if (tryBoard.GetMoveLiberties(endPoint).Any()) return false;
+                //check connect and die at end
+                List<Point> nEndPoint = tryBoard.GetStoneNeighbours(endPoint).Where(n => tryBoard[n] == c.Opposite() && !tryBoard.GetDiagonalNeighbours(n).Any(s => tryBoard[s] == c && tryBoard.GetGroupAt(s) == moveGroup)).ToList();
+                if (nEndPoint.Count != 1) return false;
+                if (!ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.GetGroupAt(nEndPoint.First()), false))
+                    return false;
                 return true;
             }
             else if (moveGroup.Liberties.Count == 1)

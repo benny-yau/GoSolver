@@ -222,8 +222,7 @@ namespace Go
             {
                 //check is immovable
                 if (diagonals.Any(d => ImmovableHelper.IsImmovablePoint(board, d, c))) return true;
-                IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, diagonals, c.Opposite(), true);
-                foreach (Board b in moveBoards)
+                foreach (Board b in GameHelper.GetMoveBoards(board, diagonals, c.Opposite(), true))
                 {
                     //make connection at other diagonal
                     Point q = diagonals.First(d => !d.Equals(b.Move.Value));
@@ -279,7 +278,6 @@ namespace Go
                 Board b = board.MakeMoveOnNewBoard(p, c.Opposite(), true);
                 if (b == null) continue;
                 opponentStones = b.GetStoneNeighbours(p).Where(n => b[n] == c).ToList();
-                if (b.GetGroupsFromPoints(opponentStones).Count < 3) continue;
                 if (!KillerFormationHelper.ThreeOpponentGroupsAtMove(b, p)) continue;
                 if (ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false)) continue;
 

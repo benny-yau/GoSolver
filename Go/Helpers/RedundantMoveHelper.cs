@@ -673,9 +673,8 @@ namespace Go
                     return true;
 
                 //cut diagonal and kill
-                List<Point> q = LinkHelper.PointsBetweenDiagonals(npoints[0], npoints[1]);
-                q.Remove(move);
-                Boolean suicidalAtDiagonal = tryBoard[q.First()] == Content.Empty && ImmovableHelper.IsSuicidalMove(tryBoard, q.First(), c, true);
+                Point q = LinkHelper.PointsBetweenDiagonals(npoints[0], npoints[1]).First(n => !n.Equals(move));
+                Boolean suicidalAtDiagonal = tryBoard[q] == Content.Empty && ImmovableHelper.IsSuicidalMove(tryBoard, q, c, true);
                 if (suicidalAtDiagonal && ngroups.All(n => WallHelper.IsStrongGroup(tryBoard, n)))
                     return true;
             }
@@ -684,9 +683,8 @@ namespace Go
             List<Point> epoints = LinkHelper.GetDiagonalsAtStoneNeighbours(tryBoard, move, Content.Empty);
             if (epoints.Count == 2)
             {
-                List<Point> q = LinkHelper.PointsBetweenDiagonals(epoints[0], epoints[1]);
-                q.Remove(move);
-                if (tryBoard[q.First()] == Content.Empty && tryBoard.GetGroupsFromStoneNeighbours().Count == 1)
+                Point q = LinkHelper.PointsBetweenDiagonals(epoints[0], epoints[1]).First(n => !n.Equals(move));
+                if (tryBoard[q] == Content.Empty && tryBoard.GetGroupsFromStoneNeighbours().Count == 1)
                     return true;
             }
 
@@ -710,6 +708,7 @@ namespace Go
             //capture move
             (_, Board b) = ImmovableHelper.ConnectAndDie(tryBoard, group, false);
             if (b == null || b.MoveGroupLiberties == 1 || b.IsCapturedGroup(group)) return false;
+            if (LifeCheck.GetTargets(tryBoard).All(t => tryBoard.MoveGroup.Equals(t))) return false;
 
             //check weak group
             if (AtariHelper.IsWeakNeighbourGroup(b, group))
@@ -754,6 +753,7 @@ namespace Go
                 List<Group> ngroups = captureBoard.GetGroupsFromStoneNeighbours().ToList();
                 ngroups.Remove(captureBoard.GetCurrentGroup(tryBoard.MoveGroup));
                 if (ngroups.Count == 0) return false;
+                if (!ngroups.Any(n => WallHelper.IsStrongGroup(captureBoard, n))) return false;
                 if (ngroups.Any(n => !WallHelper.IsNonKillableGroup(captureBoard, n)))
                     return true;
             }
@@ -875,8 +875,8 @@ namespace Go
                 return true;
 
             //ensure no diagonal groups
-            Boolean diagonalGroups = LinkHelper.GetGroupLinkedDiagonals(tryBoard).Any();
-            if (diagonalGroups) return false;
+            if (LinkHelper.GetGroupLinkedDiagonals(tryBoard).Any()) 
+                return false;
 
             //check non killable group
             if (WallHelper.TargetWithAllNonKillableGroups(captureBoard, tryBoard.MoveGroup))
@@ -919,7 +919,7 @@ namespace Go
             //ensure no liberties
             if (tryBoard.GetMoveLiberties().Any())
                 return false;
-
+            
             //ensure no diagonal at move
             if (LinkHelper.GetMoveDiagonals(tryBoard).Any())
                 return false;

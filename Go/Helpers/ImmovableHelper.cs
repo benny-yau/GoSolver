@@ -273,7 +273,7 @@ namespace Go
             Board escapeBoard = MakeMoveAtLiberty(tryBoard, group);
 
             //recursive connect and die
-            if (escapeBoard == null || CheckConnectAndDie(escapeBoard, group, !koEnabled))
+            if (escapeBoard == null || escapeBoard.MoveGroupLiberties == 1 || CheckConnectAndDie(escapeBoard, group, !koEnabled))
                 return (true, escapeBoard);
 
             return (false, escapeBoard);
@@ -459,9 +459,10 @@ namespace Go
             if (board.PointWithinMiddleArea(eyePoint.Value))
             {
                 //check three opponent stones
-                if (!KillerFormationHelper.ThreeOpponentStonesAtMove(board, eyePoint)) return false;
                 List<Point> nstones = board.GetStoneNeighbours(eyePoint).Where(n => board[n] == c.Opposite()).ToList();
-                Point middleStone = nstones.First(n => board.GetDiagonalNeighbours(n).Count(d => nstones.Contains(d)) >= 2);
+                if (nstones.Count != 3) return false;
+                Point middleStone = nstones.FirstOrDefault(n => board.GetDiagonalNeighbours(n).Count(d => nstones.Contains(d) && board.GetGroupAt(n) != board.GetGroupAt(d)) >= 2);
+                if (!Convert.ToBoolean(middleStone.NotEmpty)) return false;
                 Group target = board.GetGroupAt(middleStone);
                 if (CheckSnapback(board, target, eyeGroup))
                     return true;
@@ -489,8 +490,7 @@ namespace Go
         {
             Content c = target.Content;
             if (target.Points.Count == 1 || target.Liberties.Count != 2) return false;
-            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, target.Liberties, c.Opposite());
-            foreach (Board b in moveBoards)
+            foreach (Board b in GameHelper.GetMoveBoards(board, target.Liberties, c.Opposite()))
             {
                 if (b.MoveGroup.Points.Count == 1)
                 {
@@ -540,10 +540,11 @@ namespace Go
             Content c = group.Content;
             if (group.Liberties.Count > 2) return (false, null);
 
+            //make kill move
             List<dynamic> killBoards = new List<dynamic>();
             foreach (Point liberty in group.Liberties)
             {
-                if (!GameHelper.SetupMoveAvailable(board, liberty)) continue;
+                if (!GameHelper.SetupMoveAvailable(board, liberty, c.Opposite())) continue;
                 (_, Board b) = ImmovableHelper.IsSuicidalMove(liberty, c.Opposite(), board, koEnabled);
                 if (b == null) continue;
                 Boolean resolveAtari = Board.ResolveAtari(board, b);
@@ -616,6 +617,8 @@ namespace Go
             {
                 if (eyeGroup.Liberties.Count != 2) continue;
                 Point liberty = eyeGroup.Liberties.First(n => !n.Equals(move));
+
+                //make move at liberty
                 Board b = currentBoard.MakeMoveOnNewBoard(liberty, c, true);
                 if (b == null || WallHelper.TargetWithAllNonKillableGroups(b)) continue;
                 //check covered eye survival 
