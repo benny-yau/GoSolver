@@ -604,8 +604,18 @@ namespace Go
         public static Boolean ThreeOpponentGroupsAtMove(Board tryBoard, Point? eyePoint = null)
         {
             if (eyePoint == null) eyePoint = tryBoard.Move.Value;
+            Content c = tryBoard[eyePoint.Value];
             if (tryBoard.GetGroupsFromStoneNeighbours(eyePoint).Count >= 3)
+            {
+                List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(tryBoard, eyePoint.Value, c.Opposite(), true);
+                foreach (Point d in diagonals)
+                {
+                    Group killerGroup = GroupHelper.GetDirectKillerGroup(tryBoard, d, c.Opposite());
+                    if (killerGroup != null && tryBoard.GetNeighbourGroups(killerGroup).All(n => n.Liberties.Count > 1))
+                        return false;
+                }
                 return true;
+            }
             return false;
         }
 
