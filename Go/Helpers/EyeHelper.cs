@@ -225,13 +225,16 @@ namespace Go
                 if (killerGroup.Points.Any(p => board[p] != Content.Empty && ImmovableHelper.CheckSnapbackFromMove(board, p)))
                     return false;
 
-                //check unique corner connect and die
-                if (CheckUniqueCornerConnectAndDie(board, killerGroup))
-                    return false;
-
                 return true;
             }
             return false;
+        }
+
+        public static Boolean FindRealEyeWithinEmptySpace(Board board, Point p, Content c, EyeType eyeType = EyeType.SemiSolidEye)
+        {
+            Group eyeGroup = GroupHelper.GetKillerGroupFromCache(board, p, c);
+            if (eyeGroup == null) return false;
+            return FindRealEyeWithinEmptySpace(board, eyeGroup, eyeType);
         }
 
         /// <summary>
@@ -242,18 +245,12 @@ namespace Go
         private static Boolean CheckTwoOpponentStonesInRealEye(Board board, Group killerGroup)
         {
             if (killerGroup.Points.Count != 3) return false;
-            List<Point> opponentStones = killerGroup.Points.Where(p => board[p] == killerGroup.Content).ToList();
-            if (opponentStones.Count != 2) return false;
-            List<Group> opponentGroups = opponentStones.Select(n => board.GetGroupAt(n)).Distinct().ToList();
-            Boolean diagonalGroups = opponentGroups.Any(n => LinkHelper.GetGroupLinkedDiagonals(board, n).Any());
-            return diagonalGroups;
-        }
-
-        public static Boolean FindRealEyeWithinEmptySpace(Board board, Point p, Content c, EyeType eyeType = EyeType.SemiSolidEye)
-        {
-            Group eyeGroup = GroupHelper.GetKillerGroupFromCache(board, p, c);
-            if (eyeGroup == null) return false;
-            return FindRealEyeWithinEmptySpace(board, eyeGroup, eyeType);
+            List<Point> nstones = killerGroup.Points.Where(p => board[p] == killerGroup.Content).ToList();
+            if (nstones.Count != 2) return false;
+            HashSet<Group> ngroups = board.GetGroupsFromPoints(nstones);
+            if (ngroups.Any(n => LinkHelper.GetDiagonalGroups(board, n).Any(s => !ngroups.Contains(s))))
+                return true;
+            return false;
         }
 
         /// <summary>

@@ -637,7 +637,8 @@ namespace Go
 
         /// <summary>
         /// Three point move binding.
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29487" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.KillerFormationTest_Scenario_WindAndTime_Q30256" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A28" />
         /// Check covered eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18402_2" />
         /// </summary>
         public static Boolean ThreePointMoveBinding(Board tryBoard, Board currentBoard)
@@ -647,16 +648,16 @@ namespace Go
             //move binding
             if (tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c) == 1) return false;
             //check diagonals
-            List<Point> epoints = LinkHelper.GetDiagonalsAtStoneNeighbours(tryBoard, move, c);
-            if (epoints.Count != 2) return true;
-            Point q = LinkHelper.PointsBetweenDiagonals(epoints[0], epoints[1]).First(n => !n.Equals(move));
+            List<Point> s = LinkHelper.GetDiagonalsAtStoneNeighbours(tryBoard, move, c);
+            if (s.Count != 2) return true;
+            Point q = LinkHelper.PointsBetweenDiagonals(s[0], s[1]).First(n => !n.Equals(move));
             if (tryBoard[q] != Content.Empty) return true;
-            //make move at other point
-            Board b = currentBoard.MakeMoveOnNewBoard(q, c);
+            //return first point
             Boolean isEye = EyeHelper.FindEye(currentBoard, q, c);
-            if (b.MoveGroupLiberties == 1 && !isEye)
+            if (!isEye && KillerFormationHelper.IsFirstPoint(tryBoard, move, q))
                 return true;
             //check covered eye
+            Board b = currentBoard.MakeMoveOnNewBoard(q, c);
             if (isEye && b.MoveGroup.Liberties.Any(n => EyeHelper.IsCovered(b, n, c)) && ImmovableHelper.CheckConnectAndDie(b))
                 return true;
             return false;

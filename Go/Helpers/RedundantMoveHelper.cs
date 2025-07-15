@@ -907,7 +907,7 @@ namespace Go
                 Point p = tryBoard.MoveGroup.Liberties.First();
                 if (tryBoard.GetStoneNeighbours(p).Any(q => tryBoard.MoveGroup.Liberties.Contains(q)))
                 {
-                    if (LinkHelper.GetGroupLinkedDiagonals(tryBoard).Any())
+                    if (LinkHelper.GetDiagonalGroups(tryBoard).Any(n => !ImmovableHelper.CheckConnectAndDie(tryBoard, n, false)))
                         return false;
                     //check for killer formation
                     if (tryBoard.MoveGroup.Points.Count >= 3 && KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, captureBoard))
@@ -930,7 +930,6 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
 
-            if (tryBoard.MoveGroup.Points.Count == 1) return false;
             //ensure no liberties
             if (tryBoard.GetMoveLiberties().Any())
                 return false;
