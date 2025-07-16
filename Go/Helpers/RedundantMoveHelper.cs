@@ -643,7 +643,6 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A61" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_20230603_4" />
         /// Empty points at stone and diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_4" />
-        /// Find real eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16446_2" />
         /// Check liberty move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16594" />
         /// Ensure killer group contains only try move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_2398" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31493" />
@@ -693,16 +692,7 @@ namespace Go
                 if (tryBoard[q] == Content.Empty && tryBoard.GetGroupsFromStoneNeighbours().Count == 1)
                     return true;
             }
-            //find real eye
-            Group killerGroup = GroupHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite());
-            if (killerGroup != null && EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, killerGroup))
-            {
-                //check liberty move
-                Board b = ImmovableHelper.MakeMoveAtLiberty(captureBoard, tryBoard.MoveGroup);
-                if (b != null && b.IsAtariMove)
-                    return false;
-                return true;
-            }
+
             //ensure killer group contains only try move
             if (!GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard))
                 return false;
