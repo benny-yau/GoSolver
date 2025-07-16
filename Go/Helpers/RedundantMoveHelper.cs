@@ -1257,6 +1257,118 @@ namespace Go
         #endregion
 
         #region leap move
+
+        /// <summary>
+        /// Redundant kill leap move.
+        /// </summary>
+        public static Boolean RedundantKillLeapMove(GameTryMove tryMove)
+        {
+            if (!tryMove.IsNegligible)
+                return false;
+            GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
+            if (opponentMove != null)
+                return RedundantSurvivalLeapMove(opponentMove, tryMove);
+            return false;
+        }
+
+        /// <summary>
+        /// Redundant survival leap move.
+        /// </summary>
+        public static Boolean RedundantSurvivalLeapMove(GameTryMove tryMove, GameTryMove opponentTryMove = null)
+        {
+            Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryMove.Move;
+            Content c = tryBoard.MoveGroup.Content;
+
+            if (!tryMove.IsNegligible)
+                return false;
+
+            if (LifeCheck.GetTargets(tryBoard).Contains(tryBoard.MoveGroup)) return false;
+
+            //check opponent groups
+            if (tryBoard.GetGroupsFromStoneNeighbours().Any(n => !WallHelper.IsStrongGroup(tryBoard, n)))
+                return false;
+
+            List<Point> rc = tryBoard.GetClosestPoints(move, c.Opposite(), 2);
+            if (rc.Count(r => !WallHelper.IsNonKillableGroup(tryBoard, r)) >= 3)
+                return false;
+
+            //check leap move to target
+            HashSet<Group> groups = new HashSet<Group>() { tryBoard.MoveGroup };
+            if (CheckLeapMoveToTarget(tryBoard, groups))
+                return false;
+            return true;
+        }
+
+        /// <summary>
+        /// Check leap move to target.
+        /// </summary>
+        public static Boolean CheckLeapMoveToTarget(Board tryBoard, HashSet<Group> groups)
+        {
+            Content c = tryBoard.MoveGroup.Content;
+            Group group = groups.Last();
+
+            foreach (Point p in group.Points)
+            {
+                List<Point> rc = tryBoard.GetClosestPoints(p, c, 2).Where(r => tryBoard.GetGroupAt(r) != group).ToList();
+                if (!rc.Any()) continue;
+
+                foreach (Point r in rc)
+                {
+                    Group rgroup = tryBoard.GetGroupAt(r);
+                    if (groups.Contains(rgroup)) continue;
+
+                    //verify leap move
+                    if (tryBoard.GetClosestPoints(p, c, 2, 2).Any(n => n.Equals(r)))
+                    {
+                        if (GetMidPointsOfLeapMove(p, r).Any(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
+                            continue;
+                    }
+
+                    //check if target found
+                    if (LifeCheck.GetTargets(tryBoard).Contains(rgroup))
+                        return true;
+
+                    //recursive check leap move
+                    groups.Add(rgroup);
+                    if (CheckLeapMoveToTarget(tryBoard, groups))
+                        return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Get mid points of leap move.
+        /// </summary>
+        public static List<Point> GetMidPointsOfLeapMove(Point p, Point q)
+        {
+            List<Point> points = new List<Point>();
+            Boolean isLeapOnX = Math.Abs(p.x - q.x) == 2;
+            Boolean isLeapOnY = Math.Abs(p.y - q.y) == 2;
+            if (isLeapOnX)
+            {
+                if (p.y == q.y)
+                    points.Add(new Point(Math.Min(p.x, q.x) + 1, p.y));
+                else
+                {
+                    points.Add(new Point(Math.Min(p.x, q.x) + 1, p.y));
+                    points.Add(new Point(Math.Min(p.x, q.x) + 1, q.y));
+                }
+            }
+            else if (isLeapOnY)
+            {
+                if (p.x == q.x)
+                    points.Add(new Point(p.x, Math.Min(p.y, q.y) + 1));
+                else
+                {
+                    points.Add(new Point(p.x, Math.Min(p.y, q.y) + 1));
+                    points.Add(new Point(q.x, Math.Min(p.y, q.y) + 1));
+                }
+            }
+            return points;
+        }
+
         /// <summary>
         /// Survival leap move.
         /// <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_XuanXuanQiJing_A1" />

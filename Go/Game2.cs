@@ -141,7 +141,7 @@ namespace Go
                 tryMoves.Where(e => e.IsRedundantMove).ToList().ForEach(t => { redundantTryMoves.Add(t); tryMoves.Remove(t); });
 
             //sort game try moves
-            tryMoves = (from tryMove in tryMoves orderby tryMove.AtariResolved descending, tryMove.AtariWithoutSuicide descending, tryMove.Captured descending, tryMove.IncreasedKillerGroups descending, tryMove.TryGame.Board.MoveGroupLiberties descending select tryMove).ToList();
+            tryMoves = (from tryMove in tryMoves orderby tryMove.AtariResolved descending, tryMove.AtariWithoutSuicide descending, tryMove.Captured descending, tryMove.IncreasedKillerGroups descending, tryMove.MoveGroupLiberties descending select tryMove).ToList();
 
             //restore diagonal eye move
             if (tryMoves.Count == 0 && redundantTryMoves.Any(t => t.IsDiagonalEyeMove))
@@ -191,6 +191,9 @@ namespace Go
             tryMove.IsSuicidal = RedundantMoveHelper.SuicidalRedundantMove(tryMove);
             if (tryMove.IsSuicidal)
                 return;
+            tryMove.IsLeapMove = RedundantMoveHelper.RedundantSurvivalLeapMove(tryMove);
+            if (tryMove.IsLeapMove)
+                return;
         }
 
 
@@ -225,6 +228,9 @@ namespace Go
                 return;
             tryMove.IsSuicidal = RedundantMoveHelper.SuicidalRedundantMove(tryMove);
             if (tryMove.IsSuicidal)
+                return;
+            tryMove.IsLeapMove = RedundantMoveHelper.RedundantKillLeapMove(tryMove);
+            if (tryMove.IsLeapMove)
                 return;
         }
 
@@ -380,7 +386,7 @@ namespace Go
             }
 
             //sort game try moves
-            tryMoves = (from tryMove in tryMoves orderby tryMove.AtariResolved descending, tryMove.AtariWithoutSuicide descending, tryMove.Captured descending, tryMove.TryGame.Board.MoveGroupLiberties descending select tryMove).ToList();
+            tryMoves = (from tryMove in tryMoves orderby tryMove.AtariResolved descending, tryMove.AtariWithoutSuicide descending, tryMove.Captured descending, tryMove.MoveGroupLiberties descending select tryMove).ToList();
 
             //create random move
             CreateRandomMoveForKill(tryMoves, g);
@@ -525,30 +531,30 @@ namespace Go
             //try all possible moves
             for (int i = 0; i <= tryMoves.Count - 1; i++)
             {
-                GameTryMove gameTryMove = tryMoves[i];
+                GameTryMove tryMove = tryMoves[i];
                 Stopwatch watch = null;
                 int gameDepth = GameDepth(g);
                 if (DebugPrintMode(gameDepth))
                 {
                     if (gameDepth == 0) Debug.WriteLine(Environment.NewLine);
-                    DebugHelper.DebugWriteWithTab("Trying game move at (" + gameTryMove.Move.x + ", " + gameTryMove.Move.y + ") at depth " + depth + " (" + (i + 1) + " out of " + tryMoves.Count + ") | Last moves: " + g.Board.GetLastMoves(), gameDepth);
+                    DebugHelper.DebugWriteWithTab("Trying game move at (" + tryMove.Move.x + ", " + tryMove.Move.y + ") at depth " + depth + " (" + (i + 1) + " out of " + tryMoves.Count + ") | Last moves: " + g.Board.GetLastMoves(), gameDepth);
                     watch = Stopwatch.StartNew();
                 }
 
                 //make next opponent move
-                (gameTryMove.ConfirmAlive, gameTryMove.OpponentBestMove) = MakeSurvivalMove(depth - 1, gameTryMove.TryGame);
+                (tryMove.ConfirmAlive, tryMove.OpponentBestMove) = MakeSurvivalMove(depth - 1, tryMove.TryGame);
 
                 if (watch != null)
                 {
                     watch.Stop();
-                    DebugHelper.DebugWriteWithTab("Time taken for (" + gameTryMove.Move.x + ", " + gameTryMove.Move.y + ") at depth " + depth + ": " + watch.ElapsedMilliseconds + " | Result: " + gameTryMove.ConfirmAlive.ToString(), gameDepth);
+                    DebugHelper.DebugWriteWithTab("Time taken for (" + tryMove.Move.x + ", " + tryMove.Move.y + ") at depth " + depth + ": " + watch.ElapsedMilliseconds + " | Result: " + tryMove.ConfirmAlive.ToString(), gameDepth);
                 }
 
                 //check if game ended
-                if (gameTryMove.ConfirmAlive != ConfirmAliveResult.Unknown && ((int)gameTryMove.ConfirmAlive < (int)bestResult))
+                if (tryMove.ConfirmAlive != ConfirmAliveResult.Unknown && ((int)tryMove.ConfirmAlive < (int)bestResult))
                 {
-                    bestResult = gameTryMove.ConfirmAlive;
-                    bestResultMove = gameTryMove;
+                    bestResult = tryMove.ConfirmAlive;
+                    bestResultMove = tryMove;
                     if (GameHelper.WinOrLose(SurviveOrKill.Kill, bestResult, g.GameInfo))
                         return (bestResult, bestResultMove);
                 }

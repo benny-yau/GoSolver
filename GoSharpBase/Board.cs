@@ -514,13 +514,13 @@ namespace Go
         /// <summary>
         /// Get closest points to specific point by going in circles with increasing distance.
         /// </summary>
-        public List<Point> GetClosestPoints(Point p, Content c = Content.Unknown, int maxDistance = 2)
+        public List<Point> GetClosestPoints(Point p, Content c = Content.Unknown, int maxDistance = 2, int minDistance = 1)
         {
             int x = p.x;
             int y = p.y;
             if (c == Content.Unknown) c = this[x, y];
             List<Point> result = new List<Point>();
-            for (int i = 1; i <= maxDistance; i++)
+            for (int i = minDistance; i <= maxDistance; i++)
             {
                 for (int j = -i; j <= i - 1; j++)
                 {

@@ -1027,8 +1027,9 @@
         <member name="M:Go.KillerFormationHelper.ThreePointMoveBinding(Go.Board,Go.Board)">
             <summary>
             Three point move binding.
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.KillerFormationTest_Scenario_WindAndTime_Q30256" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A28" />
+            Return first point <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WindAndTime_Q30256" />
+            <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_XuanXuanGo_A7" />
             Check covered eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18402_2" />
             </summary>
         </member>
@@ -1706,6 +1707,26 @@
             Check for recursion <see cref="!:UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_XuanXuanGo_A27" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q14981" />
             Eternal life <see cref="!:UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_GuanZiPu_Q14971" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.RedundantKillLeapMove(Go.GameTryMove)">
+            <summary>
+            Redundant kill leap move.
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.RedundantSurvivalLeapMove(Go.GameTryMove,Go.GameTryMove)">
+            <summary>
+            Redundant survival leap move.
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CheckLeapMoveToTarget(Go.Board,System.Collections.Generic.HashSet{Go.Group})">
+            <summary>
+            Check leap move to target.
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.GetMidPointsOfLeapMove(Go.Point,Go.Point)">
+            <summary>
+            Get mid points of leap move.
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SurvivalLeapMove(Go.GameTryMove)">

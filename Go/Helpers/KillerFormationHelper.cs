@@ -637,8 +637,9 @@ namespace Go
 
         /// <summary>
         /// Three point move binding.
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.KillerFormationTest_Scenario_WindAndTime_Q30256" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A28" />
+        /// Return first point <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WindAndTime_Q30256" />
+        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_XuanXuanGo_A7" />
         /// Check covered eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18402_2" />
         /// </summary>
         public static Boolean ThreePointMoveBinding(Board tryBoard, Board currentBoard)
@@ -653,13 +654,15 @@ namespace Go
             Point q = LinkHelper.PointsBetweenDiagonals(s[0], s[1]).First(n => !n.Equals(move));
             if (tryBoard[q] != Content.Empty) return true;
             //return first point
-            Boolean isEye = EyeHelper.FindEye(currentBoard, q, c);
-            if (!isEye && KillerFormationHelper.IsFirstPoint(tryBoard, move, q))
+            if (tryBoard.GetStoneNeighbours(q).Count(n => tryBoard[n] == c) == 2 && KillerFormationHelper.IsFirstPoint(tryBoard, move, q))
                 return true;
             //check covered eye
-            Board b = currentBoard.MakeMoveOnNewBoard(q, c);
-            if (isEye && b.MoveGroup.Liberties.Any(n => EyeHelper.IsCovered(b, n, c)) && ImmovableHelper.CheckConnectAndDie(b))
-                return true;
+            if (EyeHelper.FindEye(currentBoard, q, c))
+            {
+                Board b = currentBoard.MakeMoveOnNewBoard(q, c);
+                if (b.MoveGroup.Liberties.Any(n => EyeHelper.IsCovered(b, n, c)) && ImmovableHelper.CheckConnectAndDie(b))
+                    return true;
+            }
             return false;
         }
 

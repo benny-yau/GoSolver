@@ -27,6 +27,7 @@ namespace Go
         public bool IsRedundantTigerMouth { get; set; }
         public bool IsAtariRedundant { get; set; }
         public bool MustHaveNeutralPoint { get; set; }
+        public bool IsLeapMove { get; set; }
 
         private bool? atariResolved = null;
 
@@ -168,7 +169,7 @@ namespace Go
         {
             get
             {
-                return IsEye || IsCoveredEyeMove || IsFillKoEyeMove || IsSuicidal || IsNeutralPoint || IsDiagonalEyeMove || IsRedundantKo || IsRedundantTigerMouth || IsAtariRedundant;
+                return IsEye || IsCoveredEyeMove || IsFillKoEyeMove || IsSuicidal || IsNeutralPoint || IsDiagonalEyeMove || IsRedundantKo || IsRedundantTigerMouth || IsAtariRedundant || IsLeapMove;
             }
         }
 
