@@ -243,7 +243,7 @@ namespace Go
                 //two-point move with empty point
                 if (tryBoard.GetMoveLiberties().Any())
                 {
-                    if (tryBoard.MoveGroupLiberties == 2 || SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
+                    if (SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                         return true;
                     if (!GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard))
                         return true;
@@ -276,6 +276,10 @@ namespace Go
 
                 //bent three
                 if (BentThreeSuicideAtCoveredEye(tryBoard, captureBoard))
+                    return true;
+
+                //suicide for liberty fight
+                if (SuicideForLibertyFight(tryBoard, currentBoard))
                     return true;
 
                 //suicidal end move
@@ -505,31 +509,33 @@ namespace Go
                 if (!firstPoint) return false;
             }
 
-            //get external liberty
             foreach (Group targetGroup in targetGroups)
             {
+                //get external liberty
                 List<Point> externalLiberties = targetGroup.Liberties.Where(n => GroupHelper.GetDirectKillerGroup(currentBoard, n, c.Opposite()) != killerGroup).ToList();
                 if (externalLiberties.Count != 1) continue;
                 Point liberty = externalLiberties.First();
+                HashSet<Group> groups = currentBoard.GetGroupsFromStoneNeighbours(liberty, c.Opposite());
+                if (!ImmovableHelper.IsSuicidalMove(tryBoard, liberty, c.Opposite()))
+                    continue;
+                if (groups.Any(n => ImmovableHelper.EscapeCaptureLink(currentBoard, n)))
+                    continue;
+
                 if (KoHelper.IsKoFight(tryBoard, liberty, c.Opposite()).Item1)
                 {
                     //check killer ko within killer group
-                    if (WallHelper.TargetWithAnyNonKillableGroup(tryBoard, targetGroup)) continue;
+                    if (targetGroups.Any(n => WallHelper.TargetWithAnyNonKillableGroup(currentBoard, n)))
+                        continue;
                 }
                 else
                 {
-                    List<Group> groups = tryBoard.GetGroupsFromStoneNeighbours(liberty, c.Opposite()).ToList();
-                    if (groups.Count == 0 || tryBoard.GetLibertiesOfGroups(groups).Count == 1) continue;
-                }
-
-                //check suicidal move for both players at external liberty
-                if (ImmovableHelper.IsSuicidalMoveForBothPlayers(tryBoard, liberty) || ImmovableHelper.IsSuicidalMoveForBothPlayers(currentBoard, liberty, true))
-                {
-                    HashSet<Group> groups = currentBoard.GetGroupsFromStoneNeighbours(liberty, c.Opposite());
-                    if (groups.Any(n => ImmovableHelper.EscapeCaptureLink(currentBoard, n)))
+                    if (!groups.Any(n => n.Liberties.Any(s => !s.Equals(liberty) && GroupHelper.GetDirectKillerGroup(currentBoard, s, c) != null)))
                         continue;
-                    return true;
+
+                    if (!groups.Any(n => targetGroup.Liberties.Count >= n.Liberties.Count - 1 && !WallHelper.IsNonKillableGroup(currentBoard, n)))
+                        continue;
                 }
+                return true;
             }
             return false;
         }

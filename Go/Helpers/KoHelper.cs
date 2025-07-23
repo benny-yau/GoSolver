@@ -133,8 +133,8 @@ namespace Go
         public static Point? GetKoEyePoint(Board tryBoard)
         {
             Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.singlePointCapture != null) //ko moves
-                return tryBoard.singlePointCapture.Value;
+            if (tryBoard.KoCapture != null) //ko moves
+                return tryBoard.KoCapture.Value;
             //pre ko moves
             List<Point> eyePoints = tryBoard.GetStoneNeighbours().Where(n => IsKoFight(tryBoard, n, c).Item1).ToList();
             if (eyePoints.Count == 1) return eyePoints.First();
@@ -155,8 +155,8 @@ namespace Go
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.singlePointCapture == null) return false;
-            Point capturePoint = tryBoard.singlePointCapture.Value;
+            if (tryBoard.KoCapture == null) return false;
+            Point capturePoint = tryBoard.KoCapture.Value;
             //survival double ko
             List<Group> ngroups = currentBoard.GetGroupsFromStoneNeighbours(capturePoint, c.Opposite()).ToList();
             ngroups = LinkHelper.GetAllDiagonalGroups(currentBoard, ngroups.First()).ToList();

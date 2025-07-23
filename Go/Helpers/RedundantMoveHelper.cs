@@ -923,7 +923,7 @@ namespace Go
             //ensure no liberties
             if (tryBoard.GetMoveLiberties().Any())
                 return false;
-            
+
             //ensure no diagonal at move
             if (LinkHelper.GetMoveDiagonals(tryBoard).Any())
                 return false;
@@ -1250,6 +1250,7 @@ namespace Go
 
         /// <summary>
         /// Redundant kill leap move.
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20250714_8" />
         /// </summary>
         public static Boolean RedundantKillLeapMove(GameTryMove tryMove)
         {
@@ -1263,6 +1264,8 @@ namespace Go
 
         /// <summary>
         /// Redundant survival leap move.
+        /// <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_XuanXuanQiJing_A1" />
+        /// Check opponent groups <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_GuanZiPu_B3" />
         /// </summary>
         public static Boolean RedundantSurvivalLeapMove(GameTryMove tryMove, GameTryMove opponentTryMove = null)
         {
@@ -1280,7 +1283,7 @@ namespace Go
                 return false;
 
             List<Point> rc = tryBoard.GetClosestPoints(move, c.Opposite(), 2);
-            if (rc.Count(r => !WallHelper.IsNonKillableGroup(tryBoard, r)) >= 3)
+            if (rc.Count(r => !WallHelper.IsNonKillableGroup(tryBoard, r)) >= 2)
                 return false;
 
             //check leap move to target
@@ -1357,46 +1360,6 @@ namespace Go
                 }
             }
             return points;
-        }
-
-        /// <summary>
-        /// Survival leap move.
-        /// <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_XuanXuanQiJing_A1" />
-        /// Check non killable group <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_XuanXuanGo_A23" />
-        /// Check for kill move by survival <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_GuanZiPu_B3" />
-        /// Not redundant leap move <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_GuanZiPu_B3" />
-        /// </summary>
-
-        public static Boolean SurvivalLeapMove(GameTryMove tryMove)
-        {
-            Board tryBoard = tryMove.TryGame.Board;
-            Point move = tryMove.Move;
-            Content c = tryBoard.MoveGroup.Content;
-
-            if (!tryMove.IsNegligible)
-                return false;
-
-            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => tryBoard[n] == c))
-                return false;
-
-            //find closest points within two spaces
-            List<Point> closestNeighbours = tryBoard.GetClosestPoints(move, c);
-            if (closestNeighbours.Count == 0) return false;
-
-            //validate if leap move is redundant
-            if (closestNeighbours.All(n => !LinkHelper.ValidateLeapMove(tryBoard, move, n)))
-                return true;
-
-            return false;
-        }
-
-        public static Boolean KillLeapMove(GameTryMove tryMove)
-        {
-            //test if opponent move at same point is suicidal
-            GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
-            if (opponentMove != null)
-                return SurvivalLeapMove(opponentMove);
-            return false;
         }
         #endregion
 
@@ -2340,7 +2303,7 @@ namespace Go
             if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo))
             {
                 //check pre-ko moves
-                if (tryBoard.singlePointCapture == null) return false;
+                if (tryBoard.KoCapture == null) return false;
                 //check double ko
                 if (!KoHelper.PossibilityOfDoubleKo(tryBoard, currentBoard))
                     return true;

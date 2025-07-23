@@ -138,10 +138,7 @@ namespace Go
             if (result == MakeMoveResult.Legal)
                 return result;
             else if (result != MakeMoveResult.Pass)
-            {
                 this.Board.Move = Game.PassMove;
-                this.Board.LastMoves.Add(Game.PassMove);
-            }
             return result;
         }
 

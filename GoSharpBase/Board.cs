@@ -9,13 +9,12 @@ namespace Go
     {
         public int SizeY { get { return content.GetLength(0); } }
         public int SizeX { get { return content.GetLength(1); } }
-        protected Content[,] content { get; set; }
+        private Content[,] content { get; set; }
         private List<Group> GroupCache = new List<Group>();
         public Group[,] GroupCacheFromPoint { get; set; }
 
-        public Point? Move { get; set; }
         public Group MoveGroup { get; set; }
-        public Point? singlePointCapture;
+        public Point? KoCapture;
         public Boolean IsRandomMove { get; set; }
         public KoCheck KoGameCheck { get; set; }
         public List<Group> CapturedList = new List<Group>();
@@ -24,6 +23,21 @@ namespace Go
         public Dictionary<Content, List<Group>> KillerGroups { get; set; }
         public Group[,] BlackKillerGroupCache { get; set; }
         public Group[,] WhiteKillerGroupCache { get; set; }
+
+        private Point? move;
+        public Point? Move
+        {
+            get
+            {
+                return move;
+            }
+            set
+            {
+                move = value;
+                if (move != null)
+                    LastMoves.Add(move.Value);
+            }
+        }
 
         private List<Group> atariTargets;
         public List<Group> AtariTargets
@@ -66,8 +80,8 @@ namespace Go
 
             this.GameInfo = fromBoard.GameInfo;
             this.MoveGroup = fromBoard.MoveGroup;
-            this.Move = fromBoard.Move;
-            this.singlePointCapture = fromBoard.singlePointCapture;
+            this.move = fromBoard.Move;
+            this.KoCapture = fromBoard.KoCapture;
             this.IsRandomMove = fromBoard.IsRandomMove;
             this.KoGameCheck = fromBoard.KoGameCheck;
             this.LastMoves.AddRange(fromBoard.LastMoves);
@@ -397,15 +411,14 @@ namespace Go
         /// </summary>
         public MakeMoveResult InternalMakeMove(Point p, Content c, Boolean overrideKo = false)
         {
-            Move = p;
             this.CapturedList.Clear();
-            Point? previousPtCapture = singlePointCapture;
-            singlePointCapture = null;
+            Point? koCapture = KoCapture;
+            KoCapture = null;
             IsRandomMove = false;
 
-            if (Move.Equals(PassMove))
+            if (p.Equals(PassMove))
             {
-                LastMoves.Add(Move.Value);
+                Move = p;
                 return MakeMoveResult.Pass;
             }
             else if (this[p] != Content.Empty)
@@ -416,15 +429,15 @@ namespace Go
             HashSet<Group> capturedGroups = GetCapturedGroups(p);
 
             //check for ko move
-            if (capturedGroups.Count == 1 && capturedGroups.First().Points.Count == 1 && this.GetStoneNeighbours().All(n => this[n] == c.Opposite()))
+            if (capturedGroups.Count == 1 && capturedGroups.First().Points.Count == 1 && this.GetStoneNeighbours(p).All(n => this[n] == c.Opposite()))
             {
-                if (previousPtCapture != null && !overrideKo && Move.Equals(previousPtCapture))
+                if (koCapture != null && !overrideKo && p.Equals(koCapture))
                 {
                     this[p] = Content.Empty;
-                    singlePointCapture = previousPtCapture;
+                    KoCapture = koCapture;
                     return MakeMoveResult.KoBlocked;
                 }
-                singlePointCapture = capturedGroups.First().Points.First();
+                KoCapture = capturedGroups.First().Points.First();
             }
             this.CapturedList = Capture(capturedGroups);
             MoveGroup = GetGroupAt(p);
@@ -435,7 +448,7 @@ namespace Go
                 this[p] = Content.Empty;
                 return MakeMoveResult.Suicide;
             }
-            LastMoves.Add(Move.Value);
+            Move = p;
             return MakeMoveResult.Legal;
         }
 

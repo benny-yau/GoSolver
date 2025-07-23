@@ -84,7 +84,7 @@ namespace Go
             }
 
             //check if ko alive
-            if (game.Board.Move.Equals(Game.PassMove) && game.Board.singlePointCapture != null && answerMove.Equals(game.Board.singlePointCapture.Value))
+            if (game.Board.Move.Equals(Game.PassMove) && game.Board.KoCapture != null && answerMove.Equals(game.Board.KoCapture.Value))
                 return ConfirmAliveResult.KoAlive;
 
             //return result with target killed or target survived

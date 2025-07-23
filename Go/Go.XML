@@ -1711,11 +1711,14 @@
         <member name="M:Go.RedundantMoveHelper.RedundantKillLeapMove(Go.GameTryMove)">
             <summary>
             Redundant kill leap move.
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20250714_8" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.RedundantSurvivalLeapMove(Go.GameTryMove,Go.GameTryMove)">
             <summary>
             Redundant survival leap move.
+            <see cref="!:UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_XuanXuanQiJing_A1" />
+            Check opponent groups <see cref="!:UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_GuanZiPu_B3" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckLeapMoveToTarget(Go.Board,System.Collections.Generic.HashSet{Go.Group})">
@@ -1726,15 +1729,6 @@
         <member name="M:Go.RedundantMoveHelper.GetMidPointsOfLeapMove(Go.Point,Go.Point)">
             <summary>
             Get mid points of leap move.
-            </summary>
-        </member>
-        <member name="M:Go.RedundantMoveHelper.SurvivalLeapMove(Go.GameTryMove)">
-            <summary>
-            Survival leap move.
-            <see cref="!:UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_XuanXuanQiJing_A1" />
-            Check non killable group <see cref="!:UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_XuanXuanGo_A23" />
-            Check for kill move by survival <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_GuanZiPu_B3" />
-            Not redundant leap move <see cref="!:UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_GuanZiPu_B3" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.NeutralPointSurvivalMove(Go.GameTryMove,Go.GameTryMove)">

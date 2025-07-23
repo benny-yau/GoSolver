@@ -184,7 +184,7 @@ namespace Go
             }
             return false;
         }
-        
+
         /// <summary>
         /// Is complex seki.
         /// Check covered eye <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
@@ -289,7 +289,6 @@ namespace Go
             GameTryMove tryMove = new GameTryMove(g);
             tryMove.TryGame.Board.Move = Game.PassMove;
             tryMove.MakeMoveResult = MakeMoveResult.Legal;
-            tryMove.TryGame.Board.LastMoves.Add(Game.PassMove);
             return tryMove;
         }
     }

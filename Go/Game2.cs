@@ -43,10 +43,7 @@ namespace Go
                     result = CheckMappedResults(result);
                 }
                 if (this.Board.Move == null)
-                {
                     this.Board.Move = Game.PassMove;
-                    this.Board.LastMoves.Add(Game.PassMove);
-                }
                 return result;
             }
             catch (Exception ex)
