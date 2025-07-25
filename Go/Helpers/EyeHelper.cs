@@ -167,7 +167,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Find if any of the two empty points is a real eye and return only the first one found.
+        /// Find real eye within two empty point, and return only the first one found.
         /// Check killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2413_2" /> 
         /// </summary>
         public static Board FindRealEyesWithinTwoEmptyPoints(Board board, Group eyeGroup, EyeType eyeType = EyeType.RealSolidEye)
@@ -254,38 +254,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Unique corner connect and die.
-        /// One-point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_B33" /> 
-        /// Two-point capture <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanQiJing_A38" /> 
-        /// </summary>
-        private static Boolean CheckUniqueCornerConnectAndDie(Board board, Group killerGroup)
-        {
-            Content c = killerGroup.Content;
-            if (killerGroup.Points.Count != 1) return false;
-            //ensure corner point
-            Point k = killerGroup.Points.First();
-            if (!board.GetStoneNeighbours(k).Any(p => board[p] == c.Opposite() && board.CornerPoint(p) && board.GetGroupAt(p).Points.Count == 1)) return false;
-
-            List<LinkedPoint<Point>> diagonalPoints = LinkHelper.GetGroupDiagonals(board, killerGroup);
-            List<Point> eyeDiagonals = diagonalPoints.Select(p => p.Move).Where(p => board[p] == Content.Empty).ToList();
-            if (eyeDiagonals.Count != 1) return false;
-
-            //eye at diagonal
-            Point eye = eyeDiagonals.First();
-            if (!EyeHelper.FindEye(board, eye, c.Opposite()) || board.PointWithinMiddleArea(eye)) return false;
-
-            List<Group> eyeGroups = board.GetGroupsFromStoneNeighbours(eye, c).ToList();
-            if (!eyeGroups.All(n => n.Liberties.Count > 1)) return false;
-
-            //check connect and die at target group
-            Group targetGroup = eyeGroups.Except(board.GetNeighbourGroups(killerGroup)).FirstOrDefault();
-            if (targetGroup != null && ImmovableHelper.CheckConnectAndDie(board, targetGroup))
-                return true;
-            return false;
-        }
-
-        /// <summary>
-        /// Allow opponent to make move within eye space to ensure the space can produce the required eye type. 
+        /// Make move within empty space, to check if the required eye type can be produced. 
         /// </summary>
         private static Boolean MakeMoveWithinEmptySpace(Board board, Group killerGroup, EyeType eyeType = EyeType.SemiSolidEye)
         {
@@ -316,7 +285,7 @@ namespace Go
                 if (content == c && b.CapturedList.Count > 0)
                 {
                     //whole group dying
-                    if (eyeType != EyeType.CoveredEye && b.CapturedList.Count == 1 && b.GetNeighbourGroups().Count == 0)
+                    if (b.GetNeighbourGroups().Count == 0)
                         return true;
                     return false;
                 }
