@@ -326,7 +326,7 @@ namespace Go
             {
                 if (SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                     return false;
-                if (LinkHelper.GetMoveDiagonals(tryBoard).Any())
+                if (tryBoard.MoveGroup.Points.Count >= 5 && LinkHelper.GetMoveDiagonals(tryBoard).Any() && tryBoard.GetMoveLiberties().Any(n => EyeHelper.IsCovered(tryBoard, n, c)))
                     return false;
             }
 
@@ -353,14 +353,16 @@ namespace Go
                 return true;
 
             //grid dimension changed
-            if (!GridDimensionChanged(previousGroup.Points, tryBoard.MoveGroup.Points)) 
+            if (!GridDimensionChanged(previousGroup.Points, tryBoard.MoveGroup.Points))
                 return false;
 
             //check atari target
-            if (!tryBoard.AtariTargets.Any()) return true;
-            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(captureBoard, captureBoard.MoveGroup.Liberties, c);
-            if (moveBoards.Any(n => n.MoveGroupLiberties > 1 && n.GetGroupsFromStoneNeighbours().Count > 1))
-                return false;
+            if (tryBoard.AtariTargets.Any() && captureBoard.MoveGroupLiberties == 2)
+            {
+                IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(captureBoard, captureBoard.MoveGroup.Liberties, c);
+                if (moveBoards.Any(n => n.MoveGroupLiberties > 1 && n.GetGroupsFromStoneNeighbours().Count > 1))
+                    return false;
+            }
             return true;
         }
 
@@ -763,7 +765,7 @@ namespace Go
             return false;
         }
 
-        public static Boolean TwoByTwoFormation(Board tryBoard, IEnumerable<Point> contentPoints)
+        private static Boolean TwoByTwoFormation(Board tryBoard, IEnumerable<Point> contentPoints)
         {
             if (contentPoints.Count() != 4) return false;
             IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
@@ -797,7 +799,7 @@ namespace Go
  17 . . . . . X . . . . . . . . . . . . . 
  18 . . . . . . . . . . . . . . . . . . . 
          */
-        public static Boolean CrowbarFormation(Board tryBoard, Group moveGroup)
+        private static Boolean CrowbarFormation(Board tryBoard, Group moveGroup)
         {
             HashSet<Point> contentPoints = moveGroup.Points;
             if (contentPoints.Count() != 4) return false;
@@ -805,26 +807,6 @@ namespace Go
             if (pointIntersect.Count(p => p.intersectCount == 2) == 2)
             {
                 if (contentPoints.GroupBy(p => p.x).Count(gr => gr.Count() == 3) == 1 || contentPoints.GroupBy(p => p.y).Count(gr => gr.Count() == 3) == 1)
-                    return true;
-            }
-            return false;
-        }
-
-        /*
- 15 . . . . . . . . . . . . . . . . . . .
- 16 . . . . . . . . . . . . . . . . . . . 
- 17 . . . . . X X X . . . . . . . . . . . 
- 18 . . . . . X . . . . . . . . . . . . . 
-         */
-        public static Boolean CrowbarEyeFormation(Board tryBoard, Group moveGroup)
-        {
-            if (CrowbarFormation(tryBoard, moveGroup))
-            {
-                HashSet<Point> contentPoints = moveGroup.Points;
-                Group group = tryBoard.GetGroupAt(contentPoints.First());
-                Point eyePoint = group.Liberties.FirstOrDefault(p => tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() == 2);
-                if (!Convert.ToBoolean(eyePoint.NotEmpty)) return false;
-                if (!tryBoard.PointWithinMiddleArea(eyePoint))
                     return true;
             }
             return false;
@@ -890,103 +872,6 @@ namespace Go
             return false;
         }
 
-
-        /*
- 15 . . . . . . X . . . . . . X . . . . .
- 16 . . . . . X X X . . . . X X X X . . . 
- 17 . . . . . X X . . . . . . X . . . . . 
- 18 . . . . . . . . . . . . . . . . . . . 
-         */
-        public static Boolean FlowerSixFormation(Board tryBoard, Group moveGroup)
-        {
-            HashSet<Point> contentPoints = moveGroup.Points;
-            if (contentPoints.Count() != 6) return false;
-            IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
-            if (pointIntersect.Count(p => p.intersectCount == 4) == 1)
-            {
-                if (pointIntersect.Count(p => p.intersectCount == 2) == 3)
-                    return true;
-                else if (CheckAnyEndPointCovered(tryBoard, moveGroup))
-                    return true;
-            }
-            return false;
-        }
-
-        /*
- 14 X . . . . . . . . . . . . . . . . . .
- 15 X X X . . . . . . . . . . . . . . . .
- 16 X X . . . . . . . . . . . . . . . . . 
- 17 X . . . . . . . X X X . . . . X X . . 
- 18 . . . . . . . . X X X X . . X X X X X 
-         */
-        public static Boolean OddSevenFormation(Board tryBoard, Group moveGroup)
-        {
-            HashSet<Point> contentPoints = moveGroup.Points;
-            if (contentPoints.Count() != 7) return false;
-
-            IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
-            if (pointIntersect.Count(p => p.intersectCount == 3) >= 2)
-            {
-                if (CheckAnyEndPointCovered(tryBoard, moveGroup))
-                    return true;
-            }
-            return false;
-        }
-
-
-        /*
- 14 . X . . . . . . . . . X . . . X X . .
- 15 X X X . . . . . . . X X X . . X X X .
- 16 X X . . . . . . . . X X . . . . X . . 
- 17 X . . . . . . . . . . X . . . . X . . 
- 18 . . . . . . . . . . . . . . . . . . . 
-        
-15 . . . . . . . . . . . . . x . . . . .
-16 x x . . . . . . . . . . x x x x x . . 
-17 x x x . . . . . . . . . . x . . . . . 
-18 . x x . . . . . . . . . . . . . . . . 
-         */
-        public static Boolean FlowerSevenFormation(Board tryBoard, Group moveGroup)
-        {
-            HashSet<Point> contentPoints = moveGroup.Points;
-            if (contentPoints.Count() != 7) return false;
-            IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
-            if (pointIntersect.Count(p => p.intersectCount == 4) == 1)
-            {
-                if (pointIntersect.Count(p => p.intersectCount == 2) == 6)
-                    return true;
-                else if (CheckAnyEndPointCovered(tryBoard, moveGroup))
-                    return true;
-            }
-            return false;
-        }
-
-        /*
-    15 . . . . . . . . . . . . . . . . . . .
-    16 . . . . X . . . . . . . . . . . . . . 
-    17 . . . X X . . . . X X . . X X . . . . 
-    18 . . . X X X . . X X X X . X X X X . . 
-
-    15 . . . . X . . . . . . . . . . . . . .
-    16 . . . . X X X X . . . . . . . . . . . 
-    17 . . . . X . . . . . . . . . . . . . . 
-    18 . . . . . . . . . . . . . . . . . . . 
-            */
-        public static Boolean KnifeSixFormation(Board tryBoard, Group moveGroup)
-        {
-            //includes two-by-four formation
-            HashSet<Point> contentPoints = moveGroup.Points;
-            if (contentPoints.Count() != 6) return false;
-            IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
-            if (pointIntersect.Count(p => p.intersectCount == 3) >= 1)
-            {
-                if (CheckAnyEndPointCovered(tryBoard, moveGroup))
-                    return true;
-            }
-            return false;
-        }
-
-
         /*
     15 . . . . . . . . . . . . . . . . . X .
     16 . . . . X . . . . . . . X . . . X X . 
@@ -1027,6 +912,101 @@ namespace Go
             }
             return false;
         }
+
+        /*
+ 15 . . . . . . X . . . . . . X . . . . .
+ 16 . . . . . X X X . . . . X X X X . . . 
+ 17 . . . . . X X . . . . . . X . . . . . 
+ 18 . . . . . . . . . . . . . . . . . . . 
+         */
+        public static Boolean FlowerSixFormation(Board tryBoard, Group moveGroup)
+        {
+            HashSet<Point> contentPoints = moveGroup.Points;
+            if (contentPoints.Count() != 6) return false;
+            IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
+            if (pointIntersect.Count(p => p.intersectCount == 4) == 1)
+            {
+                if (pointIntersect.Count(p => p.intersectCount == 2) == 3)
+                    return true;
+                else if (CheckAnyEndPointCovered(tryBoard, moveGroup))
+                    return true;
+            }
+            return false;
+        }
+
+        /*
+    15 . . . . . . . . . . . . . . . . . . .
+    16 . . . . X . . . . . . . . . . . . . . 
+    17 . . . X X . . . . X X . . X X . . . . 
+    18 . . . X X X . . X X X X . X X X X . . 
+
+    15 . . . . X . . . . . . . . . . . . . .
+    16 . . . . X X X X . . . . . . . . . . . 
+    17 . . . . X . . . . . . . . . . . . . . 
+    18 . . . . . . . . . . . . . . . . . . . 
+            */
+        public static Boolean KnifeSixFormation(Board tryBoard, Group moveGroup)
+        {
+            //includes two-by-four formation
+            HashSet<Point> contentPoints = moveGroup.Points;
+            if (contentPoints.Count() != 6) return false;
+            IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
+            if (pointIntersect.Count(p => p.intersectCount == 3) >= 1)
+            {
+                if (CheckAnyEndPointCovered(tryBoard, moveGroup))
+                    return true;
+            }
+            return false;
+        }
+
+        /*
+ 14 X . . . . . . . . . . . . . . . . . .
+ 15 X X X . . . . . . . . . . . . . . . .
+ 16 X X . . . . . . . . . . . . . . . . . 
+ 17 X . . . . . . . X X X . . . . X X . . 
+ 18 . . . . . . . . X X X X . . X X X X X 
+         */
+        public static Boolean OddSevenFormation(Board tryBoard, Group moveGroup)
+        {
+            HashSet<Point> contentPoints = moveGroup.Points;
+            if (contentPoints.Count() != 7) return false;
+
+            IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
+            if (pointIntersect.Count(p => p.intersectCount == 3) >= 2)
+            {
+                if (CheckAnyEndPointCovered(tryBoard, moveGroup))
+                    return true;
+            }
+            return false;
+        }
+
+        /*
+ 14 . X . . . . . . . . . X . . . X X . .
+ 15 X X X . . . . . . . X X X . . X X X .
+ 16 X X . . . . . . . . X X . . . . X . . 
+ 17 X . . . . . . . . . . X . . . . X . . 
+ 18 . . . . . . . . . . . . . . . . . . . 
+        
+15 . . . . . . . . . . . . . x . . . . .
+16 x x . . . . . . . . . . x x x x x . . 
+17 x x x . . . . . . . . . . x . . . . . 
+18 . x x . . . . . . . . . . . . . . . . 
+         */
+        public static Boolean FlowerSevenFormation(Board tryBoard, Group moveGroup)
+        {
+            HashSet<Point> contentPoints = moveGroup.Points;
+            if (contentPoints.Count() != 7) return false;
+            IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
+            if (pointIntersect.Count(p => p.intersectCount == 4) == 1)
+            {
+                if (pointIntersect.Count(p => p.intersectCount == 2) == 6)
+                    return true;
+                else if (CheckAnyEndPointCovered(tryBoard, moveGroup))
+                    return true;
+            }
+            return false;
+        }
+
 
         /// <summary>
         /// Check any end point covered. 

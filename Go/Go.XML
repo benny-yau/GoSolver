@@ -444,7 +444,7 @@
             Find real solid eye.
             </summary>
         </member>
-        <member name="M:Go.EyeHelper.FindRealEyesWithinTwoEmptyPoints(Go.Board,Go.Group,Go.EyeType)">
+        <member name="M:Go.EyeHelper.FindRealEyeWithinTwoEmptyPoints(Go.Board,Go.Group,Go.EyeType)">
             <summary>
             Find real eye within two empty point, and return only the first one found.
             Check killer formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2413_2" /> 
@@ -452,12 +452,10 @@
         </member>
         <member name="M:Go.EyeHelper.FindRealEyeWithinEmptySpace(Go.Board,Go.Group,Go.EyeType)">
             <summary>
-            Find if killer group of three points or less can produce real eye. 
+            Find real eye within empty space, not more than three points. 
             Check snapback <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Scenario_XuanXuanGo_B31" /> 
             Ensure all groups have more than one liberty <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31469" /> 
             Ensure survival can make move at empty spaces <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18796_2" /> 
-            Unique corner connect and die <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_B33" /> 
-            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanQiJing_A38" /> 
             </summary>
         </member>
         <member name="M:Go.EyeHelper.CheckTwoOpponentStonesInRealEye(Go.Board,Go.Group)">
@@ -1601,8 +1599,7 @@
         <member name="M:Go.RedundantMoveHelper.CheckDiagonalForSuicidalConnectAndDie(Go.GameTryMove,Go.Board)">
             <summary>
             Check diagonal for suicidal connect and die.
-            Check non killable group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31563" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_3" />
+            Check non killable group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_3" />
             Ensure no diagonal at move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18796_2" />
             Ensure no diagonal groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A55" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />

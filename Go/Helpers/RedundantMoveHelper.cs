@@ -859,8 +859,7 @@ namespace Go
 
         /// <summary>
         /// Check diagonal for suicidal connect and die.
-        /// Check non killable group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31563" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_3" />
+        /// Check non killable group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_3" />
         /// Ensure no diagonal at move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18796_2" />
         /// Ensure no diagonal groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A55" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
@@ -878,8 +877,12 @@ namespace Go
             Content c = tryMove.MoveContent;
 
             //check non killable group
-            if (WallHelper.TargetWithAllNonKillableGroups(captureBoard, tryBoard.MoveGroup) && !(EyeHelper.IsCovered(captureBoard, move, c.Opposite()) || tryBoard.GetMoveLiberties().Any(n => EyeHelper.FindCoveredEye(tryBoard, n, c))))
-                return true;
+            if (WallHelper.TargetWithAllNonKillableGroups(captureBoard, tryBoard.MoveGroup))
+            {
+                Boolean isCovered = EyeHelper.IsCovered(captureBoard, move, c.Opposite()) || tryBoard.GetMoveLiberties().Any(n => EyeHelper.IsCovered(tryBoard, n, c));
+                if (!isCovered)
+                    return true;
+            }
 
             if (tryBoard.MoveGroup.Points.Count == 1)
             {
@@ -897,7 +900,7 @@ namespace Go
                 Point p = tryBoard.MoveGroup.Liberties.First();
                 if (tryBoard.GetStoneNeighbours(p).Any(q => tryBoard.MoveGroup.Liberties.Contains(q)))
                 {
-                    if (LinkHelper.GetDiagonalGroups(tryBoard).Any(n => !ImmovableHelper.CheckConnectAndDie(tryBoard, n, false)))
+                    if (tryBoard.GetGroupsFromStoneNeighbours().Count > 1 && LinkHelper.GetDiagonalGroups(tryBoard).Any(n => !ImmovableHelper.CheckConnectAndDie(tryBoard, n, false)))
                         return false;
                     //check for killer formation
                     if (tryBoard.MoveGroup.Points.Count >= 3 && KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, captureBoard))
@@ -990,7 +993,7 @@ namespace Go
 
             //remove one point from two-point empty group
             Group eyeGroup = GroupHelper.GetDirectKillerGroup(currentBoard, move, c.Opposite());
-            Board board = EyeHelper.FindRealEyesWithinTwoEmptyPoints(currentBoard, eyeGroup);
+            Board board = EyeHelper.FindRealEyeWithinTwoEmptyPoints(currentBoard, eyeGroup);
             if (board != null && !move.Equals(board.Move.Value))
                 return true;
             if (capturedBoard.MoveGroupLiberties == 1) return false;
@@ -1053,7 +1056,6 @@ namespace Go
             //check atari move
             if (tryBoard.IsAtariMove)
             {
-                //check for non two-point group
                 Boolean twoPointGroup = eyeGroup != null && eyeGroup.Points.Count == 2;
                 if (!twoPointGroup && CheckNonTwoPointGroupInSuicideRealEye(tryMove, capturedBoard))
                     return true;
@@ -1233,12 +1235,12 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
 
-            //capture at tryBoard
-            if (KillerFormationHelper.CheckKoFightAfterSuicidal(tryBoard, capturedBoard))
-                return false;
-
             //killer formations
             if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, capturedBoard))
+                return false;
+
+            //check ko fight
+            if (KillerFormationHelper.CheckKoFightAfterSuicidal(tryBoard, capturedBoard))
                 return false;
 
             //no hope of escape

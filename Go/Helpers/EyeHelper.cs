@@ -170,7 +170,7 @@ namespace Go
         /// Find real eye within two empty point, and return only the first one found.
         /// Check killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2413_2" /> 
         /// </summary>
-        public static Board FindRealEyesWithinTwoEmptyPoints(Board board, Group eyeGroup, EyeType eyeType = EyeType.RealSolidEye)
+        public static Board FindRealEyeWithinTwoEmptyPoints(Board board, Group eyeGroup, EyeType eyeType = EyeType.RealSolidEye)
         {
             if (eyeGroup == null || eyeGroup.Points.Count != 2 || eyeGroup.Points.Any(p => board[p] != Content.Empty)) return null;
             Point eye = eyeGroup.Points.First();
@@ -193,7 +193,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Find if killer group of three points or less can produce real eye. 
+        /// Find real eye within empty space, not more than three points. 
         /// Check snapback <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Scenario_XuanXuanGo_B31" /> 
         /// Ensure all groups have more than one liberty <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q31469" /> 
         /// Ensure survival can make move at empty spaces <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18796_2" /> 
@@ -291,18 +291,11 @@ namespace Go
                 }
                 //make opponent move
                 result = MakeMoveWithinEmptySpace(b, killerGroup, eyeType);
-                if (eyeType == EyeType.CoveredEye)
-                {
-                    if (result) return true;
-                }
-                else
-                {
-                    //opponent to try all possible moves
-                    if (content == c && result == false)
-                        return false;
-                    if (content == c.Opposite() && result == true)
-                        return true;
-                }
+                //return result
+                if (!result && eyeType != EyeType.CoveredEye)
+                    return false;
+                if (result && eyeType == EyeType.CoveredEye)
+                    return true;
             }
             return result;
         }
