@@ -302,12 +302,9 @@ namespace Go
 
         /// <summary>
         /// Real eye of diagonally connected groups.
-        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_GuanZiPu_B3_2" /> 
-        /// Check connect and die <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126" /> 
-        /// Check for covered eye killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_4" />
-        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30315" /> 
-        /// Possible corner six formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" /> 
         /// Ensure all groups are connected <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_ScenarioHighLevel28" /> 
+        /// Check opponent stones within killer group <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_A67_101Weiqi" /> 
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" /> 
         /// </summary>
         public static Boolean RealEyeOfDiagonallyConnectedGroups(Board board, Group killerGroup)
         {
@@ -322,10 +319,10 @@ namespace Go
             if (!WallHelper.StrongGroups(board, diagonalGroups))
                 return false;
 
+            //ensure all groups are connected
             List<LinkedPoint<Point>> checkedDiagonals = new List<LinkedPoint<Point>>();
             foreach (Group diagonalGroup in diagonalGroups)
             {
-                //ensure all groups are connected
                 foreach (LinkedPoint<Point> diagonal in LinkHelper.GetGroupLinkedDiagonals(board, diagonalGroup))
                 {
                     Group group = board.GetGroupAt(diagonal.Move);
@@ -337,29 +334,22 @@ namespace Go
                 }
             }
 
-            //check for covered eye killer group
-            if (killerGroup.Points.Any(p => EyeHelper.IsCovered(board, p, c.Opposite()))) return false;
-
-            //possible corner six formation
-            if (KillerFormationHelper.OneByThreeFormation(board, killerGroup) && killerGroup.Points.Any(n => board.CornerPoint(n)))
-                return false;
-
             //check opponent stones within killer group
             List<Point> opponentStones = killerGroup.Points.Where(p => board[p] == c).ToList();
-            if (!opponentStones.Any()) return true;
-
-            HashSet<Group> opponentGroups = board.GetGroupsFromPoints(opponentStones);
-            if (opponentGroups.Count == 1 && ImmovableHelper.CheckConnectAndDie(board, opponentGroups.First(), false))
+            if (!opponentStones.Any())
                 return true;
 
-            //ensure all liberties cannot create eye for opponent
-            if (killerGroup.Points.Where(p => board[p] == Content.Empty).All(n => NoEyeForOpponentWithinKillerGroup(board, n, c)))
-                return true;
-
-            if (WallHelper.TargetWithAnyNonKillableGroup(board, killerGroup))
-                return true;
-
-            return false;
+            foreach (Group group in board.GetGroupsFromPoints(opponentStones))
+            {
+                if (!ImmovableHelper.CheckConnectAndDie(board, group, false))
+                    return false;
+                foreach (LinkedPoint<Point> p in LinkHelper.GetGroupLinkedDiagonals(board, group))
+                {
+                    if (LinkHelper.PointsBetweenDiagonals(p).All(n => board[n] == c.Opposite() && diagonalGroups.Contains(board.GetGroupAt(n))))
+                        return false;
+                }
+            }
+            return true;
         }
 
         /// <summary>

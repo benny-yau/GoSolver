@@ -16,15 +16,19 @@ namespace Go
             if (nstones.Count(n => board[n] == c) != nstones.Count - 1) return null;
             if (content == Content.Empty)
             {
-                //make move into tiger mouth
-                Board b = board.MakeMoveOnNewBoard(p, c.Opposite(), true);
-                if (b == null || b.MoveGroupLiberties != 1) return null;
-                return b.MoveGroup.Liberties.First();
+                if (board.GetGroupsFromStoneNeighbours(p, c.Opposite()).Any(n => n.Liberties.Count == 1)) return null;
+                Point libertyPoint = nstones.First(n => board[n] != c);
+                if (board[libertyPoint] == Content.Empty)
+                    return libertyPoint;
+                Group group = board.GetGroupAt(libertyPoint);
+                if (group.Liberties.Count == 2)
+                    return group.Liberties.First(n => !n.Equals(p));
             }
             else if (content == c.Opposite())
             {
-                Board b = ImmovableHelper.CaptureSuicideGroup(p, board);
-                if (b != null) return b.Move;
+                Group group = board.GetGroupAt(p);
+                if (group.Liberties.Count == 1)
+                    return group.Liberties.First();
             }
             return null;
         }
@@ -259,18 +263,18 @@ namespace Go
         /// Recursive connect and die <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A44_101Weiqi" />
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q17255" />
         /// </summary>
-        public static (Boolean, Board) UnescapableGroup(Board tryBoard, Group targetGroup, Boolean koEnabled = true)
+        public static (Boolean, Board) UnescapableGroup(Board board, Group targetGroup, Boolean koEnabled = true)
         {
-            Group group = tryBoard.GetCurrentGroup(targetGroup);
+            Group group = board.GetCurrentGroup(targetGroup);
             if (group.Liberties.Count != 1) return (false, null);
 
             //check escape by capture
-            Board captureBoard = EscapeByCapture(tryBoard, group, koEnabled);
+            Board captureBoard = EscapeByCapture(board, group, koEnabled);
             if (captureBoard != null)
                 return (false, captureBoard);
 
             //make move at liberty
-            Board escapeBoard = MakeMoveAtLiberty(tryBoard, group);
+            Board escapeBoard = MakeMoveAtLiberty(board, group);
 
             //recursive connect and die
             if (escapeBoard == null || escapeBoard.MoveGroupLiberties == 1 || CheckConnectAndDie(escapeBoard, group, !koEnabled))
@@ -286,12 +290,12 @@ namespace Go
         /// Connect and die <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
         /// Connect and die for move group <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_GuanZiPu_A3" />
         /// </summary>
-        public static Board EscapeByCapture(Board tryBoard, Group group, Boolean koEnabled = true)
+        public static Board EscapeByCapture(Board board, Group group, Boolean koEnabled = true)
         {
-            foreach (Group target in AtariHelper.AtariByGroup(group, tryBoard, koEnabled))
+            foreach (Group target in AtariHelper.AtariByGroup(group, board, koEnabled))
             {
                 //make capture move
-                (_, Board b) = ImmovableHelper.IsSuicidalOnCapture(tryBoard, target, koEnabled);
+                (_, Board b) = ImmovableHelper.IsSuicidalOnCapture(board, target, koEnabled);
                 if (b == null) continue;
                 //connect and die
                 if (CheckConnectAndDie(b, group, !koEnabled))
@@ -304,11 +308,11 @@ namespace Go
         /// <summary>
         /// Precheck not suicidal.
         /// </summary>
-        public static Boolean PrecheckNotSuicidal(Board tryBoard, Point p, Content c)
+        public static Boolean PrecheckNotSuicidal(Board board, Point p, Content c)
         {
-            if (tryBoard.GetMoveLiberties(p).Count() >= 2)
+            if (board.GetMoveLiberties(p).Count() >= 2)
                 return true;
-            if (tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Any(n => n.Liberties.Count >= 3))
+            if (board.GetGroupsFromStoneNeighbours(p, c.Opposite()).Any(n => n.Liberties.Count >= 3))
                 return true;
             return false;
         }
@@ -316,11 +320,11 @@ namespace Go
         /// <summary>
         /// Is suicidal move.
         /// </summary>
-        public static Boolean IsSuicidalMove(Board tryBoard, Point p, Content c, Boolean overrideKo = false)
+        public static Boolean IsSuicidalMove(Board board, Point p, Content c, Boolean overrideKo = false)
         {
-            if (PrecheckNotSuicidal(tryBoard, p, c))
+            if (PrecheckNotSuicidal(board, p, c))
                 return false;
-            return IsSuicidalMove(p, c, tryBoard, overrideKo).Item1;
+            return IsSuicidalMove(p, c, board, overrideKo).Item1;
         }
 
         /// <summary>
@@ -329,14 +333,14 @@ namespace Go
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_A80_2" />
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_WuQingYuan_Q31503" />
         /// </summary>
-        public static (Boolean, Board) IsSuicidalMove(Point p, Content c, Board tryBoard, Boolean overrideKo = false)
+        public static (Boolean, Board) IsSuicidalMove(Point p, Content c, Board board, Boolean overrideKo = false)
         {
-            if (EyeHelper.FindEye(tryBoard, p, c.Opposite()))
+            if (EyeHelper.FindEye(board, p, c.Opposite()))
             {
-                List<Group> eyeGroups = tryBoard.GetGroupsFromStoneNeighbours(p, c).ToList();
+                List<Group> eyeGroups = board.GetGroupsFromStoneNeighbours(p, c).ToList();
                 if (eyeGroups.All(n => n.Liberties.Count > 1)) return (true, null);
             }
-            Board b = tryBoard.MakeMoveOnNewBoard(p, c, overrideKo);
+            Board b = board.MakeMoveOnNewBoard(p, c, overrideKo);
             if (b == null) return (true, null);
             if (b.MoveGroupLiberties != 1) return (false, b);
             if (KoHelper.IsKoFight(b))
@@ -350,23 +354,23 @@ namespace Go
         /// <summary>
         /// Is suicidal without ko.
         /// </summary>
-        public static Boolean IsSuicidalWithoutKo(Board tryBoard, Group group = null)
+        public static Boolean IsSuicidalWithoutKo(Board board, Group group = null)
         {
-            if (group == null) group = tryBoard.MoveGroup;
-            else group = tryBoard.GetCurrentGroup(group);
-            return group.Liberties.Count == 1 && !KoHelper.IsKoFight(tryBoard, group);
+            if (group == null) group = board.MoveGroup;
+            else group = board.GetCurrentGroup(group);
+            return group.Liberties.Count == 1 && !KoHelper.IsKoFight(board, group);
         }
 
         /// <summary>
         /// Is suicide move on capture.
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_B28_2" />
         /// </summary>
-        public static (Boolean, Board) IsSuicidalOnCapture(Board tryBoard, Group targetGroup = null, Boolean koEnabled = false)
+        public static (Boolean, Board) IsSuicidalOnCapture(Board board, Group targetGroup = null, Boolean koEnabled = false)
         {
-            Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, targetGroup, koEnabled);
+            Board b = ImmovableHelper.CaptureSuicideGroup(board, targetGroup, koEnabled);
             if (b == null)
             {
-                if (KoHelper.IsKoFight(tryBoard, targetGroup)) return (true, null);
+                if (KoHelper.IsKoFight(board, targetGroup)) return (true, null);
                 return (false, null);
             }
             if (b.MoveGroupLiberties != 1) return (false, b);
@@ -399,11 +403,11 @@ namespace Go
         /// <summary>
         /// Make move at liberty.
         /// </summary>
-        public static Board MakeMoveAtLiberty(Board tryBoard, Group group)
+        public static Board MakeMoveAtLiberty(Board board, Group group)
         {
-            List<Point> liberties = tryBoard.GetGroupLiberties(group);
+            List<Point> liberties = board.GetGroupLiberties(group);
             if (liberties.Count != 1) return null;
-            return tryBoard.MakeMoveOnNewBoard(liberties.First(), group.Content);
+            return board.MakeMoveOnNewBoard(liberties.First(), group.Content);
         }
 
         /// <summary>
@@ -426,17 +430,17 @@ namespace Go
         /// <summary>
         /// Is suicidal move for both players.
         /// </summary>
-        public static Boolean IsSuicidalMoveForBothPlayers(Board tryBoard, Point p, Boolean connectAndDie = false)
+        public static Boolean IsSuicidalMoveForBothPlayers(Board board, Point p, Boolean connectAndDie = false)
         {
             if (!connectAndDie)
             {
-                if (ImmovableHelper.IsSuicidalMove(tryBoard, p, Content.Black) && ImmovableHelper.IsSuicidalMove(tryBoard, p, Content.White))
+                if (ImmovableHelper.IsSuicidalMove(board, p, Content.Black) && ImmovableHelper.IsSuicidalMove(board, p, Content.White))
                     return true;
             }
             else
             {
-                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, Content.Black, tryBoard);
-                (Boolean suicidal2, Board b2) = ImmovableHelper.IsSuicidalMove(p, Content.White, tryBoard);
+                (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, Content.Black, board);
+                (Boolean suicidal2, Board b2) = ImmovableHelper.IsSuicidalMove(p, Content.White, board);
                 if ((suicidal || ImmovableHelper.CheckConnectAndDie(b)) && (suicidal2 || ImmovableHelper.CheckConnectAndDie(b2)))
                     return true;
             }
@@ -575,22 +579,6 @@ namespace Go
         public static Boolean CheckConnectAndDie(Board board, Group targetGroup = null, Boolean koEnabled = true)
         {
             return ConnectAndDie(board, targetGroup, koEnabled).Item1;
-        }
-
-        /// <summary>
-        /// Check connect and die for captured board.
-        /// </summary>
-        public static Boolean AllConnectAndDie(Board capturedBoard, Point p, Content c = Content.Unknown)
-        {
-            if (c == Content.Unknown)
-            {
-                List<Point> nstones = capturedBoard.GetStoneNeighbours(p).Where(q => capturedBoard[q] != Content.Empty).ToList();
-                c = capturedBoard[nstones.First()];
-                if (nstones.Any(n => capturedBoard[n] != c))
-                    throw new Exception("Different content in connect and die.");
-            }
-            List<Group> ngroups = capturedBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).ToList();
-            return ngroups.Any(group => CheckConnectAndDie(capturedBoard, group));
         }
 
         /// <summary>

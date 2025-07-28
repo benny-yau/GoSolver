@@ -679,8 +679,7 @@ namespace Go
 
                 //cut diagonal and kill
                 Point q = LinkHelper.PointsBetweenDiagonals(npoints[0], npoints[1]).First(n => !n.Equals(move));
-                Boolean suicidalAtDiagonal = tryBoard[q] == Content.Empty && ImmovableHelper.IsSuicidalMove(tryBoard, q, c, true);
-                if (suicidalAtDiagonal && ngroups.All(n => WallHelper.IsStrongGroup(tryBoard, n)))
+                if (tryBoard[q] == Content.Empty && ImmovableHelper.IsSuicidalMove(tryBoard, q, c, true))
                     return true;
             }
 
@@ -1284,8 +1283,8 @@ namespace Go
             if (tryBoard.GetGroupsFromStoneNeighbours().Any(n => !WallHelper.IsStrongGroup(tryBoard, n)))
                 return false;
 
-            List<Point> rc = tryBoard.GetClosestPoints(move, c.Opposite(), 2);
-            if (rc.Count(r => !WallHelper.IsNonKillableGroup(tryBoard, r)) >= 2)
+            List<Point> rc = tryBoard.GetClosestPoints(move, c.Opposite(), 3);
+            if (rc.Count(r => !WallHelper.IsNonKillableGroup(tryBoard, r)) >= 3)
                 return false;
 
             //check leap move to target
@@ -2398,5 +2397,40 @@ namespace Go
             return killerGroups.All(n => EyeHelper.FindRealEyeOfAnyKillerGroup(b, n));
         }
         #endregion
+
+        #region filler move
+
+        /// <summary>
+        /// Redundant filler move.
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q6150_2" /> 
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20250311_8" /> 
+        /// </summary>
+        public static Boolean RedundantFillerMove(GameTryMove tryMove)
+        {
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryMove.Move;
+            Content c = tryBoard.MoveGroup.Content;
+
+            if (!tryMove.IsNegligible)
+                return false;
+            if (tryBoard.GetClosestPoints(move, c.Opposite(), 2).Any()) 
+                return false;
+            int possibleSpace = PossibleSpace(currentBoard, move, c);
+            List<int> npossibleSpace = tryBoard.GetMoveLiberties().Select(n => PossibleSpace(currentBoard, n, c)).ToList();
+            if (npossibleSpace.Any(n => n > possibleSpace) && !npossibleSpace.Any(n => n < possibleSpace))
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Possible space.
+        /// </summary>
+        public static int PossibleSpace(Board board, Point p, Content c)
+        {
+            return board.GetStoneNeighbours(p).Count(n => board[n] != c);
+        }
+        #endregion
+
     }
 }
