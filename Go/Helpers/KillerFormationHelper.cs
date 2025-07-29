@@ -1190,53 +1190,5 @@ namespace Go
             return false;
         }
 
-        /// <summary>
-        /// Return number of possible eyes that can be created at stone neighbour points.
-        /// </summary>
-        public static int PossibleEyesCreated(Board currentBoard, Point p, Content c)
-        {
-            List<Point> nstones = currentBoard.GetStoneNeighbours(p);
-            List<Point> possibleEyes = nstones.Where(n => currentBoard[n] != c).ToList();
-            return possibleEyes.Count;
-        }
-
-        /// <summary>
-        /// Point for killer to form max binding.
-        /// Ordering <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36_2" />
-        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q30919_2" />
-        /// Check for opponent break formation <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A80_3" />
-        /// </summary>
-        public static Point? GetMaxBindingPoint(Board currentBoard, IEnumerable<Board> killBoards, Group killerGroup)
-        {
-            Content c = killerGroup.Content;
-            List<LinkedPoint<Point>> list = new List<LinkedPoint<Point>>();
-            foreach (Board b in killBoards)
-            {
-                Point p = b.Move.Value;
-                List<Point> movePoints = b.MoveGroup.Points.ToList();
-                int maxLengthOfGrid = MaxLengthOfGrid(movePoints);
-                int maxIntersect = movePoints.Max(q => b.GetStoneNeighbours(q).Intersect(movePoints).Count());
-                int moveGroupLiberties = b.MoveGroupLiberties;
-                list.Add(new LinkedPoint<Point>(p, new { maxLengthOfGrid, maxIntersect, moveGroupLiberties, b }));
-            }
-            //order by grid length then by max of intersection then by move group liberties
-            list = list.OrderBy(m => ((dynamic)m.CheckMove).maxLengthOfGrid).ThenByDescending(m => ((dynamic)m.CheckMove).maxIntersect).ThenByDescending(m => ((dynamic)m.CheckMove).moveGroupLiberties).ToList();
-
-            //check for equals in ordering
-            if (list.Count == 1) return list.First().Move;
-            dynamic moveA = list[0].CheckMove;
-            dynamic moveB = list[1].CheckMove;
-            if (moveA.maxLengthOfGrid == moveB.maxLengthOfGrid && moveA.maxIntersect == moveB.maxIntersect && moveA.moveGroupLiberties == moveB.moveGroupLiberties)
-                return null;
-
-            //check for opponent break formation
-            if (killerGroup.Points.Count == 2 && killerGroup.Points.Any(p => currentBoard.CornerPoint(p)))
-            {
-                Board killBoard = killBoards.FirstOrDefault(b => OpponentBreakKillFormation(b, currentBoard));
-                if (killBoard != null) return killBoard.Move.Value;
-            }
-            return list.First().Move;
-        }
-
     }
 }
