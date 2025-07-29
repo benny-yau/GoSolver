@@ -103,13 +103,13 @@ namespace Go
         /// </summary>
         public static Boolean FindNonSemiSolidEye(Board board, Point eye, Content c)
         {
-            return EyeHelper.FindUncoveredEye(board, eye, c) && !EyeHelper.FindSemiSolidEye(eye, board, c).Item1;
+            return EyeHelper.FindUncoveredEye(board, eye, c) && !EyeHelper.FindSemiSolidEye(board, eye, c).Item1;
         }
 
         /// <summary>
         /// Find semi solid eye.
         /// </summary>
-        public static (Boolean, List<Point>) FindSemiSolidEye(Point eye, Board board, Content c)
+        public static (Boolean, List<Point>) FindSemiSolidEye(Board board, Point eye, Content c)
         {
             GameInfo gameInfo = board.GameInfo;
             if (!FindEye(board, eye, c)) return (false, null);
@@ -120,7 +120,7 @@ namespace Go
                 return (false, null);
 
             //get suicide point or tiger's mouth at all diagonals
-            List<Point> immovablePoints = GetImmovablePoints(eye, board, c);
+            List<Point> immovablePoints = GetImmovablePoints(board, eye, c);
             Boolean found = false;
             List<Point> diagonals = board.GetDiagonalNeighbours(eye);
             int stoneCount = diagonals.Count(d => board[d] == c);
@@ -136,7 +136,7 @@ namespace Go
         /// <summary>
         /// Get all immovable points.
         /// </summary>
-        private static List<Point> GetImmovablePoints(Point eyePoint, Board board, Content c)
+        private static List<Point> GetImmovablePoints(Board board, Point eyePoint, Content c)
         {
             List<Point> immovablePoints = new List<Point>();
             foreach (Point p in board.GetDiagonalNeighbours(eyePoint))
@@ -152,7 +152,7 @@ namespace Go
         /// <summary>
         /// Find real solid eye.
         /// </summary>
-        public static Boolean FindRealSolidEye(Point eye, Content c, Board board)
+        public static Boolean FindRealSolidEye(Board board, Point eye, Content c)
         {
             if (!FindUncoveredEye(board, eye, c))
                 return false;
@@ -203,18 +203,10 @@ namespace Go
             if (killerGroup.Points.Count > 3)
                 return false;
 
-            //ensure all groups have more than one liberty
-            List<Group> eyeGroups = board.GetNeighbourGroups(killerGroup);
-            if (eyeGroups.Count > 1 && eyeGroups.Any(n => n.Liberties.Count == 1))
-                return false;
-
-            Board b = new Board(board);
-            b.LastMoves.Clear();
-
             //find real eye
-            if (MakeMoveWithinEmptySpace(b, killerGroup, eyeType))
+            if (CheckRealEyeWithinEmptySpace(board, killerGroup, eyeType))
             {
-                if (eyeGroups.Count == 1 || eyeType != EyeType.SemiSolidEye)
+                if (eyeType != EyeType.SemiSolidEye)
                     return true;
 
                 //check two opponent stones
@@ -263,13 +255,13 @@ namespace Go
             if (availablePoints.Count == 0)
             {
                 if (eyeType == EyeType.SemiSolidEye)
-                    return killerGroup.Points.Any(k => board[k] == Content.Empty && FindSemiSolidEye(k, board, c.Opposite()).Item1);
+                    return killerGroup.Points.Any(k => board[k] == Content.Empty && FindSemiSolidEye(board, k, c.Opposite()).Item1);
                 else if (eyeType == EyeType.UnCoveredEye)
                     return killerGroup.Points.Any(k => board[k] == Content.Empty && FindUncoveredEye(board, k, c.Opposite()));
                 else if (eyeType == EyeType.CoveredEye)
                     return killerGroup.Points.Any(k => board[k] == Content.Empty && FindCoveredEye(board, k, c.Opposite()));
                 else if (eyeType == EyeType.RealSolidEye)
-                    return killerGroup.Points.Any(k => board[k] == Content.Empty && FindRealSolidEye(k, c.Opposite(), board));
+                    return killerGroup.Points.Any(k => board[k] == Content.Empty && FindRealSolidEye(board, k, c.Opposite()));
             }
             //alternate the player content
             Content content = (board.LastMoves.Count % 2 == 0) ? c : c.Opposite();
@@ -292,17 +284,43 @@ namespace Go
                 //make opponent move
                 result = MakeMoveWithinEmptySpace(b, killerGroup, eyeType);
                 //return result
-                if (!result && eyeType != EyeType.CoveredEye)
-                    return false;
-                if (result && eyeType == EyeType.CoveredEye)
-                    return true;
+                if (eyeType == EyeType.CoveredEye)
+                {
+                    if (result) return true;
+                }
+                else
+                {
+                    if (content == c && result == false)
+                        return false;
+                    if (content == c.Opposite() && result == true)
+                        return true;
+                }
             }
             return result;
         }
 
         /// <summary>
+        /// Check real eye within empty space. 
+        /// </summary>
+        public static Boolean CheckRealEyeWithinEmptySpace(Board board, Group killerGroup, EyeType eyeType = EyeType.SemiSolidEye)
+        {
+            //ensure all groups have more than one liberty
+            List<Group> eyeGroups = board.GetNeighbourGroups(killerGroup);
+            if (eyeGroups.Count == 1)
+                return true;
+            if (eyeGroups.Any(n => n.Liberties.Count == 1))
+                return false;
+
+            Board b = new Board(board);
+            b.LastMoves.Clear();
+
+            return MakeMoveWithinEmptySpace(b, killerGroup, eyeType);
+        }
+
+        /// <summary>
         /// Real eye of diagonally connected groups.
         /// Ensure all groups are connected <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_ScenarioHighLevel28" /> 
+        /// Check four point group <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_B28_2" />
         /// Check opponent stones within killer group <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_A67_101Weiqi" /> 
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" /> 
         /// </summary>
@@ -333,6 +351,10 @@ namespace Go
                     checkedDiagonals.Add(diagonal);
                 }
             }
+
+            //check four point group
+            if (killerGroup.Points.Count == 4 && !CheckRealEyeWithinEmptySpace(board, killerGroup))
+                return false;
 
             //check opponent stones within killer group
             List<Point> opponentStones = killerGroup.Points.Where(p => board[p] == c).ToList();

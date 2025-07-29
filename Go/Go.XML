@@ -429,17 +429,17 @@
             Find non semi solid eye.
             </summary>
         </member>
-        <member name="M:Go.EyeHelper.FindSemiSolidEye(Go.Point,Go.Board,Go.Content)">
+        <member name="M:Go.EyeHelper.FindSemiSolidEye(Go.Board,Go.Point,Go.Content)">
             <summary>
             Find semi solid eye.
             </summary>
         </member>
-        <member name="M:Go.EyeHelper.GetImmovablePoints(Go.Point,Go.Board,Go.Content)">
+        <member name="M:Go.EyeHelper.GetImmovablePoints(Go.Board,Go.Point,Go.Content)">
             <summary>
             Get all immovable points.
             </summary>
         </member>
-        <member name="M:Go.EyeHelper.FindRealSolidEye(Go.Point,Go.Content,Go.Board)">
+        <member name="M:Go.EyeHelper.FindRealSolidEye(Go.Board,Go.Point,Go.Content)">
             <summary>
             Find real solid eye.
             </summary>
@@ -470,10 +470,16 @@
             Make move within empty space, to check if the required eye type can be produced. 
             </summary>
         </member>
+        <member name="M:Go.EyeHelper.CheckRealEyeWithinEmptySpace(Go.Board,Go.Group,Go.EyeType)">
+            <summary>
+            Check real eye within empty space. 
+            </summary>
+        </member>
         <member name="M:Go.EyeHelper.RealEyeOfDiagonallyConnectedGroups(Go.Board,Go.Group)">
             <summary>
             Real eye of diagonally connected groups.
             Ensure all groups are connected <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_ScenarioHighLevel28" /> 
+            Check four point group <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_B28_2" />
             Check opponent stones within killer group <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_A67_101Weiqi" /> 
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" /> 
             </summary>
@@ -788,11 +794,6 @@
         <member name="M:Go.ImmovableHelper.CheckConnectAndDie(Go.Board,Go.Group,System.Boolean)">
             <summary>
             Check connect and die.
-            </summary>
-        </member>
-        <member name="M:Go.ImmovableHelper.AllConnectAndDie(Go.Board,Go.Point,Go.Content)">
-            <summary>
-            Check connect and die for captured board.
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.SuicideAtBigTigerMouth(Go.GameTryMove)">
@@ -2015,6 +2016,7 @@
             Redundant filler move.
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q6150_2" /> 
             <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20250311_8" /> 
+            Not redundant <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_B10_2" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.PossibleSpace(Go.Board,Go.Point,Go.Content)">

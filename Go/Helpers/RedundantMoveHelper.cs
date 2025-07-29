@@ -983,7 +983,7 @@ namespace Go
             Content c = tryMove.MoveContent;
 
             //ensure semi-solid eye
-            if (!EyeHelper.FindSemiSolidEye(move, capturedBoard, c.Opposite()).Item1)
+            if (!EyeHelper.FindSemiSolidEye(capturedBoard, move, c.Opposite()).Item1)
                 return false;
 
             //opponent break kill formation
@@ -1078,7 +1078,7 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
 
-            if (EyeHelper.FindRealSolidEye(move, c.Opposite(), captureBoard))
+            if (EyeHelper.FindRealSolidEye(captureBoard, move, c.Opposite()))
                 return true;
 
             //check eye groups
@@ -1985,7 +1985,7 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
             //suicide within real eye at suicidal redundant move
-            if (EyeHelper.FindSemiSolidEye(move, capturedBoard, c.Opposite()).Item1)
+            if (EyeHelper.FindSemiSolidEye(capturedBoard, move, c.Opposite()).Item1)
                 return false;
             //check for covered eye
             if (EyeHelper.IsCovered(tryBoard, move, c.Opposite()))
@@ -2042,7 +2042,6 @@ namespace Go
             //get diagonals
             List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(q => tryBoard[q] != c).ToList();
             diagonals = diagonals.Where(eye => LinkHelper.PointsBetweenDiagonals(eye, move).All(d => tryBoard[d] == c)).ToList();
-            if (diagonals.Count == 0) return false;
             diagonals.RemoveAll(d => GroupHelper.GetDirectKillerGroup(currentBoard, d, c) == null);
             if (diagonals.Count == 0) return false;
 
@@ -2052,9 +2051,6 @@ namespace Go
             Board opponentBoard = opponentMove.TryGame.Board;
             //check diagonals are real eyes
             if (!diagonals.All(eye => EyeHelper.FindRealEyeWithinEmptySpace(opponentBoard, eye, c)))
-                return false;
-            //ensure no weak groups
-            if (diagonals.Count > 1 && LinkHelper.GetPreviousMoveGroup(currentBoard, opponentBoard).Count(n => n.Liberties.Count <= 2) >= 2)
                 return false;
 
             //check other surrounding points are not possible eyes
@@ -2068,7 +2064,6 @@ namespace Go
 
             if (CoveredPointSuicidalMove(opponentMove))
                 return false;
-
             return true;
         }
 
@@ -2404,6 +2399,7 @@ namespace Go
         /// Redundant filler move.
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q6150_2" /> 
         /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20250311_8" /> 
+        /// Not redundant <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_B10_2" />
         /// </summary>
         public static Boolean RedundantFillerMove(GameTryMove tryMove)
         {
