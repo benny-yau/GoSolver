@@ -2194,7 +2194,7 @@ namespace Go
 
         /// <summary>
         /// Redundant filler move.
-        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q6150_2" /> 
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q17132" /> 
         /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20250311_8" /> 
         /// Not redundant <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_B10_2" />
         /// Check diagonal cut <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_A171_101Weiqi" />
@@ -2221,13 +2221,20 @@ namespace Go
             List<int> npossibleSpace = tryBoard.GetMoveLiberties().Select(n => PossibleSpace(currentBoard, n, c)).ToList();
             if (npossibleSpace.Any(n => n < possibleSpace))
                 return false;
-            if (!npossibleSpace.Any(n => n > possibleSpace))
-                return false;
+            if (npossibleSpace.Any(n => n > possibleSpace))
+            {
+                //check diagonal cut
+                if (LinkHelper.FindDiagonalCut(tryBoard, tryBoard.MoveGroup, false).Item1 == null)
+                    return true;
+            }
 
-            //check diagonal cut
-            if (LinkHelper.FindDiagonalCut(tryBoard, tryBoard.MoveGroup, false).Item1 != null)
-                return false;
-            return true;
+            //check edge points
+            if (!tryBoard.CornerPoint(move) && !tryBoard.PointWithinMiddleArea(move) && npossibleSpace.Any(n => n >= possibleSpace))
+            {
+                if (!tryBoard.GetClosestPoints(move, c.Opposite(), 2).Any() && !tryMove.IncreasedKillerGroups)
+                    return true;
+            }
+            return false;
         }
 
         /// <summary>

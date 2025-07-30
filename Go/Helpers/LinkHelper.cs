@@ -557,10 +557,10 @@ namespace Go
             Content c = group.Content;
             foreach (LinkedPoint<Point> p in GetGroupLinkedDiagonals(board, group))
             {
-                if (board.GetGroupAt(p.Move).Liberties.Count == 1) continue;
-                if (board.GetGroupAt((Point)p.CheckMove).Liberties.Count == 1) continue;
+                if (ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt(p.Move))) continue;
+                if (ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt((Point)p.CheckMove))) continue;
                 List<Point> diagonals = PointsBetweenDiagonals(p);
-                if (diagonals.All(d => board[d] == c.Opposite() && board.GetGroupAt(d).Liberties.Count > 1 && (!checkOpponent || WallHelper.IsStrongGroup(board, board.GetGroupAt(d)))))
+                if (diagonals.All(d => board[d] == c.Opposite() && !ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt(d)) && (!checkOpponent || WallHelper.IsStrongGroup(board, board.GetGroupAt(d)))))
                     return (p.Move, diagonals);
             }
             return (null, null);
