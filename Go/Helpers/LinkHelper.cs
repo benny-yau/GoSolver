@@ -552,15 +552,15 @@ namespace Go
         /// <summary>
         /// Find diagonal cut.
         /// </summary>
-        public static (Point?, List<Point>) FindDiagonalCut(Board board, Group group)
+        public static (Point?, List<Point>) FindDiagonalCut(Board board, Group group, Boolean checkOpponent = true)
         {
             Content c = group.Content;
             foreach (LinkedPoint<Point> p in GetGroupLinkedDiagonals(board, group))
             {
-                if (ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt(p.Move))) continue;
-                if (ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt((Point)p.CheckMove))) continue;
+                if (board.GetGroupAt(p.Move).Liberties.Count == 1) continue;
+                if (board.GetGroupAt((Point)p.CheckMove).Liberties.Count == 1) continue;
                 List<Point> diagonals = PointsBetweenDiagonals(p);
-                if (diagonals.All(d => board[d] == c.Opposite() && WallHelper.IsStrongGroup(board, board.GetGroupAt(d))))
+                if (diagonals.All(d => board[d] == c.Opposite() && board.GetGroupAt(d).Liberties.Count > 1 && (!checkOpponent || WallHelper.IsStrongGroup(board, board.GetGroupAt(d)))))
                     return (p.Move, diagonals);
             }
             return (null, null);

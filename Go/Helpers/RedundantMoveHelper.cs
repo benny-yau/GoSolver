@@ -745,7 +745,7 @@ namespace Go
         {
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
-            if (!tryBoard.GetMoveLiberties().Any() && !Board.ResolveAtari(currentBoard, tryBoard))
+            if (!tryBoard.GetMoveLiberties().Any() && !tryMove.AtariResolved)
                 return false;
             if (CheckWeakGroup(tryBoard))
                 return true;
@@ -2197,6 +2197,8 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q6150_2" /> 
         /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20250311_8" /> 
         /// Not redundant <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_B10_2" />
+        /// Check diagonal cut <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_A171_101Weiqi" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario3dan22" />
         /// </summary>
         public static Boolean RedundantFillerMove(GameTryMove tryMove)
         {
@@ -2207,13 +2209,25 @@ namespace Go
 
             if (!tryMove.IsNegligible)
                 return false;
-            if (tryBoard.GetClosestPoints(move, c.Opposite(), 2).Any()) 
+
+            //check opponent
+            if (OpponentAtStoneNeighbour(tryBoard, move, c))
                 return false;
+            if (tryBoard.GetStoneNeighbours().Any(n => OpponentAtStoneNeighbour(tryBoard, n, c)))
+                return false;
+
+            //check possible space
             int possibleSpace = PossibleSpace(currentBoard, move, c);
             List<int> npossibleSpace = tryBoard.GetMoveLiberties().Select(n => PossibleSpace(currentBoard, n, c)).ToList();
-            if (npossibleSpace.Any(n => n > possibleSpace) && !npossibleSpace.Any(n => n < possibleSpace))
-                return true;
-            return false;
+            if (npossibleSpace.Any(n => n < possibleSpace))
+                return false;
+            if (!npossibleSpace.Any(n => n > possibleSpace))
+                return false;
+
+            //check diagonal cut
+            if (LinkHelper.FindDiagonalCut(tryBoard, tryBoard.MoveGroup, false).Item1 != null)
+                return false;
+            return true;
         }
 
         /// <summary>
@@ -2223,6 +2237,15 @@ namespace Go
         {
             return board.GetStoneNeighbours(p).Count(n => board[n] != c);
         }
+
+        /// <summary>
+        /// Opponent at stone neighbour.
+        /// </summary>
+        public static Boolean OpponentAtStoneNeighbour(Board board, Point p, Content c)
+        {
+            return board.GetStoneNeighbours(p).Any(n => board[n] == c.Opposite());
+        }
+
         #endregion
 
     }

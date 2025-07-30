@@ -914,7 +914,7 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A8" />
             <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A113" />
             Check move liberty <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_8" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499_3" />
+            <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_B41_2" />
             Whole group dying <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36" />
             Bent four corner formation <see cref="!:UnitTestProject.BentFourTest.BentFourTest_Scenario7kyu26_3" />
             Corner six formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
@@ -1300,7 +1300,7 @@
             Get the opposite diagonals of the two diagonal points.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.FindDiagonalCut(Go.Board,Go.Group)">
+        <member name="M:Go.LinkHelper.FindDiagonalCut(Go.Board,Go.Group,System.Boolean)">
             <summary>
             Find diagonal cut.
             </summary>
@@ -1937,11 +1937,18 @@
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q6150_2" /> 
             <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20250311_8" /> 
             Not redundant <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_B10_2" />
+            Check diagonal cut <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_A171_101Weiqi" />
+            <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario3dan22" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.PossibleSpace(Go.Board,Go.Point,Go.Content)">
             <summary>
             Possible space.
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.OpponentAtStoneNeighbour(Go.Board,Go.Point,Go.Content)">
+            <summary>
+            Opponent at stone neighbour.
             </summary>
         </member>
         <member name="M:Go.ResultHelper.GameEndedMessage(Go.ConfirmAliveResult,Go.Game)">

@@ -306,7 +306,7 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A8" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A113" />
         /// Check move liberty <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_8" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499_3" />
+        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_B41_2" />
         /// Whole group dying <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36" />
         /// Bent four corner formation <see cref="UnitTestProject.BentFourTest.BentFourTest_Scenario7kyu26_3" />
         /// Corner six formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
@@ -322,11 +322,14 @@ namespace Go
                 return false;
 
             //check move liberty
-            if (tryBoard.GetMoveLiberties().Any())
+            List<Point> liberties = tryBoard.GetMoveLiberties();
+            if (liberties.Any())
             {
                 if (SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                     return false;
-                if (tryBoard.MoveGroup.Points.Count >= 5 && LinkHelper.GetMoveDiagonals(tryBoard).Any() && tryBoard.GetMoveLiberties().Any(n => EyeHelper.IsCovered(tryBoard, n, c)))
+                if (tryBoard.MoveGroupLiberties == 2 && liberties.Any(n => EyeHelper.FindEye(tryBoard, n, c)))
+                    return false;
+                if (tryBoard.MoveGroup.Points.Count >= 5 && LinkHelper.GetMoveDiagonals(tryBoard).Any() && liberties.Any(n => EyeHelper.IsCovered(tryBoard, n, c)))
                     return false;
             }
 
