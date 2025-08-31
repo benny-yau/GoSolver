@@ -54,7 +54,7 @@ namespace Go
         public virtual void MappingFirstLevel(Game game)
         {
             Stopwatch watch = Stopwatch.StartNew();
-            List<GameTryMove> possibleMoves = State.GetAllPossibleMoves(game);
+            List<GameTryMove> possibleMoves = GameHelper.GetTryMovesForGame(game);
             Debug.WriteLine("Scenario: " + game.GameInfo.ScenarioName);
             String msg = "";
             foreach (GameTryMove g in possibleMoves)
@@ -122,7 +122,7 @@ namespace Go
         /// </summary>
         private void SecondLevelMappingForSolution(Game game, JObject move = null)
         {
-            List<GameTryMove> possibleMoves = State.GetAllPossibleMoves(game);
+            List<GameTryMove> possibleMoves = GameHelper.GetTryMovesForGame(game);
             for (int j = 0; j <= possibleMoves.Count - 1; j++)
             {
                 Game g = new Game(game);
@@ -187,7 +187,7 @@ namespace Go
             //if only two levels required as specified in config file then return
             if (!GameMapping.OneStopMapping) return;
 
-            List<GameTryMove> possibleMoves = State.GetAllPossibleMoves(game);
+            List<GameTryMove> possibleMoves = GameHelper.GetTryMovesForGame(game);
             for (int j = 0; j <= possibleMoves.Count - 1; j++)
             {
                 Game g = new Game(game);

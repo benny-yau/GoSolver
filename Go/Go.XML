@@ -117,34 +117,34 @@
         </member>
         <member name="M:Go.Game.InitializeComputerMove">
             <summary>
-            Initializes start of search for exhaustive or real-time mcts move (default).
+            Initialize computer move. Exhaustive search or real-time mcts move (default).
             To debug with exhaustive search, set USE_MONTE_CARLO_RUNTIME in app.config to false.
             </summary>
         </member>
         <member name="M:Go.Game.MakeExhaustiveSearch">
             <summary>
-            Start exhaustive search.
+            Make exhaustive search.
             </summary>
         </member>
         <member name="M:Go.Game.GetSurvivalMoves(Go.Game)">
             <summary>
-            Get all possible survival moves. Check if the game has ended with target survived. Check and remove redundant moves. 
+            Get survival moves. Check if the game has ended with target survived. Check and remove redundant moves. 
             For survive only, check for recursion and add pass move to check for both alive where necessary.
             </summary>
         </member>
         <member name="M:Go.Game.CheckSurvivalRedundantMoves(Go.GameTryMove)">
             <summary>
-            Check for various redundant moves for survival that can be eliminated to reduce range of possible moves.
+            Check survival redundant moves that can be eliminated to reduce range of possible moves.
             </summary>
         </member>
         <member name="M:Go.Game.CheckKillRedundantMoves(Go.GameTryMove)">
             <summary>
-            Check for various redundant moves for kill that can be eliminated to reduce range of possible moves.
+            Check kill redundant moves that can be eliminated to reduce range of possible moves.
             </summary>
         </member>
         <member name="M:Go.Game.MakeSurvivalMove(System.Int32,Go.Game)">
             <summary>
-            Make all possible survival moves by exhaustive search.
+            Make survival move by exhaustive search.
             </summary>
         </member>
         <member name="M:Go.Game.KoMoveCheck(Go.Game,Go.SurviveOrKill,Go.GameTryMove,System.Int32)">
@@ -154,7 +154,7 @@
         </member>
         <member name="M:Go.Game.GetKillMoves(Go.Game)">
             <summary>
-            Get all possible kill moves. Check if the game has ended with target killed. Check and remove redundant moves. 
+            Get kill moves. Check if the game has ended with target killed. Check and remove redundant moves. 
             For kill only, restore neutral points where necessary and add random move for kill where no move is available.
             </summary>
         </member>
@@ -171,7 +171,7 @@
         </member>
         <member name="M:Go.Game.CreateRandomMoveForKill(System.Collections.Generic.List{Go.GameTryMove},Go.Game)">
             <summary>
-            Create random move if no more try moves for kill.
+            Create random move for kill if no more try moves.
             <see cref="!:UnitTestProject.KoTest.KoTest_Scenario_WuQingYuan_Q31498" />
             <see cref="!:UnitTestProject.KoTest.KoTest_Scenario_TianLongTu_Q17077" />
             </summary>
@@ -189,7 +189,7 @@
         </member>
         <member name="M:Go.Game.MakeKillMove(System.Int32,Go.Game)">
             <summary>
-            Make all possible kill moves by exhaustive search.
+            Make kill move by exhaustive search.
             </summary>
         </member>
         <member name="T:Go.GameTryMove">
@@ -1952,6 +1952,14 @@
             Opponent at stone neighbour.
             </summary>
         </member>
+        <member name="M:Go.RedundantMoveHelper.RedundantNeuralNetMove(Go.GameTryMove)">
+            <summary>
+            Redundant neural net move. For use in LeelaSharp project.
+            <see cref="!:UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_20230423_8" />
+            Check killer formation <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31499" />
+            Check equal heat value in stone neighbours <see cref="!:UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_Scenario_Nie87" />
+            </summary>
+        </member>
         <member name="M:Go.ResultHelper.GameEndedMessage(Go.ConfirmAliveResult,Go.Game)">
             <summary>
             Display game ended message from flags in confirm alive result.
@@ -2244,29 +2252,19 @@
             Check if target group is dead or alive, including survival points check.
             </summary>
         </member>
-        <member name="M:Go.FirstRunMCTS.VerifyFirstNode(Go.Node)">
-            <summary>
-            Verify first node. Set depth to verify to higher value for difficult scenarios.
-            </summary>
-        </member>
-        <member name="M:Go.FirstRunMCTS.DeepCopyHalfOfNodes(Go.Node,Go.Node)">
-            <summary>
-            Deep copy half of nodes.
-            </summary>
-        </member>
-        <member name="M:Go.FirstRunMCTS.GetHalfOfNodes(Go.Node)">
-            <summary>
-            Get half of nodes.
-            </summary>
-        </member>
         <member name="M:Go.MonteCarloGame.InitializeMonteCarloComputerMove(Go.Game,Go.Node,System.Int32)">
             <summary>
-            Create new mcts search tree and initialize search.
+            Initialize monte carlo computer move.
             </summary>
         </member>
         <member name="M:Go.MonteCarloGame.MonteCarloRealTimeMove(Go.Game)">
             <summary>
-            Start mcts search for real-time move. Not used in mapping.
+            Monte carlo real-time move. Not used in mapping.
+            </summary>
+        </member>
+        <member name="M:Go.MonteCarloGame.GetResultForMCTS(Go.MonteCarloTreeSearch)">
+            <summary>
+            Get result for MCTS.
             </summary>
         </member>
         <member name="M:Go.MonteCarloGame.ResultBothAlive(Go.Game)">
@@ -2279,9 +2277,14 @@
             Json for search answer.
             </summary>
         </member>
-        <member name="M:Go.MonteCarloGame.SetupLeelazGame(Go.Game)">
+        <member name="M:Go.MonteCarloGame.GetHeatMap(Go.Game)">
             <summary>
-            Make setup moves in leela board.
+            Get heat map.
+            </summary>
+        </member>
+        <member name="M:Go.MonteCarloGame.SetupLeelazGame(Go.Game,System.Boolean)">
+            <summary>
+            Setup leela zero game.
             </summary>
         </member>
         <member name="M:Go.MonteCarloGame.ConvertAndMakeMoveInLeelaBoard(Go.Point,Go.Content)">
@@ -2386,41 +2389,6 @@
             Include ko moves and set result as KoAlive if ko wins.
             </summary>
         </member>
-        <member name="T:Go.NeuralNetMCTS">
-            <summary>
-            Neural Net MCTS - neural net from Leela zero
-            </summary>
-        </member>
-        <member name="M:Go.NeuralNetMCTS.ExpandNode(Go.Node)">
-            <summary>
-            Expand node.
-            </summary>
-        </member>
-        <member name="M:Go.NeuralNetMCTS.GetHeatMap(Go.Node)">
-            <summary>
-            Get heat map.
-            </summary>
-        </member>
-        <member name="M:Go.NoExhaustiveSearchMCTS.SelectPromisingNode(Go.Node)">
-            <summary>
-            Select promising node.
-            </summary>
-        </member>
-        <member name="M:Go.NoExhaustiveSearchMCTS.SelectMoveByProbabilityDistribution(Go.Node)">
-            <summary>
-            Select move by probability distribution.
-            </summary>
-        </member>
-        <member name="M:Go.NoExhaustiveSearchMCTS.VerifyOnDepthReached(Go.Node)">
-            <summary>
-            Verify on depth reached.
-            </summary>
-        </member>
-        <member name="M:Go.State.GetAllPossibleMoves(Go.Game)">
-            <summary>
-            Get all possible moves for mcts, including ko moves.
-            </summary>
-        </member>
         <member name="P:Go.Tree.Root">
             <summary>
             Starting node of current mcts.
@@ -2429,6 +2397,11 @@
         <member name="P:Go.Tree.AbsoluteRoot">
             <summary>
             Starting node of initial mcts.
+            </summary>
+        </member>
+        <member name="M:Go.UCT.uctValue(Go.Node)">
+            <summary>
+            UCT value.
             </summary>
         </member>
         <member name="M:Go.UCT.findBestNodeWithUCT(Go.Node)">

@@ -18,10 +18,6 @@ namespace Go
         private ConfirmAliveResult confirmAlive = ConfirmAliveResult.Unknown;
         private Boolean winOrLose;
 
-        private int[,] heatMap;
-        private double heatValue;
-        private double winRate;
-
         public State()
         {
         }
@@ -43,7 +39,7 @@ namespace Go
             }
         }
 
-        public virtual SurviveOrKill SurviveOrKill //only survive or kill (without ko)
+        public virtual SurviveOrKill SurviveOrKill
         {
             get
             {
@@ -128,50 +124,13 @@ namespace Go
             }
         }
 
-        #region neural net values
-        public int[,] HeatMap
-        {
-            get
-            {
-                return heatMap;
-            }
-            set
-            {
-                this.heatMap = value;
-            }
-        }
-
-        public double HeatValue
-        {
-            get
-            {
-                return heatValue;
-            }
-            set
-            {
-                this.heatValue = value;
-            }
-        }
-
-        public double Winrate
-        {
-            get
-            {
-                return winRate;
-            }
-            set
-            {
-                this.winRate = value;
-            }
-        }
-        #endregion
 
         public virtual List<State> AllPossibleStates
         {
             get
             {
                 SurviveOrKill survivalOrKill = GameHelper.KillOrSurvivalForNextMove(this.Game.Board);
-                List<GameTryMove> tryMoves = GetAllPossibleMoves(this.Game);
+                List<GameTryMove> tryMoves = GameHelper.GetTryMovesForGame(this.Game);
 
                 List<State> possibleStates = new List<State>();
                 foreach (GameTryMove gameTryMove in tryMoves)
@@ -183,23 +142,6 @@ namespace Go
                 }
                 return possibleStates;
             }
-        }
-
-
-        /// <summary>
-        /// Get all possible moves for mcts, including ko moves.
-        /// </summary>
-        public static List<GameTryMove> GetAllPossibleMoves(Game g)
-        {
-            SurviveOrKill survivalOrKill = GameHelper.KillOrSurvivalForNextMove(g.Board);
-            List<GameTryMove> tryMoves;
-            GameTryMove koBlockedMove;
-            if (survivalOrKill == SurviveOrKill.Kill)
-                (_, tryMoves, koBlockedMove) = g.GetKillMoves();
-            else
-                (_, tryMoves, koBlockedMove) = g.GetSurvivalMoves();
-            if (koBlockedMove != null) tryMoves.Add(koBlockedMove);
-            return tryMoves;
         }
 
         internal virtual void IncrementVisit(int multiplier = 1)
@@ -224,26 +166,7 @@ namespace Go
                 if (i < lastMoves.Count - 1)
                     rc += ",";
             }
-            rc = "Move:" + rc;
-            if (heatMap != null)
-            {
-                rc += "\nHeatmap:";
-                rc += "\n" + new String(' ', 4);
-                for (int j = 0; j < this.Game.Board.SizeX; j++)
-                {
-                    rc += j.ToString().PadRight(2, ' ');
-                }
-                for (int i = 0; i < this.Game.Board.SizeY; i++)
-                {
-                    rc += "\n" + i.ToString().PadLeft(3, ' ') + " ";
-                    for (int j = 0; j < this.Game.Board.SizeX; j++)
-                    {
-                        rc += heatMap[j, i] + " ";
-                    }
-                }
-                rc += "\nWinrate:" + this.Winrate;
-            }
-            return rc;
+            return "Move:" + rc;
         }
 
     }

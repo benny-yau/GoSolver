@@ -90,6 +90,7 @@ namespace Go
             else
             {
                 Group targetGroup = board.GetGroupAt(p);
+                if (targetGroup.Content != c.Opposite()) return false;
                 if (!UnescapableGroup(board, targetGroup).Item1)
                     return false;
                 if (!WallHelper.StrongNeighbourGroups(board, targetGroup))

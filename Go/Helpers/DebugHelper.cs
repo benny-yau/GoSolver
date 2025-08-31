@@ -117,6 +117,22 @@ namespace Go
             return rc;
         }
 
+        public static String ShowHeatMapValues(Game game, int[,] list)
+        {
+            string rc = "\n" + new String(' ', 4);
+            for (int j = 0; j < game.GameInfo.BoardSizeX; j++)
+            {
+                rc += j.ToString().PadRight(2, ' ');
+            }
+            for (int i = 0; i < game.GameInfo.BoardSizeY; i++)
+            {
+                rc += "\n" + i.ToString().PadLeft(3, ' ') + " ";
+                for (int j = 0; j < game.GameInfo.BoardSizeX; j++)
+                    rc += list[j, i].ToString().PadRight(2, ' ');
+            }
+            return rc;
+        }
+
         public static void ReadCountFromFile()
         {
             String contents = File.ReadAllText(Directory.GetCurrentDirectory() + "\\RedundantCount.txt");

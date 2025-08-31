@@ -155,18 +155,21 @@ namespace ConsoleGoSolver
             MonteCarloMapping.searchAnswer = false;
 
             Console.WriteLine("{0}", g.Board);
+
+            Boolean solutionCorrect = false;
             if (g.Board.Move != null)
             {
                 Console.WriteLine("Move: {0}", g.Board.Move + "\n");
-                Boolean solutionCorrect = g.GameInfo.solutionPoints.Any(s => s.First().Equals(g.Board.Move));
+                solutionCorrect = g.GameInfo.solutionPoints.Any(s => s.First().Equals(g.Board.Move));
                 if (solutionCorrect)
                     Console.WriteLine("Correct.");
-                else
-                    Console.WriteLine("Incorrect. Answer: " + g.GameInfo.solutionPoints.First().First());
-
-                Debug.WriteLine(MonteCarloGame.GetAnswerJson(g, answerNode));
-                if (elapsedTime != null) Console.WriteLine(DebugHelper.PrintTimeTaken(elapsedTime.Value));
             }
+
+            if (!solutionCorrect)
+                Console.WriteLine("Incorrect. Answer: " + g.GameInfo.solutionPoints.First().First());
+            Debug.WriteLine(MonteCarloGame.GetAnswerJson(g, answerNode));
+            if (elapsedTime != null) 
+                Console.WriteLine(DebugHelper.PrintTimeTaken(elapsedTime.Value));
         }
 
         static Boolean ComputerMakeMove(Game g)

@@ -2255,5 +2255,53 @@ namespace Go
 
         #endregion
 
+        #region redundant neural net move
+        /// <summary>
+        /// Redundant neural net move. For use in LeelaSharp project.
+        /// <see cref="UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_20230423_8" />
+        /// Check killer formation <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31499" />
+        /// Check equal heat value in stone neighbours <see cref="UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_Scenario_Nie87" />
+        /// </summary>
+        public static Boolean RedundantNeuralNetMove(GameTryMove tryMove)
+        {
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryMove.Move;
+            Content c = tryBoard.MoveGroup.Content;
+
+            Game g = tryMove.CurrentGame;
+            if (!MonteCarloGame.useLeelaZero || g.isMonteCarloPlayout) return false;
+
+            if (!tryMove.IsNegligible) return false;
+
+            //check opponent at stone and diagonal neighbour
+            if (!tryBoard.GetStoneAndDiagonalNeighbours().All(n => tryBoard[n] != c.Opposite()))
+                return false;
+
+            //check killer formation
+            if (tryBoard.MoveGroupLiberties == 1 && KillerFormationHelper.IsKillerFormationFromFunc(tryBoard))
+                return false;
+
+            //get heat map
+            if (g.heatMap == null)
+                MonteCarloGame.GetHeatMap(g);
+
+            int heatValue = g.heatMap[move.x, move.y];
+
+            //check equal heat value in stone neighbours
+            if (heatValue > 2) return false;
+            if (tryBoard.GetStoneNeighbours().Count(n => g.Board[n] == Content.Empty && g.heatMap[n.x, n.y] == heatValue) >= 2)
+            {
+                if (!tryBoard.GetStoneAndDiagonalNeighbours().Any(n => g.heatMap[n.x, n.y] > heatValue))
+                    return true;
+            }
+
+            //check low heat value
+            if (heatValue > 1) return false;
+
+            return true;
+        }
+        #endregion
+
     }
 }

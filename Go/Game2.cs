@@ -15,9 +15,11 @@ namespace Go
         public static Boolean UseMapMoves = true;
         public static readonly Point PassMove = new Point(-1, -1);
         public int reachedEndOfDepth = 0;
+        public Boolean isMonteCarloPlayout = false;
+        public int[,] heatMap;
 
         /// <summary>
-        /// Initializes start of search for exhaustive or real-time mcts move (default).
+        /// Initialize computer move. Exhaustive search or real-time mcts move (default).
         /// To debug with exhaustive search, set USE_MONTE_CARLO_RUNTIME in app.config to false.
         /// </summary>
         public ConfirmAliveResult InitializeComputerMove()
@@ -55,7 +57,7 @@ namespace Go
 
 
         /// <summary>
-        /// Start exhaustive search.
+        /// Make exhaustive search.
         /// </summary>
         public ConfirmAliveResult MakeExhaustiveSearch()
         {
@@ -86,7 +88,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get all possible survival moves. Check if the game has ended with target survived. Check and remove redundant moves. 
+        /// Get survival moves. Check if the game has ended with target survived. Check and remove redundant moves. 
         /// For survive only, check for recursion and add pass move to check for both alive where necessary.
         /// </summary>
         public (ConfirmAliveResult, List<GameTryMove>, GameTryMove) GetSurvivalMoves(Game game = null)
@@ -117,7 +119,7 @@ namespace Go
                 }
                 else if (tryMove.MakeMoveResult == MakeMoveResult.Legal)
                 {
-                    //check if game ended - target group survived
+                    //check if game ended
                     if (tryMove.MoveGroupLiberties > 1)
                     {
                         ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Survive, tryMove.TryGame.Board);
@@ -140,9 +142,16 @@ namespace Go
             //sort game try moves
             tryMoves = (from tryMove in tryMoves orderby tryMove.AtariResolved descending, tryMove.AtariWithoutSuicide descending, tryMove.Captured descending, tryMove.IncreasedKillerGroups descending, tryMove.MoveGroupLiberties descending select tryMove).ToList();
 
-            //restore diagonal eye move
-            if (tryMoves.Count == 0 && redundantTryMoves.Any(t => t.IsDiagonalEyeMove))
-                tryMoves.Add(redundantTryMoves.First(t => t.IsDiagonalEyeMove));
+            if (tryMoves.Count == 0)
+            {
+                //restore diagonal eye move
+                if (redundantTryMoves.Any(t => t.IsDiagonalEyeMove))
+                    tryMoves.Add(redundantTryMoves.First(t => t.IsDiagonalEyeMove));
+
+                //restore neural net move
+                if (MonteCarloGame.useLeelaZero && redundantTryMoves.Any(t => t.IsRedundantNeuralNetMove))
+                    tryMoves.AddRange(redundantTryMoves.Where(t => t.IsRedundantNeuralNetMove));
+            }
 
             //check for both alive
             BothAliveHelper.EnablePassMoveForBothAlive(g, tryMoves, SurviveOrKill.Survive);
@@ -157,7 +166,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Check for various redundant moves for survival that can be eliminated to reduce range of possible moves.
+        /// Check survival redundant moves that can be eliminated to reduce range of possible moves.
         /// </summary>
         private void CheckSurvivalRedundantMoves(GameTryMove tryMove)
         {
@@ -194,11 +203,14 @@ namespace Go
             tryMove.IsFillerMove = RedundantMoveHelper.RedundantFillerMove(tryMove);
             if (tryMove.IsFillerMove)
                 return;
+            tryMove.IsRedundantNeuralNetMove = RedundantMoveHelper.RedundantNeuralNetMove(tryMove);
+            if (tryMove.IsRedundantNeuralNetMove)
+                return;
         }
 
 
         /// <summary>
-        /// Check for various redundant moves for kill that can be eliminated to reduce range of possible moves.
+        /// Check kill redundant moves that can be eliminated to reduce range of possible moves.
         /// </summary>
         private void CheckKillRedundantMoves(GameTryMove tryMove)
         {
@@ -235,11 +247,14 @@ namespace Go
             tryMove.IsFillerMove = RedundantMoveHelper.RedundantFillerMove(tryMove);
             if (tryMove.IsFillerMove)
                 return;
+            tryMove.IsRedundantNeuralNetMove = RedundantMoveHelper.RedundantNeuralNetMove(tryMove);
+            if (tryMove.IsRedundantNeuralNetMove)
+                return;
         }
 
 
         /// <summary>
-        /// Make all possible survival moves by exhaustive search.
+        /// Make survival move by exhaustive search.
         /// </summary>
         public (ConfirmAliveResult, GameTryMove) MakeSurvivalMove(int depth, Game game = null)
         {
@@ -338,7 +353,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get all possible kill moves. Check if the game has ended with target killed. Check and remove redundant moves. 
+        /// Get kill moves. Check if the game has ended with target killed. Check and remove redundant moves. 
         /// For kill only, restore neutral points where necessary and add random move for kill where no move is available.
         /// </summary>
         public (ConfirmAliveResult, List<GameTryMove>, GameTryMove) GetKillMoves(Game game = null)
@@ -369,7 +384,7 @@ namespace Go
                 }
                 else if (tryMove.MakeMoveResult == MakeMoveResult.Legal)
                 {
-                    //check if game ended - target group or survival points killed
+                    //check if game ended
                     ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Kill, tryMove.TryGame.Board);
                     if (confirmAlive == ConfirmAliveResult.Dead)
                         return (ConfirmAliveResult.Dead, new List<GameTryMove>() { tryMove }, null);
@@ -384,7 +399,7 @@ namespace Go
                 //remove all redundant moves
                 tryMoves.Where(e => e.IsRedundantMove).ToList().ForEach(t => { redundantTryMoves.Add(t); tryMoves.Remove(t); });
 
-                //restore neutral move where necessary
+                //restore neutral move
                 RedundantMoveHelper.RestoreNeutralMove(g, tryMoves, redundantTryMoves.Where(e => e.IsNeutralPoint).ToList());
             }
 
@@ -439,7 +454,7 @@ namespace Go
 
 
         /// <summary>
-        /// Create random move if no more try moves for kill.
+        /// Create random move for kill if no more try moves.
         /// <see cref="UnitTestProject.KoTest.KoTest_Scenario_WuQingYuan_Q31498" />
         /// <see cref="UnitTestProject.KoTest.KoTest_Scenario_TianLongTu_Q17077" />
         /// </summary>
@@ -513,7 +528,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Make all possible kill moves by exhaustive search.
+        /// Make kill move by exhaustive search.
         /// </summary>
         private (ConfirmAliveResult, GameTryMove) MakeKillMove(int depth, Game game = null)
         {

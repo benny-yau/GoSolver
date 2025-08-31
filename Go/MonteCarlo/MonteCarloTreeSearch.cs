@@ -432,7 +432,9 @@ namespace Go
         {
             ConfirmAliveResult bestResult = ConfirmAliveResult.Alive;
             Board b = g.Board;
+            g.isMonteCarloPlayout = true;
             (ConfirmAliveResult result, List<GameTryMove> tryMoves, GameTryMove koBlockedMove) = g.GetKillMoves();
+            g.isMonteCarloPlayout = false;
             if (koBlockedMove != null) tryMoves.Add(koBlockedMove);
             if (result != ConfirmAliveResult.Unknown)
                 return (result, tryMoves.First().TryGame.Board);
@@ -469,7 +471,9 @@ namespace Go
             if (depth <= 0)
                 return (ConfirmAliveResult.Dead, b);
 
+            g.isMonteCarloPlayout = true;
             (ConfirmAliveResult result, List<GameTryMove> tryMoves, GameTryMove koBlockedMove) = g.GetSurvivalMoves();
+            g.isMonteCarloPlayout = false;
             if (koBlockedMove != null) tryMoves.Add(koBlockedMove);
             if (result != ConfirmAliveResult.Unknown)
                 return (result, tryMoves.First().TryGame.Board);

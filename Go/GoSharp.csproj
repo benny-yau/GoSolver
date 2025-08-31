@@ -108,12 +108,9 @@
     <Compile Include="MonteCarloMapping\MonteCarloMapping.cs" />
     <Compile Include="MonteCarlo\EnumerableExtensions.cs" />
     <Compile Include="LifeCheck.cs" />
-    <Compile Include="MonteCarlo\FirstRunMCTS.cs" />
     <Compile Include="MonteCarlo\MonteCarloGame.cs" />
     <Compile Include="MonteCarlo\MonteCarloTreeSearch.cs" />
-    <Compile Include="MonteCarlo\NeuralNetMCTS.cs" />
     <Compile Include="MonteCarlo\Node.cs" />
-    <Compile Include="MonteCarlo\NoExhaustiveSearchMCTS.cs" />
     <Compile Include="MonteCarlo\State.cs" />
     <Compile Include="MonteCarlo\Tree.cs" />
     <Compile Include="MonteCarlo\UCT.cs" />

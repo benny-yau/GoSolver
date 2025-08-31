@@ -8,7 +8,9 @@ namespace Go
 {
     class UCT
     {
-        public static Node node = null;
+        /// <summary>
+        /// UCT value.
+        /// </summary>
         public static double uctValue(Node node)
         {
             if (node.State.VisitCount == 0)
@@ -26,8 +28,7 @@ namespace Go
         /// </summary>
         internal static Node findBestNodeWithUCT(Node node)
         {
-            Node bestNode = node.ChildArray.MaxObject(m => uctValue(m));
-            return bestNode;
+            return node.ChildArray.MaxObject(m => uctValue(m));
 
         }
     }

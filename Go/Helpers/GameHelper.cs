@@ -181,7 +181,7 @@ namespace Go
                 (result, tryMoves, koBlockedMove) = game.GetKillMoves();
             else
                 (result, tryMoves, koBlockedMove) = game.GetSurvivalMoves();
-
+            if (koBlockedMove != null) tryMoves.Add(koBlockedMove);
             return tryMoves;
         }
     }

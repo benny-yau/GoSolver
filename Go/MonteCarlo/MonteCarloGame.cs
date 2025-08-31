@@ -14,12 +14,14 @@ namespace Go
     {
         public static Boolean useLeelaZero = false;
         public static StreamWriter inputWriter = null;
-        public static Boolean isCheckHeatmap = false;
-        public static ManualResetEvent checkHeatmap = null;
+        private static Game game;
+        private static Boolean isCheckHeatmap = false;
+        private static ManualResetEvent checkHeatmap = null;
         private static List<String> heatMapLines = new List<String>();
         private static String alphabets = "ABCDEFGHJKLMNOPQRSTUVQXYZ";
+
         /// <summary>
-        /// Create new mcts search tree and initialize search.
+        /// Initialize monte carlo computer move.
         /// </summary>
         public static MonteCarloTreeSearch InitializeMonteCarloComputerMove(Game g, Node rootNode = null, int mctsDepth = 0)
         {
@@ -30,18 +32,14 @@ namespace Go
                 rootNode.State.Depth = g.GetStartingDepth();
                 state.SurviveOrKill = GameHelper.KillOrSurvivalForNextMove(g.Board);
             }
-            MonteCarloTreeSearch mcts;
-            if (useLeelaZero)
-                mcts = new NeuralNetMCTS(rootNode, mctsDepth);
-            else
-                mcts = new MonteCarloTreeSearch(rootNode, mctsDepth);
+            MonteCarloTreeSearch mcts = new MonteCarloTreeSearch(rootNode, mctsDepth);
             mcts.FindNextMove();
             return mcts;
         }
 
 
         /// <summary>
-        /// Start mcts search for real-time move. Not used in mapping.
+        /// Monte carlo real-time move. Not used in mapping.
         /// </summary>
         public static (ConfirmAliveResult, Node, long?) MonteCarloRealTimeMove(Game game)
         {
@@ -58,6 +56,9 @@ namespace Go
 
         }
 
+        /// <summary>
+        /// Get result for MCTS.
+        /// </summary>
         private static ConfirmAliveResult GetResultForMCTS(MonteCarloTreeSearch mcts)
         {
             State state = mcts.tree.Root.State;
@@ -115,17 +116,49 @@ namespace Go
 
         #region neural network
         /// <summary>
-        /// Make setup moves in leela board.
+        /// Get heat map.
         /// </summary>
-        public static void SetupLeelazGame(Game g)
+        public static void GetHeatMap(Game g)
         {
-            MonteCarloGame.inputWriter.WriteLine("clear_board");
+            isCheckHeatmap = true;
+            MonteCarloGame.game = g;
+            //make setup moves
+            SetupLeelazGame(g);
+            //make last moves in game
+            List<Point> lastMoves = g.Board.LastMoves;
+            Content startContent = g.GameInfo.StartContent;
+            for (int i = 0; i <= lastMoves.Count - 1; i++)
+            {
+                Point p = lastMoves[i];
+                if (p.Equals(Game.PassMove))
+                    continue;
+                Content c = (i % 2 == 0) ? startContent : startContent.Opposite();
+                ConvertAndMakeMoveInLeelaBoard(p, c);
+            }
+            //get neural network values
+            inputWriter.WriteLine("heatmap");
+            //wait for response from leelaz
+            checkHeatmap = new ManualResetEvent(false);
+            checkHeatmap.WaitOne();
+
+            isCheckHeatmap = false;
+        }
+
+        /// <summary>
+        /// Setup leela zero game.
+        /// </summary>
+        public static void SetupLeelazGame(Game g, Boolean setHandicapMoves = true)
+        {
+            inputWriter.WriteLine("clear_board");
             foreach (SetupMove move in g.GameInfo.SetupMoves)
                 ConvertAndMakeMoveInLeelaBoard(move.Move, move.Content);
 
-            List<String> playMoves = new List<String>() { "Q16", "Q10", "Q4", "K16", "K10", "D16", "D10" };
-            String contentToMove = (g.GameInfo.StartContent == Content.Black) ? "W" : "B";
-            playMoves.ForEach(n => MonteCarloGame.inputWriter.WriteLine("play " + contentToMove + " " + n));
+            if (setHandicapMoves)
+            {
+                List<String> playMoves = new List<String>() { "Q16", "Q10", "Q4", "K16", "K10", "D16", "D10" };
+                String contentToMove = (g.GameInfo.StartContent == Content.Black) ? "W" : "B";
+                playMoves.ForEach(n => MonteCarloGame.inputWriter.WriteLine("play " + contentToMove + " " + n));
+            }
         }
 
         /// <summary>
@@ -136,7 +169,7 @@ namespace Go
             String x = alphabets.Substring(point.x, 1);
             int y = 18 - point.y + 1;
             String content = (c == Content.Black) ? "B" : "W";
-            MonteCarloGame.inputWriter.WriteLine("play " + content + " " + x + y.ToString());
+            inputWriter.WriteLine("play " + content + " " + x + y.ToString());
         }
 
         /// <summary>
@@ -146,7 +179,7 @@ namespace Go
         {
             String line = e.Data;
             if (line == "" || line.StartsWith("=") || line.StartsWith("?")) return;
-            if (!MonteCarloGame.isCheckHeatmap)
+            if (!isCheckHeatmap)
             {
                 Console.WriteLine(line);
                 return;
@@ -154,23 +187,22 @@ namespace Go
             if (line.StartsWith("winrate:"))
             {
                 String winrate = line.Replace("winrate:", "");
-                UCT.node.State.Winrate = Convert.ToDouble(winrate);
                 //ensure all lines of heatmap collected
                 if (heatMapLines.Count == 19)
                 {
-                    //store entire heatmap to node state heatmap
-                    UCT.node.State.HeatMap = new int[19, 19];
+                    //store entire heatmap
+                    game.heatMap = new int[19, 19];
                     for (int y = 0; y <= heatMapLines.Count - 1; y++)
                     {
                         String heatMapLine = heatMapLines[y];
                         char[] delimiterChars = { ' ' };
                         String[] heatNumbers = heatMapLine.Split(delimiterChars, StringSplitOptions.RemoveEmptyEntries);
                         for (int x = 0; x <= heatNumbers.Length - 1; x++)
-                            UCT.node.State.HeatMap[x, y] = Convert.ToInt32(heatNumbers[x]);
+                            game.heatMap[x, y] = Convert.ToInt32(heatNumbers[x]);
                     }
                     heatMapLines.Clear();
                     //continue
-                    MonteCarloGame.checkHeatmap.Set();
+                    checkHeatmap.Set();
                 }
                 return;
             }

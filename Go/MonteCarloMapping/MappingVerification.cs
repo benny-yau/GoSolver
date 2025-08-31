@@ -70,7 +70,7 @@ namespace Go
                 return;
             }
 
-            List<GameTryMove> possibleMoves = State.GetAllPossibleMoves(game);
+            List<GameTryMove> possibleMoves = GameHelper.GetTryMovesForGame(game);
             for (int j = 0; j <= possibleMoves.Count - 1; j++)
             {
                 Game g = new Game(game);
