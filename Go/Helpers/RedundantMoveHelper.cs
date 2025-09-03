@@ -22,7 +22,7 @@ namespace Go
 
             if (!EyeHelper.FindEye(currentBoard, move, c)) return false;
             //find uncovered eye
-            if (EyeHelper.FindUncoveredPoint(currentBoard, move, c))
+            if (!EyeHelper.IsCovered(currentBoard, move, c))
             {
                 //check for killer formations
                 if (tryBoard.MoveGroupLiberties == 1 && KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard))
@@ -106,7 +106,7 @@ namespace Go
             {
                 //one-point covered eye
                 eyePoint = eyePoints.First();
-                if (!EyeHelper.CoveredMove(tryBoard, eyePoint, c) || KoHelper.IsKoFight(tryBoard)) return false;
+                if (!EyeHelper.IsCovered(tryBoard, eyePoint, c) || KoHelper.IsKoFight(tryBoard)) return false;
                 Board b = new Board(tryBoard);
                 b[eyePoint] = c.Opposite();
                 eyeGroup = b.GetGroupAt(eyePoint);
@@ -115,7 +115,7 @@ namespace Go
             {
                 //two-point covered eye
                 eyePoint = tryBoard.CapturedPoints.First(q => tryBoard.GetStoneNeighbours().Contains(q));
-                if (!EyeHelper.CoveredMove(tryBoard, eyePoint, c)) return false;
+                if (!EyeHelper.IsCovered(tryBoard, eyePoint, c)) return false;
                 Boolean unEscapable = tryBoard.MoveGroup.Liberties.Any(n => tryBoard.GameInfo.IsMovablePoint[n.x, n.y] == false);
                 if (unEscapable)
                     eyeGroup = tryBoard.CapturedList.First();
@@ -983,7 +983,7 @@ namespace Go
             Content c = tryMove.MoveContent;
 
             //ensure semi-solid eye
-            if (!EyeHelper.FindSemiSolidEye(capturedBoard, move, c.Opposite()).Item1)
+            if (!EyeHelper.FindSemiSolidEye(capturedBoard, move, c.Opposite()))
                 return false;
 
             //opponent break kill formation
@@ -1985,7 +1985,7 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
             //suicide within real eye at suicidal redundant move
-            if (EyeHelper.FindSemiSolidEye(capturedBoard, move, c.Opposite()).Item1)
+            if (EyeHelper.FindSemiSolidEye(capturedBoard, move, c.Opposite()))
                 return false;
             //check for covered eye
             if (EyeHelper.IsCovered(tryBoard, move, c.Opposite()))

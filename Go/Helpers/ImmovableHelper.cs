@@ -87,10 +87,9 @@ namespace Go
                 if (IsConfirmTigerMouth(board, b) != null)
                     return true;
             }
-            else
+            else if (board[p] == c.Opposite())
             {
                 Group targetGroup = board.GetGroupAt(p);
-                if (targetGroup.Content != c.Opposite()) return false;
                 if (!UnescapableGroup(board, targetGroup).Item1)
                     return false;
                 if (!WallHelper.StrongNeighbourGroups(board, targetGroup))
@@ -145,20 +144,20 @@ namespace Go
         /// Check connect and die on captured board <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario1dan21" />
         /// </summary>.
-        public static Board IsConfirmTigerMouth(Board currentBoard, Board tryBoard, Point? p = null)
+        public static Board IsConfirmTigerMouth(Board currentBoard, Board tryBoard)
         {
-            if (p == null) p = tryBoard.Move;
+            Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
 
-            Point? libertyPoint = FindTigerMouth(currentBoard, p.Value, c.Opposite());
+            Point? libertyPoint = FindTigerMouth(currentBoard, move, c.Opposite());
             if (libertyPoint == null) return null;
 
-            Board capturedBoard = CaptureSuicideGroup(p.Value, tryBoard);
+            Board capturedBoard = CaptureSuicideGroup(move, tryBoard);
             if (capturedBoard == null) return null;
 
-            if (!WallHelper.StrongNeighbourGroups(currentBoard, p.Value, c))
+            if (!WallHelper.StrongNeighbourGroups(currentBoard, move, c))
                 return null;
-            if (!WallHelper.StrongNeighbourGroups(capturedBoard, p.Value, c))
+            if (!WallHelper.StrongNeighbourGroups(capturedBoard, move, c))
                 return null;
             if (SuicidalAfterMustHaveMove(currentBoard, tryBoard, libertyPoint.Value))
                 return null;

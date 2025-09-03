@@ -567,9 +567,11 @@ namespace Go
         /// Two-point suicide with liberty.
         /// Check corner point <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q16508" />
         /// Check double atari <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18472" />
+        /// Check covered group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A41" />
         /// </summary>
         public static Boolean TwoPointSuicideWithLiberty(Board tryBoard, Board captureBoard)
         {
+            Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             if (!tryBoard.GetMoveLiberties().Any()) return false;
             //check one empty space left
@@ -579,7 +581,9 @@ namespace Go
             if (LinkHelper.GetDiagonalGroups(tryBoard).Any())
                 return true;
 
-            if (GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard)) return false;
+            if (GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard))
+                return false;
+
             //check corner point
             if (tryBoard.CornerPoint())
                 return true;
@@ -590,17 +594,22 @@ namespace Go
                     if (AtariHelper.DoubleAtariWithoutEscape(b)) 
                         return true;
             }
+            //check covered group
+            Group killerGroup = GroupHelper.GetDirectKillerGroup(tryBoard, move, c.Opposite());
+            if (killerGroup != null && killerGroup.Points.Any(n => tryBoard[n] == c && tryBoard.GetGroupAt(n).Points.Count == 1 && EyeHelper.IsCovered(tryBoard, n, c.Opposite())))
+                return true;
+
             return false;
-        }       
-        
+        }
+
         /// <summary>
-         /// Two point atari move.
-         /// Check for three groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935" />
-         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q2757_2" />
-         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" />
-         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q15017" />
-         /// Check snapback <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31469" />
-         /// </summary>
+        /// Two point atari move.
+        /// Check for three groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q2757_2" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q15017" />
+        /// Check snapback <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31469" />
+        /// </summary>
         public static Boolean TwoPointAtariMove(Board tryBoard, Board captureBoard = null)
         {
             Point move = tryBoard.Move.Value;
