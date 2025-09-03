@@ -2260,7 +2260,7 @@ namespace Go
         /// Redundant neural net move. For use in LeelaSharp project.
         /// <see cref="UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_20230423_8" />
         /// Check killer formation <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31499" />
-        /// Check equal heat value in stone neighbours <see cref="UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_Scenario_Nie87" />
+        /// Check higher heat value in stone and diagonal neighbours <see cref="UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_Scenario_Nie87" />
         /// </summary>
         public static Boolean RedundantNeuralNetMove(GameTryMove tryMove)
         {
@@ -2288,16 +2288,14 @@ namespace Go
 
             int heatValue = g.heatMap[move.x, move.y];
 
-            //check equal heat value in stone neighbours
-            if (heatValue > 2) return false;
-            if (tryBoard.GetStoneNeighbours().Count(n => g.Board[n] == Content.Empty && g.heatMap[n.x, n.y] == heatValue) >= 2)
-            {
-                if (!tryBoard.GetStoneAndDiagonalNeighbours().Any(n => g.heatMap[n.x, n.y] > heatValue))
-                    return true;
-            }
-
             //check low heat value
-            if (heatValue > 1) return false;
+            if (heatValue <= 1)
+                return true;
+
+            //check higher heat value in stone and diagonal neighbours
+            if (heatValue > 2) return false;
+            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => g.heatMap[n.x, n.y] > heatValue))
+                return false;
 
             return true;
         }

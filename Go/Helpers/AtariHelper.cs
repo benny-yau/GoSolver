@@ -52,7 +52,6 @@ namespace Go
         /// </summary>
         public static Boolean DoubleAtariWithoutEscape(Board board)
         {
-            if (ImmovableHelper.CheckConnectAndDie(board, board.MoveGroup, false)) return false;
             if (board.AtariTargets.Count == 0) return false;
             List<Group> groups = board.GetGroupsFromStoneNeighbours().Where(n => !WallHelper.IsStrongGroup(board, n)).ToList();
             groups = groups.Union(board.AtariTargets).ToList();
@@ -103,11 +102,9 @@ namespace Go
         {
             Content c = ngroup.Content;
             if (ngroup.Liberties.Count != 2) return false;
-            foreach (Point liberty in ngroup.Liberties)
+
+            foreach (Board b in GameHelper.GetMoveBoards(tryBoard, ngroup.Liberties, c.Opposite()))
             {
-                if (!GameHelper.SetupMoveAvailable(tryBoard, liberty, c.Opposite())) continue;
-                Board b = tryBoard.MakeMoveOnNewBoard(liberty, c.Opposite(), true);
-                if (b == null) continue;
                 if (ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false)) continue;
                 if (WallHelper.IsNonKillableOrKo(b)) continue;
                 return true;
