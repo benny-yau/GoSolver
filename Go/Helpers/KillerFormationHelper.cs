@@ -214,10 +214,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Find suicidal killer formation.
-        /// Two-point move with liberty <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A48" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17250" />
+        /// Find suicidal killer formation.        
         /// Covered eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16424_2" />
         /// Check for snapback <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234" />
         /// Corner three formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18860" />
@@ -565,38 +562,30 @@ namespace Go
 
         /// <summary>
         /// Two-point suicide with liberty.
-        /// Check corner point <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q16508" />
-        /// Check double atari <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18472" />
-        /// Check covered group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A41" />
+        /// Check capture move liberty <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A48" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17250" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18472" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q16508" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A41" />
         /// </summary>
         public static Boolean TwoPointSuicideWithLiberty(Board tryBoard, Board captureBoard)
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
+            if (tryBoard.MoveGroupLiberties > 1) return false;
             if (!tryBoard.GetMoveLiberties().Any()) return false;
             //check one empty space left
             if (SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                 return true;
+
             //check diagonal groups
             if (LinkHelper.GetDiagonalGroups(tryBoard).Any())
                 return true;
-
-            if (GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard))
-                return false;
-
-            //check corner point
-            if (tryBoard.CornerPoint())
-                return true;
-            //check double atari
-            if (captureBoard.MoveGroupLiberties == 2)
-            {
-                foreach (Board b in GameHelper.GetMoveBoards(captureBoard, captureBoard.MoveGroup.Liberties, c))
-                    if (AtariHelper.DoubleAtariWithoutEscape(b)) 
-                        return true;
-            }
-            //check covered group
-            Group killerGroup = GroupHelper.GetDirectKillerGroup(tryBoard, move, c.Opposite());
-            if (killerGroup != null && killerGroup.Points.Any(n => tryBoard[n] == c && tryBoard.GetGroupAt(n).Points.Count == 1 && EyeHelper.IsCovered(tryBoard, n, c.Opposite())))
+            
+            //check capture move liberty
+            List<Point> liberties = captureBoard.GetMoveLiberties().Where(n => !n.Equals(move)).ToList();
+            if (liberties.Count == 1 && !WallHelper.NoEyeForSurvival(captureBoard, liberties.First(), c.Opposite()) && !EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, liberties.First(), c.Opposite()))
                 return true;
 
             return false;

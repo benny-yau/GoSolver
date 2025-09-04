@@ -921,10 +921,17 @@ namespace Go
         {
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
+            Content c = tryMove.MoveContent;
 
             //ensure no liberties
             if (tryBoard.GetMoveLiberties().Any())
-                return false;
+            {
+                if (Board.ResolveAtari(currentBoard, tryBoard)) return false;
+                if (KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
+                    return false;
+                if (!tryBoard.GetDiagonalNeighbours().All(n => tryBoard[n] == c.Opposite()))
+                    return false;
+            }
 
             //ensure no diagonal at move
             if (LinkHelper.GetMoveDiagonals(tryBoard).Any())
