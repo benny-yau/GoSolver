@@ -579,13 +579,13 @@ namespace Go
             if (SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                 return true;
 
-            //check diagonal groups
-            if (LinkHelper.GetDiagonalGroups(tryBoard).Any())
+            //check move diagonals
+            if (LinkHelper.GetMoveDiagonals(tryBoard).Any())
                 return true;
-            
+
             //check capture move liberty
             List<Point> liberties = captureBoard.GetMoveLiberties().Where(n => !n.Equals(move)).ToList();
-            if (liberties.Count == 1 && !WallHelper.NoEyeForSurvival(captureBoard, liberties.First(), c.Opposite()) && !EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, liberties.First(), c.Opposite()))
+            if (liberties.Any(n => !WallHelper.NoEyeForSurvival(captureBoard, n, c.Opposite())) && !EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, liberties.First(), c.Opposite()))
                 return true;
 
             return false;
@@ -1055,7 +1055,7 @@ namespace Go
         private static Boolean EndPointCovered(Point endPoint, Board tryBoard, Group moveGroup)
         {
             Content c = moveGroup.Content;
-            List<Point> diagonals = LinkHelper.GetDiagonalPoint(tryBoard, endPoint);
+            List<Point> diagonals = LinkHelper.GetDiagonalPoints(tryBoard, endPoint);
             if (diagonals.Count == 0) return false;
             if (moveGroup.Liberties.Count == 2)
             {

@@ -149,8 +149,7 @@ namespace Go
                     tryMoves.Add(redundantTryMoves.First(t => t.IsDiagonalEyeMove));
 
                 //restore neural net move
-                if (MonteCarloGame.useLeelaZero && redundantTryMoves.Any(t => t.IsRedundantNeuralNetMove))
-                    tryMoves.AddRange(redundantTryMoves.Where(t => t.IsRedundantNeuralNetMove));
+                RedundantMoveHelper.RestoreNeuralNetMove(tryMoves, redundantTryMoves);
             }
 
             //check for both alive
@@ -400,7 +399,7 @@ namespace Go
                 tryMoves.Where(e => e.IsRedundantMove).ToList().ForEach(t => { redundantTryMoves.Add(t); tryMoves.Remove(t); });
 
                 //restore neutral move
-                RedundantMoveHelper.RestoreNeutralMove(g, tryMoves, redundantTryMoves.Where(e => e.IsNeutralPoint).ToList());
+                RedundantMoveHelper.RestoreNeutralMove(g, tryMoves, redundantTryMoves);
             }
 
             //sort game try moves

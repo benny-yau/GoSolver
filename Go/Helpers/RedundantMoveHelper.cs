@@ -891,8 +891,8 @@ namespace Go
             }
             else
             {
-                //no diagonal and no liberty at move
-                if (CheckNoDiagonalAndNoLibertyAtMove(tryMove, captureBoard))
+                //check diagonal and liberty at move
+                if (CheckDiagonalAndLibertyAtMove(tryMove, captureBoard))
                     return true;
 
                 //check connected liberties
@@ -911,29 +911,20 @@ namespace Go
         }
 
         /// <summary>
-        /// Check no diagonal and liberty at move.
-        /// Ensure no liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
+        /// Check diagonal and liberty at move.
         /// Check for three neighbour groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30198" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16605" />
         /// Check killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499_3" />
+        /// Check move liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
         /// </summary>
-        private static Boolean CheckNoDiagonalAndNoLibertyAtMove(GameTryMove tryMove, Board captureBoard)
+        private static Boolean CheckDiagonalAndLibertyAtMove(GameTryMove tryMove, Board captureBoard)
         {
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
 
-            //ensure no liberties
-            if (tryBoard.GetMoveLiberties().Any())
-            {
-                if (Board.ResolveAtari(currentBoard, tryBoard)) return false;
-                if (KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
-                    return false;
-                if (!tryBoard.GetDiagonalNeighbours().All(n => tryBoard[n] == c.Opposite()))
-                    return false;
-            }
-
-            //ensure no diagonal at move
+            //check move diagonals 
             if (LinkHelper.GetMoveDiagonals(tryBoard).Any())
                 return false;
 
@@ -943,6 +934,21 @@ namespace Go
 
             //check killer formation
             if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, captureBoard))
+                return false;
+
+            //check move liberties
+            if (!tryBoard.GetMoveLiberties().Any()) return true;
+
+            if (Board.ResolveAtari(currentBoard, tryBoard)) return false;
+            if (KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
+                return false;
+
+            if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c))
+                return false;
+
+            //check opponent at diagonal points
+            List<Point> diagonals = LinkHelper.GetDiagonalPoints(tryBoard, move);
+            if (!diagonals.All(n => tryBoard[n] == c.Opposite()))
                 return false;
 
             return true;
@@ -1612,9 +1618,11 @@ namespace Go
         /// <summary>
         /// Restore neutral move. Move restored on end game to kill survival group.
         /// No try moves left <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Side_A20" />
+        /// Connect and die end move <see cref="UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario_XuanXuanGo_A26" />
         /// </summary>
-        public static void RestoreNeutralMove(Game g, List<GameTryMove> tryMoves, List<GameTryMove> neutralPointMoves)
+        public static void RestoreNeutralMove(Game g, List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves)
         {
+            List<GameTryMove> neutralPointMoves = redundantTryMoves.Where(e => e.IsNeutralPoint).ToList();
             if (neutralPointMoves.Count == 0) return;
             Content c = neutralPointMoves.First().MoveContent;
             //remove unnecessary moves
@@ -1662,33 +1670,10 @@ namespace Go
             else if (tryMoves.Count <= 2)
             {
                 //check connect and die for last two try moves
-                if (tryMoves.Select(t => t.TryGame.Board).All(t => ConnectAndDieEndMove(t) || SuicideGroupNearCapture(t)))
+                if (tryMoves.Select(t => t.TryGame.Board).All(t => ImmovableHelper.CheckConnectAndDie(t) || SuicideGroupNearCapture(t)))
                     tryMoves.Add(neutralPointMoves.First());
             }
-        }
-
-        /// <summary>
-        /// Connect and die end move.
-        /// <see cref="UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario_Side_A25" />
-        /// <see cref="UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario4dan17" />
-        /// <see cref="UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario_XuanXuanGo_A26" />
-        /// </summary>
-        private static Boolean ConnectAndDieEndMove(Board tryBoard)
-        {
-            (_, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
-            if (captureBoard == null) return false;
-            if (tryBoard.MoveGroupLiberties == 2)
-            {
-                Board b = ImmovableHelper.MakeMoveAtLiberty(captureBoard, tryBoard.MoveGroup);
-                if (b == null) return true;
-            }
-            Boolean eyeFound = tryBoard.MoveGroup.Liberties.Any(n => EyeHelper.FindEye(tryBoard, n));
-            if (eyeFound && tryBoard.MoveGroup.Points.Count > 1)
-                return true;
-            if (!eyeFound && tryBoard.MoveGroup.Points.Count > 3)
-                return true;
-            return false;
-        }
+        }   
 
         /// <summary>
         /// Suicide group near capture.
@@ -1712,11 +1697,11 @@ namespace Go
             }
             return false;
         }
-
+        
         /// <summary>
-        /// Get specific neutral move to target survival groups.
-        /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B51" />
-        /// </summary>
+         /// Get specific neutral move to target survival groups.
+         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B51" />
+         /// </summary>
         public static GameTryMove GetSpecificNeutralMove(Game g, List<GameTryMove> neutralPointMoves)
         {
             GameTryMove gameTryMove = null;
@@ -2305,6 +2290,15 @@ namespace Go
                 return false;
 
             return true;
+        }
+
+        /// <summary>
+        /// Restore neural net move.
+        /// </summary>
+        public static void RestoreNeuralNetMove(List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves)
+        {
+            if (MonteCarloGame.useLeelaZero && redundantTryMoves.Any(t => t.IsRedundantNeuralNetMove))
+                tryMoves.AddRange(redundantTryMoves.Where(t => t.IsRedundantNeuralNetMove));
         }
         #endregion
 

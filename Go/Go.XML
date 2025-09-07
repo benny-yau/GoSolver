@@ -1233,14 +1233,14 @@
             Get group diagonals regardless of content.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.GetDiagonalPoint(Go.Board,Go.Point)">
+        <member name="M:Go.LinkHelper.GetDiagonalPoints(Go.Board,Go.Point)">
             <summary>
-            Get diagonal point.
+            Get diagonal points regardless of content.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.GetMoveDiagonals(Go.Board)">
             <summary>
-            Get diagonals of move of same content that are not part of the move group.
+            Get move diagonals of same content that are not part of the move group.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.IsDiagonallyConnectedGroups(System.Collections.Generic.HashSet{Go.Group},Go.Board,System.Func{Go.Group,System.Boolean})">
@@ -1589,13 +1589,13 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.CheckNoDiagonalAndNoLibertyAtMove(Go.GameTryMove,Go.Board)">
+        <member name="M:Go.RedundantMoveHelper.CheckDiagonalAndLibertyAtMove(Go.GameTryMove,Go.Board)">
             <summary>
-            Check no diagonal and liberty at move.
-            Ensure no liberties <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
+            Check diagonal and liberty at move.
             Check for three neighbour groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30198" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16605" />
             Check killer formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499_3" />
+            Check move liberties <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SinglePointSuicidalMove(Go.GameTryMove,Go.GameTryMove)">
@@ -1778,14 +1778,7 @@
             <summary>
             Restore neutral move. Move restored on end game to kill survival group.
             No try moves left <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Side_A20" />
-            </summary>
-        </member>
-        <member name="M:Go.RedundantMoveHelper.ConnectAndDieEndMove(Go.Board)">
-            <summary>
-            Connect and die end move.
-            <see cref="!:UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario_Side_A25" />
-            <see cref="!:UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario4dan17" />
-            <see cref="!:UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario_XuanXuanGo_A26" />
+            Connect and die end move <see cref="!:UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario_XuanXuanGo_A26" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SuicideGroupNearCapture(Go.Board)">
@@ -1951,6 +1944,11 @@
             <see cref="!:UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_20230423_8" />
             Check killer formation <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31499" />
             Check higher heat value in stone and diagonal neighbours <see cref="!:UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_Scenario_Nie87" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.RestoreNeuralNetMove(System.Collections.Generic.List{Go.GameTryMove},System.Collections.Generic.List{Go.GameTryMove})">
+            <summary>
+            Restore neural net move.
             </summary>
         </member>
         <member name="M:Go.ResultHelper.GameEndedMessage(Go.ConfirmAliveResult,Go.Game)">
