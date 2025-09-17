@@ -1205,16 +1205,26 @@ namespace Go
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16859_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2413_2" /> 
+        /// Check group diagonals <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_8" /> 
         /// </summary>
         public static Boolean OpponentBreakKillFormation(Board tryBoard, Board currentBoard)
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             List<Group> groups = tryBoard.GetGroupsFromStoneNeighbours();
-            if (groups.Count == 0 || groups.All(n => n.Points.Count < 4)) return false;
-            if (KillerFormationHelper.TryKillFormation(currentBoard, c.Opposite(), new List<Point>() { move }))
-                return true;
-            return false;
+            if (groups.Count != 1 || groups.First().Points.Count < 4) return false;
+
+            //check kill formation
+            if (!KillerFormationHelper.TryKillFormation(currentBoard, c.Opposite(), new List<Point>() { move }))
+                return false;
+
+            //check group diagonals
+            foreach (LinkedPoint<Point> p in LinkHelper.GetGroupLinkedDiagonals(tryBoard, groups.First()))
+            {
+                if (LinkHelper.PointsBetweenDiagonals(p).Any(n => tryBoard[n] == Content.Empty && !EyeHelper.FindCoveredEye(tryBoard, n, c.Opposite())))
+                    return false;
+            }
+            return true;
         }
 
     }

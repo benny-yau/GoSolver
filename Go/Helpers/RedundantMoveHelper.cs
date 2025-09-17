@@ -637,6 +637,7 @@ namespace Go
         /// Redundant one point move in connect and die.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3_3" />
         /// Check move next to covered point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17132_4" />
+        /// Check box formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_4" />
         /// Ensure all strong neighbour groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_7" />
         /// Cut diagonal and kill <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_3" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17081_2" />
@@ -649,15 +650,28 @@ namespace Go
         /// </summary>
         private static Boolean RedundantOnePointMoveInConnectAndDie(GameTryMove tryMove, Board captureBoard)
         {
+            Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
 
             if (tryBoard.MoveGroup.Points.Count != 1 || !tryMove.IsNegligible) return false;
 
-            //check move next to covered point
-            if (tryBoard.GetMoveLiberties().Any(p => EyeHelper.IsCovered(tryBoard, p, c.Opposite())) && GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard))
-                return true;
+            if (GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard))
+            {
+                //check move next to covered point
+                if (tryBoard.GetMoveLiberties().Any(p => EyeHelper.IsCovered(tryBoard, p, c.Opposite())))
+                    return true;
+
+                //check box formation
+                Group killerGroup = GroupHelper.GetDirectKillerGroup(currentBoard, move, c.Opposite());
+                if (killerGroup != null && KillerFormationHelper.BoxFormation(tryBoard, killerGroup) && killerGroup.Points.First().Equals(move))
+                    return false;
+
+                //check one empty space left
+                if (!KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard) && !LinkHelper.GetMoveDiagonals(tryBoard).Any())
+                    return true;
+            }
 
             //check liberty surrounded by opponent
             if (KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
@@ -916,6 +930,7 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16605" />
         /// Check killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499_3" />
         /// Check move liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
+        /// Check opponent at diagonal points <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30403_2" />
         /// </summary>
         private static Boolean CheckDiagonalAndLibertyAtMove(GameTryMove tryMove, Board captureBoard)
         {
@@ -939,7 +954,7 @@ namespace Go
             //check move liberties
             if (!tryBoard.GetMoveLiberties().Any()) return true;
 
-            if (Board.ResolveAtari(currentBoard, tryBoard)) return false;
+            if (!tryMove.IsNegligible) return false;
             if (KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                 return false;
 
@@ -2006,7 +2021,9 @@ namespace Go
             foreach (Point e in diagonalEyes)
             {
                 if (!tryBoard.GetDiagonalNeighbours(e).Any(n => tryBoard[n] == Content.Empty)) continue;
-                if (tryBoard.GetGroupsFromStoneNeighbours(e, c).Count(n => n.Liberties.Count <= 2) >= 2)
+                List<Group> groups = tryBoard.GetGroupsFromStoneNeighbours(e, c).Where(n => n.Liberties.Count <= 2).ToList();
+                if (groups.Count < 2) continue;
+                if (groups.Any(n => tryBoard.GetNeighbourGroups(n).Any(s => s != tryBoard.MoveGroup && !WallHelper.IsNonKillableGroup(tryBoard, s))))
                     return true;
             }
             return false;
