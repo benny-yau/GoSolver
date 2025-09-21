@@ -296,13 +296,14 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A8" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A113" />
         /// Check move liberty <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_B41_2" />
-        /// Check end point extension <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_8" />
-        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_9" />
         /// Whole group dying <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36" />
         /// Bent four corner formation <see cref="UnitTestProject.BentFourTest.BentFourTest_Scenario7kyu26_3" />
         /// Corner six formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
         /// Two kill formations <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_XuanXuanGo_A54" />
         /// Check atari target <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40" />
+        /// Check end point extension <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_8" />
+        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_9" />
+        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_10" />
         /// </summary>
         private static Boolean CheckRedundantKillGroupExtension(Board tryBoard, Board currentBoard, Board captureBoard)
         {
@@ -321,10 +322,6 @@ namespace Go
                 if (tryBoard.MoveGroupLiberties == 2 && liberties.Any(n => EyeHelper.FindEye(tryBoard, n, c)))
                     return false;
             }
-
-            //check end point extension
-            if (tryBoard.MoveGroup.Points.Count >= 5 && LinkHelper.GetMoveDiagonals(tryBoard).Any())
-                return false;
 
             //bent four corner formation
             if (BentFourCornerFormation(tryBoard) && UniquePatternsHelper.CheckForBentFour(currentBoard))
@@ -357,6 +354,15 @@ namespace Go
             {
                 IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(captureBoard, captureBoard.MoveGroup.Liberties, c);
                 if (moveBoards.Any(n => n.MoveGroupLiberties > 1 && n.GetGroupsFromStoneNeighbours().Count > 1))
+                    return false;
+            }
+
+            //check end point extension
+            if (tryBoard.MoveGroup.Points.Count >= 5)
+            {
+                if (tryBoard.MoveGroupLiberties == 1 && LinkHelper.GetMoveDiagonals(tryBoard).Any())
+                    return false;
+                if (tryBoard.MoveGroupLiberties == 2 && !LinkHelper.GetDiagonalPoints(tryBoard).Any(n => tryBoard[n] == c.Opposite()))
                     return false;
             }
             return true;
@@ -1056,24 +1062,22 @@ namespace Go
         {
             Content c = moveGroup.Content;
             List<Point> diagonals = LinkHelper.GetDiagonalPoints(tryBoard, endPoint);
-            if (diagonals.Count == 0) return false;
+            if (diagonals.Count == 0) return false;                
             if (moveGroup.Liberties.Count == 2)
             {
                 if (diagonals.Any(d => tryBoard[d] == c.Opposite())) return false;
-                if (tryBoard.GetMoveLiberties(endPoint).Any()) return false;
-                //check connect and die at end
-                List<Point> nEndPoint = tryBoard.GetStoneNeighbours(endPoint).Where(n => tryBoard[n] == c.Opposite() && !tryBoard.GetDiagonalNeighbours(n).Any(s => tryBoard[s] == c && tryBoard.GetGroupAt(s) == moveGroup)).ToList();
-                if (nEndPoint.Count != 1) return false;
-                if (!ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.GetGroupAt(nEndPoint.First()), false))
-                    return false;
+                if (!ImmovableHelper.CheckConnectAndDie(tryBoard, moveGroup)) return false;
                 return true;
             }
             else if (moveGroup.Liberties.Count == 1)
             {
                 if (diagonals.Any(d => tryBoard[d] != c)) return false;
                 //suicide move with one empty space or connect groups
-                if (tryBoard.Move != null && tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c) == 1 && !tryBoard.GetMoveLiberties().Any() && !tryBoard.Move.Equals(endPoint))
-                    return false;
+                if (tryBoard.Move != null && !tryBoard.Move.Equals(Game.PassMove))
+                {
+                    if (tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c) == 1 && !tryBoard.GetMoveLiberties().Any() && !tryBoard.Move.Equals(endPoint))
+                        return false;
+                }
                 return true;
             }
             return false;

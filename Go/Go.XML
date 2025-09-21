@@ -896,13 +896,14 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A8" />
             <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A113" />
             Check move liberty <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_B41_2" />
-            Check end point extension <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_8" />
-            <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_9" />
             Whole group dying <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36" />
             Bent four corner formation <see cref="!:UnitTestProject.BentFourTest.BentFourTest_Scenario7kyu26_3" />
             Corner six formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
             Two kill formations <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_XuanXuanGo_A54" />
             Check atari target <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40" />
+            Check end point extension <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_8" />
+            <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_9" />
+            <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_10" />
             </summary>
         </member>
         <member name="M:Go.KillerFormationHelper.SuicidalEndMove(Go.Board,Go.Board)">
@@ -1234,7 +1235,7 @@
             Get group diagonals regardless of content.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.GetDiagonalPoints(Go.Board,Go.Point)">
+        <member name="M:Go.LinkHelper.GetDiagonalPoints(Go.Board,System.Nullable{Go.Point})">
             <summary>
             Get diagonal points regardless of content.
             </summary>
@@ -1530,12 +1531,10 @@
             Ensure all strong neighbour groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_7" />
             Cut diagonal and kill <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_3" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17081_2" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A61" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_20230603_4" />
             Empty points at stone and diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_4" />
-            Check liberty move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16594" />
-            Ensure killer group contains only try move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_2398" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31493" />
+            Check single group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16594" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_2398" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckWeakGroup(Go.Board,Go.Group)">

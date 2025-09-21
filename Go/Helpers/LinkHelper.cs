@@ -364,10 +364,12 @@ namespace Go
         /// <summary>
         /// Get diagonal points regardless of content.
         /// </summary>
-        public static List<Point> GetDiagonalPoints(Board board, Point p)
+        public static List<Point> GetDiagonalPoints(Board board, Point? p = null)
         {
-            Content c = board[p];
-            return board.GetDiagonalNeighbours(p).Where(q => !PointsBetweenDiagonals(p, q).Any(r => board[r] == c)).ToList();
+            if (p == null)
+                p = board.Move.Value;
+            Content c = board[p.Value];
+            return board.GetDiagonalNeighbours(p).Where(q => !PointsBetweenDiagonals(p.Value, q).Any(r => board[r] == c)).ToList();
         }
 
         /// <summary>

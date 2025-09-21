@@ -641,12 +641,10 @@ namespace Go
         /// Ensure all strong neighbour groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_7" />
         /// Cut diagonal and kill <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_3" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17081_2" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A61" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_20230603_4" />
         /// Empty points at stone and diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_4" />
-        /// Check liberty move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16594" />
-        /// Ensure killer group contains only try move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_2398" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31493" />
+        /// Check single group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16594" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_2398" />
         /// </summary>
         private static Boolean RedundantOnePointMoveInConnectAndDie(GameTryMove tryMove, Board captureBoard)
         {
@@ -657,6 +655,7 @@ namespace Go
 
             if (tryBoard.MoveGroup.Points.Count != 1 || !tryMove.IsNegligible) return false;
 
+            //check single group
             if (GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard))
             {
                 //check move next to covered point
@@ -668,12 +667,12 @@ namespace Go
                 if (killerGroup != null && KillerFormationHelper.BoxFormation(tryBoard, killerGroup) && killerGroup.Points.First().Equals(move))
                     return false;
 
-                //check one empty space left
+                //check one empty space left and move diagonals
                 if (!KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard) && !LinkHelper.GetMoveDiagonals(tryBoard).Any())
                     return true;
             }
 
-            //check liberty surrounded by opponent
+            //check one empty space left
             if (KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                 return false;
 
@@ -681,6 +680,7 @@ namespace Go
             if (!WallHelper.StrongNeighbourGroups(captureBoard, move, c))
                 return false;
 
+            //check diagonals
             List<Point> npoints = LinkHelper.GetDiagonalsAtStoneNeighbours(tryBoard);
             if (npoints.Count == 2)
             {
@@ -705,12 +705,7 @@ namespace Go
                 if (tryBoard[q] == Content.Empty && tryBoard.GetGroupsFromStoneNeighbours().Count == 1)
                     return true;
             }
-
-            //ensure killer group contains only try move
-            if (!GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard))
-                return false;
-
-            return true;
+            return false;
         }
 
         /// <summary>
@@ -936,7 +931,6 @@ namespace Go
         {
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
-            Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
 
             //check move diagonals 
@@ -962,7 +956,7 @@ namespace Go
                 return false;
 
             //check opponent at diagonal points
-            List<Point> diagonals = LinkHelper.GetDiagonalPoints(tryBoard, move);
+            List<Point> diagonals = LinkHelper.GetDiagonalPoints(tryBoard);
             if (!diagonals.All(n => tryBoard[n] == c.Opposite()))
                 return false;
 
