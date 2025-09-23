@@ -925,7 +925,9 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16605" />
         /// Check killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499_3" />
         /// Check move liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
+        /// Check is negligible <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B25" />
         /// Check opponent at diagonal points <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30403_2" />
+        /// Check capture move liberty <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A64_2" />
         /// </summary>
         private static Boolean CheckDiagonalAndLibertyAtMove(GameTryMove tryMove, Board captureBoard)
         {
@@ -946,9 +948,13 @@ namespace Go
                 return false;
 
             //check move liberties
-            if (!tryBoard.GetMoveLiberties().Any()) return true;
+            List<Point> moveLiberties = tryBoard.GetMoveLiberties();
+            if (!moveLiberties.Any()) return true;
 
+            //check is negligible
             if (!tryMove.IsNegligible) return false;
+
+            //check one empty space left
             if (KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                 return false;
 
@@ -960,6 +966,15 @@ namespace Go
             if (!diagonals.All(n => tryBoard[n] == c.Opposite()))
                 return false;
 
+            //check capture move liberty
+            if (moveLiberties.Count == 1)
+            {
+                Point liberty = moveLiberties.First();
+                Board b = captureBoard;
+                if (!captureBoard.Move.Equals(liberty)) b = tryBoard.MakeMoveOnNewBoard(liberty, c.Opposite());
+                if (b != null && KillerFormationHelper.CheckCaptureMoveLiberty(tryBoard, b))
+                    return false;
+            }
             return true;
         }
 

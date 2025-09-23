@@ -568,17 +568,15 @@ namespace Go
 
         /// <summary>
         /// Two-point suicide with liberty.
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q16508" />
+        /// Check move diagonals <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2" />
         /// Check capture move liberty <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A48" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17250" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18472" />
-        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q16508" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A41" />
         /// </summary>
         public static Boolean TwoPointSuicideWithLiberty(Board tryBoard, Board captureBoard)
         {
-            Point move = tryBoard.Move.Value;
-            Content c = tryBoard.MoveGroup.Content;
             if (tryBoard.MoveGroupLiberties > 1) return false;
             if (!tryBoard.GetMoveLiberties().Any()) return false;
             //check one empty space left
@@ -590,10 +588,22 @@ namespace Go
                 return true;
 
             //check capture move liberty
-            List<Point> liberties = captureBoard.GetMoveLiberties().Where(n => !n.Equals(move)).ToList();
-            if (liberties.Any(n => !WallHelper.NoEyeForSurvival(captureBoard, n, c.Opposite())) && !EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, liberties.First(), c.Opposite()))
+            if (CheckCaptureMoveLiberty(tryBoard, captureBoard))
                 return true;
 
+            return false;
+        }
+
+        /// <summary>
+        /// Check capture move liberty.
+        /// </summary>
+        public static Boolean CheckCaptureMoveLiberty(Board tryBoard, Board captureBoard)
+        {
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            List<Point> liberties = captureBoard.GetMoveLiberties().Where(n => !n.Equals(move) && GroupHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite()) != GroupHelper.GetKillerGroupFromCache(captureBoard, n, c.Opposite())).ToList();
+            if (liberties.Any(n => !WallHelper.NoEyeForSurvival(captureBoard, n, c.Opposite()) && !EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, n, c.Opposite())))
+                return true;
             return false;
         }
 

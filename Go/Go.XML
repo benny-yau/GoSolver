@@ -237,15 +237,9 @@
             Is redundant move.
             </summary>
         </member>
-        <member name="M:Go.AtariHelper.FindAndResolveAtari(Go.GameTryMove)">
-            <summary>
-            Find and resolve atari.
-            <see cref="!:UnitTestProject.FindAndResolveAtariTest.FindAndResolveAtariTest_Scenario_XuanXuanGo_Q18358" />
-            </summary>
-        </member>
         <member name="M:Go.AtariHelper.AtariByGroup(Go.Board,Go.Group,System.Boolean)">
             <summary>
-            Check if any atari on neighbour groups, including ko. 
+             Atari by group. 
             Check for ko <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30315" />
             </summary>
         </member>
@@ -977,12 +971,17 @@
         <member name="M:Go.KillerFormationHelper.TwoPointSuicideWithLiberty(Go.Board,Go.Board)">
             <summary>
             Two-point suicide with liberty.
+            <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q16508" />
+            Check move diagonals <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2" />
             Check capture move liberty <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A48" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17250" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18472" />
-            <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q16508" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A41" />
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.CheckCaptureMoveLiberty(Go.Board,Go.Board)">
+            <summary>
+            Check capture move liberty.
             </summary>
         </member>
         <member name="M:Go.KillerFormationHelper.TwoPointAtariMove(Go.Board,Go.Board)">
@@ -1597,7 +1596,9 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16605" />
             Check killer formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499_3" />
             Check move liberties <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
+            Check is negligible <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B25" />
             Check opponent at diagonal points <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30403_2" />
+            Check capture move liberty <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A64_2" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SinglePointSuicidalMove(Go.GameTryMove,Go.GameTryMove)">

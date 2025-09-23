@@ -9,22 +9,7 @@ namespace Go
     public class AtariHelper
     {
         /// <summary>
-        /// Find and resolve atari.
-        /// <see cref="UnitTestProject.FindAndResolveAtariTest.FindAndResolveAtariTest_Scenario_XuanXuanGo_Q18358" />
-        /// </summary>
-        public static void FindAndResolveAtari(GameTryMove tryMove)
-        {
-            Board currentBoard = tryMove.CurrentGame.Board;
-            Board tryBoard = tryMove.TryGame.Board;
-            //find atari
-            Board.FindAtari(tryBoard);
-            //resolve atari
-            Board.ResolveAtari(currentBoard, tryBoard);
-        }
-
-        /// <summary>
-        /// Check if any atari on neighbour groups, including ko. 
-        /// Check for ko <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30315" />
+        /// Atari by group.
         /// </summary>
         public static Boolean AtariByGroup(Board board, Group atariGroup, Boolean koEnabled = true)
         {
@@ -33,8 +18,6 @@ namespace Go
 
         /// <summary>
         /// Atari by group.
-        /// Ensure only one ko fight group <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_A85" />
-        /// Check for ko liberty <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_Corner_A85_2" />
         /// </summary>
         public static List<Group> AtariByGroup(Group atariGroup, Board board, Boolean koEnabled = true)
         {
