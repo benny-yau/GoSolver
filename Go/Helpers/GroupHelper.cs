@@ -140,7 +140,7 @@ namespace Go
             Content c = group.Content;
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, group.Points.First(), c.Opposite());
             if (killerGroup == null || killerGroup.Points.Any(p => tryBoard[p] == c && tryBoard.GetGroupAt(p) != group)) return false;
-            if (tryBoard.GetNeighbourGroups(killerGroup).Any(gr => gr.Liberties.Count == 1)) return false;
+            if (tryBoard.OneLibertyNeighbourGroup(killerGroup).Any()) return false;
             return true;
         }
 

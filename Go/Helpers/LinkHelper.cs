@@ -350,8 +350,9 @@ namespace Go
         /// <summary>
         /// Get group diagonals regardless of content.
         /// </summary>
-        public static List<LinkedPoint<Point>> GetGroupDiagonals(Board board, Group group)
+        public static List<LinkedPoint<Point>> GetGroupDiagonals(Board board, Group group = null)
         {
+            if (group == null) group = board.MoveGroup;
             List<LinkedPoint<Point>> rc = new List<LinkedPoint<Point>>();
             foreach (Point p in group.Points)
             {

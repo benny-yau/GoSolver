@@ -45,10 +45,7 @@ namespace Go
             get
             {
                 if (atariTargets == null)
-                {
-                    atariTargets = new List<Group>();
-                    FindAtari(this);
-                }
+                    atariTargets = OneLibertyGroup();
                 return atariTargets;
             }
             set
@@ -494,15 +491,25 @@ namespace Go
         }
 
         /// <summary>
-        /// Find atari.
+        /// One liberty group.
         /// </summary>
-        public static List<Group> FindAtari(Board board)
+        public List<Group> OneLibertyGroup(Point? p = null, Content c = Content.Unknown)
         {
-            Point move = board.Move.Value;
-            Content c = board[move];
+            if (p == null)
+            {
+                p = this.Move.Value;
+                c = this[p.Value];
+            }
+            return this.GetGroupsFromStoneNeighbours(p.Value, c).Where(n => n.Liberties.Count == 1).ToList();
+        }
 
-            board.AtariTargets = board.GetGroupsFromStoneNeighbours(move, c).Where(n => n.Liberties.Count == 1).ToList();
-            return board.AtariTargets;
+        /// <summary>
+        /// One liberty neighbour group.
+        /// </summary>
+        public List<Group> OneLibertyNeighbourGroup(Group group = null)
+        {
+            if (group == null) group = this.MoveGroup;
+            return GetNeighbourGroups(group).Where(n => n.Liberties.Count == 1).ToList();
         }
 
         /// <summary>
@@ -513,13 +520,12 @@ namespace Go
             Point move = tryBoard.Move.Value;
             Content c = tryBoard[move];
             //capture stones to resolve atari
-            if (tryBoard.CapturedList.Any(n => currentBoard.GetNeighbourGroups(n).Any(g => g.Liberties.Count == 1)))
+            if (tryBoard.CapturedList.Any(n => currentBoard.OneLibertyNeighbourGroup(n).Any()))
                 return true;
 
             //check group liberty
             if (tryBoard.MoveGroupLiberties == 1) return false;
-            HashSet<Group> groups = currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite());
-            if (groups.Any(n => n.Liberties.Count == 1))
+            if (currentBoard.OneLibertyGroup(move, c.Opposite()).Any())
                 return true;
             return false;
         }

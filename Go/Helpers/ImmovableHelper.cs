@@ -16,7 +16,7 @@ namespace Go
             if (nstones.Count(n => board[n] == c) != nstones.Count - 1) return null;
             if (content == Content.Empty)
             {
-                if (board.GetGroupsFromStoneNeighbours(p, c.Opposite()).Any(n => n.Liberties.Count == 1)) return null;
+                if (board.OneLibertyGroup(p, c.Opposite()).Any()) return null;
                 Point libertyPoint = nstones.First(n => board[n] != c);
                 if (board[libertyPoint] == Content.Empty)
                     return libertyPoint;
@@ -117,7 +117,7 @@ namespace Go
             if (KoHelper.IsKoFight(board, targetGroup))
                 return true;
             //check capture neighbour groups
-            List<Group> ngroups = board.GetGroupsFromStoneNeighbours(liberty, c).Where(n => n.Liberties.Count == 1).ToList();
+            List<Group> ngroups = board.OneLibertyGroup(liberty, c);
             if (ngroups.Count > 1)
             {
                 foreach (Group group in ngroups)

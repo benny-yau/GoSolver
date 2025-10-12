@@ -22,45 +22,12 @@ namespace Go
         public static List<Group> AtariByGroup(Group atariGroup, Board board, Boolean koEnabled = true)
         {
             Content c = atariGroup.Content;
-            List<Group> targetGroups = board.GetNeighbourGroups(atariGroup).Where(gr => gr.Liberties.Count == 1).ToList();
+            List<Group> targetGroups = board.OneLibertyNeighbourGroup(atariGroup);
             if (koEnabled)
                 return targetGroups;
             //check for ko
             targetGroups.RemoveAll(t => KoHelper.IsKoFight(board, t));
             return targetGroups;
-        }
-
-        /// <summary>
-        /// Double atari without escape.
-        /// </summary>
-        public static Boolean DoubleAtariWithoutEscape(Board board)
-        {
-            if (board.AtariTargets.Count == 0) return false;
-            List<Group> groups = board.GetGroupsFromStoneNeighbours().Where(n => !WallHelper.IsStrongGroup(board, n)).ToList();
-            groups = groups.Union(board.AtariTargets).ToList();
-            if (groups.Count < 2) return false;
-
-            //check if atari targets escapable
-            foreach (Group targetGroup in board.AtariTargets)
-            {
-                //check escape by capture
-                Board b = ImmovableHelper.EscapeByCapture(board, targetGroup, false);
-                if (b != null && WallHelper.StrongGroups(b, groups))
-                {
-                    //check double atari on escape board
-                    if (!LinkHelper.DoubleAtariOnTargetGroups(b, groups))
-                        return false;
-                }
-                //make move at liberty
-                Board b2 = ImmovableHelper.MakeMoveAtLiberty(board, targetGroup);
-                if (b2 != null && WallHelper.StrongGroups(b2, groups))
-                {
-                    //check double atari on escape board
-                    if (!LinkHelper.DoubleAtariOnTargetGroups(b2, groups))
-                        return false;
-                }
-            }
-            return true;
         }
 
         /// <summary>
@@ -102,5 +69,39 @@ namespace Go
         {
             return tryBoard.AtariTargets.Count > 0 && !ImmovableHelper.IsSuicidalWithoutKo(tryBoard);
         }
+
+        /// <summary>
+        /// Double atari without escape.
+        /// </summary>
+        public static Boolean DoubleAtariWithoutEscape(Board board)
+        {
+            if (board.AtariTargets.Count == 0) return false;
+            List<Group> groups = board.GetGroupsFromStoneNeighbours().Where(n => !WallHelper.IsStrongGroup(board, n)).ToList();
+            groups = groups.Union(board.AtariTargets).ToList();
+            if (groups.Count < 2) return false;
+
+            //check if atari targets escapable
+            foreach (Group targetGroup in board.AtariTargets)
+            {
+                //check escape by capture
+                Board b = ImmovableHelper.EscapeByCapture(board, targetGroup, false);
+                if (b != null && WallHelper.StrongGroups(b, groups))
+                {
+                    //check double atari on escape board
+                    if (!LinkHelper.DoubleAtariOnTargetGroups(b, groups))
+                        return false;
+                }
+                //make move at liberty
+                Board b2 = ImmovableHelper.MakeMoveAtLiberty(board, targetGroup);
+                if (b2 != null && WallHelper.StrongGroups(b2, groups))
+                {
+                    //check double atari on escape board
+                    if (!LinkHelper.DoubleAtariOnTargetGroups(b2, groups))
+                        return false;
+                }
+            }
+            return true;
+        }
+
     }
 }

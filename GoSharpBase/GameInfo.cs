@@ -17,7 +17,6 @@ namespace Go
         public Content StartContent { get; set; }
         public PlayerOrComputer UserFirst { get; set; }
         public int SearchDepth { get; set; }
-        public ConfirmAliveResult RecursionResult { get; set; }
 
         public String ScenarioName;
         public List<SetupMove> SetupMoves = new List<SetupMove>();

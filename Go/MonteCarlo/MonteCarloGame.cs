@@ -155,7 +155,7 @@ namespace Go
 
             if (setHandicapMoves)
             {
-                List<String> playMoves = new List<String>() { "Q16", "Q10", "Q4", "K16", "K10", "D16", "D10" };
+                List<String> playMoves = new List<String>() { "Q16", "Q10", "Q4", "K16", "K10", "D16", "D10", "C13" };
                 String contentToMove = (g.GameInfo.StartContent == Content.Black) ? "W" : "B";
                 playMoves.ForEach(n => MonteCarloGame.inputWriter.WriteLine("play " + contentToMove + " " + n));
             }

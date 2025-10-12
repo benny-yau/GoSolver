@@ -43,10 +43,9 @@ namespace Go
         public static (Boolean, Group) IsKoFight(Board board, Point eye, Content c)
         {
             if (!EyeHelper.FindEye(board, eye, c)) return (false, null);
-            List<Group> eyeGroups = board.GetGroupsFromStoneNeighbours(eye, c.Opposite()).ToList();
-            List<Group> groups = eyeGroups.Where(n => n.Points.Count == 1 && n.Liberties.Count == 1).ToList();
+            List<Group> groups = board.OneLibertyGroup(eye, c.Opposite());
             if (groups.Count != 1) return (false, null);
-            if (eyeGroups.Any(g => g != groups.First() && g.Liberties.Count == 1)) return (false, null);
+            if (groups.First().Points.Count != 1) return (false, null);
             return (true, groups.First());
         }
 
