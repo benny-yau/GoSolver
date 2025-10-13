@@ -45,7 +45,7 @@ namespace Go
             get
             {
                 if (atariTargets == null)
-                    atariTargets = OneLibertyGroup();
+                    atariTargets = OneLibertyNeighbourGroup();
                 return atariTargets;
             }
             set

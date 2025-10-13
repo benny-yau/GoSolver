@@ -555,8 +555,9 @@ namespace Go
         /// <summary>
         /// Find diagonal cut.
         /// </summary>
-        public static (Point?, List<Point>) FindDiagonalCut(Board board, Group group, Boolean checkOpponent = true)
+        public static (Point?, List<Point>) FindDiagonalCut(Board board, Group group = null, Boolean checkOpponent = false)
         {
+            if (group == null) group = board.MoveGroup;
             Content c = group.Content;
             foreach (LinkedPoint<Point> p in GetGroupLinkedDiagonals(board, group))
             {
