@@ -11,14 +11,14 @@ namespace Go
     {
         public int x { get; set; }
         public int y { get; set; }
-        public int NotEmpty { get; set; }
+        public Boolean notEmpty { get; set; }
 
         [DebuggerStepThroughAttribute()]
         public Point(int xx, int yy) : this()
         {
             x = xx;
             y = yy;
-            NotEmpty = 1;
+            notEmpty = true;
         }
 
         [DebuggerStepThroughAttribute()]
@@ -43,6 +43,11 @@ namespace Go
         public Point DownPoint()
         {
             return new Point(x, y + 1);
+        }
+
+        public Boolean IsEmpty()
+        {
+            return !notEmpty;
         }
 
         public override string ToString()

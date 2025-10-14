@@ -1292,7 +1292,7 @@
             Get the opposite diagonals of the two diagonal points.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.FindDiagonalCut(Go.Board,Go.Group,System.Boolean)">
+        <member name="M:Go.LinkHelper.FindDiagonalCut(Go.Board,Go.Group)">
             <summary>
             Find diagonal cut.
             </summary>
@@ -1539,12 +1539,14 @@
             Check move next to covered point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17132_4" />
             Check box formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_4" />
             Ensure all strong neighbour groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_7" />
+            Check diagonals <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
             Cut diagonal and kill <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_3" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17081_2" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_20230603_4" />
             Empty points at stone and diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_4" />
             Check single group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16594" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_2398" />
+            Check eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A1" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckWeakGroup(Go.Board,Go.Group)">
@@ -1884,7 +1886,6 @@
         <member name="M:Go.RedundantMoveHelper.SurvivalEyeDiagonalMove(Go.GameTryMove)">
             <summary>
             Survival eye diagonal move.
-            <see cref="!:UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18473_2" />
             Check diagonals are real eyes <see cref="!:UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_SiHuoDaQuan_CornerA29_2" />
             <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B31" />
             Check link to groups <see cref="!:UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_WuQingYuan_Q31154" />
@@ -1956,7 +1957,6 @@
             Redundant neural net move. For use in LeelaSharp project.
             <see cref="!:UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_20230423_8" />
             Check killer formation <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31499" />
-            Check tiger mouth <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_B33_2" />
             Check higher heat value in stone and diagonal neighbours <see cref="!:UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_Scenario_Nie87" />
             </summary>
         </member>

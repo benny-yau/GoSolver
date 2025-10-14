@@ -1119,7 +1119,7 @@ namespace Go
         public static Boolean PossibleCornerThreeFormation(Board currentBoard, Point p, Content c)
         {
             Point corner = currentBoard.GetStoneNeighbours(p).FirstOrDefault(n => currentBoard.CornerPoint(n));
-            if (!Convert.ToBoolean(corner.NotEmpty) || currentBoard[corner] != Content.Empty) return false;
+            if (corner.IsEmpty() || currentBoard[corner] != Content.Empty) return false;
             if (currentBoard.GetStoneNeighbours(corner).Any(n => currentBoard[n] != Content.Empty)) return false;
             if (currentBoard.GetDiagonalNeighbours(p).Any(n => currentBoard.PointWithinMiddleArea(n) && EyeHelper.FindRealEyeWithinEmptySpace(currentBoard, n, c)))
             {

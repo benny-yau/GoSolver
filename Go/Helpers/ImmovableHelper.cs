@@ -174,7 +174,7 @@ namespace Go
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             Point eyePoint = currentBoard.GetDiagonalNeighbours(move).FirstOrDefault(n => EyeHelper.FindCoveredEye(currentBoard, n, c.Opposite()));
-            if (!Convert.ToBoolean(eyePoint.NotEmpty)) return false;
+            if (eyePoint.IsEmpty()) return false;
             if (!LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).All(n => n.Liberties.Count <= 2)) return false;
 
             (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(libertyPoint, c, currentBoard);
@@ -466,7 +466,7 @@ namespace Go
                 List<Point> nstones = board.GetStoneNeighbours(eyePoint).Where(n => board[n] == c.Opposite()).ToList();
                 if (nstones.Count != 3) return false;
                 Point middleStone = nstones.FirstOrDefault(n => board.GetDiagonalNeighbours(n).Count(d => nstones.Contains(d) && board.GetGroupAt(n) != board.GetGroupAt(d)) >= 2);
-                if (!Convert.ToBoolean(middleStone.NotEmpty)) return false;
+                if (middleStone.IsEmpty()) return false;
                 Group target = board.GetGroupAt(middleStone);
                 if (CheckSnapback(board, target, eyeGroup))
                     return true;

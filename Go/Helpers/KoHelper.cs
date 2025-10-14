@@ -100,14 +100,14 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             if (tryBoard.PointWithinMiddleArea(move)) return false;
             if (tryBoard.MoveGroup.Points.Count != 1 || tryBoard.MoveGroupLiberties != 2) return false;
-            foreach (Point d in tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] == c))
+            foreach (Point d in LinkHelper.GetMoveDiagonals(tryBoard))
             {
                 Group dgroup = tryBoard.GetGroupAt(d);
                 if (dgroup.Points.Count != 1) continue;
                 Point lib = tryBoard.GetStoneNeighbours(d).FirstOrDefault(p => tryBoard[p] == Content.Empty && !tryBoard.PointWithinMiddleArea(p));
-                if (!Convert.ToBoolean(lib.NotEmpty)) continue;
+                if (lib.IsEmpty()) continue;
                 Point lib2 = tryBoard.GetStoneNeighbours(lib).FirstOrDefault(p => tryBoard[p] == Content.Empty);
-                if (!Convert.ToBoolean(lib2.NotEmpty)) continue;
+                if (lib2.IsEmpty()) continue;
                 Point e = tryBoard.GetDiagonalNeighbours(lib).Intersect(tryBoard.GetStoneNeighbours(lib2)).First();
                 if (tryBoard[e] != Content.Empty || WallHelper.NoEyeForSurvival(tryBoard, e)) continue;
                 Board b = tryBoard.MakeMoveOnNewBoard(lib2, c);
@@ -197,7 +197,7 @@ namespace Go
         {
             Content c = board.MoveGroup.Content;
             Point p = board.GetStoneNeighbours().FirstOrDefault(n => EyeHelper.FindCoveredEye(board, n, c));
-            if (!Convert.ToBoolean(p.NotEmpty)) return false;
+            if (p.IsEmpty()) return false;
             return IsCoveredEyeDoubleKo(board);
         }
 

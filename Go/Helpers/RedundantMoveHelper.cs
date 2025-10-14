@@ -308,7 +308,7 @@ namespace Go
             if (tryBoard.AtariTargets.Count != 1 || tryMove.AtariResolved || tryBoard.MoveGroupLiberties == 1 || tryMove.Captured) return false;
             Group atariTarget = tryBoard.AtariTargets.First();
             Point atariPoint = tryBoard.GetStoneNeighbours().FirstOrDefault(n => tryBoard[n] == c.Opposite() && tryBoard.GetGroupAt(n).Equals(atariTarget));
-            if (!Convert.ToBoolean(atariPoint.NotEmpty)) return false;
+            if (atariPoint.IsEmpty()) return false;
 
             Point q = atariTarget.Liberties.First();
             if (!KillerFormationHelper.IsFirstPoint(currentBoard, q, move)) return false;
@@ -626,7 +626,7 @@ namespace Go
             if (killerGroup != null && GroupHelper.GetNeighbourGroupsOfKillerGroup(currentBoard, killerGroup).Count == 1)
             {
                 Point p = killerGroup.Points.FirstOrDefault(n => currentBoard[n] == Content.Empty && !ImmovableHelper.IsSuicidalMove(currentBoard, n, c.Opposite()));
-                if (!Convert.ToBoolean(p.NotEmpty) || move.Equals(p))
+                if (p.IsEmpty() || move.Equals(p))
                     return false;
             }
 
@@ -642,7 +642,7 @@ namespace Go
             }
 
             //check diagonal not cut
-            if (tryBoard.MoveGroup.Points.Count > 1 && LinkHelper.GetGroupDiagonals(tryBoard).Any(n => tryBoard[n.Move] == c && LinkHelper.PointsBetweenDiagonals(n).Any(s => tryBoard[s] == Content.Empty)))
+            if (tryBoard.MoveGroup.Points.Count > 1 && LinkHelper.GetGroupLinkedDiagonals(tryBoard).Any(n => LinkHelper.PointsBetweenDiagonals(n).Any(s => tryBoard[s] == Content.Empty)))
                 return false;
 
             return true;
@@ -714,12 +714,14 @@ namespace Go
         /// Check move next to covered point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17132_4" />
         /// Check box formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_4" />
         /// Ensure all strong neighbour groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_7" />
+        /// Check diagonals <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
         /// Cut diagonal and kill <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_3" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17081_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_20230603_4" />
         /// Empty points at stone and diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_4" />
         /// Check single group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16594" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_2398" />
+        /// Check eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A1" />
         /// </summary>
         private static Boolean RedundantOnePointMoveInConnectAndDie(GameTryMove tryMove, Board captureBoard)
         {
@@ -730,37 +732,38 @@ namespace Go
 
             if (tryBoard.MoveGroup.Points.Count != 1 || !tryMove.IsNegligible) return false;
 
-            //check single group
-            if (GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard))
-            {
-                //check move next to covered point
-                if (tryBoard.GetMoveLiberties().Any(p => EyeHelper.IsCovered(tryBoard, p, c.Opposite())))
-                    return true;
+            //check move next to covered point
+            if (tryBoard.GetMoveLiberties().Any(p => EyeHelper.IsCovered(tryBoard, p, c.Opposite())) && GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard))
+                return true;
 
-                //check box formation
-                Group killerGroup = GroupHelper.GetDirectKillerGroup(currentBoard, move, c.Opposite());
-                if (killerGroup != null && KillerFormationHelper.BoxFormation(tryBoard, killerGroup) && killerGroup.Points.First().Equals(move))
-                    return false;
-
-                //check one empty space left and move diagonals
-                if (!KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard) && !LinkHelper.GetMoveDiagonals(tryBoard).Any())
-                    return true;
-            }
-
-            //check one empty space left
-            if (KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
-                return false;
+            //check box formation
+            Group killerGroup = GroupHelper.GetDirectKillerGroup(currentBoard, move, c.Opposite());
+            if (killerGroup != null && KillerFormationHelper.BoxFormation(tryBoard, killerGroup) && tryBoard.GetNeighbourGroups(killerGroup).Count == 1 && !killerGroup.Points.First().Equals(move))
+                return true;
 
             //ensure all strong neighbour groups
             if (!WallHelper.StrongNeighbourGroups(captureBoard, move, c))
                 return false;
 
-            //check diagonals
+            //check one empty space left
+            if (KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
+                return false;
+
+            //check single group
+            if (GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard))
+            {
+                //check move diagonals
+                if (!LinkHelper.GetMoveDiagonals(tryBoard).Any())
+                    return true;
+            }
+
             List<Point> npoints = LinkHelper.GetDiagonalsAtStoneNeighbours(tryBoard);
             if (npoints.Count == 2)
             {
+                //check diagonals
                 if (LinkHelper.GetGroupLinkedDiagonals(tryBoard).Any())
                     return false;
+
                 //opponent at stone and diagonal
                 HashSet<Group> ngroups = tryBoard.GetGroupsFromPoints(npoints);
                 if (ngroups.Count == 1)
@@ -1011,7 +1014,7 @@ namespace Go
             Content c = tryMove.MoveContent;
 
             //check move diagonals 
-            if (LinkHelper.GetMoveDiagonals(tryBoard).Any())
+            if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c))
                 return false;
 
             //check for three neighbour groups
@@ -1031,9 +1034,6 @@ namespace Go
 
             //check one empty space left
             if (KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
-                return false;
-
-            if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c))
                 return false;
 
             //check opponent at diagonal points
@@ -1252,9 +1252,9 @@ namespace Go
                 return true;
 
             //check connect and die at diagonal group
-            if (opponentTryMove == null && tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c && ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.GetGroupAt(n)) && !ImmovableHelper.CheckConnectAndDie(currentBoard, currentBoard.GetGroupAt(n))))
+            if (opponentTryMove == null && LinkHelper.GetMoveDiagonals(tryBoard).Any(n => ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.GetGroupAt(n)) && !ImmovableHelper.CheckConnectAndDie(currentBoard, currentBoard.GetGroupAt(n))))
                 return true;
-
+            
             //opponent suicide
             if (opponentTryMove != null && (ImmovableHelper.SuicideAtBigTigerMouth(opponentTryMove).Item1 || BothAliveHelper.CheckForBothAliveAtMove(opponentTryMove.TryGame.Board)))
                 return false;
@@ -1311,7 +1311,7 @@ namespace Go
             else if (tryBoard.AtariTargets.Count == 1)
             {
                 Group atariTarget = tryBoard.AtariTargets.First();
-                if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c))
+                if (LinkHelper.GetMoveDiagonals(tryBoard).Any())
                 {
                     Board b = ImmovableHelper.MakeMoveAtLiberty(tryBoard, atariTarget);
                     if (b != null && b.MoveGroupLiberties > 1)
@@ -1522,7 +1522,7 @@ namespace Go
             if (tryBoard.MoveGroupLiberties != 1 || tryBoard.MoveGroup.Points.Count != 1) return false;
             if (!tryBoard.PointWithinMiddleArea()) return false;
 
-            List<Point> coveredPoints = tryBoard.GetDiagonalNeighbours().Where(q => tryBoard[q] == c).ToList();
+            List<Point> coveredPoints = LinkHelper.GetMoveDiagonals(tryBoard);
             if (coveredPoints.Count != 2) return false;
             if (coveredPoints[0].x == coveredPoints[1].x || coveredPoints[0].y == coveredPoints[1].y) return false;
             foreach (Point p in tryBoard.GetDiagonalNeighbours())
@@ -1869,7 +1869,7 @@ namespace Go
                     List<Group> oneLibertyGroup = board.OneLibertyNeighbourGroup(group);
                     if (oneLibertyGroup.Count != 1) continue;
                     Point q = sharedLiberties.FirstOrDefault(n => !oneLibertyGroup.First().Liberties.Contains(n));
-                    if (!Convert.ToBoolean(q.NotEmpty) || ImmovableHelper.IsSuicidalMove(tryBoard, q, c.Opposite()))
+                    if (q.IsEmpty() || ImmovableHelper.IsSuicidalMove(tryBoard, q, c.Opposite()))
                         return neutralPointMove;
                 }
             }
@@ -2117,7 +2117,6 @@ namespace Go
         #region redundant eye diagonal
         /// <summary>
         /// Survival eye diagonal move.
-        /// <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18473_2" />
         /// Check diagonals are real eyes <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_SiHuoDaQuan_CornerA29_2" />
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B31" />
         /// Check link to groups <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_WuQingYuan_Q31154" />
@@ -2352,7 +2351,6 @@ namespace Go
         /// Redundant neural net move. For use in LeelaSharp project.
         /// <see cref="UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_20230423_8" />
         /// Check killer formation <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31499" />
-        /// Check tiger mouth <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_B33_2" />
         /// Check higher heat value in stone and diagonal neighbours <see cref="UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_Scenario_Nie87" />
         /// </summary>
         public static Boolean RedundantNeuralNetMove(GameTryMove tryMove)
@@ -2366,23 +2364,13 @@ namespace Go
             if (!MonteCarloGame.useLeelaZero || g.isMonteCarloPlayout) return false;
 
             if (!tryMove.IsNegligible) return false;
-            if (currentBoard.CapturedList.Any()) return false;
 
-            if (tryBoard.MoveGroupLiberties == 1)
-            {
-                //check killer formation
-                if (KillerFormationHelper.IsKillerFormationFromFunc(tryBoard))
-                    return false;
+            //check opponent at stone and diagonal neighbour
+            if (!tryBoard.GetStoneAndDiagonalNeighbours().All(n => tryBoard[n] != c.Opposite()))
+                return false;
 
-                //check tiger mouth
-                if (tryBoard.MoveGroup.Points.Count == 1 && ImmovableHelper.IsConfirmTigerMouth(currentBoard, tryBoard) == null)
-                    return false;
-            }
-
-            //check stone and diagonal neighbour
-            Boolean p = tryBoard.GetStoneAndDiagonalNeighbours().All(n => tryBoard[n] != c.Opposite());
-            Boolean q = tryBoard.GetStoneAndDiagonalNeighbours().All(n => tryBoard[n] != c);
-            if (!p && !q)
+            //check killer formation
+            if (tryBoard.MoveGroupLiberties == 1 && KillerFormationHelper.IsKillerFormationFromFunc(tryBoard))
                 return false;
 
             //get heat map

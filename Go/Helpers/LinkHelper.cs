@@ -555,7 +555,7 @@ namespace Go
         /// <summary>
         /// Find diagonal cut.
         /// </summary>
-        public static (Point?, List<Point>) FindDiagonalCut(Board board, Group group = null, Boolean checkOpponent = false)
+        public static (Point?, List<Point>) FindDiagonalCut(Board board, Group group = null)
         {
             if (group == null) group = board.MoveGroup;
             Content c = group.Content;
@@ -564,7 +564,7 @@ namespace Go
                 if (ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt(p.Move))) continue;
                 if (ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt((Point)p.CheckMove))) continue;
                 List<Point> diagonals = PointsBetweenDiagonals(p);
-                if (diagonals.All(d => board[d] == c.Opposite() && !ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt(d)) && (!checkOpponent || WallHelper.IsStrongGroup(board, board.GetGroupAt(d)))))
+                if (diagonals.All(d => board[d] == c.Opposite() && !ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt(d))))
                     return (p.Move, diagonals);
             }
             return (null, null);
@@ -723,7 +723,7 @@ namespace Go
         public static Boolean DoubleKoBreak(Board b, Point tigerMouth, Content c)
         {
             Point p = b.GetStoneNeighbours(tigerMouth).FirstOrDefault(n => b[n] == Content.Empty);
-            if (!Convert.ToBoolean(p.NotEmpty)) return false;
+            if (p.IsEmpty()) return false;
             List<Point> nPoints = b.GetStoneNeighbours(p).Where(n => !n.Equals(tigerMouth)).ToList();
             List<Point> rc = nPoints.Where(n => b[n] == c.Opposite()).ToList();
             if (rc.Count != nPoints.Count - 1) return false;
