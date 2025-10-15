@@ -1602,6 +1602,12 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" />
             </summary>
         </member>
+        <member name="M:Go.RedundantMoveHelper.CheckDiagonalForRealEye(Go.Board,Go.Board)">
+            <summary>
+            Check diagonal for real eye.
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario2dan21_2" />
+            </summary>
+        </member>
         <member name="M:Go.RedundantMoveHelper.CheckDiagonalAndLibertyAtMove(Go.GameTryMove,Go.Board)">
             <summary>
             Check diagonal and liberty at move.

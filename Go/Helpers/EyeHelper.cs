@@ -345,5 +345,14 @@ namespace Go
                 return true;
             return false;
         }
+
+        public static Boolean FindRealEyeOfAnyKillerGroup(Board board, Point p, Content c)
+        {
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(board, p, c);
+            if (killerGroup == null) return false;
+            if (EyeHelper.FindRealEyeWithinEmptySpace(board, killerGroup) || EyeHelper.RealEyeOfDiagonallyConnectedGroups(board, killerGroup))
+                return true;
+            return false;
+        }
     }
 }

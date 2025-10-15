@@ -555,7 +555,7 @@ namespace Go
                 Boolean captured = b.CapturedList.Any();
                 int moveLiberties = b.GetMoveLiberties().Count;
                 int moveGroupLiberties = b.MoveGroupLiberties;
-                killBoards.Add(new { b = b, resolveAtari = resolveAtari, captured = captured, moveLiberties = moveLiberties, moveGroupLiberties = moveGroupLiberties });
+                killBoards.Add(new { b, resolveAtari, captured, moveLiberties, moveGroupLiberties });
             }
 
             killBoards = killBoards.OrderByDescending(k => k.resolveAtari).ThenByDescending(k => k.captured).ThenByDescending(k => k.moveLiberties).ThenByDescending(k => k.moveGroupLiberties).ToList();

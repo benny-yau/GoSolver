@@ -741,6 +741,11 @@ namespace Go
             if (killerGroup != null && KillerFormationHelper.BoxFormation(tryBoard, killerGroup) && tryBoard.GetNeighbourGroups(killerGroup).Count == 1 && !killerGroup.Points.First().Equals(move))
                 return true;
 
+            //check diagonal for real eye
+            List<Point> realEye = CheckDiagonalForRealEye(tryBoard, captureBoard);
+            if (realEye.Any() && tryBoard.GetDiagonalNeighbours().Except(realEye).All(n => tryBoard[n] == c.Opposite()))
+                return true;
+
             //ensure all strong neighbour groups
             if (!WallHelper.StrongNeighbourGroups(captureBoard, move, c))
                 return false;
@@ -938,8 +943,7 @@ namespace Go
             }
 
             //check for real eye
-            Group killerGroup = GroupHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite());
-            if (killerGroup == null || !EyeHelper.FindRealEyeOfAnyKillerGroup(captureBoard, killerGroup)) return false;
+            if (!EyeHelper.FindRealEyeOfAnyKillerGroup(captureBoard, move, c.Opposite())) return false;
             return KillerFormationHelper.CheckRealEyeInNeighbourGroups(tryBoard, captureBoard);
         }
 
@@ -982,6 +986,10 @@ namespace Go
                 if (CheckDiagonalAndLibertyAtMove(tryMove, captureBoard))
                     return true;
 
+                //check diagonal for real eye
+                if (CheckDiagonalForRealEye(tryBoard, captureBoard).Any())
+                    return true;
+
                 //check connected liberties
                 Point p = tryBoard.MoveGroup.Liberties.First();
                 if (tryBoard.GetStoneNeighbours(p).Any(q => tryBoard.MoveGroup.Liberties.Contains(q)))
@@ -995,6 +1003,18 @@ namespace Go
                 }
             }
             return false;
+        }
+
+        /// <summary>
+        /// Check diagonal for real eye.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario2dan21_2" />
+        /// </summary>
+        private static List<Point> CheckDiagonalForRealEye(Board tryBoard, Board captureBoard)
+        {
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            List<Point> realEyes = LinkHelper.GetGroupDiagonals(tryBoard).Select(s => s.Move).Where(n => GroupHelper.GetKillerGroupFromCache(captureBoard, n, c.Opposite()) != GroupHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite()) && EyeHelper.FindRealEyeOfAnyKillerGroup(captureBoard, n, c.Opposite())).ToList();
+            return realEyes;
         }
 
         /// <summary>
@@ -1014,7 +1034,7 @@ namespace Go
             Content c = tryMove.MoveContent;
 
             //check move diagonals 
-            if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c))
+            if (LinkHelper.GetMoveDiagonals(tryBoard).Any())
                 return false;
 
             //check for three neighbour groups
@@ -1031,6 +1051,9 @@ namespace Go
 
             //check is negligible
             if (!tryMove.IsNegligible) return false;
+
+            if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c))
+                return false;
 
             //check one empty space left
             if (KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
@@ -2383,12 +2406,7 @@ namespace Go
             if (heatValue <= 1)
                 return true;
 
-            //check higher heat value in stone and diagonal neighbours
-            if (heatValue > 2) return false;
-            if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => g.heatMap[n.x, n.y] > heatValue))
-                return false;
-
-            return true;
+            return false;
         }
 
         /// <summary>
