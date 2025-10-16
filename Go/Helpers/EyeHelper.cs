@@ -354,5 +354,88 @@ namespace Go
                 return true;
             return false;
         }
+
+        #region check real eye at diagonal or neighbour group
+        /// <summary>
+        /// Check real eye in neighbour groups.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_3" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18472" />
+        /// Check for corner six <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
+        /// Find real eye with strong groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B25" />
+        /// </summary>
+        public static Boolean CheckRealEyeInNeighbourGroups(Board tryBoard, Board captureBoard)
+        {
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+
+            //real eye at move killer group
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite());
+            if (killerGroup != null && killerGroup.Points.Count <= 2 && !EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, killerGroup))
+                return false;
+
+            //check for corner six
+            if (KillerFormationHelper.CornerSixFormation(tryBoard))
+                return false;
+
+            //bent three
+            if (KillerFormationHelper.BentThreeSuicideAtCoveredEye(tryBoard, captureBoard))
+                return false;
+
+            //find real eye in neighbour killer groups
+            List<Group> killerGroups = GroupHelper.GetKillerGroups(captureBoard, c.Opposite());
+            if (killerGroup == null) killerGroup = tryBoard.MoveGroup;
+            List<Group> ngroups = captureBoard.GetNeighbourGroups(killerGroup);
+
+            foreach (Group kgroup in killerGroups.Where(gr => gr != killerGroup))
+            {
+                List<Group> cgroups = captureBoard.GetNeighbourGroups(kgroup);
+                if (!cgroups.Intersect(ngroups).Any()) continue;
+                if (cgroups.Count == 1) return true;
+                if (!WallHelper.StrongGroups(captureBoard, cgroups)) continue;
+                if (EyeHelper.FindRealEyeOfAnyKillerGroup(captureBoard, kgroup))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Check diagonal for real eye.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario2dan21_2" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
+        /// </summary>
+        public static List<Point> CheckDiagonalForRealEye(Board tryBoard, Board captureBoard)
+        {
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            List<Point> realEye = LinkHelper.GetGroupDiagonals(tryBoard).Select(s => s.Move).Where(n => GroupHelper.GetKillerGroupFromCache(captureBoard, n, c.Opposite()) != GroupHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite()) && EyeHelper.FindRealEyeOfAnyKillerGroup(captureBoard, n, c.Opposite())).ToList();
+            return realEye;
+        }
+
+        /// <summary>
+        /// Check capture move liberty.
+        /// </summary>
+        public static Boolean CheckCaptureMoveLiberty(Board tryBoard, Board captureBoard)
+        {
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            List<Point> liberties = captureBoard.GetMoveLiberties().Where(n => !n.Equals(move) && GroupHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite()) != GroupHelper.GetKillerGroupFromCache(captureBoard, n, c.Opposite())).ToList();
+            if (liberties.Any(n => !WallHelper.NoEyeForSurvival(captureBoard, n, c.Opposite()) && !EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, n, c.Opposite())))
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Find real eye at diagonal.
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" /> 
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_2" /> 
+        /// Three point real eye <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30188" /> 
+        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WuQingYuan_Q30982" /> 
+        /// </summary>
+        public static Boolean FindRealEyeAtDiagonal(List<Point> diagonals, Board b, Content c)
+        {
+            List<Group> killerGroups = diagonals.Select(d => GroupHelper.GetDirectKillerGroup(b, d, c)).Where(n => n != null).Distinct().ToList();
+            return killerGroups.All(n => EyeHelper.FindRealEyeOfAnyKillerGroup(b, n));
+        }
+        #endregion
     }
 }

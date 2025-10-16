@@ -470,6 +470,36 @@
             Find real eye for any killer group. Within three points at FindRealEyeWithinEmptySpace and more than three points at RealEyeOfDiagonallyConnectedGroups.
             </summary>
         </member>
+        <member name="M:Go.EyeHelper.CheckRealEyeInNeighbourGroups(Go.Board,Go.Board)">
+            <summary>
+            Check real eye in neighbour groups.
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_3" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18472" />
+            Check for corner six <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
+            Find real eye with strong groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B25" />
+            </summary>
+        </member>
+        <member name="M:Go.EyeHelper.CheckDiagonalForRealEye(Go.Board,Go.Board)">
+            <summary>
+            Check diagonal for real eye.
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario2dan21_2" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
+            </summary>
+        </member>
+        <member name="M:Go.EyeHelper.CheckCaptureMoveLiberty(Go.Board,Go.Board)">
+            <summary>
+            Check capture move liberty.
+            </summary>
+        </member>
+        <member name="M:Go.EyeHelper.FindRealEyeAtDiagonal(System.Collections.Generic.List{Go.Point},Go.Board,Go.Content)">
+            <summary>
+            Find real eye at diagonal.
+            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" /> 
+            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_2" /> 
+            Three point real eye <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30188" /> 
+            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WuQingYuan_Q30982" /> 
+            </summary>
+        </member>
         <member name="M:Go.GameHelper.WinOrLose(Go.SurviveOrKill,Go.ConfirmAliveResult,Go.GameInfo)">
             <summary>
             Determine if win or lose based on result.
@@ -864,15 +894,6 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18710" />
             </summary>
         </member>
-        <member name="M:Go.KillerFormationHelper.CheckRealEyeInNeighbourGroups(Go.Board,Go.Board)">
-            <summary>
-            Check real eye in neighbour groups.
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_3" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18472" />
-            Check for corner six <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
-            Find real eye with strong groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B25" />
-            </summary>
-        </member>
         <member name="M:Go.KillerFormationHelper.FindSuicidalKillerFormation(Go.Board,Go.Board,Go.Board)">
             <summary>
             Find suicidal killer formation.        
@@ -974,11 +995,6 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17250" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18472" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A41" />
-            </summary>
-        </member>
-        <member name="M:Go.KillerFormationHelper.CheckCaptureMoveLiberty(Go.Board,Go.Board)">
-            <summary>
-            Check capture move liberty.
             </summary>
         </member>
         <member name="M:Go.KillerFormationHelper.TwoPointAtariMove(Go.Board,Go.Board)">
@@ -1602,12 +1618,6 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.CheckDiagonalForRealEye(Go.Board,Go.Board)">
-            <summary>
-            Check diagonal for real eye.
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario2dan21_2" />
-            </summary>
-        </member>
         <member name="M:Go.RedundantMoveHelper.CheckDiagonalAndLibertyAtMove(Go.GameTryMove,Go.Board)">
             <summary>
             Check diagonal and liberty at move.
@@ -1927,15 +1937,6 @@
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_x_2" /> 
             Check link for groups <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30152_2" /> 
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q30152" /> 
-            </summary>
-        </member>
-        <member name="M:Go.RedundantMoveHelper.FindRealEyeAtDiagonal(System.Collections.Generic.List{Go.Point},Go.Board,Go.Content)">
-            <summary>
-            Find real eye at diagonal.
-            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" /> 
-            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_2" /> 
-            Three point real eye <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30188" /> 
-            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WuQingYuan_Q30982" /> 
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.RedundantFillerMove(Go.GameTryMove)">
