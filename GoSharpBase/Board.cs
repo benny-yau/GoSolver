@@ -45,7 +45,7 @@ namespace Go
             get
             {
                 if (atariTargets == null)
-                    atariTargets = OneLibertyNeighbourGroup();
+                    atariTargets = OneLibertyGroup();
                 return atariTargets;
             }
             set
@@ -327,16 +327,20 @@ namespace Go
         /// <summary>
         /// Get groups from stone neighbours.
         /// </summary>
-        public HashSet<Group> GetGroupsFromStoneNeighbours(Point p, Content c)
+        public List<Group> GetGroupsFromStoneNeighbours(Point? p = null, Content c = Content.Unknown)
         {
-            List<Point> stoneNeighbours = this.GetStoneNeighbours(p).Where(q => this[q] == c.Opposite()).ToList();
-            return this.GetGroupsFromPoints(stoneNeighbours);
+            List<Point> stoneNeighbours = OpponentAtStoneNeighbour(p, c);
+            return this.GetGroupsFromPoints(stoneNeighbours).ToList();
         }
 
-        public List<Group> GetGroupsFromStoneNeighbours(Point? p = null)
+        /// <summary>
+        /// Opponent at stone neighbour.
+        /// </summary>
+        public List<Point> OpponentAtStoneNeighbour(Point? p = null, Content c = Content.Unknown)
         {
             if (p == null) p = this.Move.Value;
-            return GetGroupsFromStoneNeighbours(p.Value, this[p.Value]).ToList();
+            if (c == Content.Unknown) c = this[p.Value];
+            return this.GetStoneNeighbours(p).Where(n => this[n] == c.Opposite()).ToList();
         }
 
         /// <summary>
@@ -495,12 +499,7 @@ namespace Go
         /// </summary>
         public List<Group> OneLibertyGroup(Point? p = null, Content c = Content.Unknown)
         {
-            if (p == null)
-            {
-                p = this.Move.Value;
-                c = this[p.Value];
-            }
-            return this.GetGroupsFromStoneNeighbours(p.Value, c).Where(n => n.Liberties.Count == 1).ToList();
+            return this.GetGroupsFromStoneNeighbours(p, c).Where(n => n.Liberties.Count == 1).ToList();
         }
 
         /// <summary>

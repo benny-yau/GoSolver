@@ -271,13 +271,13 @@ namespace Go
             foreach (Point p in diagonals.Where(d => board[d] == Content.Empty))
             {
                 //ensure three opponent groups
-                List<Point> opponentStones = board.GetStoneNeighbours(p).Where(n => board[n] == c).ToList();
+                List<Point> opponentStones = board.OpponentAtStoneNeighbour(p, c.Opposite());
                 if (opponentStones.Count < 3) continue;
 
                 //make opponent move at diagonal
                 Board b = board.MakeMoveOnNewBoard(p, c.Opposite(), true);
                 if (b == null) continue;
-                opponentStones = b.GetStoneNeighbours(p).Where(n => b[n] == c).ToList();
+                opponentStones = b.OpponentAtStoneNeighbour(p);
                 if (!KillerFormationHelper.ThreeOpponentGroupsAtMove(b, p)) continue;
                 if (ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false)) continue;
 
@@ -604,7 +604,7 @@ namespace Go
         public static Group TigerMouthThreatGroup(Board board, Point tigerMouth, Content c)
         {
             if (board[tigerMouth] != Content.Empty) return null;
-            List<Point> npoints = board.GetStoneNeighbours(tigerMouth).Where(n => board[n] == c.Opposite()).ToList();
+            List<Point> npoints = board.OpponentAtStoneNeighbour(tigerMouth, c);
             if (npoints.Count != 1) return null;
             Group threatGroup = board.GetGroupAt(npoints.First());
             if (threatGroup.Liberties.Count == 2)
@@ -722,7 +722,7 @@ namespace Go
         /// </summary>
         public static Boolean DoubleKoBreak(Board b, Point tigerMouth, Content c)
         {
-            Point p = b.GetStoneNeighbours(tigerMouth).FirstOrDefault(n => b[n] == Content.Empty);
+            Point p = b.GetMoveLiberties(tigerMouth).FirstOrDefault();
             if (p.IsEmpty()) return false;
             List<Point> nPoints = b.GetStoneNeighbours(p).Where(n => !n.Equals(tigerMouth)).ToList();
             List<Point> rc = nPoints.Where(n => b[n] == c.Opposite()).ToList();

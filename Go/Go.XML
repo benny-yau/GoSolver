@@ -1525,15 +1525,16 @@
         <member name="M:Go.RedundantMoveHelper.OpponentSuicidalConnectAndDie(Go.GameTryMove,Go.GameTryMove)">
             <summary>
             Opponent suicidal connect and die.
-            Check increased killer groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3dan17_3" />
             Check killer formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29378" />
             Check eye <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />
-            Check link for groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16925" />
+            <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_B12" />
             Check one neighbour group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2413_4" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16827_3" />
+            Check increased killer groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3dan17_3" />
             Check eye at diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_B43" />
             Check diagonal cut <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie61" />
             Check diagonal not cut <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q27661" />
+            Check link for groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16925" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SuicidalConnectAndDie(Go.GameTryMove)">
@@ -1952,11 +1953,6 @@
         <member name="M:Go.RedundantMoveHelper.PossibleSpace(Go.Board,Go.Point,Go.Content)">
             <summary>
             Possible space.
-            </summary>
-        </member>
-        <member name="M:Go.RedundantMoveHelper.OpponentAtStoneNeighbour(Go.Board,Go.Point,Go.Content)">
-            <summary>
-            Opponent at stone neighbour.
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.RedundantNeuralNetMove(Go.GameTryMove)">

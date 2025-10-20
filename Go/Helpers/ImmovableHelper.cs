@@ -47,7 +47,7 @@ namespace Go
         public static Boolean FindTigerMouthForLink(Board board, Point p, Content c)
         {
             if (!ImmovableHelper.FindEmptyTigerMouth(board, p, c)) return false;
-            HashSet<Group> groups = board.GetGroupsFromStoneNeighbours(p, c.Opposite());
+            List<Group> groups = board.GetGroupsFromStoneNeighbours(p, c.Opposite());
             if (groups.Count == 1 || groups.All(n => WallHelper.IsNonKillableGroup(board, n)))
                 return false;
             return true;
@@ -463,7 +463,7 @@ namespace Go
             if (board.PointWithinMiddleArea(eyePoint.Value))
             {
                 //check three opponent stones
-                List<Point> nstones = board.GetStoneNeighbours(eyePoint).Where(n => board[n] == c.Opposite()).ToList();
+                List<Point> nstones = board.OpponentAtStoneNeighbour(eyePoint.Value, c).ToList();
                 if (nstones.Count != 3) return false;
                 Point middleStone = nstones.FirstOrDefault(n => board.GetDiagonalNeighbours(n).Count(d => nstones.Contains(d) && board.GetGroupAt(n) != board.GetGroupAt(d)) >= 2);
                 if (middleStone.IsEmpty()) return false;

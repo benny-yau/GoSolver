@@ -93,7 +93,7 @@ namespace Go
             if (!FindEye(board, eye, c)) return false;
 
             //ensure all groups have more than one liberty
-            HashSet<Group> ngroups = board.GetGroupsFromStoneNeighbours(eye, c.Opposite());
+            List<Group> ngroups = board.GetGroupsFromStoneNeighbours(eye, c.Opposite());
             if (ngroups.Count > 1 && ngroups.Any(n => n.Liberties.Count == 1))
                 return false;
 

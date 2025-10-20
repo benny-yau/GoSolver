@@ -120,7 +120,7 @@ namespace Go
         /// </summary>
         public static Boolean StrongNeighbourGroups(Board board, Point move, Content c)
         {
-            HashSet<Group> ngroups = board.GetGroupsFromStoneNeighbours(move, c);
+            List<Group> ngroups = board.GetGroupsFromStoneNeighbours(move, c);
             return StrongGroups(board, ngroups);
         }
 

@@ -484,7 +484,7 @@ namespace Go
                 List<Point> externalLiberties = targetGroup.Liberties.Where(n => GroupHelper.GetDirectKillerGroup(currentBoard, n, c.Opposite()) != killerGroup).ToList();
                 if (externalLiberties.Count != 1) continue;
                 Point liberty = externalLiberties.First();
-                HashSet<Group> groups = currentBoard.GetGroupsFromStoneNeighbours(liberty, c.Opposite());
+                List<Group> groups = currentBoard.GetGroupsFromStoneNeighbours(liberty, c.Opposite());
                 if (!ImmovableHelper.IsSuicidalMove(tryBoard, liberty, c.Opposite()))
                     continue;
                 if (groups.Any(n => ImmovableHelper.EscapeCaptureLink(currentBoard, n)))
@@ -620,7 +620,7 @@ namespace Go
         {
             if (eyePoint == null) eyePoint = tryBoard.Move.Value;
             Content c = tryBoard[eyePoint.Value];
-            if (tryBoard.GetStoneNeighbours(eyePoint).Count(n => tryBoard[n] == c.Opposite()) >= 3)
+            if (tryBoard.OpponentAtStoneNeighbour(eyePoint, c).Count(n => tryBoard[n] == c.Opposite()) >= 3)
             {
                 List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(tryBoard, eyePoint.Value, c.Opposite(), true);
                 if (diagonals.Any())

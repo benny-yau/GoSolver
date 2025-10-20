@@ -60,7 +60,7 @@ namespace Go
             else group = tryBoard.GetCurrentGroup(group);
             Content c = group.Content;
             if (!IsKoFight(tryBoard, group)) return false;
-            Point eye = tryBoard.GetStoneNeighbours(group.Points.First()).First(n => tryBoard[n] == Content.Empty);
+            Point eye = tryBoard.GetMoveLiberties(group.Points.First()).First();
             List<Group> eyeGroups = tryBoard.GetGroupsFromStoneNeighbours(eye, c.Opposite()).ToList();
             if (eyeGroups.Where(n => !n.Equals(group)).All(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
                 return true;
@@ -104,9 +104,9 @@ namespace Go
             {
                 Group dgroup = tryBoard.GetGroupAt(d);
                 if (dgroup.Points.Count != 1) continue;
-                Point lib = tryBoard.GetStoneNeighbours(d).FirstOrDefault(p => tryBoard[p] == Content.Empty && !tryBoard.PointWithinMiddleArea(p));
+                Point lib = tryBoard.GetMoveLiberties(d).FirstOrDefault(p => !tryBoard.PointWithinMiddleArea(p));
                 if (lib.IsEmpty()) continue;
-                Point lib2 = tryBoard.GetStoneNeighbours(lib).FirstOrDefault(p => tryBoard[p] == Content.Empty);
+                Point lib2 = tryBoard.GetMoveLiberties(lib).FirstOrDefault();
                 if (lib2.IsEmpty()) continue;
                 Point e = tryBoard.GetDiagonalNeighbours(lib).Intersect(tryBoard.GetStoneNeighbours(lib2)).First();
                 if (tryBoard[e] != Content.Empty || WallHelper.NoEyeForSurvival(tryBoard, e)) continue;
@@ -214,7 +214,7 @@ namespace Go
                 {
                     if (!ImmovableHelper.UnescapableGroup(board, koGroup).Item1) continue;
                     Point eye = koGroup.Liberties.First();
-                    HashSet<Group> ngroups = board.GetGroupsFromStoneNeighbours(eye, c);
+                    List<Group> ngroups = board.GetGroupsFromStoneNeighbours(eye, c);
                     if (ngroups.Any(n => n != koGroup && ImmovableHelper.CheckConnectAndDie(board, n, false)))
                         continue;
                     return true;
