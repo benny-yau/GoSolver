@@ -27,7 +27,7 @@ namespace Go
             this.game = game;
         }
 
-        public virtual Game Game
+        public Game Game
         {
             get
             {
@@ -39,7 +39,7 @@ namespace Go
             }
         }
 
-        public virtual SurviveOrKill SurviveOrKill
+        public SurviveOrKill SurviveOrKill
         {
             get
             {
@@ -51,7 +51,7 @@ namespace Go
             }
         }
 
-        public virtual int VisitCount
+        public int VisitCount
         {
             get
             {
@@ -63,7 +63,7 @@ namespace Go
             }
         }
 
-        public virtual double WinScore
+        public double WinScore
         {
             get
             {
@@ -75,7 +75,7 @@ namespace Go
             }
         }
 
-        public virtual int Depth
+        public int Depth
         {
             get
             {
@@ -88,7 +88,7 @@ namespace Go
         }
 
 
-        public virtual Boolean IsKoBlocked
+        public Boolean IsKoBlocked
         {
             get
             {
@@ -100,7 +100,7 @@ namespace Go
             }
         }
 
-        public virtual ConfirmAliveResult ConfirmAlive
+        public ConfirmAliveResult ConfirmAlive
         {
             get
             {
@@ -112,7 +112,7 @@ namespace Go
             }
         }
 
-        public virtual Boolean WinOrLose
+        public Boolean WinOrLose
         {
             get
             {
@@ -125,7 +125,7 @@ namespace Go
         }
 
 
-        public virtual List<State> AllPossibleStates
+        public List<State> AllPossibleStates
         {
             get
             {
@@ -144,12 +144,12 @@ namespace Go
             }
         }
 
-        internal virtual void IncrementVisit(int multiplier = 1)
+        internal void IncrementVisit(int multiplier = 1)
         {
             this.visitCount += multiplier;
         }
 
-        internal virtual void AddScore(double score)
+        internal void AddScore(double score)
         {
             if (this.winScore != int.MinValue)
                 this.winScore += score;

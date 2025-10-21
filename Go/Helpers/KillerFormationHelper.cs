@@ -691,6 +691,9 @@ namespace Go
  17 . . . . . X X X . . . . . . . . . . . 
  18 . . . . . . . . . . . . . . . . . . . 
          */
+        /// <summary>
+        /// Straight three formation.
+        /// </summary>
         public static Boolean StraightThreeFormation(Board tryBoard, IEnumerable<Point> contentPoints)
         {
             if (contentPoints.Count() != 3) return false;
@@ -704,6 +707,9 @@ namespace Go
  17 . . . . . . X X . . . . . . . . . . . 
  18 . . . . . . . . . . . . . . . . . . . 
          */
+        /// <summary>
+        /// Bent three formation.
+        /// </summary>
         public static Boolean BentThreeFormation(Board tryBoard, IEnumerable<Point> contentPoints)
         {
             if (contentPoints.Count() != 3) return false;
@@ -717,6 +723,9 @@ namespace Go
     17 . . . . . X X X . . . . . . . . . . . 
     18 . . . . . . . . . . . . . . . . . . . 
         */
+        /// <summary>
+        /// One by three formation.
+        /// </summary>
         public static Boolean OneByThreeFormation(Board tryBoard, Group moveGroup)
         {
             HashSet<Point> contentPoints = moveGroup.Points;
@@ -731,6 +740,9 @@ namespace Go
  17 . . . . . . X X . . . . . . . . . . . 
  18 . . . . . . . . . . . . . . . . . . . 
          */
+        /// <summary>
+        /// Two by two suicidal formation.
+        /// </summary>
         public static Boolean TwoByTwoSuicidalFormation(Board tryBoard, Group moveGroup)
         {
             Content c = moveGroup.Content;
@@ -753,6 +765,9 @@ namespace Go
             return false;
         }
 
+        /// <summary>
+        /// Two by two formation.
+        /// </summary>
         private static Boolean TwoByTwoFormation(Board tryBoard, IEnumerable<Point> contentPoints)
         {
             if (contentPoints.Count() != 4) return false;
@@ -772,6 +787,9 @@ namespace Go
  17 . . . . . X X . . . . . . . . . . . . 
  18 . . . . . . . . . . . . . . . . . . . 
          */
+        /// <summary>
+        /// Box formation.
+        /// </summary>
         public static Boolean BoxFormation(Board tryBoard, Group moveGroup)
         {
             HashSet<Point> contentPoints = moveGroup.Points;
@@ -787,6 +805,9 @@ namespace Go
  17 . . . . . X . . . . . . . . . . . . . 
  18 . . . . . . . . . . . . . . . . . . . 
          */
+        /// <summary>
+        /// Crow bar formation.
+        /// </summary>
         private static Boolean CrowbarFormation(Board tryBoard, Group moveGroup)
         {
             HashSet<Point> contentPoints = moveGroup.Points;
@@ -806,6 +827,9 @@ namespace Go
  17 . . . . . X . . . . . . . . . . . . . 
  18 . . . . . X X X . . . . . . . . . . . 
          */
+        /// <summary>
+        /// Crowbar edge formation.
+        /// </summary>
         public static Boolean CrowbarEdgeFormation(Board tryBoard, Group moveGroup)
         {
             if (CrowbarFormation(tryBoard, moveGroup))
@@ -827,6 +851,9 @@ namespace Go
  17 . . . . X X X X . . . . . . . . . . . 
  18 . . . . . . . . . . . . . . . . . . . 
          */
+        /// <summary>
+        /// Straight four formation.
+        /// </summary>
         public static Boolean StraightFourFormation(Board tryBoard, Group moveGroup)
         {
             HashSet<Point> contentPoints = moveGroup.Points;
@@ -843,6 +870,9 @@ namespace Go
  17 . . . . . X X . . . . . . . . X . . . 
  18 . . . . . . . . . . . . . . . . . . . 
          */
+        /// <summary>
+        /// Knife five formation.
+        /// </summary>
         public static Boolean KnifeFiveFormation(Board tryBoard, Group moveGroup)
         {
             HashSet<Point> contentPoints = moveGroup.Points;
@@ -866,6 +896,9 @@ namespace Go
     17 . . . X X . . . . . . . X . . . . X . 
     18 . . . . X X . . . . . X X X . . . X . 
             */
+        /// <summary>
+        /// Bent five formation.
+        /// </summary>
         public static Boolean BentFiveFormation(Board tryBoard, Group moveGroup)
         {
             //includes T formation, one-by-four formation
@@ -886,6 +919,9 @@ namespace Go
     17 X X X . . . . . X . . . . . X X X . . 
     18 . . X X . . . . X X X . . . . . . . . 
             */
+        /// <summary>
+        /// Crowbar five formation.
+        /// </summary>
         public static Boolean CrowbarFiveFormation(Board tryBoard, Group moveGroup)
         {
             //includes three-by-two side formation
@@ -907,6 +943,9 @@ namespace Go
  17 . . . . . X X . . . . . . X . . . . . 
  18 . . . . . . . . . . . . . . . . . . . 
          */
+        /// <summary>
+        /// Flower six formation.
+        /// </summary>
         public static Boolean FlowerSixFormation(Board tryBoard, Group moveGroup)
         {
             HashSet<Point> contentPoints = moveGroup.Points;
@@ -933,6 +972,9 @@ namespace Go
     17 . . . . X . . . . . . . . . . . . . . 
     18 . . . . . . . . . . . . . . . . . . . 
             */
+        /// <summary>
+        /// Knife six formation.
+        /// </summary>
         public static Boolean KnifeSixFormation(Board tryBoard, Group moveGroup)
         {
             //includes two-by-four formation
@@ -954,6 +996,9 @@ namespace Go
  17 X . . . . . . . X X X . . . . X X . . 
  18 . . . . . . . . X X X X . . X X X X X 
          */
+        /// <summary>
+        /// Odd seven formation.
+        /// </summary>
         public static Boolean OddSevenFormation(Board tryBoard, Group moveGroup)
         {
             HashSet<Point> contentPoints = moveGroup.Points;
@@ -980,6 +1025,9 @@ namespace Go
 17 x x x . . . . . . . . . . x . . . . . 
 18 . x x . . . . . . . . . . . . . . . . 
          */
+        /// <summary>
+        /// Flower seven formation.
+        /// </summary>
         public static Boolean FlowerSevenFormation(Board tryBoard, Group moveGroup)
         {
             HashSet<Point> contentPoints = moveGroup.Points;
@@ -1044,6 +1092,9 @@ namespace Go
     17 X . . . . . . . . . . . . . . . . . . 
     18 X X . . . . . . . . . . . . . . . . . 
         */
+        /// <summary>
+        /// Corner three formation.
+        /// </summary>
         public static Boolean CornerThreeFormation(Board tryBoard, Group moveGroup = null)
         {
             if (moveGroup == null) moveGroup = tryBoard.MoveGroup;
@@ -1081,6 +1132,9 @@ namespace Go
     17 X X . . . . . . . . . . . . . . . . . 
     18 X X X . . . . . . . . . . . . . . . . 
         */
+        /// <summary>
+        /// Corner six formation.
+        /// </summary>
         public static Boolean CornerSixFormation(Board tryBoard, Group moveGroup = null)
         {
             if (moveGroup == null) moveGroup = tryBoard.MoveGroup;
@@ -1099,6 +1153,9 @@ namespace Go
     17 X . . . . . . . . . . . . . . . . . . 
     18 X X . . . . . . . . . . . . . . . . . 
         */
+        /// <summary>
+        /// Bent four corner formation.
+        /// </summary>
         public static Boolean BentFourCornerFormation(Board tryBoard, Group moveGroup = null)
         {
             if (moveGroup == null) moveGroup = tryBoard.MoveGroup;
@@ -1130,7 +1187,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Rectangular space defining the max and min of points in x-axis and y-axis.
+        /// Within grid, or rectangular space defining the max and min of points in x-axis and y-axis.
         /// </summary>
         public static (int, int) WithinGrid(IEnumerable<Point> points)
         {
@@ -1184,6 +1241,15 @@ namespace Go
                     return false;
             }
             return true;
+        }
+
+        /// <summary>
+        /// First point in killer group.
+        /// </summary>
+        public static Point FirstPointInKillerGroup(Board currentBoard, Group killerGroup, Content c)
+        {
+            Point p = killerGroup.Points.OrderByDescending(n => currentBoard.OpponentAtStoneNeighbour(n, c.Opposite()).Any()).FirstOrDefault(n => currentBoard[n] == Content.Empty && !ImmovableHelper.IsSuicidalMove(currentBoard, n, c.Opposite()));
+            return p;
         }
 
     }

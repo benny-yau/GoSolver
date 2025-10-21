@@ -77,6 +77,9 @@ namespace Go
             Game g = mcts.AnswerNode.State.Game;
             Point answerMove = g.Board.Move.Value;
 
+            if (MonteCarloMapping.searchAnswer)
+                Debug.WriteLine(MonteCarloGame.GetAnswerJson(g, mcts.AnswerNode));
+
             //check if both alive
             if (mcts.AnswerNode.State.SurviveOrKill == SurviveOrKill.Survive && answerMove.Equals(Game.PassMove))
             {

@@ -20,9 +20,9 @@ namespace Go
         public static int realTimeDepthToVerify = Convert.ToInt32(ConfigurationSettings.AppSettings["REALTIME_DEPTH_TO_VERIFY"]);
 
         /// <summary>
-        /// Set the visit count required to reach before moving down the tree to the child node.
+        /// Visit count minimum requirement.
         /// </summary>
-        public virtual int VisitCountMinReq
+        public int VisitCountMinReq
         {
             get
             {
@@ -31,10 +31,10 @@ namespace Go
         }
 
         /// <summary>
-        /// Set the answer and end the search immediately.
+        /// Answer node.
         /// </summary>
-        protected Node answerNode;
-        public virtual Node AnswerNode
+        Node answerNode;
+        public Node AnswerNode
         {
             get
             {
@@ -47,7 +47,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Depth to start exhaustive search to verify.
+        /// Depth to verify.
         /// </summary>
         public int DepthToVerify
         {
@@ -68,6 +68,9 @@ namespace Go
             }
         }
 
+        /// <summary>
+        /// Monte carlo tree search.
+        /// </summary>
         public MonteCarloTreeSearch(Node rootNode, int mctsDepth = 0)
         {
             tree.Root = rootNode;
@@ -75,12 +78,12 @@ namespace Go
         }
 
         /// <summary>
-        /// Start the mcts until answer is found or all nodes are pruned (or max iterations reached).
+        /// Find next move. Start the mcts until answer is found or all nodes are pruned.
         /// <see cref="UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario2dan15" />
         /// <see cref="UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario_GuanZiPu_A3" />
         /// <see cref="UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario3dan17" />
         /// </summary>
-        public virtual void FindNextMove()
+        public void FindNextMove()
         {
             DebugHelper.DebugWriteWithTab("Start of mcts: " + tree.Root.GetLastMoves(), mctsDepth);
             Stopwatch watch = Stopwatch.StartNew();
@@ -126,15 +129,21 @@ namespace Go
                     break;
                 }
             } while (count <= maxIterations);
-            PostProcess(watch);
+            CheckTimeTaken(watch);
         }
 
-        protected Boolean NodeToExpand(Node node)
+        /// <summary>
+        /// Node to expand.
+        /// </summary>
+        private Boolean NodeToExpand(Node node)
         {
             return !node.Expanded && (node.State.Depth > 0 || node.State.SurviveOrKill == SurviveOrKill.Survive);
         }
 
-        protected virtual Node RandomChildNode(Node node)
+        /// <summary>
+        /// Random child node.
+        /// </summary>
+        private Node RandomChildNode(Node node)
         {
             int count = node.ChildArray.Count;
             if (count == 0) return node;
@@ -142,7 +151,10 @@ namespace Go
             return node.ChildArray[selectRandom];
         }
 
-        protected virtual Boolean ReachedDepthToVerify(Node node)
+        /// <summary>
+        /// Reached depth to verify.
+        /// </summary>
+        private Boolean ReachedDepthToVerify(Node node)
         {
             return (node.Parent != null && node.Parent.CurrentDepth >= DepthToVerify);
         }
@@ -150,7 +162,7 @@ namespace Go
         /// <summary>
         /// Verify on depth reached.
         /// </summary>
-        protected virtual void VerifyOnDepthReached(Node promisingNode)
+        private void VerifyOnDepthReached(Node promisingNode)
         {
             Node verifyNode = (promisingNode.NoPossibleStates) ? promisingNode : promisingNode.Parent;
             Boolean isWin = VerifyWithExhaustiveSearch(verifyNode);
@@ -165,9 +177,9 @@ namespace Go
         }
 
         /// <summary>
-        /// Verify with exhaustive search on reaching specified depth.
+        /// Verify with exhaustive search.
         /// </summary>
-        public Boolean VerifyWithExhaustiveSearch(Node verifyNode)
+        private Boolean VerifyWithExhaustiveSearch(Node verifyNode)
         {
             if (verifyNode == null || verifyNode.Parent == null)
                 return false;
@@ -175,7 +187,7 @@ namespace Go
             Game verifyGame = new Game(verifyNode.State.Game);
             DebugHelper.DebugWriteWithTab("Verifying game: " + verifyGame.Board.GetLastMoves(), mctsDepth);
 
-            //exhaustive search to find definite result
+            //exhaustive search
             ConfirmAliveResult verifyResult = verifyGame.MakeExhaustiveSearch();
 
             if (GameHelper.WinOrLose(verifyNode.State.SurviveOrKill, verifyResult, verifyGame.GameInfo))
@@ -191,10 +203,10 @@ namespace Go
         }
 
         /// <summary>
-        /// Prune node after verifying with exhaustive search and if result is a win then check if parent node is correct by trying to prune all child nodes.
+        /// Prune promising node, after verifying with exhaustive search. If result is a win then check if parent node is correct by trying to prune all child nodes.
         /// After all nodes are pruned, move up the level by recursion to check if current path is correct and the answer node will be the first node of the tree.
         /// </summary>
-        public Boolean PrunePromisingNode(Node prunedNode, Node verifyNode, Boolean winResult, Boolean recursion = false)
+        private Boolean PrunePromisingNode(Node prunedNode, Node verifyNode, Boolean winResult, Boolean recursion = false)
         {
             Node parentNode = prunedNode.Parent;
             if (prunedNode == null || parentNode == null) return false;
@@ -248,16 +260,16 @@ namespace Go
         }
 
         /// <summary>
-        /// Check if all nodes have been pruned. Check if answer found else continue to prune parent of current node.
+        /// Check all child nodes pruned. Check if answer found else continue to prune parent of current node.
         /// </summary>
-        protected Boolean CheckAllChildNodesPruned(Node node, Boolean winResult = false)
+        private Boolean CheckAllChildNodesPruned(Node node, Boolean winResult = false)
         {
             if (node.ChildArray.Count > 0) return false;
             DebugHelper.DebugWriteWithTab("All child nodes pruned.", mctsDepth);
             if (AnswerFound(node))
                 return true;
 
-            //if parent is not null then prune parent of win node moving up the tree by recursion
+            //if parent is not null then prune parent of win node by recursion
             if (node.Parent != null)
             {
                 DebugHelper.DebugWriteWithTab("MCTS recursion up level. WinResult: " + winResult, mctsDepth);
@@ -267,7 +279,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Answer found when current depth of node is count of last moves of root node plus one. Set as AnswerNode and return true.
+        /// Answer found.
         /// </summary>
         private Boolean AnswerFound(Node node)
         {
@@ -286,9 +298,9 @@ namespace Go
         }
 
         /// <summary>
-        /// Prune node after verification and set pruned node in json map.
+        /// Pruning. Set pruned node in json map.
         /// </summary>
-        protected virtual void Pruning(Node prunedNode, Node verifyNode)
+        private void Pruning(Node prunedNode, Node verifyNode)
         {
             if (prunedNode == null || prunedNode.Parent == null) return;
             if (MonteCarloMapping.mapMovesOrSearchAnswer && verifyNode != null)
@@ -314,9 +326,9 @@ namespace Go
         }
 
         /// <summary>
-        /// Selection phase - to select the most promising node from sibling nodes based on UCT value.
+        /// Selection phase - select the most promising node from sibling nodes based on UCT value.
         /// </summary>
-        protected virtual Node SelectPromisingNode(Node rootNode)
+        private Node SelectPromisingNode(Node rootNode)
         {
             Node node = rootNode;
             while (node.ChildArray.Count != 0)
@@ -329,15 +341,10 @@ namespace Go
         }
 
         /// <summary>
-        /// Expansion phase - to expand all possible states as child nodes.
-        /// Confirm alive for each possible state to check if game ended with objective reached already.
+        /// Expansion phase - expand all possible states.
+        /// Check confirm alive if game ended with objective reached already.
         /// </summary>
-        protected virtual void ExpandNode(Node node)
-        {
-            NodeExpansion(node);
-        }
-
-        protected void NodeExpansion(Node node)
+        private void ExpandNode(Node node)
         {
             if (node.Expanded) return;
             List<State> possibleStates = node.State.AllPossibleStates;
@@ -362,7 +369,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Back propagation phase - to increase score alternately up the levels for the winner.
+        /// Back propagation phase - increase score alternately up the levels for the winner.
         /// </summary>
         private void BackPropagation(Node node, Boolean winOrLose, int incrementScore = winScore)
         {
@@ -384,7 +391,7 @@ namespace Go
         /// <summary>
         /// Simulation phase - to simulate monte carlo playout by randomization of moves.
         /// </summary>
-        public virtual (ConfirmAliveResult, Board) SimulateRandomPlayout(Node node)
+        private (ConfirmAliveResult, Board) SimulateRandomPlayout(Node node)
         {
             (ConfirmAliveResult result, Board board) = InitializeMonteCarloPlayout(node);
             Boolean winLose = GameHelper.WinOrLose(node.State.SurviveOrKill, result, node.State.Game.GameInfo);
@@ -393,11 +400,10 @@ namespace Go
             return (result, board);
         }
 
-
         /// <summary>
-        /// Confirmed cases represent possible game state where the game has ended with confirm alive already.
+        /// Handle confirmed cases, for confirm alive.
         /// </summary>
-        protected Boolean HandleConfirmedCases(Node promisingNode)
+        private Boolean HandleConfirmedCases(Node promisingNode)
         {
             Node node = promisingNode.ChildArray.FirstOrDefault(m => m.State.WinOrLose);
             if (node == null) return false;
@@ -409,7 +415,10 @@ namespace Go
             return true;
         }
 
-        public (ConfirmAliveResult, Board) InitializeMonteCarloPlayout(Node node)
+        /// <summary>
+        /// Initialize monte carlo playout.
+        /// </summary>
+        private (ConfirmAliveResult, Board) InitializeMonteCarloPlayout(Node node)
         {
             Game g = node.State.Game;
             SurviveOrKill surviveOrKill = node.State.SurviveOrKill;
@@ -425,7 +434,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Make kill move in mcts simulation phase by selecting from all possible moves by randomization.
+        /// Monte carlo make kill move. Select random move from all possible moves.
         /// Include ko moves and set result as KoAlive if ko wins.
         /// </summary>
         private (ConfirmAliveResult, Board) MonteCarloMakeKillMove(int depth, Game g)
@@ -459,9 +468,8 @@ namespace Go
             return (bestResult, b);
         }
 
-
         /// <summary>
-        /// Make survival move in mcts simulation phase by selecting from all possible moves by randomization.
+        /// Monte carlo make survival move. Select random move from all possible moves.
         /// Include ko moves and set result as KoAlive if ko wins.
         /// </summary>
         private (ConfirmAliveResult, Board) MonteCarloMakeSurvivalMove(int depth, Game g)
@@ -500,7 +508,10 @@ namespace Go
             return (bestResult, b);
         }
 
-        protected virtual void PostProcess(Stopwatch watch)
+        /// <summary>
+        /// Check time taken.
+        /// </summary>
+        private void CheckTimeTaken(Stopwatch watch)
         {
             watch.Stop();
             long timeTaken = watch.ElapsedMilliseconds;

@@ -584,13 +584,13 @@ namespace Go
         /// Check killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29378" />
         /// Check eye <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_B12" />
+        /// Check increased killer groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3dan17_3" />
         /// Check one neighbour group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2413_4" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16827_3" />
-        /// Check increased killer groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3dan17_3" />
-        /// Check eye at diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_B43" />
-        /// Check diagonal cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie61" />
-        /// Check diagonal not cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q27661" />
         /// Check link for groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16925" />
+        /// Check diagonal not cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q27661" />
+        /// Check diagonal cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie61" />
+        /// Check eye at diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_B43" />
         /// </summary>
         public static Boolean OpponentSuicidalConnectAndDie(GameTryMove tryMove, GameTryMove opponentTryMove)
         {
@@ -614,28 +614,27 @@ namespace Go
             if (tryBoard.MoveGroup.Liberties.Any(n => EyeHelper.FindEye(tryBoard, n, c)))
                 return false;
 
-            //check one neighbour group
-            Group killerGroup = GroupHelper.GetDirectKillerGroup(currentBoard, move, c.Opposite());
-            if (killerGroup != null && GroupHelper.GetNeighbourGroupsOfKillerGroup(currentBoard, killerGroup).Count == 1)
-            {
-                Point p = killerGroup.Points.OrderByDescending(n => currentBoard.OpponentAtStoneNeighbour(n, c.Opposite()).Any()).FirstOrDefault(n => currentBoard[n] == Content.Empty && !ImmovableHelper.IsSuicidalMove(currentBoard, n, c.Opposite()));
-                if (p.IsEmpty() || move.Equals(p))
-                    return false;
-                return true;
-            }
-
             //check increased killer groups
             if (opponentTryMove.IncreasedKillerGroups && !WallHelper.IsNonKillableGroup(opponentBoard))
                 return false;
 
-            if (tryBoard.GetNeighbourGroups().Count > 1)
+            //check one neighbour group
+            Group killerGroup = GroupHelper.GetDirectKillerGroup(currentBoard, move, c.Opposite());
+            if (killerGroup != null && GroupHelper.GetNeighbourGroupsOfKillerGroup(currentBoard, killerGroup).Count == 1)
             {
-                //check eye at diagonal
-                if (LinkHelper.GetGroupDiagonals(tryBoard).Any(n => EyeHelper.FindEye(tryBoard, n.Move, c.Opposite())))
+                Point p = KillerFormationHelper.FirstPointInKillerGroup(currentBoard, killerGroup, c);
+                if (p.IsEmpty() || move.Equals(p))
+                    return false;
+            }
+
+            //check link for groups
+            if (LinkHelper.IsAbsoluteLinkForGroups(currentBoard, opponentBoard))
+            {
+                if (killerGroup == null || !WallHelper.StrongGroups(currentBoard, currentBoard.GetNeighbourGroups(killerGroup)))
                     return false;
 
-                //check diagonal cut
-                if (LinkHelper.FindDiagonalCut(tryBoard).Item1 != null)
+                Point p = KillerFormationHelper.FirstPointInKillerGroup(currentBoard, killerGroup, c);
+                if (p.IsEmpty() || move.Equals(p))
                     return false;
             }
 
@@ -643,10 +642,15 @@ namespace Go
             if (tryBoard.MoveGroup.Points.Count > 1 && LinkHelper.GetGroupLinkedDiagonals(tryBoard).Any(n => LinkHelper.PointsBetweenDiagonals(n).Any(s => tryBoard[s] == Content.Empty)))
                 return false;
 
-            //check link for groups
-            if (LinkHelper.IsAbsoluteLinkForGroups(currentBoard, opponentBoard))
+            if (tryBoard.GetNeighbourGroups().Count > 1)
             {
-                if (killerGroup == null || !WallHelper.StrongGroups(currentBoard, currentBoard.GetNeighbourGroups(tryBoard.MoveGroup)))
+                //check diagonal cut
+                if (LinkHelper.FindDiagonalCut(tryBoard).Item1 != null)
+                    return false;
+
+                //check eye at diagonal
+                List<Group> previousGroup = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
+                if (previousGroup.Any(n => LinkHelper.GetGroupDiagonals(tryBoard, n).Any(s => EyeHelper.FindEye(tryBoard, s.Move, c.Opposite()))))
                     return false;
             }
             return true;
@@ -1678,9 +1682,13 @@ namespace Go
         private static Boolean CheckLibertyFightAtCoveredEye(Board board, Point eye, Content c)
         {
             Group group = board.GetGroupsFromStoneNeighbours(eye, c.Opposite()).First();
-            List<Group> dgroups = LinkHelper.GetAllDiagonalGroups(board, group).ToList();
-            if (dgroups.Any(n => LinkHelper.FindDiagonalCut(board, n).Item1 != null))
+            foreach (Group dgroup in LinkHelper.GetAllDiagonalGroups(board, group))
+            {
+                (_, List<Point> diagonals) = LinkHelper.FindDiagonalCut(board, dgroup);
+                if (diagonals == null) continue;
+                if (diagonals.Any(n => ImmovableHelper.CheckConnectAndDie(board, board.GetGroupAt(n), false))) continue;
                 return true;
+            }
             return false;
         }
 

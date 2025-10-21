@@ -15,9 +15,9 @@ namespace Go
         }
 
         /// <summary>
-        /// Starting node of current mcts.
+        /// Root node of current mcts.
         /// </summary>
-        public virtual Node Root
+        public Node Root
         {
             get
             {
@@ -30,9 +30,9 @@ namespace Go
         }
 
         /// <summary>
-        /// Starting node of initial mcts.
+        /// Root node of initial mcts.
         /// </summary>
-        public virtual Node AbsoluteRoot
+        public Node AbsoluteRoot
         {
             get
             {

@@ -42,7 +42,7 @@ namespace Go
                 this.prunedJson = new JArray(node.prunedJson);
         }
 
-        public virtual State State
+        public State State
         {
             get
             {
@@ -55,7 +55,7 @@ namespace Go
         }
 
 
-        public virtual Node Parent
+        public Node Parent
         {
             get
             {
@@ -68,7 +68,7 @@ namespace Go
         }
 
 
-        public virtual List<Node> ChildArray
+        public List<Node> ChildArray
         {
             get
             {
@@ -82,7 +82,7 @@ namespace Go
             }
         }
 
-        public virtual int CurrentDepth
+        public int CurrentDepth
         {
             get
             {
@@ -90,7 +90,7 @@ namespace Go
             }
         }
 
-        public virtual bool Expanded
+        public bool Expanded
         {
             get
             {
@@ -102,7 +102,7 @@ namespace Go
             }
         }
 
-        public virtual bool NoPossibleStates
+        public bool NoPossibleStates
         {
             get
             {

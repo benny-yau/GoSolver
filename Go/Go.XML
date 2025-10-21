@@ -1039,6 +1039,86 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31453" />
             </summary>
         </member>
+        <member name="M:Go.KillerFormationHelper.StraightThreeFormation(Go.Board,System.Collections.Generic.IEnumerable{Go.Point})">
+            <summary>
+            Straight three formation.
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.BentThreeFormation(Go.Board,System.Collections.Generic.IEnumerable{Go.Point})">
+            <summary>
+            Bent three formation.
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.OneByThreeFormation(Go.Board,Go.Group)">
+            <summary>
+            One by three formation.
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.TwoByTwoSuicidalFormation(Go.Board,Go.Group)">
+            <summary>
+            Two by two suicidal formation.
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.TwoByTwoFormation(Go.Board,System.Collections.Generic.IEnumerable{Go.Point})">
+            <summary>
+            Two by two formation.
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.BoxFormation(Go.Board,Go.Group)">
+            <summary>
+            Box formation.
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.CrowbarFormation(Go.Board,Go.Group)">
+            <summary>
+            Crow bar formation.
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.CrowbarEdgeFormation(Go.Board,Go.Group)">
+            <summary>
+            Crowbar edge formation.
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.StraightFourFormation(Go.Board,Go.Group)">
+            <summary>
+            Straight four formation.
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.KnifeFiveFormation(Go.Board,Go.Group)">
+            <summary>
+            Knife five formation.
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.BentFiveFormation(Go.Board,Go.Group)">
+            <summary>
+            Bent five formation.
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.CrowbarFiveFormation(Go.Board,Go.Group)">
+            <summary>
+            Crowbar five formation.
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.FlowerSixFormation(Go.Board,Go.Group)">
+            <summary>
+            Flower six formation.
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.KnifeSixFormation(Go.Board,Go.Group)">
+            <summary>
+            Knife six formation.
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.OddSevenFormation(Go.Board,Go.Group)">
+            <summary>
+            Odd seven formation.
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.FlowerSevenFormation(Go.Board,Go.Group)">
+            <summary>
+            Flower seven formation.
+            </summary>
+        </member>
         <member name="M:Go.KillerFormationHelper.CheckAnyEndPointCovered(Go.Board,Go.Group)">
             <summary>
             Check any end point covered. 
@@ -1051,10 +1131,25 @@
             <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_20230121_8" />
             </summary>
         </member>
+        <member name="M:Go.KillerFormationHelper.CornerThreeFormation(Go.Board,Go.Group)">
+            <summary>
+            Corner three formation.
+            </summary>
+        </member>
         <member name="M:Go.KillerFormationHelper.PossibleCornerThreeFormation(Go.Board,Go.Point,Go.Content)">
             <summary>
             Possible corner three formation. 
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A139_2" />
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.CornerSixFormation(Go.Board,Go.Group)">
+            <summary>
+            Corner six formation.
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.BentFourCornerFormation(Go.Board,Go.Group)">
+            <summary>
+            Bent four corner formation.
             </summary>
         </member>
         <member name="M:Go.KillerFormationHelper.GetPointIntersect(Go.Board,System.Collections.Generic.IEnumerable{Go.Point})">
@@ -1069,7 +1164,7 @@
         </member>
         <member name="M:Go.KillerFormationHelper.WithinGrid(System.Collections.Generic.IEnumerable{Go.Point})">
             <summary>
-            Rectangular space defining the max and min of points in x-axis and y-axis.
+            Within grid, or rectangular space defining the max and min of points in x-axis and y-axis.
             </summary>
         </member>
         <member name="M:Go.KillerFormationHelper.GridDimensionChanged(System.Collections.Generic.IEnumerable{Go.Point},System.Collections.Generic.IEnumerable{Go.Point})">
@@ -1089,6 +1184,11 @@
             <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16859_2" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2413_2" /> 
             Check group diagonals <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_8" /> 
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.FirstPointInKillerGroup(Go.Board,Go.Group,Go.Content)">
+            <summary>
+            First point in killer group.
             </summary>
         </member>
         <member name="M:Go.KoHelper.KoSurvivalEnabled(Go.SurviveOrKill,Go.GameInfo)">
@@ -1528,13 +1628,13 @@
             Check killer formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29378" />
             Check eye <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_B12" />
+            Check increased killer groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3dan17_3" />
             Check one neighbour group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2413_4" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16827_3" />
-            Check increased killer groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3dan17_3" />
-            Check eye at diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_B43" />
-            Check diagonal cut <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie61" />
-            Check diagonal not cut <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q27661" />
             Check link for groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16925" />
+            Check diagonal not cut <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q27661" />
+            Check diagonal cut <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie61" />
+            Check eye at diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_B43" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SuicidalConnectAndDie(Go.GameTryMove)">
@@ -2307,25 +2407,45 @@
         </member>
         <member name="P:Go.MonteCarloTreeSearch.VisitCountMinReq">
             <summary>
-            Set the visit count required to reach before moving down the tree to the child node.
+            Visit count minimum requirement.
             </summary>
         </member>
         <member name="F:Go.MonteCarloTreeSearch.answerNode">
             <summary>
-            Set the answer and end the search immediately.
+            Answer node.
             </summary>
         </member>
         <member name="P:Go.MonteCarloTreeSearch.DepthToVerify">
             <summary>
-            Depth to start exhaustive search to verify.
+            Depth to verify.
+            </summary>
+        </member>
+        <member name="M:Go.MonteCarloTreeSearch.#ctor(Go.Node,System.Int32)">
+            <summary>
+            Monte carlo tree search.
             </summary>
         </member>
         <member name="M:Go.MonteCarloTreeSearch.FindNextMove">
             <summary>
-            Start the mcts until answer is found or all nodes are pruned (or max iterations reached).
+            Find next move. Start the mcts until answer is found or all nodes are pruned.
             <see cref="!:UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario2dan15" />
             <see cref="!:UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario_GuanZiPu_A3" />
             <see cref="!:UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario3dan17" />
+            </summary>
+        </member>
+        <member name="M:Go.MonteCarloTreeSearch.NodeToExpand(Go.Node)">
+            <summary>
+            Node to expand.
+            </summary>
+        </member>
+        <member name="M:Go.MonteCarloTreeSearch.RandomChildNode(Go.Node)">
+            <summary>
+            Random child node.
+            </summary>
+        </member>
+        <member name="M:Go.MonteCarloTreeSearch.ReachedDepthToVerify(Go.Node)">
+            <summary>
+            Reached depth to verify.
             </summary>
         </member>
         <member name="M:Go.MonteCarloTreeSearch.VerifyOnDepthReached(Go.Node)">
@@ -2335,44 +2455,44 @@
         </member>
         <member name="M:Go.MonteCarloTreeSearch.VerifyWithExhaustiveSearch(Go.Node)">
             <summary>
-            Verify with exhaustive search on reaching specified depth.
+            Verify with exhaustive search.
             </summary>
         </member>
         <member name="M:Go.MonteCarloTreeSearch.PrunePromisingNode(Go.Node,Go.Node,System.Boolean,System.Boolean)">
             <summary>
-            Prune node after verifying with exhaustive search and if result is a win then check if parent node is correct by trying to prune all child nodes.
+            Prune promising node, after verifying with exhaustive search. If result is a win then check if parent node is correct by trying to prune all child nodes.
             After all nodes are pruned, move up the level by recursion to check if current path is correct and the answer node will be the first node of the tree.
             </summary>
         </member>
         <member name="M:Go.MonteCarloTreeSearch.CheckAllChildNodesPruned(Go.Node,System.Boolean)">
             <summary>
-            Check if all nodes have been pruned. Check if answer found else continue to prune parent of current node.
+            Check all child nodes pruned. Check if answer found else continue to prune parent of current node.
             </summary>
         </member>
         <member name="M:Go.MonteCarloTreeSearch.AnswerFound(Go.Node)">
             <summary>
-            Answer found when current depth of node is count of last moves of root node plus one. Set as AnswerNode and return true.
+            Answer found.
             </summary>
         </member>
         <member name="M:Go.MonteCarloTreeSearch.Pruning(Go.Node,Go.Node)">
             <summary>
-            Prune node after verification and set pruned node in json map.
+            Pruning. Set pruned node in json map.
             </summary>
         </member>
         <member name="M:Go.MonteCarloTreeSearch.SelectPromisingNode(Go.Node)">
             <summary>
-            Selection phase - to select the most promising node from sibling nodes based on UCT value.
+            Selection phase - select the most promising node from sibling nodes based on UCT value.
             </summary>
         </member>
         <member name="M:Go.MonteCarloTreeSearch.ExpandNode(Go.Node)">
             <summary>
-            Expansion phase - to expand all possible states as child nodes.
-            Confirm alive for each possible state to check if game ended with objective reached already.
+            Expansion phase - expand all possible states.
+            Check confirm alive if game ended with objective reached already.
             </summary>
         </member>
         <member name="M:Go.MonteCarloTreeSearch.BackPropagation(Go.Node,System.Boolean,System.Int32)">
             <summary>
-            Back propagation phase - to increase score alternately up the levels for the winner.
+            Back propagation phase - increase score alternately up the levels for the winner.
             </summary>
         </member>
         <member name="M:Go.MonteCarloTreeSearch.SimulateRandomPlayout(Go.Node)">
@@ -2382,29 +2502,39 @@
         </member>
         <member name="M:Go.MonteCarloTreeSearch.HandleConfirmedCases(Go.Node)">
             <summary>
-            Confirmed cases represent possible game state where the game has ended with confirm alive already.
+            Handle confirmed cases, for confirm alive.
+            </summary>
+        </member>
+        <member name="M:Go.MonteCarloTreeSearch.InitializeMonteCarloPlayout(Go.Node)">
+            <summary>
+            Initialize monte carlo playout.
             </summary>
         </member>
         <member name="M:Go.MonteCarloTreeSearch.MonteCarloMakeKillMove(System.Int32,Go.Game)">
             <summary>
-            Make kill move in mcts simulation phase by selecting from all possible moves by randomization.
+            Monte carlo make kill move. Select random move from all possible moves.
             Include ko moves and set result as KoAlive if ko wins.
             </summary>
         </member>
         <member name="M:Go.MonteCarloTreeSearch.MonteCarloMakeSurvivalMove(System.Int32,Go.Game)">
             <summary>
-            Make survival move in mcts simulation phase by selecting from all possible moves by randomization.
+            Monte carlo make survival move. Select random move from all possible moves.
             Include ko moves and set result as KoAlive if ko wins.
+            </summary>
+        </member>
+        <member name="M:Go.MonteCarloTreeSearch.CheckTimeTaken(System.Diagnostics.Stopwatch)">
+            <summary>
+            Check time taken.
             </summary>
         </member>
         <member name="P:Go.Tree.Root">
             <summary>
-            Starting node of current mcts.
+            Root node of current mcts.
             </summary>
         </member>
         <member name="P:Go.Tree.AbsoluteRoot">
             <summary>
-            Starting node of initial mcts.
+            Root node of initial mcts.
             </summary>
         </member>
         <member name="M:Go.UCT.uctValue(Go.Node)">

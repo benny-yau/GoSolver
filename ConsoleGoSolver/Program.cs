@@ -79,7 +79,10 @@ namespace ConsoleGoSolver
         {
             Game g = new Game(game);
             Console.WriteLine("{0}", g.Board);
-            Console.WriteLine("\nDo you place the first step? [y/n] (Get answer[a], Search answer[s], Exit[x])");
+            Console.WriteLine("\n" + g.GameInfo.StartContent.ToString() + " to move.");
+            Boolean koToWin = (g.GameInfo.Survival == SurviveOrKill.KillWithKo || g.GameInfo.Survival == SurviveOrKill.SurviveWithKo);
+            Console.WriteLine(koToWin ? "Ko to win." : "");
+            Console.WriteLine("Do you place the first step? [y/n] (Get answer[a], Search answer[s], Exit[x])");
             //set player to start first
             String input = Console.ReadLine().ToLower();
             if (input == "s" || input == "search")
@@ -167,7 +170,6 @@ namespace ConsoleGoSolver
 
             if (!solutionCorrect)
                 Console.WriteLine("Incorrect. Answer: " + g.GameInfo.solutionPoints.First().First());
-            Debug.WriteLine(MonteCarloGame.GetAnswerJson(g, answerNode));
             if (elapsedTime != null) 
                 Console.WriteLine(DebugHelper.PrintTimeTaken(elapsedTime.Value));
         }
