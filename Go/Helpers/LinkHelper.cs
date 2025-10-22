@@ -111,9 +111,8 @@ namespace Go
 
             //make block move
             Point blockMove = tryBoard.GetStoneNeighbours(d).First(n => !tryBoard.PointWithinMiddleArea(n));
-            Board b = tryBoard.MakeMoveOnNewBoard(blockMove, c.Opposite(), true);
-            if (b == null) return false;
-            return ImmovableHelper.CheckConnectAndDie(b);
+            Boolean connectAndDie = ImmovableHelper.ConnectAndDieMove(tryBoard, blockMove, c.Opposite()).Item1;
+            return connectAndDie;
         }
 
         /// <summary>
@@ -226,9 +225,7 @@ namespace Go
                 {
                     //make connection at other diagonal
                     Point q = diagonals.First(d => !d.Equals(b.Move.Value));
-                    Board b2 = b.MakeMoveOnNewBoard(q, c);
-                    if (b2 == null || ImmovableHelper.CheckConnectAndDie(b2))
-                        return false;
+                    if (ImmovableHelper.ConnectAndDieMove(b, q, c).Item1) return false;
 
                     //check negligible for links
                     if (immediateLink) continue;
@@ -275,11 +272,10 @@ namespace Go
                 if (opponentStones.Count < 3) continue;
 
                 //make opponent move at diagonal
-                Board b = board.MakeMoveOnNewBoard(p, c.Opposite(), true);
-                if (b == null) continue;
+                (Boolean connectAndDie, Board b) = ImmovableHelper.ConnectAndDieMove(board, p, c.Opposite(), false);
+                if (connectAndDie) continue;
                 opponentStones = b.OpponentAtStoneNeighbour(p);
                 if (!KillerFormationHelper.ThreeOpponentGroupsAtMove(b, p)) continue;
-                if (ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false)) continue;
 
                 //check diagonal links
                 Point middleStone = opponentStones.First(n => b.GetDiagonalNeighbours(n).Count(d => opponentStones.Contains(d)) >= 2);

@@ -582,6 +582,18 @@ namespace Go
         }
 
         /// <summary>
+        /// Connect and die move.
+        /// </summary>
+        public static (Boolean, Board) ConnectAndDieMove(Board board, Point p, Content c, Boolean koEnabled = true)
+        {
+            Board b = board.MakeMoveOnNewBoard(p, c, !koEnabled);
+            if (b == null) return (true, b);
+            if (ImmovableHelper.CheckConnectAndDie(b, b.GetGroupAt(p), koEnabled))
+                return (true, b);
+            return (false, b);
+        }
+
+        /// <summary>
         /// Suicide at big tiger mouth.
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_B3" /> 
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A85" /> 

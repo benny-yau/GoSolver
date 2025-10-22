@@ -625,17 +625,18 @@ namespace Go
                 Point p = KillerFormationHelper.FirstPointInKillerGroup(currentBoard, killerGroup, c);
                 if (p.IsEmpty() || move.Equals(p))
                     return false;
+                return true;
             }
 
             //check link for groups
             if (LinkHelper.IsAbsoluteLinkForGroups(currentBoard, opponentBoard))
             {
-                if (killerGroup == null || !WallHelper.StrongGroups(currentBoard, currentBoard.GetNeighbourGroups(killerGroup)))
-                    return false;
-
-                Point p = KillerFormationHelper.FirstPointInKillerGroup(currentBoard, killerGroup, c);
+                if (killerGroup == null) return false;
+                if (EyeHelper.IsCovered(currentBoard, move, c.Opposite())) return false;
+                Point p = killerGroup.Points.FirstOrDefault(n => currentBoard[n] == Content.Empty && currentBoard.GetGroupsFromStoneNeighbours(n, c).Count() > 1);
                 if (p.IsEmpty() || move.Equals(p))
                     return false;
+                return true;
             }
 
             //check diagonal not cut

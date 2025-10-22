@@ -98,8 +98,8 @@ namespace Go
         public static Boolean CommonTigerMouthExceptions(Board board, Content c, Point tigerMouth, Point libertyPoint)
         {
             //make move at liberty point
-            Board b = board.MakeMoveOnNewBoard(libertyPoint, c.Opposite(), true);
-            if (ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false))
+            (Boolean connectAndDie, Board b) = ImmovableHelper.ConnectAndDieMove(board, libertyPoint, c.Opposite(), false);
+            if (connectAndDie)
             {
                 if (!KillerFormationHelper.PossibleCornerThreeFormation(board, tigerMouth, c))
                     return false;
@@ -121,7 +121,7 @@ namespace Go
 
             //check for another tiger mouth at move
             List<Point> tigerMouths = LinkHelper.MoveAtTigerMouth(b, board).Where(n => !n.Equals(tigerMouth)).ToList();
-            if (tigerMouths.Any() && CheckThreatGroupEscape(b, tigerMouth, tigerMouths))
+            if (tigerMouths.Any() && b.MoveGroupLiberties > 3)
                 return true;
 
             //check for ko break
@@ -133,27 +133,6 @@ namespace Go
                 return true;
 
             return false;
-        }
-
-        /// <summary>
-        /// Check threat group escape.
-        /// </summary>
-        public static Boolean CheckThreatGroupEscape(Board board, Point tigerMouth, List<Point> targetPoints)
-        {
-            Point move = board.Move.Value;
-            Content c = board.MoveGroup.Content;
-            if (board.MoveGroupLiberties > 3) return true;
-            //fill tiger mouth
-            Board b = board.MakeMoveOnNewBoard(tigerMouth, c.Opposite(), true);
-
-            //check non killable
-            if (targetPoints.All(n => b.GetGroupsFromStoneNeighbours(n, c).All(s => WallHelper.IsNonKillableGroup(b, s))))
-                return false;
-
-            Group moveGroup = b.GetCurrentGroup(board.MoveGroup);
-            if (moveGroup.Liberties.Count == 2 && moveGroup.Liberties.All(n => ImmovableHelper.IsSuicidalMove(b, n, c)))
-                return false;
-            return true;
         }
 
         /// <summary>

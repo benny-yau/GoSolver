@@ -110,9 +110,7 @@ namespace Go
                 if (lib2.IsEmpty()) continue;
                 Point e = tryBoard.GetDiagonalNeighbours(lib).Intersect(tryBoard.GetStoneNeighbours(lib2)).First();
                 if (tryBoard[e] != Content.Empty || WallHelper.NoEyeForSurvival(tryBoard, e)) continue;
-                Board b = tryBoard.MakeMoveOnNewBoard(lib2, c);
-                if (b != null && ImmovableHelper.CheckConnectAndDie(b, dgroup))
-                    continue;
+                if (ImmovableHelper.ConnectAndDieMove(tryBoard, lib2, c).Item1) continue;
                 return true;
             }
             return false;
