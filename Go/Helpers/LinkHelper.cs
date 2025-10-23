@@ -752,8 +752,7 @@ namespace Go
             {
                 if (ImmovableHelper.IsSuicidalMove(b, d, c, true)) continue;
                 HashSet<Group> ngroups = b.GetGroupsFromPoints(LinkHelper.PointsBetweenDiagonals(move, d));
-                if (ngroups.Count == 1 || ngroups.Any(n => n.Liberties.Count == 1)) continue;
-                if (ngroups.Any(n => !WallHelper.IsNonKillableGroup(b, n)))
+                if (WallHelper.TargetAttackWithKillableGroup(b, ngroups))
                     return true;
             }
             return false;
@@ -794,8 +793,13 @@ namespace Go
             foreach (Group group in groups)
             {
                 Content c = group.Content;
-                if (group.Liberties.Any(n => ImmovableHelper.IsSuicidalMove(board, n, c)))
-                    yield return group;
+                foreach (Point p in group.Liberties)
+                {
+                    if (!ImmovableHelper.IsSuicidalMove(board, p, c)) continue;
+                    List<Group> ngroups = board.GetGroupsFromStoneNeighbours(p, c);
+                    if (WallHelper.TargetAttackWithKillableGroup(board, ngroups))
+                        yield return group;
+                }
             }
         }
     }

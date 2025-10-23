@@ -222,6 +222,11 @@
             Is negligible.
             </summary>
         </member>
+        <member name="M:Go.GameTryMove.IsNegligibleForBoard(Go.Board,Go.Board,System.Func{Go.Group,System.Boolean})">
+            <summary>
+            Is negligible for board. Same as is negligible except with func. 
+            </summary>
+        </member>
         <member name="P:Go.GameTryMove.IncreasedKillerGroups">
             <summary>
             Increased count of killer groups.
@@ -238,11 +243,6 @@
             </summary>
         </member>
         <member name="M:Go.AtariHelper.AtariByGroup(Go.Board,Go.Group,System.Boolean)">
-            <summary>
-            Atari by group.
-            </summary>
-        </member>
-        <member name="M:Go.AtariHelper.AtariByGroup(Go.Group,Go.Board,System.Boolean)">
             <summary>
             Atari by group.
             </summary>
@@ -629,7 +629,7 @@
             Find tiger mouth for link.
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.GetDiagonalsOfTigerMouth(Go.Board,Go.Point,Go.Content,System.Boolean)">
+        <member name="M:Go.ImmovableHelper.GetDiagonalsOfTigerMouth(Go.Board,Go.Point,Go.Content)">
             <summary>
             Get diagonals of tiger mouth.
             </summary>
@@ -804,7 +804,7 @@
         </member>
         <member name="M:Go.ImmovableHelper.ConnectAndDieMove(Go.Board,Go.Point,Go.Content,System.Boolean)">
             <summary>
-            Check connect and die move.
+            Connect and die move.
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.SuicideAtBigTigerMouth(Go.GameTryMove)">
@@ -1024,11 +1024,6 @@
             Three opponent groups at move.
             </summary>
         </member>
-        <member name="M:Go.KillerFormationHelper.ThreeOpponentStonesAtMove(Go.Board,System.Nullable{Go.Point})">
-            <summary>
-            Three opponent stones at move.
-            </summary>
-        </member>
         <member name="M:Go.KillerFormationHelper.ThreePointMoveBinding(Go.Board,Go.Board)">
             <summary>
             Three point move binding.
@@ -1076,7 +1071,7 @@
         </member>
         <member name="M:Go.KillerFormationHelper.CrowbarFormation(Go.Board,Go.Group)">
             <summary>
-            Crow bar formation.
+            Crowbar formation.
             </summary>
         </member>
         <member name="M:Go.KillerFormationHelper.CrowbarEdgeFormation(Go.Board,Go.Group)">
@@ -1637,6 +1632,7 @@
             Check one neighbour group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2413_4" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16827_3" />
             Check link for groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16925" />
+            Check isolated group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499" />
             Check diagonal not cut <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q27661" />
             Check diagonal cut <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie61" />
             Check eye at diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_B43" />
@@ -2201,6 +2197,11 @@
         <member name="M:Go.WallHelper.TargetWithAnyNonKillableGroup(Go.Board,Go.Group)">
             <summary>
             Target with any non killable group.
+            </summary>
+        </member>
+        <member name="M:Go.WallHelper.TargetAttackWithKillableGroup(Go.Board,System.Collections.Generic.IEnumerable{Go.Group})">
+            <summary>
+            Target attack with killable group.
             </summary>
         </member>
         <member name="M:Go.WallHelper.StrongGroupsAtCoveredBoard(Go.Board,Go.Group)">

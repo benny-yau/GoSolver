@@ -176,6 +176,17 @@ namespace Go
         }
 
         /// <summary>
+        /// Target attack with killable group.
+        /// </summary>
+        public static Boolean TargetAttackWithKillableGroup(Board board, IEnumerable<Group> groups)
+        {
+            if (groups.Count() < 2) return false;
+            if (groups.Any(n => !WallHelper.IsNonKillableGroup(board, n)))
+                return true;
+            return false;
+        }
+
+        /// <summary>
         /// Strong groups at covered board. Applies only to covered eye survival.
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_20230422_8" />
         /// </summary>

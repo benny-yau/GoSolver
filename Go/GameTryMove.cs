@@ -129,6 +129,9 @@ namespace Go
             }
         }
 
+        /// <summary>
+        /// Is negligible for board. Same as is negligible except with func. 
+        /// </summary>
         public static Boolean IsNegligibleForBoard(Board tryBoard, Board currentBoard, Func<Group, Boolean> func = null)
         {
             if (tryBoard.CapturedList.Count > 0) return false;

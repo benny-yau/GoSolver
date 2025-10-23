@@ -11,16 +11,9 @@ namespace Go
         /// <summary>
         /// Atari by group.
         /// </summary>
-        public static Boolean AtariByGroup(Board board, Group atariGroup, Boolean koEnabled = true)
+        public static List<Group> AtariByGroup(Board board, Group atariGroup = null, Boolean koEnabled = true)
         {
-            return AtariByGroup(atariGroup, board, koEnabled).Any();
-        }
-
-        /// <summary>
-        /// Atari by group.
-        /// </summary>
-        public static List<Group> AtariByGroup(Group atariGroup, Board board, Boolean koEnabled = true)
-        {
+            if (atariGroup == null) atariGroup = board.MoveGroup;
             Content c = atariGroup.Content;
             List<Group> targetGroups = board.OneLibertyNeighbourGroup(atariGroup);
             if (koEnabled)

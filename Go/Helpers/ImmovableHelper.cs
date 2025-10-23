@@ -14,15 +14,20 @@ namespace Go
             Content content = board[p];
             List<Point> nstones = board.GetStoneNeighbours(p);
             if (nstones.Count(n => board[n] == c) != nstones.Count - 1) return null;
+            if (board.OneLibertyGroup(p, c.Opposite()).Any()) return null;
             if (content == Content.Empty)
             {
-                if (board.OneLibertyGroup(p, c.Opposite()).Any()) return null;
                 Point libertyPoint = nstones.First(n => board[n] != c);
                 if (board[libertyPoint] == Content.Empty)
                     return libertyPoint;
                 Group group = board.GetGroupAt(libertyPoint);
                 if (group.Liberties.Count == 2)
+                {
+                    List<Group> targetGroups = AtariHelper.AtariByGroup(board, group);
+                    if (targetGroups.Any())
+                        return targetGroups.First().Liberties.First();
                     return group.Liberties.First(n => !n.Equals(p));
+                }
             }
             else if (content == c.Opposite())
             {
@@ -48,19 +53,18 @@ namespace Go
         {
             if (!ImmovableHelper.FindEmptyTigerMouth(board, p, c)) return false;
             List<Group> groups = board.GetGroupsFromStoneNeighbours(p, c.Opposite());
-            if (groups.Count == 1 || groups.All(n => WallHelper.IsNonKillableGroup(board, n)))
-                return false;
-            return true;
+            if (WallHelper.TargetAttackWithKillableGroup(board, groups))
+                return true;
+            return false;
         }
 
         /// <summary>
         /// Get diagonals of tiger mouth.
         /// </summary>
-        public static List<Point> GetDiagonalsOfTigerMouth(Board board, Point p, Content c, Boolean checkContent = false)
+        public static List<Point> GetDiagonalsOfTigerMouth(Board board, Point p, Content c)
         {
             List<Point> npoints = LinkHelper.GetDiagonalsAtStoneNeighbours(board, p, c);
-            List<Point> diagonals = board.GetDiagonalNeighbours(p).Where(n => board.GetStoneNeighbours(n).Intersect(npoints).Count() >= 2).ToList();
-            if (checkContent) return diagonals.Where(d => board[d] != c).ToList();
+            List<Point> diagonals = board.GetDiagonalNeighbours(p).Where(n => board[n] != c && board.GetStoneNeighbours(n).Intersect(npoints).Count() >= 2).ToList();
             return diagonals;
         }
 
@@ -292,7 +296,7 @@ namespace Go
         /// </summary>
         public static Board EscapeByCapture(Board board, Group group, Boolean koEnabled = true)
         {
-            foreach (Group target in AtariHelper.AtariByGroup(group, board, koEnabled))
+            foreach (Group target in AtariHelper.AtariByGroup(board, group, koEnabled))
             {
                 //make capture move
                 (_, Board b) = ImmovableHelper.IsSuicidalOnCapture(board, target, koEnabled);
@@ -503,7 +507,7 @@ namespace Go
                 }
                 else
                 {
-                    List<Group> groups = AtariHelper.AtariByGroup(target, b).Where(n => !n.Equals(b.GetCurrentGroup(eyeGroup))).ToList();
+                    List<Group> groups = AtariHelper.AtariByGroup(b, target).Where(n => !n.Equals(b.GetCurrentGroup(eyeGroup))).ToList();
                     if (groups.Any(n => IsSnapback(b, eyeGroup, n)))
                         return true;
                 }
@@ -619,14 +623,11 @@ namespace Go
                 Point liberty = eyeGroup.Liberties.First(n => !n.Equals(move));
 
                 //make move at liberty
-                Board b = currentBoard.MakeMoveOnNewBoard(liberty, c, true);
-                if (b == null || WallHelper.TargetWithAllNonKillableGroups(b)) continue;
+                (Boolean connectAndDie, Board b) = ImmovableHelper.ConnectAndDieMove(currentBoard, liberty, c);
+                if (WallHelper.TargetWithAllNonKillableGroups(b)) continue;
                 //check covered eye survival 
-                if (b.GetGroupsFromStoneNeighbours(move, c.Opposite()).Count == 1 && EyeHelper.FindEye(b, move, c)) continue;
-                
-                //check if suicide
-                if (!WallHelper.IsStrongGroup(b))
-                    return (true, b);
+                if (b.GetGroupsFromStoneNeighbours(move, c.Opposite()).Count == 1 && EyeHelper.FindCoveredEye(b, move, c)) continue;
+                if (connectAndDie) return (true, b);
 
                 //check groups at liberty
                 if (b.MoveGroupLiberties != 2) continue;
@@ -643,7 +644,7 @@ namespace Go
                 if (b.MoveGroup.Points.Count >= 3)
                 {
                     List<Point> npoints = b2.GetStoneNeighbours().Where(n => b2[n] != c.Opposite() && !n.Equals(b.Move.Value)).ToList();
-                    if (npoints.Any(n => !WallHelper.NoEyeForSurvival(b, n, c.Opposite())))
+                    if (npoints.Any(n => !WallHelper.NoEyeForSurvival(b2, n, c.Opposite())))
                         return (true, b);
                 }
             }

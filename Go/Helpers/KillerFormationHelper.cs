@@ -614,22 +614,6 @@ namespace Go
         }
 
         /// <summary>
-        /// Three opponent stones at move.
-        /// </summary>
-        public static Boolean ThreeOpponentStonesAtMove(Board tryBoard, Point? eyePoint = null)
-        {
-            if (eyePoint == null) eyePoint = tryBoard.Move.Value;
-            Content c = tryBoard[eyePoint.Value];
-            if (tryBoard.OpponentAtStoneNeighbour(eyePoint, c).Count(n => tryBoard[n] == c.Opposite()) >= 3)
-            {
-                List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(tryBoard, eyePoint.Value, c.Opposite(), true);
-                if (diagonals.Any())
-                    return true;
-            }
-            return false;
-        }
-
-        /// <summary>
         /// Three point move binding.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A28" />
         /// Return first point <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WindAndTime_Q30256" />
@@ -651,7 +635,7 @@ namespace Go
             if (tryBoard.GetStoneNeighbours(q).Count(n => tryBoard[n] == c) == 2 && KillerFormationHelper.IsFirstPoint(tryBoard, move, q))
                 return true;
             //check covered eye
-            if (EyeHelper.FindEye(currentBoard, q, c))
+            if (EyeHelper.FindCoveredEye(currentBoard, q, c))
             {
                 Board b = currentBoard.MakeMoveOnNewBoard(q, c);
                 if (b.MoveGroup.Liberties.Any(n => EyeHelper.IsCovered(b, n, c)) && ImmovableHelper.CheckConnectAndDie(b))
@@ -806,7 +790,7 @@ namespace Go
  18 . . . . . . . . . . . . . . . . . . . 
          */
         /// <summary>
-        /// Crow bar formation.
+        /// Crowbar formation.
         /// </summary>
         private static Boolean CrowbarFormation(Board tryBoard, Group moveGroup)
         {

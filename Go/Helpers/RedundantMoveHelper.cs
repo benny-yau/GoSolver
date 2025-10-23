@@ -129,7 +129,7 @@ namespace Go
 
             //check eye for survival
             Point p = eyeGroup.Points.Count == 1 ? eyePoint : eyeGroup.Points.First(n => !n.Equals(eyePoint));
-            List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, p, c, true).Where(n => !WallHelper.NoEyeForSurvival(tryBoard, n, c)).ToList();
+            List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, p, c).Where(n => !WallHelper.NoEyeForSurvival(tryBoard, n, c)).ToList();
             if (diagonals.Any() && !EyeHelper.FindRealEyeAtDiagonal(diagonals, currentBoard, c))
                 return false;
 
@@ -588,6 +588,7 @@ namespace Go
         /// Check one neighbour group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2413_4" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16827_3" />
         /// Check link for groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16925" />
+        /// Check isolated group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499" />
         /// Check diagonal not cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q27661" />
         /// Check diagonal cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie61" />
         /// Check eye at diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_B43" />
@@ -622,6 +623,7 @@ namespace Go
             Group killerGroup = GroupHelper.GetDirectKillerGroup(currentBoard, move, c.Opposite());
             if (killerGroup != null && GroupHelper.GetNeighbourGroupsOfKillerGroup(currentBoard, killerGroup).Count == 1)
             {
+                //get first point
                 Point p = KillerFormationHelper.FirstPointInKillerGroup(currentBoard, killerGroup, c);
                 if (p.IsEmpty() || move.Equals(p))
                     return false;
@@ -632,7 +634,14 @@ namespace Go
             if (LinkHelper.IsAbsoluteLinkForGroups(currentBoard, opponentBoard))
             {
                 if (killerGroup == null) return false;
+                //check covered point
                 if (EyeHelper.IsCovered(currentBoard, move, c.Opposite())) return false;
+                //check isolated group
+                List<Group> previousGroup = LinkHelper.GetPreviousMoveGroup(currentBoard, opponentBoard);
+                if (previousGroup.Any(n => !GroupHelper.GetNeighbourGroupsOfKillerGroup(currentBoard, killerGroup).Contains(n)))
+                    return false;
+
+                //get first point
                 Point p = killerGroup.Points.FirstOrDefault(n => currentBoard[n] == Content.Empty && currentBoard.GetGroupsFromStoneNeighbours(n, c).Count() > 1);
                 if (p.IsEmpty() || move.Equals(p))
                     return false;
@@ -681,10 +690,10 @@ namespace Go
             if (LifeCheck.GetTargets(tryBoard).All(t => tryBoard.MoveGroup.Equals(t))) return true;
 
             //check capture moves
-            if (tryBoard.CapturedList.Any(g => AtariHelper.AtariByGroup(currentBoard, g))) return false;
+            if (tryBoard.CapturedList.Any(n => AtariHelper.AtariByGroup(currentBoard, n).Any())) return false;
 
             //check atari moves
-            foreach (Group atariTarget in tryBoard.AtariTargets)
+            foreach (Group atariTarget in AtariHelper.AtariByGroup(tryBoard))
             {
                 Board b = ImmovableHelper.CaptureSuicideGroup(captureBoard, atariTarget);
                 if (b != null && b.CapturedList.Count > 1)
@@ -825,7 +834,7 @@ namespace Go
                 return true;
 
             //escape by capture
-            foreach (Group gr in AtariHelper.AtariByGroup(group, b))
+            foreach (Group gr in AtariHelper.AtariByGroup(b, group))
             {
                 Board b3 = ImmovableHelper.CaptureSuicideGroup(b, gr);
                 Group target = b3.GetCurrentGroup(group);
@@ -890,7 +899,7 @@ namespace Go
                 return false;
 
             //check reverse ko fight
-            if (eyeGroups.Count > 1 && eyeGroups.Any(n => AtariHelper.AtariByGroup(tryBoard, n)))
+            if (eyeGroups.Count > 1 && eyeGroups.Any(n => AtariHelper.AtariByGroup(tryBoard, n).Any()))
                 return false;
 
             //check for eye at corner point
@@ -1809,7 +1818,7 @@ namespace Go
             foreach (Group ngroup in board.GetNeighbourGroups())
             {
                 if (ngroup.Liberties.Count > 2 || WallHelper.IsNonKillableGroup(board, ngroup)) continue;
-                foreach (Group targetGroup in AtariHelper.AtariByGroup(ngroup, board))
+                foreach (Group targetGroup in AtariHelper.AtariByGroup(board, ngroup))
                 {
                     Board b = ImmovableHelper.CaptureSuicideGroup(board, targetGroup);
                     if (!WallHelper.IsStrongGroup(b, board.MoveGroup))
@@ -2034,7 +2043,7 @@ namespace Go
             if (ImmovableHelper.IsConfirmTigerMouth(currentBoard, tryBoard) == null) return false;
 
             //check eye points at diagonals of tiger mouth
-            List<Point> diagonalPoints = ImmovableHelper.GetDiagonalsOfTigerMouth(tryBoard, move, c.Opposite(), true);
+            List<Point> diagonalPoints = ImmovableHelper.GetDiagonalsOfTigerMouth(tryBoard, move, c.Opposite());
             if (diagonalPoints.Count == 0) return false;
 
             (Boolean suicidal, Board capturedBoard) = ImmovableHelper.IsSuicidalOnCapture(tryBoard);
@@ -2279,7 +2288,7 @@ namespace Go
                 return false;
 
             //real eye at diagonal
-            List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, eyePoint.Value, c, true);
+            List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, eyePoint.Value, c);
             if (diagonals.Any() && !EyeHelper.FindRealEyeAtDiagonal(diagonals, currentBoard, c))
                 return false;
 
