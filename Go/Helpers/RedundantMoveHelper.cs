@@ -623,6 +623,10 @@ namespace Go
             Group killerGroup = GroupHelper.GetDirectKillerGroup(currentBoard, move, c.Opposite());
             if (killerGroup != null && GroupHelper.GetNeighbourGroupsOfKillerGroup(currentBoard, killerGroup).Count == 1)
             {
+                //check isolated group
+                List<Group> previousGroup = LinkHelper.GetPreviousMoveGroup(currentBoard, opponentBoard);
+                if (previousGroup.Any(n => !GroupHelper.GetNeighbourGroupsOfKillerGroup(currentBoard, killerGroup).Contains(n)))
+                    return false;
                 //get first point
                 Point p = KillerFormationHelper.FirstPointInKillerGroup(currentBoard, killerGroup, c);
                 if (p.IsEmpty() || move.Equals(p))
@@ -640,7 +644,6 @@ namespace Go
                 List<Group> previousGroup = LinkHelper.GetPreviousMoveGroup(currentBoard, opponentBoard);
                 if (previousGroup.Any(n => !GroupHelper.GetNeighbourGroupsOfKillerGroup(currentBoard, killerGroup).Contains(n)))
                     return false;
-
                 //get first point
                 Point p = killerGroup.Points.FirstOrDefault(n => currentBoard[n] == Content.Empty && currentBoard.GetGroupsFromStoneNeighbours(n, c).Count() > 1);
                 if (p.IsEmpty() || move.Equals(p))

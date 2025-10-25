@@ -239,9 +239,11 @@ namespace Go
             {
                 if (!ImmovableHelper.IsImmovablePoint(board, p, c)) continue;
                 if (immediateLink) return true;
-
-                Group killerGroup = GroupHelper.GetKillerGroupOfStrongNeighbourGroups(board, p, c);
-                if (killerGroup == null) continue;
+                if (board[p] == c.Opposite())
+                {
+                    Group killerGroup = GroupHelper.GetKillerGroupOfStrongNeighbourGroups(board, p, c);
+                    if (killerGroup == null) continue;
+                }
                 return true;
             }
             return false;
@@ -781,8 +783,7 @@ namespace Go
         /// </summary>
         public static IEnumerable<Group> CheckImmovableNeighbourGroups(Board board, Group group)
         {
-            List<Group> ngroups = board.GetNeighbourGroups(group).Where(g => g.Liberties.Count <= 2).ToList();
-            return CheckImmovableGroups(board, ngroups);
+            return CheckImmovableGroups(board, board.GetNeighbourGroups(group));
         }
 
         /// <summary>
@@ -792,6 +793,7 @@ namespace Go
         {
             foreach (Group group in groups)
             {
+                if (group.Liberties.Count > 2) continue;
                 Content c = group.Content;
                 foreach (Point p in group.Liberties)
                 {
