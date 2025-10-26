@@ -109,7 +109,11 @@ namespace Go
         {
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(board, p, c);
             if (killerGroup == null) return null;
-            List<Group> ngroups = board.GetGroupsFromStoneNeighbours(p, c.Opposite());
+            List<Group> ngroups;
+            if (board[p] == Content.Empty)
+                ngroups = board.GetGroupsFromStoneNeighbours(p, c.Opposite());
+            else
+                ngroups = board.GetNeighbourGroups(board.GetGroupAt(p));
             if (GroupHelper.GetNeighbourGroupsOfKillerGroup(board, killerGroup).Any(n => ngroups.Contains(n)))
                 return killerGroup;
             return null;

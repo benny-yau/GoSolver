@@ -591,7 +591,8 @@ namespace Go
         /// Check isolated group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499" />
         /// Check diagonal not cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q27661" />
         /// Check diagonal cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie61" />
-        /// Check eye at diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_B43" />
+        /// Get first point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_9" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_B43" />
         /// </summary>
         public static Boolean OpponentSuicidalConnectAndDie(GameTryMove tryMove, GameTryMove opponentTryMove)
         {
@@ -644,7 +645,7 @@ namespace Go
                 List<Group> previousGroup = LinkHelper.GetPreviousMoveGroup(currentBoard, opponentBoard);
                 if (previousGroup.Any(n => !GroupHelper.GetNeighbourGroupsOfKillerGroup(currentBoard, killerGroup).Contains(n)))
                     return false;
-                //get first point
+                //get first point with link for groups
                 Point p = killerGroup.Points.FirstOrDefault(n => currentBoard[n] == Content.Empty && currentBoard.GetGroupsFromStoneNeighbours(n, c).Count() > 1);
                 if (p.IsEmpty() || move.Equals(p))
                     return false;
@@ -661,10 +662,13 @@ namespace Go
                 if (LinkHelper.FindDiagonalCut(tryBoard).Item1 != null)
                     return false;
 
-                //check eye at diagonal
-                List<Group> previousGroup = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
-                if (previousGroup.Any(n => LinkHelper.GetGroupDiagonals(tryBoard, n).Any(s => EyeHelper.FindEye(tryBoard, s.Move, c.Opposite()))))
-                    return false;
+                //get first point
+                if (killerGroup != null)
+                {
+                    Point p = KillerFormationHelper.FirstPointInKillerGroup(currentBoard, killerGroup, c);
+                    if (p.IsEmpty() || move.Equals(p))
+                        return false;
+                }
             }
             return true;
         }
