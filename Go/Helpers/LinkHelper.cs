@@ -793,7 +793,7 @@ namespace Go
         {
             foreach (Group group in groups)
             {
-                if (group.Liberties.Count > 2) continue;
+                if (group.Liberties.Count != 2) continue;
                 Content c = group.Content;
                 foreach (Point p in group.Liberties)
                 {

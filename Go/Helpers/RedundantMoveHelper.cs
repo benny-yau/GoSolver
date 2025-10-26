@@ -997,6 +997,7 @@ namespace Go
                 if (CheckDiagonalAndLibertyAtMove(tryMove, captureBoard))
                     return true;
 
+                //check non killable group
                 if (WallHelper.TargetWithAnyNonKillableGroup(tryBoard))
                     return true;
 
@@ -1033,7 +1034,10 @@ namespace Go
 
             //check diagonal for real eye
             if (EyeHelper.CheckDiagonalForRealEye(tryBoard, captureBoard).Any())
-                return true;
+            {
+                if (tryBoard.MoveGroup.Points.Count > 2 || !LinkHelper.GetDiagonalGroups(captureBoard, tryBoard.MoveGroup).Any())
+                    return true;
+            }
 
             List<Point> moveLiberties = tryBoard.GetMoveLiberties();
             if (!moveLiberties.Any())
