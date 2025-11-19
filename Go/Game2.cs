@@ -11,7 +11,6 @@ namespace Go
         public static Boolean debugMode = Convert.ToBoolean(ConfigurationSettings.AppSettings["DEBUG_MODE"]);
         public static Boolean useMonteCarloRuntime = Convert.ToBoolean(ConfigurationSettings.AppSettings["USE_MONTE_CARLO_RUNTIME"]);
 
-        public static Boolean UseSolutionPoints = true;
         public static Boolean UseMapMoves = true;
         public static readonly Point PassMove = new Point(-1, -1);
         public int reachedEndOfDepth = 0;
@@ -40,10 +39,7 @@ namespace Go
 
                     DebugHelper.DebugWriteWithTab("Final move: " + this.Board.Move + " | Final result: " + confirmAlive.ToString() + " | Reached end of depth: " + (this.Root.reachedEndOfDepth > 0).ToString());
                 }
-                else
-                {
-                    result = CheckMappedResults(result);
-                }
+
                 if (this.Board.Move == null)
                     this.Board.Move = Game.PassMove;
                 return result;

@@ -801,7 +801,7 @@ namespace Go
 
                 //cut diagonal and kill
                 Point q = LinkHelper.PointsBetweenDiagonals(npoints[0], npoints[1]).First(n => !n.Equals(move));
-                if (tryBoard[q] == Content.Empty && ImmovableHelper.IsSuicidalMove(tryBoard, q, c, true))
+                if (ImmovableHelper.FindTigerMouth(tryBoard, q, c) != null)
                     return true;
             }
 
@@ -1068,9 +1068,6 @@ namespace Go
             //check is negligible
             if (!tryMove.IsNegligible) return false;
 
-            if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c))
-                return false;
-
             //check one empty space left
             if (KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                 return false;
@@ -1089,6 +1086,15 @@ namespace Go
                 if (b != null && EyeHelper.CheckCaptureMoveLiberty(tryBoard, b))
                     return false;
             }
+
+            //check killer formation
+            if (KillerFormationHelper.IsKillerFormationFromFunc(tryBoard))
+                return false;
+
+            //check eye
+            if (moveLiberties.Select(n => GroupHelper.GetKillerGroupFromCache(tryBoard, n, c)).Any(s => s != null && s.Points.Count <= 2))
+                return false;
+
             return true;
         }
 
@@ -1428,10 +1434,10 @@ namespace Go
                 return false;
 
             if (LifeCheck.GetTargets(tryBoard).Contains(tryBoard.MoveGroup)) return false;
-            
+
             //check opponent groups
             List<Point> rc = tryBoard.GetClosestPoints(move, c.Opposite(), 3);
-            if (rc.Count(r => !WallHelper.IsNonKillableGroup(tryBoard, r)) >= 3)
+            if (rc.Count(n => !CheckNonKillableAtDiagonalGroups(tryBoard, tryBoard.GetGroupAt(n))) >= 3)
                 return false;
 
             if (!WallHelper.StrongNeighbourGroups(tryBoard))
@@ -1465,8 +1471,13 @@ namespace Go
                     //verify leap move
                     if (tryBoard.GetClosestPoints(p, c, 2, 2).Any(n => n.Equals(r)))
                     {
-                        if (GetMidPointsOfLeapMove(p, r).Any(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
-                            continue;
+                        List<Point> mpoints = GetMidPointsOfLeapMove(p, r).Where(n => tryBoard[n] == c.Opposite()).ToList();
+                        if (mpoints.Count > 0)
+                        {
+                            Group mgroup = tryBoard.GetGroupAt(mpoints.First());
+                            if (CheckNonKillableAtDiagonalGroups(tryBoard, mgroup))
+                                continue;
+                        }
                     }
 
                     //check if target found
@@ -1479,6 +1490,20 @@ namespace Go
                         return true;
                 }
             }
+            return false;
+        }
+
+        /// <summary>
+        /// Check non killable at diagonal groups.
+        /// </summary>
+        public static Boolean CheckNonKillableAtDiagonalGroups(Board tryBoard, Group group)
+        {
+            if (WallHelper.IsNonKillableGroup(tryBoard, group))
+                return true;
+
+            if (LinkHelper.GetDiagonalGroupsWithoutCut(tryBoard, group).Any(n => WallHelper.IsNonKillableGroup(tryBoard, n.Move)))
+                return true;
+
             return false;
         }
 
@@ -2073,7 +2098,7 @@ namespace Go
                     if (diagonalKillerGroup == null)
                         continue;
                     HashSet<Group> opponentGroups = currentBoard.GetGroupsFromPoints(diagonalKillerGroup.Points.Where(n => currentBoard[n] == c).ToList());
-                    if (opponentGroups.Any(n => !ImmovableHelper.CheckCaptureSecure(currentBoard, n)))
+                    if (opponentGroups.Any(n => !ImmovableHelper.CheckConnectAndDie(tryBoard, n, false)))
                         continue;
 
                     //check one point atari move

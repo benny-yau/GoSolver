@@ -569,6 +569,18 @@ namespace Go
         }
 
         /// <summary>
+        /// Get diagonal groups without cut.
+        /// </summary>
+        public static IEnumerable<LinkedPoint<Point>> GetDiagonalGroupsWithoutCut(Board tryBoard, Group mGroup)
+        {
+            foreach (LinkedPoint<Point> q in LinkHelper.GetGroupLinkedDiagonals(tryBoard, mGroup))
+            {
+                if (LinkHelper.PointsBetweenDiagonals(q.Move, (Point)q.CheckMove).Any(n => tryBoard[n] == Content.Empty))
+                    yield return q;
+            }
+        }
+
+        /// <summary>
         /// Get previous move group.
         /// </summary>
         public static List<Group> GetPreviousMoveGroup(Board currentBoard, Board tryBoard)

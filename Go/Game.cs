@@ -178,64 +178,59 @@ namespace Go
         {
             //check solution points
             ConfirmAliveResult result = ConfirmAliveResult.Unknown;
-            if (UseSolutionPoints)
+            if (!UseMapMoves) return result;
+            if (this.GameInfo.solutionPoints.Count > 0)
             {
-                if (this.GameInfo.solutionPoints.Count > 0)
+                ConfirmAliveResult solutionComplete = SolutionHelper.CheckSolutionComplete(this.Board);
+                if (solutionComplete != ConfirmAliveResult.Unknown)
+                    return solutionComplete | ConfirmAliveResult.Mapped;
+                else
                 {
-                    ConfirmAliveResult solutionComplete = SolutionHelper.CheckSolutionComplete(this.Board);
-                    if (solutionComplete != ConfirmAliveResult.Unknown)
-                        return solutionComplete | ConfirmAliveResult.Mapped;
-                    else
+                    //get solution move and make move on board
+                    if (SolutionHelper.UseSolutionPoints(this))
                     {
-                        //get solution move and make move on board
-                        if (SolutionHelper.UseSolutionPoints(this))
-                        {
-                            result = ConfirmAliveResult.Mapped | ConfirmAliveResult.UseSolution;
-                            solutionComplete = SolutionHelper.CheckSolutionComplete(this.Board);
-                            if (solutionComplete != ConfirmAliveResult.Unknown)
-                                result |= solutionComplete;
-                            return result;
-                        }
-                        else
-                            result = ConfirmAliveResult.Incorrect;
+                        result = ConfirmAliveResult.Mapped | ConfirmAliveResult.UseSolution;
+                        solutionComplete = SolutionHelper.CheckSolutionComplete(this.Board);
+                        if (solutionComplete != ConfirmAliveResult.Unknown)
+                            result |= solutionComplete;
+                        return result;
                     }
+                    else
+                        result = ConfirmAliveResult.Incorrect;
                 }
-                else if (this.GameInfo.solutionPoints.Count == 0 && this.GameInfo.UserFirst == PlayerOrComputer.Computer)
-                {
-                    return ConfirmAliveResult.Mapped | ConfirmAliveResult.NoSolution;
-                }
+            }
+            else if (this.GameInfo.solutionPoints.Count == 0 && this.GameInfo.UserFirst == PlayerOrComputer.Computer)
+            {
+                return ConfirmAliveResult.Mapped | ConfirmAliveResult.NoSolution;
             }
 
             //check mapped points
-            if (UseMapMoves)
-            {
-                if (!result.HasFlag(ConfirmAliveResult.Mapped))
-                    result = UseDictatePoints(result);
+            if (!result.HasFlag(ConfirmAliveResult.Mapped))
+                result = UseDictatePoints(result);
 
-                if (!result.HasFlag(ConfirmAliveResult.Mapped))
+            if (!result.HasFlag(ConfirmAliveResult.Mapped))
+            {
+                int isChallenge = Convert.ToInt32(this.GameInfo.UserFirst == PlayerOrComputer.Computer);
+                if (this.Board.LastMoves.Count == 1 + isChallenge)
                 {
-                    int isChallenge = Convert.ToInt32(this.GameInfo.UserFirst == PlayerOrComputer.Computer);
-                    if (this.Board.LastMoves.Count == 1 + isChallenge)
-                    {
-                        //get second mapped move from json
-                        dynamic json = (isChallenge == 0) ? this.GameInfo.PlayerMoveJson : this.GameInfo.ChallengeMoveJson;
-                        if (json == null) return result;
-                        return FindSecondMoveMapped(json);
-                    }
-                    else if (this.Board.LastMoves.Count == 3 + isChallenge)
-                    {
-                        //get fourth mapped move from json
-                        dynamic json = (isChallenge == 0) ? this.GameInfo.PlayerMoveJson : this.GameInfo.ChallengeMoveJson;
-                        if (json == null) return result;
-                        return FindFourthMoveMapped(json);
-                    }
-                    else if (this.Board.LastMoves.Count == 5 + isChallenge)
-                    {
-                        //get sixth mapped move from json
-                        dynamic json = (isChallenge == 0) ? this.GameInfo.PlayerMoveJsonExtension : this.GameInfo.ChallengeMoveJsonExtension;
-                        if (json == null) return result;
-                        return FindSixthMoveMapped(json);
-                    }
+                    //get second mapped move from json
+                    dynamic json = (isChallenge == 0) ? this.GameInfo.PlayerMoveJson : this.GameInfo.ChallengeMoveJson;
+                    if (json == null) return result;
+                    return FindSecondMoveMapped(json);
+                }
+                else if (this.Board.LastMoves.Count == 3 + isChallenge)
+                {
+                    //get fourth mapped move from json
+                    dynamic json = (isChallenge == 0) ? this.GameInfo.PlayerMoveJson : this.GameInfo.ChallengeMoveJson;
+                    if (json == null) return result;
+                    return FindFourthMoveMapped(json);
+                }
+                else if (this.Board.LastMoves.Count == 5 + isChallenge)
+                {
+                    //get sixth mapped move from json
+                    dynamic json = (isChallenge == 0) ? this.GameInfo.PlayerMoveJsonExtension : this.GameInfo.ChallengeMoveJsonExtension;
+                    if (json == null) return result;
+                    return FindSixthMoveMapped(json);
                 }
             }
             return result;
@@ -353,41 +348,7 @@ namespace Go
                 result |= ConfirmAliveResult.KoAlive;
             return result;
         }
-
-        /// <summary>
-        /// Include flag for target survived or killed.
-        /// </summary>
-        public ConfirmAliveResult CheckMappedResults(ConfirmAliveResult result)
-        {
-            if (result.HasFlag(ConfirmAliveResult.NoSolution) || result.HasFlag(ConfirmAliveResult.UseSolution) || result.HasFlag(ConfirmAliveResult.Answer) || result.HasFlag(ConfirmAliveResult.SolutionDisplayed))
-                return result;
-            if (result.HasFlag(ConfirmAliveResult.KoAlive)) return result;
-
-            SurviveOrKill surviveOrKill = GameHelper.KillOrSurvivalForNextMove(this.Board).Opposite();
-            result = LifeCheck.CheckIfTargetSurvivedOrKilled(result, surviveOrKill, this.Board);
-            return result;
-        }
         #endregion
-
-        /// <summary>
-        /// Call from immediate window to show game try moves for survival moves.
-        /// </summary>
-        public void PrintSurvivalList()
-        {
-            (ConfirmAliveResult result, List<GameTryMove> tryMoves, GameTryMove koBlockedMove) = GetSurvivalMoves();
-            String content = DebugHelper.PrintGameTryMoves(this, tryMoves, null);
-            Debug.WriteLine(content);
-        }
-
-        /// <summary>
-        /// Call from immediate window to show game try moves for kill moves.
-        /// </summary>
-        public void PrintKillList()
-        {
-            (ConfirmAliveResult result, List<GameTryMove> tryMoves, GameTryMove koBlockedMove) = GetKillMoves();
-            String content = DebugHelper.PrintGameTryMoves(this, tryMoves, null);
-            Debug.WriteLine(content);
-        }
 
         /// <summary>
         /// Print game moves on exhaustive mode.

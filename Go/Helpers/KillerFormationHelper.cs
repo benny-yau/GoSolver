@@ -565,10 +565,14 @@ namespace Go
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             if (tryBoard.MoveGroup.Points.Count != 2 || tryBoard.MoveGroupLiberties != 1 || !tryBoard.IsAtariMove) return false;
-            if (captureBoard == null) captureBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
             //check for three groups
-            if (ThreeOpponentGroupsAtMove(tryBoard)) return true;
+            if (ThreeOpponentGroupsAtMove(tryBoard))
+            {
+                Boolean tm = LinkHelper.GetDiagonalPoints(tryBoard).Any(n => ImmovableHelper.FindTigerMouth(tryBoard, n, c.Opposite()) != null);
+                if (!tm) return true;
+            }
 
+            if (captureBoard == null) captureBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
             Board b = captureBoard.MakeMoveOnNewBoard(move, c);
             if (b == null || b.AtariTargets.Count == 0) return false;
             //check snapback

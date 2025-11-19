@@ -90,21 +90,6 @@
             Get sixth move from json map and return confirm alive result.
             </summary>
         </member>
-        <member name="M:Go.Game.CheckMappedResults(Go.ConfirmAliveResult)">
-            <summary>
-            Include flag for target survived or killed.
-            </summary>
-        </member>
-        <member name="M:Go.Game.PrintSurvivalList">
-            <summary>
-            Call from immediate window to show game try moves for survival moves.
-            </summary>
-        </member>
-        <member name="M:Go.Game.PrintKillList">
-            <summary>
-            Call from immediate window to show game try moves for kill moves.
-            </summary>
-        </member>
         <member name="M:Go.Game.PrintGameMoveList(System.Collections.Generic.List{Go.GameTryMove},System.Collections.Generic.List{Go.GameTryMove},Go.Game)">
             <summary>
             Print game moves on exhaustive mode.
@@ -1413,6 +1398,11 @@
             Find diagonal cut.
             </summary>
         </member>
+        <member name="M:Go.LinkHelper.GetDiagonalGroupsWithoutCut(Go.Board,Go.Group)">
+            <summary>
+            Get diagonal groups without cut.
+            </summary>
+        </member>
         <member name="M:Go.LinkHelper.GetPreviousMoveGroup(Go.Board,Go.Board)">
             <summary>
             Get previous move group.
@@ -1831,6 +1821,11 @@
         <member name="M:Go.RedundantMoveHelper.CheckLeapMoveToTarget(Go.Board,System.Collections.Generic.HashSet{Go.Group})">
             <summary>
             Check leap move to target.
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CheckNonKillableAtDiagonalGroups(Go.Board,Go.Group)">
+            <summary>
+            Check non killable at diagonal groups.
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.GetMidPointsOfLeapMove(Go.Point,Go.Point)">
