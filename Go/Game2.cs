@@ -9,29 +9,29 @@ namespace Go
     public partial class Game
     {
         public static Boolean debugMode = Convert.ToBoolean(ConfigurationSettings.AppSettings["DEBUG_MODE"]);
-        public static Boolean useMonteCarloRuntime = Convert.ToBoolean(ConfigurationSettings.AppSettings["USE_MONTE_CARLO_RUNTIME"]);
-
-        public static Boolean UseMapMoves = true;
+        public static Boolean UseMCTS = false;
+        public static Boolean UseMapMoves = false;
         public static readonly Point PassMove = new Point(-1, -1);
         public int reachedEndOfDepth = 0;
         public Boolean isMonteCarloPlayout = false;
         public int[,] heatMap;
 
         /// <summary>
-        /// Initialize computer move. Exhaustive search or real-time mcts move (default).
-        /// To debug with exhaustive search, set USE_MONTE_CARLO_RUNTIME in app.config to false.
+        /// Initialize computer move. Exhaustive search or mcts move.
         /// </summary>
-        public ConfirmAliveResult InitializeComputerMove()
+        public ConfirmAliveResult InitializeComputerMove(Boolean useMCTS = false, Boolean useMapMoves = false)
         {
             try
             {
+                Game.UseMCTS = useMCTS;
+                Game.UseMapMoves = useMapMoves;
                 this.Board.Move = null;
-                ConfirmAliveResult result = CheckSolutionAndMappedPoints();
+                ConfirmAliveResult result = SolutionHelper.CheckSolutionAndMappedPoints(this);
 
                 if (!result.HasFlag(ConfirmAliveResult.Mapped))
                 {
                     ConfirmAliveResult confirmAlive = ConfirmAliveResult.Unknown;
-                    if (!useMonteCarloRuntime)
+                    if (!useMCTS)
                         confirmAlive = MakeExhaustiveSearch();
                     else
                         confirmAlive = MonteCarloGame.MonteCarloRealTimeMove(this).Item1;
@@ -57,8 +57,8 @@ namespace Go
         /// </summary>
         public ConfirmAliveResult MakeExhaustiveSearch()
         {
-            if (debugMode)
-                this.RunTimeStopWatch = Stopwatch.StartNew();
+            Game.UseMCTS = false;
+            if (debugMode) this.RunTimeStopWatch = Stopwatch.StartNew();
 
             int depth = GetStartingDepth();
             ConfirmAliveResult confirmAlive = ConfirmAliveResult.Unknown;
@@ -103,7 +103,8 @@ namespace Go
                 if (g.Board[p] != Content.Empty) continue;
                 //create try moves
                 GameTryMove tryMove = new GameTryMove(g);
-                tryMove.MakeMoveResult = tryMove.TryGame.Board.InternalMakeMove(p, c);
+                Board b = tryMove.TryGame.Board;
+                tryMove.MakeMoveResult = b.InternalMakeMove(p, c);
                 if (tryMove.MakeMoveResult == MakeMoveResult.KoBlocked)
                 {
                     //ko moves
@@ -118,7 +119,7 @@ namespace Go
                     //check if game ended
                     if (tryMove.MoveGroupLiberties > 1)
                     {
-                        ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Survive, tryMove.TryGame.Board);
+                        ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Survive, b);
                         if (confirmAlive == ConfirmAliveResult.Alive)
                             return (ConfirmAliveResult.Alive, new List<GameTryMove>() { tryMove }, null);
                     }
@@ -143,9 +144,6 @@ namespace Go
                 //restore diagonal eye move
                 if (redundantTryMoves.Any(t => t.IsDiagonalEyeMove))
                     tryMoves.Add(redundantTryMoves.First(t => t.IsDiagonalEyeMove));
-
-                //restore neural net move
-                RedundantMoveHelper.RestoreNeuralNetMove(tryMoves, redundantTryMoves);
             }
 
             //check for both alive
@@ -367,7 +365,8 @@ namespace Go
                 if (g.Board[p] != Content.Empty) continue;
                 //create try moves
                 GameTryMove tryMove = new GameTryMove(g);
-                tryMove.MakeMoveResult = tryMove.TryGame.Board.InternalMakeMove(p, c);
+                Board b = tryMove.TryGame.Board;
+                tryMove.MakeMoveResult = b.InternalMakeMove(p, c);
                 if (tryMove.MakeMoveResult == MakeMoveResult.KoBlocked)
                 {
                     //ko moves
@@ -380,7 +379,7 @@ namespace Go
                 else if (tryMove.MakeMoveResult == MakeMoveResult.Legal)
                 {
                     //check if game ended
-                    ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Kill, tryMove.TryGame.Board);
+                    ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Kill, b);
                     if (confirmAlive == ConfirmAliveResult.Dead)
                         return (ConfirmAliveResult.Dead, new List<GameTryMove>() { tryMove }, null);
                     //find redundant moves
@@ -506,18 +505,15 @@ namespace Go
             {
                 for (int j = 3; j < 8; j++)
                 {
-                    if (board[i, j] == Content.Empty)
-                    {
-                        p = new Point(i, j);
-                        break;
-                    }
+                    if (board[i, j] != Content.Empty) continue;
+                    p = new Point(i, j);
+                    break;
                 }
                 if (!p.Equals(Game.PassMove)) break;
             }
             if (p.Equals(Game.PassMove))
                 return null;
-            GameTryMove tryMove = new GameTryMove(g);
-            tryMove.MakeMoveResult = tryMove.TryGame.InternalMakeMove(p.x, p.y);
+            GameTryMove tryMove = new GameTryMove(g, p);
             tryMove.TryGame.Board.IsRandomMove = true;
             return tryMove;
         }
@@ -536,11 +532,6 @@ namespace Go
             if (result == ConfirmAliveResult.Dead)
                 return (result, tryMoves.First());
 
-            if (Game.TimeOut(g))
-            {
-                if (debugMode) Debug.WriteLine("Break real time...");
-                return (ConfirmAliveResult.Unknown, bestResultMove);
-            }
             //try all possible moves
             for (int i = 0; i <= tryMoves.Count - 1; i++)
             {

@@ -43,6 +43,7 @@ namespace Go
         /// </summary>
         public static (ConfirmAliveResult, Node, long?) MonteCarloRealTimeMove(Game game)
         {
+            Game.UseMCTS = true;
             MonteCarloTreeSearch mcts = InitializeMonteCarloComputerMove(game);
 
             //make the move on the board
@@ -77,8 +78,8 @@ namespace Go
             Game g = mcts.AnswerNode.State.Game;
             Point answerMove = g.Board.Move.Value;
 
-            if (MonteCarloMapping.searchAnswer)
-                Debug.WriteLine(MonteCarloGame.GetAnswerJson(g, mcts.AnswerNode));
+            //show answer moves
+            Debug.WriteLine(MonteCarloGame.GetAnswerJson(g, mcts.AnswerNode));
 
             //check if both alive
             if (mcts.AnswerNode.State.SurviveOrKill == SurviveOrKill.Survive && answerMove.Equals(Game.PassMove))

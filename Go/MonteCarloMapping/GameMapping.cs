@@ -15,7 +15,7 @@ namespace Go
         public static Boolean OneStopMapping = Convert.ToBoolean(ConfigurationSettings.AppSettings["ONE_STOP_MAPPING"]);
 
         /// <summary>
-        /// Retrieves the mapped json from GameInfo object.
+        /// Get mapped json.
         /// </summary>
         public static JArray GetMappedJson(Game game)
         {
@@ -29,7 +29,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Serialize json to string and write to file. It is possible to call from immediate window, even if mapping is not fully completed to retrieve partial json map.
+        /// Serialize json.
         /// </summary>
         public static void SerializeJson(Game g)
         {
@@ -42,7 +42,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Find if any pass move in json which are likely errors. Pass move can also be a valid move returned by computer move. 
+        /// Find pass move in json. 
         /// </summary>
         private static void FindPassMoveInJson(JArray playerMoveJson)
         {

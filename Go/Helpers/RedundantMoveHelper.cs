@@ -2398,7 +2398,7 @@ namespace Go
         /// Redundant neural net move. For use in LeelaSharp project.
         /// <see cref="UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_20230423_8" />
         /// Check killer formation <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31499" />
-        /// Check higher heat value in stone and diagonal neighbours <see cref="UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_Scenario_Nie87" />
+        /// Check covered point <see cref="UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_XuanXuanQiJing_A53" />
         /// </summary>
         public static Boolean RedundantNeuralNetMove(GameTryMove tryMove)
         {
@@ -2412,34 +2412,27 @@ namespace Go
 
             if (!tryMove.IsNegligible) return false;
 
-            //check opponent at stone and diagonal neighbour
-            if (!tryBoard.GetStoneAndDiagonalNeighbours().All(n => tryBoard[n] != c.Opposite()))
+            //check opponent at stone neighbour
+            if (!tryBoard.GetStoneNeighbours().All(n => tryBoard[n] != c.Opposite()))
                 return false;
 
             //check killer formation
             if (tryBoard.MoveGroupLiberties == 1 && KillerFormationHelper.IsKillerFormationFromFunc(tryBoard))
                 return false;
 
+            //check covered point
+            if (EyeHelper.IsCovered(currentBoard, move, c))
+                return false;
+
             //get heat map
             if (g.heatMap == null)
                 MonteCarloGame.GetHeatMap(g);
 
-            int heatValue = g.heatMap[move.x, move.y];
-
             //check low heat value
-            if (heatValue <= 1)
+            if (g.heatMap[move.x, move.y] <= 1)
                 return true;
 
             return false;
-        }
-
-        /// <summary>
-        /// Restore neural net move.
-        /// </summary>
-        public static void RestoreNeuralNetMove(List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves)
-        {
-            if (MonteCarloGame.useLeelaZero && redundantTryMoves.Any(t => t.IsRedundantNeuralNetMove))
-                tryMoves.AddRange(redundantTryMoves.Where(t => t.IsRedundantNeuralNetMove));
         }
         #endregion
 

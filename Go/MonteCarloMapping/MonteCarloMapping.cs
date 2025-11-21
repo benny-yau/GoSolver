@@ -14,22 +14,11 @@ namespace Go
     /// </summary>
     public class MonteCarloMapping
     {
-        public static Boolean mapMoves = false;
-        public static Boolean searchAnswer = false;
-
         public long? elapsedTime;
-
-        public static Boolean mapMovesOrSearchAnswer
-        {
-            get
-            {
-                return mapMoves || searchAnswer;
-            }
-        }
 
         public static void MapScenario(Game game)
         {
-            mapMoves = true;
+            Game.UseMapMoves = true;
             MonteCarloMapping mctsMapping = new MonteCarloMapping();
 
             //map player moves
@@ -45,7 +34,6 @@ namespace Go
                 mctsMapping.MappingFirstLevel(game);
                 GameMapping.SerializeJson(game);
             }
-            mapMoves = false;
         }
 
         /// <summary>
@@ -320,7 +308,7 @@ namespace Go
         /// </summary>
         public static Boolean MappingRange(Board board)
         {
-            if (!MonteCarloMapping.mapMoves)
+            if (!Game.UseMapMoves)
                 return false;
 
             if (GameHelper.GetComputerOrPlayerForNextMove(board) == PlayerOrComputer.Computer)

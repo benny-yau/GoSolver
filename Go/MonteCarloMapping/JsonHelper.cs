@@ -8,9 +8,6 @@ using System.Text;
 
 namespace Go
 {
-    /// <summary>
-    /// Creates the json map that extends up to three levels.
-    /// </summary>
     public class JsonHelper
     {
         /// <summary>

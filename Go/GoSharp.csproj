@@ -97,7 +97,6 @@
     <Compile Include="Helpers\KoHelper.cs" />
     <Compile Include="Helpers\LinkHelper.cs" />
     <Compile Include="Helpers\RedundantMoveHelper.cs" />
-    <Compile Include="Helpers\ResultHelper.cs" />
     <Compile Include="Helpers\SerializerHelper.cs" />
     <Compile Include="Helpers\SolutionHelper.cs" />
     <Compile Include="Helpers\UniquePatternsHelper.cs" />

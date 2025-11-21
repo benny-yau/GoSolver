@@ -151,14 +151,8 @@ namespace ConsoleGoSolver
 
             Console.WriteLine("Calculating...");
             Game.UseMapMoves = false;
-            MonteCarloMapping.searchAnswer = true;
             (ConfirmAliveResult moveResult, Node answerNode, long? elapsedTime) = MonteCarloGame.MonteCarloRealTimeMove(g);
-
-            Game.UseMapMoves = true;
-            MonteCarloMapping.searchAnswer = false;
-
             Console.WriteLine("{0}", g.Board);
-
             Boolean solutionCorrect = false;
             if (g.Board.Move != null)
             {
@@ -170,19 +164,19 @@ namespace ConsoleGoSolver
 
             if (!solutionCorrect)
                 Console.WriteLine("Incorrect. Answer: " + g.GameInfo.solutionPoints.First().First());
-            if (elapsedTime != null) 
+            if (elapsedTime != null)
                 Console.WriteLine(DebugHelper.PrintTimeTaken(elapsedTime.Value));
         }
 
         static Boolean ComputerMakeMove(Game g)
         {
-            ConfirmAliveResult moveResult = g.InitializeComputerMove();
+            ConfirmAliveResult moveResult = g.InitializeComputerMove(true, true);
             Console.WriteLine(Environment.NewLine + "Computer move: ");
             Console.WriteLine("{0}", g.Board);
             if (g.Board.Move != null && !g.Board.Move.Equals(Game.PassMove))
                 Console.WriteLine("Move: {0}", g.Board.Move + "\n");
 
-            String msg = ResultHelper.GameEndedMessage(moveResult, g);
+            String msg = SolutionHelper.GameEndedMessage(moveResult, g);
             if (!String.IsNullOrEmpty(msg))
             {
                 Console.WriteLine("Result: {0}", msg + "\n");
@@ -209,14 +203,13 @@ namespace ConsoleGoSolver
                 if (parseX && parseY)
                 {
                     SurviveOrKill survivalOrKill = GameHelper.KillOrSurvivalForNextMove(g.Board);
-                    List<Point> rangePoints = (survivalOrKill == SurviveOrKill.Kill) ? g.GameInfo.killMovablePoints : g.GameInfo.movablePoints;
+                    List<Point> movablePoints = (survivalOrKill == SurviveOrKill.Kill) ? g.GameInfo.killMovablePoints : g.GameInfo.movablePoints;
 
-                    if (!rangePoints.Contains(new Point(x, y)))
+                    if (!movablePoints.Contains(new Point(x, y)))
                     {
                         Console.WriteLine("Outside of movable range.");
                         continue;
                     }
-
                     Game m = new Game(g);
                     result = m.InternalMakeMove(x, y);
                     if (result != MakeMoveResult.Legal)

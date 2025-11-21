@@ -14,8 +14,6 @@ namespace Go
         public Board Board { get; set; }
 
         public static int LookAheadDepth = 8;
-        public static Boolean breakRealTime = Convert.ToBoolean(ConfigurationSettings.AppSettings["BREAK_REAL_TIME"]);
-        public static int runTimeStop = 20000; //20 seconds default for real-time moves
         [NonSerialized]
         Stopwatch RunTimeStopWatch;
 
@@ -47,31 +45,6 @@ namespace Go
             if (depth < LookAheadDepth)
                 depth = LookAheadDepth;
             return depth;
-        }
-
-
-        /// <summary>
-        /// Enable or disable break on real-time move.
-        /// </summary>
-        public static Boolean BreakRealTime
-        {
-            get
-            {
-                return breakRealTime && !MonteCarloMapping.mapMovesOrSearchAnswer;
-            }
-            set
-            {
-                breakRealTime = value;
-            }
-        }
-
-
-        /// <summary>
-        /// Time out if stop watch exceeds time limit set at runTimeStop.
-        /// </summary>
-        public static Boolean TimeOut(Game g)
-        {
-            return Game.BreakRealTime && g.Root.RunTimeStopWatch.ElapsedMilliseconds >= Game.runTimeStop;
         }
 
         /// <summary>
@@ -131,9 +104,6 @@ namespace Go
         /// </summary>
         public MakeMoveResult MakeMove(int x, int y, Content content)
         {
-            if (Game.TimeOut(this))
-                return MakeMoveResult.Unknown;
-
             MakeMoveResult result = this.Board.InternalMakeMove(x, y, content);
             if (result == MakeMoveResult.Legal)
                 return result;
@@ -170,186 +140,6 @@ namespace Go
             return g.Board.LastMoves.Count - this.Board.LastMoves.Count;
         }
 
-        #region mapped moves
-        /// <summary>
-        /// Check solution and mapped points. 
-        /// </summary>
-        public ConfirmAliveResult CheckSolutionAndMappedPoints()
-        {
-            //check solution points
-            ConfirmAliveResult result = ConfirmAliveResult.Unknown;
-            if (!UseMapMoves) return result;
-            if (this.GameInfo.solutionPoints.Count > 0)
-            {
-                ConfirmAliveResult solutionComplete = SolutionHelper.CheckSolutionComplete(this.Board);
-                if (solutionComplete != ConfirmAliveResult.Unknown)
-                    return solutionComplete | ConfirmAliveResult.Mapped;
-                else
-                {
-                    //get solution move and make move on board
-                    if (SolutionHelper.UseSolutionPoints(this))
-                    {
-                        result = ConfirmAliveResult.Mapped | ConfirmAliveResult.UseSolution;
-                        solutionComplete = SolutionHelper.CheckSolutionComplete(this.Board);
-                        if (solutionComplete != ConfirmAliveResult.Unknown)
-                            result |= solutionComplete;
-                        return result;
-                    }
-                    else
-                        result = ConfirmAliveResult.Incorrect;
-                }
-            }
-            else if (this.GameInfo.solutionPoints.Count == 0 && this.GameInfo.UserFirst == PlayerOrComputer.Computer)
-            {
-                return ConfirmAliveResult.Mapped | ConfirmAliveResult.NoSolution;
-            }
-
-            //check mapped points
-            if (!result.HasFlag(ConfirmAliveResult.Mapped))
-                result = UseDictatePoints(result);
-
-            if (!result.HasFlag(ConfirmAliveResult.Mapped))
-            {
-                int isChallenge = Convert.ToInt32(this.GameInfo.UserFirst == PlayerOrComputer.Computer);
-                if (this.Board.LastMoves.Count == 1 + isChallenge)
-                {
-                    //get second mapped move from json
-                    dynamic json = (isChallenge == 0) ? this.GameInfo.PlayerMoveJson : this.GameInfo.ChallengeMoveJson;
-                    if (json == null) return result;
-                    return FindSecondMoveMapped(json);
-                }
-                else if (this.Board.LastMoves.Count == 3 + isChallenge)
-                {
-                    //get fourth mapped move from json
-                    dynamic json = (isChallenge == 0) ? this.GameInfo.PlayerMoveJson : this.GameInfo.ChallengeMoveJson;
-                    if (json == null) return result;
-                    return FindFourthMoveMapped(json);
-                }
-                else if (this.Board.LastMoves.Count == 5 + isChallenge)
-                {
-                    //get sixth mapped move from json
-                    dynamic json = (isChallenge == 0) ? this.GameInfo.PlayerMoveJsonExtension : this.GameInfo.ChallengeMoveJsonExtension;
-                    if (json == null) return result;
-                    return FindSixthMoveMapped(json);
-                }
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// Use dictate points specified to by-pass mapped points and reduce calculation time.
-        /// </summary>
-        private ConfirmAliveResult UseDictatePoints(ConfirmAliveResult result)
-        {
-            Point? p = SolutionHelper.GetDictateMove(this);
-            if (p == null) return result;
-            MakeMoveResult moveResult = this.MakeMove(p.Value);
-            result = ConfirmAliveResult.Incorrect | ConfirmAliveResult.Mapped;
-            if (moveResult == MakeMoveResult.KoBlocked)
-                result |= ConfirmAliveResult.KoAlive;
-            return result;
-        }
-
-        /// <summary>
-        /// Get second move from json map and return confirm alive result.
-        /// </summary>
-        private ConfirmAliveResult FindSecondMoveMapped(dynamic jsonMap)
-        {
-            ConfirmAliveResult result = ConfirmAliveResult.Incorrect;
-            if (this.Board.LastMoves.Count == 2 && !this.Board.LastMoves[0].Equals(this.GameInfo.solutionPoints[0][0]))
-                return result;
-
-            Point firstMovePt = this.Board.LastMoves[this.Board.LastMoves.Count - 1];
-            JToken firstMove = ((JArray)jsonMap).Where(s => (int)s["FirstMove"]["x"] == firstMovePt.x && (int)s["FirstMove"]["y"] == firstMovePt.y).FirstOrDefault();
-
-            if (firstMove == null) return result;
-            int x = (int)firstMove["SecondMove"]["x"];
-            int y = (int)firstMove["SecondMove"]["y"];
-            MakeMoveResult moveResult = this.MakeMove(x, y);
-            result |= ConfirmAliveResult.Mapped;
-
-            if (moveResult == MakeMoveResult.KoBlocked)
-                result |= ConfirmAliveResult.KoAlive;
-            return result;
-        }
-
-        /// <summary>
-        /// Get fourth move from json map and return confirm alive result.
-        /// </summary>
-        private ConfirmAliveResult FindFourthMoveMapped(dynamic jsonMap)
-        {
-            ConfirmAliveResult result = ConfirmAliveResult.Incorrect;
-            if (this.Board.LastMoves.Count == 4 && !this.Board.LastMoves[0].Equals(this.GameInfo.solutionPoints[0][0]))
-                return result;
-
-            Point firstMovePt = this.Board.LastMoves[this.Board.LastMoves.Count - 3];
-            Point secondMovePt = this.Board.LastMoves[this.Board.LastMoves.Count - 2];
-
-            JObject firstLevelMove = (JObject)((JArray)jsonMap).Where(m => (int)m["FirstMove"]["x"] == firstMovePt.x && (int)m["FirstMove"]["y"] == firstMovePt.y && (int)m["SecondMove"]["x"] == secondMovePt.x && (int)m["SecondMove"]["y"] == secondMovePt.y).FirstOrDefault();
-
-            if (firstLevelMove == null) return result;
-
-            JArray SecondLevel = (JArray)firstLevelMove["SecondLevel"];
-            if (SecondLevel == null) return result;
-            Point lastMovePt = this.Board.LastMoves[this.Board.LastMoves.Count - 1];
-            JToken secondLevelMove = SecondLevel.Where(m => (int)m["ThirdMove"]["x"] == lastMovePt.x && (int)m["ThirdMove"]["y"] == lastMovePt.y).FirstOrDefault();
-            if (secondLevelMove == null) return result;
-            JToken fourthMove = secondLevelMove["FourthMove"];
-            int x = (int)fourthMove["x"];
-            int y = (int)fourthMove["y"];
-            MakeMoveResult moveResult = this.MakeMove(x, y);
-            result |= ConfirmAliveResult.Mapped;
-
-            if (moveResult == MakeMoveResult.KoBlocked)
-                result |= ConfirmAliveResult.KoAlive;
-            return result;
-        }
-
-
-        /// <summary>
-        /// Get sixth move from json map and return confirm alive result.
-        /// </summary>
-        private ConfirmAliveResult FindSixthMoveMapped(dynamic jsonMap)
-        {
-            ConfirmAliveResult result = ConfirmAliveResult.Incorrect;
-            if (this.Board.LastMoves.Count == 6 && !this.Board.LastMoves[0].Equals(this.GameInfo.solutionPoints[0][0]))
-                return result;
-
-            Point firstMovePt = this.Board.LastMoves[this.Board.LastMoves.Count - 5];
-            Point secondMovePt = this.Board.LastMoves[this.Board.LastMoves.Count - 4];
-
-            JObject firstLevelMove = (JObject)((JArray)jsonMap).Where(m => (int)m["FirstMove"]["x"] == firstMovePt.x && (int)m["FirstMove"]["y"] == firstMovePt.y && (int)m["SecondMove"]["x"] == secondMovePt.x && (int)m["SecondMove"]["y"] == secondMovePt.y).FirstOrDefault();
-
-            if (firstLevelMove == null) return result;
-
-            JArray SecondLevel = (JArray)firstLevelMove["SecondLevel"];
-            if (SecondLevel == null) return result;
-
-            Point thirdMovePt = this.Board.LastMoves[this.Board.LastMoves.Count - 3];
-            Point fourthMovePt = this.Board.LastMoves[this.Board.LastMoves.Count - 2];
-
-            JObject secondLevelMove = (JObject)SecondLevel.Where(m => (int)m["ThirdMove"]["x"] == thirdMovePt.x && (int)m["ThirdMove"]["y"] == thirdMovePt.y && (int)m["FourthMove"]["x"] == fourthMovePt.x && (int)m["FourthMove"]["y"] == fourthMovePt.y).FirstOrDefault();
-
-            if (secondLevelMove == null) return result;
-
-            JArray ThirdLevel = (JArray)secondLevelMove["ThirdLevel"];
-            if (ThirdLevel == null) return result;
-
-            Point lastMovePt = this.Board.LastMoves[this.Board.LastMoves.Count - 1];
-            JToken thirdLevelMove = ThirdLevel.Where(m => (int)m["FifthMove"]["x"] == lastMovePt.x && (int)m["FifthMove"]["y"] == lastMovePt.y).FirstOrDefault();
-            if (thirdLevelMove == null) return result;
-            JToken sixthMove = thirdLevelMove["SixthMove"];
-            int x = (int)sixthMove["x"];
-            int y = (int)sixthMove["y"];
-            MakeMoveResult moveResult = this.MakeMove(x, y);
-            result |= ConfirmAliveResult.Mapped;
-
-            if (moveResult == MakeMoveResult.KoBlocked)
-                result |= ConfirmAliveResult.KoAlive;
-            return result;
-        }
-        #endregion
-
         /// <summary>
         /// Print game moves on exhaustive mode.
         /// </summary>
@@ -379,7 +169,7 @@ namespace Go
         /// </summary>
         public Boolean DebugPrintMode(int gameDepth)
         {
-            return (debugMode && !useMonteCarloRuntime && gameDepth <= 3);
+            return (debugMode && !UseMCTS && gameDepth <= 3);
         }
 
     }

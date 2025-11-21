@@ -15,16 +15,6 @@
             Look ahead depth is minimum depth to start with.
             </summary>
         </member>
-        <member name="P:Go.Game.BreakRealTime">
-            <summary>
-            Enable or disable break on real-time move.
-            </summary>
-        </member>
-        <member name="M:Go.Game.TimeOut(Go.Game)">
-            <summary>
-            Time out if stop watch exceeds time limit set at runTimeStop.
-            </summary>
-        </member>
         <member name="M:Go.Game.#ctor(Go.GameInfo)">
             <summary>
             Create new game.
@@ -65,31 +55,6 @@
             Game depth.
             </summary>
         </member>
-        <member name="M:Go.Game.CheckSolutionAndMappedPoints">
-            <summary>
-            Check solution and mapped points. 
-            </summary>
-        </member>
-        <member name="M:Go.Game.UseDictatePoints(Go.ConfirmAliveResult)">
-            <summary>
-            Use dictate points specified to by-pass mapped points and reduce calculation time.
-            </summary>
-        </member>
-        <member name="M:Go.Game.FindSecondMoveMapped(System.Object)">
-            <summary>
-            Get second move from json map and return confirm alive result.
-            </summary>
-        </member>
-        <member name="M:Go.Game.FindFourthMoveMapped(System.Object)">
-            <summary>
-            Get fourth move from json map and return confirm alive result.
-            </summary>
-        </member>
-        <member name="M:Go.Game.FindSixthMoveMapped(System.Object)">
-            <summary>
-            Get sixth move from json map and return confirm alive result.
-            </summary>
-        </member>
         <member name="M:Go.Game.PrintGameMoveList(System.Collections.Generic.List{Go.GameTryMove},System.Collections.Generic.List{Go.GameTryMove},Go.Game)">
             <summary>
             Print game moves on exhaustive mode.
@@ -100,10 +65,9 @@
             To print debug statements on exhaustive mode.
             </summary>
         </member>
-        <member name="M:Go.Game.InitializeComputerMove">
+        <member name="M:Go.Game.InitializeComputerMove(System.Boolean,System.Boolean)">
             <summary>
-            Initialize computer move. Exhaustive search or real-time mcts move (default).
-            To debug with exhaustive search, set USE_MONTE_CARLO_RUNTIME in app.config to false.
+            Initialize computer move. Exhaustive search or mcts move.
             </summary>
         </member>
         <member name="M:Go.Game.MakeExhaustiveSearch">
@@ -2057,22 +2021,7 @@
             Redundant neural net move. For use in LeelaSharp project.
             <see cref="!:UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_20230423_8" />
             Check killer formation <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31499" />
-            Check higher heat value in stone and diagonal neighbours <see cref="!:UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_Scenario_Nie87" />
-            </summary>
-        </member>
-        <member name="M:Go.RedundantMoveHelper.RestoreNeuralNetMove(System.Collections.Generic.List{Go.GameTryMove},System.Collections.Generic.List{Go.GameTryMove})">
-            <summary>
-            Restore neural net move.
-            </summary>
-        </member>
-        <member name="M:Go.ResultHelper.GameEndedMessage(Go.ConfirmAliveResult,Go.Game)">
-            <summary>
-            Display game ended message from flags in confirm alive result.
-            </summary>
-        </member>
-        <member name="T:Go.SolutionHelper">
-            <summary>
-            Retrieves solution move from solutionPoints in GameInfo if solution is followed.
+            Check covered point <see cref="!:UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_XuanXuanQiJing_A53" />
             </summary>
         </member>
         <member name="M:Go.SolutionHelper.UseSolutionPoints(Go.Game)">
@@ -2108,6 +2057,36 @@
         <member name="M:Go.SolutionHelper.FollowedSolution(System.Collections.Generic.List{System.Collections.Generic.List{Go.Point}},System.Collections.Generic.List{Go.Point})">
             <summary>
             Check if last moves followed any of the solutions and return the index of the solution move.
+            </summary>
+        </member>
+        <member name="M:Go.SolutionHelper.CheckSolutionAndMappedPoints(Go.Game)">
+            <summary>
+            Check solution and mapped points. 
+            </summary>
+        </member>
+        <member name="M:Go.SolutionHelper.UseDictatePoints(Go.Game,Go.ConfirmAliveResult)">
+            <summary>
+            Use dictate points specified to by-pass mapped points and reduce calculation time.
+            </summary>
+        </member>
+        <member name="M:Go.SolutionHelper.FindSecondMoveMapped(Go.Game,System.Object)">
+            <summary>
+            Get second move from json map and return confirm alive result.
+            </summary>
+        </member>
+        <member name="M:Go.SolutionHelper.FindFourthMoveMapped(Go.Game,System.Object)">
+            <summary>
+            Get fourth move from json map and return confirm alive result.
+            </summary>
+        </member>
+        <member name="M:Go.SolutionHelper.FindSixthMoveMapped(Go.Game,System.Object)">
+            <summary>
+            Get sixth move from json map and return confirm alive result.
+            </summary>
+        </member>
+        <member name="M:Go.SolutionHelper.GameEndedMessage(Go.ConfirmAliveResult,Go.Game)">
+            <summary>
+            Display game ended message from flags in confirm alive result.
             </summary>
         </member>
         <member name="T:Go.UniquePatternsHelper">
@@ -2208,22 +2187,17 @@
         </member>
         <member name="M:Go.GameMapping.GetMappedJson(Go.Game)">
             <summary>
-            Retrieves the mapped json from GameInfo object.
+            Get mapped json.
             </summary>
         </member>
         <member name="M:Go.GameMapping.SerializeJson(Go.Game)">
             <summary>
-            Serialize json to string and write to file. It is possible to call from immediate window, even if mapping is not fully completed to retrieve partial json map.
+            Serialize json.
             </summary>
         </member>
         <member name="M:Go.GameMapping.FindPassMoveInJson(Newtonsoft.Json.Linq.JArray)">
             <summary>
-            Find if any pass move in json which are likely errors. Pass move can also be a valid move returned by computer move. 
-            </summary>
-        </member>
-        <member name="T:Go.JsonHelper">
-            <summary>
-            Creates the json map that extends up to three levels.
+            Find pass move in json. 
             </summary>
         </member>
         <member name="M:Go.JsonHelper.FirstLevelMapping(System.Object,Go.Point,Go.Point)">
@@ -2243,7 +2217,7 @@
         </member>
         <member name="T:Go.MappingVerification">
             <summary>
-            Verification of the json map by searching for opponent moves after sixth move. Inherits the MonteCarloMapping class with modifications for third level mapping.
+            Verification of the json map by searching for opponent moves after sixth move.
             Error is found if opponent seventh move wins and answer is returned.
             </summary>
         </member>

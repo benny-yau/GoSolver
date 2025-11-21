@@ -10,7 +10,7 @@ using System.Linq;
 namespace Go
 {
     /// <summary>
-    /// Verification of the json map by searching for opponent moves after sixth move. Inherits the MonteCarloMapping class with modifications for third level mapping.
+    /// Verification of the json map by searching for opponent moves after sixth move.
     /// Error is found if opponent seventh move wins and answer is returned.
     /// </summary>
     public class MappingVerification : MonteCarloMapping
