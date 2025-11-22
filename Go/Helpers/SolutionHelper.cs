@@ -136,7 +136,6 @@ namespace Go
         {
             //check solution points
             ConfirmAliveResult result = ConfirmAliveResult.Unknown;
-            if (!Game.UseMapMoves) return result;
             if (g.GameInfo.solutionPoints.Count > 0)
             {
                 ConfirmAliveResult solutionComplete = SolutionHelper.CheckSolutionComplete(g.Board);

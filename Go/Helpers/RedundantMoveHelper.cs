@@ -2408,7 +2408,7 @@ namespace Go
             Point move = tryMove.Move;
             Content c = tryBoard.MoveGroup.Content;
 
-            if (!MonteCarloGame.useLeelaZero || g.isMonteCarloPlayout) return false;
+            if (!MonteCarloGame.useLeelaZero) return false;
 
             if (!tryMove.IsNegligible) return false;
 
@@ -2430,8 +2430,19 @@ namespace Go
 
             //check low heat value
             if (g.heatMap[move.x, move.y] <= 1)
-                return true;
+            {
+                if (tryBoard.GetStoneAndDiagonalNeighbours().All(n => tryBoard[n] != c.Opposite()))
+                    return true;
 
+                foreach (Point p in tryBoard.GetMoveLiberties())
+                {
+                    List<Point> diagonals = LinkHelper.GetDiagonalsAtStoneNeighbours(tryBoard, p, c.Opposite());
+                    if (diagonals.Count() > 2) return false;
+                    if (diagonals.Count() == 2 && LinkHelper.EmptyPointBetweenDiagonals(tryBoard, diagonals[0], diagonals[1]))
+                        return false;
+                }
+                return true;
+            }
             return false;
         }
         #endregion

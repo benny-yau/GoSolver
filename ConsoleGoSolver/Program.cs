@@ -150,8 +150,9 @@ namespace ConsoleGoSolver
                 Console.WriteLine("No answers for this scenario.");
 
             Console.WriteLine("Calculating...");
-            Game.UseMapMoves = false;
+            Game.SearchAnswer = true;
             (ConfirmAliveResult moveResult, Node answerNode, long? elapsedTime) = MonteCarloGame.MonteCarloRealTimeMove(g);
+            Game.SearchAnswer = false;
             Console.WriteLine("{0}", g.Board);
             Boolean solutionCorrect = false;
             if (g.Board.Move != null)

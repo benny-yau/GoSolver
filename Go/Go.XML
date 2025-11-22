@@ -1367,6 +1367,11 @@
             Get diagonal groups without cut.
             </summary>
         </member>
+        <member name="M:Go.LinkHelper.EmptyPointBetweenDiagonals(Go.Board,Go.Point,Go.Point)">
+            <summary>
+            Empty point between diagonals.
+            </summary>
+        </member>
         <member name="M:Go.LinkHelper.GetPreviousMoveGroup(Go.Board,Go.Board)">
             <summary>
             Get previous move group.

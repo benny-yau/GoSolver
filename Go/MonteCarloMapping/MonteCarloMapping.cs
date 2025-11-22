@@ -18,7 +18,7 @@ namespace Go
 
         public static void MapScenario(Game game)
         {
-            Game.UseMapMoves = true;
+            Game.MapMoves = true;
             MonteCarloMapping mctsMapping = new MonteCarloMapping();
 
             //map player moves
@@ -34,6 +34,7 @@ namespace Go
                 mctsMapping.MappingFirstLevel(game);
                 GameMapping.SerializeJson(game);
             }
+            Game.MapMoves = false;
         }
 
         /// <summary>
@@ -308,7 +309,7 @@ namespace Go
         /// </summary>
         public static Boolean MappingRange(Board board)
         {
-            if (!Game.UseMapMoves)
+            if (!Game.MapMoves)
                 return false;
 
             if (GameHelper.GetComputerOrPlayerForNextMove(board) == PlayerOrComputer.Computer)

@@ -12,7 +12,7 @@ namespace Go
         public Tree tree = new Tree();
         public const int winScore = 1;
         public int mctsDepth = 0;
-        public int maxIterations = Game.UseMapMoves ? Int32.MaxValue : 6000;
+        public int maxIterations = Game.MapMovesOrSearchAnswer ? Int32.MaxValue : 6000;
         public long? elapsedTime;
         public static Random random = new Random();
 
@@ -26,7 +26,7 @@ namespace Go
         {
             get
             {
-                return (Game.UseMapMoves) ? 5 : 10;
+                return (Game.MapMovesOrSearchAnswer) ? 5 : 10;
             }
         }
 
@@ -53,7 +53,7 @@ namespace Go
         {
             get
             {
-                if (Game.UseMapMoves)
+                if (Game.MapMovesOrSearchAnswer)
                 {
                     //mapping or search answer
                     Boolean mapPlayerMove = (tree.Root.State.Game.GameInfo.UserFirst == PlayerOrComputer.Player);
@@ -297,7 +297,7 @@ namespace Go
         private void Pruning(Node prunedNode, Node verifyNode)
         {
             if (prunedNode == null || prunedNode.Parent == null) return;
-            if (Game.UseMapMoves && verifyNode != null)
+            if (Game.MapMovesOrSearchAnswer && verifyNode != null)
             {
                 //set move of pruned node with corresponding answer from verifyNode in PrunedJson of parent node
                 Game verifyGame = verifyNode.State.Game;

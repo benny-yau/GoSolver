@@ -10,11 +10,20 @@ namespace Go
     {
         public static Boolean debugMode = Convert.ToBoolean(ConfigurationSettings.AppSettings["DEBUG_MODE"]);
         public static Boolean UseMCTS = false;
-        public static Boolean UseMapMoves = false;
+        public static Boolean MapMoves = false;
+        public static Boolean SearchAnswer = false;
         public static readonly Point PassMove = new Point(-1, -1);
         public int reachedEndOfDepth = 0;
         public Boolean isMonteCarloPlayout = false;
         public int[,] heatMap;
+
+        public static Boolean MapMovesOrSearchAnswer
+        {
+            get
+            {
+                return MapMoves || SearchAnswer;
+            }
+        }
 
         /// <summary>
         /// Initialize computer move. Exhaustive search or mcts move.
@@ -24,10 +33,9 @@ namespace Go
             try
             {
                 Game.UseMCTS = useMCTS;
-                Game.UseMapMoves = useMapMoves;
                 this.Board.Move = null;
-                ConfirmAliveResult result = SolutionHelper.CheckSolutionAndMappedPoints(this);
-
+                ConfirmAliveResult result = ConfirmAliveResult.Unknown;
+                if (useMapMoves) result = SolutionHelper.CheckSolutionAndMappedPoints(this);
                 if (!result.HasFlag(ConfirmAliveResult.Mapped))
                 {
                     ConfirmAliveResult confirmAlive = ConfirmAliveResult.Unknown;
@@ -57,7 +65,6 @@ namespace Go
         /// </summary>
         public ConfirmAliveResult MakeExhaustiveSearch()
         {
-            Game.UseMCTS = false;
             if (debugMode) this.RunTimeStopWatch = Stopwatch.StartNew();
 
             int depth = GetStartingDepth();
@@ -166,11 +173,13 @@ namespace Go
             tryMove.IsEye = RedundantMoveHelper.FindPotentialEye(tryMove);
             if (tryMove.IsEye)
                 return;
-            tryMove.IsCoveredEyeMove = RedundantMoveHelper.RedundantCoveredEyeMove(tryMove);
-            if (tryMove.IsCoveredEyeMove)
-                return;
             tryMove.IsFillKoEyeMove = RedundantMoveHelper.FillKoEyeMove(tryMove);
             if (tryMove.IsFillKoEyeMove)
+                return;
+            //check monte carlo playout
+            if (isMonteCarloPlayout) return;
+            tryMove.IsCoveredEyeMove = RedundantMoveHelper.RedundantCoveredEyeMove(tryMove);
+            if (tryMove.IsCoveredEyeMove)
                 return;
             tryMove.IsNeutralPoint = RedundantMoveHelper.NeutralPointSurvivalMove(tryMove);
             if (tryMove.IsNeutralPoint)
@@ -210,11 +219,13 @@ namespace Go
             tryMove.IsEye = RedundantMoveHelper.FindPotentialEye(tryMove);
             if (tryMove.IsEye)
                 return;
-            tryMove.IsCoveredEyeMove = RedundantMoveHelper.RedundantCoveredEyeMove(tryMove);
-            if (tryMove.IsCoveredEyeMove)
-                return;
             tryMove.IsFillKoEyeMove = RedundantMoveHelper.FillKoEyeMove(tryMove);
             if (tryMove.IsFillKoEyeMove)
+                return;
+            //check monte carlo playout
+            if (isMonteCarloPlayout) return;
+            tryMove.IsCoveredEyeMove = RedundantMoveHelper.RedundantCoveredEyeMove(tryMove);
+            if (tryMove.IsCoveredEyeMove)
                 return;
             tryMove.IsNeutralPoint = RedundantMoveHelper.NeutralPointKillMove(tryMove);
             if (tryMove.IsNeutralPoint)

@@ -571,13 +571,26 @@ namespace Go
         /// <summary>
         /// Get diagonal groups without cut.
         /// </summary>
-        public static IEnumerable<LinkedPoint<Point>> GetDiagonalGroupsWithoutCut(Board tryBoard, Group mGroup)
+        public static IEnumerable<LinkedPoint<Point>> GetDiagonalGroupsWithoutCut(Board board, Group group)
         {
-            foreach (LinkedPoint<Point> q in LinkHelper.GetGroupLinkedDiagonals(tryBoard, mGroup))
+            foreach (LinkedPoint<Point> q in LinkHelper.GetGroupLinkedDiagonals(board, group))
             {
-                if (LinkHelper.PointsBetweenDiagonals(q.Move, (Point)q.CheckMove).Any(n => tryBoard[n] == Content.Empty))
+                if (LinkHelper.EmptyPointBetweenDiagonals(board, q.Move, (Point)q.CheckMove))
                     yield return q;
             }
+        }
+
+        /// <summary>
+        /// Empty point between diagonals.
+        /// </summary>
+        public static Boolean EmptyPointBetweenDiagonals(Board board, Point p, Point q)
+        {
+            Content c = board[q];
+            List<Point> points = LinkHelper.PointsBetweenDiagonals(p, q);
+            if (!points.Any(n => board[n] == Content.Empty)) return false;
+            if (points.Any(n => board[n] == c.Opposite() && !ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt(n))))
+                return true;
+            return false;
         }
 
         /// <summary>
