@@ -417,7 +417,7 @@ namespace Go
             Game g = node.State.Game;
             SurviveOrKill surviveOrKill = node.State.SurviveOrKill;
 
-            int depth = g.GetStartingDepth();
+            int depth = Game.SearchDepth;
             ConfirmAliveResult confirmAlive = ConfirmAliveResult.Unknown;
             Board board;
             if (surviveOrKill == SurviveOrKill.Kill)

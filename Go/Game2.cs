@@ -13,7 +13,6 @@ namespace Go
         public static Boolean MapMoves = false;
         public static Boolean SearchAnswer = false;
         public static readonly Point PassMove = new Point(-1, -1);
-        public int reachedEndOfDepth = 0;
         public Boolean isMonteCarloPlayout = false;
         public int[,] heatMap;
 
@@ -45,7 +44,7 @@ namespace Go
                         confirmAlive = MonteCarloGame.MonteCarloRealTimeMove(this).Item1;
                     result |= confirmAlive;
 
-                    DebugHelper.DebugWriteWithTab("Final move: " + this.Board.Move + " | Final result: " + confirmAlive.ToString() + " | Reached end of depth: " + (this.Root.reachedEndOfDepth > 0).ToString());
+                    DebugHelper.DebugWriteWithTab("Final move: " + this.Board.Move + " | Final result: " + confirmAlive.ToString());
                 }
 
                 if (this.Board.Move == null)
@@ -67,7 +66,7 @@ namespace Go
         {
             if (debugMode) this.RunTimeStopWatch = Stopwatch.StartNew();
 
-            int depth = GetStartingDepth();
+            int depth = Game.SearchDepth;
             ConfirmAliveResult confirmAlive = ConfirmAliveResult.Unknown;
             GameTryMove bestResultMove = null;
 
@@ -124,13 +123,10 @@ namespace Go
                 else if (tryMove.MakeMoveResult == MakeMoveResult.Legal)
                 {
                     //check if game ended
-                    if (tryMove.MoveGroupLiberties > 1)
-                    {
-                        ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Survive, b);
-                        if (confirmAlive == ConfirmAliveResult.Alive)
-                            return (ConfirmAliveResult.Alive, new List<GameTryMove>() { tryMove }, null);
-                    }
-                    //check recursion and return as alive
+                    ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Survive, b);
+                    if (confirmAlive == ConfirmAliveResult.Alive)
+                        return (ConfirmAliveResult.Alive, new List<GameTryMove>() { tryMove }, null);
+                    //check recursion
                     if (GameHelper.CheckForRecursion(tryMove))
                         return (ConfirmAliveResult.Alive, new List<GameTryMove>() { tryMove }, null);
                     //find redundant moves
@@ -151,6 +147,9 @@ namespace Go
                 //restore diagonal eye move
                 if (redundantTryMoves.Any(t => t.IsDiagonalEyeMove))
                     tryMoves.Add(redundantTryMoves.First(t => t.IsDiagonalEyeMove));
+
+                //restore neural net move
+                RedundantMoveHelper.RestoreNeuralNetMove(tryMoves, redundantTryMoves);
             }
 
             //check for both alive
@@ -267,10 +266,8 @@ namespace Go
             ConfirmAliveResult bestResult = ConfirmAliveResult.Dead;
             //if end of depth reached, then assume target group is dead
             if (depth <= 0)
-            {
-                this.Root.reachedEndOfDepth++;
                 return (ConfirmAliveResult.Dead, bestResultMove);
-            }
+
             //get all survival moves
             (ConfirmAliveResult result, List<GameTryMove> tryMoves, GameTryMove koBlockedMove) = GetSurvivalMoves(g);
             if (result == ConfirmAliveResult.Alive)

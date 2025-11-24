@@ -13,14 +13,14 @@ namespace Go
         public Game Root { get; private set; }
         public Board Board { get; set; }
 
-        public static int LookAheadDepth = 8;
+        public static int SearchDepth = 30;
         [NonSerialized]
         Stopwatch RunTimeStopWatch;
 
-        GameInfo gameInfo;
         /// <summary>
         /// Game info.
         /// </summary>
+        GameInfo gameInfo;
         public GameInfo GameInfo
         {
             get
@@ -31,20 +31,6 @@ namespace Go
             {
                 gameInfo = value;
             }
-        }
-
-        /// <summary>
-        /// Get starting depth, excluding pass move.
-        /// Look ahead depth is minimum depth to start with.
-        /// </summary>
-        public int GetStartingDepth()
-        {
-            int depth = GameInfo.SearchDepth + 2 - Board.LastMoves.Count;
-            int passMoves = Board.LastMoves.Count(m => m.Equals(Game.PassMove));
-            depth += passMoves;
-            if (depth < LookAheadDepth)
-                depth = LookAheadDepth;
-            return depth;
         }
 
         /// <summary>
@@ -146,22 +132,14 @@ namespace Go
         public void PrintGameMoveList(List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves, Game g)
         {
             int gameDepth = GameDepth(g);
-            if (DebugPrintMode(gameDepth))
+            if (!DebugPrintMode(gameDepth)) return;
+            String msg = "";
+            foreach (GameTryMove tryMove in tryMoves)
             {
-                String msg = "";
-                foreach (GameTryMove tryMove in tryMoves)
-                {
-                    if (msg != "") msg += ",";
-                    msg += "(" + tryMove.Move.x + "," + tryMove.Move.y + ")";
-                }
-                DebugHelper.DebugWriteWithTab("Game try moves: " + msg, gameDepth);
-
-                if (new StackTrace().GetFrame(3).GetMethod().Name == "btnPrintMoves_Click")
-                {
-                    String content = DebugHelper.PrintGameTryMoves(g, tryMoves, redundantTryMoves);
-                    Debug.WriteLine(content);
-                }
+                if (msg != "") msg += ",";
+                msg += "(" + tryMove.Move.x + "," + tryMove.Move.y + ")";
             }
+            DebugHelper.DebugWriteWithTab("Game try moves: " + msg, gameDepth);
         }
 
         /// <summary>

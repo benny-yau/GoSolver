@@ -2399,6 +2399,7 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_20230423_8" />
         /// Check killer formation <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31499" />
         /// Check covered point <see cref="UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_XuanXuanQiJing_A53" />
+        /// Check move liberties <see cref="UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_Scenario_Corner_A130" />
         /// </summary>
         public static Boolean RedundantNeuralNetMove(GameTryMove tryMove)
         {
@@ -2409,7 +2410,6 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
 
             if (!MonteCarloGame.useLeelaZero) return false;
-
             if (!tryMove.IsNegligible) return false;
 
             //check opponent at stone neighbour
@@ -2424,16 +2424,9 @@ namespace Go
             if (EyeHelper.IsCovered(currentBoard, move, c))
                 return false;
 
-            //get heat map
-            if (g.heatMap == null)
-                MonteCarloGame.GetHeatMap(g);
-
-            //check low heat value
-            if (g.heatMap[move.x, move.y] <= 1)
+            //check move liberties
+            if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite()))
             {
-                if (tryBoard.GetStoneAndDiagonalNeighbours().All(n => tryBoard[n] != c.Opposite()))
-                    return true;
-
                 foreach (Point p in tryBoard.GetMoveLiberties())
                 {
                     List<Point> diagonals = LinkHelper.GetDiagonalsAtStoneNeighbours(tryBoard, p, c.Opposite());
@@ -2441,9 +2434,27 @@ namespace Go
                     if (diagonals.Count() == 2 && LinkHelper.EmptyPointBetweenDiagonals(tryBoard, diagonals[0], diagonals[1]))
                         return false;
                 }
-                return true;
             }
+
+            //get heat map
+            if (g.heatMap == null)
+                MonteCarloGame.GetHeatMap(g);
+
+            //check low heat value
+            if (g.heatMap[move.x, move.y] <= 1)
+                return true;
+
             return false;
+        }
+
+        /// <summary>
+        /// Restore neural net move.
+        /// <see cref="UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_Scenario_WindAndTime_Q30199" />
+        /// </summary>
+        public static void RestoreNeuralNetMove(List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves)
+        {
+            if (MonteCarloGame.useLeelaZero && redundantTryMoves.Any(t => t.IsRedundantNeuralNetMove))
+                tryMoves.AddRange(redundantTryMoves.Where(t => t.IsRedundantNeuralNetMove));
         }
         #endregion
 

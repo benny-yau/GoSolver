@@ -4,15 +4,9 @@
         <name>GoSharp</name>
     </assembly>
     <members>
-        <member name="P:Go.Game.GameInfo">
+        <member name="F:Go.Game.gameInfo">
             <summary>
             Game info.
-            </summary>
-        </member>
-        <member name="M:Go.Game.GetStartingDepth">
-            <summary>
-            Get starting depth, excluding pass move.
-            Look ahead depth is minimum depth to start with.
             </summary>
         </member>
         <member name="M:Go.Game.#ctor(Go.GameInfo)">
@@ -2027,6 +2021,13 @@
             <see cref="!:UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_20230423_8" />
             Check killer formation <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31499" />
             Check covered point <see cref="!:UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_XuanXuanQiJing_A53" />
+            Check move liberties <see cref="!:UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_Scenario_Corner_A130" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.RestoreNeuralNetMove(System.Collections.Generic.List{Go.GameTryMove},System.Collections.Generic.List{Go.GameTryMove})">
+            <summary>
+            Restore neural net move.
+            <see cref="!:UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_Scenario_WindAndTime_Q30199" />
             </summary>
         </member>
         <member name="M:Go.SolutionHelper.UseSolutionPoints(Go.Game)">

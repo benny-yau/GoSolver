@@ -25,11 +25,12 @@ namespace Go
         /// </summary>
         public static MonteCarloTreeSearch InitializeMonteCarloComputerMove(Game g, Node rootNode = null, int mctsDepth = 0)
         {
+            Game.UseMCTS = true;
             if (rootNode == null)
             {
                 State state = new State(g);
                 rootNode = new Node(state);
-                rootNode.State.Depth = g.GetStartingDepth();
+                rootNode.State.Depth = Game.SearchDepth;
                 state.SurviveOrKill = GameHelper.KillOrSurvivalForNextMove(g.Board);
             }
             MonteCarloTreeSearch mcts = new MonteCarloTreeSearch(rootNode, mctsDepth);
@@ -43,7 +44,6 @@ namespace Go
         /// </summary>
         public static (ConfirmAliveResult, Node, long?) MonteCarloRealTimeMove(Game game)
         {
-            Game.UseMCTS = true;
             MonteCarloTreeSearch mcts = InitializeMonteCarloComputerMove(game);
 
             //make the move on the board

@@ -66,15 +66,15 @@ namespace Go
         /// <summary>
         /// Get next move as hint.
         /// </summary>
-        public static Point? GetNextAnswerHint(Game m)
+        public static Point? GetNextAnswerHint(Game g)
         {
-            List<List<Point>> solutions = m.GameInfo.solutionPoints;
-            int? solutionIndex = FollowedSolution(solutions, m.Board.LastMoves).FirstOrDefault();
+            List<List<Point>> solutions = g.GameInfo.solutionPoints;
+            int? solutionIndex = FollowedSolution(solutions, g.Board.LastMoves).FirstOrDefault();
             if (solutionIndex != null)
             {
                 List<Point> solution = solutions[solutionIndex.Value];
-                if (m.Board.LastMoves.Count < solution.Count)
-                    return solution[m.Board.LastMoves.Count];
+                if (g.Board.LastMoves.Count < solution.Count)
+                    return solution[g.Board.LastMoves.Count];
             }
             return null;
         }
@@ -82,10 +82,10 @@ namespace Go
         /// <summary>
         /// Check if end of solution reached.
         /// </summary>
-        public static Boolean AnswerFound(Game m)
+        public static Boolean AnswerFound(Game g)
         {
-            List<List<Point>> solutions = m.GameInfo.CombinedSolutions.Where(s => s.Count == m.Board.LastMoves.Count).ToList();
-            return (FollowedSolution(solutions, m.Board.LastMoves).Any());
+            List<List<Point>> solutions = g.GameInfo.CombinedSolutions.Where(s => s.Count == g.Board.LastMoves.Count).ToList();
+            return (FollowedSolution(solutions, g.Board.LastMoves).Any());
         }
 
         /// <summary>
