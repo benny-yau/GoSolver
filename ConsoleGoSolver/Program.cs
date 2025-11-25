@@ -151,7 +151,7 @@ namespace ConsoleGoSolver
 
             Console.WriteLine("Calculating...");
             Game.SearchAnswer = true;
-            (ConfirmAliveResult moveResult, Node answerNode, long? elapsedTime) = MonteCarloGame.MonteCarloRealTimeMove(g);
+            (ConfirmAliveResult moveResult, Node answerNode, long? elapsedTime) = MonteCarloGame.MakeMonteCarloTreeSearch(g);
             Game.SearchAnswer = false;
             Console.WriteLine("{0}", g.Board);
             Boolean solutionCorrect = false;
@@ -174,7 +174,7 @@ namespace ConsoleGoSolver
             ConfirmAliveResult moveResult = g.InitializeComputerMove(true, true);
             Console.WriteLine(Environment.NewLine + "Computer move: ");
             Console.WriteLine("{0}", g.Board);
-            if (g.Board.Move != null && !g.Board.Move.Equals(Game.PassMove))
+            if (g.Board.Move != null && !g.Board.IsPassMove)
                 Console.WriteLine("Move: {0}", g.Board.Move + "\n");
 
             String msg = SolutionHelper.GameEndedMessage(moveResult, g);

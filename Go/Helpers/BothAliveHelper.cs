@@ -20,7 +20,7 @@ namespace Go
             }
             else
             {
-                if (board.LastMove != null && board.LastMove.Value.Equals(Game.PassMove)) return;
+                if (board.IsPassMove) return;
                 if (tryMoves.Count == 1 && tryMoves.Select(n => n.TryGame.Board).Any(b => b.IsRandomMove)) return;
                 if (!EnableCheckForPassMove(board, c, tryMoves)) return;
                 GameTryMove tryMove = Game.GetRandomMove(g);

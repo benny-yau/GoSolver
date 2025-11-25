@@ -1064,7 +1064,7 @@ namespace Go
             {
                 if (diagonals.Any(d => tryBoard[d] != c)) return false;
                 //suicide move with one empty space or connect groups
-                if (tryBoard.Move != null && !tryBoard.Move.Equals(Game.PassMove))
+                if (tryBoard.Move != null && !tryBoard.IsPassMove)
                 {
                     if (tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c) == 1 && !tryBoard.GetMoveLiberties().Any() && !tryBoard.Move.Equals(endPoint))
                         return false;

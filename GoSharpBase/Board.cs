@@ -56,6 +56,13 @@ namespace Go
 
         public GameInfo GameInfo { get; set; }
         public static readonly Point PassMove = new Point(-1, -1);
+        public Boolean IsPassMove 
+        { 
+            get
+            {
+                return move != null && move.Equals(PassMove);
+            }
+        }
 
         public Board(int sx, int sy)
         {

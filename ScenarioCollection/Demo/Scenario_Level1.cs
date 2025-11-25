@@ -187,7 +187,7 @@ namespace ScenarioCollection
          */
         public Game Scenario5kyu29()
         {
-            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black, 12);
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -292,7 +292,7 @@ namespace ScenarioCollection
          */
         public Game Scenario7kyu26()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 16);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -670,7 +670,7 @@ namespace ScenarioCollection
          */
         public Game Scenario3kyu15()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 24);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(0, 16, Content.White);
@@ -930,7 +930,7 @@ namespace ScenarioCollection
          */
         public Game Scenario2kyu19()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -981,7 +981,7 @@ namespace ScenarioCollection
          */
         public Game Scenario1kyu11()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 10);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1191,7 +1191,7 @@ namespace ScenarioCollection
          */
         public Game Scenario1dan21()
         {
-            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 

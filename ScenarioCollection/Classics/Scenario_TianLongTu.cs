@@ -21,7 +21,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q15082()
         {
             //https://www.101weiqi.com/book/tianlongtu/32/15082/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -78,7 +78,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q14916()
         {
             //https://www.101weiqi.com/book/tianlongtu/32/14916/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(0, 13, Content.Black);
@@ -122,7 +122,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16605()
         {
             //https://www.101weiqi.com/book/tianlongtu/32/16605/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(1, 18, Content.Black);
@@ -181,7 +181,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16574()
         {
             //https://www.101weiqi.com/book/tianlongtu/31/16574/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(1, 15, Content.Black);
@@ -236,7 +236,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16444()
         {
             //https://www.101weiqi.com/book/tianlongtu/30/16444/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(1, 16, Content.Black);
@@ -283,7 +283,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16470()
         {
             //https://www.101weiqi.com/book/tianlongtu/30/16470/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(1, 17, Content.Black);
@@ -343,7 +343,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16483()
         {
             //https://www.101weiqi.com/book/tianlongtu/30/16483/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(1, 16, Content.Black);
@@ -393,7 +393,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q14992()
         {
             //https://www.101weiqi.com/book/tianlongtu/32/14992/
-            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(0, 15, Content.Black);
@@ -449,7 +449,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16520()
         {
             //https://www.101weiqi.com/book/tianlongtu/31/16520/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(1, 15, Content.Black);
@@ -504,7 +504,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16487()
         {
             //https://www.101weiqi.com/book/tianlongtu/30/16487/
-            var gi = new GameInfo(SurviveOrKill.SurviveWithKo, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.SurviveWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -560,7 +560,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q15017()
         {
             //https://www.101weiqi.com/book/tianlongtu/30/15017/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -606,7 +606,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16446()
         {
             //https://www.101weiqi.com/book/tianlongtu/30/16446/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -662,7 +662,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16456()
         {
             //https://www.101weiqi.com/book/tianlongtu/30/16456/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -711,7 +711,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q15054()
         {
             //https://www.101weiqi.com/book/tianlongtu/30/15054/
-            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -762,7 +762,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16693()
         {
             //https://www.101weiqi.com/book/tianlongtu/33/16693/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -797,7 +797,7 @@ namespace ScenarioCollection
 
             gi.PlayerMoveJson = "[{\"FirstMove\":{\"x\":5,\"y\":16},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":15},\"SecondMove\":{\"x\":4,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}}]},{\"FirstMove\":{\"x\":5,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":17},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":1,\"y\":17},\"SecondMove\":{\"x\":0,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}}]},{\"FirstMove\":{\"x\":1,\"y\":18},\"SecondMove\":{\"x\":2,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":17}}]},{\"FirstMove\":{\"x\":2,\"y\":18},\"SecondMove\":{\"x\":5,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":17}}]},{\"FirstMove\":{\"x\":0,\"y\":16},\"SecondMove\":{\"x\":0,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":15}}]},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":4,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":16}},{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":2,\"y\":17},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":16}}]},{\"FirstMove\":{\"x\":3,\"y\":18},\"SecondMove\":{\"x\":2,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}}]},{\"FirstMove\":{\"x\":4,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":14},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":14},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":2,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":2,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}}]}]";
 
-            gi.ChallengeMoveJson = "[{\"FirstMove\":{\"x\":4,\"y\":18},\"SecondMove\":{\"x\":5,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":16},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":16}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":18}}]},{\"FirstMove\":{\"x\":1,\"y\":17},\"SecondMove\":{\"x\":3,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":5,\"y\":16},\"SecondMove\":{\"x\":5,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":2,\"y\":17},\"SecondMove\":{\"x\":0,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":5,\"y\":16}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":17}}]},{\"FirstMove\":{\"x\":0,\"y\":17},\"SecondMove\":{\"x\":1,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":5,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":15},\"SecondMove\":{\"x\":3,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":16}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":5,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":16}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}}]},{\"FirstMove\":{\"x\":1,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":5,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":5,\"y\":16}}]},{\"FirstMove\":{\"x\":3,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}}]}]";
+            gi.ChallengeMoveJson = "[{\"FirstMove\":{\"x\":4,\"y\":18},\"SecondMove\":{\"x\":5,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":1,\"y\":17},\"SecondMove\":{\"x\":3,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":5,\"y\":16},\"SecondMove\":{\"x\":5,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":2,\"y\":17},\"SecondMove\":{\"x\":0,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":5,\"y\":16}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":17}}]},{\"FirstMove\":{\"x\":0,\"y\":17},\"SecondMove\":{\"x\":1,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":5,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":15},\"SecondMove\":{\"x\":3,\"y\":18},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":4,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":4,\"y\":18}}]},{\"FirstMove\":{\"x\":0,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":16}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":5,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":15}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":16}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}}]},{\"FirstMove\":{\"x\":5,\"y\":18},\"SecondMove\":{\"x\":0,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":5,\"y\":16}}]},{\"FirstMove\":{\"x\":3,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":14}},{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}}]},{\"FirstMove\":{\"x\":0,\"y\":16},\"SecondMove\":{\"x\":5,\"y\":16},\"SecondLevel\":[{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":3,\"y\":18}},{\"ThirdMove\":{\"x\":1,\"y\":18},\"FourthMove\":{\"x\":1,\"y\":17}},{\"ThirdMove\":{\"x\":1,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":1,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":5,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":3,\"y\":18}}]},{\"FirstMove\":{\"x\":1,\"y\":18},\"SecondMove\":{\"x\":1,\"y\":17},\"SecondLevel\":[{\"ThirdMove\":{\"x\":3,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":2,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":17},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":15},\"FourthMove\":{\"x\":0,\"y\":18}},{\"ThirdMove\":{\"x\":0,\"y\":16},\"FourthMove\":{\"x\":5,\"y\":16}},{\"ThirdMove\":{\"x\":5,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":4,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":5,\"y\":16},\"FourthMove\":{\"x\":0,\"y\":16}},{\"ThirdMove\":{\"x\":0,\"y\":18},\"FourthMove\":{\"x\":0,\"y\":16}}]}]";
             return g;
         }
 
@@ -812,7 +812,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16490()
         {
             //https://www.101weiqi.com/book/tianlongtu/30/16490/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -866,7 +866,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16711()
         {
             //https://www.101weiqi.com/book/tianlongtu/33/16711/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -915,7 +915,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16867()
         {
             //https://www.101weiqi.com/book/tianlongtu/35/16867/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -977,7 +977,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16760()
         {
             //https://www.101weiqi.com/book/tianlongtu/34/16760/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1028,7 +1028,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16748()
         {
             //https://www.101weiqi.com/book/tianlongtu/34/16748/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1079,7 +1079,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16768()
         {
             //https://www.101weiqi.com/book/tianlongtu/34/16768/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(1, 18, Content.Black);
@@ -1132,7 +1132,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q15618()
         {
             //https://www.101weiqi.com/book/tianlongtu/34/15618/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1194,7 +1194,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16747()
         {
             //https://www.101weiqi.com/book/tianlongtu/34/16747/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1253,7 +1253,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16851()
         {
             //https://www.101weiqi.com/book/tianlongtu/35/16851/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1300,7 +1300,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16850()
         {
             //https://www.101weiqi.com/book/tianlongtu/35/16850/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1355,7 +1355,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16859()
         {
             //https://www.101weiqi.com/book/tianlongtu/35/16859/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1410,7 +1410,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16902()
         {
             //https://www.101weiqi.com/book/tianlongtu/35/16902/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1473,7 +1473,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16936()
         {
             //https://www.101weiqi.com/book/tianlongtu/36/16936/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(0, 14, Content.Black);
@@ -1529,7 +1529,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16931()
         {
             //https://www.101weiqi.com/book/tianlongtu/36/16931/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(1, 15, Content.Black);
@@ -1587,7 +1587,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16924()
         {
             //https://www.101weiqi.com/book/tianlongtu/36/16924/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1637,7 +1637,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16973()
         {
             //https://www.101weiqi.com/book/tianlongtu/36/16973/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1681,7 +1681,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16975()
         {
             //https://www.101weiqi.com/book/tianlongtu/36/16975/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 24);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1733,7 +1733,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q17078()
         {
             //https://www.101weiqi.com/book/tianlongtu/37/17078/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1787,7 +1787,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16754()
         {
             //https://www.101weiqi.com/book/tianlongtu/34/16754/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1842,7 +1842,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16827()
         {
             //https://www.101weiqi.com/book/tianlongtu/35/16827/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1899,7 +1899,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16872()
         {
             //https://www.101weiqi.com/book/tianlongtu/35/16872/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1958,7 +1958,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16985()
         {
             //https://www.101weiqi.com/book/tianlongtu/36/16985/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2010,7 +2010,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q17077()
         {
             //https://www.101weiqi.com/book/tianlongtu/37/17077/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2060,7 +2060,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q17081()
         {
             //https://www.101weiqi.com/book/tianlongtu/38/17081/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2118,7 +2118,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q17154()
         {
             //https://www.101weiqi.com/book/tianlongtu/38/17154/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2170,7 +2170,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q17136()
         {
             //https://www.101weiqi.com/book/tianlongtu/38/17136/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2228,7 +2228,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q17241()
         {
             //https://www.101weiqi.com/book/tianlongtu/39/17241/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2290,7 +2290,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q17250()
         {
             //https://www.101weiqi.com/book/tianlongtu/39/17250/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2349,7 +2349,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16604()
         {
             //https://www.101weiqi.com/book/tianlongtu/32/16604/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2415,7 +2415,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q17239()
         {
             //https://www.101weiqi.com/book/tianlongtu/39/17239/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2472,7 +2472,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q17255()
         {
             //https://www.101weiqi.com/book/tianlongtu/39/17255/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 20);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2525,7 +2525,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q2176()
         {
             //https://www.101weiqi.com/book/tianlongtu/39/2176/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2579,7 +2579,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q17183()
         {
             //https://www.101weiqi.com/book/tianlongtu/39/17183/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2630,7 +2630,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q17112()
         {
             //https://www.101weiqi.com/book/tianlongtu/38/17112/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2691,7 +2691,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16925()
         {
             //https://www.101weiqi.com/book/tianlongtu/36/16925/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2750,7 +2750,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16466()
         {
             //https://www.101weiqi.com/book/tianlongtu/30/16466/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2809,7 +2809,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16571()
         {
             //https://www.101weiqi.com/book/tianlongtu/31/16571/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2866,7 +2866,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16594()
         {
             //https://www.101weiqi.com/book/tianlongtu/32/16594/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2922,7 +2922,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16735()
         {
             //https://www.101weiqi.com/book/tianlongtu/33/16735/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 20);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2978,7 +2978,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q2834()
         {
             //https://www.101weiqi.com/book/tianlongtu/39/2834/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3024,7 +3024,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16738()
         {
             //https://www.101weiqi.com/book/tianlongtu/33/16738/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3087,7 +3087,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q27661()
         {
             //https://www.101weiqi.com/book/tianlongtu/38/27661/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3143,7 +3143,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16424()
         {
             //https://www.101weiqi.com/book/tianlongtu/30/16424/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3196,7 +3196,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16919()
         {
             //https://www.101weiqi.com/book/tianlongtu/36/16919/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(0, 14, Content.Black);
@@ -3238,7 +3238,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q15301()
         {
             //https://www.101weiqi.com/book/tianlongtu/30/15301/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3302,7 +3302,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16673()
         {
             //https://www.101weiqi.com/book/tianlongtu/33/16673/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(1, 16, Content.Black);
@@ -3353,7 +3353,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q2174()
         {
             //https://www.101weiqi.com/book/tianlongtu/37/2174/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3407,7 +3407,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q2413()
         {
             //https://www.101weiqi.com/book/tianlongtu/34/2413/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(1, 13, Content.Black);
@@ -3463,7 +3463,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q17143()
         {
             //https://www.101weiqi.com/book/tianlongtu/38/17143/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3528,7 +3528,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q17198()
         {
             //https://www.101weiqi.com/book/tianlongtu/39/17198/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3595,7 +3595,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q17160()
         {
             //https://www.101weiqi.com/book/tianlongtu/38/17160/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3657,7 +3657,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q16860()
         {
             //https://www.101weiqi.com/book/tianlongtu/35/16860/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3721,7 +3721,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q17132()
         {
             //https://www.101weiqi.com/book/tianlongtu/38/17132/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 

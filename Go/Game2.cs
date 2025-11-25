@@ -41,7 +41,7 @@ namespace Go
                     if (!useMCTS)
                         confirmAlive = MakeExhaustiveSearch();
                     else
-                        confirmAlive = MonteCarloGame.MonteCarloRealTimeMove(this).Item1;
+                        confirmAlive = MonteCarloGame.MakeMonteCarloTreeSearch(this).Item1;
                     result |= confirmAlive;
 
                     DebugHelper.DebugWriteWithTab("Final move: " + this.Board.Move + " | Final result: " + confirmAlive.ToString());
@@ -277,6 +277,7 @@ namespace Go
             for (int i = 0; i <= tryMoves.Count - 1; i++)
             {
                 GameTryMove gameTryMove = tryMoves[i];
+                Board b = gameTryMove.TryGame.Board;
                 Stopwatch watch = null;
                 int gameDepth = GameDepth(g);
                 if (DebugPrintMode(gameDepth))
@@ -302,7 +303,7 @@ namespace Go
                     bestResultMove = gameTryMove;
                     if (GameHelper.WinOrLose(SurviveOrKill.Survive, bestResult, g.GameInfo))
                     {
-                        if (gameTryMove.Move.Equals(Game.PassMove) && gameTryMove.TryGame.Board.KoGameCheck == KoCheck.None) bestResult = ConfirmAliveResult.BothAlive;
+                        if (b.IsPassMove && b.KoGameCheck == KoCheck.None) bestResult = ConfirmAliveResult.BothAlive;
                         return (bestResult, bestResultMove);
                     }
                 }
@@ -431,8 +432,8 @@ namespace Go
         private void CreateRandomMoveForRedundantKo(Game g, List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves)
         {
             Board b = g.Board;
-            if (b.LastMove != null && b.LastMove.Value.Equals(Game.PassMove)) return;
-            if (tryMoves.Count == 1 && tryMoves.Select(n => n.TryGame.Board).Any(s => s.IsRandomMove || s.Move.Equals(Game.PassMove))) return;
+            if (b.IsPassMove) return;
+            if (tryMoves.Count == 1 && tryMoves.Select(n => n.TryGame.Board).Any(s => s.IsRandomMove || s.IsPassMove)) return;
 
             foreach (GameTryMove koMove in redundantTryMoves.Where(t => t.IsRedundantKo))
             {
@@ -456,21 +457,22 @@ namespace Go
 
 
         /// <summary>
-        /// Create random move for kill if no more try moves.
-        /// <see cref="UnitTestProject.KoTest.KoTest_Scenario_WuQingYuan_Q31498" />
+        /// Create random move for kill.
+        /// No more moves <see cref="UnitTestProject.KoTest.KoTest_Scenario_WuQingYuan_Q31498" />
         /// <see cref="UnitTestProject.KoTest.KoTest_Scenario_TianLongTu_Q17077" />
+        /// Check ko fight after suicidal <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31498" />
         /// </summary>
         private void CreateRandomMoveForKill(List<GameTryMove> tryMoves, Game g)
         {
             Board b = g.Board;
             if (tryMoves.Count > 0)
             {
+                //check ko fight after suicidal
                 Boolean suicidal = tryMoves.Count == 1 && KillerFormationHelper.CheckKoFightAfterSuicidal(tryMoves.First().TryGame.Board);
                 if (!suicidal) return;
             }
             //do not add move if last move is random or pass move
-            Point? lastMove = b.LastMove;
-            if (lastMove != null && (b.IsRandomMove || lastMove.Value.Equals(Game.PassMove))) return;
+            if (b.IsRandomMove || b.IsPassMove) return;
 
             GameTryMove tryMove = GetRandomMove(g);
             if (tryMove != null) tryMoves.Add(tryMove);

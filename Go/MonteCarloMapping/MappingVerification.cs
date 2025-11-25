@@ -82,11 +82,7 @@ namespace Go
 
                 //check if solution move available
                 if (SolutionHelper.GetSolutionMove(g.Board) != null)
-                {
-                    if (game.GameInfo.UserFirst == PlayerOrComputer.Player)
-                        FinalVerification(g);
                     continue;
-                }
 
                 if (move != null && move["ThirdLevel"] != null)
                 {

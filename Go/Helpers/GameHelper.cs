@@ -46,7 +46,7 @@ namespace Go
         /// </summary>
         public static Content GetContentForNextMove(Board board)
         {
-            if (board.LastMove != null && !board.Move.Equals(Game.PassMove))
+            if (board.LastMove != null && !board.IsPassMove)
                 return board.MoveGroup.Content.Opposite();
             Content startContent = board.GameInfo.StartContent;
             int lastMoveMod = board.LastMoves.Count % 2;

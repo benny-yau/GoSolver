@@ -2399,6 +2399,7 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_20230423_8" />
         /// Check killer formation <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31499" />
         /// Check covered point <see cref="UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_XuanXuanQiJing_A53" />
+        /// Check both alive <see cref="UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_Scenario_Corner_B23" />
         /// Check move liberties <see cref="UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_Scenario_Corner_A130" />
         /// </summary>
         public static Boolean RedundantNeuralNetMove(GameTryMove tryMove)
@@ -2424,9 +2425,13 @@ namespace Go
             if (EyeHelper.IsCovered(currentBoard, move, c))
                 return false;
 
-            //check move liberties
             if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite()))
             {
+                //check both alive
+                if (BothAliveHelper.CheckForBothAliveAtMove(tryBoard))
+                    return false;
+
+                //check move liberties
                 foreach (Point p in tryBoard.GetMoveLiberties())
                 {
                     List<Point> diagonals = LinkHelper.GetDiagonalsAtStoneNeighbours(tryBoard, p, c.Opposite());

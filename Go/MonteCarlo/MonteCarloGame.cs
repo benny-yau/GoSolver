@@ -40,9 +40,9 @@ namespace Go
 
 
         /// <summary>
-        /// Monte carlo real-time move. Not used in mapping.
+        /// Make monte carlo tree search.
         /// </summary>
-        public static (ConfirmAliveResult, Node, long?) MonteCarloRealTimeMove(Game game)
+        public static (ConfirmAliveResult, Node, long?) MakeMonteCarloTreeSearch(Game game)
         {
             MonteCarloTreeSearch mcts = InitializeMonteCarloComputerMove(game);
 
@@ -89,7 +89,7 @@ namespace Go
             }
 
             //check if ko alive
-            if (game.Board.Move.Equals(Game.PassMove) && game.Board.KoCapture != null && answerMove.Equals(game.Board.KoCapture.Value))
+            if (game.Board.IsPassMove && game.Board.KoCapture != null && answerMove.Equals(game.Board.KoCapture.Value))
                 return ConfirmAliveResult.KoAlive;
 
             //return result with target killed or target survived

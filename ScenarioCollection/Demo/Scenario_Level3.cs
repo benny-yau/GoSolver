@@ -20,7 +20,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_Nie1()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 16);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(0, 15, Content.Black);
@@ -64,7 +64,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_AncientJapanese_A7()
         {
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.White, 14);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(1, 15, Content.White);
@@ -106,7 +106,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_AncientJapanese_A30()
         {
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.White, 14);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -156,7 +156,7 @@ namespace ScenarioCollection
          */
         public Game Scenario4dan13()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -215,7 +215,7 @@ namespace ScenarioCollection
          */
         public Game Scenario4dan29()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -285,7 +285,7 @@ namespace ScenarioCollection
          */
         public Game Scenario5dan9()
         {
-            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(0, 12, Content.Black);
@@ -345,7 +345,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_Nie61()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 16);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(1, 16, Content.Black);
@@ -399,7 +399,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_Nie71()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 24);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(0, 13, Content.Black);
@@ -452,7 +452,7 @@ namespace ScenarioCollection
         */
         public Game Scenario_Nie166()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(1, 14, Content.Black);
@@ -508,7 +508,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_Nie60()
         {
-            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(1, 14, Content.White);
@@ -569,7 +569,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_Nie63()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(1, 16, Content.Black);
@@ -624,7 +624,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_Nie87()
         {
-            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(0, 16, Content.White);
@@ -741,7 +741,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_Nie109()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(0, 16, Content.White);
@@ -847,7 +847,7 @@ namespace ScenarioCollection
          */
         public Game Scenario5dan27()
         {
-            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(2, 13, Content.White);
@@ -919,7 +919,7 @@ namespace ScenarioCollection
          */
         public Game Scenario4dan10()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -976,7 +976,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_Nie66()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 16);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(1, 17, Content.Black);
@@ -1034,7 +1034,7 @@ namespace ScenarioCollection
          */
         public Game Scenario5dan18()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 20);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(1, 18, Content.White);
@@ -1093,7 +1093,7 @@ namespace ScenarioCollection
          */
         public Game Scenario5dan25()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 16);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(0, 17, Content.White);
@@ -1153,7 +1153,7 @@ namespace ScenarioCollection
          */
         public Game ScenarioHighLevel8()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(2, 17, Content.White);
@@ -1223,7 +1223,7 @@ namespace ScenarioCollection
          */
         public Game ScenarioHighLevel18()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(3, 18, Content.White);
@@ -1281,7 +1281,7 @@ namespace ScenarioCollection
          */
         public Game ScenarioHighLevel23()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(0, 14, Content.Black);
@@ -1330,7 +1330,7 @@ namespace ScenarioCollection
          */
         public Game ScenarioHighLevel32()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(1, 16, Content.White);
@@ -1384,7 +1384,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_Corner_A128()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1434,7 +1434,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_Corner_A132()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(0, 15, Content.White);
@@ -1485,7 +1485,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_Corner_A136()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(1, 15, Content.White);

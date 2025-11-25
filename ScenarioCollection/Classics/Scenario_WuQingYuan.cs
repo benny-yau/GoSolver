@@ -21,7 +21,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q1783()
         {
             //https://www.101weiqi.com/book/30126/21848/1783/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 16);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(0, 14, Content.Black);
@@ -73,7 +73,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q5971()
         {
             //https://www.101weiqi.com/book/1223/2591/5971/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -129,7 +129,7 @@ namespace ScenarioCollection
         public Game Scenario_Corner_A126()
         {
             //https://www.101weiqi.com/q/6123/ //WuQingYuan Q6123
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -177,7 +177,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q6150()
         {
             //https://www.101weiqi.com/book/1224/2593/6150/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -228,7 +228,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q15126()
         {
             //https://www.101weiqi.com/book/1225/2595/15126/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -280,7 +280,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q16508()
         {
             //https://www.101weiqi.com/book/1223/2591/16508/
-            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -331,7 +331,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q30919()
         {
             //https://www.101weiqi.com/book/wuqingyuan/16789/30919/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -386,7 +386,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q30934()
         {
             //https://www.101weiqi.com/book/wuqingyuan/16789/30934/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -442,7 +442,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q30935()
         {
             //https://www.101weiqi.com/book/wuqingyuan/16789/30935/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 20);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -497,7 +497,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q30981()
         {
             //https://www.101weiqi.com/book/wuqingyuan/16789/30981/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -549,7 +549,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q30982()
         {
             //https://www.101weiqi.com/book/wuqingyuan/16789/30982/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -606,7 +606,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q30986()
         {
             //https://www.101weiqi.com/book/wuqingyuan/16789/30986/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -664,7 +664,7 @@ namespace ScenarioCollection
         public Game Scenario_Corner_A130()
         {
             //https://www.101weiqi.com/similarly/88115/31014/ //WuQingYuan Q31014
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -720,7 +720,7 @@ namespace ScenarioCollection
         public Game Scenario_Corner_A139()
         {
             //https://www.101weiqi.com/book/levelorder/1221/75/ //WuQingYuan Q31070
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.White, 18);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(0, 15, Content.White);
@@ -770,7 +770,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31171()
         {
             //https://www.101weiqi.com/book/1225/2594/31171/
-            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -822,7 +822,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31177()
         {
             //https://www.101weiqi.com/book/wuqingyuan/16788/31177/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(2, 16, Content.Black);
@@ -879,7 +879,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31154()
         {
             //https://www.101weiqi.com/book/wuqingyuan/16788/31154/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -942,7 +942,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31225()
         {
             //https://www.101weiqi.com/book/wuqingyuan/16788/31225/
-            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black, 28);
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1003,7 +1003,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31240()
         {
             //https://www.101weiqi.com/book/wuqingyuan/429/31240/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 16);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1063,7 +1063,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31305()
         {
             //https://www.101weiqi.com/book/1223/2591/31305/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1125,7 +1125,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31326()
         {
             //https://www.101weiqi.com/book/1223/2591/31326/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1180,7 +1180,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31329()
         {
             //https://www.101weiqi.com/book/1223/2591/31329/
-            var gi = new GameInfo(SurviveOrKill.SurviveWithKo, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.SurviveWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1233,7 +1233,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31339()
         {
             //https://www.101weiqi.com/book/1223/2591/31339/
-            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black, 24);
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1285,7 +1285,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31366()
         {
             //https://www.101weiqi.com/book/1223/2591/31366/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1339,7 +1339,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31365()
         {
             //https://www.101weiqi.com/book/1223/2591/31365/
-            var gi = new GameInfo(SurviveOrKill.SurviveWithKo, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.SurviveWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1402,7 +1402,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q3849()
         {
             //https://www.101weiqi.com/book/1225/2596/3849/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 16);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1463,7 +1463,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31398()
         {
             //https://www.101weiqi.com/book/1223/2591/31398/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1523,7 +1523,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31419()
         {
             //https://www.101weiqi.com/book/1223/2591/31419/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1582,7 +1582,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31428()
         {
             //https://www.101weiqi.com/book/1223/2591/31428/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1634,7 +1634,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31430()
         {
             //https://www.101weiqi.com/book/1223/2591/31430/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1690,7 +1690,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31435()
         {
             //https://www.101weiqi.com/book/1224/2592/31435/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1741,7 +1741,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31444()
         {
             //https://www.101weiqi.com/book/1224/2592/31444/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1802,7 +1802,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31445()
         {
             //https://www.101weiqi.com/book/1224/2592/31445/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1853,7 +1853,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31449()
         {
             //https://www.101weiqi.com/book/1224/2592/31449/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1909,7 +1909,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31450()
         {
             //https://www.101weiqi.com/book/1224/2592/31450/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1966,7 +1966,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31453()
         {
             //https://www.101weiqi.com/book/1224/2592/31453/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2032,7 +2032,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31466()
         {
             //https://www.101weiqi.com/book/1224/2592/31466/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2085,7 +2085,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31469()
         {
             //https://www.101weiqi.com/book/1224/2592/31469/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(0, 15, Content.Black);
@@ -2134,7 +2134,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31471()
         {
             //https://www.101weiqi.com/book/1224/2592/31471/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2189,7 +2189,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31493()
         {
             //https://www.101weiqi.com/book/1224/2592/31493/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2250,7 +2250,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31498()
         {
             //https://www.101weiqi.com/book/1224/2592/31498/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2302,7 +2302,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31499()
         {
             //https://www.101weiqi.com/book/1224/2592/31499/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2351,7 +2351,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31503()
         {
             //https://www.101weiqi.com/book/1224/2592/31503/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2399,7 +2399,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31510()
         {
             //https://www.101weiqi.com/book/1224/2592/31510/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2452,7 +2452,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31514()
         {
             //https://www.101weiqi.com/book/1224/2592/31514/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2509,7 +2509,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31525()
         {
             //https://www.101weiqi.com/book/1224/2593/31525/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2561,7 +2561,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31526()
         {
             //https://www.101weiqi.com/book/1224/2593/31526/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2621,7 +2621,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31530()
         {
             //https://www.101weiqi.com/book/1224/2593/31530/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2675,7 +2675,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31533()
         {
             //https://www.101weiqi.com/book/1224/2593/31533/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2723,7 +2723,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31536()
         {
             //https://www.101weiqi.com/book/1224/2593/31536/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2782,7 +2782,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31537()
         {
             //https://www.101weiqi.com/book/1224/2593/31537/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2834,7 +2834,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31542()
         {
             //https://www.101weiqi.com/book/1224/2593/31542/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2880,7 +2880,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31563()
         {
             //https://www.101weiqi.com/book/1224/2593/31563/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2934,7 +2934,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31564()
         {
             //https://www.101weiqi.com/book/1224/2593/31564/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2996,7 +2996,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31575()
         {
             //https://www.101weiqi.com/book/1224/2593/31575/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3048,7 +3048,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31580()
         {
             //https://www.101weiqi.com/book/1224/2593/31580/
-            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3107,7 +3107,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31585()
         {
             //https://www.101weiqi.com/book/1224/2593/31585/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3165,7 +3165,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31587()
         {
             //https://www.101weiqi.com/book/1224/2593/31587/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3220,7 +3220,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31602()
         {
             //https://www.101weiqi.com/book/1224/2593/31602/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3278,7 +3278,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31603()
         {
             //https://www.101weiqi.com/book/1224/2593/31603/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3336,7 +3336,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31640()
         {
             //https://www.101weiqi.com/book/1225/2595/31640/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3386,7 +3386,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31646()
         {
             //https://www.101weiqi.com/book/1225/2595/31646/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3439,7 +3439,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31657()
         {
             //https://www.101weiqi.com/book/1225/2595/31657/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3491,7 +3491,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31670()
         {
             //https://www.101weiqi.com/book/1225/2596/31670/
-            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3553,7 +3553,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31673()
         {
             //https://www.101weiqi.com/book/1225/2596/31673/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3608,7 +3608,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31680()
         {
             //https://www.101weiqi.com/book/1225/2596/31680/
-            var gi = new GameInfo(SurviveOrKill.SurviveWithKo, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.SurviveWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3660,7 +3660,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31682()
         {
             //https://www.101weiqi.com/book/1225/2596/31682/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3720,7 +3720,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31686()
         {
             //https://www.101weiqi.com/book/1225/2596/31686/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3768,7 +3768,7 @@ namespace ScenarioCollection
         public Game Scenario_WuQingYuan_Q31672()
         {
             //https://www.101weiqi.com/book/1225/2596/31672/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3824,7 +3824,7 @@ namespace ScenarioCollection
         public Game Scenario_Corner_A137()
         {
             //https://www.101weiqi.com/q/37305/ //WuQingYuan Q37305
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(0, 16, Content.White);

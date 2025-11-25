@@ -19,7 +19,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanQiJing_A1()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -71,7 +71,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanGo_A2()
         {
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.White, 14);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -117,7 +117,7 @@ namespace ScenarioCollection
         public Game Scenario_XuanXuanGo_A3()
         {
             //https://www.101weiqi.com/book/xuanxuanqijin/90/848/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(0, 16, Content.White);
@@ -165,7 +165,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanGo_A4()
         {
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.White, 14);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -218,7 +218,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanGo_A6()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -271,7 +271,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanGo_A7()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -318,7 +318,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanQiJing_A8()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -366,7 +366,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanQiJing_A11()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -420,7 +420,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanGo_A14()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -467,7 +467,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanGo_A17()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -514,7 +514,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanGo_A20()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(0, 15, Content.Black);
@@ -562,7 +562,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanGo_A23()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 24);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(1, 15, Content.Black);
@@ -618,7 +618,7 @@ namespace ScenarioCollection
         public Game Scenario_XuanXuanGo_A26()
         {
             //https://www.101weiqi.com/q/2601/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(0, 12, Content.Black);
@@ -670,7 +670,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanGo_A27()
         {
-            var gi = new GameInfo(SurviveOrKill.SurviveWithKo, Content.White, 22);
+            var gi = new GameInfo(SurviveOrKill.SurviveWithKo, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -723,7 +723,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanQiJing_A33()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(0, 16, Content.Black);
@@ -781,7 +781,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanQiJing_Weiqi101_A19()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -836,7 +836,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanQiJing_Weiqi101_B4()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(0, 14, Content.Black);
@@ -889,7 +889,7 @@ namespace ScenarioCollection
         {
             //https://www.101weiqi.com/book/30126/21849/2282/
 
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -945,7 +945,7 @@ namespace ScenarioCollection
         {
             //https://www.101weiqi.com/book/30126/21849/2398/
 
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -992,7 +992,7 @@ namespace ScenarioCollection
         public Game Scenario_XuanXuanGo_Q6710()
         {
             //https://www.101weiqi.com/book/1349/3037/6710/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1052,7 +1052,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanQiJing_Weiqi101_B19()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1110,7 +1110,7 @@ namespace ScenarioCollection
         public Game Scenario_XuanXuanGo_A34()
         {
             //https://www.101weiqi.com/book/xuanxuanqijin/90/7729/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1162,7 +1162,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanQiJing_A36()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1224,7 +1224,7 @@ namespace ScenarioCollection
         public Game Scenario_XuanXuanGo_A115_101Weiqi()
         {
             //https://www.101weiqi.com/book/1349/3037/18427/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 10);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1282,7 +1282,7 @@ namespace ScenarioCollection
         public Game Scenario_XuanXuanGo_A75_101Weiqi()
         {
             //https://www.101weiqi.com/book/1349/3037/18387/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.White, 14);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1341,7 +1341,7 @@ namespace ScenarioCollection
         public Game Scenario_XuanXuanGo_A37_101Weiqi()
         {
             //https://www.101weiqi.com/book/1349/3037/18351/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.White, 18);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1398,7 +1398,7 @@ namespace ScenarioCollection
         public Game Scenario_XuanXuanGo_Q18341()
         {
             //https://www.101weiqi.com/book/1349/3037/18341/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(1, 11, Content.White);
@@ -1454,7 +1454,7 @@ namespace ScenarioCollection
         */
         public Game Scenario_XuanXuanQiJing_A46()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1517,7 +1517,7 @@ namespace ScenarioCollection
         public Game Scenario_XuanXuanGo_Q18474()
         {
             //https://www.101weiqi.com/book/1349/3037/18474/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1581,7 +1581,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanGo_A49()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1720,7 +1720,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanQiJing_A52()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1785,7 +1785,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanGo_B9()
         {
-            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(0, 15, Content.Black);
@@ -1834,7 +1834,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanGo_B10()
         {
-            var gi = new GameInfo(SurviveOrKill.Survive, Content.White, 22);
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -1888,7 +1888,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanGo_B12()
         {
-            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(0, 14, Content.White);
@@ -1945,7 +1945,7 @@ namespace ScenarioCollection
         public Game Scenario_XuanXuanGo_Q18331()
         {
             //https://www.101weiqi.com/book/1349/3037/18331/
-            var gi = new GameInfo(SurviveOrKill.Survive, Content.White, 22);
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2010,7 +2010,7 @@ namespace ScenarioCollection
         public Game Scenario_XuanXuanGo_Q18358()
         {
             //https://www.101weiqi.com/book/1349/3037/18358/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.White, 22);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2063,7 +2063,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanQiJing_A53()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2126,7 +2126,7 @@ namespace ScenarioCollection
         */
         public Game Scenario_XuanXuanGo_A57()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2194,7 +2194,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanQiJing_A61()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2259,7 +2259,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanGo_A59()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2329,7 +2329,7 @@ namespace ScenarioCollection
         public Game Scenario_XuanXuanGo_A66()
         {
             //https://www.101weiqi.com/book/xuanxuanqijin/91/18509/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.White, 18);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(1, 8, Content.White);
@@ -2381,7 +2381,7 @@ namespace ScenarioCollection
         {
             //https://www.101weiqi.com/book/xuanxuanqijin/90/7245/
 
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2434,7 +2434,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanQiJing_B17()
         {
-            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2500,7 +2500,7 @@ namespace ScenarioCollection
         public Game Scenario_XuanXuanGo_18467_101Weiqi()
         {
             //https://www.101weiqi.com/book/xuanxuanqijin/91/18467/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(1, 15, Content.White);
@@ -2568,7 +2568,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanGo_B6()
         {
-            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2632,7 +2632,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanGo_B7()
         {
-            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2690,7 +2690,7 @@ namespace ScenarioCollection
         {
             //https://www.101weiqi.com/book/xuanxuanqijin/90/18402/
             //XuanXuanGo_B13
-            var gi = new GameInfo(SurviveOrKill.SurviveWithKo, Content.White, 22);
+            var gi = new GameInfo(SurviveOrKill.SurviveWithKo, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2764,7 +2764,7 @@ namespace ScenarioCollection
         public Game Scenario_XuanXuanQiJing_Weiqi101_18410()
         {
             //https://www.101weiqi.com/book/xuanxuanqijin/90/18410/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.White, 22);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2813,7 +2813,7 @@ namespace ScenarioCollection
         {
             //https://www.101weiqi.com/book/xuanxuanqijin/90/1887/
 
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2872,7 +2872,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanGo_B31()
         {
-            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -2940,7 +2940,7 @@ namespace ScenarioCollection
         public Game Scenario_XuanXuanGo_B32()
         {
             //Scenario_XuanXuanQiJing_B26
-            var gi = new GameInfo(SurviveOrKill.Survive, Content.White, 22);
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3010,7 +3010,7 @@ namespace ScenarioCollection
   */
         public Game Scenario_XuanXuanGo_B33()
         {
-            var gi = new GameInfo(SurviveOrKill.Survive, Content.White, 22);
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3083,7 +3083,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanGo_B35()
         {
-            var gi = new GameInfo(SurviveOrKill.Survive, Content.White, 22);
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3152,7 +3152,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanQiJing_A64()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3211,7 +3211,7 @@ namespace ScenarioCollection
         public Game Scenario_XuanXuanGo_A82_101Weiqi()
         {
             //https://www.101weiqi.com/book/1349/3037/62625/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.White, 22);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3266,7 +3266,7 @@ namespace ScenarioCollection
         public Game Scenario_XuanXuanGo_A67_101Weiqi()
         {
             //https://www.101weiqi.com/book/xuanxuanqijin/91/18492/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3328,7 +3328,7 @@ namespace ScenarioCollection
         public Game Scenario_XuanXuanGo_A136_101Weiqi()
         {
             //https://www.101weiqi.com/book/1349/3037/18446/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.White, 18);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3379,7 +3379,7 @@ namespace ScenarioCollection
         public Game Scenario_XuanXuanGo_A138_101Weiqi()
         {
             //https://www.101weiqi.com/book/1349/3037/18448/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3447,7 +3447,7 @@ namespace ScenarioCollection
         public Game Scenario_XuanXuanGo_A53_101Weiqi()
         {
             //https://www.101weiqi.com/book/1349/3037/18365/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 14);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3517,7 +3517,7 @@ namespace ScenarioCollection
         public Game Scenario_XuanXuanGo_A28_101Weiqi()
         {
             //https://www.101weiqi.com/book/1349/3037/18345/
-            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black, 36);
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3574,7 +3574,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanGo_A42()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 18);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3655,7 +3655,7 @@ namespace ScenarioCollection
         {
             //https://www.101weiqi.com/book/1349/3037/18497/
 
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3740,7 +3740,7 @@ namespace ScenarioCollection
         {
             //https://www.101weiqi.com/q/18476/
             //Q-18476 
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.White, 22);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3814,7 +3814,7 @@ namespace ScenarioCollection
         public Game Scenario_XuanXuanGo_A171_101Weiqi()
         {
             //https://www.101weiqi.com/book/1349/3037/18478/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3883,7 +3883,7 @@ namespace ScenarioCollection
         */
         public Game Scenario_XuanXuanQiJing_B57()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 20);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3950,7 +3950,7 @@ namespace ScenarioCollection
         public Game Scenario_XuanXuanGo_B3()
         {
             //https://www.101weiqi.com/q/2609/
-            var gi = new GameInfo(SurviveOrKill.Survive, Content.White, 22);
+            var gi = new GameInfo(SurviveOrKill.Survive, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -4018,7 +4018,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanQiJing_A39()
         {
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.White, 22);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -4090,7 +4090,7 @@ namespace ScenarioCollection
         public Game Scenario_XuanXuanGo_A41()
         {
             //https://www.101weiqi.com/book/xuanxuanqijin/91/18507/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(0, 9, Content.Black);
@@ -4151,7 +4151,7 @@ namespace ScenarioCollection
         public Game Scenario_XuanXuanGo_Q18500()
         {
             //https://www.101weiqi.cn/q/18500/
-            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.White, 24);
+            var gi = new GameInfo(SurviveOrKill.KillWithKo, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -4220,7 +4220,7 @@ namespace ScenarioCollection
         public Game Scenario_XuanXuanQiJing_Weiqi101_B74()
         {
             //https://www.101weiqi.com/book/xuanxuanqijin/91/18499/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -4283,7 +4283,7 @@ namespace ScenarioCollection
         public Game Scenario_XuanXuanGo_A151_101Weiqi()
         {
             //https://www.101weiqi.com/book/1349/3037/18461/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 24);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -4343,7 +4343,7 @@ namespace ScenarioCollection
         public Game Scenario_XuanXuanGo_A46_101Weiqi()
         {
             //https://www.101weiqi.com/book/1349/3037/7271/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 28);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -4392,7 +4392,7 @@ namespace ScenarioCollection
         {
             //https://www.101weiqi.com/book/xuanxuanqijin/91/18473/
 
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.White, 22);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
