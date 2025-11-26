@@ -9,7 +9,7 @@ namespace Go
     public class SolutionHelper
     {
         /// <summary>
-        /// Get solution move and make move on the board.
+        /// Use solution points.
         /// </summary>
         public static bool UseSolutionPoints(Game g)
         {
@@ -24,12 +24,17 @@ namespace Go
         }
 
         /// <summary>
-        /// Check if last moves followed any of the solutions and return the solution move.
+        /// Get solution move.
         /// </summary>
-        public static Point? GetSolutionMove(Board b)
+        public static Point? GetSolutionMove(Board b, Boolean combinedSolutions = true)
         {
             List<Point> solutionMoves = new List<Point>();
-            List<List<Point>> solutions = b.GameInfo.CombinedSolutions.Where(s => s.Count > b.LastMoves.Count).ToList();
+            List<List<Point>> solutions;
+            if (combinedSolutions)
+                solutions = b.GameInfo.CombinedSolutions.Where(s => s.Count > b.LastMoves.Count).ToList();
+            else
+                solutions = b.GameInfo.solutionPoints.Where(s => s.Count > b.LastMoves.Count).ToList();
+
             int? solutionIndex = FollowedSolution(solutions, b.LastMoves).FirstOrDefault();
             if (solutionIndex != null)
             {
@@ -40,7 +45,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Check if last moves followed any of the solutions and return confirm alive result.
+        /// Check solution complete.
         /// </summary>
         public static ConfirmAliveResult CheckSolutionComplete(Board b)
         {
@@ -64,7 +69,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get next move as hint.
+        /// Get next answer hint.
         /// </summary>
         public static Point? GetNextAnswerHint(Game g)
         {
@@ -80,7 +85,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Check if end of solution reached.
+        /// Answer found.
         /// </summary>
         public static Boolean AnswerFound(Game g)
         {
@@ -89,7 +94,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get dictate move where dictate points are specified.
+        /// Get dictate move.
         /// </summary>
         public static Point? GetDictateMove(Game g)
         {
@@ -104,7 +109,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Check if last moves followed any of the solutions and return the index of the solution move.
+        /// Followed solution.
         /// </summary>
         public static IEnumerable<int?> FollowedSolution(List<List<Point>> solutions, List<Point> lastMoves)
         {
@@ -194,7 +199,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Use dictate points specified to by-pass mapped points and reduce calculation time.
+        /// Use dictate points.
         /// </summary>
         private static ConfirmAliveResult UseDictatePoints(Game g, ConfirmAliveResult result)
         {
@@ -208,7 +213,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get second move from json map and return confirm alive result.
+        /// Find second move mapped.
         /// </summary>
         private static ConfirmAliveResult FindSecondMoveMapped(Game g, dynamic jsonMap)
         {
@@ -231,7 +236,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get fourth move from json map and return confirm alive result.
+        /// Find fourth move mapped.
         /// </summary>
         private static ConfirmAliveResult FindFourthMoveMapped(Game g, dynamic jsonMap)
         {
@@ -264,7 +269,7 @@ namespace Go
 
 
         /// <summary>
-        /// Get sixth move from json map and return confirm alive result.
+        /// Find sixth move mapped.
         /// </summary>
         private static ConfirmAliveResult FindSixthMoveMapped(Game g, dynamic jsonMap)
         {
@@ -308,7 +313,7 @@ namespace Go
         #endregion
 
         /// <summary>
-        /// Display game ended message from flags in confirm alive result.
+        /// Game ended message.
         /// </summary>
         public static String GameEndedMessage(ConfirmAliveResult result, Game g)
         {

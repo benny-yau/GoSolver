@@ -300,10 +300,10 @@ namespace Go
                 return false;
 
             //ensure all groups are connected
-            List<LinkedPoint<Point>> checkedDiagonals = new List<LinkedPoint<Point>>();
+            List<Link<Point>> checkedDiagonals = new List<Link<Point>>();
             foreach (Group diagonalGroup in diagonalGroups)
             {
-                foreach (LinkedPoint<Point> diagonal in LinkHelper.GetGroupLinkedDiagonals(board, diagonalGroup))
+                foreach (Link<Point> diagonal in LinkHelper.GetGroupLinkedDiagonals(board, diagonalGroup))
                 {
                     Group group = board.GetGroupAt(diagonal.Move);
                     if (!diagonalGroups.Contains(group)) continue;
@@ -327,7 +327,7 @@ namespace Go
             {
                 if (!ImmovableHelper.CheckConnectAndDie(board, group, false))
                     return false;
-                foreach (LinkedPoint<Point> p in LinkHelper.GetGroupLinkedDiagonals(board, group))
+                foreach (Link<Point> p in LinkHelper.GetGroupLinkedDiagonals(board, group))
                 {
                     if (LinkHelper.PointsBetweenDiagonals(p).All(n => board[n] == c.Opposite() && diagonalGroups.Contains(board.GetGroupAt(n))))
                         return false;

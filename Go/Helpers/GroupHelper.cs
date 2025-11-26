@@ -170,5 +170,19 @@ namespace Go
             int currentCount = GroupHelper.GetKillerGroups(currentBoard, c).Count;
             return (tryCount > currentCount);
         }
+
+        /// <summary>
+        /// Check killer group points.
+        /// </summary>
+        public static Group CheckKillerGroupPoints(Board board, Point p, Content c, int points = 2, Boolean equals = true)
+        {
+            Group killerGroup = GroupHelper.GetKillerGroupFromCache(board, p, c);
+            if (killerGroup == null) return null;
+            if (equals && killerGroup.Points.Count == points)
+                return killerGroup;
+            if (!equals && killerGroup.Points.Count <= points)
+                return killerGroup;
+            return null;
+        }
     }
 }

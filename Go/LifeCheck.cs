@@ -29,7 +29,7 @@ namespace Go
         {
             Content c = targetGroup.Content;
             List<Group> eyes = new List<Group>();
-            List<LinkedPoint<Point>> tigerMouthList = new List<LinkedPoint<Point>>();
+            List<Link<Point>> tigerMouthList = new List<Link<Point>>();
 
             //ensure at least two liberties
             if (targetGroup.Liberties.Count == 1) return ConfirmAliveResult.Unknown;
@@ -138,11 +138,11 @@ namespace Go
         /// <summary>
         /// Get tiger mouth of eye groups.
         /// </summary>
-        private static void GetTigerMouthsOfEyeGroups(Board board, Group eye, List<LinkedPoint<Point>> tigerMouthList)
+        private static void GetTigerMouthsOfEyeGroups(Board board, Group eye, List<Link<Point>> tigerMouthList)
         {
             Content c = eye.Content;
-            List<LinkedPoint<Point>> diagonalPoints = LinkHelper.GetGroupDiagonals(board, eye);
-            foreach (LinkedPoint<Point> p in diagonalPoints)
+            List<Link<Point>> diagonalPoints = LinkHelper.GetGroupDiagonals(board, eye);
+            foreach (Link<Point> p in diagonalPoints)
             {
                 if (ImmovableHelper.FindTigerMouthForLink(board, p.Move, c.Opposite()))
                     tigerMouthList.Add(p);

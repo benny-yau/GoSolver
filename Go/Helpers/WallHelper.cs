@@ -198,8 +198,7 @@ namespace Go
             //cover external liberties only
             foreach (Point p in board.GetLibertiesOfGroups(groups))
             {
-                Group killerGroup = GroupHelper.GetDirectKillerGroup(board, p, c);
-                if (killerGroup != null && killerGroup.Points.Count <= 3) continue;
+                if (GroupHelper.CheckKillerGroupPoints(board, p, c, 3, false) != null) continue;
                 coveredBoard[p] = c.Opposite();
             }
             return StrongGroups(coveredBoard, groups);

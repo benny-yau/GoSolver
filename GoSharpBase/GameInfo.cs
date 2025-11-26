@@ -241,7 +241,7 @@ namespace Go
         /// <summary>
         /// Game info. 
         /// </summary>
-        public GameInfo(SurviveOrKill survive = SurviveOrKill.Survive, Content start = Content.Black, int searchDepth = 14)
+        public GameInfo(SurviveOrKill survive = SurviveOrKill.Survive, Content start = Content.Black, int searchDepth = 30)
         {
             StartContent = start;
             BoardSizeX = BoardSizeY = 19;

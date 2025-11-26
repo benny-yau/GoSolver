@@ -565,7 +565,6 @@ namespace ScenarioCollection
             gi.solutionPoints.Add(new List<Point>() { new Point(0, 17), new Point(0, 16), new Point(1, 18) });
             gi.solutionPoints.Add(new List<Point>() { new Point(0, 17), new Point(0, 16), new Point(2, 18), new Point(3, 17), new Point(1, 18) });
             gi.solutionPoints.Add(new List<Point>() { new Point(0, 17), new Point(0, 16), new Point(3, 17), new Point(4, 17), new Point(1, 18) });
-            gi.solutionPoints.Add(new List<Point>() { new Point(0, 16), new Point(0, 17), new Point(1, 18), new Point(0, 15), new Point(3, 18), new Point(4, 18), new Point(4, 17) });
 
             gi.PlayerMoveJson = gi.PlayerMoveJsonExtension = ResourceHelper.GetGuanZiPuMappedJsonExtensionString("Scenario_GuanZiPu_A12_PlayerMoveExtension");
             gi.ChallengeMoveJson = gi.ChallengeMoveJsonExtension = ResourceHelper.GetGuanZiPuMappedJsonExtensionString("Scenario_GuanZiPu_A12_ChallengeMoveExtension");

@@ -13,7 +13,6 @@ namespace Go
         public Game Root { get; private set; }
         public Board Board { get; set; }
 
-        public static int SearchDepth = 30;
         [NonSerialized]
         Stopwatch RunTimeStopWatch;
 

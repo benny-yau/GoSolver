@@ -240,7 +240,7 @@ namespace Go
             }
 
             //fill eye point in neighbour group
-            foreach (LinkedPoint<Point> p in LinkHelper.GetGroupDiagonals(board, killerGroup))
+            foreach (Link<Point> p in LinkHelper.GetGroupDiagonals(board, killerGroup))
             {
                 if (!EyeHelper.FindEye(board, p.Move, c.Opposite())) continue;
                 if (board[(Point)p.CheckMove] != Content.Empty) continue;
@@ -264,7 +264,7 @@ namespace Go
             {
                 if (group.Points.Count <= 2 && !EyeHelper.FindRealEyeWithinEmptySpace(board, group, EyeType.UnCoveredEye))
                 {
-                    foreach (LinkedPoint<Point> p in LinkHelper.GetGroupDiagonals(board, group))
+                    foreach (Link<Point> p in LinkHelper.GetGroupDiagonals(board, group))
                     {
                         if (board[p.Move] != c.Opposite()) continue;
                         Group killerGroup = GroupHelper.GetDirectKillerGroup(board, p.Move, c);

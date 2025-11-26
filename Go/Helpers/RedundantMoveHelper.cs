@@ -57,8 +57,10 @@ namespace Go
             {
                 Point p = g.Liberties.First(n => !n.Equals(move));
                 if (!currentBoard.GetDiagonalNeighbours(move).Contains(p)) continue;
+
                 if (!currentBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Except(eyeGroups).Any(n => n.Liberties.Count == 2)) continue;
-                if (ImmovableHelper.IsSuicidalMove(currentBoard, p, c.Opposite(), true)) continue;
+                if (ImmovableHelper.IsSuicidalMove(currentBoard, p, c.Opposite())) continue;
+                if (currentBoard.GetGroupsFromStoneNeighbours(p, c).Any(n => WallHelper.IsNonKillableGroup(currentBoard, n))) continue;
                 return true;
             }
             return false;
@@ -430,7 +432,7 @@ namespace Go
 
             foreach (Group ngroup in ngroups)
             {
-                foreach (LinkedPoint<Point> p in LinkHelper.GetGroupLinkedDiagonals(tryBoard, ngroup))
+                foreach (Link<Point> p in LinkHelper.GetGroupLinkedDiagonals(tryBoard, ngroup))
                 {
                     List<Point> diagonals = LinkHelper.PointsBetweenDiagonals(p.Move, (Point)p.CheckMove);
                     diagonals = diagonals.Where(q => GroupHelper.GetDirectKillerGroup(tryBoard, q, c.Opposite()) == killerGroup).ToList();
@@ -1092,7 +1094,7 @@ namespace Go
                 return false;
 
             //check eye
-            if (moveLiberties.Select(n => GroupHelper.GetKillerGroupFromCache(tryBoard, n, c)).Any(s => s != null && s.Points.Count <= 2))
+            if (moveLiberties.Any(n => GroupHelper.CheckKillerGroupPoints(tryBoard, n, c, 2, false) != null))
                 return false;
 
             return true;
@@ -2401,6 +2403,7 @@ namespace Go
         /// Check covered point <see cref="UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_XuanXuanQiJing_A53" />
         /// Check both alive <see cref="UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_Scenario_Corner_B23" />
         /// Check move liberties <see cref="UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_Scenario_Corner_A130" />
+        /// Check ko fight <see cref="UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
         /// </summary>
         public static Boolean RedundantNeuralNetMove(GameTryMove tryMove)
         {
@@ -2436,10 +2439,14 @@ namespace Go
                 {
                     List<Point> diagonals = LinkHelper.GetDiagonalsAtStoneNeighbours(tryBoard, p, c.Opposite());
                     if (diagonals.Count() > 2) return false;
-                    if (diagonals.Count() == 2 && LinkHelper.EmptyPointBetweenDiagonals(tryBoard, diagonals[0], diagonals[1]))
+                    if (diagonals.Count() == 2 && LinkHelper.SingleLibertyBetweenDiagonals(tryBoard, diagonals[0], diagonals[1]))
                         return false;
                 }
             }
+
+            //check ko fight
+            if (KoHelper.IsForwardOrReverseKoFight(tryBoard) && GroupHelper.CheckKillerGroupPoints(tryBoard, move, c.Opposite()) != null)
+                return false;
 
             //get heat map
             if (g.heatMap == null)

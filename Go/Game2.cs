@@ -66,7 +66,7 @@ namespace Go
         {
             if (debugMode) this.RunTimeStopWatch = Stopwatch.StartNew();
 
-            int depth = Game.SearchDepth;
+            int depth = this.GameInfo.SearchDepth;
             ConfirmAliveResult confirmAlive = ConfirmAliveResult.Unknown;
             GameTryMove bestResultMove = null;
 

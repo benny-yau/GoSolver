@@ -599,8 +599,7 @@ namespace Go
             List<Point> emptyPoints = b.GetMoveLiberties(q);
             if (emptyPoints.Count != 1) return false;
 
-            Group killerGroup = GroupHelper.GetDirectKillerGroup(b, q, c.Opposite());
-            if (killerGroup != null && killerGroup.Points.Count == 2 && EyeHelper.IsCovered(b, emptyPoints.First(), c.Opposite()))
+            if (GroupHelper.CheckKillerGroupPoints(b, q, c.Opposite()) != null && EyeHelper.IsCovered(b, emptyPoints.First(), c.Opposite()))
                 return true;
             return false;
         }
@@ -1209,7 +1208,7 @@ namespace Go
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16859_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2413_2" /> 
-        /// Check group diagonals <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_8" /> 
+        /// Check group diagonals <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30302_2" /> 
         /// </summary>
         public static Boolean OpponentBreakKillFormation(Board tryBoard, Board currentBoard)
         {
@@ -1217,17 +1216,21 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             List<Group> groups = tryBoard.GetGroupsFromStoneNeighbours();
             if (groups.Count != 1 || groups.First().Points.Count < 4) return false;
-
+            Group targetGroup = groups.First();
             //check kill formation
             if (!KillerFormationHelper.TryKillFormation(currentBoard, c.Opposite(), new List<Point>() { move }))
                 return false;
 
             //check group diagonals
-            foreach (LinkedPoint<Point> p in LinkHelper.GetGroupLinkedDiagonals(tryBoard, groups.First()))
+            foreach (Link<Point> p in LinkHelper.GetGroupLinkedDiagonals(tryBoard, targetGroup))
             {
                 if (LinkHelper.PointsBetweenDiagonals(p).Any(n => tryBoard[n] == Content.Empty && !EyeHelper.FindCoveredEye(tryBoard, n, c.Opposite())))
                     return false;
             }
+
+            if (WallHelper.TargetWithAnyNonKillableGroup(tryBoard, targetGroup))
+                return false;
+
             return true;
         }
 

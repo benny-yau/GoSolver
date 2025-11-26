@@ -558,6 +558,11 @@
             Increased killer groups.
             </summary>
         </member>
+        <member name="M:Go.GroupHelper.CheckKillerGroupPoints(Go.Board,Go.Point,Go.Content,System.Int32,System.Boolean)">
+            <summary>
+            Check killer group points.
+            </summary>
+        </member>
         <member name="M:Go.ImmovableHelper.FindTigerMouth(Go.Board,Go.Point,Go.Content)">
             <summary>
             Find tiger mouth.
@@ -1127,7 +1132,7 @@
             <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
             <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16859_2" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2413_2" /> 
-            Check group diagonals <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_8" /> 
+            Check group diagonals <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30302_2" /> 
             </summary>
         </member>
         <member name="M:Go.KillerFormationHelper.FirstPointInKillerGroup(Go.Board,Go.Group,Go.Content)">
@@ -1254,18 +1259,18 @@
             Check capture secure <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_2" />
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.CheckIsDiagonalLinked(Go.LinkedPoint{Go.Point},Go.Board,System.Boolean)">
+        <member name="M:Go.LinkHelper.CheckIsDiagonalLinked(Go.Link{Go.Point},Go.Board,System.Boolean)">
             <summary>
             Check is diagonal linked.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.CheckDoubleLinkage(Go.Board,Go.LinkedPoint{Go.Point})">
+        <member name="M:Go.LinkHelper.CheckDoubleLinkage(Go.Board,Go.Link{Go.Point})">
             <summary>
             Check for double linkage.
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_8" />
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.CheckDoubleAtariForLinks(Go.Board,Go.LinkedPoint{Go.Point})">
+        <member name="M:Go.LinkHelper.CheckDoubleAtariForLinks(Go.Board,Go.Link{Go.Point})">
             <summary>
             Check double atari for links.
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_DoubleAtariOnSemiSolidEye" />
@@ -1332,12 +1337,12 @@
             Check possible link.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.CheckTigerMouthExceptionsForLinks(Go.Board,Go.LinkedPoint{Go.Point})">
+        <member name="M:Go.LinkHelper.CheckTigerMouthExceptionsForLinks(Go.Board,Go.Link{Go.Point})">
             <summary>
             Check tiger mouth exceptions for links.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.GetTigerMouthsOfLinks(Go.Board,Go.LinkedPoint{Go.Point})">
+        <member name="M:Go.LinkHelper.GetTigerMouthsOfLinks(Go.Board,Go.Link{Go.Point})">
             <summary>
             Get tiger mouth of links.
             </summary>
@@ -1362,9 +1367,9 @@
             Get diagonal groups without cut.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.EmptyPointBetweenDiagonals(Go.Board,Go.Point,Go.Point)">
+        <member name="M:Go.LinkHelper.SingleLibertyBetweenDiagonals(Go.Board,Go.Point,Go.Point)">
             <summary>
-            Empty point between diagonals.
+            Single liberty between diagonals.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.GetPreviousMoveGroup(Go.Board,Go.Board)">
@@ -2024,6 +2029,7 @@
             Check covered point <see cref="!:UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_XuanXuanQiJing_A53" />
             Check both alive <see cref="!:UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_Scenario_Corner_B23" />
             Check move liberties <see cref="!:UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_Scenario_Corner_A130" />
+            Check ko fight <see cref="!:UnitTestProject.RedundantNeuralNetMoveTest.RedundantNeuralNetMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.RestoreNeuralNetMove(System.Collections.Generic.List{Go.GameTryMove},System.Collections.Generic.List{Go.GameTryMove})">
@@ -2034,37 +2040,37 @@
         </member>
         <member name="M:Go.SolutionHelper.UseSolutionPoints(Go.Game)">
             <summary>
-            Get solution move and make move on the board.
+            Use solution points.
             </summary>
         </member>
-        <member name="M:Go.SolutionHelper.GetSolutionMove(Go.Board)">
+        <member name="M:Go.SolutionHelper.GetSolutionMove(Go.Board,System.Boolean)">
             <summary>
-            Check if last moves followed any of the solutions and return the solution move.
+            Get solution move.
             </summary>
         </member>
         <member name="M:Go.SolutionHelper.CheckSolutionComplete(Go.Board)">
             <summary>
-            Check if last moves followed any of the solutions and return confirm alive result.
+            Check solution complete.
             </summary>
         </member>
         <member name="M:Go.SolutionHelper.GetNextAnswerHint(Go.Game)">
             <summary>
-            Get next move as hint.
+            Get next answer hint.
             </summary>
         </member>
         <member name="M:Go.SolutionHelper.AnswerFound(Go.Game)">
             <summary>
-            Check if end of solution reached.
+            Answer found.
             </summary>
         </member>
         <member name="M:Go.SolutionHelper.GetDictateMove(Go.Game)">
             <summary>
-            Get dictate move where dictate points are specified.
+            Get dictate move.
             </summary>
         </member>
         <member name="M:Go.SolutionHelper.FollowedSolution(System.Collections.Generic.List{System.Collections.Generic.List{Go.Point}},System.Collections.Generic.List{Go.Point})">
             <summary>
-            Check if last moves followed any of the solutions and return the index of the solution move.
+            Followed solution.
             </summary>
         </member>
         <member name="M:Go.SolutionHelper.CheckSolutionAndMappedPoints(Go.Game)">
@@ -2074,27 +2080,27 @@
         </member>
         <member name="M:Go.SolutionHelper.UseDictatePoints(Go.Game,Go.ConfirmAliveResult)">
             <summary>
-            Use dictate points specified to by-pass mapped points and reduce calculation time.
+            Use dictate points.
             </summary>
         </member>
         <member name="M:Go.SolutionHelper.FindSecondMoveMapped(Go.Game,System.Object)">
             <summary>
-            Get second move from json map and return confirm alive result.
+            Find second move mapped.
             </summary>
         </member>
         <member name="M:Go.SolutionHelper.FindFourthMoveMapped(Go.Game,System.Object)">
             <summary>
-            Get fourth move from json map and return confirm alive result.
+            Find fourth move mapped.
             </summary>
         </member>
         <member name="M:Go.SolutionHelper.FindSixthMoveMapped(Go.Game,System.Object)">
             <summary>
-            Get sixth move from json map and return confirm alive result.
+            Find sixth move mapped.
             </summary>
         </member>
         <member name="M:Go.SolutionHelper.GameEndedMessage(Go.ConfirmAliveResult,Go.Game)">
             <summary>
-            Display game ended message from flags in confirm alive result.
+            Game ended message.
             </summary>
         </member>
         <member name="T:Go.UniquePatternsHelper">
@@ -2314,7 +2320,7 @@
             Common tiger mouth exceptions.
             </summary>
         </member>
-        <member name="M:Go.LifeCheck.GetTigerMouthsOfEyeGroups(Go.Board,Go.Group,System.Collections.Generic.List{Go.LinkedPoint{Go.Point}})">
+        <member name="M:Go.LifeCheck.GetTigerMouthsOfEyeGroups(Go.Board,Go.Group,System.Collections.Generic.List{Go.Link{Go.Point}})">
             <summary>
             Get tiger mouth of eye groups.
             </summary>
@@ -2381,7 +2387,7 @@
         </member>
         <member name="M:Go.MonteCarloGame.MyProcess_OutputDataReceived(System.Object,System.Diagnostics.DataReceivedEventArgs)">
             <summary>
-            Retrieve neural network heatmap and other output data from leelaz.
+            Retrieve heatmap from leela zero neural network.
             </summary>
         </member>
         <member name="P:Go.MonteCarloTreeSearch.VisitCountMinReq">

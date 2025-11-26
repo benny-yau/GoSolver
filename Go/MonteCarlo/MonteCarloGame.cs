@@ -30,7 +30,7 @@ namespace Go
             {
                 State state = new State(g);
                 rootNode = new Node(state);
-                rootNode.State.Depth = Game.SearchDepth;
+                rootNode.State.Depth = g.GameInfo.SearchDepth;
                 state.SurviveOrKill = GameHelper.KillOrSurvivalForNextMove(g.Board);
             }
             MonteCarloTreeSearch mcts = new MonteCarloTreeSearch(rootNode, mctsDepth);
@@ -159,9 +159,9 @@ namespace Go
 
             if (setHandicapMoves)
             {
-                List<String> playMoves = new List<String>() { "Q16", "Q10", "Q4", "K16", "K10", "D16", "D10", "C13" };
+                List<String> handicapMoves = new List<String>() { "Q16", "Q10", "Q4", "K16", "K10", "D16", "D10", "C13" };
                 String contentToMove = (g.GameInfo.StartContent == Content.Black) ? "W" : "B";
-                playMoves.ForEach(n => MonteCarloGame.inputWriter.WriteLine("play " + contentToMove + " " + n));
+                handicapMoves.ForEach(n => MonteCarloGame.inputWriter.WriteLine("play " + contentToMove + " " + n));
             }
         }
 
@@ -177,7 +177,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Retrieve neural network heatmap and other output data from leelaz.
+        /// Retrieve heatmap from leela zero neural network.
         /// </summary>
         public static void MyProcess_OutputDataReceived(object sender, DataReceivedEventArgs e)
         {

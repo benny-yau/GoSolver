@@ -37,22 +37,22 @@ namespace Go
 
     public class DirectionHelper
     {
-        static List<LinkedPoint<Direction>> directionalLinkedList = null;
+        static List<Link<Direction>> directionalLinkedList = null;
         /// <summary>
         /// Create linked list of all four directions, in clockwise rotation with direction pointing to center.
         /// </summary>
-        public static List<LinkedPoint<Direction>> DirectionLinkedList
+        public static List<Link<Direction>> DirectionLinkedList
         {
             get
             {
                 if (directionalLinkedList == null)
                 {
-                    LinkedPoint<Direction> directionLeft = new LinkedPoint<Direction>(Direction.Left, null);
-                    LinkedPoint<Direction> directionDown = new LinkedPoint<Direction>(Direction.Down, directionLeft);
-                    LinkedPoint<Direction> directionRight = new LinkedPoint<Direction>(Direction.Right, directionDown);
-                    LinkedPoint<Direction> directionUp = new LinkedPoint<Direction>(Direction.Up, directionRight);
+                    Link<Direction> directionLeft = new Link<Direction>(Direction.Left, null);
+                    Link<Direction> directionDown = new Link<Direction>(Direction.Down, directionLeft);
+                    Link<Direction> directionRight = new Link<Direction>(Direction.Right, directionDown);
+                    Link<Direction> directionUp = new Link<Direction>(Direction.Up, directionRight);
                     directionLeft.CheckMove = directionUp;
-                    directionalLinkedList = new List<LinkedPoint<Direction>>() { directionUp, directionRight, directionDown, directionLeft };
+                    directionalLinkedList = new List<Link<Direction>>() { directionUp, directionRight, directionDown, directionLeft };
                 }
                 return directionalLinkedList;
             }
@@ -63,10 +63,10 @@ namespace Go
         /// </summary>
         public static Direction GetNewDirection(Direction direction, int count = 0)
         {
-            LinkedPoint<Direction> directionPoint = DirectionLinkedList.Where(m => m.Move == direction).First();
+            Link<Direction> directionPoint = DirectionLinkedList.Where(m => m.Move == direction).First();
             for (int i = 0; i <= count - 1; i++)
             {
-                directionPoint = ((LinkedPoint<Direction>)directionPoint.CheckMove);
+                directionPoint = ((Link<Direction>)directionPoint.CheckMove);
             }
             return directionPoint.Move;
         }

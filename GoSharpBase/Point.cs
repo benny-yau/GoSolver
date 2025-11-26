@@ -56,18 +56,18 @@ namespace Go
         }
     }
 
-    public class LinkedPoint<T>
+    public class Link<T>
     {
         public T Move { get; set; }
         public object CheckMove { get; set; }
 
-        public LinkedPoint(T move, object checkMove)
+        public Link(T move, object checkMove)
         {
             this.Move = move;
             this.CheckMove = checkMove;
         }
 
-        public Boolean EqualLink(LinkedPoint<T> linkedPoint)
+        public Boolean EqualLink(Link<T> linkedPoint)
         {
             if (linkedPoint.Move.Equals((T)CheckMove) && ((T)linkedPoint.CheckMove).Equals(Move))
                 return true;
