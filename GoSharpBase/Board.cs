@@ -461,10 +461,10 @@ namespace Go
         }
 
 
-        public MakeMoveResult InternalMakeMove(int x, int y, Content content, Boolean overrideKo = false)
+        public MakeMoveResult InternalMakeMove(int x, int y, Content c, Boolean overrideKo = false)
         {
             Point p = new Point(x, y);
-            return InternalMakeMove(p, content, overrideKo);
+            return InternalMakeMove(p, c, overrideKo);
         }
 
         /// <summary>
@@ -632,16 +632,7 @@ namespace Go
         /// </summary>
         public String GetLastMoves()
         {
-            String msg = "";
-            List<Point> lastMoves = this.LastMoves;
-            for (int i = 0; i <= lastMoves.Count - 1; i++)
-            {
-                Point p = lastMoves[i];
-                msg += p;
-                if (i < lastMoves.Count - 1)
-                    msg += ",";
-            }
-            return msg;
+            return this.LastMoves.GetConcatenatedString();
         }
     }
 }

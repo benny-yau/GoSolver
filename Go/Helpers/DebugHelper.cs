@@ -3,47 +3,27 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Go
 {
     public class DebugHelper
     {
-        /// <summary>
-        /// Print debug statements with tabs in front.
-        /// </summary>
-        public static void DebugWriteWithTab(String content, int gameDepth = 0)
+        public static void DebugWriteWithTab(String msg, int gameDepth = 0)
         {
             if (!Game.debugMode) return;
             String tabs = (gameDepth == 0) ? "" : string.Concat(Enumerable.Repeat('\t', gameDepth));
-            Debug.WriteLine(tabs + content);
+            Debug.WriteLine(tabs + msg);
         }
 
-        /// <summary>
-        /// Print game try moves and redundant try moves on exhaustive search mode.
-        /// </summary>
-        /// <returns></returns>
         public static String PrintGameTryMoves(Game g, List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves)
         {
-            String content = g.Board.ToString() + Environment.NewLine + "Scenario: " + g.GameInfo.ScenarioName + Environment.NewLine + "Last moves: " + g.Board.GetLastMoves() + Environment.NewLine;
-
-            String msg = "";
-            foreach (GameTryMove tryMove in tryMoves)
-            {
-                if (msg != "") msg += ",";
-                msg += "(" + tryMove.Move.x + "," + tryMove.Move.y + ")";
-            }
-            content += "Game try moves: " + msg + Environment.NewLine;
-            if (redundantTryMoves == null) return content;
-            msg = "";
-            foreach (GameTryMove tryMove in redundantTryMoves)
-            {
-                if (msg != "") msg += ",";
-                msg += "(" + tryMove.Move.x + "," + tryMove.Move.y + ")";
-            }
-            content += "Redundant try moves: " + msg + Environment.NewLine;
-            return content;
+            String msg = g.Board.ToString() + Environment.NewLine + "Scenario: " + g.GameInfo.ScenarioName + Environment.NewLine + "Last moves: " + g.Board.GetLastMoves() + Environment.NewLine;
+            
+            msg += "Game try moves: " + tryMoves.GetConcatenatedString() + Environment.NewLine;
+            if (redundantTryMoves == null) return msg;
+            msg += "Redundant try moves: " + redundantTryMoves.GetConcatenatedString() + Environment.NewLine;
+            return msg;
         }
 
         public static void PrintBoardToText(Board board)
@@ -53,90 +33,85 @@ namespace Go
 
         public static void PrintBoardToText(Board board, String fileName)
         {
-            String content = board.ToString() + Environment.NewLine + board.GameInfo.ScenarioName + Environment.NewLine + board.GetLastMoves() + Environment.NewLine;
-            File.AppendAllText(Directory.GetCurrentDirectory() + "\\" + fileName, content);
-            Debug.WriteLine(content);
+            String msg = board.ToString() + Environment.NewLine + board.GameInfo.ScenarioName + Environment.NewLine + board.GetLastMoves() + Environment.NewLine;
+            File.AppendAllText(Directory.GetCurrentDirectory() + "\\" + fileName, msg);
+            Debug.WriteLine(msg);
         }
 
         public static void PrintBoardToText(Board board, String info, String fileName)
         {
-            String content = board.ToString() + Environment.NewLine + board.GameInfo.ScenarioName + Environment.NewLine + board.GetLastMoves() + Environment.NewLine + info + Environment.NewLine;
-            File.AppendAllText(Directory.GetCurrentDirectory() + "\\" + fileName, content);
-            Debug.WriteLine(content);
+            String msg = board.ToString() + Environment.NewLine + board.GameInfo.ScenarioName + Environment.NewLine + board.GetLastMoves() + Environment.NewLine + info + Environment.NewLine;
+            File.AppendAllText(Directory.GetCurrentDirectory() + "\\" + fileName, msg);
+            Debug.WriteLine(msg);
         }
 
         public static void PrintGameTryMovesToText(Game g, List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves)
         {
-            String content = PrintGameTryMoves(g, tryMoves, redundantTryMoves);
-            File.AppendAllText(Directory.GetCurrentDirectory() + "\\GameBoards.txt", content);
-            Debug.WriteLine(content);
+            String msg = PrintGameTryMoves(g, tryMoves, redundantTryMoves);
+            File.AppendAllText(Directory.GetCurrentDirectory() + "\\GameBoards.txt", msg);
+            Debug.WriteLine(msg);
         }
+
         public static void PrintToText(String text, String fileName)
         {
             File.AppendAllText(Directory.GetCurrentDirectory() + "\\" + fileName, text + Environment.NewLine);
         }
 
-        public static String CreateSetupMovesScript(String contents)
+        public static String CreateSetupMovesScript(String script)
         {
-            MatchCollection matches = Regex.Matches(contents, @"\(-?\d+,-?\d+\)");
-            String script = "";
+            MatchCollection matches = Regex.Matches(script, @"\(-?\d+,-?\d+\)");
+            String msg = "";
             foreach (Match match in matches)
-            {
-                script += "g.MakeMove" + match.Value + ";" + Environment.NewLine;
-            }
-            return script;
+                msg += "g.MakeMove" + match.Value + ";" + Environment.NewLine;
+            return msg;
         }
 
-        public static String ShowMovablePoints(Game game)
+        public static String ShowTryMoves(Game g)
         {
             List<Point> points = new List<Point>();
-            List<GameTryMove> gameTryMoves = GameHelper.GetTryMovesForGame(game);
+            List<GameTryMove> gameTryMoves = GameHelper.GetTryMovesForGame(g);
             gameTryMoves.ForEach(t => points.Add(t.TryGame.Board.Move.Value));
-            return ShowMovablePoints(game, points);
+            return ShowPointsInBoard(g, points);
         }
 
-        public static String ShowMovablePoints(Game game, List<Point> points)
+        public static String ShowPointsInBoard(Game g, List<Point> points)
         {
-            string rc = "\n" + new String(' ', 4);
-            for (int j = 0; j < game.GameInfo.BoardSizeX; j++)
+            string msg = "\n" + new String(' ', 4);
+            for (int j = 0; j < g.GameInfo.BoardSizeX; j++)
+                msg += j.ToString().PadRight(2, ' ');
+            for (int i = 0; i < g.GameInfo.BoardSizeY; i++)
             {
-                rc += j.ToString().PadRight(2, ' ');
-            }
-            for (int i = 0; i < game.GameInfo.BoardSizeY; i++)
-            {
-                rc += "\n" + i.ToString().PadLeft(3, ' ') + " ";
-                for (int j = 0; j < game.GameInfo.BoardSizeX; j++)
+                msg += "\n" + i.ToString().PadLeft(3, ' ') + " ";
+                for (int j = 0; j < g.GameInfo.BoardSizeX; j++)
                 {
                     if (points.Any(p => p.x == j && p.y == i))
-                        rc += "X";
+                        msg += "X";
                     else
-                        rc += ".";
-                    rc += " ";
+                        msg += ".";
+                    msg += " ";
                 }
             }
-            return rc;
+            return msg;
         }
 
-        public static String ShowHeatMapValues(Game game, int[,] list)
+        public static String ShowHeatMapValues(Game g, int[,] list)
         {
-            string rc = "\n" + new String(' ', 4);
-            for (int j = 0; j < game.GameInfo.BoardSizeX; j++)
+            string msg = "\n" + new String(' ', 4);
+            for (int j = 0; j < g.GameInfo.BoardSizeX; j++)
+                msg += j.ToString().PadRight(2, ' ');
+            for (int i = 0; i < g.GameInfo.BoardSizeY; i++)
             {
-                rc += j.ToString().PadRight(2, ' ');
+                msg += "\n" + i.ToString().PadLeft(3, ' ') + " ";
+                for (int j = 0; j < g.GameInfo.BoardSizeX; j++)
+                    msg += list[j, i].ToString().PadRight(2, ' ');
             }
-            for (int i = 0; i < game.GameInfo.BoardSizeY; i++)
-            {
-                rc += "\n" + i.ToString().PadLeft(3, ' ') + " ";
-                for (int j = 0; j < game.GameInfo.BoardSizeX; j++)
-                    rc += list[j, i].ToString().PadRight(2, ' ');
-            }
-            return rc;
+            return msg;
         }
 
         public static void ReadCountFromFile()
         {
-            String contents = File.ReadAllText(Directory.GetCurrentDirectory() + "\\RedundantCount.txt");
-            String[] array = contents.Split('|');
+            String msg = File.ReadAllText(Directory.GetCurrentDirectory() + "\\RedundantCount.txt");
+            String[] array = msg.Split('|');
             int totalCount = 0;
             foreach (String s in array)
             {

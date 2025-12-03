@@ -7,14 +7,13 @@ using System.Linq;
 
 
 namespace Go
-{
+{    
     /// <summary>
-    /// Mapping all possible moves up to three levels on a json map, including ko moves, redundant moves, etc.
-    /// This will enable a spontaneous response in real-time play up to three levels.
+    /// Map all possible moves for two or three levels on a json map.
     /// </summary>
     public class MonteCarloMapping
     {
-        public long? elapsedTime;
+        public static Boolean ThreeLevelMapping = Convert.ToBoolean(ConfigurationSettings.AppSettings["ONE_STOP_MAPPING"]);
 
         public static void MapScenario(Game game)
         {
@@ -45,26 +44,20 @@ namespace Go
             Stopwatch watch = Stopwatch.StartNew();
             List<GameTryMove> possibleMoves = GameHelper.GetTryMovesForGame(game);
             Debug.WriteLine("Scenario: " + game.GameInfo.ScenarioName);
-            String msg = "";
-            foreach (GameTryMove g in possibleMoves)
-            {
-                if (msg != "") msg += ", ";
-                msg += "(" + g.Move.x + ", " + g.Move.y + ")";
-            }
-            Debug.WriteLine("Game moves: " + msg);
+            Debug.WriteLine("Game moves: " + possibleMoves.GetConcatenatedString());
             JArray mappedJson = GameMapping.GetMappedJson(game);
 
             for (int j = 0; j <= possibleMoves.Count - 1; j++)
             {
-                GameTryMove gameTryMove = possibleMoves[j];
+                GameTryMove tryMove = possibleMoves[j];
                 Game g = new Game(game);
 
                 //make first move on the board
-                if (MakeMoveAndCheckIfAnswerFound(g, gameTryMove.Move))
+                if (MakeMoveAndCheckIfAnswerFound(g, tryMove.Move))
                     continue;
 
                 //check if second move mapped already
-                JObject firstLevelMove = (JObject)(mappedJson.Where(m => (int)m["FirstMove"]["x"] == gameTryMove.Move.x && (int)m["FirstMove"]["y"] == gameTryMove.Move.y).FirstOrDefault());
+                JObject firstLevelMove = (JObject)(mappedJson.Where(m => (int)m["FirstMove"]["x"] == tryMove.Move.x && (int)m["FirstMove"]["y"] == tryMove.Move.y).FirstOrDefault());
 
                 if (firstLevelMove != null)
                 {
@@ -84,7 +77,7 @@ namespace Go
                     {
                         //added solution move to json
                         Point secondMove = solutionMove.Value;
-                        MonteCarloMapFirstSecondMove(g, gameTryMove.Move, secondMove);
+                        MonteCarloMapFirstSecondMove(g, tryMove.Move, secondMove);
 
                         //make second move on the board
                         if (MakeMoveAndCheckIfAnswerFound(g, secondMove))
@@ -97,13 +90,12 @@ namespace Go
                     {
                         //if not mapped and solution not found then search for answer by mcts
                         MonteCarloTreeSearch mcts = MonteCarloGame.InitializeMonteCarloComputerMove(g);
-                        MapAnswerNodeToJson(g, gameTryMove.Move, mcts.AnswerNode);
+                        MapAnswerNodeToJson(g, tryMove.Move, mcts.AnswerNode);
                     }
                 }
             }
             watch.Stop();
             Debug.WriteLine("Total time taken (verification): " + watch.ElapsedMilliseconds);
-            elapsedTime = watch.ElapsedMilliseconds;
         }
 
         /// <summary>
@@ -115,17 +107,17 @@ namespace Go
             for (int j = 0; j <= possibleMoves.Count - 1; j++)
             {
                 Game g = new Game(game);
-                GameTryMove gameTryMove = possibleMoves[j];
+                GameTryMove tryMove = possibleMoves[j];
 
                 //make third move on the board
-                if (MakeMoveAndCheckIfAnswerFound(g, gameTryMove.Move))
+                if (MakeMoveAndCheckIfAnswerFound(g, tryMove.Move))
                     continue;
 
                 JObject secondLevelMove = null;
                 if (move != null && move["SecondLevel"] != null)
                 {
                     //check if fourth move mapped already
-                    secondLevelMove = (JObject)(move["SecondLevel"].Where(m => (int)m["ThirdMove"]["x"] == gameTryMove.Move.x && (int)m["ThirdMove"]["y"] == gameTryMove.Move.y).FirstOrDefault());
+                    secondLevelMove = (JObject)(move["SecondLevel"].Where(m => (int)m["ThirdMove"]["x"] == tryMove.Move.x && (int)m["ThirdMove"]["y"] == tryMove.Move.y).FirstOrDefault());
                     if (secondLevelMove != null)
                     {
                         Point fourthMove = new Point((int)secondLevelMove["FourthMove"]["x"], (int)secondLevelMove["FourthMove"]["y"]);
@@ -148,7 +140,7 @@ namespace Go
                     {
                         //added solution move to json
                         Point fourthMove = solutionMove.Value;
-                        MonteCarloMapThirdFourthMove(g, gameTryMove.Move, fourthMove);
+                        MonteCarloMapThirdFourthMove(g, tryMove.Move, fourthMove);
 
                         //make fourth move on the board
                         if (MakeMoveAndCheckIfAnswerFound(g, fourthMove))
@@ -162,7 +154,7 @@ namespace Go
                         //if not mapped and solution not found then search for answer by mcts
                         MonteCarloTreeSearch mcts = MonteCarloGame.InitializeMonteCarloComputerMove(g);
                         Point answerMove = (mcts.AnswerNode != null) ? mcts.AnswerNode.State.Game.Board.Move.Value : Game.PassMove;
-                        MonteCarloMapThirdFourthMove(g, gameTryMove.Move, answerMove, mcts.AnswerNode);
+                        MonteCarloMapThirdFourthMove(g, tryMove.Move, answerMove, mcts.AnswerNode);
                     }
                 }
             }
@@ -174,16 +166,16 @@ namespace Go
         protected virtual void ThirdLevelMappingForSolution(Game game, JObject move = null)
         {
             //if only two levels required as specified in config file then return
-            if (!GameMapping.OneStopMapping) return;
+            if (!MonteCarloMapping.ThreeLevelMapping) return;
 
             List<GameTryMove> possibleMoves = GameHelper.GetTryMovesForGame(game);
             for (int j = 0; j <= possibleMoves.Count - 1; j++)
             {
                 Game g = new Game(game);
-                GameTryMove gameTryMove = possibleMoves[j];
+                GameTryMove tryMove = possibleMoves[j];
 
                 //make fifth move on the board
-                if (MakeMoveAndCheckIfAnswerFound(g, gameTryMove.Move))
+                if (MakeMoveAndCheckIfAnswerFound(g, tryMove.Move))
                     continue;
 
                 //if solution found then all three levels completed
@@ -193,7 +185,7 @@ namespace Go
                 if (move != null && move["ThirdLevel"] != null)
                 {
                     //check if third level move mapped already
-                    JObject thirdLevelMove = (JObject)(move["ThirdLevel"].Where(m => (int)m["FifthMove"]["x"] == gameTryMove.Move.x && (int)m["FifthMove"]["y"] == gameTryMove.Move.y).FirstOrDefault());
+                    JObject thirdLevelMove = (JObject)(move["ThirdLevel"].Where(m => (int)m["FifthMove"]["x"] == tryMove.Move.x && (int)m["FifthMove"]["y"] == tryMove.Move.y).FirstOrDefault());
 
                     //if mapped then all three levels completed
                     if (thirdLevelMove != null)
@@ -203,7 +195,7 @@ namespace Go
                 //if not mapped and solution not found then search for answer by mcts
                 MonteCarloTreeSearch mcts = MonteCarloGame.InitializeMonteCarloComputerMove(g);
                 Point answerMove = (mcts.AnswerNode != null) ? mcts.AnswerNode.State.Game.Board.Move.Value : Game.PassMove;
-                MonteCarloMapFifthSixthMove(g, gameTryMove.Move, answerMove, mcts.AnswerNode);
+                MonteCarloMapFifthSixthMove(g, tryMove.Move, answerMove, mcts.AnswerNode);
             }
         }
 
@@ -249,7 +241,7 @@ namespace Go
                 JObject secondLevelMove = JsonHelper.SecondLevelMapping(firstLevelMove, thirdMove, fourthMove);
                 if (move["SecondLevel"] == null) continue;
                 //third level
-                if (!GameMapping.OneStopMapping) continue;
+                if (!MonteCarloMapping.ThreeLevelMapping) continue;
                 foreach (JObject move2 in move["SecondLevel"])
                 {
                     Point fifthMove = new Point((int)move2["FirstMove"]["x"], (int)move2["FirstMove"]["y"]);
@@ -280,7 +272,7 @@ namespace Go
             JObject secondLevelMove = JsonHelper.SecondLevelMapping(firstLevelMove, thirdMovePt, fourthMovePt);
             if (answerNode == null) return;
 
-            if (!GameMapping.OneStopMapping) return;
+            if (!MonteCarloMapping.ThreeLevelMapping) return;
             //third level
             foreach (JObject move in answerNode.PrunedJson)
             {
@@ -305,7 +297,7 @@ namespace Go
         }
 
         /// <summary>
-        /// On mapping, return true for the first three levels (or first six moves) in order to map all moves whether redundant or not.
+        /// Mapping range.
         /// </summary>
         public static Boolean MappingRange(Board board)
         {
@@ -316,7 +308,7 @@ namespace Go
                 return false;
 
             int isChallenge = Convert.ToInt32(board.GameInfo.UserFirst == PlayerOrComputer.Computer);
-            if (board.LastMoves.Count <= ((GameMapping.OneStopMapping) ? 5 : 3) + isChallenge)
+            if (board.LastMoves.Count <= ((MonteCarloMapping.ThreeLevelMapping) ? 5 : 3) + isChallenge)
                 return true;
             return false;
         }

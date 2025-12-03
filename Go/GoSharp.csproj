@@ -105,7 +105,6 @@
     <Compile Include="MonteCarloMapping\JsonHelper.cs" />
     <Compile Include="MonteCarloMapping\MappingVerification.cs" />
     <Compile Include="MonteCarloMapping\MonteCarloMapping.cs" />
-    <Compile Include="MonteCarlo\EnumerableExtensions.cs" />
     <Compile Include="LifeCheck.cs" />
     <Compile Include="MonteCarlo\MonteCarloGame.cs" />
     <Compile Include="MonteCarlo\MonteCarloTreeSearch.cs" />

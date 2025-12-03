@@ -11,22 +11,22 @@ namespace Go
         /// <summary>
         /// Ko survival enabled.
         /// </summary>
-        public static Boolean KoSurvivalEnabled(SurviveOrKill surviveOrKill, GameInfo gameInfo)
+        public static Boolean KoSurvivalEnabled(SurviveOrKill surviveOrKill, GameInfo gi)
         {
             if (surviveOrKill == SurviveOrKill.Survive)
-                return (gameInfo.Survival == SurviveOrKill.SurviveWithKo || gameInfo.Survival == SurviveOrKill.Kill);
+                return (gi.Survival == SurviveOrKill.SurviveWithKo || gi.Survival == SurviveOrKill.Kill);
             else if (surviveOrKill == SurviveOrKill.Kill)
-                return (gameInfo.Survival == SurviveOrKill.KillWithKo || gameInfo.Survival == SurviveOrKill.Survive);
+                return (gi.Survival == SurviveOrKill.KillWithKo || gi.Survival == SurviveOrKill.Survive);
             return false;
         }
 
         /// <summary>
         /// Ko content enabled.
         /// </summary>
-        public static Boolean KoContentEnabled(Content c, GameInfo gameInfo)
+        public static Boolean KoContentEnabled(Content c, GameInfo gi)
         {
-            Content killContent = GameHelper.GetContentForSurviveOrKill(gameInfo, SurviveOrKill.Kill);
-            return KoSurvivalEnabled((c == killContent) ? SurviveOrKill.Kill : SurviveOrKill.Survive, gameInfo);
+            Content content = GameHelper.GetContentForSurviveOrKill(gi, SurviveOrKill.Kill);
+            return KoSurvivalEnabled((c == content) ? SurviveOrKill.Kill : SurviveOrKill.Survive, gi);
         }
 
         /// <summary>

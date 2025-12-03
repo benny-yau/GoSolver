@@ -9,7 +9,6 @@ namespace ConsoleGoSolver
 {
     public class Program
     {
-
         static void Main(string[] args)
         {
             try
@@ -19,14 +18,10 @@ namespace ConsoleGoSolver
                     Game g = GetScenarioGame();
                     while (true)
                     {
-                        Boolean completed = PlayOneRound(g);
-                        if (!completed)
-                            break;
-                        Console.WriteLine("\nDo you want to play the scenario again (y/n)?");
-                        String play_again = Console.ReadLine();
-                        if (play_again.ToLower() != "y")
+                        if (PlayOneRound(g))
                             break;
                     }
+                    Console.WriteLine();
                 }
             }
             catch (Exception ex)
@@ -63,9 +58,9 @@ namespace ConsoleGoSolver
 
         static int SelectFromList<T>(List<T> list)
         {
-            int selected = 0;
             do
             {
+                int selected = 0;
                 String input = Console.ReadLine();
                 if (Int32.TryParse(input, out selected))
                 {
@@ -82,17 +77,30 @@ namespace ConsoleGoSolver
             Console.WriteLine("\n" + g.GameInfo.StartContent.ToString() + " to move.");
             Boolean koToWin = (g.GameInfo.Survival == SurviveOrKill.KillWithKo || g.GameInfo.Survival == SurviveOrKill.SurviveWithKo);
             Console.WriteLine(koToWin ? "Ko to win." : "");
-            Console.WriteLine("Do you place the first step? [y/n] (Get answer[a], Search answer[s], Exit[x])");
-            //set player to start first
+            Console.WriteLine("Do you place the first step? [y/n] (Get answer[a], Search answer[s])");
             String input = Console.ReadLine().ToLower();
-            if (input == "s" || input == "search")
+            if (input == "")
+                return true;
+            else if (input == "s" || input == "search")
+            {
                 SearchAnswer(g);
+                return true;
+            }
             else if (input == "a" || input == "answer")
                 GetAnswer(g);
             else if (input == "m" || input == "mapping")
             {
                 MonteCarloMapping.MapScenario(g);
                 Console.WriteLine("Mapping completed.");
+            }
+            else if (input == "r" || input == "move")
+                GetUserInput(g);
+            else if (input == "t" || input == "trymoves")
+                Console.WriteLine(DebugHelper.ShowTryMoves(g));
+            else if (input == "e" || input == "movablepoints")
+            {
+                List<Point> movablePoints = GameHelper.GetMovablePoints(g.Board);
+                Console.WriteLine(DebugHelper.ShowPointsInBoard(g, movablePoints));
             }
             else if (input == "v" || input == "verification")
             {
@@ -108,22 +116,20 @@ namespace ConsoleGoSolver
                 else
                     return false;
 
-                Boolean gameEnded = false;
                 //make player move
                 if (g.GameInfo.UserFirst == PlayerOrComputer.Player)
                     GetNextMoveFromUser(g);
                 do
                 {
                     //make computer move
-                    gameEnded = ComputerMakeMove(g);
-                    if (gameEnded)
-                        break;
+                    if (ComputerMakeMove(g))
+                        return false;
                     //get player move
                     if (!GetNextMoveFromUser(g))
-                        return false;
+                        return true;
                 } while (true);
             }
-            return true;
+            return false;
         }
 
         public static void GetAnswer(Game g)
@@ -132,16 +138,7 @@ namespace ConsoleGoSolver
                 Console.WriteLine("No answers for this scenario.");
 
             List<Point> solution = g.GameInfo.solutionPoints.First();
-
-            String msg = "";
-            for (int i = 0; i <= solution.Count - 1; i++)
-            {
-                Point p = solution[i];
-                msg += p;
-                if (i < solution.Count - 1)
-                    msg += ",";
-            }
-            Console.WriteLine("\nSolution: " + msg + "\n");
+            Console.WriteLine("\nSolution: " + solution.GetConcatenatedString() + "\n");
         }
 
         public static void SearchAnswer(Game g)
@@ -188,43 +185,51 @@ namespace ConsoleGoSolver
 
         static Boolean GetNextMoveFromUser(Game g)
         {
-            int x, y;
-            bool parseX, parseY;
-            MakeMoveResult result = MakeMoveResult.Unknown;
             do
             {
-                Console.WriteLine("Enter x position: ");
-                String input = Console.ReadLine();
-                if (input == "x")
-                    return false;
-                parseX = Int32.TryParse(input, out x);
-                Console.WriteLine("Enter y position: ");
-                parseY = Int32.TryParse(Console.ReadLine(), out y);
-
-                if (parseX && parseY)
-                {
-                    SurviveOrKill survivalOrKill = GameHelper.KillOrSurvivalForNextMove(g.Board);
-                    List<Point> movablePoints = (survivalOrKill == SurviveOrKill.Kill) ? g.GameInfo.killMovablePoints : g.GameInfo.movablePoints;
-
-                    if (!movablePoints.Contains(new Point(x, y)))
-                    {
-                        Console.WriteLine("Outside of movable range.");
-                        continue;
-                    }
-                    Game m = new Game(g);
-                    result = m.InternalMakeMove(x, y);
-                    if (result != MakeMoveResult.Legal)
-                        Console.WriteLine("Illegal move.");
-                    else
-                        break;
-                }
+                (Boolean result, Point? move) = GetUserInput(g);
+                if (!result) continue;
+                if (move == null) return false;
+                break;
             } while (true);
-            g.MakeMove(x, y);
             Console.WriteLine(Environment.NewLine + "Your move: ");
             Console.WriteLine("{0}", g.Board);
             Console.WriteLine("Move: {0}", g.Board.Move + "\n");
             return true;
         }
 
+        static (Boolean, Point?) GetUserInput(Game g)
+        {
+            int x, y;
+            Console.WriteLine("Enter x position: ");
+            String input = Console.ReadLine();
+            bool parseX = Int32.TryParse(input, out x);
+            if (input == "")
+                return (true, null);
+            Console.WriteLine("Enter y position: ");
+            bool parseY = Int32.TryParse(Console.ReadLine(), out y);
+
+            if (parseX && parseY)
+            {
+                if (!GameHelper.GetMovablePoints(g.Board).Contains(new Point(x, y)))
+                {
+                    Console.WriteLine("Outside of movable range.");
+                    return (false, null);
+                }
+                MakeMoveResult result = g.InternalMakeMove(x, y);
+                if (result == MakeMoveResult.KoBlocked)
+                {
+                    Console.WriteLine("Ko blocked move.");
+                    return (false, null);
+                }
+                else if (result != MakeMoveResult.Legal)
+                {
+                    Console.WriteLine("Illegal move.");
+                    return (false, null);
+                }
+                return (true, g.Board.Move);
+            }
+            return (false, null);
+        }
     }
 }

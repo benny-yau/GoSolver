@@ -96,16 +96,16 @@ namespace Go
         public (ConfirmAliveResult, List<GameTryMove>, GameTryMove) GetSurvivalMoves(Game game = null)
         {
             Game g = game ?? this;
-            GameInfo gameInfo = g.GameInfo;
-            Content c = GameHelper.GetContentForSurviveOrKill(gameInfo, SurviveOrKill.Survive);
+            GameInfo gi = g.GameInfo;
+            Content c = GameHelper.GetContentForSurviveOrKill(gi, SurviveOrKill.Survive);
             List<GameTryMove> tryMoves = new List<GameTryMove>();
             List<GameTryMove> redundantTryMoves = new List<GameTryMove>();
             GameTryMove koBlockedMove = null;
             Boolean mappingRange = MonteCarloMapping.MappingRange(g.Board);
 
-            for (int i = 0; i <= gameInfo.movablePoints.Count - 1; i++)
+            for (int i = 0; i <= gi.movablePoints.Count - 1; i++)
             {
-                Point p = gameInfo.movablePoints[i];
+                Point p = gi.movablePoints[i];
                 if (g.Board[p] != Content.Empty) continue;
                 //create try moves
                 GameTryMove tryMove = new GameTryMove(g);
@@ -117,7 +117,7 @@ namespace Go
                     tryMove.MakeKoMove(p, SurviveOrKill.Survive);
                     tryMove.IsRedundantKo = RedundantMoveHelper.RedundantSurvivalKoMove(tryMove);
                     if (tryMove.IsRedundantKo) redundantTryMoves.Add(tryMove);
-                    if (KoHelper.KoContentEnabled(c, gameInfo) && (!tryMove.IsRedundantKo || mappingRange))
+                    if (KoHelper.KoContentEnabled(c, gi) && (!tryMove.IsRedundantKo || mappingRange))
                         koBlockedMove = tryMove;
                 }
                 else if (tryMove.MakeMoveResult == MakeMoveResult.Legal)
@@ -159,7 +159,7 @@ namespace Go
             CreateRandomMoveForCoveredEyeSurvival(tryMoves, g);
             CreateRandomMoveForRedundantKo(g, tryMoves, redundantTryMoves);
 
-            PrintGameMoveList(tryMoves, redundantTryMoves, g);
+            PrintGameMoveList(tryMoves, g);
 
             return (ConfirmAliveResult.Unknown, tryMoves, koBlockedMove);
         }
@@ -276,31 +276,31 @@ namespace Go
             //try all possible moves
             for (int i = 0; i <= tryMoves.Count - 1; i++)
             {
-                GameTryMove gameTryMove = tryMoves[i];
-                Board b = gameTryMove.TryGame.Board;
+                GameTryMove tryMove = tryMoves[i];
+                Board b = tryMove.TryGame.Board;
                 Stopwatch watch = null;
                 int gameDepth = GameDepth(g);
                 if (DebugPrintMode(gameDepth))
                 {
                     if (gameDepth == 0) Debug.WriteLine(Environment.NewLine);
-                    DebugHelper.DebugWriteWithTab("Trying game move at (" + gameTryMove.Move.x + ", " + gameTryMove.Move.y + ") at depth " + depth + " (" + (i + 1) + " out of " + tryMoves.Count + ") | Last moves: " + g.Board.GetLastMoves(), gameDepth);
+                    DebugHelper.DebugWriteWithTab("Trying game move at " + tryMove.Move.ToString() + " at depth " + depth + " (" + (i + 1) + " out of " + tryMoves.Count + ") | Last moves: " + g.Board.GetLastMoves(), gameDepth);
                     watch = Stopwatch.StartNew();
                 }
 
                 //make next opponent move
-                (gameTryMove.ConfirmAlive, gameTryMove.OpponentBestMove) = MakeKillMove(depth - 1, gameTryMove.TryGame);
+                (tryMove.ConfirmAlive, tryMove.OpponentBestMove) = MakeKillMove(depth - 1, tryMove.TryGame);
 
                 if (watch != null)
                 {
                     watch.Stop();
-                    DebugHelper.DebugWriteWithTab("Time taken for (" + gameTryMove.Move.x + ", " + gameTryMove.Move.y + ") at depth " + depth + ": " + watch.ElapsedMilliseconds + " | Result: " + gameTryMove.ConfirmAlive.ToString(), gameDepth);
+                    DebugHelper.DebugWriteWithTab("Time taken for " + tryMove.Move.ToString() + " at depth " + depth + ": " + watch.ElapsedMilliseconds + " | Result: " + tryMove.ConfirmAlive.ToString(), gameDepth);
                 }
 
                 //check if game ended
-                if (gameTryMove.ConfirmAlive != ConfirmAliveResult.Unknown && ((int)gameTryMove.ConfirmAlive > (int)bestResult))
+                if (tryMove.ConfirmAlive != ConfirmAliveResult.Unknown && ((int)tryMove.ConfirmAlive > (int)bestResult))
                 {
-                    bestResult = gameTryMove.ConfirmAlive;
-                    bestResultMove = gameTryMove;
+                    bestResult = tryMove.ConfirmAlive;
+                    bestResultMove = tryMove;
                     if (GameHelper.WinOrLose(SurviveOrKill.Survive, bestResult, g.GameInfo))
                     {
                         if (b.IsPassMove && b.KoGameCheck == KoCheck.None) bestResult = ConfirmAliveResult.BothAlive;
@@ -330,7 +330,7 @@ namespace Go
             if (DebugPrintMode(gameDepth))
             {
                 if (gameDepth == 0) Debug.WriteLine(Environment.NewLine);
-                DebugHelper.DebugWriteWithTab("Trying Ko game move at (" + move.x + ", " + move.y + ") at depth " + depth + " | Last moves: " + g.Board.GetLastMoves(), gameDepth);
+                DebugHelper.DebugWriteWithTab("Trying Ko game move at " + move.ToString() + " at depth " + depth + " | Last moves: " + g.Board.GetLastMoves(), gameDepth);
                 watch = Stopwatch.StartNew();
             }
 
@@ -344,7 +344,7 @@ namespace Go
             if (watch != null)
             {
                 watch.Stop();
-                DebugHelper.DebugWriteWithTab("Time taken for Ko (" + move.x + ", " + move.y + ") at depth " + depth + ": " + watch.ElapsedMilliseconds + " | Result: " + koTryMove.ConfirmAlive.ToString(), gameDepth);
+                DebugHelper.DebugWriteWithTab("Time taken for Ko " + move.ToString() + " at depth " + depth + ": " + watch.ElapsedMilliseconds + " | Result: " + koTryMove.ConfirmAlive.ToString(), gameDepth);
             }
             if (GameHelper.WinOrLose(surviveOrKill, koTryMove.ConfirmAlive, game.GameInfo))
             {
@@ -361,16 +361,16 @@ namespace Go
         public (ConfirmAliveResult, List<GameTryMove>, GameTryMove) GetKillMoves(Game game = null)
         {
             Game g = game ?? this;
-            GameInfo gameInfo = g.GameInfo;
-            Content c = GameHelper.GetContentForSurviveOrKill(gameInfo, SurviveOrKill.Kill);
+            GameInfo gi = g.GameInfo;
+            Content c = GameHelper.GetContentForSurviveOrKill(gi, SurviveOrKill.Kill);
             List<GameTryMove> tryMoves = new List<GameTryMove>();
             List<GameTryMove> redundantTryMoves = new List<GameTryMove>();
             GameTryMove koBlockedMove = null;
             Boolean mappingRange = MonteCarloMapping.MappingRange(g.Board);
 
-            for (int i = 0; i <= gameInfo.killMovablePoints.Count - 1; i++)
+            for (int i = 0; i <= gi.killMovablePoints.Count - 1; i++)
             {
-                Point p = gameInfo.killMovablePoints[i];
+                Point p = gi.killMovablePoints[i];
                 if (g.Board[p] != Content.Empty) continue;
                 //create try moves
                 GameTryMove tryMove = new GameTryMove(g);
@@ -382,7 +382,7 @@ namespace Go
                     tryMove.MakeKoMove(p, SurviveOrKill.Kill);
                     tryMove.IsRedundantKo = RedundantMoveHelper.RedundantSurvivalKoMove(tryMove);
                     if (tryMove.IsRedundantKo) redundantTryMoves.Add(tryMove);
-                    if (KoHelper.KoContentEnabled(c, gameInfo) && (!tryMove.IsRedundantKo || mappingRange))
+                    if (KoHelper.KoContentEnabled(c, gi) && (!tryMove.IsRedundantKo || mappingRange))
                         koBlockedMove = tryMove;
                 }
                 else if (tryMove.MakeMoveResult == MakeMoveResult.Legal)
@@ -415,7 +415,7 @@ namespace Go
 
             //check for both alive
             BothAliveHelper.EnablePassMoveForBothAlive(g, tryMoves, SurviveOrKill.Kill);
-            PrintGameMoveList(tryMoves, redundantTryMoves, g);
+            PrintGameMoveList(tryMoves, g);
 
             return (ConfirmAliveResult.Unknown, tryMoves, koBlockedMove);
         }
@@ -551,7 +551,7 @@ namespace Go
                 if (DebugPrintMode(gameDepth))
                 {
                     if (gameDepth == 0) Debug.WriteLine(Environment.NewLine);
-                    DebugHelper.DebugWriteWithTab("Trying game move at (" + tryMove.Move.x + ", " + tryMove.Move.y + ") at depth " + depth + " (" + (i + 1) + " out of " + tryMoves.Count + ") | Last moves: " + g.Board.GetLastMoves(), gameDepth);
+                    DebugHelper.DebugWriteWithTab("Trying game move at " + tryMove.Move.ToString() + " at depth " + depth + " (" + (i + 1) + " out of " + tryMoves.Count + ") | Last moves: " + g.Board.GetLastMoves(), gameDepth);
                     watch = Stopwatch.StartNew();
                 }
 
@@ -561,7 +561,7 @@ namespace Go
                 if (watch != null)
                 {
                     watch.Stop();
-                    DebugHelper.DebugWriteWithTab("Time taken for (" + tryMove.Move.x + ", " + tryMove.Move.y + ") at depth " + depth + ": " + watch.ElapsedMilliseconds + " | Result: " + tryMove.ConfirmAlive.ToString(), gameDepth);
+                    DebugHelper.DebugWriteWithTab("Time taken for " + tryMove.Move.ToString() + " at depth " + depth + ": " + watch.ElapsedMilliseconds + " | Result: " + tryMove.ConfirmAlive.ToString(), gameDepth);
                 }
 
                 //check if game ended
@@ -573,7 +573,7 @@ namespace Go
                         return (bestResult, bestResultMove);
                 }
             }
-
+            
             //check for ko
             if (KoMoveCheck(g, SurviveOrKill.Kill, koBlockedMove, depth))
                 return (koBlockedMove.ConfirmAlive, koBlockedMove);

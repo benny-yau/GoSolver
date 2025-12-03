@@ -51,9 +51,9 @@ namespace Go
                 board.WhiteKillerGroupCache = cache;
 
             //cover all empty points
-            GameInfo gameInfo = board.GameInfo;
-            Boolean isKill = (GameHelper.GetContentForSurviveOrKill(gameInfo, SurviveOrKill.Kill) == c.Opposite());
-            List<Point> coverPoints = (isKill) ? gameInfo.killMovablePoints : gameInfo.movablePoints;
+            GameInfo gi = board.GameInfo;
+            Boolean isKill = (GameHelper.GetContentForSurviveOrKill(gi, SurviveOrKill.Kill) == c.Opposite());
+            List<Point> coverPoints = (isKill) ? gi.killMovablePoints : gi.movablePoints;
             List<Point> emptyPoints = coverPoints.Where(p => filledBoard[p] == Content.Empty).ToList();
             emptyPoints.ForEach(p => filledBoard[p] = c.Opposite());
 
@@ -61,7 +61,7 @@ namespace Go
             foreach (Group group in groups)
             {
                 //find killer groups with no liberties left or surrounded by non movable points
-                if (group.Liberties.Count == 0 || (!isKill && group.Liberties.All(n => gameInfo.IsMovablePoint[n.x, n.y] == false)))
+                if (group.Liberties.Count == 0 || (!isKill && group.Liberties.All(n => gi.IsMovablePoint[n.x, n.y] == false)))
                 {
                     killerGroups.Add(group);
                     foreach (Point p in group.Points)

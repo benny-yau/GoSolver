@@ -54,8 +54,10 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="GameInfo.cs" />
     <Compile Include="Group.cs" />
+    <Compile Include="Link.cs" />
     <Compile Include="Point.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SetupMove.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -11,7 +11,7 @@
         </member>
         <member name="M:Go.Game.#ctor(Go.GameInfo)">
             <summary>
-            Create new game.
+            Create new game from game info.
             </summary>
         </member>
         <member name="M:Go.Game.#ctor(Go.Game)">
@@ -21,22 +21,17 @@
         </member>
         <member name="M:Go.Game.InitializeFromGameInfo">
             <summary>
-            Initialize new game with root game and board parameters.
+            Initialize from game info.
             </summary>
         </member>
         <member name="M:Go.Game.MakeMove(Go.Board)">
             <summary>
-            Make move on initial board.
-            </summary>
-        </member>
-        <member name="M:Go.Game.MakeMove(System.Int32,System.Int32,Go.Content)">
-            <summary>
-            Make move on the board and set pass move for ko moves.
+            Make move.
             </summary>
         </member>
         <member name="M:Go.Game.SetupMove(System.Int32,System.Int32,Go.Content)">
             <summary>
-            Setup move on the board from initial scenario.
+            Setup move.
             </summary>
         </member>
         <member name="M:Go.Game.InternalMakeMove(System.Int32,System.Int32,System.Boolean)">
@@ -49,14 +44,14 @@
             Game depth.
             </summary>
         </member>
-        <member name="M:Go.Game.PrintGameMoveList(System.Collections.Generic.List{Go.GameTryMove},System.Collections.Generic.List{Go.GameTryMove},Go.Game)">
+        <member name="M:Go.Game.PrintGameMoveList(System.Collections.Generic.List{Go.GameTryMove},Go.Game)">
             <summary>
-            Print game moves on exhaustive mode.
+            Print game moves list.
             </summary>
         </member>
         <member name="M:Go.Game.DebugPrintMode(System.Int32)">
             <summary>
-            To print debug statements on exhaustive mode.
+            Debug print mode.
             </summary>
         </member>
         <member name="M:Go.Game.InitializeComputerMove(System.Boolean,System.Boolean)">
@@ -278,17 +273,6 @@
             Add pass move for game try move.
             </summary>
         </member>
-        <member name="M:Go.DebugHelper.DebugWriteWithTab(System.String,System.Int32)">
-            <summary>
-            Print debug statements with tabs in front.
-            </summary>
-        </member>
-        <member name="M:Go.DebugHelper.PrintGameTryMoves(Go.Game,System.Collections.Generic.List{Go.GameTryMove},System.Collections.Generic.List{Go.GameTryMove})">
-            <summary>
-            Print game try moves and redundant try moves on exhaustive search mode.
-            </summary>
-            <returns></returns>
-        </member>
         <member name="P:Go.DirectionHelper.DirectionLinkedList">
             <summary>
             Create linked list of all four directions, in clockwise rotation with direction pointing to center.
@@ -446,12 +430,12 @@
         </member>
         <member name="M:Go.GameHelper.WinOrLose(Go.SurviveOrKill,Go.ConfirmAliveResult,Go.GameInfo)">
             <summary>
-            Determine if win or lose based on result.
+            Win or lose.
             </summary>
         </member>
         <member name="M:Go.GameHelper.KillOrSurvivalForNextMove(Go.Board)">
             <summary>
-            Determine if next move is kill or survival.
+            Kill or survival for next move.
             </summary>
         </member>
         <member name="M:Go.GameHelper.GetContentForNextMove(Go.Board)">
@@ -471,30 +455,34 @@
         </member>
         <member name="M:Go.GameHelper.SetupMoveAvailable(Go.Board,Go.Point,Go.Content)">
             <summary>
-            Determine if setup move is available for kill or survival.
+            Setup move available.
+            </summary>
+        </member>
+        <member name="M:Go.GameHelper.GetMovablePoints(Go.Board)">
+            <summary>
+            Get movable points.
             </summary>
         </member>
         <member name="M:Go.GameHelper.GetComputerOrPlayerForNextMove(Go.Board)">
             <summary>
-            Determine if next move is computer or player, based on count of last moves and initial player.
+            Get computer or player for next move.
             </summary>
         </member>
         <member name="M:Go.GameHelper.CheckForRecursion(Go.GameTryMove)">
             <summary>
-            Check for recursion or superkos that are 4 spaces to 12 spaces apart.
+            Check for recursion.
             https://senseis.xmp.net/?LongCycleRule
             <see cref="!:UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_TianLongTu_Q16446" />
             </summary>
         </member>
         <member name="M:Go.GameHelper.CheckForRecursion(Go.Board)">
             <summary>
-            Check for recursion without comparing board.
+            Check for recursion.
             </summary>
         </member>
         <member name="M:Go.GameHelper.GetSnapshotBoard(Go.Game,System.Int32)">
             <summary>
-            Get specific board from last moves based on moveCount parameter.
-            Requires that the root of the game starts from initial setup.
+            Get snapshot board. Requires that the root of the game starts from initial setup.
             </summary>
         </member>
         <member name="M:Go.GameHelper.GetMoveBoards(Go.Board,System.Collections.Generic.IEnumerable{Go.Point},Go.Content,System.Boolean)">
@@ -504,7 +492,7 @@
         </member>
         <member name="M:Go.GameHelper.GetTryMovesForGame(Go.Game)">
             <summary>
-            Get all try moves for next move.
+            Get try moves for game.
             </summary>
         </member>
         <member name="M:Go.GroupHelper.GetKillerGroupFromCache(Go.Board,Go.Point,Go.Content)">
@@ -2247,8 +2235,7 @@
         </member>
         <member name="T:Go.MonteCarloMapping">
             <summary>
-            Mapping all possible moves up to three levels on a json map, including ko moves, redundant moves, etc.
-            This will enable a spontaneous response in real-time play up to three levels.
+            Map all possible moves for two or three levels on a json map.
             </summary>
         </member>
         <member name="M:Go.MonteCarloMapping.MappingFirstLevel(Go.Game)">
@@ -2288,7 +2275,7 @@
         </member>
         <member name="M:Go.MonteCarloMapping.MappingRange(Go.Board)">
             <summary>
-            On mapping, return true for the first three levels (or first six moves) in order to map all moves whether redundant or not.
+            Mapping range.
             </summary>
         </member>
         <member name="M:Go.LifeCheck.ConfirmAlive(Go.Board,System.Collections.Generic.List{Go.Point})">
@@ -2522,12 +2509,12 @@
             Root node of initial mcts.
             </summary>
         </member>
-        <member name="M:Go.UCT.uctValue(Go.Node)">
+        <member name="M:Go.UCT.UctValue(Go.Node)">
             <summary>
             UCT value.
             </summary>
         </member>
-        <member name="M:Go.UCT.findBestNodeWithUCT(Go.Node)">
+        <member name="M:Go.UCT.FindBestNodeWithUCT(Go.Node)">
             <summary>
             Find best child node using uct value.
             </summary>

@@ -15,8 +15,7 @@ namespace Go
         public int maxIterations = Game.MapMovesOrSearchAnswer ? Int32.MaxValue : 6000;
         public long? elapsedTime;
         public static Random random = new Random();
-
-        public static int mappingDepthToVerify = Convert.ToInt32(ConfigurationSettings.AppSettings["MAPPING_DEPTH_TO_VERIFY"]);
+        public static int searchDepthToVerify = Convert.ToInt32(ConfigurationSettings.AppSettings["MAPPING_DEPTH_TO_VERIFY"]);
         public static int realTimeDepthToVerify = Convert.ToInt32(ConfigurationSettings.AppSettings["REALTIME_DEPTH_TO_VERIFY"]);
 
         /// <summary>
@@ -57,13 +56,12 @@ namespace Go
                 {
                     //mapping or search answer
                     Boolean mapPlayerMove = (tree.Root.State.Game.GameInfo.UserFirst == PlayerOrComputer.Player);
-                    return mappingDepthToVerify + 1 + (mapPlayerMove ? 0 : 1);
+                    return searchDepthToVerify + 1 + (mapPlayerMove ? 0 : 1);
                 }
                 else
                 {
                     //real-time and verification
-                    int addLevels = realTimeDepthToVerify;
-                    return tree.AbsoluteRoot.CurrentDepth + addLevels;
+                    return tree.AbsoluteRoot.CurrentDepth + realTimeDepthToVerify;
                 }
             }
         }
@@ -327,7 +325,7 @@ namespace Go
             Node node = rootNode;
             while (node.ChildArray.Count != 0)
             {
-                node = UCT.findBestNodeWithUCT(node);
+                node = UCT.FindBestNodeWithUCT(node);
                 if (ReachedDepthToVerify(node))
                     break;
             }
@@ -446,19 +444,19 @@ namespace Go
             int possibleMoves = tryMoves.Count;
             if (possibleMoves == 0) return (bestResult, b);
             int selectRandom = random.Next(0, possibleMoves);
-            GameTryMove gameTryMove = tryMoves[selectRandom];
-            Game tryGame = gameTryMove.TryGame;
-            if (gameTryMove.MakeMoveResult == MakeMoveResult.Legal)
+            GameTryMove tryMove = tryMoves[selectRandom];
+            Game tryGame = tryMove.TryGame;
+            if (tryMove.MakeMoveResult == MakeMoveResult.Legal)
             {
-                (gameTryMove.ConfirmAlive, b) = MonteCarloMakeSurvivalMove(depth - 1, tryGame);
+                (tryMove.ConfirmAlive, b) = MonteCarloMakeSurvivalMove(depth - 1, tryGame);
             }
-            else if (gameTryMove.MakeMoveResult == MakeMoveResult.KoBlocked)
+            else if (tryMove.MakeMoveResult == MakeMoveResult.KoBlocked)
             {
-                (gameTryMove.ConfirmAlive, b) = MonteCarloMakeSurvivalMove(depth, tryGame);
+                (tryMove.ConfirmAlive, b) = MonteCarloMakeSurvivalMove(depth, tryGame);
                 if (GameHelper.WinOrLose(SurviveOrKill.Kill, result, tryGame.GameInfo))
-                    gameTryMove.ConfirmAlive = ConfirmAliveResult.KoAlive;
+                    tryMove.ConfirmAlive = ConfirmAliveResult.KoAlive;
             }
-            bestResult = gameTryMove.ConfirmAlive;
+            bestResult = tryMove.ConfirmAlive;
             return (bestResult, b);
         }
 
@@ -483,22 +481,22 @@ namespace Go
             int possibleMoves = tryMoves.Count;
             if (possibleMoves == 0) return (bestResult, b);
             int selectRandom = random.Next(0, possibleMoves);
-            GameTryMove gameTryMove = tryMoves[selectRandom];
-            Game tryGame = gameTryMove.TryGame;
+            GameTryMove tryMove = tryMoves[selectRandom];
+            Game tryGame = tryMove.TryGame;
 
-            if (gameTryMove.MakeMoveResult == MakeMoveResult.Legal)
+            if (tryMove.MakeMoveResult == MakeMoveResult.Legal)
             {
-                (gameTryMove.ConfirmAlive, b) = MonteCarloMakeKillMove(depth - 1, tryGame);
-                if (gameTryMove.ConfirmAlive == ConfirmAliveResult.Alive && tryGame.Board.IsPassMove && tryGame.Board.KoGameCheck == KoCheck.None)
-                    gameTryMove.ConfirmAlive = ConfirmAliveResult.BothAlive;
+                (tryMove.ConfirmAlive, b) = MonteCarloMakeKillMove(depth - 1, tryGame);
+                if (tryMove.ConfirmAlive == ConfirmAliveResult.Alive && tryGame.Board.IsPassMove && tryGame.Board.KoGameCheck == KoCheck.None)
+                    tryMove.ConfirmAlive = ConfirmAliveResult.BothAlive;
             }
-            else if (gameTryMove.MakeMoveResult == MakeMoveResult.KoBlocked)
+            else if (tryMove.MakeMoveResult == MakeMoveResult.KoBlocked)
             {
-                (gameTryMove.ConfirmAlive, b) = MonteCarloMakeKillMove(depth, tryGame);
+                (tryMove.ConfirmAlive, b) = MonteCarloMakeKillMove(depth, tryGame);
                 if (GameHelper.WinOrLose(SurviveOrKill.Survive, result, tryGame.GameInfo))
-                    gameTryMove.ConfirmAlive = ConfirmAliveResult.KoAlive;
+                    tryMove.ConfirmAlive = ConfirmAliveResult.KoAlive;
             }
-            bestResult = gameTryMove.ConfirmAlive;
+            bestResult = tryMove.ConfirmAlive;
             return (bestResult, b);
         }
 

@@ -74,10 +74,10 @@ namespace Go
             for (int j = 0; j <= possibleMoves.Count - 1; j++)
             {
                 Game g = new Game(game);
-                GameTryMove gameTryMove = possibleMoves[j];
+                GameTryMove tryMove = possibleMoves[j];
 
                 //make fifth move on the board
-                if (MakeMoveAndCheckIfAnswerFound(g, gameTryMove.Move))
+                if (MakeMoveAndCheckIfAnswerFound(g, tryMove.Move))
                     continue;
 
                 //check if solution move available
@@ -91,7 +91,7 @@ namespace Go
                 if (move != null && move["ThirdLevel"] != null)
                 {
                     //check if mapped already
-                    JObject thirdLevelMove = (JObject)(move["ThirdLevel"].Where(m => (int)m["FifthMove"]["x"] == gameTryMove.Move.x && (int)m["FifthMove"]["y"] == gameTryMove.Move.y).FirstOrDefault());
+                    JObject thirdLevelMove = (JObject)(move["ThirdLevel"].Where(m => (int)m["FifthMove"]["x"] == tryMove.Move.x && (int)m["FifthMove"]["y"] == tryMove.Move.y).FirstOrDefault());
 
                     if (thirdLevelMove != null)
                     {
@@ -125,10 +125,10 @@ namespace Go
                 WriteToFile("Elapsed time: " + mcts.elapsedTime.Value + " - " + g.Board.GetLastMoves() + Environment.NewLine);
         }
 
-        public static void WriteToFile(String contents)
+        public static void WriteToFile(String msg)
         {
-            File.AppendAllText(Directory.GetCurrentDirectory() + "\\verification.txt", contents);
-            Debug.WriteLine(contents);
+            File.AppendAllText(Directory.GetCurrentDirectory() + "\\verification.txt", msg);
+            Debug.WriteLine(msg);
         }
 
 

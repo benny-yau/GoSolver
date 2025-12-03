@@ -14,8 +14,7 @@ namespace Go
         Survive,
         Kill,
         SurviveWithKo,
-        KillWithKo,
-        Unknown
+        KillWithKo
     }
 
     /// <summary>
@@ -53,7 +52,6 @@ namespace Go
     /// </summary>
     public enum MakeMoveResult
     {
-        Unknown,
         Suicide,
         KoBlocked,
         Legal,

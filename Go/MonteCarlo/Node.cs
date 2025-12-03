@@ -128,14 +128,6 @@ namespace Go
             }
         }
 
-        public Node FirstNode()
-        {
-            Node n = this;
-            while (n.CurrentDepth > 1)
-                n = n.Parent;
-            return n;
-        }
-
         public String GetLastMoves()
         {
             return this.State.Game.Board.GetLastMoves();
@@ -145,7 +137,7 @@ namespace Go
         {
             String rc = "Score: " + this.State.WinScore;
             rc += " VisitCount: " + this.State.VisitCount;
-            rc += " UCT:" + UCT.uctValue(this);
+            rc += " UCT:" + UCT.UctValue(this);
             rc += " Move:" + GetLastMoves();
             rc += " Depth:" + this.State.Depth;
             return rc;

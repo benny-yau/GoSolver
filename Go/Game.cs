@@ -33,7 +33,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Create new game.
+        /// Create new game from game info.
         /// </summary>
         public Game(GameInfo gi)
         {
@@ -52,7 +52,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Initialize new game with root game and board parameters.
+        /// Initialize from game info.
         /// </summary>
         private void InitializeFromGameInfo()
         {
@@ -61,7 +61,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Make move on initial board.
+        /// Make move.
         /// </summary>
         public MakeMoveResult MakeMove(Board board)
         {
@@ -84,12 +84,9 @@ namespace Go
             return MakeMove(x, y, c);
         }
 
-        /// <summary>
-        /// Make move on the board and set pass move for ko moves.
-        /// </summary>
-        public MakeMoveResult MakeMove(int x, int y, Content content)
+        public MakeMoveResult MakeMove(int x, int y, Content c)
         {
-            MakeMoveResult result = this.Board.InternalMakeMove(x, y, content);
+            MakeMoveResult result = this.Board.InternalMakeMove(x, y, c);
             if (result == MakeMoveResult.Legal)
                 return result;
             else if (result != MakeMoveResult.Pass)
@@ -98,7 +95,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Setup move on the board from initial scenario.
+        /// Setup move.
         /// </summary>
         public void SetupMove(int x, int y, Content c)
         {
@@ -126,23 +123,17 @@ namespace Go
         }
 
         /// <summary>
-        /// Print game moves on exhaustive mode.
+        /// Print game moves list.
         /// </summary>
-        public void PrintGameMoveList(List<GameTryMove> tryMoves, List<GameTryMove> redundantTryMoves, Game g)
+        public void PrintGameMoveList(List<GameTryMove> tryMoves, Game g)
         {
             int gameDepth = GameDepth(g);
             if (!DebugPrintMode(gameDepth)) return;
-            String msg = "";
-            foreach (GameTryMove tryMove in tryMoves)
-            {
-                if (msg != "") msg += ",";
-                msg += "(" + tryMove.Move.x + "," + tryMove.Move.y + ")";
-            }
-            DebugHelper.DebugWriteWithTab("Game try moves: " + msg, gameDepth);
+            DebugHelper.DebugWriteWithTab("Game try moves: " + tryMoves.GetConcatenatedString(), gameDepth);
         }
 
         /// <summary>
-        /// To print debug statements on exhaustive mode.
+        /// Debug print mode.
         /// </summary>
         public Boolean DebugPrintMode(int gameDepth)
         {

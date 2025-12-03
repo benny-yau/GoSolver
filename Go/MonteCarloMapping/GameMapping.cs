@@ -12,8 +12,6 @@ namespace Go
 {
     public static class GameMapping
     {
-        public static Boolean OneStopMapping = Convert.ToBoolean(ConfigurationSettings.AppSettings["ONE_STOP_MAPPING"]);
-
         /// <summary>
         /// Get mapped json.
         /// </summary>
@@ -35,7 +33,7 @@ namespace Go
         {
             dynamic json = GetMappedJson(g);
             String jsonString = JsonConvert.SerializeObject(json);
-            String jsonFormatted = (GameMapping.OneStopMapping) ? jsonString : Regex.Replace(jsonString, "\"", "\\\"");
+            String jsonFormatted = (MonteCarloMapping.ThreeLevelMapping) ? jsonString : Regex.Replace(jsonString, "\"", "\\\"");
             String fileName = (g.GameInfo.UserFirst == PlayerOrComputer.Player) ? "\\playerJson.txt" : "\\challengeJson.txt";
             File.WriteAllText(Directory.GetCurrentDirectory() + fileName, jsonFormatted);
             FindPassMoveInJson(json);

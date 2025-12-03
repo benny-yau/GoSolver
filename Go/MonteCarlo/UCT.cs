@@ -11,24 +11,21 @@ namespace Go
         /// <summary>
         /// UCT value.
         /// </summary>
-        public static double uctValue(Node node)
+        public static double UctValue(Node node)
         {
             if (node.State.VisitCount == 0)
-            {
                 return int.MaxValue;
-            }
-            int totalVisitCount = 0;
-            node.Parent.ChildArray.ForEach(m => totalVisitCount += m.State.VisitCount);
+            int totalVisitCount = node.Parent.ChildArray.Sum(n => n.State.VisitCount);
 
-            return (node.State.WinScore / (double)node.State.VisitCount) + 1.41 * Math.Sqrt(Math.Log(totalVisitCount) / (double)node.State.VisitCount);// 0.44 or 1.41
+            return (node.State.WinScore / (double)node.State.VisitCount) + 1.41 * Math.Sqrt(Math.Log(totalVisitCount) / (double)node.State.VisitCount);
         }
 
         /// <summary>
         /// Find best child node using uct value.
         /// </summary>
-        internal static Node findBestNodeWithUCT(Node node)
+        public static Node FindBestNodeWithUCT(Node node)
         {
-            return node.ChildArray.MaxObject(m => uctValue(m));
+            return node.ChildArray.MaxObject(m => UctValue(m));
 
         }
     }

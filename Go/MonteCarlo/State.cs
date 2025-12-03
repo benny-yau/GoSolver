@@ -8,7 +8,6 @@ namespace Go
     [Serializable]
     public class State
     {
-        private Node node;
         private Game game;
         private SurviveOrKill surviveOrKill;
         private int visitCount;
@@ -133,11 +132,11 @@ namespace Go
                 List<GameTryMove> tryMoves = GameHelper.GetTryMovesForGame(this.Game);
 
                 List<State> possibleStates = new List<State>();
-                foreach (GameTryMove gameTryMove in tryMoves)
+                foreach (GameTryMove tryMove in tryMoves)
                 {
-                    State state = new State(gameTryMove.TryGame);
+                    State state = new State(tryMove.TryGame);
                     state.SurviveOrKill = survivalOrKill;
-                    state.IsKoBlocked = (gameTryMove.MakeMoveResult == MakeMoveResult.KoBlocked);
+                    state.IsKoBlocked = (tryMove.MakeMoveResult == MakeMoveResult.KoBlocked);
                     possibleStates.Add(state);
                 }
                 return possibleStates;
@@ -157,16 +156,7 @@ namespace Go
 
         public override String ToString()
         {
-            String rc = "";
-            List<Point> lastMoves = this.Game.Board.LastMoves;
-            for (int i = 0; i <= lastMoves.Count - 1; i++)
-            {
-                Point point = lastMoves[i];
-                rc += point;
-                if (i < lastMoves.Count - 1)
-                    rc += ",";
-            }
-            return "Move:" + rc;
+            return "Move:" + this.Game.Board.LastMoves.GetConcatenatedString();
         }
 
     }

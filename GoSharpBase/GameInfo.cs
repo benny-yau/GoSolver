@@ -241,31 +241,13 @@ namespace Go
         /// <summary>
         /// Game info. 
         /// </summary>
-        public GameInfo(SurviveOrKill survive = SurviveOrKill.Survive, Content start = Content.Black, int searchDepth = 30)
+        public GameInfo(SurviveOrKill surviveOrKill = SurviveOrKill.Survive, Content c = Content.Black, int searchDepth = 30)
         {
-            StartContent = start;
+            StartContent = c;
             BoardSizeX = BoardSizeY = 19;
-            Survival = survive;
+            Survival = surviveOrKill;
             UserFirst = PlayerOrComputer.Player;
             SearchDepth = searchDepth;
-        }
-    }
-
-    [Serializable]
-    public class SetupMove
-    {
-        public Point Move { get; set; }
-        public Content Content { get; set; }
-
-        public SetupMove(Point move, Content content)
-        {
-            this.Move = move;
-            this.Content = content;
-        }
-
-        public override string ToString()
-        {
-            return "Move: " + Move.ToString() + " Content: " + Content;
         }
     }
 

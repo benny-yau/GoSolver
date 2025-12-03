@@ -95,7 +95,7 @@ namespace Go
         /// Check possible links <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
         /// </summary>
-        public static Boolean FindCoveredEyeMove(GameTryMove tryMove, GameTryMove opponentTryMove = null)
+        public static Boolean FindCoveredEyeMove(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
             Board tryBoard = tryMove.TryGame.Board;
             Board currentBoard = tryMove.CurrentGame.Board;
@@ -157,10 +157,10 @@ namespace Go
             if (KoHelper.IsCoveredEyeDoubleKo(tryBoard))
                 return false;
 
-            if (opponentTryMove != null)
+            if (opponentMove != null)
             {
                 //check no eye for survival for opponent
-                Board opponentBoard = opponentTryMove.TryGame.Board;
+                Board opponentBoard = opponentMove.TryGame.Board;
                 if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(opponentBoard))
                     return false;
 
@@ -390,11 +390,11 @@ namespace Go
         /// <summary>
         /// Suicidal move at non killable group.
         /// </summary>
-        private static Boolean SuicidalMoveAtNonKillableGroup(GameTryMove tryMove, GameTryMove opponentTryMove = null)
+        private static Boolean SuicidalMoveAtNonKillableGroup(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
-            if (MoveWithinNonKillableGroup(tryMove, opponentTryMove))
+            if (MoveWithinNonKillableGroup(tryMove, opponentMove))
                 return true;
-            if (opponentTryMove == null && MoveNextToNonKillableGroup(tryMove))
+            if (opponentMove == null && MoveNextToNonKillableGroup(tryMove))
                 return true;
             return false;
         }
@@ -406,7 +406,7 @@ namespace Go
         /// Check any is non killable <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30370" />
         /// Check for covered eye <see cref="UnitTestProject.RedundantTigerMouthMove.RedundantTigerMouthMove_Scenario_WindAndTime_Q30225_2" />
         /// </summary>
-        private static Boolean MoveWithinNonKillableGroup(GameTryMove tryMove, GameTryMove opponentTryMove = null)
+        private static Boolean MoveWithinNonKillableGroup(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
@@ -414,7 +414,7 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             if (GameHelper.GetContentForSurviveOrKill(tryBoard.GameInfo, SurviveOrKill.Survive) != c) return false;
             //check for negligible in opponent move
-            if (opponentTryMove != null && !opponentTryMove.IsNegligible) return false;
+            if (opponentMove != null && !opponentMove.IsNegligible) return false;
 
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
             if (killerGroup == null) return false;
@@ -449,7 +449,7 @@ namespace Go
                     if (kgroup != null && WallHelper.TargetWithAllNonKillableGroups(b, kgroup))
                     {
                         //check for covered eye
-                        if (opponentTryMove != null && EyeHelper.IsCovered(tryBoard, move, c.Opposite()))
+                        if (opponentMove != null && EyeHelper.IsCovered(tryBoard, move, c.Opposite()))
                             continue;
                         return true;
                     }
@@ -596,14 +596,14 @@ namespace Go
         /// Get first point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_9" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_B43" />
         /// </summary>
-        public static Boolean OpponentSuicidalConnectAndDie(GameTryMove tryMove, GameTryMove opponentTryMove)
+        public static Boolean OpponentSuicidalConnectAndDie(GameTryMove tryMove, GameTryMove opponentMove)
         {
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
-            Board opponentBoard = opponentTryMove.TryGame.Board;
+            Board opponentBoard = opponentMove.TryGame.Board;
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
-            if (!opponentTryMove.IsNegligible || opponentBoard.MoveGroupLiberties == 1) return false;
+            if (!opponentMove.IsNegligible || opponentBoard.MoveGroupLiberties == 1) return false;
             if (tryBoard.CornerPoint(move)) return false;
 
             //check connect and die
@@ -619,7 +619,7 @@ namespace Go
                 return false;
 
             //check increased killer groups
-            if (opponentTryMove.IncreasedKillerGroups && !WallHelper.IsNonKillableGroup(opponentBoard))
+            if (opponentMove.IncreasedKillerGroups && !WallHelper.IsNonKillableGroup(opponentBoard))
                 return false;
 
             //check one neighbour group
@@ -1103,7 +1103,7 @@ namespace Go
         /// <summary>
         /// Single point suicidal move.
         /// </summary>
-        public static Boolean SinglePointSuicidalMove(GameTryMove tryMove, GameTryMove opponentTryMove = null)
+        public static Boolean SinglePointSuicidalMove(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
             Board tryBoard = tryMove.TryGame.Board;
             if (!tryMove.IsNegligible)
@@ -1115,7 +1115,7 @@ namespace Go
             if (capturedBoard.CapturedPoints.Count() > 1) return true;
             if (SuicideWithinRealEye(tryMove, capturedBoard))
                 return true;
-            if (MiscSinglePointSuicide(tryMove, capturedBoard, opponentTryMove))
+            if (MiscSinglePointSuicide(tryMove, capturedBoard, opponentMove))
                 return true;
             return false;
         }
@@ -1286,7 +1286,7 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B25_2" />
         /// Without opposite content <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B4" />
         /// </summary>
-        private static Boolean MiscSinglePointSuicide(GameTryMove tryMove, Board capturedBoard, GameTryMove opponentTryMove = null)
+        private static Boolean MiscSinglePointSuicide(GameTryMove tryMove, Board capturedBoard, GameTryMove opponentMove = null)
         {
             Point move = tryMove.Move;
             Board currentBoard = tryMove.CurrentGame.Board;
@@ -1299,11 +1299,11 @@ namespace Go
                 return true;
 
             //check connect and die at diagonal group
-            if (opponentTryMove == null && LinkHelper.GetMoveDiagonals(tryBoard).Any(n => ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.GetGroupAt(n)) && !ImmovableHelper.CheckConnectAndDie(currentBoard, currentBoard.GetGroupAt(n))))
+            if (opponentMove == null && LinkHelper.GetMoveDiagonals(tryBoard).Any(n => ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.GetGroupAt(n)) && !ImmovableHelper.CheckConnectAndDie(currentBoard, currentBoard.GetGroupAt(n))))
                 return true;
 
             //opponent suicide
-            if (opponentTryMove != null && (ImmovableHelper.SuicideAtBigTigerMouth(opponentTryMove).Item1 || BothAliveHelper.CheckForBothAliveAtMove(opponentTryMove.TryGame.Board)))
+            if (opponentMove != null && (ImmovableHelper.SuicideAtBigTigerMouth(opponentMove).Item1 || BothAliveHelper.CheckForBothAliveAtMove(opponentMove.TryGame.Board)))
                 return false;
 
             //suicide near non killable group
@@ -1426,7 +1426,7 @@ namespace Go
         /// <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_XuanXuanQiJing_A1" />
         /// Check opponent groups <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_GuanZiPu_B3" />
         /// </summary>
-        public static Boolean RedundantSurvivalLeapMove(GameTryMove tryMove, GameTryMove opponentTryMove = null)
+        public static Boolean RedundantSurvivalLeapMove(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
@@ -1820,11 +1820,11 @@ namespace Go
                 if (!preAtariAdded)
                 {
                     //generic neutral point
-                    GameTryMove genericNeutralMove = GetGenericNeutralMove(g, neutralPointMoves);
-                    if (genericNeutralMove != null)
+                    GameTryMove tryMove = GetGenericNeutralMove(g, neutralPointMoves);
+                    if (tryMove != null)
                     {
-                        tryMoves.Add(genericNeutralMove);
-                        neutralPointMoves.Remove(genericNeutralMove);
+                        tryMoves.Add(tryMove);
+                        neutralPointMoves.Remove(tryMove);
                     }
                 }
             }
@@ -1872,14 +1872,14 @@ namespace Go
         /// </summary>
         public static GameTryMove GetSpecificNeutralMove(Game g, List<GameTryMove> neutralPointMoves)
         {
-            GameTryMove gameTryMove = null;
+            GameTryMove tryMove = null;
             List<Group> killerGroups = GroupHelper.GetKillerGroups(g.Board);
             List<Group> immovableGroups = IsImmovableKill(g, killerGroups).ToList();
             if (immovableGroups.Any())
-                gameTryMove = immovableGroups.Select(gr => SpecificKillWithImmovablePoints(g.Board, neutralPointMoves, gr)).FirstOrDefault(n => n != null);
+                tryMove = immovableGroups.Select(gr => SpecificKillWithImmovablePoints(g.Board, neutralPointMoves, gr)).FirstOrDefault(n => n != null);
             else
-                gameTryMove = SpecificKillWithLibertyFight(g.Board, neutralPointMoves, killerGroups);
-            return gameTryMove;
+                tryMove = SpecificKillWithLibertyFight(g.Board, neutralPointMoves, killerGroups);
+            return tryMove;
         }
 
         /// <summary>

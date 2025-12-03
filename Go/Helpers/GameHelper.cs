@@ -8,9 +8,9 @@ namespace Go
     public class GameHelper
     {
         /// <summary>
-        /// Determine if win or lose based on result.
+        /// Win or lose.
         /// </summary>
-        public static Boolean WinOrLose(SurviveOrKill surviveOrKill, ConfirmAliveResult result, GameInfo gameInfo)
+        public static Boolean WinOrLose(SurviveOrKill surviveOrKill, ConfirmAliveResult result, GameInfo gi)
         {
             if (surviveOrKill == SurviveOrKill.Survive)
             {
@@ -23,18 +23,17 @@ namespace Go
                     return true;
             }
             if (result.HasFlag(ConfirmAliveResult.KoAlive))
-                return KoHelper.KoSurvivalEnabled(surviveOrKill, gameInfo);
+                return KoHelper.KoSurvivalEnabled(surviveOrKill, gi);
             return false;
         }
 
         /// <summary>
-        /// Determine if next move is kill or survival.
+        /// Kill or survival for next move.
         /// </summary>
         public static SurviveOrKill KillOrSurvivalForNextMove(Board board)
         {
             int lastMoveMod = board.LastMoves.Count % 2;
-            GameInfo gameInfo = board.GameInfo;
-            Boolean isKill = IsSurviveOrKill(gameInfo, SurviveOrKill.Kill);
+            Boolean isKill = IsSurviveOrKill(board.GameInfo, SurviveOrKill.Kill);
             if (isKill && lastMoveMod == 0 || !isKill && lastMoveMod == 1)
                 return SurviveOrKill.Kill;
             else
@@ -49,58 +48,66 @@ namespace Go
             if (board.LastMove != null && !board.IsPassMove)
                 return board.MoveGroup.Content.Opposite();
             Content startContent = board.GameInfo.StartContent;
-            int lastMoveMod = board.LastMoves.Count % 2;
-            return (lastMoveMod == 0) ? startContent : startContent.Opposite();
+            return (board.LastMoves.Count % 2 == 0) ? startContent : startContent.Opposite();
         }
 
         /// <summary>
         /// Get content for kill or survival.
         /// </summary>
-        public static Content GetContentForSurviveOrKill(GameInfo gameInfo, SurviveOrKill surviveOrKill)
+        public static Content GetContentForSurviveOrKill(GameInfo gi, SurviveOrKill surviveOrKill)
         {
-            if (IsSurviveOrKill(gameInfo, surviveOrKill))
-                return gameInfo.StartContent;
+            if (IsSurviveOrKill(gi, surviveOrKill))
+                return gi.StartContent;
             else
-                return gameInfo.StartContent.Opposite();
+                return gi.StartContent.Opposite();
         }
 
         /// <summary>
         /// Is survive or kill.
         /// </summary>
-        public static Boolean IsSurviveOrKill(GameInfo gameInfo, SurviveOrKill surviveOrKill)
+        public static Boolean IsSurviveOrKill(GameInfo gi, SurviveOrKill surviveOrKill)
         {
-            if (surviveOrKill == SurviveOrKill.Survive && (gameInfo.Survival == SurviveOrKill.Survive || gameInfo.Survival == SurviveOrKill.SurviveWithKo))
+            if (surviveOrKill == SurviveOrKill.Survive && (gi.Survival == SurviveOrKill.Survive || gi.Survival == SurviveOrKill.SurviveWithKo))
                 return true;
-            if (surviveOrKill == SurviveOrKill.Kill && (gameInfo.Survival == SurviveOrKill.Kill || gameInfo.Survival == SurviveOrKill.KillWithKo))
+            if (surviveOrKill == SurviveOrKill.Kill && (gi.Survival == SurviveOrKill.Kill || gi.Survival == SurviveOrKill.KillWithKo))
                 return true;
             return false;
         }
 
         /// <summary>
-        /// Determine if setup move is available for kill or survival.
+        /// Setup move available.
         /// </summary>
         public static Boolean SetupMoveAvailable(Board board, Point p, Content c = Content.Empty)
         {
-            GameInfo gameInfo = board.GameInfo;
+            GameInfo gi = board.GameInfo;
             if (c == Content.Empty) c = GetContentForNextMove(board);
-            if (GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive) == c)
-                return gameInfo.IsMovablePoint[p.x, p.y];
+            if (GetContentForSurviveOrKill(gi, SurviveOrKill.Survive) == c)
+                return gi.IsMovablePoint[p.x, p.y];
             else
-                return gameInfo.IsKillMovablePoint[p.x, p.y];
+                return gi.IsKillMovablePoint[p.x, p.y];
         }
 
         /// <summary>
-        /// Determine if next move is computer or player, based on count of last moves and initial player.
+        /// Get movable points.
+        /// </summary>
+        public static List<Point> GetMovablePoints(Board board)
+        {
+            SurviveOrKill survivalOrKill = GameHelper.KillOrSurvivalForNextMove(board);
+            List<Point> movablePoints = (survivalOrKill == SurviveOrKill.Kill || survivalOrKill == SurviveOrKill.KillWithKo) ? board.GameInfo.killMovablePoints : board.GameInfo.movablePoints;
+            return movablePoints;
+        }
+
+        /// <summary>
+        /// Get computer or player for next move.
         /// </summary>
         public static PlayerOrComputer GetComputerOrPlayerForNextMove(Board board)
         {
-            int lastMoveMod = board.LastMoves.Count % 2;
-            GameInfo gameInfo = board.GameInfo;
-            return (lastMoveMod == 0) ? gameInfo.UserFirst : gameInfo.UserFirst.Opposite();
+            GameInfo gi = board.GameInfo;
+            return (board.LastMoves.Count % 2 == 0) ? gi.UserFirst : gi.UserFirst.Opposite();
         }
 
         /// <summary>
-        /// Check for recursion or superkos that are 4 spaces to 12 spaces apart.
+        /// Check for recursion.
         /// https://senseis.xmp.net/?LongCycleRule
         /// <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_TianLongTu_Q16446" />
         /// </summary>
@@ -119,11 +126,12 @@ namespace Go
         }
 
         /// <summary>
-        /// Check for recursion without comparing board.
+        /// Check for recursion.
         /// </summary>
         public static IEnumerable<int> CheckForRecursion(Board tryBoard)
         {
             Point move = tryBoard.Move.Value;
+            //check 4 spaces to 12 spaces apart
             for (int j = 4; j <= 12; j++)
             {
                 List<Point> lastMoves = tryBoard.LastMoves;
@@ -136,8 +144,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get specific board from last moves based on moveCount parameter.
-        /// Requires that the root of the game starts from initial setup.
+        /// Get snapshot board. Requires that the root of the game starts from initial setup.
         /// </summary>
         public static Board GetSnapshotBoard(Game g, int moveCount)
         {
@@ -169,7 +176,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get all try moves for next move.
+        /// Get try moves for game.
         /// </summary>
         public static List<GameTryMove> GetTryMovesForGame(Game game)
         {
