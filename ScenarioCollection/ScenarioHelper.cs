@@ -46,18 +46,15 @@ namespace ScenarioCollection
                     gameSets.Add(new GameSet("Classics-C", new List<String>(), "Classics-C  (Go Seigen)"));
                     gameSets.Add(new GameSet("Classics-D", new List<String>(), "Classics-D  (Hashimoto Utaro)"));
                     gameSets.Add(new GameSet("Classics-E", new List<String>(), "Classics-E  (Kweon Kab-yong)"));
-
-                    if (Game.debugMode)
-                        gameSets.Add(new GameSet("Problem-Set", new List<String>() { "Fundamentals-Corner", "XuanXuanGo", "GuanZiPu", "GoSeigen", "HashimotoUtaro", "KweonKabyong" }));
                 }
                 return gameSets;
             }
         }
 
         /// <summary>
-        /// Verify for all scenarios.
+        /// Find all scenarios.
         /// </summary>
-        public static void VerifyForAllScenarios(Action<String, String> action)
+        public static void FindAllScenarios(Action<String, String> action)
         {
             for (int i = 0; i <= ScenarioHelper.GameSets.Count - 1; i++)
             {

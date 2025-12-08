@@ -14,6 +14,7 @@ namespace Go
     public class MonteCarloMapping
     {
         public static Boolean ThreeLevelMapping = Convert.ToBoolean(ConfigurationSettings.AppSettings["ONE_STOP_MAPPING"]);
+        public long? elapsedTime;
 
         public static void MapScenario(Game game)
         {
@@ -96,6 +97,7 @@ namespace Go
             }
             watch.Stop();
             Debug.WriteLine("Total time taken (verification): " + watch.ElapsedMilliseconds);
+            elapsedTime = watch.ElapsedMilliseconds;
         }
 
         /// <summary>

@@ -2445,7 +2445,7 @@ namespace Go
             }
 
             //check ko fight
-            if (KoHelper.IsForwardOrReverseKoFight(tryBoard) && GroupHelper.CheckKillerGroupPoints(tryBoard, move, c.Opposite()) != null)
+            if (KoHelper.IsForwardOrReverseKoFight(tryBoard) && GroupHelper.CheckKillerGroupPoints(currentBoard, move, c) != null)
                 return false;
 
             //get heat map

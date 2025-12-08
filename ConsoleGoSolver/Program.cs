@@ -34,26 +34,26 @@ namespace ConsoleGoSolver
         {
             //select game set and level
             List<String> gameSetList = new List<String>();
-            ScenarioHelper.VerifyForAllScenarios((gameSet, level) => gameSetList.Add(gameSet + " - " + level));
+            ScenarioHelper.FindAllScenarios((gs, level) => gameSetList.Add(gs + (level == "" ? "" : " - ") + level));
             Console.WriteLine("Select scenario:");
             for (int i = 0; i <= gameSetList.Count - 1; i++)
                 Console.WriteLine((i + 1).ToString().PadLeft(3, ' ') + ": " + gameSetList[i]);
 
             Console.WriteLine("\nSelect game set (1 to " + gameSetList.Count.ToString() + "):");
 
-            int gameSetSelected = SelectFromList<String>(gameSetList);
-            String selectedGameSet = gameSetList[gameSetSelected - 1];
-            String[] gameSetLevel = selectedGameSet.Split(new string[] { " - " }, StringSplitOptions.None);
+            int gameSet = SelectFromList<String>(gameSetList);
+            String selected = gameSetList[gameSet - 1];
+            String[] rc = selected.Split(new string[] { " - " }, StringSplitOptions.None);
 
             //get all scenarios for gameset and level
-            List<Func<Scenario, Game>> scenarioList = ScenarioHelper.AddScenarios(gameSetLevel[0].Trim(), (gameSetLevel.Length == 2) ? gameSetLevel[1].Trim() : "");
+            List<Func<Scenario, Game>> scenarioList = ScenarioHelper.AddScenarios(rc[0], (rc.Length == 2) ? rc[1] : "");
 
             //select scenario number
             Console.WriteLine("Select scenario number (1 to " + scenarioList.Count.ToString() + ") : ");
-            int scenarioSelected = SelectFromList<Func<Scenario, Game>>(scenarioList);
+            int scenario = SelectFromList<Func<Scenario, Game>>(scenarioList);
 
             //return selected scenario
-            return ScenarioHelper.GetScenarioFromList(scenarioList, scenarioSelected - 1);
+            return ScenarioHelper.GetScenarioFromList(scenarioList, scenario - 1);
         }
 
         static int SelectFromList<T>(List<T> list)
@@ -81,13 +81,30 @@ namespace ConsoleGoSolver
             String input = Console.ReadLine().ToLower();
             if (input == "")
                 return true;
+            else if (input == "y" || input == "n")
+            {
+                g.GameInfo.UserFirst = (input == "y") ? PlayerOrComputer.Player : PlayerOrComputer.Computer;
+
+                //make player move
+                if (g.GameInfo.UserFirst == PlayerOrComputer.Player)
+                    GetNextMoveFromUser(g);
+                do
+                {
+                    //make computer move
+                    if (ComputerMakeMove(g))
+                        return false;
+                    //get player move
+                    if (!GetNextMoveFromUser(g))
+                        return true;
+                } while (true);
+            }
+            else if (input == "a" || input == "answer")
+                GetAnswer(g);
             else if (input == "s" || input == "search")
             {
                 SearchAnswer(g);
                 return true;
             }
-            else if (input == "a" || input == "answer")
-                GetAnswer(g);
             else if (input == "m" || input == "mapping")
             {
                 MonteCarloMapping.MapScenario(g);
@@ -107,28 +124,12 @@ namespace ConsoleGoSolver
                 int error = MappingVerification.VerifyScenario(g);
                 Console.WriteLine("Verification completed. Errors: " + error);
             }
-            else
-            {
-                if (input == "y")
-                    g.GameInfo.UserFirst = PlayerOrComputer.Player;
-                else if (input == "n")
-                    g.GameInfo.UserFirst = PlayerOrComputer.Computer;
-                else
-                    return false;
-
-                //make player move
-                if (g.GameInfo.UserFirst == PlayerOrComputer.Player)
-                    GetNextMoveFromUser(g);
-                do
-                {
-                    //make computer move
-                    if (ComputerMakeMove(g))
-                        return false;
-                    //get player move
-                    if (!GetNextMoveFromUser(g))
-                        return true;
-                } while (true);
-            }
+            else if (input == "vs" || input == "verify_solution")
+                ScenarioHelper.FindAllScenarios(Verification.VerifySolutionForAllScenarios);
+            else if (input == "va" || input == "verify_all")
+                ScenarioHelper.FindAllScenarios(Verification.VerifyMappedJson);
+            else if (input == "sa" || input == "search_all")
+                ScenarioHelper.FindAllScenarios(Verification.SearchAnswerForAllScenarios);
             return false;
         }
 
