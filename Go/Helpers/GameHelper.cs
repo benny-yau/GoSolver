@@ -47,8 +47,8 @@ namespace Go
         {
             if (board.LastMove != null && !board.IsPassMove)
                 return board.MoveGroup.Content.Opposite();
-            Content startContent = board.GameInfo.StartContent;
-            return (board.LastMoves.Count % 2 == 0) ? startContent : startContent.Opposite();
+            Content c = board.GameInfo.StartContent;
+            return (board.LastMoves.Count % 2 == 0) ? c : c.Opposite();
         }
 
         /// <summary>
@@ -178,16 +178,16 @@ namespace Go
         /// <summary>
         /// Get try moves for game.
         /// </summary>
-        public static List<GameTryMove> GetTryMovesForGame(Game game)
+        public static List<GameTryMove> GetTryMovesForGame(Game g)
         {
             ConfirmAliveResult result;
             GameTryMove koBlockedMove;
             List<GameTryMove> tryMoves;
-            SurviveOrKill surviveOrKill = GameHelper.KillOrSurvivalForNextMove(game.Board);
+            SurviveOrKill surviveOrKill = GameHelper.KillOrSurvivalForNextMove(g.Board);
             if (surviveOrKill == SurviveOrKill.Kill)
-                (result, tryMoves, koBlockedMove) = game.GetKillMoves();
+                (result, tryMoves, koBlockedMove) = g.GetKillMoves();
             else
-                (result, tryMoves, koBlockedMove) = game.GetSurvivalMoves();
+                (result, tryMoves, koBlockedMove) = g.GetSurvivalMoves();
             if (koBlockedMove != null) tryMoves.Add(koBlockedMove);
             return tryMoves;
         }

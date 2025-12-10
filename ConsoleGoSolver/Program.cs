@@ -91,7 +91,7 @@ namespace ConsoleGoSolver
                 {
                     //make computer move
                     if (ComputerMakeMove(g))
-                        return false;
+                        return true;
                     //get player move
                     if (!GetNextMoveFromUser(g))
                         return true;
@@ -145,8 +145,10 @@ namespace ConsoleGoSolver
         {
             Boolean start = g.Board.LastMoves.Count == 0;
             if (start && g.GameInfo.solutionPoints.Count == 0)
+            {
                 Console.WriteLine("No answers for this scenario.");
-
+                return;
+            }
             Console.WriteLine("Calculating...");
             Game.SearchAnswer = true;
             (ConfirmAliveResult moveResult, Node answerNode, long? elapsedTime) = MonteCarloGame.MakeMonteCarloTreeSearch(g);

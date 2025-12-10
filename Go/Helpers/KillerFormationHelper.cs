@@ -593,6 +593,9 @@ namespace Go
             if (b.AtariTargets.Count != 1) return false;
             Group atariTarget = b.AtariTargets.First();
             if (atariTarget.Points.Count != 1) return false;
+
+            if (b.MoveGroup.Points.Count == 1 && GroupHelper.CheckKillerGroupPoints(b, b.Move.Value, c.Opposite()) == null)
+                return false;
             Point q = atariTarget.Liberties.First();
             if (EyeHelper.FindNonSemiSolidEye(board, q, c.Opposite()))
                 return true;

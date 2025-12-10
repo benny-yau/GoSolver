@@ -805,6 +805,7 @@ namespace Go
                 Point q = LinkHelper.PointsBetweenDiagonals(npoints[0], npoints[1]).First(n => !n.Equals(move));
                 if (tryBoard[q] == Content.Empty)
                     return false;
+
                 //check eye
                 if (tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindEye(tryBoard, n, c)))
                     return false;
@@ -886,7 +887,7 @@ namespace Go
             if (tryBoard.MoveGroup.Points.Count == 1)
             {
                 List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours();
-                if (!(ngroups.Count == 0 || ngroups.All(n => n.Points.Count == 1)))
+                if (!(ngroups.Count == 0 || ngroups.Any(n => n.Points.Count == 1 && n.Liberties.Count <= 2)))
                     return false;
             }
 
@@ -2118,6 +2119,9 @@ namespace Go
                 if (!ImmovableHelper.IsImmovablePoint(currentBoard, d, c.Opposite()))
                     continue;
 
+                if (currentBoard.GetGroupsFromStoneNeighbours(d, c).Any(n => WallHelper.IsNonKillableGroup(currentBoard, n)))
+                    return true;
+
                 if (opponentMove == null)
                 {
                     //check killer groups
@@ -2199,7 +2203,9 @@ namespace Go
             foreach (Point e in diagonalEyes)
             {
                 if (!tryBoard.GetDiagonalNeighbours(e).Any(n => tryBoard[n] == Content.Empty)) continue;
-                List<Group> groups = tryBoard.GetGroupsFromStoneNeighbours(e, c).Where(n => n.Liberties.Count <= 2).ToList();
+                List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(e, c);
+                if (ngroups.Any(n => WallHelper.IsNonKillableGroup(tryBoard, n))) continue;
+                List<Group> groups = ngroups.Where(n => n.Liberties.Count <= 2).ToList();
                 if (groups.Count < 2) continue;
                 if (groups.Any(n => tryBoard.GetNeighbourGroups(n).Any(s => s != tryBoard.MoveGroup && !WallHelper.IsNonKillableGroup(tryBoard, s))))
                     return true;
