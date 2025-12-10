@@ -101,7 +101,6 @@
     <Compile Include="Helpers\SolutionHelper.cs" />
     <Compile Include="Helpers\UniquePatternsHelper.cs" />
     <Compile Include="Helpers\WallHelper.cs" />
-    <Compile Include="MonteCarloMapping\GameMapping.cs" />
     <Compile Include="MonteCarloMapping\JsonHelper.cs" />
     <Compile Include="MonteCarloMapping\MappingVerification.cs" />
     <Compile Include="MonteCarloMapping\MonteCarloMapping.cs" />

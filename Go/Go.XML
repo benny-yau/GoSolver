@@ -1612,7 +1612,9 @@
             Empty points at stone and diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_4" />
             Check single group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16594" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_2398" />
-            Check eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A1" />
+            Check corner point <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />
+            Check diagonal move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29264" />
+            Check weak group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17241_2" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckWeakGroup(Go.Board,Go.Group)">
@@ -2187,34 +2189,34 @@
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_20230422_8" />
             </summary>
         </member>
-        <member name="M:Go.GameMapping.GetMappedJson(Go.Game)">
+        <member name="M:Go.JsonHelper.GetMappedJson(Go.Game)">
             <summary>
             Get mapped json.
             </summary>
         </member>
-        <member name="M:Go.GameMapping.SerializeJson(Go.Game)">
+        <member name="M:Go.JsonHelper.SerializeJson(Go.Game)">
             <summary>
             Serialize json.
             </summary>
         </member>
-        <member name="M:Go.GameMapping.FindPassMoveInJson(Newtonsoft.Json.Linq.JArray)">
+        <member name="M:Go.JsonHelper.FindPassMoveInJson(Newtonsoft.Json.Linq.JArray)">
             <summary>
             Find pass move in json. 
             </summary>
         </member>
         <member name="M:Go.JsonHelper.FirstLevelMapping(System.Object,Go.Point,Go.Point)">
             <summary>
-            Create or retrieve first level move in json.
+            First level mapping.
             </summary>
         </member>
         <member name="M:Go.JsonHelper.SecondLevelMapping(Newtonsoft.Json.Linq.JObject,Go.Point,Go.Point)">
             <summary>
-            Create or retrieve second level move in json.
+            Second level mapping.
             </summary>
         </member>
         <member name="M:Go.JsonHelper.ThirdLevelMapping(Newtonsoft.Json.Linq.JObject,Go.Point,Go.Point)">
             <summary>
-            Create or retrieve third level move in json.
+            Third level mapping.
             </summary>
         </member>
         <member name="T:Go.MappingVerification">

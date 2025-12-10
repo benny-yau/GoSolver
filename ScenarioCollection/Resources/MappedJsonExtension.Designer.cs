@@ -19,10 +19,10 @@ namespace ScenarioCollection.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class MappedJsonExtension {
+    public class MappedJsonExtension {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace ScenarioCollection.Resources {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ScenarioCollection.Resources.MappedJsonExtension", typeof(MappedJsonExtension).Assembly);
@@ -51,7 +51,7 @@ namespace ScenarioCollection.Resources {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17},&quot;SecondMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;FourthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&qu....
         /// </summary>
-        internal static string Scenario_AncientJapanese_B6_PlayerMoveExtension {
+        public static string Scenario_AncientJapanese_B6_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_AncientJapanese_B6_PlayerMoveExtension", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SecondMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A101_ChallengeMoveExtension {
+        public static string Scenario_Corner_A101_ChallengeMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A101_ChallengeMoveExtension", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;SecondMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;FourthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A101_PlayerMoveExtension {
+        public static string Scenario_Corner_A101_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A101_PlayerMoveExtension", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:15},&quot;SecondMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:13},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A108_ChallengeMoveExtension {
+        public static string Scenario_Corner_A108_ChallengeMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A108_ChallengeMoveExtension", resourceCulture);
             }
@@ -99,7 +99,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SecondMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:14},&quot;FourthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:13},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A108_PlayerMoveExtension {
+        public static string Scenario_Corner_A108_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A108_PlayerMoveExtension", resourceCulture);
             }
@@ -108,7 +108,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;SecondMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:13},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A109_ChallengeMoveExtension {
+        public static string Scenario_Corner_A109_ChallengeMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A109_ChallengeMoveExtension", resourceCulture);
             }
@@ -117,7 +117,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;SecondMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:13},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:13},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:12},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A109_PlayerMoveExtension {
+        public static string Scenario_Corner_A109_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A109_PlayerMoveExtension", resourceCulture);
             }
@@ -126,7 +126,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SecondMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16},&quot;FourthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:14}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A113_ChallengeMoveExtension {
+        public static string Scenario_Corner_A113_ChallengeMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A113_ChallengeMoveExtension", resourceCulture);
             }
@@ -135,7 +135,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SecondMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16},&quot;FourthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A113_PlayerMoveExtension {
+        public static string Scenario_Corner_A113_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A113_PlayerMoveExtension", resourceCulture);
             }
@@ -144,7 +144,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16},&quot;SecondMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;FourthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A120_ChallengeMoveExtension {
+        public static string Scenario_Corner_A120_ChallengeMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A120_ChallengeMoveExtension", resourceCulture);
             }
@@ -153,7 +153,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SecondMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;FourthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A120_PlayerMoveExtension {
+        public static string Scenario_Corner_A120_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A120_PlayerMoveExtension", resourceCulture);
             }
@@ -162,7 +162,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SecondMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16},&quot;FourthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:13}}]},{&quot;ThirdMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14}},{&quot;FifthMove&....
         /// </summary>
-        internal static string Scenario_Corner_A130_ChallengeMoveExtension {
+        public static string Scenario_Corner_A130_ChallengeMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A130_ChallengeMoveExtension", resourceCulture);
             }
@@ -171,7 +171,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;SecondMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;FourthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A130_PlayerMoveExtension {
+        public static string Scenario_Corner_A130_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A130_PlayerMoveExtension", resourceCulture);
             }
@@ -180,7 +180,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:15},&quot;SecondMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;FourthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A132_ChallengeMoveExtension {
+        public static string Scenario_Corner_A132_ChallengeMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A132_ChallengeMoveExtension", resourceCulture);
             }
@@ -189,7 +189,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SecondMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:15},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A132_PlayerMoveExtension {
+        public static string Scenario_Corner_A132_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A132_PlayerMoveExtension", resourceCulture);
             }
@@ -198,7 +198,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SecondMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;FourthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A136_ChallengeMoveExtension {
+        public static string Scenario_Corner_A136_ChallengeMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A136_ChallengeMoveExtension", resourceCulture);
             }
@@ -207,7 +207,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SecondMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A136_PlayerMoveExtension {
+        public static string Scenario_Corner_A136_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A136_PlayerMoveExtension", resourceCulture);
             }
@@ -216,7 +216,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16},&quot;SecondMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:16},&quot;FourthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:14},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:14}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:14}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A137_ChallengeMoveExtension {
+        public static string Scenario_Corner_A137_ChallengeMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A137_ChallengeMoveExtension", resourceCulture);
             }
@@ -225,7 +225,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:14},&quot;SecondMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16},&quot;FourthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A137_PlayerMoveExtension {
+        public static string Scenario_Corner_A137_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A137_PlayerMoveExtension", resourceCulture);
             }
@@ -234,7 +234,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:16},&quot;SecondMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;FourthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A20_PlayerMoveExtension {
+        public static string Scenario_Corner_A20_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A20_PlayerMoveExtension", resourceCulture);
             }
@@ -243,7 +243,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17},&quot;SecondMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;FourthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:7,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A21_ChallengeMoveExtension {
+        public static string Scenario_Corner_A21_ChallengeMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A21_ChallengeMoveExtension", resourceCulture);
             }
@@ -252,7 +252,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:16},&quot;SecondMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;FourthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A21_PlayerMoveExtension {
+        public static string Scenario_Corner_A21_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A21_PlayerMoveExtension", resourceCulture);
             }
@@ -261,7 +261,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16},&quot;SecondMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:13},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A23_PlayerMoveExtension {
+        public static string Scenario_Corner_A23_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A23_PlayerMoveExtension", resourceCulture);
             }
@@ -270,7 +270,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:16},&quot;SecondMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A28_PlayerMoveExtension {
+        public static string Scenario_Corner_A28_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A28_PlayerMoveExtension", resourceCulture);
             }
@@ -279,7 +279,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16},&quot;SecondMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A35_PlayerMoveExtension {
+        public static string Scenario_Corner_A35_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A35_PlayerMoveExtension", resourceCulture);
             }
@@ -288,7 +288,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:16},&quot;SecondMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A36_PlayerMoveExtension {
+        public static string Scenario_Corner_A36_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A36_PlayerMoveExtension", resourceCulture);
             }
@@ -297,7 +297,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SecondMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16},&quot;FourthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}}]},{&quot;ThirdMove&quot;:{&quot;x&quot;:3,&....
         /// </summary>
-        internal static string Scenario_Corner_A49_ChallengeMoveExtension {
+        public static string Scenario_Corner_A49_ChallengeMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A49_ChallengeMoveExtension", resourceCulture);
             }
@@ -306,7 +306,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16},&quot;SecondMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17},&quot;FourthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A49_PlayerMoveExtension {
+        public static string Scenario_Corner_A49_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A49_PlayerMoveExtension", resourceCulture);
             }
@@ -315,7 +315,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SecondMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;FourthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:6,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A55_PlayerMoveExtension {
+        public static string Scenario_Corner_A55_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A55_PlayerMoveExtension", resourceCulture);
             }
@@ -324,7 +324,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SecondMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:17},&quot;FourthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:7,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A58_PlayerMoveExtension {
+        public static string Scenario_Corner_A58_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A58_PlayerMoveExtension", resourceCulture);
             }
@@ -333,7 +333,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SecondMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:7,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A59_PlayerMoveExtension {
+        public static string Scenario_Corner_A59_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A59_PlayerMoveExtension", resourceCulture);
             }
@@ -342,7 +342,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SecondMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;FourthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A68_ChallengeMoveExtension {
+        public static string Scenario_Corner_A68_ChallengeMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A68_ChallengeMoveExtension", resourceCulture);
             }
@@ -351,34 +351,16 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;SecondMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;FourthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A68_PlayerMoveExtension {
+        public static string Scenario_Corner_A68_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A68_PlayerMoveExtension", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SecondMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;FourthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&qu....
-        /// </summary>
-        internal static string Scenario_Corner_A73_Ext1_ChallengeMoveExtension {
-            get {
-                return ResourceManager.GetString("Scenario_Corner_A73_Ext1_ChallengeMoveExtension", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SecondMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;FourthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
-        /// </summary>
-        internal static string Scenario_Corner_A73_Ext1_PlayerMoveExtension {
-            get {
-                return ResourceManager.GetString("Scenario_Corner_A73_Ext1_PlayerMoveExtension", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SecondMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A74_PlayerMoveExtension {
+        public static string Scenario_Corner_A74_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A74_PlayerMoveExtension", resourceCulture);
             }
@@ -387,7 +369,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SecondMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;FourthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A75_PlayerMoveExtension {
+        public static string Scenario_Corner_A75_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A75_PlayerMoveExtension", resourceCulture);
             }
@@ -396,7 +378,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SecondMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;FourthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A79_PlayerMoveExtension {
+        public static string Scenario_Corner_A79_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A79_PlayerMoveExtension", resourceCulture);
             }
@@ -405,7 +387,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;SecondMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17},&quot;FourthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A80_ChallengeMoveExtension {
+        public static string Scenario_Corner_A80_ChallengeMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A80_ChallengeMoveExtension", resourceCulture);
             }
@@ -414,7 +396,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16},&quot;SecondMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;FourthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A80_PlayerMoveExtension {
+        public static string Scenario_Corner_A80_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A80_PlayerMoveExtension", resourceCulture);
             }
@@ -423,7 +405,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;SecondMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A84_ChallengeMoveExtension {
+        public static string Scenario_Corner_A84_ChallengeMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A84_ChallengeMoveExtension", resourceCulture);
             }
@@ -432,7 +414,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SecondMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:16},&quot;FourthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A84_PlayerMoveExtension {
+        public static string Scenario_Corner_A84_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A84_PlayerMoveExtension", resourceCulture);
             }
@@ -441,7 +423,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SecondMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:16},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A85_ChallengeMoveExtension {
+        public static string Scenario_Corner_A85_ChallengeMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A85_ChallengeMoveExtension", resourceCulture);
             }
@@ -450,7 +432,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SecondMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;FourthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:16},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A85_PlayerMoveExtension {
+        public static string Scenario_Corner_A85_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A85_PlayerMoveExtension", resourceCulture);
             }
@@ -459,7 +441,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SecondMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:16},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;FourthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A86_ChallengeMoveExtension {
+        public static string Scenario_Corner_A86_ChallengeMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A86_ChallengeMoveExtension", resourceCulture);
             }
@@ -468,7 +450,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SecondMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;FourthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:13},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A86_PlayerMoveExtension {
+        public static string Scenario_Corner_A86_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A86_PlayerMoveExtension", resourceCulture);
             }
@@ -477,7 +459,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;SecondMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:16},&quot;FourthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A87_ChallengeMoveExtension {
+        public static string Scenario_Corner_A87_ChallengeMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A87_ChallengeMoveExtension", resourceCulture);
             }
@@ -486,7 +468,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SecondMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:16},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A87_PlayerMoveExtension {
+        public static string Scenario_Corner_A87_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A87_PlayerMoveExtension", resourceCulture);
             }
@@ -495,7 +477,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SecondMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:16},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;FourthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A94_ChallengeMoveExtension {
+        public static string Scenario_Corner_A94_ChallengeMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A94_ChallengeMoveExtension", resourceCulture);
             }
@@ -504,7 +486,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SecondMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&qu....
         /// </summary>
-        internal static string Scenario_Corner_A94_PlayerMoveExtension {
+        public static string Scenario_Corner_A94_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_A94_PlayerMoveExtension", resourceCulture);
             }
@@ -513,7 +495,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SecondMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;FourthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&qu....
         /// </summary>
-        internal static string Scenario_Corner_B20_PlayerMoveExtension {
+        public static string Scenario_Corner_B20_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_B20_PlayerMoveExtension", resourceCulture);
             }
@@ -522,7 +504,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SecondMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&qu....
         /// </summary>
-        internal static string Scenario_Corner_B22_PlayerMoveExtension {
+        public static string Scenario_Corner_B22_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_B22_PlayerMoveExtension", resourceCulture);
             }
@@ -531,7 +513,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SecondMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_B24_PlayerMoveExtension {
+        public static string Scenario_Corner_B24_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_B24_PlayerMoveExtension", resourceCulture);
             }
@@ -540,7 +522,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SecondMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:6,&qu....
         /// </summary>
-        internal static string Scenario_Corner_B25_ChallengeMoveExtension {
+        public static string Scenario_Corner_B25_ChallengeMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_B25_ChallengeMoveExtension", resourceCulture);
             }
@@ -549,7 +531,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;SecondMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:16},&quot;FourthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_B25_PlayerMoveExtension {
+        public static string Scenario_Corner_B25_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_B25_PlayerMoveExtension", resourceCulture);
             }
@@ -558,7 +540,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:15},&quot;SecondMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:16},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:15},&quot;FourthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&qu....
         /// </summary>
-        internal static string Scenario_Corner_B28_ChallengeMoveExtension {
+        public static string Scenario_Corner_B28_ChallengeMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_B28_ChallengeMoveExtension", resourceCulture);
             }
@@ -567,7 +549,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16},&quot;SecondMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:16},&quot;FourthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&qu....
         /// </summary>
-        internal static string Scenario_Corner_B28_PlayerMoveExtension {
+        public static string Scenario_Corner_B28_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_B28_PlayerMoveExtension", resourceCulture);
             }
@@ -576,7 +558,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;SecondMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_B40_ChallengeMoveExtension {
+        public static string Scenario_Corner_B40_ChallengeMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_B40_ChallengeMoveExtension", resourceCulture);
             }
@@ -585,7 +567,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SecondMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;FourthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_B40_PlayerMoveExtension {
+        public static string Scenario_Corner_B40_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_B40_PlayerMoveExtension", resourceCulture);
             }
@@ -594,7 +576,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;SecondMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_B41_ChallengeMoveExtension {
+        public static string Scenario_Corner_B41_ChallengeMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_B41_ChallengeMoveExtension", resourceCulture);
             }
@@ -603,7 +585,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SecondMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;FourthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_B41_PlayerMoveExtension {
+        public static string Scenario_Corner_B41_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_B41_PlayerMoveExtension", resourceCulture);
             }
@@ -612,7 +594,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;SecondMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;FourthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_B42_ChallengeMoveExtension {
+        public static string Scenario_Corner_B42_ChallengeMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_B42_ChallengeMoveExtension", resourceCulture);
             }
@@ -621,7 +603,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SecondMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;FourthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario_Corner_B42_PlayerMoveExtension {
+        public static string Scenario_Corner_B42_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_B42_PlayerMoveExtension", resourceCulture);
             }
@@ -630,16 +612,34 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;SecondMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;FourthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&qu....
         /// </summary>
-        internal static string Scenario_Corner_B43_PlayerMoveExtension {
+        public static string Scenario_Corner_B43_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Corner_B43_PlayerMoveExtension", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:14},&quot;SecondMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FirstMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SecondMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FirstMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:15},&quot;SecondMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FirstMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:13},&quot;SecondMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FirstMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:14},&quot;SecondMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SecondMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:13},&quot;SecondMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;SecondMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SecondMove&quot;:{&q....
+        /// </summary>
+        public static string Scenario_Corner_B6_ChallengeMoveExtension {
+            get {
+                return ResourceManager.GetString("Scenario_Corner_B6_ChallengeMoveExtension", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;SecondMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:15},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:13},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&qu....
+        /// </summary>
+        public static string Scenario_Corner_B6_PlayerMoveExtension {
+            get {
+                return ResourceManager.GetString("Scenario_Corner_B6_PlayerMoveExtension", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SecondMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;FourthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:16},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17}}]},{&quot;ThirdMove&quot;:{&quot;x&quot;:4,&....
         /// </summary>
-        internal static string Scenario_Nie1_ChallengeMoveExtension {
+        public static string Scenario_Nie1_ChallengeMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Nie1_ChallengeMoveExtension", resourceCulture);
             }
@@ -648,7 +648,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16},&quot;SecondMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:16},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;FourthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&qu....
         /// </summary>
-        internal static string Scenario_Nie1_PlayerMoveExtension {
+        public static string Scenario_Nie1_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Nie1_PlayerMoveExtension", resourceCulture);
             }
@@ -657,7 +657,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:15},&quot;SecondMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:16},&quot;FourthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:17},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:8,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:6,&qu....
         /// </summary>
-        internal static string Scenario_Nie137_PlayerMoveExtension {
+        public static string Scenario_Nie137_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Nie137_PlayerMoveExtension", resourceCulture);
             }
@@ -666,7 +666,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:14},&quot;SecondMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:15},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:15},&quot;FourthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:16},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&qu....
         /// </summary>
-        internal static string Scenario_Nie61_PlayerMoveExtension {
+        public static string Scenario_Nie61_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Nie61_PlayerMoveExtension", resourceCulture);
             }
@@ -675,7 +675,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;SecondMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;FourthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:7,&qu....
         /// </summary>
-        internal static string Scenario_Phenomena_B7_ChallengeMoveExtension {
+        public static string Scenario_Phenomena_B7_ChallengeMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Phenomena_B7_ChallengeMoveExtension", resourceCulture);
             }
@@ -684,7 +684,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SecondMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17},&quot;FourthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&qu....
         /// </summary>
-        internal static string Scenario_Phenomena_B7_PlayerMoveExtension {
+        public static string Scenario_Phenomena_B7_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Phenomena_B7_PlayerMoveExtension", resourceCulture);
             }
@@ -693,7 +693,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SecondMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:8,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:7,&qu....
         /// </summary>
-        internal static string Scenario_Side_A20_PlayerMoveExtension {
+        public static string Scenario_Side_A20_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Side_A20_PlayerMoveExtension", resourceCulture);
             }
@@ -702,7 +702,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:14},&quot;SecondMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:7,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&qu....
         /// </summary>
-        internal static string Scenario_Side_A24_PlayerMoveExtension {
+        public static string Scenario_Side_A24_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Side_A24_PlayerMoveExtension", resourceCulture);
             }
@@ -711,7 +711,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SecondMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:15},&quot;FourthMove&quot;:{&quot;x&quot;:7,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&qu....
         /// </summary>
-        internal static string Scenario_Side_A25_ChallengeMoveExtension {
+        public static string Scenario_Side_A25_ChallengeMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Side_A25_ChallengeMoveExtension", resourceCulture);
             }
@@ -720,7 +720,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:7,&quot;y&quot;:18},&quot;SecondMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&qu....
         /// </summary>
-        internal static string Scenario_Side_A25_PlayerMoveExtension {
+        public static string Scenario_Side_A25_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Side_A25_PlayerMoveExtension", resourceCulture);
             }
@@ -729,7 +729,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:15},&quot;SecondMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:8,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:9,&qu....
         /// </summary>
-        internal static string Scenario_Side_A26_PlayerMoveExtension {
+        public static string Scenario_Side_A26_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Side_A26_PlayerMoveExtension", resourceCulture);
             }
@@ -738,7 +738,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:11,&quot;y&quot;:18},&quot;SecondMove&quot;:{&quot;x&quot;:8,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:10,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:9,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:7,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:8,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:12,....
         /// </summary>
-        internal static string Scenario_Side_A5_PlayerMoveExtension {
+        public static string Scenario_Side_A5_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Side_A5_PlayerMoveExtension", resourceCulture);
             }
@@ -747,7 +747,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SecondMove&quot;:{&quot;x&quot;:7,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:10,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:11,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:7,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:8,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&....
         /// </summary>
-        internal static string Scenario_Side_A6_PlayerMoveExtension {
+        public static string Scenario_Side_A6_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Side_A6_PlayerMoveExtension", resourceCulture);
             }
@@ -756,7 +756,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16},&quot;SecondMove&quot;:{&quot;x&quot;:8,&quot;y&quot;:18},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:7,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:7,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&qu....
         /// </summary>
-        internal static string Scenario_Side_B19_PlayerMoveExtension {
+        public static string Scenario_Side_B19_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Side_B19_PlayerMoveExtension", resourceCulture);
             }
@@ -765,7 +765,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SecondMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:7,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&qu....
         /// </summary>
-        internal static string Scenario_Side_B33_PlayerMoveExtension {
+        public static string Scenario_Side_B33_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Side_B33_PlayerMoveExtension", resourceCulture);
             }
@@ -774,7 +774,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:7,&quot;y&quot;:15},&quot;SecondMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:8,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:7,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&qu....
         /// </summary>
-        internal static string Scenario_Side_B34_PlayerMoveExtension {
+        public static string Scenario_Side_B34_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Side_B34_PlayerMoveExtension", resourceCulture);
             }
@@ -783,7 +783,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SecondMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:17},&quot;FourthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:7,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:7,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:7,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:8,&qu....
         /// </summary>
-        internal static string Scenario_Side_B35_PlayerMoveExtension {
+        public static string Scenario_Side_B35_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_Side_B35_PlayerMoveExtension", resourceCulture);
             }
@@ -792,7 +792,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;SecondMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:15},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&qu....
         /// </summary>
-        internal static string Scenario_SiHuoDaQuan_CornerA117_PlayerMoveExtension {
+        public static string Scenario_SiHuoDaQuan_CornerA117_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario_SiHuoDaQuan_CornerA117_PlayerMoveExtension", resourceCulture);
             }
@@ -801,7 +801,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:9},&quot;SecondMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:13},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:10},&quot;FourthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:11},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:12},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:13}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:13},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:12}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:13}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quo....
         /// </summary>
-        internal static string Scenario4dan10_PlayerMoveExtension {
+        public static string Scenario4dan10_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario4dan10_PlayerMoveExtension", resourceCulture);
             }
@@ -810,7 +810,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{\&quot;FirstMove\&quot;:{\&quot;x\&quot;:4,\&quot;y\&quot;:14},\&quot;SecondMove\&quot;:{\&quot;x\&quot;:1,\&quot;y\&quot;:18},\&quot;SecondLevel\&quot;:[{\&quot;ThirdMove\&quot;:{\&quot;x\&quot;:4,\&quot;y\&quot;:17},\&quot;FourthMove\&quot;:{\&quot;x\&quot;:3,\&quot;y\&quot;:17},\&quot;ThirdLevel\&quot;:[{\&quot;FifthMove\&quot;:{\&quot;x\&quot;:4,\&quot;y\&quot;:18},\&quot;SixthMove\&quot;:{\&quot;x\&quot;:2,\&quot;y\&quot;:18},\&quot;Result\&quot;:\&quot;Alive\&quot;},{\&quot;FifthMove\&quot;:{\&quot;x\&quot;:5,\&quot;y\&quot;:18},\&quot;SixthMove\&quot;:{\&quot;x\&quot;:3,\&quot;y\&quot;:18},\&quot;Result\&quot;:\&quot;Alive\&quot;},{\&quot;FifthMove\&quot;:{\&quot;x\&quot;:3,\&quot;y\&quot;:18},\&quot;SixthMove\&quot;:{\&quot;x\&quot;:4,\&quot;y\&quot;:18},\&quot;Result\&quot;:\&quot;Alive\&quot;},{\&quot;FifthMove\&quot;:{\&quot;x\&quot;:2,\&quot;y\&quot;:17},\&quot;SixthMove\&quot;:{\&quot;x\&quot;:2,\&quot;y\&quot;:18},\&quot;Result [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string Scenario5dan12_PlayerMoveExtension {
+        public static string Scenario5dan12_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario5dan12_PlayerMoveExtension", resourceCulture);
             }
@@ -819,7 +819,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16},&quot;SecondMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:17},&quot;FourthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:7,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:13},&quot;SixthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&qu....
         /// </summary>
-        internal static string Scenario5dan18_ChallengeMoveExtension {
+        public static string Scenario5dan18_ChallengeMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario5dan18_ChallengeMoveExtension", resourceCulture);
             }
@@ -828,7 +828,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:13},&quot;SecondMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:17},&quot;FourthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:14}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:14}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:8,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:6,&qu....
         /// </summary>
-        internal static string Scenario5dan18_PlayerMoveExtension {
+        public static string Scenario5dan18_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario5dan18_PlayerMoveExtension", resourceCulture);
             }
@@ -837,7 +837,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SecondMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:15},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:14},&quot;FourthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:13},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:13},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:14}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:14}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:14}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:14}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&qu....
         /// </summary>
-        internal static string Scenario5dan9_ChallengeMoveExtension {
+        public static string Scenario5dan9_ChallengeMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario5dan9_ChallengeMoveExtension", resourceCulture);
             }
@@ -846,7 +846,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SecondMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:14},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:15},&quot;FourthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:14},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:14}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:13},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:13}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:14}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:13},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:13}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:14}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string Scenario5dan9_PlayerMoveExtension {
+        public static string Scenario5dan9_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("Scenario5dan9_PlayerMoveExtension", resourceCulture);
             }
@@ -855,7 +855,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:7,&quot;y&quot;:15},&quot;SecondMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:16},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:15},&quot;FourthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:8,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:7,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:7,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:13},&quot;SixthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:15}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&qu....
         /// </summary>
-        internal static string ScenarioHighLevel18_PlayerMoveExtension {
+        public static string ScenarioHighLevel18_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("ScenarioHighLevel18_PlayerMoveExtension", resourceCulture);
             }
@@ -864,7 +864,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:15},&quot;SecondMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:16},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:15},&quot;FourthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:1,&quot;y&quot;:17}},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&qu....
         /// </summary>
-        internal static string ScenarioHighLevel23_PlayerMoveExtension {
+        public static string ScenarioHighLevel23_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("ScenarioHighLevel23_PlayerMoveExtension", resourceCulture);
             }
@@ -873,7 +873,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SecondMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:15},&quot;FourthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16},&quot;Result&quot;:&quot;Dead&quot;},{&quot;FifthMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:13},&quot;Result&quot;:&quot;Dead&quot;},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;Result&quot;:&quot;Dead&quot;},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:13},&quot;Result&quot;:&quot;Dead&quot;},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:13},&quot;Result&quo....
         /// </summary>
-        internal static string ScenarioHighLevel28_ChallengeMoveExtension {
+        public static string ScenarioHighLevel28_ChallengeMoveExtension {
             get {
                 return ResourceManager.GetString("ScenarioHighLevel28_ChallengeMoveExtension", resourceCulture);
             }
@@ -882,7 +882,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:13},&quot;SecondMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:14},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;FourthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:18},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:15},&quot;Result&quot;:&quot;Alive&quot;},{&quot;FifthMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;Result&quot;:&quot;Alive&quot;},{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:15},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:15},&quot;Result&quot;:&quot;Alive&quot;},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:14},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:15},&quot;Result&quot;:&quot;Alive&quot;},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:15},&quot;Result....
         /// </summary>
-        internal static string ScenarioHighLevel28_PlayerMoveExtension {
+        public static string ScenarioHighLevel28_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("ScenarioHighLevel28_PlayerMoveExtension", resourceCulture);
             }
@@ -891,7 +891,7 @@ namespace ScenarioCollection.Resources {
         /// <summary>
         ///   Looks up a localized string similar to [{&quot;FirstMove&quot;:{&quot;x&quot;:6,&quot;y&quot;:13},&quot;SecondMove&quot;:{&quot;x&quot;:5,&quot;y&quot;:14},&quot;SecondLevel&quot;:[{&quot;ThirdMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:15},&quot;FourthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:16},&quot;ThirdLevel&quot;:[{&quot;FifthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:18},&quot;SixthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:3,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:16},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:0,&quot;y&quot;:17},&quot;SixthMove&quot;:{&quot;x&quot;:2,&quot;y&quot;:18}},{&quot;FifthMove&quot;:{&quot;x&quot;:4,&qu....
         /// </summary>
-        internal static string ScenarioHighLevel8_PlayerMoveExtension {
+        public static string ScenarioHighLevel8_PlayerMoveExtension {
             get {
                 return ResourceManager.GetString("ScenarioHighLevel8_PlayerMoveExtension", resourceCulture);
             }

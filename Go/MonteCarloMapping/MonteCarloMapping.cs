@@ -23,7 +23,7 @@ namespace Go
 
             //map player moves
             mctsMapping.MappingFirstLevel(game);
-            GameMapping.SerializeJson(game);
+            JsonHelper.SerializeJson(game);
 
             //map challenge moves
             if (game.GameInfo.solutionPoints.Count > 0)
@@ -32,7 +32,7 @@ namespace Go
                 Point p = game.GameInfo.solutionPoints.First().First();
                 game.MakeMove(p);
                 mctsMapping.MappingFirstLevel(game);
-                GameMapping.SerializeJson(game);
+                JsonHelper.SerializeJson(game);
             }
             Game.MapMoves = false;
         }
@@ -46,7 +46,7 @@ namespace Go
             List<GameTryMove> possibleMoves = GameHelper.GetTryMovesForGame(game);
             Debug.WriteLine("Scenario: " + game.GameInfo.ScenarioName);
             Debug.WriteLine("Game moves: " + possibleMoves.GetConcatenatedString());
-            JArray mappedJson = GameMapping.GetMappedJson(game);
+            JArray mappedJson = JsonHelper.GetMappedJson(game);
 
             for (int j = 0; j <= possibleMoves.Count - 1; j++)
             {
@@ -58,17 +58,17 @@ namespace Go
                     continue;
 
                 //check if second move mapped already
-                JObject firstLevelMove = (JObject)(mappedJson.Where(m => (int)m["FirstMove"]["x"] == tryMove.Move.x && (int)m["FirstMove"]["y"] == tryMove.Move.y).FirstOrDefault());
+                JObject firstLevel = (JObject)(mappedJson.Where(m => (int)m["FirstMove"]["x"] == tryMove.Move.x && (int)m["FirstMove"]["y"] == tryMove.Move.y).FirstOrDefault());
 
-                if (firstLevelMove != null)
+                if (firstLevel != null)
                 {
                     //make second move on the board
-                    Point secondMove = new Point((int)firstLevelMove["SecondMove"]["x"], (int)firstLevelMove["SecondMove"]["y"]);
+                    Point secondMove = new Point((int)firstLevel["SecondMove"]["x"], (int)firstLevel["SecondMove"]["y"]);
                     if (MakeMoveAndCheckIfAnswerFound(g, secondMove))
                         continue;
 
                     //continue with second level
-                    SecondLevelMappingForSolution(g, firstLevelMove);
+                    SecondLevelMappingForSolution(g, firstLevel);
                 }
                 else //second move not mapped
                 {
@@ -115,26 +115,26 @@ namespace Go
                 if (MakeMoveAndCheckIfAnswerFound(g, tryMove.Move))
                     continue;
 
-                JObject secondLevelMove = null;
+                JObject secondLevel = null;
                 if (move != null && move["SecondLevel"] != null)
                 {
                     //check if fourth move mapped already
-                    secondLevelMove = (JObject)(move["SecondLevel"].Where(m => (int)m["ThirdMove"]["x"] == tryMove.Move.x && (int)m["ThirdMove"]["y"] == tryMove.Move.y).FirstOrDefault());
-                    if (secondLevelMove != null)
+                    secondLevel = (JObject)(move["SecondLevel"].Where(m => (int)m["ThirdMove"]["x"] == tryMove.Move.x && (int)m["ThirdMove"]["y"] == tryMove.Move.y).FirstOrDefault());
+                    if (secondLevel != null)
                     {
-                        Point fourthMove = new Point((int)secondLevelMove["FourthMove"]["x"], (int)secondLevelMove["FourthMove"]["y"]);
+                        Point fourthMove = new Point((int)secondLevel["FourthMove"]["x"], (int)secondLevel["FourthMove"]["y"]);
 
                         //make fourth move on the board
                         if (MakeMoveAndCheckIfAnswerFound(g, fourthMove))
                             continue;
 
                         //continue with third level
-                        ThirdLevelMappingForSolution(g, secondLevelMove);
+                        ThirdLevelMappingForSolution(g, secondLevel);
                     }
                 }
 
                 //fourth move not mapped
-                if (secondLevelMove == null)
+                if (secondLevel == null)
                 {
                     //check if solution move available
                     Point? solutionMove = SolutionHelper.GetSolutionMove(g.Board);
@@ -187,10 +187,10 @@ namespace Go
                 if (move != null && move["ThirdLevel"] != null)
                 {
                     //check if third level move mapped already
-                    JObject thirdLevelMove = (JObject)(move["ThirdLevel"].Where(m => (int)m["FifthMove"]["x"] == tryMove.Move.x && (int)m["FifthMove"]["y"] == tryMove.Move.y).FirstOrDefault());
+                    JObject thirdLevel = (JObject)(move["ThirdLevel"].Where(m => (int)m["FifthMove"]["x"] == tryMove.Move.x && (int)m["FifthMove"]["y"] == tryMove.Move.y).FirstOrDefault());
 
                     //if mapped then all three levels completed
-                    if (thirdLevelMove != null)
+                    if (thirdLevel != null)
                         continue;
                 }
 
@@ -229,18 +229,18 @@ namespace Go
         public static JObject MapAnswerNodeToJson(Game g, Point firstMovePt, Node answerNode, Boolean getMappedJson = true)
         {
             JArray json = new JArray();
-            if (getMappedJson) json = GameMapping.GetMappedJson(g);
+            if (getMappedJson) json = JsonHelper.GetMappedJson(g);
             //first level
             Point answerMove = (answerNode != null && answerNode.State.Game.Board.Move != null) ? answerNode.State.Game.Board.Move.Value : Game.PassMove;
-            JObject firstLevelMove = JsonHelper.FirstLevelMapping(json, firstMovePt, answerMove);
-            if (answerNode == null) return firstLevelMove;
+            JObject firstLevel = JsonHelper.FirstLevelMapping(json, firstMovePt, answerMove);
+            if (answerNode == null) return firstLevel;
             //second level
             foreach (JObject move in answerNode.PrunedJson)
             {
                 Point thirdMove = new Point((int)move["FirstMove"]["x"], (int)move["FirstMove"]["y"]);
                 Point fourthMove = new Point((int)move["SecondMove"]["x"], (int)move["SecondMove"]["y"]);
                 if (thirdMove.Equals(Game.PassMove)) continue;
-                JObject secondLevelMove = JsonHelper.SecondLevelMapping(firstLevelMove, thirdMove, fourthMove);
+                JObject secondLevel = JsonHelper.SecondLevelMapping(firstLevel, thirdMove, fourthMove);
                 if (move["SecondLevel"] == null) continue;
                 //third level
                 if (!MonteCarloMapping.ThreeLevelMapping) continue;
@@ -249,17 +249,17 @@ namespace Go
                     Point fifthMove = new Point((int)move2["FirstMove"]["x"], (int)move2["FirstMove"]["y"]);
                     Point sixthMove = new Point((int)move2["SecondMove"]["x"], (int)move2["SecondMove"]["y"]);
                     if (fifthMove.Equals(Game.PassMove)) continue;
-                    JsonHelper.ThirdLevelMapping(secondLevelMove, fifthMove, sixthMove);
+                    JsonHelper.ThirdLevelMapping(secondLevel, fifthMove, sixthMove);
                 }
             }
-            return firstLevelMove;
+            return firstLevel;
         }
 
         private static JObject MonteCarloMapFirstSecondMove(Game g, Point firstMovePt, Point secondMovePt)
         {
-            JArray json = GameMapping.GetMappedJson(g);
-            JObject firstLevelMove = JsonHelper.FirstLevelMapping(json, firstMovePt, secondMovePt);
-            return firstLevelMove;
+            JArray json = JsonHelper.GetMappedJson(g);
+            JObject firstLevel = JsonHelper.FirstLevelMapping(json, firstMovePt, secondMovePt);
+            return firstLevel;
         }
 
         /// <summary>
@@ -267,11 +267,11 @@ namespace Go
         /// </summary>
         private static void MonteCarloMapThirdFourthMove(Game g, Point thirdMovePt, Point fourthMovePt, Node answerNode = null)
         {
-            JArray json = GameMapping.GetMappedJson(g);
+            JArray json = JsonHelper.GetMappedJson(g);
             int isChallenge = Convert.ToInt32(g.GameInfo.UserFirst == PlayerOrComputer.Computer);
             //second level
-            JObject firstLevelMove = JsonHelper.FirstLevelMapping(json, g.Board.LastMoves[0 + isChallenge], g.Board.LastMoves[1 + isChallenge]);
-            JObject secondLevelMove = JsonHelper.SecondLevelMapping(firstLevelMove, thirdMovePt, fourthMovePt);
+            JObject firstLevel = JsonHelper.FirstLevelMapping(json, g.Board.LastMoves[0 + isChallenge], g.Board.LastMoves[1 + isChallenge]);
+            JObject secondLevel = JsonHelper.SecondLevelMapping(firstLevel, thirdMovePt, fourthMovePt);
             if (answerNode == null) return;
 
             if (!MonteCarloMapping.ThreeLevelMapping) return;
@@ -281,7 +281,7 @@ namespace Go
                 Point fifthMove = new Point((int)move["FirstMove"]["x"], (int)move["FirstMove"]["y"]);
                 Point sixthMove = new Point((int)move["SecondMove"]["x"], (int)move["SecondMove"]["y"]);
                 if (fifthMove.Equals(Game.PassMove)) continue;
-                JsonHelper.ThirdLevelMapping(secondLevelMove, fifthMove, sixthMove);
+                JsonHelper.ThirdLevelMapping(secondLevel, fifthMove, sixthMove);
             }
         }
 
@@ -290,12 +290,12 @@ namespace Go
         /// </summary>
         private static void MonteCarloMapFifthSixthMove(Game g, Point fifthMovePt, Point sixthMovePt, Node answerNode)
         {
-            JArray json = GameMapping.GetMappedJson(g);
+            JArray json = JsonHelper.GetMappedJson(g);
             int isChallenge = Convert.ToInt32(g.GameInfo.UserFirst == PlayerOrComputer.Computer);
-            JObject firstLevelMove = JsonHelper.FirstLevelMapping(json, g.Board.LastMoves[0 + isChallenge], g.Board.LastMoves[1 + isChallenge]);
-            JObject secondLevelMove = JsonHelper.SecondLevelMapping(firstLevelMove, g.Board.LastMoves[2 + isChallenge], g.Board.LastMoves[3 + isChallenge]);
+            JObject firstLevel = JsonHelper.FirstLevelMapping(json, g.Board.LastMoves[0 + isChallenge], g.Board.LastMoves[1 + isChallenge]);
+            JObject secondLevel = JsonHelper.SecondLevelMapping(firstLevel, g.Board.LastMoves[2 + isChallenge], g.Board.LastMoves[3 + isChallenge]);
             //third level
-            JsonHelper.ThirdLevelMapping(secondLevelMove, fifthMovePt, sixthMovePt);
+            JsonHelper.ThirdLevelMapping(secondLevel, fifthMovePt, sixthMovePt);
         }
 
         /// <summary>

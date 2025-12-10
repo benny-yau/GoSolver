@@ -70,9 +70,8 @@ namespace ConsoleGoSolver
             } while (true);
         }
 
-        static Boolean PlayOneRound(Game game)
+        static Boolean PlayOneRound(Game g)
         {
-            Game g = new Game(game);
             Console.WriteLine("{0}", g.Board);
             Console.WriteLine("\n" + g.GameInfo.StartContent.ToString() + " to move.");
             Boolean koToWin = (g.GameInfo.Survival == SurviveOrKill.KillWithKo || g.GameInfo.Survival == SurviveOrKill.SurviveWithKo);
@@ -105,19 +104,19 @@ namespace ConsoleGoSolver
                 SearchAnswer(g);
                 return true;
             }
-            else if (input == "m" || input == "mapping")
-            {
-                MonteCarloMapping.MapScenario(g);
-                Console.WriteLine("Mapping completed.");
-            }
             else if (input == "r" || input == "move")
                 GetUserInput(g);
-            else if (input == "t" || input == "trymoves")
-                Console.WriteLine(DebugHelper.ShowTryMoves(g));
             else if (input == "e" || input == "movablepoints")
             {
                 List<Point> movablePoints = GameHelper.GetMovablePoints(g.Board);
                 Console.WriteLine(DebugHelper.ShowPointsInBoard(g, movablePoints));
+            }
+            else if (input == "t" || input == "trymoves")
+                Console.WriteLine(DebugHelper.ShowTryMoves(g));
+            else if (input == "m" || input == "mapping")
+            {
+                MonteCarloMapping.MapScenario(g);
+                Console.WriteLine("Mapping completed.");
             }
             else if (input == "v" || input == "verification")
             {
@@ -144,7 +143,8 @@ namespace ConsoleGoSolver
 
         public static void SearchAnswer(Game g)
         {
-            if (g.GameInfo.solutionPoints.Count == 0)
+            Boolean start = g.Board.LastMoves.Count == 0;
+            if (start && g.GameInfo.solutionPoints.Count == 0)
                 Console.WriteLine("No answers for this scenario.");
 
             Console.WriteLine("Calculating...");
@@ -157,11 +157,11 @@ namespace ConsoleGoSolver
             {
                 Console.WriteLine("Move: {0}", g.Board.Move + "\n");
                 solutionCorrect = g.GameInfo.solutionPoints.Any(s => s.First().Equals(g.Board.Move));
-                if (solutionCorrect)
+                if (start && solutionCorrect)
                     Console.WriteLine("Correct.");
             }
 
-            if (!solutionCorrect)
+            if (start && !solutionCorrect)
                 Console.WriteLine("Incorrect. Answer: " + g.GameInfo.solutionPoints.First().First());
             if (elapsedTime != null)
                 Console.WriteLine(DebugHelper.PrintTimeTaken(elapsedTime.Value));

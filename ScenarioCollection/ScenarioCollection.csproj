@@ -95,7 +95,7 @@
     <EmbeddedResource Include="Resources\HashimotoUtaro_MappedJsonExtension.resx" />
     <EmbeddedResource Include="Resources\KweonKabYong_MappedJsonExtension.resx" />
     <EmbeddedResource Include="Resources\MappedJsonExtension.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>MappedJsonExtension.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\XuanXuanQiJing_MappedJsonExtension.resx">
