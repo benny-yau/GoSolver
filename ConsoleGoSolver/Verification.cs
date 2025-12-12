@@ -28,7 +28,7 @@ namespace ConsoleGoSolver
         {
             List<Func<Scenario, Game>> scenarioList = ScenarioHelper.GetScenarioDelegates(gameSet, level);
             MappingVerification.WriteToFile("Verify mapped json for: " + gameSet + ", " + level + Environment.NewLine);
-            MappingVerification.WriteToFile("Start from: " + DateTime.Now.ToString("yyyyMMdd HH:mm:ss"));
+            MappingVerification.WriteToFile("Start from: " + DateTime.Now.ToString("yyyyMMdd HH:mm:ss") + Environment.NewLine + Environment.NewLine);
             for (int i = 0; i <= scenarioList.Count - 1; i++)
             {
                 //verify player json

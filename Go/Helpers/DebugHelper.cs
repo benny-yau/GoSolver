@@ -9,7 +9,7 @@ namespace Go
 {
     public class DebugHelper
     {
-        public static void DebugWriteWithTab(String msg, int gameDepth = 0)
+        public static void WriteLine(String msg, int gameDepth = 0)
         {
             if (!Game.debugMode) return;
             String tabs = (gameDepth == 0) ? "" : string.Concat(Enumerable.Repeat('\t', gameDepth));
@@ -106,20 +106,6 @@ namespace Go
                     msg += list[j, i].ToString().PadRight(2, ' ');
             }
             return msg;
-        }
-
-        public static void ReadCountFromFile()
-        {
-            String msg = File.ReadAllText(Directory.GetCurrentDirectory() + "\\RedundantCount.txt");
-            String[] array = msg.Split('|');
-            int totalCount = 0;
-            foreach (String s in array)
-            {
-                if (s == "") continue;
-                int i = Convert.ToInt32(s);
-                totalCount += i;
-            }
-            Debug.WriteLine("Total count: " + totalCount);
         }
 
         public static String PrintTimeTaken(long timeTaken)

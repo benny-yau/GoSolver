@@ -53,7 +53,7 @@ namespace Go
                 game.MakeMove(g.Board);
             }
             ConfirmAliveResult result = GetResultForMCTS(mcts);
-            return (result, mcts.AnswerNode ?? mcts.tree.Root, mcts.elapsedTime);
+            return (result, mcts.AnswerNode, mcts.elapsedTime);
 
         }
 

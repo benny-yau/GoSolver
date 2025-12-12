@@ -751,6 +751,9 @@ namespace Go
         /// Check corner point <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />
         /// Check diagonal move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29264" />
         /// Check weak group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17241_2" />
+        /// Check for weak groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17250_3" />
+        /// Check for neighbour weak groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A37" />
+        /// Check move liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_4" />
         /// </summary>
         private static Boolean RedundantOnePointMoveInConnectAndDie(GameTryMove tryMove, Board captureBoard)
         {
@@ -831,6 +834,41 @@ namespace Go
                 return true;
             }
 
+            if (npoints.Count == 0)
+            {
+                if (tryBoard.PointWithinMiddleArea()) return false;
+                if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c)) return false;
+
+                //check for weak groups
+                List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours();
+                if (ngroups.Any(n => n.Liberties.Count <= 2)) return false;
+                foreach (Group ngroup in ngroups)
+                {
+                    if (tryBoard.GetNeighbourGroups(ngroup).Where(s => s != tryBoard.MoveGroup).Any()) continue;
+                    if (ngroup.Points.Count > 1)
+                        return true;
+                    if (!LinkHelper.GetDiagonalGroups(tryBoard, ngroup).Any(s => s.Liberties.Count <= 2))
+                        return true;
+                }
+                
+                //check for neighbour weak groups
+                if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == Content.Empty && captureBoard.GetGroupsFromStoneNeighbours(n, c).Any(s => s.Liberties.Count <= 3)))
+                    return false;
+
+                //check move liberties
+                foreach (Point p in tryBoard.GetMoveLiberties())
+                {
+                    List<Group> sgroups = tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Where(n => n != tryBoard.MoveGroup).ToList();
+                    if (!sgroups.Any()) continue;
+                    Board b = tryBoard.MakeMoveOnNewBoard(p, c.Opposite());
+                    if (b == null) continue;
+                    Group kgroup = GroupHelper.GetDirectKillerGroup(b, move, c.Opposite());
+                    if (kgroup != null && !GroupHelper.IsSingleGroupWithinKillerGroup(b, tryBoard.MoveGroup))
+                        return false;
+                }
+                return true;
+            }
+
             return false;
         }
 
@@ -874,6 +912,7 @@ namespace Go
 
         /// <summary>
         /// Check weak group in connect and die.
+        /// Check one point group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q5971" /> 
         /// Check three liberty weak group <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20250311_8" /> 
         /// </summary>
         private static Boolean CheckWeakGroupInConnectAndDie(GameTryMove tryMove, Board captureBoard)

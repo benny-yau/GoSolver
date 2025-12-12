@@ -1615,6 +1615,9 @@
             Check corner point <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />
             Check diagonal move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29264" />
             Check weak group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17241_2" />
+            Check for weak groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17250_3" />
+            Check for neighbour weak groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A37" />
+            Check move liberties <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_4" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckWeakGroup(Go.Board,Go.Group)">
@@ -1628,6 +1631,7 @@
         <member name="M:Go.RedundantMoveHelper.CheckWeakGroupInConnectAndDie(Go.GameTryMove,Go.Board)">
             <summary>
             Check weak group in connect and die.
+            Check one point group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q5971" /> 
             Check three liberty weak group <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20250311_8" /> 
             </summary>
         </member>

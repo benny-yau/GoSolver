@@ -155,13 +155,15 @@ namespace ConsoleGoSolver
             Game.SearchAnswer = false;
             Console.WriteLine("{0}", g.Board);
             Boolean solutionCorrect = false;
-            if (g.Board.Move != null)
+            if (answerNode != null)
             {
                 Console.WriteLine("Move: {0}", g.Board.Move + "\n");
                 solutionCorrect = g.GameInfo.solutionPoints.Any(s => s.First().Equals(g.Board.Move));
                 if (start && solutionCorrect)
                     Console.WriteLine("Correct.");
             }
+            else
+                Console.WriteLine("No move.");
 
             if (start && !solutionCorrect)
                 Console.WriteLine("Incorrect. Answer: " + g.GameInfo.solutionPoints.First().First());

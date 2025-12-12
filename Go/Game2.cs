@@ -44,7 +44,7 @@ namespace Go
                         confirmAlive = MonteCarloGame.MakeMonteCarloTreeSearch(this).Item1;
                     result |= confirmAlive;
 
-                    DebugHelper.DebugWriteWithTab("Final move: " + this.Board.Move + " | Final result: " + confirmAlive.ToString());
+                    DebugHelper.WriteLine("Final move: " + this.Board.Move + " | Final result: " + confirmAlive.ToString());
                 }
 
                 if (this.Board.Move == null)
@@ -283,7 +283,7 @@ namespace Go
                 if (DebugPrintMode(gameDepth))
                 {
                     if (gameDepth == 0) Debug.WriteLine(Environment.NewLine);
-                    DebugHelper.DebugWriteWithTab("Trying game move at " + tryMove.Move.ToString() + " at depth " + depth + " (" + (i + 1) + " out of " + tryMoves.Count + ") | Last moves: " + g.Board.GetLastMoves(), gameDepth);
+                    DebugHelper.WriteLine("Trying game move at " + tryMove.Move.ToString() + " at depth " + depth + " (" + (i + 1) + " out of " + tryMoves.Count + ") | Last moves: " + g.Board.GetLastMoves(), gameDepth);
                     watch = Stopwatch.StartNew();
                 }
 
@@ -293,7 +293,7 @@ namespace Go
                 if (watch != null)
                 {
                     watch.Stop();
-                    DebugHelper.DebugWriteWithTab("Time taken for " + tryMove.Move.ToString() + " at depth " + depth + ": " + watch.ElapsedMilliseconds + " | Result: " + tryMove.ConfirmAlive.ToString(), gameDepth);
+                    DebugHelper.WriteLine("Time taken for " + tryMove.Move.ToString() + " at depth " + depth + ": " + watch.ElapsedMilliseconds + " | Result: " + tryMove.ConfirmAlive.ToString(), gameDepth);
                 }
 
                 //check if game ended
@@ -330,7 +330,7 @@ namespace Go
             if (DebugPrintMode(gameDepth))
             {
                 if (gameDepth == 0) Debug.WriteLine(Environment.NewLine);
-                DebugHelper.DebugWriteWithTab("Trying Ko game move at " + move.ToString() + " at depth " + depth + " | Last moves: " + g.Board.GetLastMoves(), gameDepth);
+                DebugHelper.WriteLine("Trying Ko game move at " + move.ToString() + " at depth " + depth + " | Last moves: " + g.Board.GetLastMoves(), gameDepth);
                 watch = Stopwatch.StartNew();
             }
 
@@ -344,7 +344,7 @@ namespace Go
             if (watch != null)
             {
                 watch.Stop();
-                DebugHelper.DebugWriteWithTab("Time taken for Ko " + move.ToString() + " at depth " + depth + ": " + watch.ElapsedMilliseconds + " | Result: " + koTryMove.ConfirmAlive.ToString(), gameDepth);
+                DebugHelper.WriteLine("Time taken for Ko " + move.ToString() + " at depth " + depth + ": " + watch.ElapsedMilliseconds + " | Result: " + koTryMove.ConfirmAlive.ToString(), gameDepth);
             }
             if (GameHelper.WinOrLose(surviveOrKill, koTryMove.ConfirmAlive, game.GameInfo))
             {
@@ -551,7 +551,7 @@ namespace Go
                 if (DebugPrintMode(gameDepth))
                 {
                     if (gameDepth == 0) Debug.WriteLine(Environment.NewLine);
-                    DebugHelper.DebugWriteWithTab("Trying game move at " + tryMove.Move.ToString() + " at depth " + depth + " (" + (i + 1) + " out of " + tryMoves.Count + ") | Last moves: " + g.Board.GetLastMoves(), gameDepth);
+                    DebugHelper.WriteLine("Trying game move at " + tryMove.Move.ToString() + " at depth " + depth + " (" + (i + 1) + " out of " + tryMoves.Count + ") | Last moves: " + g.Board.GetLastMoves(), gameDepth);
                     watch = Stopwatch.StartNew();
                 }
 
@@ -561,7 +561,7 @@ namespace Go
                 if (watch != null)
                 {
                     watch.Stop();
-                    DebugHelper.DebugWriteWithTab("Time taken for " + tryMove.Move.ToString() + " at depth " + depth + ": " + watch.ElapsedMilliseconds + " | Result: " + tryMove.ConfirmAlive.ToString(), gameDepth);
+                    DebugHelper.WriteLine("Time taken for " + tryMove.Move.ToString() + " at depth " + depth + ": " + watch.ElapsedMilliseconds + " | Result: " + tryMove.ConfirmAlive.ToString(), gameDepth);
                 }
 
                 //check if game ended

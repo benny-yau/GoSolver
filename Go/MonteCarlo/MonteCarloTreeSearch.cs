@@ -83,7 +83,7 @@ namespace Go
         /// </summary>
         public void FindNextMove()
         {
-            DebugHelper.DebugWriteWithTab("Start of mcts: " + tree.Root.GetLastMoves(), mctsDepth);
+            DebugHelper.WriteLine("Start of mcts: " + tree.Root.GetLastMoves(), mctsDepth);
             Stopwatch watch = Stopwatch.StartNew();
             int count = 0;
             do
@@ -115,7 +115,7 @@ namespace Go
                 SimulateRandomPlayout(promisingNode);
 
                 if (count % 60 == 0)
-                    DebugHelper.DebugWriteWithTab("Count: " + count + " | Last moves: " + promisingNode.GetLastMoves(), mctsDepth);
+                    DebugHelper.WriteLine("Count: " + count + " | Last moves: " + promisingNode.GetLastMoves(), mctsDepth);
 
                 //break on answer found or no answer
                 if (AnswerNode != null || tree.Root.ChildArray.Count == 0)
@@ -177,19 +177,19 @@ namespace Go
                 return false;
 
             Game verifyGame = new Game(verifyNode.State.Game);
-            DebugHelper.DebugWriteWithTab("Verifying game: " + verifyGame.Board.GetLastMoves(), mctsDepth);
+            DebugHelper.WriteLine("Verifying game: " + verifyGame.Board.GetLastMoves(), mctsDepth);
 
             //exhaustive search
             ConfirmAliveResult verifyResult = verifyGame.MakeExhaustiveSearch();
 
             if (GameHelper.WinOrLose(verifyNode.State.SurviveOrKill, verifyResult, verifyGame.GameInfo))
             {
-                DebugHelper.DebugWriteWithTab("Verified: " + verifyNode.GetLastMoves(), mctsDepth);
+                DebugHelper.WriteLine("Verified: " + verifyNode.GetLastMoves(), mctsDepth);
                 return true;
             }
             else
             {
-                DebugHelper.DebugWriteWithTab("Not verified: " + verifyNode.GetLastMoves(), mctsDepth);
+                DebugHelper.WriteLine("Not verified: " + verifyNode.GetLastMoves(), mctsDepth);
                 return false;
             }
         }
@@ -209,7 +209,7 @@ namespace Go
             if (prunedNode.CurrentDepth == this.tree.Root.CurrentDepth + 1)
             {
                 //return after hitting the top of tree
-                DebugHelper.DebugWriteWithTab("Hit top at level: " + prunedNode.CurrentDepth + " WinResult: " + winResult + " Recursion: " + recursion, mctsDepth);
+                DebugHelper.WriteLine("Hit top at level: " + prunedNode.CurrentDepth + " WinResult: " + winResult + " Recursion: " + recursion, mctsDepth);
                 return true;
             }
 
@@ -228,7 +228,7 @@ namespace Go
                     if (!winOrLose)
                     {
                         //game lost - prune sibling node (default pathway if parent node is correct)
-                        DebugHelper.DebugWriteWithTab("Sibling node pruned.", mctsDepth);
+                        DebugHelper.WriteLine("Sibling node pruned.", mctsDepth);
                         Pruning(siblingNode, mcts.AnswerNode);
                         //continue to prune all siblings to confirm answer
                     }
@@ -239,7 +239,7 @@ namespace Go
                             return true;
                         if (parentNode.Parent != null)
                         {
-                            DebugHelper.DebugWriteWithTab("Parent node pruned.", mctsDepth);
+                            DebugHelper.WriteLine("Parent node pruned.", mctsDepth);
                             Pruning(parentNode, siblingNode);
                             return true;
                         }
@@ -257,14 +257,14 @@ namespace Go
         private Boolean CheckAllChildNodesPruned(Node node, Boolean winResult = false)
         {
             if (node.ChildArray.Count > 0) return false;
-            DebugHelper.DebugWriteWithTab("All child nodes pruned.", mctsDepth);
+            DebugHelper.WriteLine("All child nodes pruned.", mctsDepth);
             if (AnswerFound(node))
                 return true;
 
             //if parent is not null then prune parent of win node by recursion
             if (node.Parent != null)
             {
-                DebugHelper.DebugWriteWithTab("MCTS recursion up level. WinResult: " + winResult, mctsDepth);
+                DebugHelper.WriteLine("MCTS recursion up level. WinResult: " + winResult, mctsDepth);
                 PrunePromisingNode(node.Parent, node, winResult, true);
             }
             return false;
@@ -281,7 +281,7 @@ namespace Go
                 if (Game.debugMode)
                 {
                     String msg = (node.CurrentDepth == 1) ? "Answer move: " + node.State.Game.Board.Move : "Answer move for " + this.tree.Root.GetLastMoves() + ": " + node.State.Game.Board.Move;
-                    DebugHelper.DebugWriteWithTab(msg, mctsDepth);
+                    DebugHelper.WriteLine(msg, mctsDepth);
                 }
                 AnswerNode = node;
                 return true;
@@ -313,7 +313,7 @@ namespace Go
             //increase score for parent
             BackPropagation(prunedNode.Parent, true, 20 * winScore);
 
-            DebugHelper.DebugWriteWithTab("Pruned node: " + prunedNode.GetLastMoves(), mctsDepth);
+            DebugHelper.WriteLine("Pruned node: " + prunedNode.GetLastMoves(), mctsDepth);
 
         }
 
@@ -400,7 +400,7 @@ namespace Go
             Node node = promisingNode.ChildArray.FirstOrDefault(m => m.State.WinOrLose);
             if (node == null) return false;
             ConfirmAliveResult confirmAlive = node.State.ConfirmAlive;
-            DebugHelper.DebugWriteWithTab("Confirm alive at: " + node.GetLastMoves() + " | " + confirmAlive.ToString(), mctsDepth);
+            DebugHelper.WriteLine("Confirm alive at: " + node.GetLastMoves() + " | " + confirmAlive.ToString(), mctsDepth);
             if (AnswerFound(node))
                 return true;
             Pruning(node.Parent, node);
@@ -510,11 +510,11 @@ namespace Go
             elapsedTime = timeTaken;
             if (tree.Root == tree.AbsoluteRoot)
             {
-                DebugHelper.DebugWriteWithTab(DebugHelper.PrintTimeTaken(timeTaken), mctsDepth);
-                DebugHelper.DebugWriteWithTab("Total time taken (mcts): " + timeTaken + Environment.NewLine + Environment.NewLine, mctsDepth);
+                DebugHelper.WriteLine(DebugHelper.PrintTimeTaken(timeTaken), mctsDepth);
+                DebugHelper.WriteLine("Total time taken (mcts): " + timeTaken + Environment.NewLine + Environment.NewLine, mctsDepth);
             }
             else
-                DebugHelper.DebugWriteWithTab("Time taken (mcts): " + timeTaken, mctsDepth);
+                DebugHelper.WriteLine("Time taken (mcts): " + timeTaken, mctsDepth);
         }
     }
 }

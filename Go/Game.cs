@@ -129,7 +129,7 @@ namespace Go
         {
             int gameDepth = GameDepth(g);
             if (!DebugPrintMode(gameDepth)) return;
-            DebugHelper.DebugWriteWithTab("Game try moves: " + tryMoves.GetConcatenatedString(), gameDepth);
+            DebugHelper.WriteLine("Game try moves: " + tryMoves.GetConcatenatedString(), gameDepth);
         }
 
         /// <summary>
