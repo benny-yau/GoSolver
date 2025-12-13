@@ -604,7 +604,6 @@ namespace Go
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
             if (!opponentMove.IsNegligible || opponentBoard.MoveGroupLiberties == 1) return false;
-            if (tryBoard.CornerPoint(move)) return false;
 
             //check connect and die
             (Boolean connectAndDie, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard, tryBoard.MoveGroup, false);
@@ -672,6 +671,13 @@ namespace Go
                         return false;
                 }
             }
+
+            //check corner point
+            if (KillerFormationHelper.CornerKillFormation(tryBoard))
+                return false;
+
+            if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite() && ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.GetGroupAt(n)) && !ImmovableHelper.CheckConnectAndDie(opponentBoard, opponentBoard.GetGroupAt(n))))
+                return false;
             return true;
         }
 
@@ -751,6 +757,7 @@ namespace Go
         /// Check corner point <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />
         /// Check diagonal move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29264" />
         /// Check weak group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17241_2" />
+        /// Check capture move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31453_2" />
         /// Check for weak groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17250_3" />
         /// Check for neighbour weak groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A37" />
         /// Check move liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_4" />
@@ -787,13 +794,10 @@ namespace Go
                 return false;
 
             //empty points at stone and diagonal
-            List<Point> epoints = LinkHelper.GetDiagonalsAtStoneNeighbours(tryBoard, move, Content.Empty);
-            if (epoints.Count == 2)
-            {
-                Point q = LinkHelper.PointsBetweenDiagonals(epoints[0], epoints[1]).First(n => !n.Equals(move));
-                if (tryBoard[q] == Content.Empty && tryBoard.GetGroupsFromStoneNeighbours().Count == 1)
-                    return true;
-            }
+            Point? e = LinkHelper.CheckPointsBetweenDiagonalsAtMove(tryBoard, Content.Empty);
+            if (e != null && tryBoard[e.Value] == Content.Empty && tryBoard.GetGroupsFromStoneNeighbours().Count == 1)
+                return true;
+
             //check single group
             if (GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard))
             {
@@ -802,13 +806,9 @@ namespace Go
                     return true;
             }
 
-            List<Point> npoints = LinkHelper.GetDiagonalsAtStoneNeighbours(tryBoard);
-            if (npoints.Count == 2)
+            Point? d = LinkHelper.CheckPointsBetweenDiagonalsAtMove(tryBoard);
+            if (d != null && tryBoard[d.Value] != Content.Empty)
             {
-                Point q = LinkHelper.PointsBetweenDiagonals(npoints[0], npoints[1]).First(n => !n.Equals(move));
-                if (tryBoard[q] == Content.Empty)
-                    return false;
-
                 //check eye
                 if (tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindEye(tryBoard, n, c)))
                     return false;
@@ -834,23 +834,30 @@ namespace Go
                 return true;
             }
 
-            if (npoints.Count == 0)
+            if (d == null)
             {
                 if (tryBoard.PointWithinMiddleArea()) return false;
                 if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c)) return false;
 
-                //check for weak groups
+                //check capture move
                 List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours();
                 if (ngroups.Any(n => n.Liberties.Count <= 2)) return false;
-                foreach (Group ngroup in ngroups)
+                if (captureBoard.MoveGroup.Points.Count == 1 && ngroups.All(n => n.Liberties.Count > n.Neighbours.Count * 0.5))
                 {
-                    if (tryBoard.GetNeighbourGroups(ngroup).Where(s => s != tryBoard.MoveGroup).Any()) continue;
-                    if (ngroup.Points.Count > 1)
-                        return true;
-                    if (!LinkHelper.GetDiagonalGroups(tryBoard, ngroup).Any(s => s.Liberties.Count <= 2))
+                    Point? v = LinkHelper.CheckPointsBetweenDiagonalsAtMove(captureBoard, Content.Empty);
+                    if (v != null && captureBoard[v.Value] == Content.Empty)
                         return true;
                 }
-                
+
+                //check for weak groups
+                foreach (Group ngroup in ngroups)
+                {
+                    if (ngroup.Points.Count > 1 && tryBoard.GetNeighbourGroups(ngroup).Count(s => s != tryBoard.MoveGroup) <= 1 && LinkHelper.GetGroupDiagonals(tryBoard, ngroup).All(n => tryBoard[n.Move] != c))
+                        return true;
+                    if (ngroup.Points.Count == 1 && !LinkHelper.GetDiagonalGroups(tryBoard, ngroup).Any(s => s.Liberties.Count <= 2))
+                        return true;
+                }
+
                 //check for neighbour weak groups
                 if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == Content.Empty && captureBoard.GetGroupsFromStoneNeighbours(n, c).Any(s => s.Liberties.Count <= 3)))
                     return false;
@@ -1006,8 +1013,8 @@ namespace Go
                 return true;
 
             //check for kill formation
-            Boolean killFormation = (tryBoard.GetClosestPoints(move, c.Opposite()).Count >= 3 && !tryBoard.GetClosestPoints(move, c).Any());
-            if (killFormation) return false;
+            if (KillerFormationHelper.CornerKillFormation(tryBoard))
+                return false;
 
             //multipoint snapback
             if (captureBoard.GetNeighbourGroups(tryBoard.MoveGroup).Any(gr => gr.Points.Count > 1 && ImmovableHelper.CheckConnectAndDie(captureBoard, gr)))

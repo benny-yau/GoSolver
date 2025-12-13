@@ -1123,6 +1123,11 @@
             Check group diagonals <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30302_2" /> 
             </summary>
         </member>
+        <member name="M:Go.KillerFormationHelper.CornerKillFormation(Go.Board)">
+            <summary>
+            Corner kill formation.
+            </summary>
+        </member>
         <member name="M:Go.KillerFormationHelper.FirstPointInKillerGroup(Go.Board,Go.Group,Go.Content)">
             <summary>
             First point in killer group.
@@ -1337,12 +1342,17 @@
         </member>
         <member name="M:Go.LinkHelper.GetAllDiagonalGroups(Go.Board,Go.Group,System.Func{Go.Group,System.Boolean},System.Collections.Generic.List{Go.Group})">
             <summary>
-            Get all diagonal groups by recursion.
+            Get all diagonal groups.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.PointsBetweenDiagonals(Go.Point,Go.Point)">
             <summary>
-            Get the opposite diagonals of the two diagonal points.
+            Points between diagonals.
+            </summary>
+        </member>
+        <member name="M:Go.LinkHelper.CheckPointsBetweenDiagonalsAtMove(Go.Board,Go.Content)">
+            <summary>
+            Check points between diagonals at move.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.FindDiagonalCut(Go.Board,Go.Group)">
@@ -1372,7 +1382,7 @@
         </member>
         <member name="M:Go.LinkHelper.TigerMouthThreatGroup(Go.Board,Go.Point,Go.Content)">
             <summary>
-            Get tiger mouth threat group.
+            Tiger mouth threat group.
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_7" />
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_6" />
             </summary>
@@ -1615,6 +1625,7 @@
             Check corner point <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />
             Check diagonal move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29264" />
             Check weak group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17241_2" />
+            Check capture move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31453_2" />
             Check for weak groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17250_3" />
             Check for neighbour weak groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A37" />
             Check move liberties <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_4" />

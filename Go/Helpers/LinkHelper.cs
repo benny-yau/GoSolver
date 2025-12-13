@@ -507,7 +507,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get all diagonal groups by recursion.
+        /// Get all diagonal groups.
         /// </summary>
         public static List<Group> GetAllDiagonalGroups(Board board, Group group, Func<Group, Boolean> func = null, List<Group> groups = null)
         {
@@ -529,7 +529,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get the opposite diagonals of the two diagonal points.
+        /// Points between diagonals.
         /// </summary>
         public static List<Point> PointsBetweenDiagonals(Point p, Point q)
         {
@@ -548,6 +548,21 @@ namespace Go
         public static List<Point> PointsBetweenDiagonals(Link<Point> diagonal)
         {
             return PointsBetweenDiagonals(diagonal.Move, (Point)diagonal.CheckMove);
+        }
+
+        /// <summary>
+        /// Check points between diagonals at move.
+        /// </summary>
+        public static Point? CheckPointsBetweenDiagonalsAtMove(Board board, Content c = Content.Unknown)
+        {
+            Point move = board.Move.Value;
+            List<Point> epoints = GetDiagonalsAtStoneNeighbours(board, move, c);
+            if (epoints.Count == 2)
+            {
+                Point q = PointsBetweenDiagonals(epoints[0], epoints[1]).First(n => !n.Equals(move));
+                return q;
+            }
+            return null;
         }
 
         /// <summary>
@@ -608,11 +623,8 @@ namespace Go
         /// </summary>
         public static List<Point> GetDiagonalsAtStoneNeighbours(Board board, Point? p = null, Content c = Content.Unknown)
         {
-            if (p == null)
-            {
-                p = board.Move.Value;
-                c = board.MoveGroup.Content.Opposite();
-            }
+            if (p == null) p = board.Move.Value;
+            if (c == Content.Unknown) c = board.MoveGroup.Content.Opposite();
             List<Point> npoints = board.GetStoneNeighbours(p.Value).Where(n => board[n] == c).ToList();
             if (npoints.Count == 0) return npoints;
             npoints = npoints.Where(n => board.GetDiagonalNeighbours(n).Intersect(npoints).Any()).ToList();
@@ -620,7 +632,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get tiger mouth threat group.
+        /// Tiger mouth threat group.
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_7" />
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_6" />
         /// </summary>

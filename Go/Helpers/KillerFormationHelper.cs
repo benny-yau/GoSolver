@@ -1238,6 +1238,18 @@ namespace Go
         }
 
         /// <summary>
+        /// Corner kill formation.
+        /// </summary>
+        public static Boolean CornerKillFormation(Board tryBoard)
+        {
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            if (tryBoard.GetClosestPoints(move, c.Opposite()).Count >= 3 && !tryBoard.GetClosestPoints(move, c).Any())
+                return true;
+            return false;
+        }
+
+        /// <summary>
         /// First point in killer group.
         /// </summary>
         public static Point FirstPointInKillerGroup(Board currentBoard, Group killerGroup, Content c)
