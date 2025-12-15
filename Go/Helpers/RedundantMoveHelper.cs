@@ -852,15 +852,22 @@ namespace Go
                 //check for weak groups
                 foreach (Group ngroup in ngroups)
                 {
-                    if (ngroup.Points.Count > 1 && tryBoard.GetNeighbourGroups(ngroup).Count(s => s != tryBoard.MoveGroup) <= 1 && LinkHelper.GetGroupDiagonals(tryBoard, ngroup).All(n => tryBoard[n.Move] != c))
+                    if (LinkHelper.GetDiagonalGroups(tryBoard, ngroup).Any(s => s.Liberties.Count <= 2)) continue;
+                    if (ngroup.Points.Count == 1)
                         return true;
-                    if (ngroup.Points.Count == 1 && !LinkHelper.GetDiagonalGroups(tryBoard, ngroup).Any(s => s.Liberties.Count <= 2))
+
+                    if (LinkHelper.GetGroupDiagonals(tryBoard, ngroup).Any(n => tryBoard[n.Move] == c)) continue;
+                    if (tryBoard.GetNeighbourGroups(ngroup).Count(s => s != tryBoard.MoveGroup) <= 1)
                         return true;
                 }
 
                 //check for neighbour weak groups
-                if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == Content.Empty && captureBoard.GetGroupsFromStoneNeighbours(n, c).Any(s => s.Liberties.Count <= 3)))
+                foreach (Point p in tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] == Content.Empty))
+                {
+                    if (!captureBoard.GetGroupsFromStoneNeighbours(p, c).Any(s => s.Liberties.Count <= 3)) continue;
+                    if (ImmovableHelper.IsSuicidalMove(tryBoard, p, c, true)) continue;
                     return false;
+                }
 
                 //check move liberties
                 foreach (Point p in tryBoard.GetMoveLiberties())
@@ -2229,7 +2236,7 @@ namespace Go
             if (KillerFormationHelper.ThreeOpponentGroupsAtMove(tryBoard))
                 return false;
             //check for strong neighbour groups
-            if (!WallHelper.StrongNeighbourGroups(tryBoard))
+            if (tryBoard.GetDiagonalNeighbours().Any(n => ImmovableHelper.FindEmptyTigerMouth(tryBoard, n, c.Opposite()) && !WallHelper.StrongNeighbourGroups(tryBoard, n, c)))
                 return false;
             //check for killer group
             if (!GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard))
