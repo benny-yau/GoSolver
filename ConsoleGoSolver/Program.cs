@@ -53,6 +53,8 @@ namespace ConsoleGoSolver
             int scenario = SelectFromList<Func<Scenario, Game>>(scenarioList);
 
             //return selected scenario
+            Console.WriteLine("\nGame set: \t\t" + selected);
+            Console.WriteLine("Scenario number: \t" + scenario);
             return ScenarioHelper.GetScenarioFromList(scenarioList, scenario - 1);
         }
 
@@ -72,8 +74,9 @@ namespace ConsoleGoSolver
 
         static Boolean PlayOneRound(Game g)
         {
+            Console.WriteLine("Scenario name: \t\t" + g.GameInfo.ScenarioName);
             Console.WriteLine("{0}", g.Board);
-            Console.WriteLine("\n" + g.GameInfo.StartContent.ToString() + " to move.");
+            Console.WriteLine("\n" + GameHelper.GetContentForNextMove(g.Board).ToString() + " to move.");
             Boolean koToWin = (g.GameInfo.Survival == SurviveOrKill.KillWithKo || g.GameInfo.Survival == SurviveOrKill.SurviveWithKo);
             Console.WriteLine(koToWin ? "Ko to win." : "");
             Console.WriteLine("Do you place the first step? [y/n] (Get answer[a], Search answer[s])");

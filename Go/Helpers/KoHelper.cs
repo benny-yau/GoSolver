@@ -103,7 +103,7 @@ namespace Go
             foreach (Point d in LinkHelper.GetMoveDiagonals(tryBoard))
             {
                 Group dgroup = tryBoard.GetGroupAt(d);
-                if (dgroup.Points.Count != 1) continue;
+                if (dgroup.Points.Count != 1 || dgroup.Liberties.Count != 2) continue;
                 Point lib = tryBoard.GetMoveLiberties(d).FirstOrDefault(p => !tryBoard.PointWithinMiddleArea(p));
                 if (lib.IsEmpty()) continue;
                 Point lib2 = tryBoard.GetMoveLiberties(lib).FirstOrDefault();

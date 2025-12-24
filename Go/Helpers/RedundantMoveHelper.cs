@@ -807,8 +807,10 @@ namespace Go
             }
 
             Point? d = LinkHelper.CheckPointsBetweenDiagonalsAtMove(tryBoard);
-            if (d != null && tryBoard[d.Value] != Content.Empty)
+            if (d != null)
             {
+                if (tryBoard[d.Value] == Content.Empty) return false;
+
                 //check eye
                 if (tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindEye(tryBoard, n, c)))
                     return false;
@@ -817,7 +819,7 @@ namespace Go
                 List<Point> dpoints = captureBoard.GetDiagonalNeighbours(move).Where(n => captureBoard[n] == Content.Empty).Intersect(captureBoard.GetStoneNeighbours(captureBoard.GetMoveLiberties(move).First())).ToList();
                 foreach (Board b in GameHelper.GetMoveBoards(captureBoard, dpoints, c))
                 {
-                    if (!ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false))
+                    if (b.MoveGroup.Points.Count > 1 && !ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false))
                         return false;
                 }
 
@@ -827,14 +829,13 @@ namespace Go
                     if (ngroup.Liberties.Count != 2) continue;
                     foreach (Board b in GameHelper.GetMoveBoards(captureBoard, ngroup.Liberties, c, true))
                     {
-                        if (b.GetStoneAndDiagonalNeighbours().Any(n => !WallHelper.NoEyeForSurvival(captureBoard, n, c.Opposite())))
+                        if (b.GetStoneAndDiagonalNeighbours().Any(n => !n.Equals(move) && !WallHelper.NoEyeForSurvival(captureBoard, n, c.Opposite())))
                             return false;
                     }
                 }
                 return true;
             }
-
-            if (d == null)
+            else
             {
                 if (tryBoard.PointWithinMiddleArea()) return false;
                 if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c)) return false;
@@ -2143,11 +2144,14 @@ namespace Go
 
         /// <summary>
         /// Redundant tiger mouth.
-        /// Check killer groups <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WuQingYuan_Q15126" />
+        /// Check diagonal killer group <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WuQingYuan_Q15126" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_XuanXuanGo_B31" />
         /// Check one point atari move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31428" />
         /// Opponent move at tiger mouth <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A151_101Weiqi" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_Nie67" />
+        /// Check atari target <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31536" />
+        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_A4" />
+        /// Check snapback <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A26" />
         /// </summary>
         private static Boolean RedundantTigerMouth(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
@@ -2177,13 +2181,23 @@ namespace Go
 
                 if (opponentMove == null)
                 {
-                    //check killer groups
                     Group diagonalKillerGroup = GroupHelper.GetDirectKillerGroup(currentBoard, d, c.Opposite());
-                    if (diagonalKillerGroup == null)
-                        continue;
-                    HashSet<Group> opponentGroups = currentBoard.GetGroupsFromPoints(diagonalKillerGroup.Points.Where(n => currentBoard[n] == c).ToList());
-                    if (opponentGroups.Any(n => !ImmovableHelper.CheckConnectAndDie(tryBoard, n, false)))
-                        continue;
+                    if (diagonalKillerGroup != null)
+                    {
+                        //check diagonal killer group
+                        HashSet<Group> opponentGroups = currentBoard.GetGroupsFromPoints(diagonalKillerGroup.Points.Where(n => currentBoard[n] == c).ToList());
+                        if (opponentGroups.Any(n => !ImmovableHelper.CheckConnectAndDie(tryBoard, n, false)))
+                            continue;
+                    }
+                    else
+                    {
+                        //check atari target
+                        if (tryBoard.AtariTargets.Any() && tryBoard.GetDiagonalNeighbours().Any(s => ImmovableHelper.FindEmptyTigerMouth(currentBoard, s, c.Opposite())))
+                            continue;
+                        //check snapback
+                        if (ImmovableHelper.CheckSnapbackFromMove(tryBoard))
+                            continue;
+                    }
 
                     //check one point atari move
                     if (KillerFormationHelper.OnePointAtariMove(tryBoard, currentBoard))
@@ -2193,6 +2207,7 @@ namespace Go
                         continue;
                     if (KillCoveredEyeAtDiagonal(tryBoard, currentBoard))
                         continue;
+
                     return true;
                 }
                 else
