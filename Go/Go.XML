@@ -1599,6 +1599,8 @@
             Check diagonal cut <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie61" />
             Get first point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_9" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_B43" />
+            Check corner point <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_B8" />
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221109_7" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SuicidalConnectAndDie(Go.GameTryMove)">
@@ -1626,6 +1628,7 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17081_2" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_20230603_4" />
             Empty points at stone and diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_4" />
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221027_6" />
             Check single group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16594" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_2398" />
             Check corner point <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />
@@ -1973,10 +1976,11 @@
             Check both alive for opponent move <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_A35" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.CheckSuicideDiagonalAtTigerMouth(Go.Board,Go.Board)">
+        <member name="M:Go.RedundantMoveHelper.CheckWeakGroupAtTigerMouth(Go.Board,Go.Board)">
             <summary>
-            Check suicide diagonal at tiger mouth.
+            Check weak group at tiger mouth.
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A26_2" />
+            <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_A2Q29_101Weiqi" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.KillCoveredEyeAtDiagonal(Go.Board,Go.Board)">

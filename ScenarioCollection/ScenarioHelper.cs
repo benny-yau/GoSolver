@@ -59,7 +59,6 @@ namespace ScenarioCollection
             for (int i = 0; i <= ScenarioHelper.GameSets.Count - 1; i++)
             {
                 GameSet gameSet = ScenarioHelper.GameSets[i];
-                if (gameSet.Name == "Problem-Set") continue;
                 if (gameSet.Levels.Count == 0)
                     action(gameSet.Name, "");
                 else
@@ -89,21 +88,6 @@ namespace ScenarioCollection
                 scenarioDelegates.Add(key, scenarioList);
                 return scenarioList;
             }
-        }
-
-        public static Dictionary<String, List<Func<Scenario, Game>>> GetScenarioDelegates(String gameSet, List<String> levels)
-        {
-            Dictionary<String, List<Func<Scenario, Game>>> scenarios = new Dictionary<String, List<Func<Scenario, Game>>>();
-            if (levels == null || levels.Count == 0)
-                levels = new List<string>() { String.Empty };
-
-            for (int i = 0; i <= levels.Count - 1; i++)
-            {
-                String level = levels[i];
-                List<Func<Scenario, Game>> scenarioList = GetScenarioDelegates(gameSet, level);
-                scenarios.Add(level, scenarioList);
-            }
-            return scenarios;
         }
 
         /// <summary>
