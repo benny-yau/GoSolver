@@ -33,7 +33,7 @@ namespace Go
             if (WallHelper.IsNonKillableFromSetupMoves(tryBoard, group))
                 return false;
 
-            if (tryBoard.GetNeighbourGroups(group).Any(n => IsWeakGroup(tryBoard, n)))
+            if (tryBoard.GetNeighbourGroups(group).Any(n => IsWeakGroup(tryBoard, group, n)))
                 return true;
             return false;
         }
@@ -41,7 +41,7 @@ namespace Go
         /// <summary>
         /// Is weak group.
         /// </summary>
-        public static Boolean IsWeakGroup(Board tryBoard, Group ngroup)
+        public static Boolean IsWeakGroup(Board tryBoard, Group targetGroup, Group ngroup)
         {
             Content c = ngroup.Content;
             if (ngroup.Liberties.Count != 2) return false;
@@ -50,9 +50,25 @@ namespace Go
             {
                 if (ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false)) continue;
                 if (WallHelper.IsNonKillableOrKo(b)) continue;
+                if (CheckWeakGroupMove(b, targetGroup)) continue;
                 return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// Check weak group move.
+        /// </summary>
+        public static Boolean CheckWeakGroupMove(Board b, Group targetGroup)
+        {
+            Content c = targetGroup.Content;
+            targetGroup = b.GetCurrentGroup(targetGroup);
+            if (targetGroup.Liberties.Count != 1) return false;
+            Point p = targetGroup.Liberties.First();
+            if (!b.GetStoneNeighbours().Contains(p)) return false;
+            if (!LinkHelper.GetMoveDiagonals(b).Any(n => b.GetGroupAt(n).Equals(targetGroup))) return false;
+            if (EyeHelper.FindEye(b, p, c)) return false;
+            return true;
         }
 
         /// <summary>
