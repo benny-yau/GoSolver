@@ -2282,14 +2282,32 @@ namespace Go
 
         /// <summary>
         /// Check weak group at tiger mouth.
-        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A26_2" />
-        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_A2Q29_101Weiqi" />
+        /// Check snapback <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q17081" />
+        /// Check diagonal at move <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A26_2" />
+        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A26_3" />
+        /// Check hostile group <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_A2Q29_101Weiqi" />
         /// </summary>
         private static Boolean CheckWeakGroupAtTigerMouth(Board tryBoard, Board capturedBoard)
         {
-            if (capturedBoard.MoveGroup.Points.Count == 1 || capturedBoard.MoveGroupLiberties != 2) return false;
-            if (!WallHelper.IsHostileGroup(capturedBoard))
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            List<Group> ngroups = capturedBoard.GetGroupsFromStoneNeighbours(move, c);
+            if (ngroups.Count == 1) return false;
+            if (!ngroups.Any(n => n.Liberties.Count <= 2 && n.Points.Count > 1)) return false;
+            //check snapback
+            if (LinkHelper.GetDiagonalGroups(tryBoard).Any(n => ImmovableHelper.IsSnapback(tryBoard, tryBoard.MoveGroup, n)))
                 return true;
+
+            //check diagonal at move
+            if (capturedBoard.GetMoveLiberties().Count == 1 && tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c && tryBoard.GetStoneNeighbours(n).Contains(capturedBoard.Move.Value)))
+                return true;
+
+            //check hostile group
+            if (capturedBoard.MoveGroup.Points.Count > 1 && capturedBoard.MoveGroupLiberties == 2)
+            {
+                if (!WallHelper.IsHostileGroup(capturedBoard))
+                    return true;
+            }
             return false;
         }
 

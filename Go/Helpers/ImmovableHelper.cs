@@ -520,8 +520,10 @@ namespace Go
         /// </summary>
         public static Boolean IsSnapback(Board board, Group eyeGroup, Group suicideGroup)
         {
+            if (suicideGroup.Points.Count != 1 || suicideGroup.Liberties.Count != 1) return false;
+            if (eyeGroup.Liberties.Count != 1) return false;
+            if (!board.GetNeighbourGroups(eyeGroup).Any(n => n.Liberties.Count == 1 && n.Points.Count > 1)) return false;
             //capture suicide group
-            if (suicideGroup.Liberties.Count != 1) return false;
             Board b = ImmovableHelper.CaptureSuicideGroup(board, suicideGroup);
             if (b.MoveGroup.Points.Count == 1 || b.MoveGroupLiberties != 1) return false;
             //capture eye group
