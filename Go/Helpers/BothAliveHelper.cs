@@ -135,7 +135,8 @@ namespace Go
             if (cGroups.Count == 1)
             {
                 Group cGroup = cGroups.First();
-                if (ImmovableHelper.CheckConnectAndDie(board, cGroup))
+                Boolean checkLastMove = (board.Move != null && board[board.Move.Value] == cGroup.Content);
+                if (checkLastMove && ImmovableHelper.CheckConnectAndDie(board, cGroup))
                 {
                     if (cGroup.Points.Count > 3 && !KillerFormationHelper.IsKillerFormationFromFunc(board, cGroup))
                         return false;

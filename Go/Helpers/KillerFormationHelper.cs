@@ -613,7 +613,7 @@ namespace Go
         public static Boolean ThreeOpponentGroupsAtMove(Board tryBoard, Point? eyePoint = null)
         {
             if (eyePoint == null) eyePoint = tryBoard.Move.Value;
-            Content c = tryBoard[eyePoint.Value];
+            if (!tryBoard.PointWithinMiddleArea()) return false;
             if (tryBoard.GetGroupsFromStoneNeighbours(eyePoint).Count >= 3)
                 return true;
             return false;
