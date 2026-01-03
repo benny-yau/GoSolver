@@ -1133,6 +1133,11 @@
             Corner kill formation.
             </summary>
         </member>
+        <member name="M:Go.KillerFormationHelper.TigerMouthAtDiagonal(Go.Board)">
+            <summary>
+            Tiger mouth at diagonal.
+            </summary>
+        </member>
         <member name="M:Go.KillerFormationHelper.FirstPointInKillerGroup(Go.Board,Go.Group,Go.Content)">
             <summary>
             First point in killer group.
@@ -1879,6 +1884,12 @@
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_x_2" />
             </summary>
         </member>
+        <member name="M:Go.RedundantMoveHelper.CheckCoveredEyeAtNeutralPoint(Go.GameTryMove)">
+            <summary>
+            Check covered eye at neutral point.
+            Check connect and die <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260103_8" />
+            </summary>
+        </member>
         <member name="M:Go.RedundantMoveHelper.ValidateNeutralPoint(Go.GameTryMove)">
             <summary>
             Validate neutral point.
@@ -1978,7 +1989,7 @@
             <summary>
             Check covered eye at tiger mouth.
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16738" />
-            Check diagonal at move <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_Side_A25" />
+            Check diagonal at move <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanQiJing_B57_2" />
             Check suicidal move <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q30225_2" />
             </summary>
         </member>

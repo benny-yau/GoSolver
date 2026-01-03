@@ -131,15 +131,17 @@ namespace Go
             }
 
             //check content group connect and die
-            HashSet<Group> cGroups = board.GetGroupsFromPoints(contentPoints);
-            if (cGroups.Count == 1)
+            if (board.Move != null && board[board.Move.Value] == c)
             {
-                Group cGroup = cGroups.First();
-                Boolean checkLastMove = (board.Move != null && board[board.Move.Value] == cGroup.Content);
-                if (checkLastMove && ImmovableHelper.CheckConnectAndDie(board, cGroup))
+                HashSet<Group> cGroups = board.GetGroupsFromPoints(contentPoints);
+                if (cGroups.Count == 1)
                 {
-                    if (cGroup.Points.Count > 3 && !KillerFormationHelper.IsKillerFormationFromFunc(board, cGroup))
-                        return false;
+                    Group cGroup = cGroups.First();
+                    if (ImmovableHelper.CheckConnectAndDie(board, cGroup))
+                    {
+                        if (cGroup.Points.Count > 3 && !KillerFormationHelper.IsKillerFormationFromFunc(board, cGroup))
+                            return false;
+                    }
                 }
             }
 

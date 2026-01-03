@@ -1250,6 +1250,19 @@ namespace Go
         }
 
         /// <summary>
+        /// Tiger mouth at diagonal.
+        /// </summary>
+        public static Boolean TigerMouthAtDiagonal(Board tryBoard)
+        {
+            Content c = tryBoard.MoveGroup.Content;
+            if (tryBoard.MoveGroup.Points.Count != 1 || tryBoard.MoveGroupLiberties != 1) return false;
+            Point liberty = tryBoard.MoveGroup.Liberties.First();
+            if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c && tryBoard.GetStoneNeighbours(n).Contains(liberty)))
+                return true;
+            return false;
+        }
+
+        /// <summary>
         /// First point in killer group.
         /// </summary>
         public static Point FirstPointInKillerGroup(Board currentBoard, Group killerGroup, Content c)
