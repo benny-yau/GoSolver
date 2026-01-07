@@ -595,6 +595,7 @@ namespace Go
         /// Check diagonal cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie61" />
         /// Get first point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_9" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_B43" />
+        /// Check point next to corner point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Phenomena_B12" />
         /// Check corner point <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_B8" />
         /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20221109_7" />
         /// </summary>
@@ -673,6 +674,10 @@ namespace Go
                         return false;
                 }
             }
+
+            //check point next to corner point
+            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard.CornerPoint(n) && captureBoard.PointWithinMiddleArea() && captureBoard.MoveGroupLiberties <= 2 && captureBoard.MoveGroup.Points.Count == 1))
+                return false;
 
             //check corner point
             if (KillerFormationHelper.CornerKillFormation(tryBoard))
@@ -835,7 +840,7 @@ namespace Go
                 List<Point> dpoints = captureBoard.GetDiagonalNeighbours(move).Where(n => captureBoard[n] == Content.Empty).Intersect(captureBoard.GetStoneNeighbours(captureBoard.GetMoveLiberties(move).First())).ToList();
                 foreach (Board b in GameHelper.GetMoveBoards(captureBoard, dpoints, c))
                 {
-                    if (b.MoveGroup.Points.Count > 1 && !ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false))
+                    if (!ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false))
                         return false;
                 }
 
@@ -1883,10 +1888,6 @@ namespace Go
             //check covered eye
             if (CheckCoveredEyeAtNeutralPoint(tryMove))
                 return false;
-            //check covered point suicidal move
-            GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
-            if (opponentMove != null && CoveredPointSuicidalMove(opponentMove))
-                return false;
             return true;
         }
 
@@ -2181,6 +2182,7 @@ namespace Go
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_Nie67" />
         /// Check atari target <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31536" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_A4" />
+        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_Corner_A20" />
         /// Check snapback <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A26" />
         /// </summary>
         private static Boolean RedundantTigerMouth(GameTryMove tryMove, GameTryMove opponentMove = null)
@@ -2222,8 +2224,13 @@ namespace Go
                         //check atari target
                         if (tryBoard.AtariTargets.Any())
                         {
-                            if (tryBoard.PointWithinMiddleArea() && ImmovableHelper.FindEmptyTigerMouth(currentBoard, d, c.Opposite()))
-                                continue;
+                            if (ImmovableHelper.FindEmptyTigerMouth(currentBoard, d, c.Opposite()))
+                            {
+                                if (tryBoard.PointWithinMiddleArea())
+                                    continue;
+                                if (tryBoard.GetStoneNeighbours(d).Any(n => tryBoard[n] == c && LinkHelper.FindDiagonalCut(tryBoard, tryBoard.GetGroupAt(n)).Item1 != null))
+                                    continue;
+                            }
                         }
                         //check snapback
                         if (ImmovableHelper.CheckSnapbackFromMove(tryBoard))
