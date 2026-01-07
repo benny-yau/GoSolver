@@ -562,8 +562,11 @@ namespace Go
             //exclude all corners
             result.RemoveAll(r => Math.Abs(r.x - x) >= Math.Max(2, maxDistance) && Math.Abs(r.x - x) == Math.Abs(r.y - y));
             //exclude all from same group
-            Group group = GetGroupAt(p);
-            result.RemoveAll(r => GetGroupAt(r) == group);
+            if (this[p] == c)
+            {
+                Group group = GetGroupAt(p);
+                result.RemoveAll(r => GetGroupAt(r) == group);
+            }
             return result;
         }
 

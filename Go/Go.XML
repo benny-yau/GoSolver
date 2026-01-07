@@ -1128,7 +1128,7 @@
             Check group diagonals <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30302_2" /> 
             </summary>
         </member>
-        <member name="M:Go.KillerFormationHelper.CornerKillFormation(Go.Board)">
+        <member name="M:Go.KillerFormationHelper.CornerKillFormation(Go.Board,System.Nullable{Go.Point},Go.Content)">
             <summary>
             Corner kill formation.
             </summary>
@@ -1835,10 +1835,11 @@
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_Q18500_2" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.CoveredPointSuicidalMove(Go.GameTryMove)">
+        <member name="M:Go.RedundantMoveHelper.CoveredPointSuicidalMove(Go.GameTryMove,Go.Board)">
             <summary>
             Covered point suicidal move.
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221214_5" />
+            <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221214_6" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.EssentialAtariAtCoveredEye(Go.GameTryMove)">

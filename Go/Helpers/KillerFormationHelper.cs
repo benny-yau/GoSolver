@@ -1240,11 +1240,12 @@ namespace Go
         /// <summary>
         /// Corner kill formation.
         /// </summary>
-        public static Boolean CornerKillFormation(Board tryBoard)
+        public static Boolean CornerKillFormation(Board tryBoard, Point? p = null, Content c = Content.Unknown)
         {
-            Point move = tryBoard.Move.Value;
-            Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.GetClosestPoints(move, c.Opposite()).Count >= 3 && !tryBoard.GetClosestPoints(move, c).Any())
+            if (p == null) p = tryBoard.Move.Value;
+            if (c == Content.Unknown) c = tryBoard.GetGroupAt(p.Value).Content;
+            if (!tryBoard.CornerPoint(p)) return false;
+            if (tryBoard.GetClosestPoints(p.Value, c.Opposite()).Count >= 3 && !tryBoard.GetClosestPoints(p.Value, c).Any())
                 return true;
             return false;
         }

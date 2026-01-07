@@ -1418,7 +1418,7 @@ namespace Go
                 Boolean nonKillableSuicide = tryBoard.PointWithinMiddleArea(move) ? diagonals.Count >= 2 : diagonals.Count >= 1;
                 if (!nonKillableSuicide) return false;
 
-                if (CoveredPointSuicidalMove(tryMove)) return false;
+                if (CoveredPointSuicidalMove(tryMove, capturedBoard)) return false;
 
                 if (diagonals.Any(n => LinkHelper.PointsBetweenDiagonals(move, n).Any(d => tryBoard[d] == Content.Empty)))
                     return true;
@@ -1679,8 +1679,9 @@ namespace Go
         /// <summary>
         /// Covered point suicidal move.
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221214_5" />
+        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221214_6" />
         /// </summary>
-        public static Boolean CoveredPointSuicidalMove(GameTryMove tryMove)
+        public static Boolean CoveredPointSuicidalMove(GameTryMove tryMove, Board captureBoard = null)
         {
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryBoard.MoveGroup.Content;
@@ -1688,20 +1689,11 @@ namespace Go
             if (!tryBoard.PointWithinMiddleArea()) return false;
 
             if (!KillerFormationHelper.TigerMouthAtDiagonal(tryBoard)) return false;
-            List<Point> coveredPoints = LinkHelper.GetMoveDiagonals(tryBoard);
-            if (coveredPoints.Count != 2) return false;
-            if (coveredPoints[0].x == coveredPoints[1].x || coveredPoints[0].y == coveredPoints[1].y) return false;
-            foreach (Point p in tryBoard.GetDiagonalNeighbours())
-            {
-                if (tryBoard[p] == c.Opposite()) continue;
-                Group killerGroup = GroupHelper.GetDirectKillerGroup(tryBoard, p, c.Opposite());
-                if (killerGroup == null)
-                    continue;
-                if (tryBoard.GetGroupsFromPoints(coveredPoints).Any(n => ImmovableHelper.CheckConnectAndDie(tryBoard, n)))
-                    continue;
-                return true;
-            }
-            return false;
+            if (captureBoard == null) captureBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
+            if (captureBoard.GetMoveLiberties().Count != 1) return false;
+            if (!LinkHelper.GetGroupDiagonals(captureBoard).Any(n => captureBoard[n.Move] == Content.Empty && KillerFormationHelper.CornerKillFormation(captureBoard, n.Move, c)))
+                return false;
+            return true;
         }
 
         /// <summary>
@@ -1859,6 +1851,14 @@ namespace Go
                 Board captureBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
                 List<Group> ngroups = captureBoard.GetGroupsFromStoneNeighbours(move, c);
                 if (ngroups.Any(n => n.Points.Count >= 3 && ImmovableHelper.CheckConnectAndDie(captureBoard, n)))
+                    return true;
+            }
+
+            //check covered point suicidal move
+            if (ImmovableHelper.FindEmptyTigerMouth(currentBoard, move, c) && currentBoard.GetDiagonalNeighbours(move).Count(n => WallHelper.IsNonKillableGroup(currentBoard, n)) >= 2)
+            {
+                GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
+                if (opponentMove != null && CoveredPointSuicidalMove(opponentMove))
                     return true;
             }
             return false;
@@ -2241,7 +2241,7 @@ namespace Go
                     if (KillerFormationHelper.OnePointAtariMove(tryBoard, currentBoard))
                         continue;
 
-                    if (CoveredPointSuicidalMove(tryMove))
+                    if (CoveredPointSuicidalMove(tryMove, capturedBoard))
                         continue;
                     if (KillCoveredEyeAtDiagonal(tryBoard, currentBoard))
                         continue;
@@ -2293,6 +2293,9 @@ namespace Go
                 return false;
             //check weak group
             if (CheckWeakGroupAtTigerMouth(tryBoard, capturedBoard))
+                return false;
+            //check covered point suicidal move
+            if (CoveredPointSuicidalMove(tryMove, capturedBoard))
                 return false;
             //check both alive for opponent move
             if (opponentMove != null && BothAliveHelper.CheckForBothAliveAtMove(opponentMove.TryGame.Board))
