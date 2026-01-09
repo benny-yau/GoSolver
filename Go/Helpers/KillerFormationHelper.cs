@@ -474,7 +474,7 @@ namespace Go
             //get only one move within killer group
             if (targetGroups.Count == 1)
             {
-                Boolean firstPoint = killerGroup.Points.FirstOrDefault(p => currentBoard[p] == Content.Empty).Equals(move);
+                Boolean firstPoint = KillerFormationHelper.FirstPointInKillerGroup(currentBoard, killerGroup).Equals(move);
                 if (!firstPoint) return false;
             }
 
@@ -1266,9 +1266,17 @@ namespace Go
         /// <summary>
         /// First point in killer group.
         /// </summary>
-        public static Point FirstPointInKillerGroup(Board currentBoard, Group killerGroup, Content c)
+        public static Point FirstPointInKillerGroup(Board board, Group killerGroup, Boolean checkSuicidal = false)
         {
-            Point p = killerGroup.Points.OrderByDescending(n => currentBoard.OpponentAtStoneNeighbour(n, c.Opposite()).Any()).FirstOrDefault(n => currentBoard[n] == Content.Empty && !ImmovableHelper.IsSuicidalMove(currentBoard, n, c.Opposite()));
+            Point p;
+            Content c = killerGroup.Content;
+            if (!checkSuicidal)
+                p = killerGroup.Points.FirstOrDefault(n => board[n] == Content.Empty);
+            else
+            {
+                IEnumerable<Point> points = killerGroup.Points.Where(n => board[n] == Content.Empty && !ImmovableHelper.IsSuicidalMove(board, n, c.Opposite()));
+                p = points.OrderByDescending(n => board.OpponentAtStoneNeighbour(n, c.Opposite()).Any()).FirstOrDefault();
+            }
             return p;
         }
 

@@ -1138,7 +1138,7 @@
             Tiger mouth at diagonal.
             </summary>
         </member>
-        <member name="M:Go.KillerFormationHelper.FirstPointInKillerGroup(Go.Board,Go.Group,Go.Content)">
+        <member name="M:Go.KillerFormationHelper.FirstPointInKillerGroup(Go.Board,Go.Group,System.Boolean)">
             <summary>
             First point in killer group.
             </summary>
@@ -1607,6 +1607,7 @@
             Check point next to corner point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Phenomena_B12" />
             Check corner point <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_B8" />
             <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221109_7" />
+            Check four-point killer formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3_5" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SuicidalConnectAndDie(Go.GameTryMove)">

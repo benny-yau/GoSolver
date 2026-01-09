@@ -598,6 +598,7 @@ namespace Go
         /// Check point next to corner point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Phenomena_B12" />
         /// Check corner point <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_B8" />
         /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20221109_7" />
+        /// Check four-point killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3_5" />
         /// </summary>
         public static Boolean OpponentSuicidalConnectAndDie(GameTryMove tryMove, GameTryMove opponentMove)
         {
@@ -633,7 +634,7 @@ namespace Go
                 if (previousGroup.Any(n => !GroupHelper.GetNeighbourGroupsOfKillerGroup(currentBoard, killerGroup).Contains(n)))
                     return false;
                 //get first point
-                Point p = KillerFormationHelper.FirstPointInKillerGroup(currentBoard, killerGroup, c);
+                Point p = KillerFormationHelper.FirstPointInKillerGroup(currentBoard, killerGroup, true);
                 if (p.IsEmpty() || move.Equals(p))
                     return false;
                 return true;
@@ -669,7 +670,7 @@ namespace Go
                 //get first point
                 if (killerGroup != null)
                 {
-                    Point p = KillerFormationHelper.FirstPointInKillerGroup(currentBoard, killerGroup, c);
+                    Point p = KillerFormationHelper.FirstPointInKillerGroup(currentBoard, killerGroup, true);
                     if (p.IsEmpty() || move.Equals(p))
                         return false;
                 }
@@ -685,6 +686,16 @@ namespace Go
 
             if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite() && ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.GetGroupAt(n)) && !ImmovableHelper.CheckConnectAndDie(opponentBoard, opponentBoard.GetGroupAt(n))))
                 return false;
+
+            //check four-point killer formation
+            Group kgroup = GroupHelper.GetDirectKillerGroup(currentBoard, move, c);
+            if (kgroup != null && (KillerFormationHelper.OneByThreeFormation(currentBoard, kgroup) || KillerFormationHelper.BoxFormation(currentBoard, kgroup)))
+            {
+                Point p = KillerFormationHelper.FirstPointInKillerGroup(currentBoard, kgroup);
+                if (move.Equals(p))
+                    return false;
+            }
+                
             return true;
         }
 
