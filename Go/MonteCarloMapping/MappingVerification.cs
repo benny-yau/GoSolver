@@ -15,6 +15,7 @@ namespace Go
     public class MappingVerification : MonteCarloMapping
     {
         public int errorCount = 0;
+        public Boolean logElapsedTime = false;
         public long elapsedTimeToLog = 30000;
 
         public static int VerifyScenario(Game game)
@@ -120,7 +121,7 @@ namespace Go
             }
 
             //log if time exceeded
-            if (mcts.elapsedTime.Value > elapsedTimeToLog)
+            if (logElapsedTime && mcts.elapsedTime.Value > elapsedTimeToLog)
                 WriteToFile("Elapsed time: " + mcts.elapsedTime.Value + " - " + g.Board.GetLastMoves() + Environment.NewLine);
         }
 

@@ -1637,12 +1637,18 @@
             Empty points at stone and diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_4" />
             <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221027_6" />
             Check single group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16594" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_2398" />
-            Check corner point <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_2398" />   
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CheckOnePointMoveDiagonalsInConnectAndDie(Go.GameTryMove,Go.Board)">
+            <summary>
+            Check one point move diagonals in connect and die.
+            Check eye <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />     
             Check diagonal move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29264" />
             Check weak group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17241_2" />
             Check capture move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31453_2" />
             Check for weak groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17250_3" />
+            Check no diagonal groups <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260111_8" />
             Check for neighbour weak groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A37" />
             Check move liberties <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_4" />
             </summary>
@@ -1730,6 +1736,7 @@
             <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126" />
             <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18_3" />
             Two liberties <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30215" />
+            Two liberties connect and die <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260112_8" />
             Three liberties <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_20221019_6" />
             </summary>
         </member>
