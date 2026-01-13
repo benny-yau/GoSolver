@@ -903,7 +903,7 @@ namespace Go
                 {
                     List<Group> diagonalGroups = LinkHelper.GetDiagonalGroups(tryBoard, ngroup);
                     //check no diagonal groups
-                    if (diagonalGroups.Count == 0) continue;
+                    if (diagonalGroups.Count == 0 && ngroup.Points.Count == 1) continue;
                     //check one point group
                     if (diagonalGroups.Any(s => s.Liberties.Count <= 2)) continue;
                     if (ngroup.Points.Count == 1)
@@ -1324,11 +1324,9 @@ namespace Go
                     }
                 }
                 //two liberties connect and die
-                foreach (Point q in liberties)
-                {
-                    if (capturedBoard.GetGroupsFromStoneNeighbours(q, c.Opposite()).Any(n => n.Points.Count >= 3 && ImmovableHelper.CheckConnectAndDie(capturedBoard, n) && !ImmovableHelper.CheckConnectAndDie(tryBoard, n)))
-                        return false;
-                }
+                List<Group> groups = capturedBoard.GetGroupsFromStoneNeighbours(liberties.First(), c.Opposite());
+                if (groups.Count >= 2 && groups.Any(n => ImmovableHelper.CheckConnectAndDie(capturedBoard, n) && !ImmovableHelper.CheckConnectAndDie(tryBoard, n)))
+                    return false;
             }
             else if (liberties.Count == 3)
             {
@@ -2315,6 +2313,7 @@ namespace Go
         private static Boolean TigerMouthWithoutDiagonalMouth(GameTryMove tryMove, Board capturedBoard, GameTryMove opponentMove = null)
         {
             Point move = tryMove.Move;
+            Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
             //suicide within real eye at suicidal redundant move
@@ -2324,7 +2323,7 @@ namespace Go
             if (CheckCoveredEyeAtTigerMouth(tryBoard, capturedBoard, opponentMove))
                 return false;
             //check for three groups
-            if (KillerFormationHelper.ThreeOpponentGroupsAtMove(tryBoard))
+            if (KillerFormationHelper.ThreeOpponentGroupsAtMove(tryBoard) && !currentBoard.GetGroupsFromStoneNeighbours(move, c).Any(n => WallHelper.IsNonKillableGroup(currentBoard, n)))
                 return false;
             //check for killer group
             if (!tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c) && !GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard))
@@ -2337,7 +2336,7 @@ namespace Go
                 return false;
             //check both alive for opponent move
             if (opponentMove != null && BothAliveHelper.CheckForBothAliveAtMove(opponentMove.TryGame.Board))
-                return false;
+                return false;            
             return true;
         }
 
