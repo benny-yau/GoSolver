@@ -61,7 +61,7 @@ namespace Go
             Content c = group.Content;
             if (!IsKoFight(tryBoard, group)) return false;
             Point eye = tryBoard.GetMoveLiberties(group.Points.First()).First();
-            List<Group> eyeGroups = tryBoard.GetGroupsFromStoneNeighbours(eye, c.Opposite()).ToList();
+            List<Group> eyeGroups = tryBoard.GetGroupsFromStoneNeighbours(eye, c.Opposite());
             if (eyeGroups.Where(n => !n.Equals(group)).All(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
                 return true;
             return false;
@@ -155,8 +155,8 @@ namespace Go
             if (tryBoard.KoCapture == null) return false;
             Point capturePoint = tryBoard.KoCapture.Value;
             //survival double ko
-            List<Group> ngroups = currentBoard.GetGroupsFromStoneNeighbours(capturePoint, c.Opposite()).ToList();
-            ngroups = LinkHelper.GetAllDiagonalGroups(currentBoard, ngroups.First()).ToList();
+            List<Group> ngroups = currentBoard.GetGroupsFromStoneNeighbours(capturePoint, c.Opposite());
+            ngroups = LinkHelper.GetAllDiagonalGroups(currentBoard, ngroups.First());
             List<Group> targetGroups = new List<Group>();
             ngroups.ForEach(n => targetGroups.AddRange(KoHelper.GetKoTargetGroups(currentBoard, n)));
             targetGroups = targetGroups.Distinct().ToList();

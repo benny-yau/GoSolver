@@ -76,11 +76,11 @@ namespace Go
             if (group.IsNonKillable.Value) return true;
 
             //search all connected groups if non killable
-            HashSet<Group> groups = LinkHelper.GetAllDiagonalConnectedGroups(board, group, func);
+            List<Group> groups = LinkHelper.GetAllDiagonalConnectedGroups(board, group, func).ToList();
             groups.Remove(group);
             Boolean nonKillable = groups.Any(s => func(s));
             group.IsNonKillable = nonKillable;
-            groups.ToList().ForEach(g => g.IsNonKillable = nonKillable);
+            groups.ForEach(g => g.IsNonKillable = nonKillable);
             return nonKillable;
         }
 
@@ -193,7 +193,7 @@ namespace Go
         public static Boolean StrongGroupsAtCoveredBoard(Board board, Group targetGroup)
         {
             Content c = targetGroup.Content;
-            List<Group> groups = LinkHelper.GetAllDiagonalGroups(board, targetGroup).ToList();
+            List<Group> groups = LinkHelper.GetAllDiagonalGroups(board, targetGroup);
             Board coveredBoard = new Board(board);
             //cover external liberties only
             foreach (Point p in board.GetLibertiesOfGroups(groups))

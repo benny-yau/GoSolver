@@ -341,7 +341,7 @@ namespace Go
         {
             if (EyeHelper.FindEye(board, p, c.Opposite()))
             {
-                List<Group> eyeGroups = board.GetGroupsFromStoneNeighbours(p, c).ToList();
+                List<Group> eyeGroups = board.GetGroupsFromStoneNeighbours(p, c);
                 if (eyeGroups.All(n => n.Liberties.Count > 1)) return (true, null);
             }
             Board b = board.MakeMoveOnNewBoard(p, c, overrideKo);

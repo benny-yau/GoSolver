@@ -296,7 +296,7 @@ namespace Go
             Content c = board[diagonalPoint.Move];
             foreach (Point d in LinkHelper.PointsBetweenDiagonals(diagonalPoint))
             {
-                List<Group> tigerMouthGroups = board.GetGroupsFromStoneNeighbours(d, c.Opposite()).ToList();
+                List<Group> tigerMouthGroups = board.GetGroupsFromStoneNeighbours(d, c.Opposite());
                 if (DoubleAtariOnTargetGroups(board, tigerMouthGroups))
                     return true;
             }
@@ -615,7 +615,7 @@ namespace Go
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            return currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite()).ToList();
+            return currentBoard.GetGroupsFromStoneNeighbours(move, c.Opposite());
         }
 
         /// <summary>
