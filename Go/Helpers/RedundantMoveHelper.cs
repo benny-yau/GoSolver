@@ -2272,9 +2272,9 @@ namespace Go
                     else
                     {
                         //check atari target
-                        if (tryBoard.AtariTargets.Any())
+                        if (tryBoard.AtariTargets.Any() && currentBoard[d] == Content.Empty)
                         {
-                            if (ImmovableHelper.FindEmptyTigerMouth(currentBoard, d, c.Opposite()) && !WallHelper.NoEyeForSurvival(currentBoard, d, c.Opposite()))
+                            if (!WallHelper.NoEyeForSurvival(currentBoard, d, c.Opposite()) || GroupHelper.CheckKillerGroupPoints(tryBoard, move, c.Opposite()) != null)
                             {
                                 if (tryBoard.PointWithinMiddleArea())
                                     continue;
