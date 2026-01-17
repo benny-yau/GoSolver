@@ -58,10 +58,10 @@ namespace Go
             {
                 Point p = g.Liberties.First(n => !n.Equals(move));
                 if (!currentBoard.GetDiagonalNeighbours(move).Contains(p)) continue;
-
-                if (!currentBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Except(eyeGroups).Any(n => n.Liberties.Count == 2)) continue;
-                if (ImmovableHelper.IsSuicidalMove(currentBoard, p, c.Opposite())) continue;
-                if (currentBoard.GetGroupsFromStoneNeighbours(p, c).Any(n => WallHelper.IsNonKillableGroup(currentBoard, n))) continue;
+                List<Group> ngroups = currentBoard.GetGroupsFromStoneNeighbours(p, c.Opposite());
+                if (!ngroups.Except(eyeGroups).Any(n => n.Liberties.Count == 2)) continue;
+                if (ImmovableHelper.IsSuicidalMove(currentBoard, p, c.Opposite()) || ngroups.Any(n => ImmovableHelper.CheckConnectAndDie(currentBoard, n, false))) continue;
+                if (eyeGroups.Any(n => WallHelper.IsNonKillableGroup(currentBoard, n))) continue;
                 return true;
             }
             return false;
@@ -1280,6 +1280,10 @@ namespace Go
             if (!EyeHelper.FindSemiSolidEye(capturedBoard, move, c.Opposite()))
                 return false;
 
+            //check non killable neighbour group
+            if (WallHelper.TargetWithAnyNonKillableGroup(currentBoard, move, c))
+                return true;
+
             //opponent break kill formation
             if (KillerFormationHelper.OpponentBreakKillFormation(tryBoard, currentBoard))
                 return false;
@@ -1291,8 +1295,6 @@ namespace Go
                 return true;
             if (capturedBoard.MoveGroupLiberties == 1) return false;
 
-            //check non killable neighbour group
-            if (WallHelper.TargetWithAnyNonKillableGroup(tryBoard)) return true;
 
             //check for snapback
             if (ImmovableHelper.CheckSnapbackFromMove(tryBoard))
@@ -2247,7 +2249,7 @@ namespace Go
             diagonalPoints = diagonalPoints.Where(d => ImmovableHelper.IsImmovablePoint(currentBoard, d, c.Opposite())).ToList();
             foreach (Point d in diagonalPoints)
             {
-                if (currentBoard.GetGroupsFromStoneNeighbours(d, c).Any(n => WallHelper.IsNonKillableGroup(currentBoard, n)))
+                if (WallHelper.TargetWithAnyNonKillableGroup(currentBoard, d, c))
                     return true;
 
                 if (opponentMove == null)
@@ -2265,7 +2267,7 @@ namespace Go
                         //check atari target
                         if (tryBoard.AtariTargets.Any())
                         {
-                            if (ImmovableHelper.FindEmptyTigerMouth(currentBoard, d, c.Opposite()))
+                            if (ImmovableHelper.FindEmptyTigerMouth(currentBoard, d, c.Opposite()) && !WallHelper.NoEyeForSurvival(currentBoard, d, c.Opposite()))
                             {
                                 if (tryBoard.PointWithinMiddleArea())
                                     continue;
@@ -2328,7 +2330,7 @@ namespace Go
             if (CheckCoveredEyeAtTigerMouth(tryBoard, capturedBoard, opponentMove))
                 return false;
             //check for three groups
-            if (KillerFormationHelper.ThreeOpponentGroupsAtMove(tryBoard) && !currentBoard.GetGroupsFromStoneNeighbours(move, c).Any(n => WallHelper.IsNonKillableGroup(currentBoard, n)))
+            if (KillerFormationHelper.ThreeOpponentGroupsAtMove(tryBoard) && !WallHelper.TargetWithAnyNonKillableGroup(currentBoard, move, c))
                 return false;
             //check for killer group
             if (!tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c) && !GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard))

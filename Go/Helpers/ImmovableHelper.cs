@@ -626,7 +626,7 @@ namespace Go
 
                 //make move at liberty
                 (Boolean connectAndDie, Board b) = ImmovableHelper.ConnectAndDieMove(currentBoard, liberty, c);
-                if (WallHelper.TargetWithAllNonKillableGroups(b)) continue;
+                if (WallHelper.TargetWithAnyNonKillableGroup(currentBoard, move, c)) continue;
                 //check covered eye survival 
                 if (b.GetGroupsFromStoneNeighbours(move, c.Opposite()).Count == 1 && EyeHelper.FindCoveredEye(b, move, c)) continue;
                 if (connectAndDie) return (true, b);

@@ -175,6 +175,13 @@ namespace Go
             return false;
         }
 
+        public static Boolean TargetWithAnyNonKillableGroup(Board board, Point move, Content c)
+        {
+            if (board.GetGroupsFromStoneNeighbours(move, c).Any(n => WallHelper.IsNonKillableGroup(board, n)))
+                return true;
+            return false;
+        }
+
         /// <summary>
         /// Target attack with killable group.
         /// </summary>
