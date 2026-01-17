@@ -619,14 +619,18 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Board currentBoard = tryMove.CurrentGame.Board;
             Content c = tryMove.MoveContent;
+
+            if (ImmovableHelper.CheckConnectAndDie(tryBoard)) return (false, null);
             foreach (Group eyeGroup in LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard))
             {
                 if (eyeGroup.Liberties.Count != 2) continue;
                 Point liberty = eyeGroup.Liberties.First(n => !n.Equals(move));
+                if (WallHelper.TargetWithAnyNonKillableGroup(currentBoard, liberty, c)) continue;
 
                 //make move at liberty
                 (Boolean connectAndDie, Board b) = ImmovableHelper.ConnectAndDieMove(currentBoard, liberty, c);
-                if (WallHelper.TargetWithAnyNonKillableGroup(currentBoard, move, c)) continue;
+                if (WallHelper.TargetWithAllNonKillableGroups(b)) continue;
+
                 //check covered eye survival 
                 if (b.GetGroupsFromStoneNeighbours(move, c.Opposite()).Count == 1 && EyeHelper.FindCoveredEye(b, move, c)) continue;
                 if (connectAndDie) return (true, b);

@@ -2236,14 +2236,21 @@ namespace Go
             Content c = tryMove.MoveContent;
             //ensure is tiger mouth
             if (tryBoard.MoveGroup.Points.Count != 1 || !tryMove.IsNegligible) return false;
-            if (ImmovableHelper.IsConfirmTigerMouth(currentBoard, tryBoard) == null) return false;
+            Board capturedBoard = ImmovableHelper.IsConfirmTigerMouth(currentBoard, tryBoard);
+            if (capturedBoard == null) return false;
+
+            //check covered point suicidal move
+            if (CoveredPointSuicidalMove(tryMove, capturedBoard))
+                return false;
+
+            //check strong groups
+            if (tryBoard.GetNeighbourGroups().All(n => n.Liberties.Count > 2) && GroupHelper.CheckKillerGroupPoints(tryBoard, move, c.Opposite()) == null)
+                return true;
 
             //check eye points at diagonals of tiger mouth
             List<Point> diagonalPoints = ImmovableHelper.GetDiagonalsOfTigerMouth(tryBoard, move, c.Opposite());
-            if (diagonalPoints.Count == 0) return false;
-
-            (Boolean suicidal, Board capturedBoard) = ImmovableHelper.IsSuicidalOnCapture(tryBoard);
-            if (suicidal || capturedBoard == null) return false;
+            if (diagonalPoints.Count == 0)
+                return false;
 
             //find immovable point at diagonal
             diagonalPoints = diagonalPoints.Where(d => ImmovableHelper.IsImmovablePoint(currentBoard, d, c.Opposite())).ToList();
@@ -2279,16 +2286,12 @@ namespace Go
                         if (ImmovableHelper.CheckSnapbackFromMove(tryBoard))
                             continue;
                     }
-
                     //check one point atari move
                     if (KillerFormationHelper.OnePointAtariMove(tryBoard, currentBoard))
                         continue;
-
-                    if (CoveredPointSuicidalMove(tryMove, capturedBoard))
-                        continue;
+                    //check kill covered eye
                     if (KillCoveredEyeAtDiagonal(tryBoard, currentBoard))
                         continue;
-
                     return true;
                 }
                 else
@@ -2337,9 +2340,6 @@ namespace Go
                 return false;
             //check weak group
             if (CheckWeakGroupAtTigerMouth(tryBoard, capturedBoard))
-                return false;
-            //check covered point suicidal move
-            if (CoveredPointSuicidalMove(tryMove, capturedBoard))
                 return false;
             //check both alive for opponent move
             if (opponentMove != null && BothAliveHelper.CheckForBothAliveAtMove(opponentMove.TryGame.Board))

@@ -152,7 +152,7 @@ namespace Go
         public static Boolean TargetWithAllNonKillableGroups(Board board, Group group = null)
         {
             if (group == null) group = board.MoveGroup;
-            if (board.GetNeighbourGroups(group).All(n => IsNonKillableOrKo(board, n)))
+            if (board.GetNeighbourGroups(group).All(n => IsNonKillableOrKo(board, n), true))
                 return true;
             return false;
         }
