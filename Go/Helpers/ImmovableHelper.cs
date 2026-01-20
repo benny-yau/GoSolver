@@ -339,11 +339,6 @@ namespace Go
         /// </summary>
         public static (Boolean, Board) IsSuicidalMove(Point p, Content c, Board board, Boolean overrideKo = false)
         {
-            if (EyeHelper.FindEye(board, p, c.Opposite()))
-            {
-                List<Group> eyeGroups = board.GetGroupsFromStoneNeighbours(p, c);
-                if (eyeGroups.All(n => n.Liberties.Count > 1)) return (true, null);
-            }
             Board b = board.MakeMoveOnNewBoard(p, c, overrideKo);
             if (b == null) return (true, null);
             if (b.MoveGroupLiberties != 1) return (false, b);

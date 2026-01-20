@@ -2223,9 +2223,6 @@ namespace Go
         /// Check one point atari move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31428" />
         /// Check both alive for opponent move <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A151_101Weiqi" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_Nie67" />
-        /// Check atari target <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31536" />
-        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_A4" />
-        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_Corner_A20" />
         /// Check snapback <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A26" />
         /// </summary>
         private static Boolean RedundantTigerMouth(GameTryMove tryMove, GameTryMove opponentMove = null)
@@ -2247,12 +2244,8 @@ namespace Go
             if (tryBoard.GetNeighbourGroups().All(n => n.Liberties.Count > 2) && GroupHelper.CheckKillerGroupPoints(tryBoard, move, c.Opposite()) == null)
                 return true;
 
-            //check eye points at diagonals of tiger mouth
-            List<Point> diagonalPoints = ImmovableHelper.GetDiagonalsOfTigerMouth(tryBoard, move, c.Opposite());
-            if (diagonalPoints.Count == 0)
-                return false;
-
             //find immovable point at diagonal
+            List<Point> diagonalPoints = ImmovableHelper.GetDiagonalsOfTigerMouth(tryBoard, move, c.Opposite());
             diagonalPoints = diagonalPoints.Where(d => ImmovableHelper.IsImmovablePoint(currentBoard, d, c.Opposite())).ToList();
             foreach (Point d in diagonalPoints)
             {
@@ -2271,17 +2264,9 @@ namespace Go
                     }
                     else
                     {
-                        //check atari target
-                        if (tryBoard.AtariTargets.Any() && currentBoard[d] == Content.Empty)
-                        {
-                            if (!WallHelper.NoEyeForSurvival(currentBoard, d, c.Opposite()) || GroupHelper.CheckKillerGroupPoints(tryBoard, move, c.Opposite()) != null)
-                            {
-                                if (tryBoard.PointWithinMiddleArea())
-                                    continue;
-                                if (tryBoard.GetStoneNeighbours(d).Any(n => tryBoard[n] == c && LinkHelper.FindDiagonalCut(tryBoard, tryBoard.GetGroupAt(n)).Item1 != null))
-                                    continue;
-                            }
-                        }
+                        //check atari
+                        if (CheckAtariAtTigerMouth(tryMove, d))
+                            continue;
                         //check snapback
                         if (ImmovableHelper.CheckSnapbackFromMove(tryBoard))
                             continue;
@@ -2313,11 +2298,39 @@ namespace Go
         }
 
         /// <summary>
+        /// Check atari at tiger mouth.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31536" />
+        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_A4" />
+        /// Check no eye for survival <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_Corner_A27_2" />
+        /// Check killer group <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WuQingYuan_Q31673" />
+        /// Check diagonal cut <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_Corner_A20" />
+        /// </summary>
+        private static Boolean CheckAtariAtTigerMouth(GameTryMove tryMove, Point diagonal)
+        {
+            Point move = tryMove.Move;
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            Content c = tryMove.MoveContent;
+            if (!tryBoard.AtariTargets.Any()) return false;
+            if (currentBoard[diagonal] != Content.Empty) return false;
+            //check no eye for survival and killer group
+            if (WallHelper.NoEyeForSurvival(currentBoard, diagonal, c.Opposite()) && GroupHelper.CheckKillerGroupPoints(tryBoard, move, c.Opposite()) == null) return false;
+            if (tryBoard.PointWithinMiddleArea())
+                return true;
+            //check diagonal cut
+            if (tryBoard.GetStoneNeighbours(diagonal).Any(n => tryBoard[n] == c && LinkHelper.FindDiagonalCut(tryBoard, tryBoard.GetGroupAt(n)).Item1 != null))
+                return true;
+            return false;
+        }
+
+        /// <summary>
         /// Redundant tiger mouth without diagonal mouth.
         /// Check for three groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q1970" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935" />
         /// Check for killer group <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20230505_8" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221220_7" />
+        /// Check side move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A84" />
+        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16827" />
         /// Check both alive for opponent move <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_A35" />
         /// </summary>
         private static Boolean TigerMouthWithoutDiagonalMouth(GameTryMove tryMove, Board capturedBoard, GameTryMove opponentMove = null)
@@ -2341,6 +2354,12 @@ namespace Go
             //check weak group
             if (CheckWeakGroupAtTigerMouth(tryBoard, capturedBoard))
                 return false;
+            //check side move
+            if (!tryBoard.PointWithinMiddleArea() && !tryBoard.CornerPoint() && !tryBoard.OpponentAtStoneNeighbour().Any(n => tryBoard.PointWithinMiddleArea(n)))
+            {
+                if (currentBoard.GetGroupsFromStoneNeighbours(move, c).Any(n => n.Liberties.Count <= 2))
+                    return false;
+            }
             //check both alive for opponent move
             if (opponentMove != null && BothAliveHelper.CheckForBothAliveAtMove(opponentMove.TryGame.Board))
                 return false;

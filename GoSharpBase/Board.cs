@@ -56,8 +56,8 @@ namespace Go
 
         public GameInfo GameInfo { get; set; }
         public static readonly Point PassMove = new Point(-1, -1);
-        public Boolean IsPassMove 
-        { 
+        public Boolean IsPassMove
+        {
             get
             {
                 return move != null && move.Equals(PassMove);
@@ -130,7 +130,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Set content on board and clear group cache.
+        /// Set content at point.
         /// </summary>
         private void SetContentAt(int x, int y, Content c)
         {
@@ -139,7 +139,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get last move on board if available.
+        /// Last move.
         /// </summary>
         public Point? LastMove
         {
@@ -151,7 +151,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get captured points.
+        /// Captured points.
         /// </summary>
         public IEnumerable<Point> CapturedPoints
         {
@@ -219,7 +219,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get move group liberties.
+        /// Move group liberties.
         /// </summary>
         public int MoveGroupLiberties
         {
@@ -276,7 +276,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get directly connected points on all four directions.
+        /// Get stone neighbours.
         /// </summary>
         public List<Point> GetStoneNeighbours(Point? p = null)
         {
@@ -291,7 +291,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get diagonal points on all four directions.
+        /// Get diagonal neighbours.
         /// </summary>
         public List<Point> GetDiagonalNeighbours(Point? p = null)
         {
@@ -316,7 +316,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get neighbour groups that are of opposite content to the current group.
+        /// Get neighbour groups.
         /// </summary>
         public List<Group> GetNeighbourGroups(Group group = null)
         {
@@ -404,10 +404,20 @@ namespace Go
         }
 
         /// <summary>
-        /// Create new board and make move on board.
+        /// Make move on new board.
         /// </summary>
         public Board MakeMoveOnNewBoard(Point p, Content c, Boolean overrideKo = false)
         {
+            if (GetStoneNeighbours(p).All(q => this[q] == c.Opposite()))
+            {
+                List<Group> eyeGroups = GetGroupsFromStoneNeighbours(p, c);
+                if (eyeGroups.All(n => n.Liberties.Count > 1)) return null;
+                if (!overrideKo)
+                {
+                    List<Group> groups = eyeGroups.Where(n => n.Liberties.Count == 1).ToList();
+                    if (groups.Count == 1 && groups.First().Points.Count == 1) return null;
+                }
+            }
             Board board = new Board(this);
             if (board.InternalMakeMove(p, c, overrideKo) == MakeMoveResult.Legal)
                 return board;
@@ -468,7 +478,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Check if point within board coordinates.
+        /// Point within board.
         /// </summary>
         public Boolean PointWithinBoard(int x, int y)
         {
@@ -482,7 +492,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Check if point within middle area of board.
+        /// Point within middle area of board.
         /// </summary>
         public Boolean PointWithinMiddleArea(Point? p = null)
         {
@@ -519,7 +529,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Resolve atari by capturing stones or escaping atari group.
+        /// Resolve atari.
         /// </summary>
         public static Boolean ResolveAtari(Board currentBoard, Board tryBoard)
         {
@@ -537,7 +547,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get closest points to specific point by going in circles with increasing distance.
+        /// Get closest points to specific point.
         /// </summary>
         public List<Point> GetClosestPoints(Point p, Content c = Content.Unknown, int maxDistance = 2, int minDistance = 1)
         {
