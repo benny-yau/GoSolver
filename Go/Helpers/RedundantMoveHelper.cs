@@ -764,6 +764,7 @@ namespace Go
         /// Redundant one point move in connect and die.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3_3" />
         /// Check move next to covered point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17132_4" />
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260123_7" />
         /// Check box formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_4" />
         /// Check diagonal for real eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q5971" />
         /// Ensure all strong neighbour groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_7" />
@@ -785,7 +786,7 @@ namespace Go
             Content c = tryMove.MoveContent;
 
             //check move next to covered point
-            if (tryBoard.GetMoveLiberties().Any(p => EyeHelper.IsCovered(tryBoard, p, c.Opposite())) && GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard))
+            if (tryBoard.GetMoveLiberties().Any(p => EyeHelper.IsCovered(tryBoard, p, c.Opposite())) && GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard) && !tryBoard.GetNeighbourGroups().Any(n => n.Liberties.Count <= 2))
                 return true;
 
             //check box formation
@@ -843,6 +844,7 @@ namespace Go
 
         /// <summary>
         /// Check one point move diagonals in connect and die.
+        /// Check empty point at diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_3" />
         /// Check eye <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />     
         /// Check diagonal move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29264" />
         /// Check weak group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17241_2" />
@@ -862,7 +864,9 @@ namespace Go
             Point? d = LinkHelper.CheckPointsBetweenDiagonalsAtMove(tryBoard);
             if (d != null)
             {
-                if (tryBoard[d.Value] == Content.Empty) return false;
+                //check empty point at diagonal
+                if (tryBoard[d.Value] == Content.Empty && tryBoard.GetNeighbourGroups().Any(n => n.Liberties.Count <= 2))
+                    return false;
 
                 //check eye
                 if (tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindEye(tryBoard, n, c)))
@@ -2328,10 +2332,6 @@ namespace Go
 
         /// <summary>
         /// Redundant tiger mouth without diagonal mouth.
-        /// Check for killer group <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20230505_8" />
-        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221220_7" />
-        /// Check side move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A84" />
-        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16827" />
         /// Check both alive for opponent move <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_A35" />
         /// </summary>
         private static Boolean TigerMouthWithoutDiagonalMouth(GameTryMove tryMove, Board capturedBoard, GameTryMove opponentMove = null)
@@ -2349,18 +2349,12 @@ namespace Go
             //check for three opponent groups
             if (CheckThreeOpponentGroupsAtTigerMouth(tryMove, capturedBoard))
                 return false;
-            //check for killer group
-            if (!tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c) && !GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard))
-                return false;
             //check weak group
             if (CheckWeakGroupAtTigerMouth(tryBoard, capturedBoard))
                 return false;
             //check side move
-            if (!tryBoard.PointWithinMiddleArea() && !tryBoard.CornerPoint() && !tryBoard.OpponentAtStoneNeighbour().Any(n => tryBoard.PointWithinMiddleArea(n)))
-            {
-                if (currentBoard.GetGroupsFromStoneNeighbours(move, c).Any(n => n.Liberties.Count <= 2))
-                    return false;
-            }
+            if (CheckSideMoveAtTigerMouth(tryMove))
+                return false;
             //check both alive for opponent move
             if (opponentMove != null && BothAliveHelper.CheckForBothAliveAtMove(opponentMove.TryGame.Board))
                 return false;
@@ -2373,6 +2367,7 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q1970" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935" />
         /// Check atari move <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q29277" />
+        /// Check immovable point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" />
         /// Check for killer group <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q30251" />
         /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20221020_6" />
         /// </summary>
@@ -2399,13 +2394,49 @@ namespace Go
             //check diagonal point
             foreach (Point p in capturedBoard.GetDiagonalNeighbours(move))
             {
-                if (!ImmovableHelper.IsImmovablePoint(capturedBoard, p, c.Opposite())) continue;
+                //check immovable point
+                if (GroupHelper.CheckKillerGroupPoints(tryBoard, move, c.Opposite()) != null && !ImmovableHelper.IsImmovablePoint(capturedBoard, p, c.Opposite()))
+                    continue;
                 //check for killer group
                 Group kgroup = GroupHelper.GetDirectKillerGroup(capturedBoard, p, c.Opposite());
                 if (kgroup != null && kgroup.Points.All(n => capturedBoard[n] == Content.Empty))
                     return false;
             }
             return true;
+        }
+
+        /// <summary>
+        /// Check side move.
+        /// No opponent in middle area <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A84" />
+        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16827" />
+        /// Check for killer group <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20230505_8" />
+        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221220_7" />
+        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A28" />
+        /// </summary>
+        private static Boolean CheckSideMoveAtTigerMouth(GameTryMove tryMove)
+        {
+            Point move = tryMove.Move;
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            Content c = tryMove.MoveContent;
+            if (tryBoard.PointWithinMiddleArea()) return false;
+            Point? d = LinkHelper.CheckPointsBetweenDiagonalsAtMove(tryBoard);
+            if (d == null)
+            {
+                //no opponent in middle area
+                if (!tryBoard.CornerPoint() && currentBoard.GetGroupsFromStoneNeighbours(move, c).Any(n => n.Liberties.Count <= 2))
+                    return true;
+            }
+            else
+            {
+                //check for killer group
+                if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c)) return false;
+                if (tryBoard.GetNeighbourGroups().Count != 2) return false;
+                if (tryBoard[d.Value] != Content.Empty || tryBoard.GetGroupsFromStoneNeighbours(d.Value, c).Count != 2) return false;
+                if (!GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard))
+                    return true;
+            }
+            return false;
         }
 
         /// <summary>
