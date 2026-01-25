@@ -1699,7 +1699,7 @@ namespace Go
             if (opponentMove == null && !tryMove.IsNegligible && EssentialAtariAtCoveredEye(tryMove))
                 return false;
             //validate neutral point
-            return ValidateNeutralPoint(tryMove);
+            return ValidateNeutralPoint(tryMove, opponentMove);
         }
 
         /// <summary>
@@ -1733,6 +1733,7 @@ namespace Go
         public static Boolean CoveredPointSuicidalMove(GameTryMove tryMove, Board captureBoard = null)
         {
             Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             if (tryBoard.MoveGroupLiberties != 1 || tryBoard.MoveGroup.Points.Count != 1) return false;
             if (!tryBoard.PointWithinMiddleArea()) return false;
@@ -1740,6 +1741,7 @@ namespace Go
             if (!KillerFormationHelper.TigerMouthAtDiagonal(tryBoard)) return false;
             if (captureBoard == null) captureBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
             if (captureBoard.GetMoveLiberties().Count != 1) return false;
+            if (!EyeHelper.FindCoveredEye(captureBoard, move, c.Opposite())) return false;
             if (!LinkHelper.GetGroupDiagonals(captureBoard).Any(n => captureBoard[n.Move] == Content.Empty && KillerFormationHelper.CornerKillFormation(captureBoard, n.Move, c)))
                 return false;
             return true;
@@ -1902,14 +1904,6 @@ namespace Go
                 if (ngroups.Any(n => n.Points.Count >= 3 && ImmovableHelper.CheckConnectAndDie(captureBoard, n)))
                     return true;
             }
-
-            //check covered point suicidal move
-            if (ImmovableHelper.FindEmptyTigerMouth(currentBoard, move, c) && currentBoard.GetDiagonalNeighbours(move).Count(n => WallHelper.IsNonKillableGroup(currentBoard, n)) >= 2)
-            {
-                GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
-                if (opponentMove != null && CoveredPointSuicidalMove(opponentMove))
-                    return true;
-            }
             return false;
         }
 
@@ -1918,7 +1912,7 @@ namespace Go
         /// Check link for groups <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" />
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
         /// </summary>
-        public static Boolean ValidateNeutralPoint(GameTryMove tryMove)
+        public static Boolean ValidateNeutralPoint(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
@@ -1937,9 +1931,47 @@ namespace Go
             //check covered eye
             if (CheckCoveredEyeAtNeutralPoint(tryMove))
                 return false;
+            if (opponentMove != null)
+            {
+                //check opponent kill formation
+                if (CheckOpponentKillFormationAtNeutralPoint(opponentMove))
+                    return false;
+                //check covered point suicidal move
+                if (CoveredPointSuicidalMove(opponentMove))
+                    return false;
+            }
             return true;
         }
 
+        /// <summary>
+        /// Check opponent kill formation at neutral point.
+        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16827" />
+        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16827_2" />
+        /// </summary>
+        private static Boolean CheckOpponentKillFormationAtNeutralPoint(GameTryMove tryMove)
+        {
+            Board tryBoard = tryMove.TryGame.Board;
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Point move = tryBoard.Move.Value;
+            Content c = tryMove.MoveContent;
+            HashSet<Point> liberties = tryBoard.GetLibertiesOfGroups(tryBoard.GetGroupsFromStoneNeighbours());
+            List<Group> kgroups = liberties.Select(n => GroupHelper.GetDirectKillerGroup(tryBoard, n, c.Opposite())).Where(n => n != null).Distinct().ToList();
+            foreach (Group kgroup in kgroups)
+            {
+                List<Point> contentPoints = kgroup.Points.Where(n => tryBoard[n] == c).ToList();
+                List<Group> groups = tryBoard.GetGroupsFromPoints(contentPoints).ToList();
+                if (groups.Count != 1 || groups.First().Points.Count < 4) continue;
+                if (liberties.Count(n => GroupHelper.GetKillerGroupFromCache(tryBoard, n, c.Opposite()) != kgroup) != 1) continue;
+
+                //check kill formation
+                Board b = KillerFormationHelper.DeadFormationInBothAlive(tryBoard, kgroup, 3).Item2;
+                if (b == null) continue;
+                if (tryBoard.GetStoneNeighbours(b.Move).Any(n => tryBoard[n] == c.Opposite())) continue;
+                if (KillerFormationHelper.IsKillerFormationFromFunc(tryBoard, groups.First())) continue;
+                return true;
+            }
+            return false;
+        }
         #endregion
 
         #region restore neutral points

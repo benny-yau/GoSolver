@@ -119,13 +119,13 @@ namespace Go
                 if (emptyPointCount >= 3)
                 {
                     //check for three or more liberty formation
-                    if (!KillerFormationHelper.DeadFormationInBothAlive(filledBoard, killerGroup, emptyPointCount, 2))
+                    if (!KillerFormationHelper.DeadFormationInBothAlive(filledBoard, killerGroup, emptyPointCount, 2).Item1)
                         return false;
                 }
                 else if (emptyPointCount == 2)
                 {
                     //check for two liberty formation
-                    if (KillerFormationHelper.DeadFormationInBothAlive(filledBoard, killerGroup, emptyPointCount))
+                    if (KillerFormationHelper.DeadFormationInBothAlive(filledBoard, killerGroup, emptyPointCount).Item1)
                         return false;
                 }
             }

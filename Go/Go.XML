@@ -1904,11 +1904,18 @@
             Check connect and die <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260103_8" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.ValidateNeutralPoint(Go.GameTryMove)">
+        <member name="M:Go.RedundantMoveHelper.ValidateNeutralPoint(Go.GameTryMove,Go.GameTryMove)">
             <summary>
             Validate neutral point.
             Check link for groups <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" />
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CheckOpponentKillFormationAtNeutralPoint(Go.GameTryMove)">
+            <summary>
+            Check opponent kill formation at neutral point.
+            <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16827" />
+            <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16827_2" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.RestoreNeutralMove(Go.Game,System.Collections.Generic.List{Go.GameTryMove},System.Collections.Generic.List{Go.GameTryMove})">

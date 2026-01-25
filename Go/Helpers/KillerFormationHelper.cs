@@ -65,24 +65,22 @@ namespace Go
         /// <summary>
         /// Dead formation in both alive.
         /// </summary>
-        public static Boolean DeadFormationInBothAlive(Board board, Group killerGroup, int libertyCount = 2, int requiredCount = 1)
+        public static (Boolean, Board) DeadFormationInBothAlive(Board board, Group killerGroup, int libertyCount = 2, int requiredCount = 1)
         {
             Content c = killerGroup.Content;
             List<Point> emptyPoints = killerGroup.Points.Where(t => board[t] == Content.Empty).ToList();
             if (emptyPoints.Count != libertyCount)
-                return false;
+                return (false, null);
             if (emptyPoints.Any(n => !board.GetStoneNeighbours(n).Any(s => board[s] == c)))
-                return false;
+                return (false, null);
 
-            if (TryKillFormation(board, c, emptyPoints, requiredCount))
-                return true;
-            return false;
+            return TryKillFormation(board, c, emptyPoints, requiredCount);
         }
 
         /// <summary>
         /// Try kill formation. Make move at each liberty to test if formation created.
         /// </summary>
-        public static Boolean TryKillFormation(Board board, Content c, List<Point> emptyPoints, int requiredCount = 1)
+        public static (Boolean, Board) TryKillFormation(Board board, Content c, List<Point> emptyPoints, int requiredCount = 1)
         {
             int count = 0;
             foreach (Board b in GameHelper.GetMoveBoards(board, emptyPoints, c))
@@ -90,9 +88,9 @@ namespace Go
                 if (!IsKillerFormationFromFunc(b)) continue;
                 count++;
                 if (count >= requiredCount)
-                    return true;
+                    return (true, b);
             }
-            return false;
+            return (false, null);
         }
 
         /// <summary>
@@ -289,7 +287,7 @@ namespace Go
             if (WholeGroupDying(tryBoard))
             {
                 Point liberty = tryBoard.MoveGroup.Liberties.First();
-                if (TryKillFormation(currentBoard, c, new List<Point>() { liberty }) && SuicidalEndMove(tryBoard, currentBoard))
+                if (TryKillFormation(currentBoard, c, new List<Point>() { liberty }).Item1 && SuicidalEndMove(tryBoard, currentBoard))
                     return true;
                 return false;
             }
@@ -1221,7 +1219,9 @@ namespace Go
             if (groups.Count != 1 || groups.First().Points.Count < 4) return false;
             Group targetGroup = groups.First();
             //check kill formation
-            if (!KillerFormationHelper.TryKillFormation(currentBoard, c.Opposite(), new List<Point>() { move }))
+            if (!KillerFormationHelper.TryKillFormation(currentBoard, c.Opposite(), new List<Point>() { move }).Item1)
+                return false;
+            if (KillerFormationHelper.IsKillerFormationFromFunc(currentBoard, targetGroup))
                 return false;
 
             //check group diagonals
