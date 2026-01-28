@@ -206,9 +206,14 @@
             Is atari without suicide.
             </summary>
         </member>
-        <member name="M:Go.AtariHelper.DoubleAtariWithoutEscape(Go.Board)">
+        <member name="M:Go.AtariHelper.IsDoubleAtari(Go.Board,Go.Point,Go.Content)">
             <summary>
-            Double atari without escape.
+            Is double atari.
+            </summary>
+        </member>
+        <member name="M:Go.AtariHelper.DoubleKillAtariWithoutEscape(Go.Board)">
+            <summary>
+            Double kill atari without escape.
             </summary>
         </member>
         <member name="M:Go.BothAliveHelper.EnablePassMoveForBothAlive(Go.Game,System.Collections.Generic.List{Go.GameTryMove},Go.SurviveOrKill)">
@@ -1175,7 +1180,7 @@
             Make ko fight.
             </summary>
         </member>
-        <member name="M:Go.KoHelper.CheckReverseKoForNeutralPoint(Go.Board)">
+        <member name="M:Go.KoHelper.CheckReverseKoForNeutralPoint(Go.Board,Go.Group)">
             <summary>
             Reverse ko for neutral point move.
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A80" />
@@ -1397,9 +1402,9 @@
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_6" />
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.DoubleAtariOnTargetGroups(Go.Board,System.Collections.Generic.List{Go.Group})">
+        <member name="M:Go.LinkHelper.DoubleKillAtariOnTargetGroups(Go.Board,System.Collections.Generic.List{Go.Group})">
             <summary>
-            Double atari on target groups.
+            Double kill atari on target groups.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.DoubleConnectAndDieOnTargetGroups(Go.Board,System.Collections.Generic.List{Go.Group})">
@@ -1858,7 +1863,11 @@
             <summary>
             Essential atari at covered eye.
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario4dan17" />
-            Check neighbour groups <see cref="!:UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_TianLongTu_Q16456" />
+            <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A41_2" />
+            Check reverse ko <see cref="!:UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_TianLongTu_Q16456" />
+            Check double atari <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WindAndTime_Q30224" />
+            Check opponent at liberty point <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WindAndTime_Q30199" />
+            Check capture at liberty point <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario4dan17_2" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.MustHaveNeutralPoint(Go.GameTryMove,Go.GameTryMove)">

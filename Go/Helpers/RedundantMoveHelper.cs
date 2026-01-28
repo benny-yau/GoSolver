@@ -727,12 +727,8 @@ namespace Go
             if (tryBoard.CapturedList.Any(n => AtariHelper.AtariByGroup(currentBoard, n).Any())) return false;
 
             //check atari moves
-            foreach (Group atariTarget in AtariHelper.AtariByGroup(tryBoard))
-            {
-                Board b = ImmovableHelper.CaptureSuicideGroup(captureBoard, atariTarget);
-                if (b != null && b.CapturedList.Count > 1)
-                    return false;
-            }
+            if (AtariHelper.AtariByGroup(tryBoard).Any(n => AtariHelper.IsDoubleAtari(tryBoard, n.Liberties.First(), c)))
+                return false;
 
             //find bloated eye suicide
             if (FindBloatedEyeSuicide(tryMove, captureBoard))
@@ -1750,22 +1746,54 @@ namespace Go
         /// <summary>
         /// Essential atari at covered eye.
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario4dan17" />
-        /// Check neighbour groups <see cref="UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_TianLongTu_Q16456" />
+        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A41_2" />
+        /// Check reverse ko <see cref="UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_TianLongTu_Q16456" />
+        /// Check double atari <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WindAndTime_Q30224" />
+        /// Check opponent at liberty point <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WindAndTime_Q30199" />
+        /// Check capture at liberty point <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario4dan17_2" />
         /// </summary>
         private static Boolean EssentialAtariAtCoveredEye(GameTryMove tryMove)
         {
             Board tryBoard = tryMove.TryGame.Board;
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Content c = tryBoard.MoveGroup.Content;
             if (tryMove.AtariResolved || tryMove.Captured || tryBoard.MoveGroupLiberties == 1) return true;
             if (tryBoard.AtariTargets.Count != 1) return true;
 
             Group atariTarget = tryBoard.AtariTargets.First();
-            if (!KoHelper.IsKoFight(tryBoard, atariTarget)) return true;
+            if (atariTarget.Points.Count != 1) return true;
 
-            //check neighbour groups
-            Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, atariTarget);
-            if (WallHelper.StrongNeighbourGroups(b))
-                return false;
-            return true;
+            //check ko fight
+            if (KoHelper.IsKoFight(tryBoard, atariTarget))
+            {
+                //check neighbour groups
+                Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, atariTarget);
+                if (WallHelper.StrongNeighbourGroups(b))
+                    return false;
+                return true;
+            }
+
+            Point p = atariTarget.Liberties.First();
+            if (!EyeHelper.IsCovered(tryBoard, p, c.Opposite())) return true;
+
+            //check reverse ko
+            if (KoHelper.CheckReverseKoForNeutralPoint(currentBoard, atariTarget))
+                return true;
+
+            //check double atari
+            if (AtariHelper.IsDoubleAtari(tryBoard, p, c))
+                return true;
+
+            //check opponent at liberty point
+            if (tryBoard.OpponentAtStoneNeighbour(p, c.Opposite()).Any())
+                return true;
+
+            //check capture at liberty point
+            Point q = tryBoard.GetMoveLiberties(p).FirstOrDefault();
+            if (!q.IsEmpty() && tryBoard.GetGroupsFromStoneNeighbours(q, c).Any(n => n.Liberties.Count == 1))
+                return true;
+
+            return false;
         }
 
         /// <summary>

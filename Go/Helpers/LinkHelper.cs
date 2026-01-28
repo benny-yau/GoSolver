@@ -297,7 +297,7 @@ namespace Go
             foreach (Point d in LinkHelper.PointsBetweenDiagonals(diagonalPoint))
             {
                 List<Group> tigerMouthGroups = board.GetGroupsFromStoneNeighbours(d, c.Opposite());
-                if (DoubleAtariOnTargetGroups(board, tigerMouthGroups))
+                if (DoubleKillAtariOnTargetGroups(board, tigerMouthGroups))
                     return true;
             }
             return false;
@@ -648,20 +648,21 @@ namespace Go
         }
 
         /// <summary>
-        /// Double atari on target groups.
+        /// Double kill atari on target groups.
         /// </summary>
-        public static Boolean DoubleAtariOnTargetGroups(Board board, List<Group> targetGroups)
+        public static Boolean DoubleKillAtariOnTargetGroups(Board board, List<Group> targetGroups)
         {
             if (targetGroups.Count == 0) return false;
             Content c = targetGroups.First().Content;
             List<Group> groups = targetGroups.Where(t => board.GetGroupLiberties(t).Count == 2).ToList();
             if (groups.Count > 0)
             {
-                //double atari
+                //double kill atari
                 HashSet<Point> liberties = board.GetLibertiesOfGroups(groups);
                 IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, liberties, c.Opposite(), true);
-                if (moveBoards.Any(b => AtariHelper.DoubleAtariWithoutEscape(b)))
+                if (moveBoards.Any(b => AtariHelper.DoubleKillAtariWithoutEscape(b)))
                     return true;
+                //check exception
                 if (moveBoards.Any(b => CheckMoveGroupForTigerMouthExceptions(board, b)))
                     return true;
             }

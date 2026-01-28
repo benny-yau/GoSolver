@@ -94,17 +94,17 @@ namespace Go
         /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20230813" />
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_20221229_7" />
         /// </summary>
-        public static Boolean CheckReverseKoForNeutralPoint(Board tryBoard)
+        public static Boolean CheckReverseKoForNeutralPoint(Board tryBoard, Group targetGroup = null)
         {
-            Point move = tryBoard.Move.Value;
-            Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.PointWithinMiddleArea(move)) return false;
-            if (tryBoard.MoveGroup.Points.Count != 1 || tryBoard.MoveGroupLiberties != 2) return false;
-            foreach (Point d in LinkHelper.GetMoveDiagonals(tryBoard))
+            if (targetGroup == null) targetGroup = tryBoard.MoveGroup;
+            else targetGroup = tryBoard.GetCurrentGroup(targetGroup);
+            Content c = targetGroup.Content;
+            if (targetGroup.Points.Count != 1 || targetGroup.Liberties.Count != 2) return false;
+            if (tryBoard.PointWithinMiddleArea(targetGroup.Points.First())) return false;
+            foreach (Group dgroup in LinkHelper.GetDiagonalGroups(tryBoard, targetGroup))
             {
-                Group dgroup = tryBoard.GetGroupAt(d);
                 if (dgroup.Points.Count != 1 || dgroup.Liberties.Count != 2) continue;
-                Point lib = tryBoard.GetMoveLiberties(d).FirstOrDefault(p => !tryBoard.PointWithinMiddleArea(p));
+                Point lib = tryBoard.GetMoveLiberties(dgroup.Points.First()).FirstOrDefault(p => !tryBoard.PointWithinMiddleArea(p));
                 if (lib.IsEmpty()) continue;
                 Point lib2 = tryBoard.GetMoveLiberties(lib).FirstOrDefault();
                 if (lib2.IsEmpty()) continue;
