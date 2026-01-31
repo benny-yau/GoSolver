@@ -26,6 +26,7 @@ namespace ConsoleGoSolver
             }
             catch (Exception ex)
             {
+                Debugger.Break();
                 Console.WriteLine(ex.Message);
             }
         }
@@ -125,6 +126,7 @@ namespace ConsoleGoSolver
             {
                 int error = MappingVerification.VerifyScenario(g);
                 Console.WriteLine("Verification completed. Errors: " + error);
+                return true;
             }
             else if (input == "vs" || input == "verify_solution")
                 ScenarioHelper.FindAllScenarios(Verification.VerifySolutionForAllScenarios);

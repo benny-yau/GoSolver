@@ -616,8 +616,11 @@ namespace Go
             Content c = tryMove.MoveContent;
 
             if (ImmovableHelper.CheckConnectAndDie(tryBoard)) return (false, null);
-            foreach (Group eyeGroup in LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard))
+            foreach (Point p in currentBoard.OpponentAtStoneNeighbour(move, c.Opposite()))
             {
+                if (!EyeHelper.FindEye(tryBoard, move, c) && !tryBoard.GetDiagonalNeighbours().Intersect(tryBoard.GetStoneNeighbours(p)).All(n => tryBoard[n] == c.Opposite())) 
+                    continue;
+                Group eyeGroup = currentBoard.GetGroupAt(p);
                 if (eyeGroup.Liberties.Count != 2) continue;
                 Point liberty = eyeGroup.Liberties.First(n => !n.Equals(move));
                 if (WallHelper.TargetWithAnyNonKillableGroup(currentBoard, liberty, c)) continue;

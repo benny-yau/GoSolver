@@ -51,7 +51,7 @@ namespace ScenarioCollection
             scenarioList.Add(x => x.Scenario_XuanXuanQiJing_A53());
             scenarioList.Add(x => x.Scenario_XuanXuanGo_A57());
             scenarioList.Add(x => x.Scenario_XuanXuanQiJing_A61());
-            scenarioList.Add(x => x.Scenario_XuanXuanGo_A59());
+            //scenarioList.Add(x => x.Scenario_XuanXuanGo_A59());
             scenarioList.Add(x => x.Scenario_XuanXuanGo_A66());
             scenarioList.Add(x => x.Scenario_XuanXuanQiJing_Weiqi101_7245());
             scenarioList.Add(x => x.Scenario_XuanXuanQiJing_B17());
@@ -184,7 +184,7 @@ namespace ScenarioCollection
             scenarioList.Add(x => x.Scenario_WuQingYuan_Q31177());
             scenarioList.Add(x => x.Scenario_WuQingYuan_Q31154());
             scenarioList.Add(x => x.Scenario_WuQingYuan_Q31225());
-            scenarioList.Add(x => x.Scenario_WuQingYuan_Q31240());
+            //scenarioList.Add(x => x.Scenario_WuQingYuan_Q31240());
             scenarioList.Add(x => x.Scenario_WuQingYuan_Q31305());
             scenarioList.Add(x => x.Scenario_WuQingYuan_Q31326());
             scenarioList.Add(x => x.Scenario_WuQingYuan_Q31329());
@@ -376,7 +376,7 @@ namespace ScenarioCollection
             scenarioList.Add(x => x.Scenario_TianLongTu_Q15301());
             scenarioList.Add(x => x.Scenario_TianLongTu_Q16673());
             scenarioList.Add(x => x.Scenario_TianLongTu_Q2174());
-            scenarioList.Add(x => x.Scenario_TianLongTu_Q2413());
+            //scenarioList.Add(x => x.Scenario_TianLongTu_Q2413());
             scenarioList.Add(x => x.Scenario_TianLongTu_Q17143());
             scenarioList.Add(x => x.Scenario_TianLongTu_Q17198());
             scenarioList.Add(x => x.Scenario_TianLongTu_Q17160());

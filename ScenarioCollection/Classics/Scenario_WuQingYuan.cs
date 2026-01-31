@@ -1041,6 +1041,8 @@ namespace ScenarioCollection
             gi.killMovablePoints.Add(new Point(1, 18));
             gi.killMovablePoints.Add(new Point(10, 18));
             gi.solutionPoints.Add(new List<Point>() { new Point(3, 18), new Point(4, 18), new Point(6, 17), new Point(5, 17), new Point(6, 16), new Point(6, 15), new Point(6, 18) });
+
+            //move outside boundary
             gi.correctedSolutions.Add(new CorrectedList(new List<Point>() { new Point(8, 18), new Point(5, 17), new Point(4, 18), new Point(3, 18), new Point(7, 18), new Point(6, 18), new Point(6, 16), new Point(9, 18) }));
             gi.correctedSolutions.Add(new CorrectedList(new List<Point>() { new Point(8, 18), new Point(5, 17), new Point(7, 18), new Point(6, 18) }));
 

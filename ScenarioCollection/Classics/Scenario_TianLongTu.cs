@@ -3444,6 +3444,8 @@ namespace ScenarioCollection
             gi.killMovablePoints.Add(new Point(5, 15));
 
             gi.solutionPoints.Add(new List<Point>() { new Point(1, 18), new Point(3, 18), new Point(0, 17), new Point(0, 14), new Point(0, 16), new Point(1, 16), new Point(1, 17) });
+
+            //move outside boundary
             gi.correctedSolutions.Add(new CorrectedList(new List<Point>() { new Point(3, 18), new Point(1, 17), new Point(1, 18), new Point(2, 16), new Point(2, 18), new Point(4, 18), new Point(5, 18), new Point(0, 16) }));
 
             gi.PlayerMoveJson = gi.PlayerMoveJsonExtension = ResourceHelper.GetKweonKabYongMappedJsonExtensionString("Scenario_TianLongTu_Q2413_PlayerMoveExtension");

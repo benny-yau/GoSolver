@@ -1782,6 +1782,14 @@
             Without opposite content <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B4" />
             </summary>
         </member>
+        <member name="M:Go.RedundantMoveHelper.CoveredPointSideMove(Go.GameTryMove,Go.GameTryMove)">
+            <summary>
+            Covered point side move.
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A41_2" />
+            Check one opponent group in killer group <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q5971" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3dan8_2" />
+            </summary>
+        </member>
         <member name="M:Go.RedundantMoveHelper.CornerPointSuicide(Go.GameTryMove,Go.Board)">
             Corner point suicide.
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A26_2" />
@@ -1862,8 +1870,8 @@
         <member name="M:Go.RedundantMoveHelper.EssentialAtariAtCoveredEye(Go.GameTryMove)">
             <summary>
             Essential atari at covered eye.
-            <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario4dan17" />
-            <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A41_2" />
+            Check ko fight <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario4dan17" />
+            Check covered <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A41_2" />
             Check reverse ko <see cref="!:UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_TianLongTu_Q16456" />
             Check double atari <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WindAndTime_Q30224" />
             Check opponent at liberty point <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WindAndTime_Q30199" />
@@ -2033,7 +2041,7 @@
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckSideMoveAtTigerMouth(Go.GameTryMove)">
             <summary>
-            Check side move.
+            Check side move at tiger mouth.
             No opponent in middle area <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A84" />
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16827" />
             Check for killer group <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20230505_8" />

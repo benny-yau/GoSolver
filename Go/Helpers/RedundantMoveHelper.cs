@@ -1456,10 +1456,15 @@ namespace Go
             else
             {
                 //diagonal non killable groups
-                List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(n => WallHelper.IsNonKillableGroup(tryBoard, n)).ToList();
-                Boolean nonKillableSuicide = tryBoard.PointWithinMiddleArea(move) ? diagonals.Count >= 2 : diagonals.Count >= 1;
-                if (!nonKillableSuicide) return false;
+                List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(n => WallHelper.IsNonKillableGroup(currentBoard, n)).ToList();
+                Boolean rc = tryBoard.PointWithinMiddleArea(move) ? diagonals.Count >= 2 : diagonals.Count >= 1;
+                if (!rc) return false;
 
+                //covered point side move
+                if (CoveredPointSideMove(tryMove, opponentMove))
+                    return true;
+
+                //covered point suicidal move
                 if (CoveredPointSuicidalMove(tryMove, capturedBoard)) return false;
 
                 if (diagonals.Any(n => LinkHelper.PointsBetweenDiagonals(move, n).Any(d => tryBoard[d] == Content.Empty)))
@@ -1478,6 +1483,40 @@ namespace Go
             return false;
         }
 
+        /// <summary>
+        /// Covered point side move.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A41_2" />
+        /// Check one opponent group in killer group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q5971" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3dan8_2" />
+        /// </summary>
+        private static Boolean CoveredPointSideMove(GameTryMove tryMove, GameTryMove opponentMove = null)
+        {
+            if (opponentMove == null) return false;
+            Board opponentBoard = opponentMove.TryGame.Board;
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Point move = opponentBoard.Move.Value;
+            Content c = opponentBoard.MoveGroup.Content;
+            if (opponentBoard.PointWithinMiddleArea())
+                return false;
+            Point? p = LinkHelper.CheckPointsBetweenDiagonalsAtMove(opponentBoard, c);
+            if (p == null) return false;
+            if (opponentBoard[p.Value] != c.Opposite())
+                return false;
+            if (!WallHelper.IsNonKillableGroup(currentBoard, currentBoard.GetGroupAt(p.Value)))
+                return false;
+            //check killer group points
+            if (GroupHelper.CheckKillerGroupPoints(currentBoard, move, c) != null)
+                return false;
+            //check one opponent group in killer group
+            Group kgroup = GroupHelper.GetDirectKillerGroup(currentBoard, move, c);
+            if (kgroup != null)
+            {
+                List<Point> contentPoints = kgroup.Points.Where(n => currentBoard[n] == c.Opposite()).ToList();
+                if (currentBoard.GetGroupsFromPoints(contentPoints).Count == 1)
+                    return false;
+            }
+            return true;
+        }
 
         /// Corner point suicide.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A26_2" />
@@ -1745,8 +1784,8 @@ namespace Go
 
         /// <summary>
         /// Essential atari at covered eye.
-        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario4dan17" />
-        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A41_2" />
+        /// Check ko fight <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario4dan17" />
+        /// Check covered <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A41_2" />
         /// Check reverse ko <see cref="UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_TianLongTu_Q16456" />
         /// Check double atari <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WindAndTime_Q30224" />
         /// Check opponent at liberty point <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WindAndTime_Q30199" />
@@ -1773,6 +1812,7 @@ namespace Go
                 return true;
             }
 
+            //check covered
             Point p = atariTarget.Liberties.First();
             if (!EyeHelper.IsCovered(tryBoard, p, c.Opposite())) return true;
 
@@ -2466,7 +2506,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Check side move.
+        /// Check side move at tiger mouth.
         /// No opponent in middle area <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A84" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16827" />
         /// Check for killer group <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20230505_8" />
