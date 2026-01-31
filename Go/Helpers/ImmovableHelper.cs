@@ -618,7 +618,7 @@ namespace Go
             if (ImmovableHelper.CheckConnectAndDie(tryBoard)) return (false, null);
             foreach (Point p in currentBoard.OpponentAtStoneNeighbour(move, c.Opposite()))
             {
-                if (!EyeHelper.FindEye(tryBoard, move, c) && !tryBoard.GetDiagonalNeighbours().Intersect(tryBoard.GetStoneNeighbours(p)).All(n => tryBoard[n] == c.Opposite())) 
+                if (!EyeHelper.FindEye(currentBoard, move, c) && !tryBoard.GetDiagonalNeighbours().Intersect(tryBoard.GetStoneNeighbours(p)).All(n => tryBoard[n] == c.Opposite())) 
                     continue;
                 Group eyeGroup = currentBoard.GetGroupAt(p);
                 if (eyeGroup.Liberties.Count != 2) continue;
