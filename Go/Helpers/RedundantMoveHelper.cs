@@ -1750,6 +1750,7 @@ namespace Go
             GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
             if (opponentMove == null) return false;
 
+            //check neutral point
             Boolean isNeutralPoint = NeutralPointSurvivalMove(opponentMove, tryMove);
             if (isNeutralPoint)
             {
@@ -1757,7 +1758,50 @@ namespace Go
                 if (MustHaveNeutralPoint(tryMove, opponentMove))
                     tryMove.MustHaveNeutralPoint = true;
             }
+
+            //kill move in middle area
+            if (NeutralPointKillMoveInMiddleArea(tryMove))
+                return true;
             return isNeutralPoint;
+        }
+
+        /// <summary>
+        /// Neutral point kill move in middle area.
+        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A26_3" />
+        /// Check middle area <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_A40" />
+        /// Check one empty space left <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WindAndTime_Q29264" />
+        /// Check opponent at stone and diagonal neighbour <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" />
+        /// Check connect and die <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_B31" />
+        /// </summary>
+        public static Boolean NeutralPointKillMoveInMiddleArea(GameTryMove tryMove)
+        {
+            Board tryBoard = tryMove.TryGame.Board;
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            if (!tryMove.IsNegligible) return false;
+            //check middle area
+            if (!tryBoard.PointWithinMiddleArea()) return false;
+            //check no eye for survival
+            if (!WallHelper.NoEyeForSurvival(currentBoard, move, c.Opposite())) return false;
+            //check opponent at stone neighbour
+            List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours();
+            if (ngroups.Any())
+            {
+                Boolean rc = (ngroups.Count == 1 && ngroups.First().Points.Count == 1);
+                if (!rc)
+                    return false;
+            }
+            //check one empty space left
+            if (KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
+                return false;
+            //check opponent at stone and diagonal neighbour
+            List<Point> opponentPoints = tryBoard.GetStoneAndDiagonalNeighbours().Where(n => tryBoard[n] == c.Opposite()).ToList();
+            if (tryBoard.GetGroupsFromPoints(opponentPoints).Count >= 2) return false;
+            //check connect and die
+            if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Any(n => ImmovableHelper.CheckConnectAndDie(currentBoard, n)))
+                return false;
+            return true;
         }
 
         /// <summary>

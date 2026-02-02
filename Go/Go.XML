@@ -1860,6 +1860,16 @@
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_Q18500_2" />
             </summary>
         </member>
+        <member name="M:Go.RedundantMoveHelper.NeutralPointKillMoveInMiddleArea(Go.GameTryMove)">
+            <summary>
+            Neutral point kill move in middle area.
+            <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A26_3" />
+            Check middle area <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_A40" />
+            Check one empty space left <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WindAndTime_Q29264" />
+            Check opponent at stone and diagonal neighbour <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" />
+            Check connect and die <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_B31" />
+            </summary>
+        </member>
         <member name="M:Go.RedundantMoveHelper.CoveredPointSuicidalMove(Go.GameTryMove,Go.Board)">
             <summary>
             Covered point suicidal move.
