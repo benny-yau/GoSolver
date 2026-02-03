@@ -118,7 +118,12 @@ namespace Go
                     tryMove.IsRedundantKo = RedundantMoveHelper.RedundantSurvivalKoMove(tryMove);
                     if (tryMove.IsRedundantKo) redundantTryMoves.Add(tryMove);
                     if (KoHelper.KoContentEnabled(c, gi) && (!tryMove.IsRedundantKo || mappingRange))
+                    {
                         koBlockedMove = tryMove;
+                        //check recursion
+                        if (GameHelper.CheckForRecursion(tryMove))
+                            return (ConfirmAliveResult.KoAlive, new List<GameTryMove>(), koBlockedMove);
+                    }
                 }
                 else if (tryMove.MakeMoveResult == MakeMoveResult.Legal)
                 {
@@ -573,7 +578,7 @@ namespace Go
                         return (bestResult, bestResultMove);
                 }
             }
-            
+
             //check for ko
             if (KoMoveCheck(g, SurviveOrKill.Kill, koBlockedMove, depth))
                 return (koBlockedMove.ConfirmAlive, koBlockedMove);

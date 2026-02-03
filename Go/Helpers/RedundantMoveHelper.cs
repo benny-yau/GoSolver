@@ -1486,8 +1486,10 @@ namespace Go
         /// <summary>
         /// Covered point side move.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A41_2" />
-        /// Check one opponent group in killer group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q5971" />
+        /// Check diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B29" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3dan8_2" />
+        /// Check corner <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A36" />
+        /// Check one opponent group in killer group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q5971" />
         /// </summary>
         private static Boolean CoveredPointSideMove(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
@@ -1506,6 +1508,12 @@ namespace Go
                 return false;
             //check killer group points
             if (GroupHelper.CheckKillerGroupPoints(currentBoard, move, c) != null)
+                return false;
+            //check diagonal
+            if (opponentBoard.GetDiagonalNeighbours().Any(n => opponentBoard[n] == c))
+                return false;
+            //check corner
+            if (opponentBoard.GetMoveLiberties().Any(n => opponentBoard.CornerPoint(n)))
                 return false;
             //check one opponent group in killer group
             Group kgroup = GroupHelper.GetDirectKillerGroup(currentBoard, move, c);
