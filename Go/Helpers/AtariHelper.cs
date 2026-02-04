@@ -84,7 +84,7 @@ namespace Go
         /// </summary>
         public static Boolean IsDoubleAtari(Board board, Point p, Content c)
         {
-            return board.GetGroupsFromStoneNeighbours(p, c).Count(s => s.Liberties.Count == 1) > 1;
+            return board.OneLibertyGroup(p, c).Count() > 1;
         }
 
         /// <summary>

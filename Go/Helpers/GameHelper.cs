@@ -113,13 +113,13 @@ namespace Go
         /// </summary>
         public static Boolean CheckForRecursion(GameTryMove tryMove)
         {
-            Game tryGame = tryMove.TryGame;
-            foreach (int j in CheckForRecursion(tryGame.Board))
+            Game g = tryMove.TryGame;
+            foreach (int j in CheckForRecursion(g.Board))
             {
                 //get snapshot of board from last moves and compare if board is the same
-                int compareLastMoves = tryGame.Board.LastMoves.Count - j;
-                Board compareBoard = GameHelper.GetSnapshotBoard(tryGame, compareLastMoves);
-                if (tryGame.Board.Equals(compareBoard))
+                int count = g.Board.LastMoves.Count - j;
+                Board compareBoard = GameHelper.GetSnapshotBoard(g, count);
+                if (g.Board.Equals(compareBoard))
                     return true;
             }
             return false;
@@ -135,9 +135,9 @@ namespace Go
             for (int j = 4; j <= 12; j++)
             {
                 List<Point> lastMoves = tryBoard.LastMoves;
-                int lastMoveCount = lastMoves.Count - 1;
+                int rc = lastMoves.Count - 1;
                 //find recurrence of last three moves
-                Boolean recur = (lastMoveCount >= j + 2 && move.Equals(lastMoves[lastMoveCount - j]) && lastMoves[lastMoveCount - 1].Equals(lastMoves[lastMoveCount - (j + 1)]) && lastMoves[lastMoveCount - 2].Equals(lastMoves[lastMoveCount - (j + 2)]));
+                Boolean recur = (rc >= j + 2 && move.Equals(lastMoves[rc - j]) && lastMoves[rc - 1].Equals(lastMoves[rc - (j + 1)]) && lastMoves[rc - 2].Equals(lastMoves[rc - (j + 2)]));
                 if (recur)
                     yield return j;
             }
@@ -146,12 +146,12 @@ namespace Go
         /// <summary>
         /// Get snapshot board. Requires that the root of the game starts from initial setup.
         /// </summary>
-        public static Board GetSnapshotBoard(Game g, int moveCount)
+        public static Board GetSnapshotBoard(Game g, int count)
         {
-            if (g.Board.LastMoves.Count < moveCount)
+            if (g.Board.LastMoves.Count < count)
                 return g.Board;
             Board rootBoard = new Board(g.Root.Board);
-            for (int i = rootBoard.LastMoves.Count; i < moveCount; i++)
+            for (int i = rootBoard.LastMoves.Count; i < count; i++)
             {
                 Point p = g.Board.LastMoves[i];
                 Content c = GetContentForNextMove(rootBoard);

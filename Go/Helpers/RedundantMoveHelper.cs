@@ -1465,7 +1465,7 @@ namespace Go
                     return true;
 
                 //covered point suicidal move
-                if (CoveredPointSuicidalMove(tryMove, capturedBoard)) return false;
+                if (CoveredPointSuicidalWithCornerFormation(tryMove, capturedBoard)) return false;
 
                 if (diagonals.Any(n => LinkHelper.PointsBetweenDiagonals(move, n).Any(d => tryBoard[d] == Content.Empty)))
                     return true;
@@ -1813,11 +1813,11 @@ namespace Go
         }
 
         /// <summary>
-        /// Covered point suicidal move.
+        /// Covered point suicidal with corner formation.
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221214_5" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221214_6" />
         /// </summary>
-        public static Boolean CoveredPointSuicidalMove(GameTryMove tryMove, Board captureBoard = null)
+        public static Boolean CoveredPointSuicidalWithCornerFormation(GameTryMove tryMove, Board captureBoard = null)
         {
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryBoard.Move.Value;
@@ -1882,7 +1882,7 @@ namespace Go
 
             //check capture at liberty point
             Point q = tryBoard.GetMoveLiberties(p).FirstOrDefault();
-            if (!q.IsEmpty() && tryBoard.GetGroupsFromStoneNeighbours(q, c).Any(n => n.Liberties.Count == 1))
+            if (!q.IsEmpty() && tryBoard.OneLibertyGroup(q, c).Any())
                 return true;
 
             return false;
@@ -2057,7 +2057,7 @@ namespace Go
                 if (CheckOpponentKillFormationAtNeutralPoint(opponentMove))
                     return false;
                 //check covered point suicidal move
-                if (CoveredPointSuicidalMove(opponentMove))
+                if (CoveredPointSuicidalWithCornerFormation(opponentMove))
                     return false;
             }
             return true;
@@ -2395,7 +2395,7 @@ namespace Go
             if (capturedBoard == null) return false;
 
             //check covered point suicidal move
-            if (CoveredPointSuicidalMove(tryMove, capturedBoard))
+            if (CoveredPointSuicidalWithCornerFormation(tryMove, capturedBoard))
                 return false;
 
             //check one point atari move
@@ -2520,7 +2520,7 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935" />
         /// Check atari move <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q29277" />
         /// Check immovable point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" />
-        /// Check for killer group <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q30251" />
+        /// Check for killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Phenomena_B6" />
         /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20221020_6" />
         /// </summary>
         private static Boolean CheckThreeOpponentGroupsAtTigerMouth(GameTryMove tryMove, Board capturedBoard)
@@ -2551,7 +2551,7 @@ namespace Go
                     continue;
                 //check for killer group
                 Group kgroup = GroupHelper.GetDirectKillerGroup(capturedBoard, p, c.Opposite());
-                if (kgroup != null && kgroup.Points.All(n => capturedBoard[n] == Content.Empty))
+                if (kgroup != null && kgroup.Points.Count <= 3)
                     return false;
             }
             return true;
@@ -2727,7 +2727,7 @@ namespace Go
             if (LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard))
                 return false;
 
-            if (CoveredPointSuicidalMove(opponentMove))
+            if (CoveredPointSuicidalWithCornerFormation(opponentMove))
                 return false;
             return true;
         }

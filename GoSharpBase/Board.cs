@@ -262,13 +262,10 @@ namespace Go
         /// </summary>
         public HashSet<Group> GetCapturedGroups(Point p)
         {
-            HashSet<Group> captures = new HashSet<Group>();
-            List<Point> stoneNeighbours = GetStoneNeighbours(p);
             Content c = this[p];
-            foreach (Point n in stoneNeighbours)
+            HashSet<Group> captures = new HashSet<Group>();
+            foreach (Group ngroup in GetGroupsFromStoneNeighbours(p, c))
             {
-                if (this[n] != c.Opposite()) continue;
-                Group ngroup = GetGroupAt(n);
                 if (ngroup.Liberties.Count == 0)
                     captures.Add(ngroup);
             }
