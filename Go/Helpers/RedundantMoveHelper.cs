@@ -764,13 +764,9 @@ namespace Go
         /// Check box formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_4" />
         /// Check diagonal for real eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q5971" />
         /// Ensure all strong neighbour groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_7" />
-        /// Check diagonals <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
         /// Cut diagonal and kill <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_3" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17081_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_20230603_4" />
-        /// Empty points at stone and diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_4" />
-        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20221027_6" />
-        /// Check ko fight <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260114_8" />
         /// Check single group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16594" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_2398" />   
         /// </summary>
@@ -813,20 +809,9 @@ namespace Go
             if (KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                 return false;
 
-            //empty points at stone and diagonal
-            Point? e = LinkHelper.CheckPointsBetweenDiagonalsAtMove(tryBoard, Content.Empty);
-            if (e != null && tryBoard[e.Value] == Content.Empty)
-            {
-                List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours();
-                if (ngroups.Count == 1 && ngroups.First().Points.Count > 1)
-                {
-                    //check ko fight
-                    Group ngroup = ngroups.First();
-                    Boolean koFight = ngroup.Points.Count == 2 && tryBoard.GetNeighbourGroups(ngroup).Any(n => KoHelper.IsKoFight(tryBoard, n));
-                    if (!koFight)
-                        return true;
-                }
-            }
+            //check empty points at stone and diagonal
+            if (CheckEmptyPointsAtStoneAndDiagonal(tryMove))
+                return true;
 
             //check single group
             if (GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard) && !LinkHelper.GetMoveDiagonals(tryBoard).Any())
@@ -835,6 +820,47 @@ namespace Go
             //check one point move diagonals
             if (CheckOnePointMoveDiagonalsInConnectAndDie(tryMove, captureBoard))
                 return true;
+
+            return false;
+        }
+
+        /// <summary>
+        /// Check empty points at stone and diagonal.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18500_3" />
+        /// Check point next to corner <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20221027_6" />
+        /// Check for one neighbour group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_4" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
+        /// Check connect and die <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260206_6" />
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260114_8" />
+        /// </summary>
+        private static Boolean CheckEmptyPointsAtStoneAndDiagonal(GameTryMove tryMove)
+        {
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryMove.Move;
+            Content c = tryMove.MoveContent;
+            //empty points at stone and diagonal
+            Point? e = LinkHelper.CheckPointsBetweenDiagonalsAtMove(tryBoard, Content.Empty);
+            if (e == null || tryBoard[e.Value] != Content.Empty) return false;
+
+            //check point next to corner
+            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard.CornerPoint(n)))
+            {
+                Group kgroup = GroupHelper.GetDirectKillerGroup(tryBoard, move, c.Opposite());
+                if (kgroup != null && !GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard))
+                    return false;
+            }
+
+            //check for one neighbour group
+            List<Group> ngroups = currentBoard.GetGroupsFromStoneNeighbours(move, c);
+            if (ngroups.Count == 1)
+            {
+                //check connect and die
+                Group ngroup = ngroups.First();
+                Boolean connectAndDie = ngroup.Points.Count == 2 && currentBoard.GetNeighbourGroups(ngroup).Any(n => ImmovableHelper.CheckConnectAndDie(currentBoard, n));
+                if (!connectAndDie)
+                    return true;
+            }
             return false;
         }
 
