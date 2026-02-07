@@ -1643,6 +1643,14 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_2398" />   
             </summary>
         </member>
+        <member name="M:Go.RedundantMoveHelper.CheckImmovablePointAtDiagonal(Go.GameTryMove,Go.Board)">
+            <summary>
+            Check immovable point at diagonal.
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17250_3" />
+            Check opponent at diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30196" />
+            Diagonal move without diagonal cut <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16483" />
+            </summary>
+        </member>
         <member name="M:Go.RedundantMoveHelper.CheckEmptyPointsAtStoneAndDiagonal(Go.GameTryMove)">
             <summary>
             Check empty points at stone and diagonal.

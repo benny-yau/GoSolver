@@ -817,10 +817,49 @@ namespace Go
             if (GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard) && !LinkHelper.GetMoveDiagonals(tryBoard).Any())
                 return true;
 
+            //check immovable point at diagonal
+            if (CheckImmovablePointAtDiagonal(tryMove, captureBoard))
+                return true;
+
             //check one point move diagonals
             if (CheckOnePointMoveDiagonalsInConnectAndDie(tryMove, captureBoard))
                 return true;
 
+            return false;
+        }
+
+        /// <summary>
+        /// Check immovable point at diagonal.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17250_3" />
+        /// Check opponent at diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30196" />
+        /// Diagonal move without diagonal cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16483" />
+        /// </summary>
+        private static Boolean CheckImmovablePointAtDiagonal(GameTryMove tryMove, Board captureBoard)
+        {
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryMove.Move;
+            Content c = tryMove.MoveContent;
+            List<Point> diagonals = LinkHelper.GetMoveDiagonals(tryBoard);
+            if (!diagonals.Any())
+            {
+                //check opponent at diagonal
+                if (!tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite())) return false;
+                //check immovable point at diagonal
+                if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard.PointWithinMiddleArea(n) && ImmovableHelper.IsImmovablePoint(tryBoard, n, c.Opposite())))
+                    return true;
+            }
+            else
+            {
+                //diagonal move without diagonal cut
+                if (diagonals.Count != 1) return false;
+                if (!tryBoard.PointWithinMiddleArea()) return false;
+                if (!LinkHelper.PointsBetweenDiagonals(move, diagonals.First()).Any(n => tryBoard[n] == Content.Empty)) return false;
+                if (ImmovableHelper.CheckConnectAndDie(currentBoard, currentBoard.GetGroupAt(diagonals.First()))) return false;
+                //check immovable point at diagonal
+                if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard.PointWithinMiddleArea(n) && ImmovableHelper.IsImmovablePoint(captureBoard, n, c.Opposite())))
+                    return true;
+            }
             return false;
         }
 
