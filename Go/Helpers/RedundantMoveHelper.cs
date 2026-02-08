@@ -832,7 +832,9 @@ namespace Go
         /// Check immovable point at diagonal.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17250_3" />
         /// Check opponent at diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30196" />
-        /// Diagonal move without diagonal cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16483" />
+        /// Without diagonal cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16483" />
+        /// With diagonal cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_ScenarioHighLevel28_2" />
+        /// Check killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16483" />
         /// </summary>
         private static Boolean CheckImmovablePointAtDiagonal(GameTryMove tryMove, Board captureBoard)
         {
@@ -848,17 +850,35 @@ namespace Go
                 //check immovable point at diagonal
                 if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard.PointWithinMiddleArea(n) && ImmovableHelper.IsImmovablePoint(tryBoard, n, c.Opposite())))
                     return true;
+                //check real eye
+                if (EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, move, c.Opposite()))
+                    return true;
             }
             else
             {
-                //diagonal move without diagonal cut
+                //diagonal move
                 if (diagonals.Count != 1) return false;
                 if (!tryBoard.PointWithinMiddleArea()) return false;
-                if (!LinkHelper.PointsBetweenDiagonals(move, diagonals.First()).Any(n => tryBoard[n] == Content.Empty)) return false;
                 if (ImmovableHelper.CheckConnectAndDie(currentBoard, currentBoard.GetGroupAt(diagonals.First()))) return false;
                 //check immovable point at diagonal
-                if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard.PointWithinMiddleArea(n) && ImmovableHelper.IsImmovablePoint(captureBoard, n, c.Opposite())))
+                foreach (Point p in tryBoard.GetDiagonalNeighbours())
+                {
+                    if (!tryBoard.PointWithinMiddleArea(p)) continue;
+                    if (!ImmovableHelper.IsImmovablePoint(captureBoard, p, c.Opposite())) continue;
+                    //no diagonal cut
+                    if (LinkHelper.PointsBetweenDiagonals(move, diagonals.First()).Any(n => tryBoard[n] == Content.Empty))
+                        return true;
+                    //with diagonal cut
+                    if (tryBoard.GetGroupsFromStoneNeighbours().Any(n => n.Points.Count == 1)) continue;
+                    //check killer group
+                    Group kgroup = GroupHelper.GetDirectKillerGroup(captureBoard, p, c.Opposite());
+                    if (kgroup != null && kgroup.Points.Count == 2)
+                    {
+                        if (kgroup.Points.Any(n => captureBoard[n] == c) && !EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, kgroup))
+                            continue;
+                    }
                     return true;
+                }
             }
             return false;
         }
@@ -896,7 +916,7 @@ namespace Go
             {
                 //check connect and die
                 Group ngroup = ngroups.First();
-                Boolean connectAndDie = ngroup.Points.Count == 2 && currentBoard.GetNeighbourGroups(ngroup).Any(n => ImmovableHelper.CheckConnectAndDie(currentBoard, n));
+                Boolean connectAndDie = ngroup.Points.Count == 2 && !WallHelper.StrongNeighbourGroups(currentBoard, ngroup);
                 if (!connectAndDie)
                     return true;
             }
