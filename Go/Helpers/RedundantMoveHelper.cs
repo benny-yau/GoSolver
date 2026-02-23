@@ -746,13 +746,20 @@ namespace Go
             if (CheckDiagonalForSuicidalConnectAndDie(tryMove, captureBoard))
                 return true;
 
-            if (tryBoard.MoveGroup.Points.Count <= 4)
+            if (tryBoard.MoveGroup.Points.Count <= 3)
             {
-                return CheckRedundantInSuicidalConnectAndDie(tryMove, captureBoard);
+                if (!CheckRedundantInSuicidalConnectAndDie(tryMove, captureBoard))
+                    return false;
             }
-            //check killer formation
-            else if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, captureBoard))
-                return false;
+            else
+            {
+                //check killer formation
+                if (KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, captureBoard))
+                    return false;
+
+                if (tryBoard.MoveGroup.Points.Count == 4 && !EyeHelper.CheckRealEyeInNeighbourGroups(tryBoard, captureBoard))
+                    return false;
+            }
             return true;
         }
 
@@ -2934,8 +2941,10 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q17132" /> 
         /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20250311_8" /> 
         /// Not redundant <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_B10_2" />
+        /// Check weak group <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260223_8" />
         /// Check diagonal cut <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_A171_101Weiqi" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario3dan22" />
+        /// Check edge points <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q17132" />
         /// </summary>
         public static Boolean RedundantFillerMove(GameTryMove tryMove)
         {
@@ -2958,6 +2967,12 @@ namespace Go
             List<int> npossibleSpace = tryBoard.GetMoveLiberties().Select(n => PossibleSpace(currentBoard, n, c)).ToList();
             if (npossibleSpace.Any(n => n < possibleSpace))
                 return false;
+
+            //check weak group
+            List<Group> groups = tryBoard.GetClosestPoints(move, c, 2).Select(n => tryBoard.GetGroupAt(n)).ToList();
+            if (groups.Any(n => n.Liberties.Count <= 2 && n.Points.Count >= 2 && AtariHelper.AtariByGroup(tryBoard, n).Any()))
+                return false;
+
             if (npossibleSpace.Any(n => n > possibleSpace))
             {
                 //check diagonal cut

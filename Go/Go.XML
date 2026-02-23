@@ -2148,8 +2148,10 @@
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q17132" /> 
             <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20250311_8" /> 
             Not redundant <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_B10_2" />
+            Check weak group <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260223_8" />
             Check diagonal cut <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_A171_101Weiqi" />
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario3dan22" />
+            Check edge points <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q17132" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.PossibleSpace(Go.Board,Go.Point,Go.Content)">
