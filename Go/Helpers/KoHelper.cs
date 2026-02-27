@@ -194,8 +194,7 @@ namespace Go
         public static Boolean NeutralPointDoubleKo(Board board)
         {
             Content c = board.MoveGroup.Content;
-            Point p = board.GetStoneNeighbours().FirstOrDefault(n => EyeHelper.FindCoveredEye(board, n, c));
-            if (p.IsEmpty()) return false;
+            if (!board.GetStoneNeighbours().Any(n => EyeHelper.FindCoveredEye(board, n, c))) return false;
             return IsCoveredEyeDoubleKo(board);
         }
 

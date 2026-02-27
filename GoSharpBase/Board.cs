@@ -628,7 +628,7 @@ namespace Go
             Board compareBoard = (Board)value;
             for (int y = 8; y <= 18; y++)
             {
-                for (int x = 0; x <= 12; x++)
+                for (int x = 0; x <= 18; x++)
                 {
                     if (content[x, y] != compareBoard[x, y])
                         return false;
