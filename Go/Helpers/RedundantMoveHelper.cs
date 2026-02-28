@@ -782,11 +782,8 @@ namespace Go
                 return true;
 
             //check diagonal for real eye
-            if (EyeHelper.CheckDiagonalForRealEye(tryBoard, captureBoard).Any())
-            {
-                if (!LinkHelper.GetDiagonalGroups(captureBoard, tryBoard.MoveGroup).Any())
-                    return true;
-            }
+            if (EyeHelper.CheckDiagonalForRealEye(tryBoard, captureBoard).Any() && !LinkHelper.GetDiagonalGroups(captureBoard, tryBoard.MoveGroup).Any())
+                return true;
 
             //check atari targets
             if (tryBoard.AtariTargets.Any(n => n.Points.Count > 1))
@@ -829,7 +826,7 @@ namespace Go
         /// Check opponent at diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30196" />
         /// Without diagonal cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16483" />
         /// With diagonal cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_ScenarioHighLevel28_2" />
-        /// Check killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16483" />
+        /// Check killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18474" />
         /// </summary>
         private static Boolean CheckImmovablePointAtDiagonal(GameTryMove tryMove, Board captureBoard)
         {
@@ -950,11 +947,8 @@ namespace Go
 
                 //check diagonal move
                 List<Point> dpoints = captureBoard.GetDiagonalNeighbours(move).Where(n => captureBoard[n] == Content.Empty).Intersect(captureBoard.GetStoneNeighbours(captureBoard.GetMoveLiberties(move).First())).ToList();
-                foreach (Board b in GameHelper.GetMoveBoards(captureBoard, dpoints, c))
-                {
-                    if (!ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false))
-                        return false;
-                }
+                if (GameHelper.GetMoveBoards(captureBoard, dpoints, c).Any(b => !ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false)))
+                    return false;
 
                 //check weak group
                 foreach (Group ngroup in captureBoard.GetGroupsFromStoneNeighbours(move, c))
@@ -2629,6 +2623,7 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q1970" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935" />
         /// Check atari move <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q29277" />
+        /// Check for two empty diagonals <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q17250" />
         /// Check immovable point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" />
         /// Check for killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Phenomena_B6" />
         /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20221020_6" />
@@ -2646,16 +2641,17 @@ namespace Go
                 return false;
 
             //check atari move
-            if (tryBoard.IsAtariMove)
-            {
-                if (tryBoard.AtariTargets.Count > 1) return true;
-                if (!WallHelper.NoEyeForSurvival(capturedBoard, tryBoard.AtariTargets.First().Liberties.First(), c.Opposite()))
-                    return true;
-            }
+            if (tryBoard.AtariTargets.Any(n => !WallHelper.NoEyeForSurvival(capturedBoard, n.Liberties.First(), c.Opposite())))
+                return true;
+
+            //check for two empty diagonals
+            if (capturedBoard.GetStoneNeighbours().Intersect(capturedBoard.GetDiagonalNeighbours(move)).Count(n => capturedBoard[n] == Content.Empty) == 2)
+                return false;
 
             //check diagonal point
             foreach (Point p in capturedBoard.GetDiagonalNeighbours(move))
             {
+                if (capturedBoard[p] == c.Opposite()) continue;
                 //check immovable point
                 if (GroupHelper.CheckKillerGroupPoints(tryBoard, move, c.Opposite()) != null && !ImmovableHelper.IsImmovablePoint(capturedBoard, p, c.Opposite()))
                     continue;

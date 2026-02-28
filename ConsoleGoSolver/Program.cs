@@ -50,7 +50,8 @@ namespace ConsoleGoSolver
             List<Func<Scenario, Game>> scenarioList = ScenarioHelper.AddScenarios(rc[0], (rc.Length == 2) ? rc[1] : "");
 
             //select scenario number
-            Console.WriteLine("Select scenario number (1 to " + scenarioList.Count.ToString() + ") : ");
+            Console.WriteLine("Select scenario number (1 to " + scenarioList.Count.ToString() + "):");
+            Console.WriteLine("(Show all scenarios[s])");
             int scenario = SelectFromList<Func<Scenario, Game>>(scenarioList);
 
             //return selected scenario
@@ -64,13 +65,31 @@ namespace ConsoleGoSolver
             do
             {
                 int selected = 0;
-                String input = Console.ReadLine();
+                String input = Console.ReadLine().ToLower();
                 if (Int32.TryParse(input, out selected))
                 {
                     if (selected > 0 && selected <= list.Count)
                         return selected;
                 }
+                else if (input == "s")
+                {
+                    if (typeof(T) == typeof(Func<Scenario, Game>))
+                        ShowScenariosInGameSet(list as List<Func<Scenario, Game>>);
+                }
             } while (true);
+        }
+
+        static void ShowScenariosInGameSet(List<Func<Scenario, Game>> scenarioList)
+        {
+            for (int i = 0; i <= scenarioList.Count - 1; i++)
+            {
+                Scenario s = new Scenario();
+                Func<Scenario, Game> handler = scenarioList[i];
+                Game g = handler(s);
+                Console.WriteLine("Scenario number: \t" + (i + 1));
+                Console.WriteLine("Scenario name: \t\t" + g.GameInfo.ScenarioName);
+                Console.WriteLine("{0} \n\n", g.Board);
+            }
         }
 
         static Boolean PlayOneRound(Game g)
