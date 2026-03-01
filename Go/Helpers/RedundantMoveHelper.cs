@@ -1854,7 +1854,7 @@ namespace Go
             {
                 //must have neutral point
                 if (MustHaveNeutralPoint(tryMove, opponentMove))
-                    tryMove.MustHaveNeutralPoint = true;
+                    return false;
             }
 
             //kill move only
@@ -1866,6 +1866,7 @@ namespace Go
         /// <summary>
         /// Neutral point kill move only.
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A26_3" />
+        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18410" />
         /// Check opponent at diagonal neighbour <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_A136" />
         /// Check middle area <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_A40" />
         /// Check one empty space left <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WindAndTime_Q29264" />
@@ -2244,9 +2245,6 @@ namespace Go
                     }
                 }
             }
-            //must have neutral point
-            List<GameTryMove> mustHaveNeutralMoves = neutralPointMoves.Where(n => n.MustHaveNeutralPoint).ToList();
-            mustHaveNeutralMoves.ForEach(n => { tryMoves.Add(n); neutralPointMoves.Remove(n); });
             if (neutralPointMoves.Count == 0) return;
             //no try moves left
             if (tryMoves.Count == 0)
@@ -2624,9 +2622,10 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935" />
         /// Check atari move <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q29277" />
         /// Check for two empty diagonals <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q17250" />
-        /// Check immovable point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" />
-        /// Check for killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Phenomena_B6" />
+        /// Check for real eye at diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Phenomena_B6" />
         /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20221020_6" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" />
+        /// Check connect and die at diagonal <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q17077" />
         /// </summary>
         private static Boolean CheckThreeOpponentGroupsAtTigerMouth(GameTryMove tryMove, Board capturedBoard)
         {
@@ -2641,24 +2640,23 @@ namespace Go
                 return false;
 
             //check atari move
-            if (tryBoard.AtariTargets.Any(n => !WallHelper.NoEyeForSurvival(capturedBoard, n.Liberties.First(), c.Opposite())))
+            if (tryBoard.AtariTargets.Any(n => n.Points.Count > 1 && !WallHelper.NoEyeForSurvival(capturedBoard, n.Liberties.First(), c.Opposite())))
                 return true;
 
             //check for two empty diagonals
             if (capturedBoard.GetStoneNeighbours().Intersect(capturedBoard.GetDiagonalNeighbours(move)).Count(n => capturedBoard[n] == Content.Empty) == 2)
                 return false;
 
-            //check diagonal point
+            //check for real eye at diagonal
             foreach (Point p in capturedBoard.GetDiagonalNeighbours(move))
             {
                 if (capturedBoard[p] == c.Opposite()) continue;
-                //check immovable point
-                if (GroupHelper.CheckKillerGroupPoints(tryBoard, move, c.Opposite()) != null && !ImmovableHelper.IsImmovablePoint(capturedBoard, p, c.Opposite()))
+                if (!EyeHelper.FindRealEyeWithinEmptySpace(capturedBoard, p, c.Opposite())) 
                     continue;
-                //check for killer group
-                Group kgroup = GroupHelper.GetDirectKillerGroup(capturedBoard, p, c.Opposite());
-                if (kgroup != null && kgroup.Points.Count <= 3)
-                    return false;
+                //check connect and die at diagonal
+                if (tryBoard.AtariTargets.Any() && LinkHelper.GetDiagonalGroups(tryBoard).Select(n => currentBoard.GetCurrentGroup(n)).Any(n => n.Points.Count > 1 && n.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(currentBoard, n)))
+                    continue;
+                return false;
             }
             return true;
         }
