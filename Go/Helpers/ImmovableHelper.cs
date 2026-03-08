@@ -115,13 +115,13 @@ namespace Go
         private static Boolean CheckForKoInImmovablePoint(Board board, Group targetGroup)
         {
             if (targetGroup.Points.Count != 1 || targetGroup.Liberties.Count != 1) return false;
-            Content c = targetGroup.Content.Opposite();
+            Content c = targetGroup.Content;
             Point liberty = targetGroup.Liberties.First();
 
             if (KoHelper.IsKoFight(board, targetGroup))
                 return true;
             //check capture neighbour groups
-            List<Group> ngroups = board.OneLibertyGroup(liberty, c);
+            List<Group> ngroups = board.OneLibertyGroup(liberty, c.Opposite());
             if (ngroups.Count > 1)
             {
                 foreach (Group group in ngroups)
@@ -133,10 +133,7 @@ namespace Go
             }
 
             //check for reverse ko fight 
-            List<Point> nstones = board.GetStoneNeighbours(liberty);
-            if (nstones.Any(n => board[n] == c)) return false;
-            List<Point> eyeNeighbour = nstones.Where(n => board[n] == Content.Empty).ToList();
-            if (eyeNeighbour.Count == 1 && KoHelper.MakeKoFight(board, eyeNeighbour.First(), c.Opposite()))
+            if (KoHelper.MakeKoFightFromEyePoint(board, liberty, c))
                 return true;
             return false;
         }
@@ -618,7 +615,7 @@ namespace Go
             if (ImmovableHelper.CheckConnectAndDie(tryBoard)) return (false, null);
             foreach (Point p in currentBoard.OpponentAtStoneNeighbour(move, c.Opposite()))
             {
-                if (!EyeHelper.FindEye(currentBoard, move, c) && !tryBoard.GetDiagonalNeighbours().Intersect(tryBoard.GetStoneNeighbours(p)).All(n => tryBoard[n] == c.Opposite())) 
+                if (!EyeHelper.FindEye(currentBoard, move, c) && !tryBoard.GetDiagonalNeighbours().Intersect(tryBoard.GetStoneNeighbours(p)).All(n => tryBoard[n] == c.Opposite()))
                     continue;
                 Group eyeGroup = currentBoard.GetGroupAt(p);
                 if (eyeGroup.Liberties.Count != 2) continue;

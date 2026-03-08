@@ -89,6 +89,19 @@ namespace Go
         }
 
         /// <summary>
+        /// Make ko fight from eye point.
+        /// </summary>
+        public static Boolean MakeKoFightFromEyePoint(Board board, Point eye, Content c)
+        {
+            List<Point> nstones = board.GetStoneNeighbours(eye);
+            if (nstones.Count(n => board[n] == c) != nstones.Count - 1) return false;
+            List<Point> eyeNeighbour = nstones.Where(n => board[n] == Content.Empty).ToList();
+            if (eyeNeighbour.Count == 1 && KoHelper.MakeKoFight(board, eyeNeighbour.First(), c))
+                return true;
+            return false;
+        }
+
+        /// <summary>
         /// Reverse ko for neutral point move.
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A80" />
         /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20230813" />

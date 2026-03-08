@@ -1180,6 +1180,11 @@
             Make ko fight.
             </summary>
         </member>
+        <member name="M:Go.KoHelper.MakeKoFightFromEyePoint(Go.Board,Go.Point,Go.Content)">
+            <summary>
+            Make ko fight from eye point.
+            </summary>
+        </member>
         <member name="M:Go.KoHelper.CheckReverseKoForNeutralPoint(Go.Board,Go.Group)">
             <summary>
             Reverse ko for neutral point move.
@@ -1674,8 +1679,10 @@
             Check for weak groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17250_3" />
             Check no diagonal groups <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260111_8" />
             Check multi-point group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245_2" />
-            Check for neighbour weak groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A37" />
             Check move liberties <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_4" />
+            Check move at diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A37" />
+            Check ko fight <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie1" />
+            Check for strong neighbour groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16456" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckWeakGroup(Go.Board,Go.Group)">
@@ -1882,6 +1889,7 @@
             <summary>
             Neutral point kill move only.
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A26_3" />
+            <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18410" />
             Check opponent at diagonal neighbour <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_A136" />
             Check middle area <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_A40" />
             Check one empty space left <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WindAndTime_Q29264" />
@@ -2068,6 +2076,7 @@
             <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221020_6" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" />
             Check connect and die at diagonal <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q17077" />
+            Check move at diagonal <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario4dan13" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckSideMoveAtTigerMouth(Go.GameTryMove)">
