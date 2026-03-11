@@ -59,12 +59,19 @@ namespace Go
         /// </summary>
         public static Boolean FindCoveredEye(Board board, Point eye, Content c)
         {
-            if (FindEye(board, eye, c) && IsCovered(board, eye, c))
-            {
-                if (!board.GetGroupsFromStoneNeighbours(eye, c.Opposite()).All(gr => gr.Liberties.Count == 1))
-                    return true;
-            }
-            return false;
+            if (!FindEye(board, eye, c)) return false;
+            if (!IsCovered(board, eye, c)) return false;
+            if (board.GetGroupsFromStoneNeighbours(eye, c.Opposite()).All(gr => gr.Liberties.Count == 1)) return false;
+            return true;
+        }
+
+        /// <summary>
+        /// Find covered eye at stone neighbour.
+        /// </summary>
+        public static List<Point> FindCoveredEyeAtStoneNeighbour(Board board)
+        {
+            Content c = board.MoveGroup.Content;
+            return board.GetStoneNeighbours().Where(n => EyeHelper.FindCoveredEye(board, n, c)).ToList();
         }
 
         /// <summary>

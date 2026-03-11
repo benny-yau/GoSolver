@@ -25,7 +25,7 @@ namespace Go
             if (tryBoard.CapturedList.Count == 0 && ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.MoveGroup, false))
             {
                 //check covered eye
-                if (!tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindCoveredEye(tryBoard, n, c)))
+                if (!EyeHelper.FindCoveredEyeAtStoneNeighbour(tryBoard).Any())
                     return false;
             }
 

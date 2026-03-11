@@ -85,7 +85,10 @@ namespace Go
             if (tryBoard[p] != Content.Empty) return false;
             Board board = tryBoard.MakeMoveOnNewBoard(p, c, true);
             if (board == null) return false;
-            return IsForwardOrReverseKoFight(board);
+            if (!IsForwardOrReverseKoFight(board)) return false;
+            if (ImmovableHelper.CheckConnectAndDie(board, board.MoveGroup, false))
+                return false;
+            return true;
         }
 
         /// <summary>
@@ -207,7 +210,7 @@ namespace Go
         public static Boolean NeutralPointDoubleKo(Board board)
         {
             Content c = board.MoveGroup.Content;
-            if (!board.GetStoneNeighbours().Any(n => EyeHelper.FindCoveredEye(board, n, c))) return false;
+            if (!EyeHelper.FindCoveredEyeAtStoneNeighbour(board).Any()) return false;
             return IsCoveredEyeDoubleKo(board);
         }
 
