@@ -16,7 +16,6 @@ namespace Go
         public ConfirmAliveResult ConfirmAlive { get; set; }
         public GameTryMove OpponentBestMove { get; set; }
 
-
         public bool IsEye { get; set; }
         public bool IsCoveredEyeMove { get; set; }
         public bool IsFillKoEyeMove { get; set; }
@@ -26,16 +25,14 @@ namespace Go
         public bool IsRedundantKo { get; set; }
         public bool IsRedundantTigerMouth { get; set; }
         public bool IsAtariRedundant { get; set; }
-        public bool MustHaveNeutralPoint { get; set; }
         public bool IsLeapMove { get; set; }
         public bool IsFillerMove { get; set; }
         public bool IsRedundantNeuralNetMove { get; set; }
 
-        private bool? atariResolved = null;
-
         /// <summary>
         /// Atari resolved.
         /// </summary>
+        private bool? atariResolved = null;
         public bool AtariResolved
         {
             get
@@ -148,6 +145,20 @@ namespace Go
             get
             {
                 return GroupHelper.IncreasedKillerGroups(TryGame.Board, CurrentGame.Board);
+            }
+        }
+
+        /// <summary>
+        /// Opponent move.
+        /// </summary>
+        GameTryMove opponentMove = null;
+        public GameTryMove OpponentMove
+        {
+            get
+            {
+                if (opponentMove == null)
+                    opponentMove = MakeMoveWithOpponentAtSamePoint();
+                return opponentMove;
             }
         }
 

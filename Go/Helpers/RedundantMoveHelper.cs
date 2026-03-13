@@ -81,8 +81,7 @@ namespace Go
                 return true;
 
             //find covered eye for opponent
-            GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
-            if (opponentMove != null && FindCoveredEyeMove(opponentMove, tryMove))
+            if (tryMove.OpponentMove != null && FindCoveredEyeMove(tryMove.OpponentMove, tryMove))
                 return true;
 
             return false;
@@ -366,18 +365,18 @@ namespace Go
                 return true;
 
             //test if opponent move at same point is suicidal
-            GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
+            GameTryMove opponentMove = tryMove.OpponentMove;
             if (opponentMove == null) return false;
-            Board opponentTryBoard = opponentMove.TryGame.Board;
-            if (opponentTryBoard.MoveGroupLiberties == 1)
+            Board opponentBoard = opponentMove.TryGame.Board;
+            if (opponentBoard.MoveGroupLiberties == 1)
             {
-                Boolean singlePoint = opponentTryBoard.MoveGroup.Points.Count == 1;
+                Boolean singlePoint = opponentBoard.MoveGroup.Points.Count == 1;
                 if (singlePoint && SinglePointSuicidalMove(opponentMove, tryMove))
                     return true;
                 if (!singlePoint && MultiPointOpponentSuicidalMove(tryMove))
                     return true;
             }
-            else if (opponentTryBoard.MoveGroupLiberties == 2)
+            else if (opponentBoard.MoveGroupLiberties == 2)
             {
                 if (OpponentSuicidalConnectAndDie(opponentMove, tryMove))
                     return true;
@@ -816,6 +815,10 @@ namespace Go
             if (CheckOnePointMoveDiagonalsInConnectAndDie(tryMove, captureBoard))
                 return true;
 
+            //check one point move without diagonals
+            if (CheckOnePointMoveWithoutDiagonalsInConnectAndDie(tryMove, captureBoard))
+                return true;
+
             return false;
         }
 
@@ -944,10 +947,48 @@ namespace Go
         /// <summary>
         /// Check one point move diagonals in connect and die.
         /// Check empty point at diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_3" />
-        /// Check covered eye <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />     
+        /// Check eye <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />     
         /// Check diagonal move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29264" />
         /// Check weak group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17241_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
+        /// </summary>
+        private static Boolean CheckOnePointMoveDiagonalsInConnectAndDie(GameTryMove tryMove, Board captureBoard)
+        {
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryMove.Move;
+            Content c = tryMove.MoveContent;
+            Point? d = LinkHelper.CheckPointsBetweenDiagonalsAtMove(tryBoard);
+            if (d == null) return false;
+
+            //check empty point at diagonal
+            if (tryBoard[d.Value] == Content.Empty && tryBoard.GetNeighbourGroups().Any(n => n.Liberties.Count <= 2))
+                return false;
+
+            //check eye
+            if (tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindEye(tryBoard, n, c)))
+                return false;
+
+            //check diagonal move
+            List<Point> dpoints = captureBoard.GetDiagonalNeighbours(move).Where(n => captureBoard[n] == Content.Empty).Intersect(captureBoard.GetStoneNeighbours(captureBoard.GetMoveLiberties(move).First())).ToList();
+            if (GameHelper.GetMoveBoards(captureBoard, dpoints, c).Any(b => !ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false)))
+                return false;
+
+            //check weak group
+            foreach (Group ngroup in captureBoard.GetGroupsFromStoneNeighbours(move, c))
+            {
+                if (ngroup.Liberties.Count != 2) continue;
+                foreach (Board b in GameHelper.GetMoveBoards(captureBoard, ngroup.Liberties, c, true))
+                {
+                    if (b.GetStoneAndDiagonalNeighbours().Any(n => !n.Equals(move) && !WallHelper.NoEyeForSurvival(captureBoard, n, c.Opposite())))
+                        return false;
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Check one point move diagonals in connect and die.
         /// Check capture move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31453_2" />
         /// Check no diagonal groups <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260111_8" />
         /// Check weak diagonal group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17250_3" />
@@ -957,113 +998,85 @@ namespace Go
         /// Check ko fight <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie1" />
         /// Check for strong neighbour groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16456" />
         /// </summary>
-        private static Boolean CheckOnePointMoveDiagonalsInConnectAndDie(GameTryMove tryMove, Board captureBoard)
+        private static Boolean CheckOnePointMoveWithoutDiagonalsInConnectAndDie(GameTryMove tryMove, Board captureBoard)
         {
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
             Point? d = LinkHelper.CheckPointsBetweenDiagonalsAtMove(tryBoard);
-            if (d != null)
+            if (d != null) return false;
+            if (LinkHelper.GetMoveDiagonals(tryBoard).Any()) return false;
+
+            //check capture move
+            List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours();
+            if (ngroups.Any(n => n.Liberties.Count <= 2)) return false;
+
+            if (captureBoard.MoveGroup.Points.Count == 1 && ngroups.All(n => n.Liberties.Count > 3 || n.Liberties.Count > n.Neighbours.Count * 0.5))
             {
-                //check empty point at diagonal
-                if (tryBoard[d.Value] == Content.Empty && tryBoard.GetNeighbourGroups().Any(n => n.Liberties.Count <= 2))
-                    return false;
-
-                //check covered eye
-                if (EyeHelper.FindCoveredEyeAtStoneNeighbour(tryBoard).Any())
-                    return false;
-
-                //check diagonal move
-                List<Point> dpoints = captureBoard.GetDiagonalNeighbours(move).Where(n => captureBoard[n] == Content.Empty).Intersect(captureBoard.GetStoneNeighbours(captureBoard.GetMoveLiberties(move).First())).ToList();
-                if (GameHelper.GetMoveBoards(captureBoard, dpoints, c).Any(b => !ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false)))
-                    return false;
-
-                //check weak group
-                foreach (Group ngroup in captureBoard.GetGroupsFromStoneNeighbours(move, c))
-                {
-                    if (ngroup.Liberties.Count != 2) continue;
-                    foreach (Board b in GameHelper.GetMoveBoards(captureBoard, ngroup.Liberties, c, true))
-                    {
-                        if (b.GetStoneAndDiagonalNeighbours().Any(n => !n.Equals(move) && !WallHelper.NoEyeForSurvival(captureBoard, n, c.Opposite())))
-                            return false;
-                    }
-                }
-                return true;
+                Point? v = LinkHelper.CheckPointsBetweenDiagonalsAtMove(captureBoard, Content.Empty);
+                if (v != null && captureBoard[v.Value] == Content.Empty)
+                    return true;
             }
-            else
+
+            //check for weak groups
+            foreach (Group ngroup in ngroups)
             {
-                if (LinkHelper.GetMoveDiagonals(tryBoard).Any()) return false;
-
-                //check capture move
-                List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours();
-                if (ngroups.Any(n => n.Liberties.Count <= 2)) return false;
-                if (captureBoard.MoveGroup.Points.Count == 1 && ngroups.All(n => n.Liberties.Count > n.Neighbours.Count * 0.5))
+                if (ngroup.Points.Count == 1)
                 {
-                    Point? v = LinkHelper.CheckPointsBetweenDiagonalsAtMove(captureBoard, Content.Empty);
-                    if (v != null && captureBoard[v.Value] == Content.Empty)
+                    //check no diagonal groups
+                    List<Group> diagonalGroups = LinkHelper.GetDiagonalGroups(tryBoard, ngroup);
+                    if (diagonalGroups.Count == 0) continue;
+                    //check weak diagonal group
+                    if (diagonalGroups.Any(s => !WallHelper.IsHostileGroup(tryBoard, s) && tryBoard.GetClosestPoints(move, c.Opposite()).Any(n => s.Equals(tryBoard.GetGroupAt(n))))) continue;
+                    return true;
+                }
+                else
+                {
+                    //check multi-point group
+                    if (!tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite())) continue;
+                    if (LinkHelper.GetGroupDiagonals(tryBoard, ngroup).Any(n => tryBoard[n.Move] == c)) continue;
+                    if (tryBoard.GetNeighbourGroups(ngroup).Count(s => s != tryBoard.MoveGroup) <= 1)
                         return true;
                 }
+            }
 
-                //check for weak groups
-                foreach (Group ngroup in ngroups)
-                {
-                    if (ngroup.Points.Count == 1)
-                    {
-                        //check no diagonal groups
-                        List<Group> diagonalGroups = LinkHelper.GetDiagonalGroups(tryBoard, ngroup);
-                        if (diagonalGroups.Count == 0) continue;
-                        //check weak diagonal group
-                        if (diagonalGroups.Any(s => !WallHelper.IsHostileGroup(tryBoard, s) && tryBoard.GetClosestPoints(move, c.Opposite()).Any(n => s.Equals(tryBoard.GetGroupAt(n))))) continue;
-                        return true;
-                    }
-                    else
-                    {
-                        //check multi-point group
-                        if (!tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite())) continue;
-                        if (LinkHelper.GetGroupDiagonals(tryBoard, ngroup).Any(n => tryBoard[n.Move] == c)) continue;
-                        if (tryBoard.GetNeighbourGroups(ngroup).Count(s => s != tryBoard.MoveGroup) <= 1)
-                            return true;
-                    }
-                }
+            //check move liberties
+            foreach (Point p in tryBoard.GetMoveLiberties())
+            {
+                List<Group> sgroups = tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Where(n => n != tryBoard.MoveGroup).ToList();
+                if (!sgroups.Any()) continue;
+                Board b = tryBoard.MakeMoveOnNewBoard(p, c.Opposite());
+                if (b == null) continue;
+                Group kgroup = GroupHelper.GetDirectKillerGroup(b, move, c.Opposite());
+                if (kgroup != null && !GroupHelper.IsSingleGroupWithinKillerGroup(b, tryBoard.MoveGroup))
+                    return false;
+            }
 
-                //check move liberties
-                foreach (Point p in tryBoard.GetMoveLiberties())
+            //check move at diagonal
+            foreach (Point p in tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] == Content.Empty))
+            {
+                if (!captureBoard.GetGroupsFromStoneNeighbours(p, c).Any(s => s.Liberties.Count <= 3)) continue;
+
+                Board b = tryBoard.MakeMoveOnNewBoard(p, c, true);
+                if (b == null) continue;
+                (Boolean connectAndDie, Board b2) = ImmovableHelper.ConnectAndDie(b, b.MoveGroup, false);
+                if (!connectAndDie) return false;
+
+                //check ko fight
+                if (b.MoveGroup.Liberties.Count == 2)
                 {
-                    List<Group> sgroups = tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Where(n => n != tryBoard.MoveGroup).ToList();
-                    if (!sgroups.Any()) continue;
-                    Board b = tryBoard.MakeMoveOnNewBoard(p, c.Opposite());
-                    if (b == null) continue;
-                    Group kgroup = GroupHelper.GetDirectKillerGroup(b, move, c.Opposite());
-                    if (kgroup != null && !GroupHelper.IsSingleGroupWithinKillerGroup(b, tryBoard.MoveGroup))
+                    Point q = b2.GetCurrentGroup(b.MoveGroup).Liberties.First();
+                    if (KoHelper.IsKoFight(b2, q, c).Item1 || KoHelper.MakeKoFightFromEyePoint(b2, q, c))
                         return false;
                 }
 
-                //check move at diagonal
-                foreach (Point p in tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] == Content.Empty))
-                {
-                    if (!captureBoard.GetGroupsFromStoneNeighbours(p, c).Any(s => s.Liberties.Count <= 3)) continue;
-
-                    Board b = tryBoard.MakeMoveOnNewBoard(p, c, true);
-                    if (b == null) continue;
-                    (Boolean connectAndDie, Board b2) = ImmovableHelper.ConnectAndDie(b, b.MoveGroup, false);
-                    if (!connectAndDie) return false;
-
-                    //check ko fight
-                    if (b.MoveGroup.Liberties.Count == 2)
-                    {
-                        Point q = b2.GetCurrentGroup(b.MoveGroup).Liberties.First();
-                        if (KoHelper.IsKoFight(b2, q, c).Item1 || KoHelper.MakeKoFightFromEyePoint(b2, q, c))
-                            return false;
-                    }
-
-                    //check for strong neighbour groups
-                    if (WallHelper.StrongNeighbourGroups(b2, b.MoveGroup))
-                        continue;
-                    return false;
-                }
-                return true;
+                //check for strong neighbour groups
+                if (WallHelper.StrongNeighbourGroups(b2, b.MoveGroup))
+                    continue;
+                return false;
             }
+            return true;
         }
 
         /// <summary>
@@ -1467,7 +1480,7 @@ namespace Go
                     if (GroupHelper.GetDirectKillerGroup(tryBoard, q, c.Opposite()) == null) continue;
                     if (ImmovableHelper.IsSuicidalMoveForBothPlayers(b, q))
                     {
-                        if (b.GetNeighbourGroups(tryBoard.MoveGroup).All(n => LinkHelper.FindDiagonalCut(b, n).Item1 == null))
+                        if (b.GetNeighbourGroups(tryBoard.MoveGroup).All(n => LinkHelper.FindDiagonalCut(b, n, true).Item1 == null))
                             continue;
                         return false;
                     }
@@ -1615,10 +1628,8 @@ namespace Go
 
                 //check real eye at diagonal without opposite content
                 if (!WallHelper.StrongGroups(capturedBoard, capturedBoard.GetGroupsFromStoneNeighbours(move, c))) return false;
-                foreach (Point d in capturedBoard.GetDiagonalNeighbours(move))
+                foreach (Point d in EyeHelper.FindRealEyeAtDiagonal(capturedBoard, move, c.Opposite()))
                 {
-                    if (capturedBoard[d] != Content.Empty) continue;
-                    if (!EyeHelper.FindRealEyeWithinEmptySpace(capturedBoard, d, c.Opposite())) continue;
                     if (!GroupHelper.GetDirectKillerGroup(capturedBoard, d, c.Opposite()).Points.Any(p => capturedBoard[p] == c))
                         return true;
                 }
@@ -1749,9 +1760,8 @@ namespace Go
         {
             if (!tryMove.IsNegligible)
                 return false;
-            GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
-            if (opponentMove != null)
-                return RedundantSurvivalLeapMove(opponentMove, tryMove);
+            if (tryMove.OpponentMove != null)
+                return RedundantSurvivalLeapMove(tryMove.OpponentMove, tryMove);
             return false;
         }
 
@@ -1898,7 +1908,7 @@ namespace Go
             if (!tryMove.IsNegligible && EssentialAtariAtCoveredPoint(tryMove))
                 return false;
             //make move from perspective of survival
-            GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
+            GameTryMove opponentMove = tryMove.OpponentMove;
             if (opponentMove == null) return false;
 
             //check neutral point
@@ -2152,9 +2162,8 @@ namespace Go
             Group group = board.GetGroupsFromStoneNeighbours(eye, c.Opposite()).First();
             foreach (Group dgroup in LinkHelper.GetAllDiagonalGroups(board, group))
             {
-                (_, List<Point> diagonals) = LinkHelper.FindDiagonalCut(board, dgroup);
+                (_, List<Point> diagonals) = LinkHelper.FindDiagonalCut(board, dgroup, true);
                 if (diagonals == null) continue;
-                if (diagonals.Any(n => ImmovableHelper.CheckConnectAndDie(board, board.GetGroupAt(n), false))) continue;
                 return true;
             }
             return false;
@@ -2436,7 +2445,7 @@ namespace Go
             {
                 List<Point> nliberties = null;
                 //find neighbour groups at diagonal cut
-                (_, List<Point> diagonals) = LinkHelper.FindDiagonalCut(tryBoard, targetGroup);
+                (_, List<Point> diagonals) = LinkHelper.FindDiagonalCut(tryBoard, targetGroup, true);
                 if (diagonals != null)
                 {
                     //get the group other than neutral point group
@@ -2503,7 +2512,7 @@ namespace Go
 
                     //check diagonal cut
                     Board b = neutralMove.TryGame.Board;
-                    if (b.GetGroupsFromStoneNeighbours().Any(n => LinkHelper.FindDiagonalCut(b, n).Item1 != null))
+                    if (b.GetGroupsFromStoneNeighbours().Any(n => LinkHelper.FindDiagonalCut(b, n, true).Item1 != null))
                         return neutralMove;
                 }
             }
@@ -2523,8 +2532,7 @@ namespace Go
                 return true;
 
             //find tiger mouth for opponent
-            GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
-            if (opponentMove != null && RedundantTigerMouth(opponentMove, tryMove))
+            if (tryMove.OpponentMove != null && RedundantTigerMouth(tryMove.OpponentMove, tryMove))
                 return true;
             return false;
         }
@@ -2632,7 +2640,7 @@ namespace Go
             if (tryBoard.PointWithinMiddleArea())
                 return true;
             //check diagonal cut
-            if (tryBoard.GetStoneNeighbours(diagonal).Any(n => tryBoard[n] == c && LinkHelper.FindDiagonalCut(tryBoard, tryBoard.GetGroupAt(n)).Item1 != null))
+            if (tryBoard.GetStoneNeighbours(diagonal).Any(n => tryBoard[n] == c && LinkHelper.FindDiagonalCut(tryBoard, tryBoard.GetGroupAt(n), true).Item1 != null))
                 return true;
             return false;
         }
@@ -2660,7 +2668,7 @@ namespace Go
             if (CheckWeakGroupAtTigerMouth(tryBoard, capturedBoard))
                 return false;
             //check side move
-            if (CheckSideMoveAtTigerMouth(tryMove))
+            if (CheckSideMoveAtTigerMouth(tryMove, capturedBoard))
                 return false;
             //check both alive for opponent move
             if (opponentMove != null && BothAliveHelper.CheckForBothAliveAtMove(opponentMove.TryGame.Board))
@@ -2702,11 +2710,8 @@ namespace Go
                 return false;
 
             //check for real eye at diagonal
-            foreach (Point p in capturedBoard.GetDiagonalNeighbours(move))
+            foreach (Point p in EyeHelper.FindRealEyeAtDiagonal(capturedBoard, move, c.Opposite()))
             {
-                if (capturedBoard[p] == c.Opposite()) continue;
-                if (!EyeHelper.FindRealEyeWithinEmptySpace(capturedBoard, p, c.Opposite()))
-                    continue;
                 //check connect and die at diagonal
                 if (tryBoard.AtariTargets.Any() && LinkHelper.GetDiagonalGroups(tryBoard).Select(n => currentBoard.GetCurrentGroup(n)).Any(n => n.Points.Count > 1 && n.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(currentBoard, n)))
                     continue;
@@ -2714,8 +2719,7 @@ namespace Go
             }
 
             //check move at diagonal
-            List<Point> diagonalPoints = ImmovableHelper.GetDiagonalsOfTigerMouth(tryBoard, move, c.Opposite());
-            foreach (Point d in diagonalPoints)
+            foreach (Point d in ImmovableHelper.GetDiagonalsOfTigerMouth(tryBoard, move, c.Opposite()))
             {
                 if (tryBoard[d] != Content.Empty) continue;
                 if (GroupHelper.CheckKillerGroupPoints(tryBoard, move, c.Opposite()) != null) continue;
@@ -2735,13 +2739,27 @@ namespace Go
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221220_7" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A28" />
         /// </summary>
-        private static Boolean CheckSideMoveAtTigerMouth(GameTryMove tryMove)
+        private static Boolean CheckSideMoveAtTigerMouth(GameTryMove tryMove, Board capturedBoard)
         {
             Point move = tryMove.Move;
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
             if (tryBoard.PointWithinMiddleArea()) return false;
+            //check for real eye at diagonal
+            if (EyeHelper.FindRealEyeAtDiagonal(capturedBoard, move, c.Opposite()).Any())
+                return false;
+
+            //check move at diagonal
+            foreach (Point s in ImmovableHelper.GetDiagonalsOfTigerMouth(tryBoard, move, c.Opposite()))
+            {
+                if (tryBoard[s] != Content.Empty) continue;
+                if (GroupHelper.CheckKillerGroupPoints(tryBoard, move, c.Opposite()) != null) continue;
+                Board b = tryBoard.MakeMoveOnNewBoard(s, c.Opposite());
+                if (b != null && b.GetGroupsFromStoneNeighbours(move, c).All(n => n.Liberties.Count > 3))
+                    return false;
+            }
+
             Point? d = LinkHelper.CheckPointsBetweenDiagonalsAtMove(tryBoard);
             if (d == null)
             {
@@ -2886,8 +2904,9 @@ namespace Go
                 return false;
 
             //make opponent move
-            if (opponentMove == null) opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
+            if (opponentMove == null) opponentMove = tryMove.OpponentMove;
             if (opponentMove == null) return false;
+
             //check real eye at all diagonals
             Board opponentBoard = opponentMove.TryGame.Board;
             if (!diagonals.All(eye => EyeHelper.FindRealEyeWithinEmptySpace(opponentBoard, eye, c)))
@@ -2910,9 +2929,8 @@ namespace Go
         {
             if (!tryMove.IsNegligible)
                 return false;
-            GameTryMove opponentMove = tryMove.MakeMoveWithOpponentAtSamePoint();
-            if (opponentMove != null)
-                return SurvivalEyeDiagonalMove(opponentMove, tryMove);
+            if (tryMove.OpponentMove != null)
+                return SurvivalEyeDiagonalMove(tryMove.OpponentMove, tryMove);
             return false;
         }
         #endregion

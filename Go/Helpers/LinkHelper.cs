@@ -568,7 +568,7 @@ namespace Go
         /// <summary>
         /// Find diagonal cut.
         /// </summary>
-        public static (Point?, List<Point>) FindDiagonalCut(Board board, Group group = null)
+        public static (Point?, List<Point>) FindDiagonalCut(Board board, Group group = null, Boolean checkConnectAndDie = false)
         {
             if (group == null) group = board.MoveGroup;
             Content c = group.Content;
@@ -577,8 +577,16 @@ namespace Go
                 if (ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt(p.Move))) continue;
                 if (ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt((Point)p.CheckMove))) continue;
                 List<Point> diagonals = PointsBetweenDiagonals(p);
-                if (diagonals.All(d => board[d] == c.Opposite() && !ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt(d))))
-                    return (p.Move, diagonals);
+                if (checkConnectAndDie)
+                {
+                    if (diagonals.All(d => board[d] == c.Opposite() && !ImmovableHelper.CheckConnectAndDie(board, board.GetGroupAt(d), false)))
+                        return (p.Move, diagonals);
+                }
+                else
+                {
+                    if (diagonals.All(d => board[d] == c.Opposite() && !ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt(d))))
+                        return (p.Move, diagonals);
+                }
             }
             return (null, null);
         }

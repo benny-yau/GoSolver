@@ -172,7 +172,7 @@ namespace Go
             if (board.GetGroupsFromPoints(contentPoints).Any(n => n.Liberties.Count == 1)) return false;
 
             //check complex seki without diagonal cut
-            (_, List<Point> diagonals) = LinkHelper.FindDiagonalCut(board, killerGroup);
+            (_, List<Point> diagonals) = LinkHelper.FindDiagonalCut(board, killerGroup, true);
             if (diagonals == null) return IsComplexSeki(board, killerGroups, ngroups);
 
             //check complex seki with diagonal cut

@@ -136,7 +136,7 @@
             Game try move.
             </summary>
         </member>
-        <member name="P:Go.GameTryMove.AtariResolved">
+        <member name="F:Go.GameTryMove.atariResolved">
             <summary>
             Atari resolved.
             </summary>
@@ -169,6 +169,11 @@
         <member name="P:Go.GameTryMove.IncreasedKillerGroups">
             <summary>
             Increased count of killer groups.
+            </summary>
+        </member>
+        <member name="F:Go.GameTryMove.opponentMove">
+            <summary>
+            Opponent move.
             </summary>
         </member>
         <member name="M:Go.GameTryMove.MakeMoveWithOpponentAtSamePoint(System.Boolean)">
@@ -432,6 +437,11 @@
         <member name="M:Go.EyeHelper.CheckCaptureMoveLiberty(Go.Board,Go.Board)">
             <summary>
             Check capture move liberty.
+            </summary>
+        </member>
+        <member name="M:Go.EyeHelper.FindRealEyeAtDiagonal(Go.Board,Go.Point,Go.Content)">
+            <summary>
+            Find real eye at diagonal.
             </summary>
         </member>
         <member name="M:Go.EyeHelper.FindRealEyeAtDiagonal(System.Collections.Generic.List{Go.Point},Go.Board,Go.Content)">
@@ -1380,7 +1390,7 @@
             Check points between diagonals at move.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.FindDiagonalCut(Go.Board,Go.Group)">
+        <member name="M:Go.LinkHelper.FindDiagonalCut(Go.Board,Go.Group,System.Boolean)">
             <summary>
             Find diagonal cut.
             </summary>
@@ -1682,10 +1692,15 @@
             <summary>
             Check one point move diagonals in connect and die.
             Check empty point at diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_3" />
-            Check covered eye <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />     
+            Check eye <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />     
             Check diagonal move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29264" />
             Check weak group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17241_2" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CheckOnePointMoveWithoutDiagonalsInConnectAndDie(Go.GameTryMove,Go.Board)">
+            <summary>
+            Check one point move diagonals in connect and die.
             Check capture move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31453_2" />
             Check no diagonal groups <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260111_8" />
             Check weak diagonal group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17250_3" />
@@ -2091,7 +2106,7 @@
             Check move at diagonal <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario4dan13" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.CheckSideMoveAtTigerMouth(Go.GameTryMove)">
+        <member name="M:Go.RedundantMoveHelper.CheckSideMoveAtTigerMouth(Go.GameTryMove,Go.Board)">
             <summary>
             Check side move at tiger mouth.
             No opponent in middle area <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A84" />

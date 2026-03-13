@@ -410,12 +410,11 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario2dan21_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
         /// </summary>
-        public static List<Point> CheckDiagonalForRealEye(Board tryBoard, Board captureBoard)
+        public static IEnumerable<Point> CheckDiagonalForRealEye(Board tryBoard, Board captureBoard)
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            List<Point> realEye = LinkHelper.GetGroupDiagonals(tryBoard).Select(s => s.Move).Where(n => GroupHelper.GetKillerGroupFromCache(captureBoard, n, c.Opposite()) != GroupHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite()) && EyeHelper.FindRealEyeOfAnyKillerGroup(captureBoard, n, c.Opposite())).ToList();
-            return realEye;
+            return LinkHelper.GetGroupDiagonals(tryBoard).Select(s => s.Move).Where(n => GroupHelper.GetKillerGroupFromCache(captureBoard, n, c.Opposite()) != GroupHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite()) && EyeHelper.FindRealEyeOfAnyKillerGroup(captureBoard, n, c.Opposite()));
         }
 
         /// <summary>
@@ -429,6 +428,19 @@ namespace Go
             if (liberties.Any(n => !WallHelper.NoEyeForSurvival(captureBoard, n, c.Opposite()) && !EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, n, c.Opposite())))
                 return true;
             return false;
+        }
+
+        /// <summary>
+        /// Find real eye at diagonal.
+        /// </summary>
+        public static IEnumerable<Point> FindRealEyeAtDiagonal(Board board, Point p, Content c)
+        {
+            foreach (Point d in board.GetDiagonalNeighbours(p))
+            {
+                if (board[d] == c) continue;
+                if (EyeHelper.FindRealEyeWithinEmptySpace(board, d, c))
+                    yield return d;
+            }
         }
 
         /// <summary>
