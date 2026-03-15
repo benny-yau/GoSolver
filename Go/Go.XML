@@ -343,6 +343,11 @@
             Is covered.
             </summary>
         </member>
+        <member name="M:Go.EyeHelper.CoveredPointWithinTwoPointGroup(Go.Board,Go.Point,Go.Content)">
+            <summary>
+            Covered point within two point group.
+            </summary>
+        </member>
         <member name="M:Go.EyeHelper.FindCoveredEye(Go.Board,Go.Point,Go.Content)">
             <summary>
             Find covered eye.
@@ -351,11 +356,6 @@
         <member name="M:Go.EyeHelper.FindCoveredEyeAtStoneNeighbour(Go.Board)">
             <summary>
             Find covered eye at stone neighbour.
-            </summary>
-        </member>
-        <member name="M:Go.EyeHelper.FindCoveredEyeAfterCapture(Go.Board,Go.Group)">
-            <summary>
-            Find covered eye within empty space after capture.
             </summary>
         </member>
         <member name="M:Go.EyeHelper.FindNonSemiSolidEye(Go.Board,Go.Point,Go.Content)">
@@ -574,6 +574,11 @@
         <member name="M:Go.GroupHelper.CheckKillerGroupPoints(Go.Board,Go.Point,Go.Content,System.Int32,System.Boolean)">
             <summary>
             Check killer group points.
+            </summary>
+        </member>
+        <member name="M:Go.GroupHelper.GetKillerGroupsFromPoints(System.Collections.Generic.IEnumerable{Go.Point},Go.Board,Go.Content)">
+            <summary>
+            Get killer groups from points.
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.FindTigerMouth(Go.Board,Go.Point,Go.Content)">
@@ -1494,9 +1499,9 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A18" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.EyeDoubleAtari(Go.GameTryMove)">
+        <member name="M:Go.RedundantMoveHelper.EyeDoubleAtariException(Go.GameTryMove)">
             <summary>
-            Eye double atari.
+            Eye double atari exception.
             <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20250326_8" /> 
             </summary>
         </member>
@@ -2100,9 +2105,10 @@
             Check atari move <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q29277" />
             Check for two empty diagonals <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q17250" />
             Check for real eye at diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Phenomena_B6" />
-            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221020_6" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" />
             Check connect and die at diagonal <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q17077" />
+            Check for immovable point at diagonal <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A171_101Weiqi" />
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221020_6" />
             Check move at diagonal <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario4dan13" />
             </summary>
         </member>
@@ -2143,6 +2149,7 @@
         <member name="M:Go.RedundantMoveHelper.SurvivalEyeDiagonalMove(Go.GameTryMove,Go.GameTryMove)">
             <summary>
             Survival eye diagonal move.
+            <see cref="!:UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_x" />
             Check real eye at all diagonals <see cref="!:UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_SiHuoDaQuan_CornerA29_2" />
             <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B31" />
             Check link to groups <see cref="!:UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_WuQingYuan_Q31154" />

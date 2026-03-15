@@ -28,7 +28,7 @@ namespace Go
                 //check for killer formations
                 if (tryBoard.MoveGroupLiberties == 1 && KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard))
                     return false;
-                if (EyeDoubleAtari(tryMove))
+                if (EyeDoubleAtariException(tryMove))
                     return false;
             }
             else
@@ -44,10 +44,10 @@ namespace Go
         }
 
         /// <summary>
-        /// Eye double atari.
+        /// Eye double atari exception.
         /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20250326_8" /> 
         /// </summary>
-        public static Boolean EyeDoubleAtari(GameTryMove tryMove)
+        public static Boolean EyeDoubleAtariException(GameTryMove tryMove)
         {
             Point move = tryMove.Move;
             Board currentBoard = tryMove.CurrentGame.Board;
@@ -113,11 +113,11 @@ namespace Go
                 b[eyePoint] = c.Opposite();
                 eyeGroup = b.GetGroupAt(eyePoint);
             }
-            else if (tryBoard.CapturedList.Count == 1 && tryBoard.CapturedPoints.Count() == 2 && EyeHelper.FindCoveredEyeAfterCapture(tryBoard, tryBoard.CapturedList.First()))
+            else if (tryBoard.CapturedList.Count == 1 && tryBoard.CapturedPoints.Count() == 2)
             {
                 //two-point covered eye
                 eyePoint = tryBoard.CapturedPoints.First(q => tryBoard.GetStoneNeighbours().Contains(q));
-                if (!EyeHelper.IsCovered(tryBoard, eyePoint, c)) return false;
+                if (!EyeHelper.CoveredPointWithinTwoPointGroup(tryBoard, eyePoint, c)) return false;
                 Boolean unEscapable = tryBoard.MoveGroup.Liberties.Any(n => tryBoard.GameInfo.IsMovablePoint[n.x, n.y] == false);
                 if (unEscapable)
                     eyeGroup = tryBoard.CapturedList.First();
@@ -253,10 +253,10 @@ namespace Go
                 return false;
 
             //double atari
-            if (eyeGroups.Count(n => n.Liberties.Count == 1) >= 2)
+            if (AtariHelper.IsDoubleAtari(currentBoard, move, c.Opposite()))
                 return false;
 
-            if (EyeDoubleAtari(tryMove))
+            if (EyeDoubleAtariException(tryMove))
                 return false;
 
             //check both alive
@@ -1919,10 +1919,12 @@ namespace Go
                 if (MustHaveNeutralPoint(tryMove, opponentMove))
                     return false;
             }
-
-            //kill move only
-            if (NeutralPointKillMoveOnly(tryMove))
-                return true;
+            else
+            {
+                //kill move only
+                if (NeutralPointKillMoveOnly(tryMove))
+                    return true;
+            }
             return isNeutralPoint;
         }
 
@@ -1959,7 +1961,7 @@ namespace Go
             {
                 //check opponent at stone neighbour
                 List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours();
-                if (ngroups.Any())
+                if (ngroups.Any(n => n.Liberties.Count <= n.Neighbours.Count * 0.5))
                 {
                     Boolean rc = (ngroups.Count == 1 && ngroups.First().Points.Count == 1);
                     if (!rc)
@@ -2242,7 +2244,7 @@ namespace Go
             Point move = tryBoard.Move.Value;
             Content c = tryMove.MoveContent;
             HashSet<Point> liberties = tryBoard.GetLibertiesOfGroups(tryBoard.GetGroupsFromStoneNeighbours());
-            List<Group> kgroups = liberties.Select(n => GroupHelper.GetDirectKillerGroup(tryBoard, n, c.Opposite())).Where(n => n != null).Distinct().ToList();
+            List<Group> kgroups = GroupHelper.GetKillerGroupsFromPoints(liberties, tryBoard, c.Opposite());
             foreach (Group kgroup in kgroups)
             {
                 List<Point> contentPoints = kgroup.Points.Where(n => tryBoard[n] == c).ToList();
@@ -2568,6 +2570,8 @@ namespace Go
             //check strong groups
             if (tryBoard.GetNeighbourGroups().All(n => n.Liberties.Count > 2) && GroupHelper.CheckKillerGroupPoints(tryBoard, move, c.Opposite()) == null)
                 return true;
+            if (capturedBoard.GetGroupsFromStoneNeighbours(move, c).All(n => n.Liberties.Count > 3) && !EyeHelper.CoveredPointWithinTwoPointGroup(tryBoard, move, c.Opposite()))
+                return true;
 
             //find immovable point at diagonal
             List<Point> diagonalPoints = ImmovableHelper.GetDiagonalsOfTigerMouth(tryBoard, move, c.Opposite());
@@ -2684,9 +2688,10 @@ namespace Go
         /// Check atari move <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q29277" />
         /// Check for two empty diagonals <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q17250" />
         /// Check for real eye at diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Phenomena_B6" />
-        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20221020_6" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" />
         /// Check connect and die at diagonal <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q17077" />
+        /// Check for immovable point at diagonal <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A171_101Weiqi" />
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20221020_6" />
         /// Check move at diagonal <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario4dan13" />
         /// </summary>
         private static Boolean CheckThreeOpponentGroupsAtTigerMouth(GameTryMove tryMove, Board capturedBoard)
@@ -2714,6 +2719,18 @@ namespace Go
             {
                 //check connect and die at diagonal
                 if (tryBoard.AtariTargets.Any() && LinkHelper.GetDiagonalGroups(tryBoard).Select(n => currentBoard.GetCurrentGroup(n)).Any(n => n.Points.Count > 1 && n.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(currentBoard, n)))
+                    continue;
+                return false;
+            }
+
+            //check for immovable point at diagonal
+            foreach (Point p in capturedBoard.GetDiagonalNeighbours(move))
+            {
+                if (capturedBoard[p] == c.Opposite()) continue;
+                if (!ImmovableHelper.IsImmovablePoint(capturedBoard, p, c.Opposite())) continue;
+                if (tryBoard.AtariTargets.Any()) continue;
+                List<Group> kgroups = GroupHelper.GetKillerGroupsFromPoints(capturedBoard.GetMoveLiberties(), capturedBoard, c.Opposite());
+                if (kgroups.Any(n => n.Points.Any(q => capturedBoard[q] == c)))
                     continue;
                 return false;
             }
@@ -2793,7 +2810,7 @@ namespace Go
             if (!EyeHelper.IsCovered(tryBoard, move, c.Opposite())) return false;
 
             List<Point> npoints = capturedBoard.GetStoneNeighbours().Where(n => !n.Equals(move) && capturedBoard[n] != c.Opposite()).ToList();
-            List<Group> killerGroups = npoints.Select(n => GroupHelper.GetDirectKillerGroup(capturedBoard, n, c.Opposite())).Where(s => s != null).Distinct().ToList();
+            List<Group> killerGroups = GroupHelper.GetKillerGroupsFromPoints(npoints, capturedBoard, c.Opposite());
 
             //check diagonal at move
             if (opponentMove == null && KillerFormationHelper.TigerMouthAtDiagonal(tryBoard))
@@ -2879,18 +2896,18 @@ namespace Go
         #region redundant eye diagonal
         /// <summary>
         /// Survival eye diagonal move.
+        /// <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_x" />
         /// Check real eye at all diagonals <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_SiHuoDaQuan_CornerA29_2" />
         /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B31" />
         /// Check link to groups <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_WuQingYuan_Q31154" />
         /// </summary>
         public static Boolean SurvivalEyeDiagonalMove(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
-            if (!tryMove.IsNegligible)
-                return false;
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
             Content c = GameHelper.GetContentForSurviveOrKill(tryBoard.GameInfo, SurviveOrKill.Survive);
+            if (!tryMove.IsNegligible) return false;
 
             //get diagonals of killer groups
             List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(q => tryBoard[q] != c).ToList();

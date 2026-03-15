@@ -55,6 +55,16 @@ namespace Go
         }
 
         /// <summary>
+        /// Covered point within two point group.
+        /// </summary>
+        public static Boolean CoveredPointWithinTwoPointGroup(Board board, Point move, Content c)
+        {
+            if (IsCovered(board, move, c) && GroupHelper.CheckKillerGroupPoints(board, move, c) != null)
+                return true;
+            return false;
+        }
+
+        /// <summary>
         /// Find covered eye.
         /// </summary>
         public static Boolean FindCoveredEye(Board board, Point eye, Content c)
@@ -72,16 +82,6 @@ namespace Go
         {
             Content c = board.MoveGroup.Content;
             return board.GetStoneNeighbours().Where(n => EyeHelper.FindCoveredEye(board, n, c)).ToList();
-        }
-
-        /// <summary>
-        /// Find covered eye within empty space after capture.
-        /// </summary>
-        public static Boolean FindCoveredEyeAfterCapture(Board capturedBoard, Group capturedGroup)
-        {
-            int capturedCount = capturedGroup.Points.Count;
-            if (capturedCount != 1 && capturedCount != 2) return false;
-            return EyeHelper.FindRealEyeWithinEmptySpace(capturedBoard, capturedGroup, EyeType.CoveredEye);
         }
 
         /// <summary>
@@ -452,7 +452,7 @@ namespace Go
         /// </summary>
         public static Boolean FindRealEyeAtDiagonal(List<Point> diagonals, Board b, Content c)
         {
-            List<Group> killerGroups = diagonals.Select(d => GroupHelper.GetDirectKillerGroup(b, d, c)).Where(n => n != null).Distinct().ToList();
+            List<Group> killerGroups = GroupHelper.GetKillerGroupsFromPoints(diagonals, b, c);
             return killerGroups.All(n => EyeHelper.FindRealEyeOfAnyKillerGroup(b, n));
         }
         #endregion

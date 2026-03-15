@@ -44,8 +44,7 @@ namespace Go
         public static Boolean CheckForBothAliveAtMove(Board board)
         {
             Content c = board.MoveGroup.Content;
-            List<Group> killerGroups = board.GetStoneAndDiagonalNeighbours().Where(n => board[n] != c).Select(n => GroupHelper.GetDirectKillerGroup(board, n, c)).Distinct().ToList();
-
+            List<Group> killerGroups = GroupHelper.GetKillerGroupsFromPoints(board.GetStoneAndDiagonalNeighbours(), board, c);
             if (killerGroups.Any(n => n != null && CheckForBothAlive(board, n)))
                 return true;
             return false;

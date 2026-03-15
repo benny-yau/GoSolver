@@ -184,5 +184,14 @@ namespace Go
                 return killerGroup;
             return null;
         }
+
+        /// <summary>
+        /// Get killer groups from points.
+        /// </summary>
+        public static List<Group> GetKillerGroupsFromPoints(IEnumerable<Point> points, Board board, Content c)
+        {
+            List<Group> killerGroups = points.Where(n => board[n] != c).Select(d => GroupHelper.GetDirectKillerGroup(board, d, c)).Where(n => n != null).Distinct().ToList();
+            return killerGroups;
+        }
     }
 }
