@@ -89,8 +89,6 @@ namespace Go
         /// Find covered eye move.
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" /> 
         /// Two-point covered eye <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_A68" /> 
-        /// Check eye for survival <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q29277" /> 
-        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_B25" /> 
         /// Check kill opponent <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A34" />
         /// Check possible links <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
@@ -100,12 +98,14 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Board currentBoard = tryMove.CurrentGame.Board;
             Content c = tryMove.MoveContent;
+            if (tryBoard.CapturedList.Count == 0) return false;
             if (tryMove.AtariResolved) return false;
             Group eyeGroup = null;
             Point eyePoint = new Point();
             List<Point> eyePoints = EyeHelper.FindCoveredEyeAtStoneNeighbour(tryBoard);
             if (eyePoints.Count == 1)
             {
+                if (KoHelper.IsKoFight(tryBoard)) return false;
                 //one-point covered eye
                 eyePoint = eyePoints.First();
                 eyeGroup = new Group(c.Opposite());
@@ -797,7 +797,7 @@ namespace Go
             Content c = tryMove.MoveContent;
 
             if (tryBoard.MoveGroup.Points.Count != 1) return false;
-                
+
             //check move next to covered point
             if (tryBoard.GetMoveLiberties().Any(p => EyeHelper.IsCovered(tryBoard, p, c.Opposite())) && GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard) && !tryBoard.GetNeighbourGroups().Any(n => n.Liberties.Count <= 2))
                 return true;
@@ -3061,25 +3061,24 @@ namespace Go
         /// <summary>
         /// Redundant non suicidal move.
         /// <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A23" /> 
+        /// Check neighbour groups <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q30064" />
         /// </summary>
         public static Boolean RedundantNonSuicidalMove(GameTryMove tryMove)
         {
-            Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
             Content c = tryBoard.MoveGroup.Content;
             if (tryBoard.MoveGroup.Points.Count != 1 || tryBoard.MoveGroup.Liberties.Count != 3) return false;
             if (LinkHelper.GetDiagonalGroups(tryBoard).Any()) return false;
-
             if (KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard)) return false;
-            if (GroupHelper.GetKillerGroupsFromPoints(tryBoard.GetMoveLiberties(), tryBoard, c).Any()) return false;
 
             //check neighbour groups
-            List<Point> npoints = tryBoard.GetClosestPoints(tryMove.Move, c.Opposite(), 1);
+            List<Point> npoints = tryBoard.GetClosestPoints(move, c.Opposite(), 1);
             if (tryBoard.GetGroupsFromPoints(npoints).Count != 1) return false;
 
             //check liberties of neighbour groups
-            if (!tryBoard.GetGroupsFromStoneNeighbours().All(n => n.Points.Count > 1 && n.Liberties.Count > n.Neighbours.Count * 0.5, true)) return false;
+            if (!tryBoard.GetGroupsFromStoneNeighbours().All(n => n.Points.Count > 1 && n.Liberties.Count > n.Neighbours.Count * 0.5, true))
+                return false;
 
             return true;
         }
