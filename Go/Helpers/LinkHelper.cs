@@ -34,12 +34,12 @@ namespace Go
             HashSet<Group> ngroups = currentBoard.GetGroupsFromPoints(npoints);
 
             //check captured groups
-            if (tryBoard.CapturedList.Any())
+            if (tryBoard.CapturedList.Any(n => !ImmovableHelper.UnescapableGroup(currentBoard, n).Item1))
             {
                 if (tryBoard.CapturedList.Count > 1)
                     return true;
                 Group capturedGroup = tryBoard.CapturedList.First();
-                if (currentBoard.GetNeighbourGroups(capturedGroup).Count > 1 && !ImmovableHelper.UnescapableGroup(currentBoard, capturedGroup).Item1)
+                if (currentBoard.GetNeighbourGroups(capturedGroup).Count > 1)
                     return true;
             }
 

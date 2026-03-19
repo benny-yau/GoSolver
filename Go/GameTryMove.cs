@@ -26,6 +26,7 @@ namespace Go
         public bool IsRedundantTigerMouth { get; set; }
         public bool IsAtariRedundant { get; set; }
         public bool IsLeapMove { get; set; }
+        public bool IsNonSuicidal { get; set; }
         public bool IsFillerMove { get; set; }
         public bool IsRedundantNeuralNetMove { get; set; }
 
@@ -185,7 +186,7 @@ namespace Go
         {
             get
             {
-                return IsEye || IsCoveredEyeMove || IsFillKoEyeMove || IsSuicidal || IsNeutralPoint || IsDiagonalEyeMove || IsRedundantKo || IsRedundantTigerMouth || IsAtariRedundant || IsLeapMove || IsFillerMove || IsRedundantNeuralNetMove;
+                return IsEye || IsCoveredEyeMove || IsFillKoEyeMove || IsSuicidal || IsNeutralPoint || IsDiagonalEyeMove || IsRedundantKo || IsRedundantTigerMouth || IsAtariRedundant || IsLeapMove || IsNonSuicidal || IsFillerMove || IsRedundantNeuralNetMove;
             }
         }
 

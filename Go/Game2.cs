@@ -206,6 +206,9 @@ namespace Go
             tryMove.IsLeapMove = RedundantMoveHelper.RedundantSurvivalLeapMove(tryMove);
             if (tryMove.IsLeapMove)
                 return;
+            tryMove.IsNonSuicidal = RedundantMoveHelper.RedundantNonSuicidalMove(tryMove);
+            if (tryMove.IsNonSuicidal)
+                return;
             tryMove.IsFillerMove = RedundantMoveHelper.RedundantFillerMove(tryMove);
             if (tryMove.IsFillerMove)
                 return;
@@ -251,6 +254,9 @@ namespace Go
                 return;
             tryMove.IsLeapMove = RedundantMoveHelper.RedundantKillLeapMove(tryMove);
             if (tryMove.IsLeapMove)
+                return;
+            tryMove.IsNonSuicidal = RedundantMoveHelper.RedundantNonSuicidalMove(tryMove);
+            if (tryMove.IsNonSuicidal)
                 return;
             tryMove.IsFillerMove = RedundantMoveHelper.RedundantFillerMove(tryMove);
             if (tryMove.IsFillerMove)

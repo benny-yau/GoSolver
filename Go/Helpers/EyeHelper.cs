@@ -407,8 +407,6 @@ namespace Go
 
         /// <summary>
         /// Check diagonal for real eye.
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario2dan21_2" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
         /// </summary>
         public static IEnumerable<Point> CheckDiagonalForRealEye(Board tryBoard, Board captureBoard)
         {
