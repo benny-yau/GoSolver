@@ -30,9 +30,8 @@ namespace Go
         {
             if (group == null) group = tryBoard.MoveGroup;
             else group = tryBoard.GetCurrentGroup(group);
-            if (WallHelper.IsNonKillableFromSetupMoves(tryBoard, group))
+            if (WallHelper.IsNonKillableGroup(tryBoard, group))
                 return false;
-
             if (tryBoard.GetNeighbourGroups(group).Any(n => IsWeakGroup(tryBoard, group, n)))
                 return true;
             return false;

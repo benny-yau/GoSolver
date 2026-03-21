@@ -779,12 +779,8 @@ namespace Go
         /// <summary>
         /// Redundant one point move in connect and die.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3_3" />
-        /// Check move next to covered point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17132_4" />
-        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260123_7" />
         /// Check box formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_4" />
         /// Ensure all strong neighbour groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_7" />
-        /// Cut diagonal and kill <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_3" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17081_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_20230603_4" />
         /// Check single group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16594" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_2398" />   
@@ -799,7 +795,7 @@ namespace Go
             if (tryBoard.MoveGroup.Points.Count != 1) return false;
 
             //check move next to covered point
-            if (tryBoard.GetMoveLiberties().Any(p => EyeHelper.IsCovered(tryBoard, p, c.Opposite())) && GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard) && !tryBoard.GetNeighbourGroups().Any(n => n.Liberties.Count <= 2))
+            if (CheckMoveNextToCoveredPoint(tryMove, captureBoard))
                 return true;
 
             //check box formation
@@ -847,6 +843,23 @@ namespace Go
             if (CheckOnePointMoveWithoutDiagonalsInConnectAndDie(tryMove, captureBoard))
                 return true;
 
+            return false;
+        }
+
+        /// <summary>
+        /// Check move next to covered point.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A61" />
+        /// Check neighbour group <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260123_7" />
+        /// </summary>
+        private static Boolean CheckMoveNextToCoveredPoint(GameTryMove tryMove, Board captureBoard)
+        {
+            Board tryBoard = tryMove.TryGame.Board;
+            Content c = tryMove.MoveContent;
+            if (!tryBoard.GetMoveLiberties().Any(p => EyeHelper.IsCovered(tryBoard, p, c.Opposite()))) return false;
+            if (!GroupHelper.IsSingleGroupWithinKillerGroup(captureBoard, tryBoard.MoveGroup)) return false;
+            //check neighbour group
+            if (WallHelper.HostileNeighbourGroups(tryBoard) || WallHelper.HostileNeighbourGroups(captureBoard, tryBoard.MoveGroup))
+                return true;
             return false;
         }
 
@@ -993,7 +1006,7 @@ namespace Go
             if (d == null) return false;
 
             //check empty point at diagonal
-            if (tryBoard[d.Value] == Content.Empty && tryBoard.GetNeighbourGroups().Any(n => n.Liberties.Count <= 2))
+            if (tryBoard[d.Value] == Content.Empty && !WallHelper.HostileNeighbourGroups(tryBoard))
                 return false;
 
             //check eye
@@ -1285,7 +1298,8 @@ namespace Go
 
         /// <summary>
         /// Redundant multi point move in suicidal connect and die.
-        /// Check connected liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
+        /// Check diagonal cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
+        /// Check suicidal move <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260321_3" />
         /// Check for killer formation <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16748" />
         /// </summary>
@@ -1295,7 +1309,6 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
-
             if (tryBoard.MoveGroup.Points.Count == 1) return false;
 
             //check diagonal and liberty at move
@@ -1306,9 +1319,16 @@ namespace Go
             Point p = tryBoard.MoveGroup.Liberties.First();
             if (tryBoard.GetStoneNeighbours(p).Any(q => tryBoard.MoveGroup.Liberties.Contains(q)))
             {
-                if (tryBoard.GetGroupsFromStoneNeighbours().Count > 1 && LinkHelper.FindDiagonalCut(tryBoard).Item1 != null)
-                    return false;
-
+                List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours();
+                if (ngroups.Count > 1)
+                { 
+                    //check diagonal cut
+                    if (LinkHelper.FindDiagonalCut(tryBoard).Item1 != null)
+                        return false;
+                    //check suicidal move
+                    if (ngroups.Any(n => n.Liberties.Count == 2 && n.Liberties.Any(s => ImmovableHelper.IsSuicidalMove(tryBoard, s, c.Opposite()))))
+                        return false;
+                }
                 //check for killer formation
                 if (tryBoard.MoveGroup.Points.Count >= 3 && KillerFormationHelper.SuicidalKillerFormations(tryBoard, currentBoard, captureBoard))
                     return false;

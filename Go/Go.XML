@@ -1656,15 +1656,18 @@
             <summary>
             Redundant one point move in connect and die.
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3_3" />
-            Check move next to covered point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17132_4" />
-            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260123_7" />
             Check box formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_4" />
             Ensure all strong neighbour groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_7" />
-            Cut diagonal and kill <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_3" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17081_2" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_20230603_4" />
             Check single group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16594" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_2398" />   
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CheckMoveNextToCoveredPoint(Go.GameTryMove,Go.Board)">
+            <summary>
+            Check move next to covered point.
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A61" />
+            Check neighbour group <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260123_7" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckDiagonalForRealEyeForSuicidalConnectAndDie(Go.GameTryMove,Go.Board)">
@@ -1762,7 +1765,8 @@
         <member name="M:Go.RedundantMoveHelper.RedundantMultiPointMoveInConnectAndDie(Go.GameTryMove,Go.Board)">
             <summary>
             Redundant multi point move in suicidal connect and die.
-            Check connected liberties <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
+            Check diagonal cut <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
+            Check suicidal move <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260321_3" />
             Check for killer formation <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi_2" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16748" />
             </summary>
@@ -2347,6 +2351,11 @@
             Is non killable from setup moves.
             </summary>
         </member>
+        <member name="M:Go.WallHelper.IsNonKillableOrKo(Go.Board,Go.Group)">
+            <summary>
+            Is non killable or ko.
+            </summary>
+        </member>
         <member name="M:Go.WallHelper.StrongGroups(Go.Board,System.Collections.Generic.IEnumerable{Go.Group})">
             <summary>
             Strong groups.
@@ -2365,6 +2374,11 @@
         <member name="M:Go.WallHelper.IsHostileGroup(Go.Board,Go.Group)">
             <summary>
             Is hostile group. Two liberties suicidal to opponent.
+            </summary>
+        </member>
+        <member name="M:Go.WallHelper.HostileNeighbourGroups(Go.Board,Go.Group)">
+            <summary>
+            Hostile neighbour groups.
             </summary>
         </member>
         <member name="M:Go.WallHelper.TargetWithAllNonKillableGroups(Go.Board,Go.Group)">

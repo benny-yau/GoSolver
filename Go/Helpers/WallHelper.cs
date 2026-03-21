@@ -94,6 +94,16 @@ namespace Go
         }
 
         /// <summary>
+        /// Is non killable or ko.
+        /// </summary>
+        public static Boolean IsNonKillableOrKo(Board board, Group group = null)
+        {
+            if (group == null) group = board.MoveGroup;
+            else group = board.GetCurrentGroup(group);
+            return WallHelper.IsNonKillableGroup(board, group) || KoHelper.IsNonKillableGroupKoFight(board, group);
+        }
+
+        /// <summary>
         /// Strong groups.
         /// </summary>
         public static Boolean StrongGroups(Board board, IEnumerable<Group> ngroups)
@@ -147,6 +157,17 @@ namespace Go
         }
 
         /// <summary>
+        /// Hostile neighbour groups.
+        /// </summary>
+        public static Boolean HostileNeighbourGroups(Board board, Group group = null)
+        {
+            if (group == null) group = board.MoveGroup;
+            else group = board.GetCurrentGroup(group);
+            Boolean rc = board.GetNeighbourGroups(group).Any(n => !WallHelper.IsHostileGroup(board, n));
+            return !rc;
+        }
+
+        /// <summary>
         /// Target with all non killable groups.
         /// </summary>
         public static Boolean TargetWithAllNonKillableGroups(Board board, Group group = null)
@@ -155,13 +176,6 @@ namespace Go
             if (board.GetNeighbourGroups(group).All(n => IsNonKillableOrKo(board, n), true))
                 return true;
             return false;
-        }
-
-        public static Boolean IsNonKillableOrKo(Board board, Group group = null)
-        {
-            if (group == null) group = board.MoveGroup;
-            else group = board.GetCurrentGroup(group);
-            return WallHelper.IsNonKillableGroup(board, group) || KoHelper.IsNonKillableGroupKoFight(board, group);
         }
 
         /// <summary>
