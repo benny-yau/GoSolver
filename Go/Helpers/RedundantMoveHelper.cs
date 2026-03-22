@@ -747,9 +747,9 @@ namespace Go
                 return true;
 
             //check real eye
-            if (!CheckRealEyeInSuicidalConnectAndDie(tryMove, captureBoard))
-                return false;
-            return true;
+            if (CheckRealEyeInSuicidalConnectAndDie(tryMove, captureBoard))
+                return true;
+            return false;
         }
 
         /// <summary>
@@ -850,6 +850,7 @@ namespace Go
         /// Check move next to covered point.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A61" />
         /// Check neighbour group <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260123_7" />
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260322_8" />
         /// </summary>
         private static Boolean CheckMoveNextToCoveredPoint(GameTryMove tryMove, Board captureBoard)
         {
@@ -858,7 +859,9 @@ namespace Go
             if (!tryBoard.GetMoveLiberties().Any(p => EyeHelper.IsCovered(tryBoard, p, c.Opposite()))) return false;
             if (!GroupHelper.IsSingleGroupWithinKillerGroup(captureBoard, tryBoard.MoveGroup)) return false;
             //check neighbour group
-            if (WallHelper.HostileNeighbourGroups(tryBoard) || WallHelper.HostileNeighbourGroups(captureBoard, tryBoard.MoveGroup))
+            if (WallHelper.HostileNeighbourGroups(captureBoard, tryBoard.MoveGroup))
+                return true;
+            if (captureBoard.MoveGroup.Points.Count == 1 && WallHelper.HostileNeighbourGroups(tryBoard))
                 return true;
             return false;
         }
@@ -2778,7 +2781,7 @@ namespace Go
 
         /// <summary>
         /// Check side move at tiger mouth.
-        /// No opponent in middle area <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A84" />
+        /// No diagonal at move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A84" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16827" />
         /// Check for killer group <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20230505_8" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221220_7" />
@@ -2808,7 +2811,7 @@ namespace Go
             Point? d = LinkHelper.CheckPointsBetweenDiagonalsAtMove(tryBoard);
             if (d == null)
             {
-                //no opponent in middle area
+                //no diagonal at move
                 if (!tryBoard.CornerPoint() && currentBoard.GetGroupsFromStoneNeighbours(move, c).Any(n => n.Liberties.Count <= 2))
                     return true;
             }

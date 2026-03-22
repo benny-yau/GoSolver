@@ -1668,6 +1668,7 @@
             Check move next to covered point.
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A61" />
             Check neighbour group <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260123_7" />
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260322_8" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckDiagonalForRealEyeForSuicidalConnectAndDie(Go.GameTryMove,Go.Board)">
@@ -2118,7 +2119,7 @@
         <member name="M:Go.RedundantMoveHelper.CheckSideMoveAtTigerMouth(Go.GameTryMove,Go.Board)">
             <summary>
             Check side move at tiger mouth.
-            No opponent in middle area <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A84" />
+            No diagonal at move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A84" />
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16827" />
             Check for killer group <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20230505_8" />
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221220_7" />
