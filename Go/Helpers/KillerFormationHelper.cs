@@ -124,7 +124,7 @@ namespace Go
             //check suicide at eye point
             if (tryBoard.MoveGroupLiberties == 2 && tryBoard.GetStoneNeighbours().All(n => tryBoard[n] == c) && LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).All(n => n.Liberties.Count > 1))
                 return false;
-            
+
             //check if neighbour group is non-killable
             if (WallHelper.TargetWithAnyNonKillableGroup(tryBoard))
                 return false;
@@ -1227,7 +1227,7 @@ namespace Go
             //check group diagonals
             foreach (Link<Point> p in LinkHelper.GetGroupLinkedDiagonals(tryBoard, targetGroup))
             {
-                if (LinkHelper.PointsBetweenDiagonals(p).Any(n => tryBoard[n] == Content.Empty && !EyeHelper.FindCoveredEye(tryBoard, n, c.Opposite())))
+                if (LinkHelper.FindLibertyBetweenDiagonals(tryBoard, p.Move, (Point)p.CheckMove).Any(n => !EyeHelper.FindCoveredEye(tryBoard, n, c.Opposite())))
                     return false;
             }
             return true;

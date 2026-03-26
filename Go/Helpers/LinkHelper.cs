@@ -594,26 +594,22 @@ namespace Go
         /// <summary>
         /// Get diagonal groups without cut.
         /// </summary>
-        public static IEnumerable<Link<Point>> GetDiagonalGroupsWithoutCut(Board board, Group group)
+        public static IEnumerable<Group> GetDiagonalGroupsWithoutCut(Board board, Group group)
         {
             foreach (Link<Point> q in LinkHelper.GetGroupLinkedDiagonals(board, group))
             {
-                if (LinkHelper.SingleLibertyBetweenDiagonals(board, q.Move, (Point)q.CheckMove))
-                    yield return q;
+                if (LinkHelper.FindLibertyBetweenDiagonals(board, q.Move, (Point)q.CheckMove).Any())
+                    yield return board.GetGroupAt(q.Move);
             }
         }
 
         /// <summary>
-        /// Single liberty between diagonals.
+        /// Find liberty between diagonals.
         /// </summary>
-        public static Boolean SingleLibertyBetweenDiagonals(Board board, Point p, Point q)
+        public static List<Point> FindLibertyBetweenDiagonals(Board board, Point p, Point q)
         {
-            Content c = board[q];
             List<Point> points = LinkHelper.PointsBetweenDiagonals(p, q);
-            if (!points.Any(n => board[n] == Content.Empty)) return false;
-            if (points.Any(n => board[n] == c.Opposite() && !ImmovableHelper.IsSuicidalWithoutKo(board, board.GetGroupAt(n))))
-                return true;
-            return false;
+            return points.Where(n => board[n] == Content.Empty).ToList();
         }
 
         /// <summary>

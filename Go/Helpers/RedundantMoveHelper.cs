@@ -935,7 +935,7 @@ namespace Go
                     if (!ImmovableHelper.IsImmovablePoint(captureBoard, p, c.Opposite())) continue;
                     if (EyeHelper.FindCoveredEyeAtStoneNeighbour(tryBoard).Any()) continue;
                     //no diagonal cut
-                    if (LinkHelper.PointsBetweenDiagonals(move, diagonals.First()).Any(n => tryBoard[n] == Content.Empty))
+                    if (LinkHelper.FindLibertyBetweenDiagonals(tryBoard, move, diagonals.First()).Any())
                         return true;
                     //with diagonal cut
                     if (tryBoard.GetGroupsFromStoneNeighbours().Any(n => n.Points.Count == 1)) continue;
@@ -1324,7 +1324,7 @@ namespace Go
             {
                 List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours();
                 if (ngroups.Count > 1)
-                { 
+                {
                     //check diagonal cut
                     if (LinkHelper.FindDiagonalCut(tryBoard).Item1 != null)
                         return false;
@@ -1654,7 +1654,7 @@ namespace Go
                 //covered point suicidal move
                 if (CoveredPointSuicidalWithCornerFormation(tryMove, capturedBoard)) return false;
 
-                if (diagonals.Any(n => LinkHelper.PointsBetweenDiagonals(move, n).Any(d => tryBoard[d] == Content.Empty)))
+                if (diagonals.Any(n => LinkHelper.FindLibertyBetweenDiagonals(tryBoard, move, n).Any()))
                     return true;
 
                 //check real eye at diagonal without opposite content
@@ -1878,7 +1878,7 @@ namespace Go
             if (WallHelper.IsNonKillableGroup(tryBoard, group))
                 return true;
 
-            if (LinkHelper.GetDiagonalGroupsWithoutCut(tryBoard, group).Any(n => WallHelper.IsNonKillableGroup(tryBoard, n.Move)))
+            if (LinkHelper.GetDiagonalGroupsWithoutCut(tryBoard, group).Any(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
                 return true;
 
             return false;
@@ -2625,7 +2625,7 @@ namespace Go
                     else
                     {
                         //check atari
-                        if (CheckAtariAtTigerMouth(tryMove, d))
+                        if (CheckAtariAtTigerMouth(tryMove, d, capturedBoard))
                             continue;
                         //check snapback
                         if (ImmovableHelper.CheckSnapbackFromMove(tryBoard))
@@ -2656,27 +2656,45 @@ namespace Go
 
         /// <summary>
         /// Check atari at tiger mouth.
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31536" />
-        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_A4" />
-        /// Check no eye for survival <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_Corner_A27_2" />
-        /// Check killer group <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WuQingYuan_Q31673" />
         /// Check diagonal cut <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_Corner_A20" />
+        /// Check capture group <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q30267" />
+        /// Check one point target <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_A4" />
+        /// Check multi point target <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31536" />
         /// </summary>
-        private static Boolean CheckAtariAtTigerMouth(GameTryMove tryMove, Point diagonal)
+        private static Boolean CheckAtariAtTigerMouth(GameTryMove tryMove, Point diagonal, Board captureBoard = null)
         {
             Point move = tryMove.Move;
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
-            if (!tryBoard.AtariTargets.Any()) return false;
+            if (tryBoard.AtariTargets.Count != 1) return false;
             if (currentBoard[diagonal] != Content.Empty) return false;
-            //check no eye for survival and killer group
-            if (WallHelper.NoEyeForSurvival(currentBoard, diagonal, c.Opposite()) && GroupHelper.CheckKillerGroupPoints(tryBoard, move, c.Opposite()) == null) return false;
-            if (tryBoard.PointWithinMiddleArea())
-                return true;
             //check diagonal cut
             if (tryBoard.GetStoneNeighbours(diagonal).Any(n => tryBoard[n] == c && LinkHelper.FindDiagonalCut(tryBoard, tryBoard.GetGroupAt(n), true).Item1 != null))
                 return true;
+
+            if (!tryBoard.PointWithinMiddleArea()) return false;
+            //check capture group
+            if (captureBoard.MoveGroup.Points.Count > 1 && captureBoard.MoveGroupLiberties == 2)
+                return true;
+            //check suicidal move at liberty
+            Group atariTarget = tryBoard.AtariTargets.First();
+            Point p = atariTarget.Liberties.First();
+            if (GroupHelper.CheckKillerGroupPoints(tryBoard, move, c.Opposite()) != null && ImmovableHelper.IsSuicidalMove(tryBoard, p, c.Opposite()))
+                return false;
+            
+            if (atariTarget.Points.Count == 1)
+            {
+                //check one point target
+                if (GroupHelper.CheckKillerGroupPoints(tryBoard, move, c.Opposite()) != null)
+                    return true;
+            }
+            else
+            {
+                //check multi point target
+                if (tryBoard.PointWithinMiddleArea(p))
+                    return true;
+            }
             return false;
         }
 
@@ -3217,7 +3235,7 @@ namespace Go
                 {
                     List<Point> diagonals = LinkHelper.GetDiagonalsAtStoneNeighbours(tryBoard, p, c.Opposite());
                     if (diagonals.Count() > 2) return false;
-                    if (diagonals.Count() == 2 && LinkHelper.SingleLibertyBetweenDiagonals(tryBoard, diagonals[0], diagonals[1]))
+                    if (diagonals.Count() == 2 && LinkHelper.FindLibertyBetweenDiagonals(tryBoard, diagonals[0], diagonals[1]).Any())
                         return false;
                 }
             }

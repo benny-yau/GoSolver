@@ -595,7 +595,9 @@ namespace Go
         /// Suicide at big tiger mouth.
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_B3" /> 
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A85" /> 
+        /// Check opponent at diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A53_101Weiqi_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario6kyu13" />
+        /// Check killer group <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16867" /> 
         /// Check groups at liberty <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Side_B19" />
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23" />
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
@@ -611,11 +613,12 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Board currentBoard = tryMove.CurrentGame.Board;
             Content c = tryMove.MoveContent;
-
             if (ImmovableHelper.CheckConnectAndDie(tryBoard)) return (false, null);
+
             foreach (Point p in currentBoard.OpponentAtStoneNeighbour(move, c.Opposite()))
             {
-                if (!EyeHelper.FindEye(currentBoard, move, c) && !tryBoard.GetDiagonalNeighbours().Intersect(tryBoard.GetStoneNeighbours(p)).All(n => tryBoard[n] == c.Opposite()))
+                //check opponent at diagonal
+                if (!tryBoard.GetDiagonalNeighbours().Intersect(tryBoard.GetStoneNeighbours(p)).Any(n => tryBoard[n] == c.Opposite()))
                     continue;
                 Group eyeGroup = currentBoard.GetGroupAt(p);
                 if (eyeGroup.Liberties.Count != 2) continue;
@@ -628,8 +631,17 @@ namespace Go
 
                 //check covered eye survival 
                 if (b.GetGroupsFromStoneNeighbours(move, c.Opposite()).Count == 1 && EyeHelper.FindCoveredEye(b, move, c)) continue;
-                if (connectAndDie) return (true, b);
+                if (connectAndDie)
+                {
+                    //check killer group
+                    if (GroupHelper.GetDirectKillerGroup(currentBoard, b.Move.Value, c) != null)
+                        return (true, b);
 
+                    //check strong neighbour groups
+                    Board linkBoard = b.MakeMoveOnNewBoard(move, c);
+                    if (!WallHelper.StrongNeighbourGroups(linkBoard, b.Move.Value, c))
+                        return (true, b);
+                }
                 //check groups at liberty
                 if (b.MoveGroupLiberties != 2) continue;
                 Point liberty2 = b.MoveGroup.Liberties.First(n => !n.Equals(move));

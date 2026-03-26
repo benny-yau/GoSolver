@@ -777,7 +777,9 @@
             Suicide at big tiger mouth.
             <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_B3" /> 
             <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A85" /> 
+            Check opponent at diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A53_101Weiqi_2" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario6kyu13" />
+            Check killer group <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16867" /> 
             Check groups at liberty <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Side_B19" />
             <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23" />
             <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
@@ -1403,9 +1405,9 @@
             Get diagonal groups without cut.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.SingleLibertyBetweenDiagonals(Go.Board,Go.Point,Go.Point)">
+        <member name="M:Go.LinkHelper.FindLibertyBetweenDiagonals(Go.Board,Go.Point,Go.Point)">
             <summary>
-            Single liberty between diagonals.
+            Find liberty between diagonals.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.GetPreviousMoveGroup(Go.Board,Go.Board)">
@@ -2084,14 +2086,13 @@
             Check snapback <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A26" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.CheckAtariAtTigerMouth(Go.GameTryMove,Go.Point)">
+        <member name="M:Go.RedundantMoveHelper.CheckAtariAtTigerMouth(Go.GameTryMove,Go.Point,Go.Board)">
             <summary>
             Check atari at tiger mouth.
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31536" />
-            <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_A4" />
-            Check no eye for survival <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_Corner_A27_2" />
-            Check killer group <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WuQingYuan_Q31673" />
             Check diagonal cut <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_Corner_A20" />
+            Check capture group <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q30267" />
+            Check one point target <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_A4" />
+            Check multi point target <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31536" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.TigerMouthWithoutDiagonalMouth(Go.GameTryMove,Go.Board,Go.GameTryMove)">
