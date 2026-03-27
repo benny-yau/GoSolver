@@ -482,9 +482,9 @@ namespace Go
                 List<Point> externalLiberties = targetGroup.Liberties.Where(n => GroupHelper.GetDirectKillerGroup(currentBoard, n, c.Opposite()) != killerGroup).ToList();
                 if (externalLiberties.Count != 1) continue;
                 Point liberty = externalLiberties.First();
-                List<Group> groups = currentBoard.GetGroupsFromStoneNeighbours(liberty, c.Opposite());
                 if (!ImmovableHelper.IsSuicidalMove(tryBoard, liberty, c.Opposite()))
                     continue;
+                List<Group> groups = currentBoard.GetGroupsFromStoneNeighbours(liberty, c.Opposite());
                 if (groups.Any(n => ImmovableHelper.EscapeCaptureLink(currentBoard, n)))
                     continue;
 
@@ -496,9 +496,8 @@ namespace Go
                 }
                 else
                 {
-                    if (!groups.Any(n => n.Liberties.Any(s => !s.Equals(liberty) && GroupHelper.GetDirectKillerGroup(currentBoard, s, c) != null)))
+                    if (!groups.Any(n => n.Liberties.Any(s => !s.Equals(liberty))))
                         continue;
-
                     if (!groups.Any(n => targetGroup.Liberties.Count >= n.Liberties.Count - 1 && !WallHelper.IsNonKillableGroup(currentBoard, n)))
                         continue;
                 }

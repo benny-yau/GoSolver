@@ -780,6 +780,7 @@
             Check opponent at diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A53_101Weiqi_2" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario6kyu13" />
             Check killer group <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16867" /> 
+            Check one liberty group <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_TianLongTu_Q17132" /> 
             Check groups at liberty <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Side_B19" />
             <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A23" />
             <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
@@ -790,7 +791,7 @@
             Check covered eye survival <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_20230422_8" /> 
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.CheckThreeLibertyGroupAtBigTigerMouth(Go.GameTryMove)">
+        <member name="M:Go.ImmovableHelper.CheckThreeLibertyGroupAtBigTigerMouth(Go.Board,Go.Board)">
             <summary>
             Check three liberty group at big tiger mouth.
             Check capture at liberty <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18_2" />
@@ -1637,6 +1638,7 @@
             Check corner point <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_B8" />
             <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221109_7" />
             Check four-point killer formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3_5" />
+            Check three liberty group <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A54" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SuicidalConnectAndDie(Go.GameTryMove)">
@@ -1898,6 +1900,11 @@
         <member name="M:Go.RedundantMoveHelper.CheckLeapMoveToTarget(Go.Board,System.Collections.Generic.HashSet{Go.Group})">
             <summary>
             Check leap move to target.
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.VerifyLeapMove(Go.Board,Go.Point,Go.Point,Go.Content)">
+            <summary>
+            Verify leap move.
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckNonKillableAtDiagonalGroups(Go.Board,Go.Group)">

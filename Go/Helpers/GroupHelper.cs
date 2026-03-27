@@ -60,13 +60,11 @@ namespace Go
             HashSet<Group> groups = filledBoard.GetGroupsFromPoints(emptyPoints);
             foreach (Group group in groups)
             {
-                //find killer groups with no liberties left or surrounded by non movable points
-                if (group.Liberties.Count == 0 || (!isKill && group.Liberties.All(n => gi.IsMovablePoint[n.x, n.y] == false)))
-                {
-                    killerGroups.Add(group);
-                    foreach (Point p in group.Points)
-                        cache[p.x, p.y] = group;
-                }
+                //find killer groups with no liberties left
+                if (group.Liberties.Count > 0) continue;
+                killerGroups.Add(group);
+                foreach (Point p in group.Points)
+                    cache[p.x, p.y] = group;
             }
             return killerGroups;
         }

@@ -37,7 +37,7 @@ namespace Go
                 if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Any(n => n.Liberties.Count <= 2))
                     return false;
                 //check three liberty group
-                if (ImmovableHelper.CheckThreeLibertyGroupAtBigTigerMouth(tryMove))
+                if (ImmovableHelper.CheckThreeLibertyGroupAtBigTigerMouth(tryBoard, currentBoard))
                     return false;
             }
             return true;
@@ -595,6 +595,7 @@ namespace Go
         /// Check corner point <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_B8" />
         /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20221109_7" />
         /// Check four-point killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3_5" />
+        /// Check three liberty group <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A54" />
         /// </summary>
         public static Boolean OpponentSuicidalConnectAndDie(GameTryMove tryMove, GameTryMove opponentMove)
         {
@@ -692,6 +693,9 @@ namespace Go
                     return false;
             }
 
+            //check three liberty group
+            if (ImmovableHelper.CheckThreeLibertyGroupAtBigTigerMouth(opponentBoard, currentBoard))
+                return false;
             return true;
         }
 
@@ -1511,9 +1515,8 @@ namespace Go
                     if (GroupHelper.GetDirectKillerGroup(tryBoard, q, c.Opposite()) == null) continue;
                     if (ImmovableHelper.IsSuicidalMoveForBothPlayers(b, q))
                     {
-                        if (b.GetNeighbourGroups(tryBoard.MoveGroup).All(n => LinkHelper.FindDiagonalCut(b, n, true).Item1 == null))
-                            continue;
-                        return false;
+                        if (b.GetNeighbourGroups(tryBoard.MoveGroup).Any(n => LinkHelper.FindDiagonalCut(b, n, true).Item1 != null))
+                            return false;
                     }
                 }
                 //two liberties connect and die
@@ -1846,16 +1849,8 @@ namespace Go
                     if (groups.Contains(rgroup)) continue;
 
                     //verify leap move
-                    if (tryBoard.GetClosestPoints(p, c, 2, 2).Any(n => n.Equals(r)))
-                    {
-                        List<Point> mpoints = GetMidPointsOfLeapMove(p, r).Where(n => tryBoard[n] == c.Opposite()).ToList();
-                        if (mpoints.Count > 0)
-                        {
-                            Group mgroup = tryBoard.GetGroupAt(mpoints.First());
-                            if (CheckNonKillableAtDiagonalGroups(tryBoard, mgroup))
-                                continue;
-                        }
-                    }
+                    if (VerifyLeapMove(tryBoard, p, r, c))
+                        continue;
 
                     //check if target found
                     if (LifeCheck.GetTargets(tryBoard).Contains(rgroup))
@@ -1867,6 +1862,20 @@ namespace Go
                         return true;
                 }
             }
+            return false;
+        }
+
+        /// <summary>
+        /// Verify leap move.
+        /// </summary>
+        public static Boolean VerifyLeapMove(Board tryBoard, Point p, Point r, Content c)
+        {
+            if (!tryBoard.GetClosestPoints(p, c, 2, 2).Any(n => n.Equals(r))) return false;
+            List<Point> mpoints = GetMidPointsOfLeapMove(p, r).Where(n => tryBoard[n] == c.Opposite()).ToList();
+            if (mpoints.Count == 0) return false;
+            Group mgroup = tryBoard.GetGroupAt(mpoints.First());
+            if (CheckNonKillableAtDiagonalGroups(tryBoard, mgroup))
+                return true;
             return false;
         }
 
@@ -2670,7 +2679,7 @@ namespace Go
             if (tryBoard.AtariTargets.Count != 1) return false;
             if (currentBoard[diagonal] != Content.Empty) return false;
             //check diagonal cut
-            if (tryBoard.GetStoneNeighbours(diagonal).Any(n => tryBoard[n] == c && LinkHelper.FindDiagonalCut(tryBoard, tryBoard.GetGroupAt(n), true).Item1 != null))
+            if (tryBoard.GetGroupsFromStoneNeighbours(diagonal, c.Opposite()).Any(n => LinkHelper.FindDiagonalCut(tryBoard, n).Item1 != null))
                 return true;
 
             if (!tryBoard.PointWithinMiddleArea()) return false;
@@ -2680,13 +2689,14 @@ namespace Go
             //check suicidal move at liberty
             Group atariTarget = tryBoard.AtariTargets.First();
             Point p = atariTarget.Liberties.First();
-            if (GroupHelper.CheckKillerGroupPoints(tryBoard, move, c.Opposite()) != null && ImmovableHelper.IsSuicidalMove(tryBoard, p, c.Opposite()))
+            Boolean twoPointGroup = GroupHelper.CheckKillerGroupPoints(tryBoard, move, c.Opposite()) != null;
+            if (twoPointGroup && ImmovableHelper.IsSuicidalMove(tryBoard, p, c.Opposite()))
                 return false;
             
             if (atariTarget.Points.Count == 1)
             {
                 //check one point target
-                if (GroupHelper.CheckKillerGroupPoints(tryBoard, move, c.Opposite()) != null)
+                if (twoPointGroup)
                     return true;
             }
             else
