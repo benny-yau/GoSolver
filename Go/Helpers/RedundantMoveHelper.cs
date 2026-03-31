@@ -216,6 +216,7 @@ namespace Go
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" /> 
         /// Check double ko <see cref = "UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16975" />
         /// <see cref = "UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_2" />
+        /// Check possible recursion <see cref = "UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" />
         /// </summary>
         public static Boolean FillKoEyeMove(GameTryMove tryMove)
         {
@@ -271,15 +272,26 @@ namespace Go
                     return false;
             }
 
-            //check double ko
             if (isKoFight)
             {
+                //check double ko
                 Board b = currentBoard.MakeMoveOnNewBoard(move, c.Opposite(), true);
                 if (KoHelper.PossibilityOfDoubleKo(b, currentBoard))
                     return false;
                 Board b2 = ImmovableHelper.CaptureSuicideGroup(b);
                 if (b2 != null && KoHelper.PossibilityOfDoubleKo(b2, b))
                     return false;
+
+                //check possible recursion
+                if (tryBoard.LastMoves.Count >= 6)
+                {
+                    Point p = tryBoard.LastMoves[tryBoard.LastMoves.Count - 3];
+                    if (tryBoard.GetStoneNeighbours().Any(n => n.Equals(p)))
+                    {
+                        if (tryBoard.LastMoves.GetRange(tryBoard.LastMoves.Count - 6, 3).Any(n => n.Equals(move)))
+                            return false;
+                    }
+                }
             }
             return true;
         }
@@ -1040,6 +1052,9 @@ namespace Go
 
         /// <summary>
         /// Check one point move diagonals in connect and die.
+        /// Check move diagonals <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17154_3" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31445" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_3" />
         /// Check capture move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31453_2" />
         /// Check no diagonal groups <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260111_8" />
         /// Check weak diagonal group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17250_3" />
@@ -1057,7 +1072,15 @@ namespace Go
             Content c = tryMove.MoveContent;
             Point? d = LinkHelper.CheckPointsBetweenDiagonalsAtMove(tryBoard);
             if (d != null) return false;
-            if (LinkHelper.GetMoveDiagonals(tryBoard).Any()) return false;
+
+            //check move diagonals
+            if (LinkHelper.GetMoveDiagonals(tryBoard).Any())
+            {
+                if (tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindEye(tryBoard, n, c) || ImmovableHelper.FindEmptyTigerMouth(tryBoard, n, c)))
+                    return false;
+                if (EyeHelper.IsCovered(captureBoard, move, c.Opposite()))
+                    return false;
+            }
 
             //check capture move
             List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours();

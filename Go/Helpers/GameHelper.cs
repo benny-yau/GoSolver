@@ -131,10 +131,10 @@ namespace Go
         public static IEnumerable<int> CheckForRecursion(Board tryBoard)
         {
             Point move = tryBoard.Move.Value;
+            List<Point> lastMoves = tryBoard.LastMoves;
             //check 4 spaces to 12 spaces apart
             for (int j = 4; j <= 12; j++)
             {
-                List<Point> lastMoves = tryBoard.LastMoves;
                 int rc = lastMoves.Count - 1;
                 //find recurrence of last three moves
                 Boolean recur = (rc >= j + 2 && move.Equals(lastMoves[rc - j]) && lastMoves[rc - 1].Equals(lastMoves[rc - (j + 1)]) && lastMoves[rc - 2].Equals(lastMoves[rc - (j + 2)]));
