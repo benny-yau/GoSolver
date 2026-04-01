@@ -149,17 +149,6 @@ namespace Go
             if (KoHelper.IsCoveredEyeDoubleKo(tryBoard))
                 return false;
 
-            if (opponentMove != null)
-            {
-                //check no eye for survival for opponent
-                Board opponentBoard = opponentMove.TryGame.Board;
-                if (!WallHelper.NoEyeForSurvivalAtNeighbourPoints(opponentBoard))
-                    return false;
-
-                //check must-have move
-                if (!RedundantAtMustHaveMove(opponentBoard, eyePoint))
-                    return false;
-            }
             return true;
         }
 
@@ -798,8 +787,6 @@ namespace Go
         /// Check box formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_4" />
         /// Ensure all strong neighbour groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_7" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_20230603_4" />
-        /// Check single group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16594" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_2398" />   
         /// </summary>
         private static Boolean RedundantOnePointMoveInConnectAndDie(GameTryMove tryMove, Board captureBoard)
         {
@@ -841,10 +828,6 @@ namespace Go
 
             //check empty points at stone and diagonal
             if (CheckEmptyPointsAtStoneAndDiagonal(tryMove))
-                return true;
-
-            //check single group
-            if (GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard) && LinkHelper.FindDiagonalCut(tryBoard).Item1 == null)
                 return true;
 
             //check immovable point at diagonal
@@ -2190,6 +2173,7 @@ namespace Go
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_TianLongTu_Q17136" />
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Corner_A84" />
         /// Check liberty fight <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A54_2" />
+        /// Check covered eye <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260330_8" />
         /// </summary>
         private static Boolean RedundantAtMustHaveMove(Board tryBoard, Point tigerMouth)
         {
@@ -2205,13 +2189,31 @@ namespace Go
             if (WallHelper.StrongNeighbourGroups(b, tigerMouth, c)) return true;
 
             //check one neighbour group
-            List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(tigerMouth, c);
+            List<Group> ngroups = b.GetGroupsFromStoneNeighbours();
             if (ngroups.Count == 1)
             {
                 //check liberty fight
-                if (tryBoard.GetNeighbourGroups(ngroups.First()).Any(n => !WallHelper.IsNonKillableGroup(tryBoard, n) && LinkHelper.FindDiagonalCut(tryBoard, n).Item1 != null))
+                Group ngroup = ngroups.First();
+                if (tryBoard.GetNeighbourGroups(ngroup).Any(n => !WallHelper.IsNonKillableGroup(tryBoard, n) && LinkHelper.FindDiagonalCut(tryBoard, n).Item1 != null))
                     return false;
+
+                //check covered eye
+                if (ngroup.Liberties.Count == 1 && EyeHelper.FindCoveredEye(b, ngroup.Liberties.First(), c.Opposite()))
+                {
+                    if (ImmovableHelper.UnescapableGroup(b, ngroup).Item1)
+                        return false;
+                }
                 return true;
+            }
+            else
+            {
+                //capture group at diagonal
+                foreach (Point p in b.GetDiagonalNeighbours())
+                {
+                    if (b.GetGroupsFromStoneNeighbours(p, c).Count < 2) continue;
+                    if (b[p] == c && b.GetGroupAt(p).Liberties.Count == 1)
+                        return true;
+                }
             }
             return false;
         }

@@ -622,7 +622,7 @@ namespace Go
                 Group eyeGroup = currentBoard.GetGroupAt(p);
                 if (eyeGroup.Liberties.Count != 2) continue;
                 Point liberty = eyeGroup.Liberties.First(n => !n.Equals(move));
-                if (tryBoard.GetDiagonalNeighbours().Any(n => n.Equals(liberty))) continue;
+                if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => n.Equals(liberty))) continue;
                 if (WallHelper.TargetWithAnyNonKillableGroup(currentBoard, liberty, c)) continue;
 
                 //make move at liberty

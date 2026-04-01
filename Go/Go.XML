@@ -1725,6 +1725,9 @@
         <member name="M:Go.RedundantMoveHelper.CheckOnePointMoveWithoutDiagonalsInConnectAndDie(Go.GameTryMove,Go.Board)">
             <summary>
             Check one point move diagonals in connect and die.
+            Check move diagonals <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17154_3" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31445" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_3" />
             Check capture move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31453_2" />
             Check no diagonal groups <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260111_8" />
             Check weak diagonal group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17250_3" />
@@ -1995,6 +1998,7 @@
             <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_TianLongTu_Q17136" />
             <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_Corner_A84" />
             Check liberty fight <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A54_2" />
+            Check covered eye <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260330_8" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckLibertyFightAtCoveredEye(Go.Board,Go.Point,Go.Content)">
