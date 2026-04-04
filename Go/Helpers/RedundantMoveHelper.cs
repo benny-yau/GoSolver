@@ -291,12 +291,8 @@ namespace Go
         /// <summary>
         /// Atari redundant move.
         /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A9_Ext" />
-        /// One liberty move group <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A68" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16748" />
-        /// Check capture secure <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WindAndTime_Q30225_2" />
-        /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WindAndTime_Q30225_3" />
-        /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Side_A23" />
-        /// Check killer group <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Side_A25" />
+        /// Make move at the other liberty <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q17154" />
+        /// Check capture secure <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_GuanZiPu_B3" />
         /// </summary>
         public static Boolean AtariRedundantMove(GameTryMove tryMove)
         {
@@ -317,22 +313,21 @@ namespace Go
             if (killerGroup == null || currentBoard.GetNeighbourGroups(killerGroup).Any(n => n.Liberties.Count <= 2))
                 return false;
 
-            if (!GroupHelper.IsSingleGroupWithinKillerGroup(currentBoard, atariTarget))
-                return false;
-
             //ensure capture secure
             if (!ImmovableHelper.CheckCaptureSecure(tryBoard, atariTarget, true))
                 return false;
 
             //make move at the other liberty
             (Boolean suicidal, Board board) = ImmovableHelper.IsSuicidalMove(q, c, currentBoard);
-            if (suicidal) return false;
+            if (suicidal)
+                return false;
+
             Group target = board.GetGroupAt(atariPoint);
-            if (!GameTryMove.IsNegligibleForBoard(board, currentBoard, n => !n.Equals(target))) return false;
 
             //ensure capture secure
             if (!ImmovableHelper.CheckCaptureSecure(board, target, true))
                 return false;
+
             return true;
         }
 
@@ -958,6 +953,7 @@ namespace Go
         /// Check for one neighbour group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_4" />
         /// Check connect and die <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260206_6" />
         /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260114_8" />
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260401_8" />
         /// </summary>
         private static Boolean CheckEmptyPointsAtStoneAndDiagonal(GameTryMove tryMove)
         {
@@ -3169,9 +3165,10 @@ namespace Go
         /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20250311_8" /> 
         /// Not redundant <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_B10_2" />
         /// Check weak group <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260223_8" />
+        /// Check edge points <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q17132" />
         /// Check diagonal cut <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_A171_101Weiqi" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario3dan22" />
-        /// Check edge points <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q17132" />
+        /// Check diagonal of corner point <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260403_8" />
         /// </summary>
         public static Boolean RedundantFillerMove(GameTryMove tryMove)
         {
@@ -3191,8 +3188,8 @@ namespace Go
 
             //check possible space
             int possibleSpace = PossibleSpace(currentBoard, move, c);
-            List<int> npossibleSpace = tryBoard.GetMoveLiberties().Select(n => PossibleSpace(currentBoard, n, c)).ToList();
-            if (npossibleSpace.Any(n => n < possibleSpace))
+            List<KeyValuePair<Point, int>> npossibleSpace = tryBoard.GetMoveLiberties().Select(n => new KeyValuePair<Point, int>(n, PossibleSpace(currentBoard, n, c))).ToList();
+            if (npossibleSpace.Any(n => n.Value < possibleSpace))
                 return false;
 
             //check weak group
@@ -3200,18 +3197,22 @@ namespace Go
             if (groups.Any(n => n.Liberties.Count <= 2 && n.Points.Count >= 2 && AtariHelper.AtariByGroup(tryBoard, n).Any()))
                 return false;
 
-            if (npossibleSpace.Any(n => n > possibleSpace))
-            {
-                //check diagonal cut
-                if (LinkHelper.FindDiagonalCut(tryBoard).Item1 == null)
-                    return true;
-            }
-
             //check edge points
-            if (!tryBoard.CornerPoint(move) && !tryBoard.PointWithinMiddleArea(move) && npossibleSpace.Any(n => n >= possibleSpace))
+            if (!tryBoard.CornerPoint(move) && !tryBoard.PointWithinMiddleArea(move) && npossibleSpace.Any(n => n.Value >= possibleSpace))
             {
                 if (!tryBoard.GetClosestPoints(move, c.Opposite(), 2).Any() && !tryMove.IncreasedKillerGroups)
                     return true;
+            }
+
+            //check all points
+            if (npossibleSpace.Any(n => n.Value > possibleSpace))
+            {
+                //check diagonal cut
+                if (LinkHelper.FindDiagonalCut(tryBoard).Item1 != null)
+                    return false;
+                //check diagonal of corner point
+                if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard.CornerPoint(n) && npossibleSpace.Any(s => s.Value > possibleSpace && tryBoard.PointWithinMiddleArea(s.Key))))
+                    return false;
             }
             return false;
         }

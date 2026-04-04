@@ -1564,12 +1564,8 @@
             <summary>
             Atari redundant move.
             <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A9_Ext" />
-            One liberty move group <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A68" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16748" />
-            Check capture secure <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WindAndTime_Q30225_2" />
-            <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WindAndTime_Q30225_3" />
-            <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Side_A23" />
-            Check killer group <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Side_A25" />
+            Make move at the other liberty <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q17154" />
+            Check capture secure <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_GuanZiPu_B3" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SuicidalRedundantMove(Go.GameTryMove)">
@@ -1671,8 +1667,6 @@
             Check box formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_4" />
             Ensure all strong neighbour groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_7" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_20230603_4" />
-            Check single group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16594" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_2398" />   
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckMoveNextToCoveredPoint(Go.GameTryMove,Go.Board)">
@@ -1710,6 +1704,7 @@
             Check for one neighbour group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_4" />
             Check connect and die <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260206_6" />
             <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260114_8" />
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260401_8" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckOnePointMoveDiagonalsInConnectAndDie(Go.GameTryMove,Go.Board)">
@@ -2225,9 +2220,10 @@
             <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20250311_8" /> 
             Not redundant <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_B10_2" />
             Check weak group <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260223_8" />
+            Check edge points <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q17132" />
             Check diagonal cut <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_A171_101Weiqi" />
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario3dan22" />
-            Check edge points <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q17132" />
+            Check diagonal of corner point <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260403_8" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.PossibleSpace(Go.Board,Go.Point,Go.Content)">
