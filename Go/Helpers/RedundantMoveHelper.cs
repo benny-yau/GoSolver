@@ -3213,6 +3213,7 @@ namespace Go
                 //check diagonal of corner point
                 if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard.CornerPoint(n) && npossibleSpace.Any(s => s.Value > possibleSpace && tryBoard.PointWithinMiddleArea(s.Key))))
                     return false;
+                return true;
             }
             return false;
         }
