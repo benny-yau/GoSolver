@@ -406,13 +406,21 @@ namespace Go
         }
 
         /// <summary>
-        /// Check diagonal for real eye.
+        /// Check diagonal for killer group on capture.
         /// </summary>
-        public static IEnumerable<Point> CheckDiagonalForRealEye(Board tryBoard, Board captureBoard)
+        public static IEnumerable<Group> CheckDiagonalForKillerGroupOnCapture(Board tryBoard, Board captureBoard, Point? move = null)
         {
-            Point move = tryBoard.Move.Value;
-            Content c = tryBoard.MoveGroup.Content;
-            return LinkHelper.GetGroupDiagonals(tryBoard).Select(s => s.Move).Where(n => GroupHelper.GetKillerGroupFromCache(captureBoard, n, c.Opposite()) != GroupHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite()) && EyeHelper.FindRealEyeOfAnyKillerGroup(captureBoard, n, c.Opposite()));
+            if (move == null) move = tryBoard.Move.Value;
+            Content c = tryBoard[move.Value];
+            return LinkHelper.GetGroupDiagonals(tryBoard).Where(n => tryBoard[n.Move] != c).Select(n => GroupHelper.GetDirectKillerGroup(captureBoard, n.Move, c.Opposite())).Where(s => s != GroupHelper.GetDirectKillerGroup(captureBoard, move.Value, c.Opposite())).Distinct();
+        }
+
+        /// <summary>
+        /// Check diagonal for real eye on capture.
+        /// </summary>
+        public static IEnumerable<Group> CheckDiagonalForRealEyeOnCapture(Board tryBoard, Board captureBoard)
+        {
+            return CheckDiagonalForKillerGroupOnCapture(tryBoard, captureBoard).Where(n => n != null && EyeHelper.FindRealEyeOfAnyKillerGroup(captureBoard, n));
         }
 
         /// <summary>

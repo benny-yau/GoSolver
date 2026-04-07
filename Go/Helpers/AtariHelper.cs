@@ -109,10 +109,13 @@ namespace Go
                 }
                 //make move at liberty
                 Board b2 = ImmovableHelper.MakeMoveAtLiberty(board, targetGroup);
-                if (b2 != null && WallHelper.StrongGroups(b2, groups))
+                if (b2 == null) continue;
+                List<Group> ngroups = groups.Select(n => b2.GetCurrentGroup(n)).Distinct().ToList();
+                if (ngroups.Count < 2) return false;
+                if (WallHelper.StrongGroups(b2, groups))
                 {
                     //check double kill atari on escape board
-                    if (!LinkHelper.DoubleKillAtariOnTargetGroups(b2, groups))
+                    if (!LinkHelper.DoubleKillAtariOnTargetGroups(b2, ngroups))
                         return false;
                 }
             }

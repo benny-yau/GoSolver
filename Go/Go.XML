@@ -427,9 +427,14 @@
             Find real eye with strong groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B25" />
             </summary>
         </member>
-        <member name="M:Go.EyeHelper.CheckDiagonalForRealEye(Go.Board,Go.Board)">
+        <member name="M:Go.EyeHelper.CheckDiagonalForKillerGroupOnCapture(Go.Board,Go.Board,System.Nullable{Go.Point})">
             <summary>
-            Check diagonal for real eye.
+            Check diagonal for killer group on capture.
+            </summary>
+        </member>
+        <member name="M:Go.EyeHelper.CheckDiagonalForRealEyeOnCapture(Go.Board,Go.Board)">
+            <summary>
+            Check diagonal for real eye on capture.
             </summary>
         </member>
         <member name="M:Go.EyeHelper.CheckCaptureMoveLiberty(Go.Board,Go.Board)">
@@ -1564,8 +1569,10 @@
             <summary>
             Atari redundant move.
             <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A9_Ext" />
+            Check increased killer group <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_GuanZiPu_B3" />
             Make move at the other liberty <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q17154" />
-            Check capture secure <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_GuanZiPu_B3" />
+            Check killer formation <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Side_A23" />
+            Check one point atari target <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WindAndTime_Q30225_3" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SuicidalRedundantMove(Go.GameTryMove)">
@@ -1691,6 +1698,7 @@
             Check immovable point at diagonal.
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17250_3" />
             Check opponent at diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30196" />
+            Check real eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A41" />
             Without diagonal cut <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16483" />
             With diagonal cut <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_ScenarioHighLevel28_2" />
             Check killer group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18474" />
