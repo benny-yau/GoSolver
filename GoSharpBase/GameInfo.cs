@@ -21,12 +21,15 @@ namespace Go
         public String ScenarioName;
         public List<SetupMove> SetupMoves = new List<SetupMove>();
         public List<Point> targetPoints = new List<Point>();
-        public List<Point> survivalPoints = new List<Point>();
         public List<Point> movablePoints = new List<Point>();
         public List<Point> killMovablePoints = new List<Point>();
         public List<List<Point>> solutionPoints = new List<List<Point>>();
-        public List<CorrectedList> correctedSolutions = new List<CorrectedList>();
+
+        public List<Point> survivalPoints = new List<Point>();
+        public List<Point> survivalLinkPoints = new List<Point>();
         public List<List<Point>> dictatePoints = new List<List<Point>>();
+        public List<CorrectedList> correctedSolutions = new List<CorrectedList>();
+
 
         private List<List<Point>> combinedSolutions;
         public List<List<Point>> CombinedSolutions

@@ -286,8 +286,7 @@ namespace Go
             //whole group dying
             if (WholeGroupDying(tryBoard))
             {
-                Point liberty = tryBoard.MoveGroup.Liberties.First();
-                if (TryKillFormation(currentBoard, c, new List<Point>() { liberty }).Item1 && SuicidalEndMove(tryBoard, currentBoard))
+                if (SuicidalEndMove(tryBoard, currentBoard))
                     return true;
                 return false;
             }

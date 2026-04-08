@@ -192,6 +192,16 @@ namespace Go
         }
 
         /// <summary>
+        /// Is external link to target group.
+        /// </summary>
+        public static Boolean IsExternalLinkToTargetGroup(Board board, Point linkPoint)
+        {
+            if (board.GameInfo.targetPoints.Any(n => LinkHelper.IsDiagonallyConnectedGroups(board, board.GetGroupAt(linkPoint), board.GetGroupAt(n))))
+                return true;
+            return false;
+        }
+
+        /// <summary>
         /// Is absolute link for groups.
         /// </summary>
         public static Boolean IsAbsoluteLinkForGroups(Board currentBoard, Board tryBoard)
@@ -434,6 +444,7 @@ namespace Go
         /// </summary>
         public static Boolean IsDiagonallyConnectedGroups(Board board, Group group, Group findGroup)
         {
+            if (group.Equals(findGroup)) return true;
             return IsDiagonallyConnectedGroups(new HashSet<Group>() { group }, board, s => s == findGroup);
         }
 

@@ -335,7 +335,8 @@ namespace Go
             if (!rc2 && !KillerFormationHelper.IsFirstPoint(currentBoard, q, move)) return false;
 
             //check killer formation
-            if (KillerFormationHelper.TryKillFormation(currentBoard, c.Opposite(), new List<Point> { move }).Item1)
+            int points = currentBoard.GetGroupsFromStoneNeighbours(move, c).Sum(n => n.Points.Count);
+            if (points >= 3 && KillerFormationHelper.TryKillFormation(currentBoard, c.Opposite(), new List<Point> { move }).Item1)
                 return false;
 
             //check one point atari target
@@ -934,7 +935,9 @@ namespace Go
                 //check real eye
                 if (EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, move, c.Opposite()))
                 {
-                    if (EyeHelper.CheckDiagonalForKillerGroupOnCapture(tryBoard, captureBoard).Any(n => n != null)) 
+                    if (tryBoard.PointWithinMiddleArea() || tryBoard.GetDiagonalNeighbours().All(n => tryBoard[n] == c.Opposite())) return true;
+                    List<Group> kgroups = EyeHelper.CheckDiagonalForKillerGroupOnCapture(tryBoard, captureBoard).ToList();
+                    if (!kgroups.Any() || kgroups.Any(n => n != null))
                         return true;
                 }
             }
@@ -2735,7 +2738,7 @@ namespace Go
             Boolean twoPointGroup = GroupHelper.CheckKillerGroupPoints(tryBoard, move, c.Opposite()) != null;
             if (twoPointGroup && ImmovableHelper.IsSuicidalMove(tryBoard, p, c.Opposite()))
                 return false;
-            
+
             if (atariTarget.Points.Count == 1)
             {
                 //check one point target

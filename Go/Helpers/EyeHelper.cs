@@ -412,7 +412,8 @@ namespace Go
         {
             if (move == null) move = tryBoard.Move.Value;
             Content c = tryBoard[move.Value];
-            return LinkHelper.GetGroupDiagonals(tryBoard).Where(n => tryBoard[n.Move] != c).Select(n => GroupHelper.GetDirectKillerGroup(captureBoard, n.Move, c.Opposite())).Where(s => s != GroupHelper.GetDirectKillerGroup(captureBoard, move.Value, c.Opposite())).Distinct();
+            IEnumerable<Link<Point>> diagonals = LinkHelper.GetGroupDiagonals(tryBoard).Where(n => tryBoard[n.Move] != c.Opposite());
+            return diagonals.Select(n => GroupHelper.GetDirectKillerGroup(captureBoard, n.Move, c.Opposite())).Where(s => s != GroupHelper.GetDirectKillerGroup(captureBoard, move.Value, c.Opposite())).Distinct();
         }
 
         /// <summary>

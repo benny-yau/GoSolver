@@ -169,7 +169,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Check if all target points are killed.
+        /// Check if target group killed.
         /// </summary>
         public static ConfirmAliveResult CheckIfTargetGroupKilled(Board board)
         {
@@ -183,7 +183,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Includes target survived and target killed flags to prompt user.
+        /// Check if target survived or killed.
         /// </summary>
         public static ConfirmAliveResult CheckIfTargetSurvivedOrKilled(ConfirmAliveResult result, SurviveOrKill surviveOrKill, Board board)
         {
@@ -197,7 +197,7 @@ namespace Go
 
 
         /// <summary>
-        /// Check if target group is dead or alive, including survival points check.
+        /// Check if target group is dead or alive.
         /// </summary>
         public static ConfirmAliveResult CheckIfDeadOrAlive(SurviveOrKill surviveOrKill, Board board)
         {
@@ -205,6 +205,10 @@ namespace Go
             //check for survival points
             if (board.CapturedPoints.Intersect(board.GameInfo.survivalPoints).Any())
                 return (surviveOrKill == SurviveOrKill.Survive) ? ConfirmAliveResult.Alive : ConfirmAliveResult.Dead;
+
+            //check external link
+            if (surviveOrKill == SurviveOrKill.Survive && board.GameInfo.survivalLinkPoints.Any(n => LinkHelper.IsExternalLinkToTargetGroup(board, n)))
+                return ConfirmAliveResult.Alive;
 
             //check target dead or alive
             if (surviveOrKill == SurviveOrKill.Survive)

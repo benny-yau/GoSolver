@@ -1290,6 +1290,11 @@
             Validate leap move.
             </summary>
         </member>
+        <member name="M:Go.LinkHelper.IsExternalLinkToTargetGroup(Go.Board,Go.Point)">
+            <summary>
+            Is external link to target group.
+            </summary>
+        </member>
         <member name="M:Go.LinkHelper.IsAbsoluteLinkForGroups(Go.Board,Go.Board)">
             <summary>
             Is absolute link for groups.
@@ -1570,6 +1575,7 @@
             Atari redundant move.
             <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A9_Ext" />
             Check increased killer group <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_GuanZiPu_B3" />
+            Check killer group <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WuQingYuan_Q31503" />
             Make move at the other liberty <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q17154" />
             Check killer formation <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Side_A23" />
             Check one point atari target <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WindAndTime_Q30225_3" />
@@ -2559,17 +2565,17 @@
         </member>
         <member name="M:Go.LifeCheck.CheckIfTargetGroupKilled(Go.Board)">
             <summary>
-            Check if all target points are killed.
+            Check if target group killed.
             </summary>
         </member>
         <member name="M:Go.LifeCheck.CheckIfTargetSurvivedOrKilled(Go.ConfirmAliveResult,Go.SurviveOrKill,Go.Board)">
             <summary>
-            Includes target survived and target killed flags to prompt user.
+            Check if target survived or killed.
             </summary>
         </member>
         <member name="M:Go.LifeCheck.CheckIfDeadOrAlive(Go.SurviveOrKill,Go.Board)">
             <summary>
-            Check if target group is dead or alive, including survival points check.
+            Check if target group is dead or alive.
             </summary>
         </member>
         <member name="M:Go.MonteCarloGame.InitializeMonteCarloComputerMove(Go.Game,Go.Node,System.Int32)">
