@@ -342,12 +342,11 @@ namespace Go
             //check one point atari target
             if (atariTarget.Points.Count == 1 && KillerFormationHelper.BoxFormation(currentBoard, killerGroup))
             {
-                if (EyeHelper.CheckDiagonalForKillerGroupOnCapture(currentBoard, tryBoard, atariPoint).Any())
+                if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] != c && GroupHelper.CheckIfDifferentKillerGroup(tryBoard, n, atariPoint, c).Item1))
                     return false;
             }
             return true;
         }
-
         #endregion
 
         #region suicidal move
@@ -2336,8 +2335,6 @@ namespace Go
                 List<Point> contentPoints = kgroup.Points.Where(n => tryBoard[n] == c).ToList();
                 List<Group> groups = tryBoard.GetGroupsFromPoints(contentPoints).ToList();
                 if (groups.Count != 1 || groups.First().Points.Count < 4) continue;
-                if (liberties.Count(n => GroupHelper.GetKillerGroupFromCache(tryBoard, n, c.Opposite()) != kgroup) != 1) continue;
-
                 //check kill formation
                 Board b = KillerFormationHelper.DeadFormationInBothAlive(tryBoard, kgroup, 3).Item2;
                 if (b == null) continue;
@@ -3159,6 +3156,7 @@ namespace Go
         /// Redundant non suicidal move.
         /// <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A23" /> 
         /// Check neighbour groups <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q30064" />
+        /// Check killer group at neighbour group <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
         /// </summary>
         public static Boolean RedundantNonSuicidalMove(GameTryMove tryMove)
         {
@@ -3174,7 +3172,13 @@ namespace Go
             if (tryBoard.GetGroupsFromPoints(npoints).Count != 1) return false;
 
             //check liberties of neighbour groups
-            if (!tryBoard.GetGroupsFromStoneNeighbours().All(n => n.Points.Count > 1 && n.Liberties.Count > n.Neighbours.Count * 0.5, true))
+            List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours().Where(n => n.Points.Count > 1 && n.Liberties.Count > n.Neighbours.Count * 0.5).ToList();
+            if (ngroups.Count != 1)
+                return false;
+
+            //check killer group at neighbour group
+            List<Group> kgroups = GroupHelper.GetKillerGroupsFromPoints(ngroups.First().Neighbours, tryBoard, c.Opposite());
+            if (kgroups.Any(n => tryBoard.GetNeighbourGroups(n).Any(s => !WallHelper.IsHostileGroup(tryBoard, s))))
                 return false;
 
             return true;

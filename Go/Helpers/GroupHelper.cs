@@ -191,5 +191,16 @@ namespace Go
             List<Group> killerGroups = points.Where(n => board[n] != c).Select(d => GroupHelper.GetDirectKillerGroup(board, d, c)).Where(n => n != null).Distinct().ToList();
             return killerGroups;
         }
+
+        /// <summary>
+        /// Check if different killer group.
+        /// </summary>
+        public static (Boolean, Group) CheckIfDifferentKillerGroup(Board board, Point p, Point q, Content c)
+        {
+            Group groupP = GroupHelper.GetDirectKillerGroup(board, p, c);
+            Group groupQ = GroupHelper.GetDirectKillerGroup(board, q, c);
+            if (groupP == groupQ) return (false, null);
+            return (true, groupP);
+        }
     }
 }

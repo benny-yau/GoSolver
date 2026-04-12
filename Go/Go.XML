@@ -427,7 +427,7 @@
             Find real eye with strong groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B25" />
             </summary>
         </member>
-        <member name="M:Go.EyeHelper.CheckDiagonalForKillerGroupOnCapture(Go.Board,Go.Board,System.Nullable{Go.Point})">
+        <member name="M:Go.EyeHelper.CheckDiagonalForKillerGroupOnCapture(Go.Board,Go.Board)">
             <summary>
             Check diagonal for killer group on capture.
             </summary>
@@ -582,6 +582,11 @@
         <member name="M:Go.GroupHelper.GetKillerGroupsFromPoints(System.Collections.Generic.IEnumerable{Go.Point},Go.Board,Go.Content)">
             <summary>
             Get killer groups from points.
+            </summary>
+        </member>
+        <member name="M:Go.GroupHelper.CheckIfDifferentKillerGroup(Go.Board,Go.Point,Go.Point,Go.Content)">
+            <summary>
+            Check if different killer group.
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.FindTigerMouth(Go.Board,Go.Point,Go.Content)">
@@ -2225,6 +2230,7 @@
             Redundant non suicidal move.
             <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A23" /> 
             Check neighbour groups <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q30064" />
+            Check killer group at neighbour group <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.RedundantFillerMove(Go.GameTryMove)">

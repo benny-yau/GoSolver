@@ -408,12 +408,15 @@ namespace Go
         /// <summary>
         /// Check diagonal for killer group on capture.
         /// </summary>
-        public static IEnumerable<Group> CheckDiagonalForKillerGroupOnCapture(Board tryBoard, Board captureBoard, Point? move = null)
+        public static IEnumerable<Group> CheckDiagonalForKillerGroupOnCapture(Board tryBoard, Board captureBoard)
         {
-            if (move == null) move = tryBoard.Move.Value;
-            Content c = tryBoard[move.Value];
-            IEnumerable<Link<Point>> diagonals = LinkHelper.GetGroupDiagonals(tryBoard).Where(n => tryBoard[n.Move] != c.Opposite());
-            return diagonals.Select(n => GroupHelper.GetDirectKillerGroup(captureBoard, n.Move, c.Opposite())).Where(s => s != GroupHelper.GetDirectKillerGroup(captureBoard, move.Value, c.Opposite())).Distinct();
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            foreach (Link<Point> d in LinkHelper.GetGroupDiagonals(tryBoard).Where(n => tryBoard[n.Move] != c.Opposite()))
+            {
+                (Boolean rc, Group groupP) = GroupHelper.CheckIfDifferentKillerGroup(captureBoard, d.Move, move, c.Opposite());
+                if (rc) yield return groupP;
+            }
         }
 
         /// <summary>
@@ -431,9 +434,14 @@ namespace Go
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            List<Point> liberties = captureBoard.GetMoveLiberties().Where(n => !n.Equals(move) && GroupHelper.GetKillerGroupFromCache(captureBoard, move, c.Opposite()) != GroupHelper.GetKillerGroupFromCache(captureBoard, n, c.Opposite())).ToList();
-            if (liberties.Any(n => !WallHelper.NoEyeForSurvival(captureBoard, n, c.Opposite()) && !EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, n, c.Opposite())))
+            foreach (Point p in captureBoard.GetMoveLiberties().Where(n => !n.Equals(move)))
+            {
+                (Boolean rc, Group groupP) = GroupHelper.CheckIfDifferentKillerGroup(captureBoard, p, move, c.Opposite());
+                if (!rc) continue;
+                if (WallHelper.NoEyeForSurvival(captureBoard, p, c.Opposite())) continue;
+                if (groupP != null && EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, groupP)) continue;
                 return true;
+            }
             return false;
         }
 
