@@ -1458,6 +1458,7 @@
         <member name="M:Go.LinkHelper.DoubleConnectAndDieOnTargetGroups(Go.Board,System.Collections.Generic.List{Go.Group})">
             <summary>
             Double connect and die on target groups.
+            Check tiger mouth exceptions <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30315" />
             </summary>
         </member>
         <member name="M:Go.LinkHelper.CheckMoveGroupForTigerMouthExceptions(Go.Board,Go.Board)">

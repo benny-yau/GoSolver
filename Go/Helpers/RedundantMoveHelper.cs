@@ -2328,19 +2328,22 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Point move = tryBoard.Move.Value;
             Content c = tryMove.MoveContent;
-            HashSet<Point> liberties = tryBoard.GetLibertiesOfGroups(tryBoard.GetGroupsFromStoneNeighbours());
-            List<Group> kgroups = GroupHelper.GetKillerGroupsFromPoints(liberties, tryBoard, c.Opposite());
-            foreach (Group kgroup in kgroups)
+            foreach (Group ngroup in tryBoard.GetGroupsFromStoneNeighbours())
             {
-                List<Point> contentPoints = kgroup.Points.Where(n => tryBoard[n] == c).ToList();
-                List<Group> groups = tryBoard.GetGroupsFromPoints(contentPoints).ToList();
-                if (groups.Count != 1 || groups.First().Points.Count < 4) continue;
-                //check kill formation
-                Board b = KillerFormationHelper.DeadFormationInBothAlive(tryBoard, kgroup, 3).Item2;
-                if (b == null) continue;
-                if (tryBoard.GetStoneNeighbours(b.Move).Any(n => tryBoard[n] == c.Opposite())) continue;
-                if (KillerFormationHelper.IsKillerFormationFromFunc(tryBoard, groups.First())) continue;
-                return true;
+                List<Group> kgroups = GroupHelper.GetKillerGroupsFromPoints(ngroup.Liberties, tryBoard, c.Opposite());
+                foreach (Group kgroup in kgroups)
+                {
+                    if (kgroup.Liberties.Count > 3) continue;
+                    List<Point> contentPoints = kgroup.Points.Where(n => tryBoard[n] == c).ToList();
+                    List<Group> groups = tryBoard.GetGroupsFromPoints(contentPoints).ToList();
+                    if (groups.Count != 1 || groups.First().Points.Count < 4) continue;
+                    //check kill formation
+                    Board b = KillerFormationHelper.DeadFormationInBothAlive(tryBoard, kgroup, 3).Item2;
+                    if (b == null) continue;
+                    if (tryBoard.GetStoneNeighbours(b.Move).Any(n => tryBoard[n] == c.Opposite())) continue;
+                    if (KillerFormationHelper.IsKillerFormationFromFunc(tryBoard, groups.First())) continue;
+                    return true;
+                }
             }
             return false;
         }
@@ -3172,13 +3175,24 @@ namespace Go
             if (tryBoard.GetGroupsFromPoints(npoints).Count != 1) return false;
 
             //check liberties of neighbour groups
-            List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours().Where(n => n.Points.Count > 1 && n.Liberties.Count > n.Neighbours.Count * 0.5).ToList();
-            if (ngroups.Count != 1)
-                return false;
+            List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours();
+            if (ngroups.Count != 1) return false;
+            Group ngroup = ngroups.First();
+            if (ngroup.Points.Count == 1) return false;
+            if (ngroup.Points.Count > 2)
+            {
+                if (ngroup.Liberties.Count < ngroup.Neighbours.Count * 0.5)
+                    return false;
+            }
+            else if (ngroup.Points.Count == 2)
+            {
+                if (ngroup.Liberties.Count <= ngroup.Neighbours.Count * 0.5)
+                    return false;
+            }
 
             //check killer group at neighbour group
-            List<Group> kgroups = GroupHelper.GetKillerGroupsFromPoints(ngroups.First().Neighbours, tryBoard, c.Opposite());
-            if (kgroups.Any(n => tryBoard.GetNeighbourGroups(n).Any(s => !WallHelper.IsHostileGroup(tryBoard, s))))
+            List<Group> kgroups = GroupHelper.GetKillerGroupsFromPoints(ngroup.Neighbours, tryBoard, c.Opposite());
+            if (kgroups.Any(n => n.Points.Count <= 3 && tryBoard.GetNeighbourGroups(n).Any(s => !WallHelper.IsHostileGroup(tryBoard, s))))
                 return false;
 
             return true;

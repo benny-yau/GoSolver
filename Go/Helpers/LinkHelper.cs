@@ -677,10 +677,7 @@ namespace Go
                 IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, liberties, c.Opposite(), true);
                 if (moveBoards.Any(b => AtariHelper.DoubleKillAtariWithoutEscape(b)))
                     return true;
-                //check exception
-                if (moveBoards.Any(b => CheckMoveGroupForTigerMouthExceptions(board, b)))
-                    return true;
-            }
+            }            
             //double connect and die
             if (DoubleConnectAndDieOnTargetGroups(board, targetGroups))
                 return true;
@@ -689,6 +686,7 @@ namespace Go
 
         /// <summary>
         /// Double connect and die on target groups.
+        /// Check tiger mouth exceptions <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30315" />
         /// </summary>
         public static Boolean DoubleConnectAndDieOnTargetGroups(Board board, List<Group> targetGroups)
         {
@@ -703,6 +701,7 @@ namespace Go
             //double connect and die
             if (moveBoards.Any(b => b.GetGroupsFromStoneNeighbours().Count(n => !WallHelper.IsStrongGroup(b, n)) >= 2))
                 return true;
+            //check tiger mouth exceptions
             if (moveBoards.Any(b => CheckMoveGroupForTigerMouthExceptions(board, b)))
                 return true;
             return false;
