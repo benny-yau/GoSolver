@@ -648,8 +648,6 @@ namespace Go
 
         /// <summary>
         /// Tiger mouth threat group.
-        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_7" />
-        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_6" />
         /// </summary>
         public static Group TigerMouthThreatGroup(Board board, Point tigerMouth, Content c)
         {
@@ -722,6 +720,8 @@ namespace Go
 
         /// <summary>
         /// Link with immovable group.
+        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_6" />
+        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_7" />
         /// </summary>
         public static Boolean LinkWithImmovableGroup(Board b, Board board, Func<Group, Boolean> func = null)
         {

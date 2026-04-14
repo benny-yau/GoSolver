@@ -128,18 +128,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Is negligible for board. Same as is negligible except with func. 
-        /// </summary>
-        public static Boolean IsNegligibleForBoard(Board tryBoard, Board currentBoard, Func<Group, Boolean> func = null)
-        {
-            if (tryBoard.CapturedList.Count > 0) return false;
-            if (Board.ResolveAtari(currentBoard, tryBoard)) return false;
-            if (!ImmovableHelper.IsSuicidalWithoutKo(tryBoard) && tryBoard.AtariTargets.Any(t => (func != null) ? func(t) : true)) return false;
-            return true;
-        }
-
-        /// <summary>
-        /// Increased count of killer groups.
+        /// Increased killer groups.
         /// </summary>
         public bool IncreasedKillerGroups
         {
@@ -164,7 +153,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Make move at same point as opponent.
+        /// Make move with opponent at same point.
         /// </summary>
         public GameTryMove MakeMoveWithOpponentAtSamePoint(Boolean overrideKo = true)
         {
@@ -190,6 +179,9 @@ namespace Go
             }
         }
 
+        /// <summary>
+        /// Link for groups.
+        /// </summary>
         public Boolean LinkForGroups()
         {
             return LinkHelper.PossibleLinkForGroups(TryGame.Board, CurrentGame.Board);

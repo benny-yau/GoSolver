@@ -80,13 +80,13 @@ namespace Go
         /// <summary>
         /// Make ko fight.
         /// </summary>
-        public static Boolean MakeKoFight(Board tryBoard, Point p, Content c)
+        public static Boolean MakeKoFight(Board tryBoard, Point p, Content c, Boolean checkConnectAndDie = true)
         {
             if (tryBoard[p] != Content.Empty) return false;
             Board board = tryBoard.MakeMoveOnNewBoard(p, c, true);
             if (board == null) return false;
             if (!IsForwardOrReverseKoFight(board)) return false;
-            if (ImmovableHelper.CheckConnectAndDie(board, board.MoveGroup, false))
+            if (checkConnectAndDie && ImmovableHelper.CheckConnectAndDie(board, board.MoveGroup, false))
                 return false;
             return true;
         }
@@ -94,18 +94,18 @@ namespace Go
         /// <summary>
         /// Make ko fight from eye point.
         /// </summary>
-        public static Boolean MakeKoFightFromEyePoint(Board board, Point eye, Content c)
+        public static Boolean MakeKoFightFromEyePoint(Board board, Point eye, Content c, Boolean checkConnectAndDie = true)
         {
             List<Point> nstones = board.GetStoneNeighbours(eye);
             if (nstones.Count(n => board[n] == c) != nstones.Count - 1) return false;
             List<Point> eyeNeighbour = nstones.Where(n => board[n] == Content.Empty).ToList();
-            if (eyeNeighbour.Count == 1 && KoHelper.MakeKoFight(board, eyeNeighbour.First(), c))
+            if (eyeNeighbour.Count == 1 && KoHelper.MakeKoFight(board, eyeNeighbour.First(), c, checkConnectAndDie))
                 return true;
             return false;
         }
 
         /// <summary>
-        /// Reverse ko for neutral point move.
+        /// Check reverse ko for neutral point move.
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A80" />
         /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20230813" />
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_20221229_7" />
@@ -156,7 +156,7 @@ namespace Go
 
 
         /// <summary>
-        /// Check for possibility of double ko, for both survival and kill.
+        /// Possibility of double ko.
         /// Survival double ko <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_TianLongTu_Q16446" />
         /// <see cref="UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_TianLongTu_Q16975" />
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_3" /> 
@@ -202,7 +202,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Double ko for neutral point.
+        /// Neutral point double ko.
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_4" />
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B41_2" />
@@ -215,7 +215,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Double ko for covered eye.
+        /// Is covered eye double ko.
         /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_7" />
         /// </summary>
         public static Boolean IsCoveredEyeDoubleKo(Board board)

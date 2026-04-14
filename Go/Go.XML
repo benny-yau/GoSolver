@@ -1213,12 +1213,12 @@
             Is forward or reverse ko fight.
             </summary>
         </member>
-        <member name="M:Go.KoHelper.MakeKoFight(Go.Board,Go.Point,Go.Content)">
+        <member name="M:Go.KoHelper.MakeKoFight(Go.Board,Go.Point,Go.Content,System.Boolean)">
             <summary>
             Make ko fight.
             </summary>
         </member>
-        <member name="M:Go.KoHelper.MakeKoFightFromEyePoint(Go.Board,Go.Point,Go.Content)">
+        <member name="M:Go.KoHelper.MakeKoFightFromEyePoint(Go.Board,Go.Point,Go.Content,System.Boolean)">
             <summary>
             Make ko fight from eye point.
             </summary>
@@ -1542,6 +1542,7 @@
             Check kill opponent <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A34" />
             Check possible links <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" />
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
+            Check ko fight <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_Q18341_3" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckTwoLibertyGroupToCaptureNeighbour(Go.Board,Go.Board,Go.Group)">
@@ -2229,9 +2230,16 @@
         <member name="M:Go.RedundantMoveHelper.RedundantNonSuicidalMove(Go.GameTryMove)">
             <summary>
             Redundant non suicidal move.
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.RedundantNonSuicidal(Go.GameTryMove,Go.GameTryMove)">
+            <summary>
+            Redundant non suicidal move.
             <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A23" /> 
+            <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_Corner_A84" /> 
             Check neighbour groups <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q30064" />
             Check killer group at neighbour group <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
+            Check opponent move <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q30403" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.RedundantFillerMove(Go.GameTryMove)">

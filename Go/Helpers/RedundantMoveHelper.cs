@@ -92,11 +92,13 @@ namespace Go
         /// Check kill opponent <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A34" />
         /// Check possible links <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
+        /// Check ko fight <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_Q18341_3" />
         /// </summary>
         public static Boolean FindCoveredEyeMove(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
             Board tryBoard = tryMove.TryGame.Board;
             Board currentBoard = tryMove.CurrentGame.Board;
+            Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
             if (tryBoard.CapturedList.Count == 0) return false;
             if (tryMove.AtariResolved) return false;
@@ -147,6 +149,10 @@ namespace Go
 
             //check double ko
             if (KoHelper.IsCoveredEyeDoubleKo(tryBoard))
+                return false;
+
+            //check ko fight
+            if (currentBoard.CornerPoint(move) && KoHelper.MakeKoFightFromEyePoint(currentBoard, move, c.Opposite(), false))
                 return false;
 
             return true;
@@ -3157,11 +3163,28 @@ namespace Go
 
         /// <summary>
         /// Redundant non suicidal move.
-        /// <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A23" /> 
-        /// Check neighbour groups <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q30064" />
-        /// Check killer group at neighbour group <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
         /// </summary>
         public static Boolean RedundantNonSuicidalMove(GameTryMove tryMove)
+        {
+            //non suicidal move
+            if (RedundantNonSuicidal(tryMove))
+                return true;
+
+            //non suicidal move for opponent
+            if (tryMove.OpponentMove != null && RedundantNonSuicidal(tryMove.OpponentMove, tryMove))
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Redundant non suicidal move.
+        /// <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A23" /> 
+        /// <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_Corner_A84" /> 
+        /// Check neighbour groups <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q30064" />
+        /// Check killer group at neighbour group <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
+        /// Check opponent move <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q30403" />
+        /// </summary>
+        public static Boolean RedundantNonSuicidal(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
@@ -3195,6 +3218,13 @@ namespace Go
             if (kgroups.Any(n => n.Points.Count <= 3 && tryBoard.GetNeighbourGroups(n).Any(s => !WallHelper.IsHostileGroup(tryBoard, s))))
                 return false;
 
+            //check opponent move
+            if (opponentMove != null)
+            {
+                List<Group> diagonalGroups = LinkHelper.GetDiagonalGroups(tryBoard, ngroup);
+                if (diagonalGroups.Any(n => !WallHelper.IsHostileGroup(tryBoard, n)))
+                    return false;
+            }
             return true;
         }
 
