@@ -937,6 +937,8 @@ namespace Go
                 //check immovable point at diagonal
                 if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard.PointWithinMiddleArea(n) && ImmovableHelper.IsImmovablePoint(tryBoard, n, c.Opposite())))
                     return true;
+                if (tryBoard.GetDiagonalNeighbours().Any(n => ImmovableHelper.IsImmovablePoint(captureBoard, n, c.Opposite()) && captureBoard.GetNeighbourGroups(tryBoard.MoveGroup).All(s => WallHelper.IsHostileGroup(captureBoard, s))))
+                    return true;
                 //check real eye
                 if (EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, move, c.Opposite()))
                 {

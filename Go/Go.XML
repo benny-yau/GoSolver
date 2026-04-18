@@ -161,14 +161,9 @@
             Is negligible.
             </summary>
         </member>
-        <member name="M:Go.GameTryMove.IsNegligibleForBoard(Go.Board,Go.Board,System.Func{Go.Group,System.Boolean})">
-            <summary>
-            Is negligible for board. Same as is negligible except with func. 
-            </summary>
-        </member>
         <member name="P:Go.GameTryMove.IncreasedKillerGroups">
             <summary>
-            Increased count of killer groups.
+            Increased killer groups.
             </summary>
         </member>
         <member name="F:Go.GameTryMove.opponentMove">
@@ -178,12 +173,17 @@
         </member>
         <member name="M:Go.GameTryMove.MakeMoveWithOpponentAtSamePoint(System.Boolean)">
             <summary>
-            Make move at same point as opponent.
+            Make move with opponent at same point.
             </summary>
         </member>
         <member name="P:Go.GameTryMove.IsRedundantMove">
             <summary>
             Is redundant move.
+            </summary>
+        </member>
+        <member name="M:Go.GameTryMove.LinkForGroups">
+            <summary>
+            Link for groups.
             </summary>
         </member>
         <member name="M:Go.AtariHelper.AtariByGroup(Go.Board,Go.Group,System.Boolean)">
@@ -1225,7 +1225,7 @@
         </member>
         <member name="M:Go.KoHelper.CheckReverseKoForNeutralPoint(Go.Board,Go.Group)">
             <summary>
-            Reverse ko for neutral point move.
+            Check reverse ko for neutral point move.
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A80" />
             <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20230813" />
             <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_20221229_7" />
@@ -1243,7 +1243,7 @@
         </member>
         <member name="M:Go.KoHelper.PossibilityOfDoubleKo(Go.Board,Go.Board)">
             <summary>
-            Check for possibility of double ko, for both survival and kill.
+            Possibility of double ko.
             Survival double ko <see cref="!:UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_TianLongTu_Q16446" />
             <see cref="!:UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_Scenario_TianLongTu_Q16975" />
             <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_3" /> 
@@ -1254,7 +1254,7 @@
         </member>
         <member name="M:Go.KoHelper.NeutralPointDoubleKo(Go.Board)">
             <summary>
-            Double ko for neutral point.
+            Neutral point double ko.
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi" />
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_4" />
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B41_2" />
@@ -1262,7 +1262,7 @@
         </member>
         <member name="M:Go.KoHelper.IsCoveredEyeDoubleKo(Go.Board)">
             <summary>
-            Double ko for covered eye.
+            Is covered eye double ko.
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_7" />
             </summary>
         </member>
@@ -1446,13 +1446,14 @@
         <member name="M:Go.LinkHelper.TigerMouthThreatGroup(Go.Board,Go.Point,Go.Content)">
             <summary>
             Tiger mouth threat group.
-            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_7" />
-            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_6" />
             </summary>
         </member>
         <member name="M:Go.LinkHelper.DoubleKillAtariOnTargetGroups(Go.Board,System.Collections.Generic.List{Go.Group})">
             <summary>
             Double kill atari on target groups.
+            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_DoubleAtariOnSemiSolidEye" />
+            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_DoubleAtariOnLinkage" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
             </summary>
         </member>
         <member name="M:Go.LinkHelper.DoubleConnectAndDieOnTargetGroups(Go.Board,System.Collections.Generic.List{Go.Group})">
@@ -1469,6 +1470,8 @@
         <member name="M:Go.LinkHelper.LinkWithImmovableGroup(Go.Board,Go.Board,System.Func{Go.Group,System.Boolean})">
             <summary>
             Link with immovable group.
+            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_6" />
+            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_7" />
             </summary>
         </member>
         <member name="M:Go.LinkHelper.MoveAtTigerMouth(Go.Board,Go.Board)">

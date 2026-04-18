@@ -662,6 +662,9 @@ namespace Go
 
         /// <summary>
         /// Double kill atari on target groups.
+        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_DoubleAtariOnSemiSolidEye" />
+        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_DoubleAtariOnLinkage" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
         /// </summary>
         public static Boolean DoubleKillAtariOnTargetGroups(Board board, List<Group> targetGroups)
         {
