@@ -918,6 +918,8 @@ namespace Go
         /// Check immovable point at diagonal.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17250_3" />
         /// Check opponent at diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30196" />
+        /// Check diagonal group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A66" />
+        /// Check side point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31510_2" />
         /// Check real eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A41" />
         /// Without diagonal cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16483" />
         /// With diagonal cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_ScenarioHighLevel28_2" />
@@ -937,8 +939,27 @@ namespace Go
                 //check immovable point at diagonal
                 if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard.PointWithinMiddleArea(n) && ImmovableHelper.IsImmovablePoint(tryBoard, n, c.Opposite())))
                     return true;
-                if (tryBoard.GetDiagonalNeighbours().Any(n => ImmovableHelper.IsImmovablePoint(captureBoard, n, c.Opposite()) && captureBoard.GetNeighbourGroups(tryBoard.MoveGroup).All(s => WallHelper.IsHostileGroup(captureBoard, s))))
-                    return true;
+
+                foreach (Point d in tryBoard.GetDiagonalNeighbours())
+                {
+                    if (!ImmovableHelper.IsImmovablePoint(captureBoard, d, c.Opposite())) continue;
+                    //check hostile neighbour group
+                    if (captureBoard.GetNeighbourGroups(tryBoard.MoveGroup).All(n => WallHelper.IsHostileGroup(captureBoard, n)))
+                        return true;
+                    //check multi-point neighbour group
+                    List<Group> ngroups = tryBoard.GetNeighbourGroups();
+                    if (ngroups.All(n => n.Points.Count > 1))
+                    {
+                        //check diagonal group
+                        if (ngroups.Any(n => LinkHelper.GetDiagonalGroups(tryBoard, n).Any(s => !WallHelper.IsHostileGroup(tryBoard, s))))
+                            continue;
+                        //check side point
+                        if (!tryBoard.PointWithinMiddleArea() && !captureBoard.PointWithinMiddleArea() && ImmovableHelper.GetDiagonalsOfTigerMouth(captureBoard, d, c.Opposite()).Count(n => !captureBoard.PointWithinMiddleArea(n)) == 2)
+                            continue;
+                        return true;
+                    }
+                }
+
                 //check real eye
                 if (EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, move, c.Opposite()))
                 {

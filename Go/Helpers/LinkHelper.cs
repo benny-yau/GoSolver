@@ -678,7 +678,7 @@ namespace Go
                 IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, liberties, c.Opposite(), true);
                 if (moveBoards.Any(b => AtariHelper.DoubleKillAtariWithoutEscape(b)))
                     return true;
-            }            
+            }
             //double connect and die
             if (DoubleConnectAndDieOnTargetGroups(board, targetGroups))
                 return true;
@@ -687,7 +687,6 @@ namespace Go
 
         /// <summary>
         /// Double connect and die on target groups.
-        /// Check tiger mouth exceptions <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30315" />
         /// </summary>
         public static Boolean DoubleConnectAndDieOnTargetGroups(Board board, List<Group> targetGroups)
         {
@@ -700,23 +699,25 @@ namespace Go
             IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, liberties, c.Opposite(), true);
             moveBoards = moveBoards.Where(b => !WallHelper.StrongGroups(b, targetGroups));
             //double connect and die
-            if (moveBoards.Any(b => b.GetGroupsFromStoneNeighbours().Count(n => !WallHelper.IsStrongGroup(b, n)) >= 2))
+            Boolean rc = liberties.Any(n => targetGroups.All(s => board.GetGroupsFromStoneNeighbours(n, c.Opposite()).Contains(s)));
+            if (!rc && moveBoards.Any(b => b.GetGroupsFromStoneNeighbours().Count(n => !WallHelper.IsStrongGroup(b, n)) >= 2))
                 return true;
-            //check tiger mouth exceptions
-            if (moveBoards.Any(b => CheckMoveGroupForTigerMouthExceptions(board, b)))
+            //check exceptions
+            if (moveBoards.Any(b => CheckDoubleConnectAndDieExceptions(board, b)))
                 return true;
             return false;
         }
 
         /// <summary>
-        /// Check move group for tiger mouth exceptions.
+        /// Check double conenct and die exceptions.
+        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30315" />
         /// </summary>
-        public static Boolean CheckMoveGroupForTigerMouthExceptions(Board board, Board b)
+        public static Boolean CheckDoubleConnectAndDieExceptions(Board board, Board b)
         {
             if (Board.ResolveAtari(board, b) || b.CapturedList.Any(n => CheckImmovableNeighbourGroups(board, n).Any()))
                 return true;
 
-            if (LinkWithImmovableGroup(b, board) || MoveAtTigerMouth(b, board).Any() || CheckForKoBreak(b) || LinkBreakage(b))
+            if (LinkWithImmovableGroup(b, board) || CheckForKoBreak(b))
                 return true;
             return false;
         }
