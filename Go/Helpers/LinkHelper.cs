@@ -696,8 +696,8 @@ namespace Go
             if (targetGroups.Count == 0) return false;
 
             HashSet<Point> liberties = board.GetLibertiesOfGroups(targetGroups);
-            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, liberties, c.Opposite(), true);
-            moveBoards = moveBoards.Where(b => !WallHelper.StrongGroups(b, targetGroups));
+            IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, liberties, c.Opposite());
+            moveBoards = moveBoards.Where(b => !ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false) && !WallHelper.StrongGroups(b, targetGroups));
             //double connect and die
             Boolean rc = liberties.Any(n => targetGroups.All(s => board.GetGroupsFromStoneNeighbours(n, c.Opposite()).Contains(s)));
             if (!rc && moveBoards.Any(b => b.GetGroupsFromStoneNeighbours().Count(n => !WallHelper.IsStrongGroup(b, n)) >= 2))

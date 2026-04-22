@@ -612,8 +612,8 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Board currentBoard = tryMove.CurrentGame.Board;
             Content c = tryMove.MoveContent;
-            if (ImmovableHelper.CheckConnectAndDie(tryBoard)) return (false, null);
 
+            if (tryMove.ConnectAndDie) return (false, null);
             foreach (Point p in currentBoard.OpponentAtStoneNeighbour(move, c.Opposite()))
             {
                 //check opponent at diagonal

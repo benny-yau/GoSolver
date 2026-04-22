@@ -15,6 +15,7 @@ namespace Go
         public MakeMoveResult MakeMoveResult { get; set; }
         public ConfirmAliveResult ConfirmAlive { get; set; }
         public GameTryMove OpponentBestMove { get; set; }
+        public Board CaptureBoard { get; set; }
 
         public bool IsEye { get; set; }
         public bool IsCoveredEyeMove { get; set; }
@@ -124,6 +125,24 @@ namespace Go
             get
             {
                 return (!Captured && !AtariResolved && !AtariWithoutSuicide);
+            }
+        }
+
+        /// <summary>
+        /// Connect and die.
+        /// </summary>
+        private bool? connectAndDie = null;
+        public bool ConnectAndDie
+        {
+            get
+            {
+                if (connectAndDie == null)
+                {
+                    (Boolean connectAndDie, Board captureBoard) = ImmovableHelper.ConnectAndDie(TryGame.Board, TryGame.Board.MoveGroup, false);
+                    this.connectAndDie = connectAndDie;
+                    this.CaptureBoard = captureBoard;
+                }
+                return connectAndDie.Value;
             }
         }
 

@@ -99,23 +99,15 @@ namespace Go
         /// Check if real eye found in neighbour groups <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario5dan27" />
         /// Check covered eye at non-killable group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
         /// </summary>
-        public static Boolean SuicidalKillerFormations(Board tryBoard, Board currentBoard, Board captureBoard = null)
+        public static Boolean SuicidalKillerFormations(GameTryMove tryMove)
         {
-            Point move = tryBoard.Move.Value;
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryMove.Move;
             Content c = tryBoard.MoveGroup.Content;
 
-            //check liberties of move group
-            if (tryBoard.MoveGroupLiberties > 2) return false;
-
-            //create captured board
-            if (captureBoard == null)
-            {
-                if (tryBoard.MoveGroupLiberties == 1)
-                    captureBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
-                else if (tryBoard.MoveGroupLiberties == 2)
-                    (_, captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard);
-            }
-            if (captureBoard == null) return false;
+            if (!tryMove.ConnectAndDie) return false;
+            Board captureBoard = tryMove.CaptureBoard;
 
             //check multipoint snapback after capture
             if (MultipointSnapbackAfterCapture(tryBoard, captureBoard))

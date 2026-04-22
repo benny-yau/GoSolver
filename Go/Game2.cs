@@ -127,13 +127,16 @@ namespace Go
                 }
                 else if (tryMove.MakeMoveResult == MakeMoveResult.Legal)
                 {
-                    //check if game ended
-                    ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Survive, b);
-                    if (confirmAlive == ConfirmAliveResult.Alive)
-                        return (ConfirmAliveResult.Alive, new List<GameTryMove>() { tryMove }, null);
-                    //check recursion
-                    if (GameHelper.CheckForRecursion(tryMove))
-                        return (ConfirmAliveResult.Alive, new List<GameTryMove>() { tryMove }, null);
+                    if (!tryMove.ConnectAndDie)
+                    {
+                        //check if game ended
+                        ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Survive, b);
+                        if (confirmAlive == ConfirmAliveResult.Alive)
+                            return (ConfirmAliveResult.Alive, new List<GameTryMove>() { tryMove }, null);
+                        //check recursion
+                        if (GameHelper.CheckForRecursion(tryMove))
+                            return (ConfirmAliveResult.Alive, new List<GameTryMove>() { tryMove }, null);
+                    }
                     //find redundant moves
                     CheckSurvivalRedundantMoves(tryMove);
                     tryMoves.Add(tryMove);
@@ -403,13 +406,16 @@ namespace Go
                 }
                 else if (tryMove.MakeMoveResult == MakeMoveResult.Legal)
                 {
-                    //check if game ended
-                    ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Kill, b);
-                    if (confirmAlive == ConfirmAliveResult.Dead)
-                        return (ConfirmAliveResult.Dead, new List<GameTryMove>() { tryMove }, null);
-                    //check recursion
-                    if (GameHelper.CheckForRecursion(tryMove))
-                        return (ConfirmAliveResult.Alive, new List<GameTryMove>() { tryMove }, null);
+                    if (!tryMove.ConnectAndDie)
+                    {
+                        //check if game ended
+                        ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Kill, b);
+                        if (confirmAlive == ConfirmAliveResult.Dead)
+                            return (ConfirmAliveResult.Dead, new List<GameTryMove>() { tryMove }, null);
+                        //check recursion
+                        if (GameHelper.CheckForRecursion(tryMove))
+                            return (ConfirmAliveResult.Alive, new List<GameTryMove>() { tryMove }, null);
+                    }
                     //find redundant moves
                     CheckKillRedundantMoves(tryMove);
                     tryMoves.Add(tryMove);
