@@ -734,7 +734,7 @@ namespace Go
             if (!tryMove.ConnectAndDie) return false;
             Board captureBoard = tryMove.CaptureBoard;
 
-            if (LifeCheck.GetTargets(tryBoard).All(t => tryBoard.MoveGroup.Equals(t))) return true;
+            if (LifeCheck.GetTargets(tryBoard).All(t => tryBoard.MoveGroup.Equals(t))) return false;
 
             //check capture moves
             if (tryBoard.CapturedList.Any(n => AtariHelper.AtariByGroup(currentBoard, n).Any())) return false;
@@ -924,7 +924,7 @@ namespace Go
         /// Check side point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31510_2" />
         /// Check real eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A12_2" />
         /// Without diagonal cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16483" />
-        /// With diagonal cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_ScenarioHighLevel28_2" />
+        /// With diagonal cut <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_ScenarioHighLevel28" />
         /// Check killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18474" />
         /// </summary>
         private static Boolean CheckImmovablePointAtDiagonal(GameTryMove tryMove, Board captureBoard)
@@ -3224,6 +3224,7 @@ namespace Go
         /// Redundant non suicidal move.
         /// <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A23" /> 
         /// <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_Corner_A84" /> 
+        /// Check immovable point at diagonal <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_TianLongTu_Q16738" /> 
         /// Check neighbour groups <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q30064" />
         /// Check killer group at neighbour group <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
         /// Check opponent move <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q30403" />
@@ -3237,25 +3238,25 @@ namespace Go
             if (LinkHelper.GetDiagonalGroups(tryBoard).Any()) return false;
             if (KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard)) return false;
 
-            //check neighbour groups
-            List<Point> npoints = tryBoard.GetClosestPoints(move, c.Opposite(), 1);
-            if (tryBoard.GetGroupsFromPoints(npoints).Count != 1) return false;
-
             //check liberties of neighbour groups
             List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours();
             if (ngroups.Count != 1) return false;
             Group ngroup = ngroups.First();
             if (ngroup.Points.Count == 1) return false;
-            if (ngroup.Points.Count > 2)
-            {
-                if (ngroup.Liberties.Count < ngroup.Neighbours.Count * 0.5)
-                    return false;
-            }
-            else if (ngroup.Points.Count == 2)
-            {
-                if (ngroup.Liberties.Count <= ngroup.Neighbours.Count * 0.5)
-                    return false;
-            }
+            if (ngroup.Liberties.Count < ngroup.Neighbours.Count * 0.5)
+                return false;
+
+            //check immovable point at diagonal
+            if (tryBoard.GetDiagonalNeighbours().Any(n => ImmovableHelper.IsImmovablePoint(tryBoard, n, c.Opposite())))
+                return true;
+
+            //check two-point neighbour group
+            if (ngroup.Points.Count == 2 && ngroup.Liberties.Count <= ngroup.Neighbours.Count * 0.5)
+                return false;
+
+            //check neighbour groups
+            List<Point> npoints = tryBoard.GetClosestPoints(move, c.Opposite(), 1);
+            if (tryBoard.GetGroupsFromPoints(npoints).Count != 1) return false;
 
             //check killer group at neighbour group
             List<Group> kgroups = GroupHelper.GetKillerGroupsFromPoints(ngroup.Neighbours, tryBoard, c.Opposite());
@@ -3367,7 +3368,7 @@ namespace Go
             if (!tryMove.IsNegligible) return false;
 
             //check opponent at stone neighbour
-            if (!tryBoard.GetStoneNeighbours().All(n => tryBoard[n] != c.Opposite()))
+            if (tryBoard.OpponentAtStoneNeighbour().Any())
                 return false;
 
             //check killer formation

@@ -89,6 +89,7 @@ namespace ConsoleGoSolver
                 Console.WriteLine("Scenario number: \t" + (i + 1));
                 Console.WriteLine("Scenario name: \t\t" + g.GameInfo.ScenarioName);
                 Console.WriteLine("{0} \n\n", g.Board);
+                Console.WriteLine(DebugHelper.ShowTryMoves(g) + "\n\n");
             }
         }
 
