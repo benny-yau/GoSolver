@@ -3227,7 +3227,8 @@ namespace Go
         /// Check immovable point at diagonal <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_TianLongTu_Q16738" /> 
         /// Check neighbour groups <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q30064" />
         /// Check killer group at neighbour group <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
-        /// Check opponent move <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q30403" />
+        /// Check opponent move <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A26" />
+        /// <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q30403" />
         /// </summary>
         public static Boolean RedundantNonSuicidal(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
@@ -3266,6 +3267,8 @@ namespace Go
             //check opponent move
             if (opponentMove != null)
             {
+                if (tryBoard.MoveGroup.Points.Count == 2 && tryBoard.GetNeighbourGroups(ngroup).Count > 1)
+                    return false;
                 List<Group> diagonalGroups = LinkHelper.GetDiagonalGroups(tryBoard, ngroup);
                 if (diagonalGroups.Any(n => !WallHelper.IsHostileGroup(tryBoard, n)))
                     return false;
