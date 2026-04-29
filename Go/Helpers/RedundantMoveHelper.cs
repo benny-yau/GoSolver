@@ -3242,11 +3242,10 @@ namespace Go
             List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours();
             if (ngroups.Count != 1) return false;
             Group ngroup = ngroups.First();
-            if (ngroup.Points.Count == 1) return false;
+            if (ngroup.Points.Count == 1 || ngroup.Liberties.Count <= 2) return false;
             //check immovable point at diagonal
             if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard.PointWithinMiddleArea(n) && ImmovableHelper.IsImmovablePoint(tryBoard, n, c.Opposite())))
                 return true;
-
             //check liberties of neighbour groups
             if (ngroup.Liberties.Count < ngroup.Neighbours.Count * 0.5)
                 return false;
