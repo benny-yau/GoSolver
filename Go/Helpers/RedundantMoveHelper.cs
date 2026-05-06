@@ -2260,32 +2260,19 @@ namespace Go
 
             //check one neighbour group
             List<Group> ngroups = b.GetGroupsFromStoneNeighbours();
-            if (ngroups.Count == 1)
-            {
-                //check liberty fight
-                Group ngroup = ngroups.First();
-                if (tryBoard.GetNeighbourGroups(ngroup).Any(n => !WallHelper.IsNonKillableGroup(tryBoard, n) && LinkHelper.FindDiagonalCut(tryBoard, n).Item1 != null))
-                    return false;
+            if (ngroups.Count != 1) return false;
+            //check liberty fight
+            Group ngroup = ngroups.First();
+            if (tryBoard.GetNeighbourGroups(ngroup).Any(n => !WallHelper.IsNonKillableGroup(tryBoard, n) && LinkHelper.FindDiagonalCut(tryBoard, n).Item1 != null))
+                return false;
 
-                //check covered eye
-                if (ngroup.Liberties.Count == 1 && EyeHelper.FindCoveredEye(b, ngroup.Liberties.First(), c.Opposite()))
-                {
-                    if (ImmovableHelper.UnescapableGroup(b, ngroup).Item1)
-                        return false;
-                }
-                return true;
-            }
-            else
+            //check covered eye
+            if (ngroup.Liberties.Count == 1 && EyeHelper.FindCoveredEye(b, ngroup.Liberties.First(), c.Opposite()))
             {
-                //capture group at diagonal
-                foreach (Point p in b.GetDiagonalNeighbours())
-                {
-                    if (b.GetGroupsFromStoneNeighbours(p, c).Count < 2) continue;
-                    if (b[p] == c && b.GetGroupAt(p).Liberties.Count == 1)
-                        return true;
-                }
+                if (ImmovableHelper.UnescapableGroup(b, ngroup).Item1)
+                    return false;
             }
-            return false;
+            return true;
         }
 
         /// <summary>
@@ -3235,25 +3222,41 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
             Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.MoveGroup.Points.Count != 1 || tryBoard.MoveGroup.Liberties.Count != 3) return false;
+            if (tryBoard.MoveGroup.Points.Count != 1) return false;
             if (LinkHelper.GetDiagonalGroups(tryBoard).Any()) return false;
+            if (!tryBoard.PointWithinMiddleArea() && tryBoard.GetStoneNeighbours().Any(n => ImmovableHelper.FindEmptyTigerMouth(tryBoard, n, c))) return false;
             if (KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard)) return false;
 
             List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours();
             if (ngroups.Count != 1) return false;
             Group ngroup = ngroups.First();
-            if (ngroup.Points.Count == 1 || ngroup.Liberties.Count <= 2) return false;
+            if (ngroup.Points.Count == 1) return false;
+
             //check immovable point at diagonal
-            if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard.PointWithinMiddleArea(n) && ImmovableHelper.IsImmovablePoint(tryBoard, n, c.Opposite())))
-                return true;
+            Point immovablePoint = tryBoard.GetDiagonalNeighbours().FirstOrDefault(n => ImmovableHelper.IsImmovablePoint(tryBoard, n, c.Opposite()));
+            if (!immovablePoint.IsEmpty() && tryBoard.PointWithinMiddleArea(immovablePoint))
+            {
+                if (ngroup.Liberties.Count > 2) return true;
+                if (ngroup.Liberties.Count == 2)
+                {
+                    Point p = ngroup.Liberties.First(n => !n.Equals(immovablePoint));
+                    Board b = tryBoard.MakeMoveOnNewBoard(p, c.Opposite());
+                    if (b != null && WallHelper.IsHostileGroup(b))
+                        return true;
+                }
+            }
+
             //check liberties of neighbour groups
             if (ngroup.Liberties.Count < ngroup.Neighbours.Count * 0.5)
                 return false;
 
             //check immovable point at diagonal
-            if (tryBoard.GetDiagonalNeighbours().Any(n => !tryBoard.PointWithinMiddleArea(n) && ImmovableHelper.IsImmovablePoint(tryBoard, n, c.Opposite())))
+            if (!immovablePoint.IsEmpty() && !tryBoard.PointWithinMiddleArea(immovablePoint))
                 return true;
 
+            if (tryBoard.MoveGroup.Liberties.Count != 3)
+                return false;
+            
             //check two-point neighbour group
             if (ngroup.Points.Count == 2 && ngroup.Liberties.Count <= ngroup.Neighbours.Count * 0.5)
                 return false;
