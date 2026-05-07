@@ -2696,7 +2696,7 @@ namespace Go
             if (capturedBoard.GetGroupsFromStoneNeighbours(move, c).All(n => n.Liberties.Count > 3) && !EyeHelper.CoveredPointWithinTwoPointGroup(tryBoard, move, c.Opposite()))
                 return true;
 
-            //find immovable point at diagonal
+            //check immovable point at diagonal
             List<Point> diagonalPoints = ImmovableHelper.GetDiagonalsOfTigerMouth(tryBoard, move, c.Opposite());
             diagonalPoints = diagonalPoints.Where(d => ImmovableHelper.IsImmovablePoint(currentBoard, d, c.Opposite())).ToList();
             foreach (Point d in diagonalPoints)
@@ -2741,6 +2741,9 @@ namespace Go
             if (diagonalPoints.Count == 0)
             {
                 if (TigerMouthWithoutDiagonalMouth(tryMove, capturedBoard, opponentMove))
+                    return true;
+
+                if (CheckImmovableAtTigerMouthWithoutDiagonal(tryMove, opponentMove))
                     return true;
             }
             return false;
@@ -2805,7 +2808,7 @@ namespace Go
             if (EyeHelper.FindSemiSolidEye(capturedBoard, move, c.Opposite()))
                 return false;
             //check covered eye
-            if (CheckCoveredEyeAtTigerMouth(tryBoard, capturedBoard, opponentMove))
+            if (CheckCoveredEyeAtTigerMouth(tryMove, capturedBoard, opponentMove))
                 return false;
             //check for three opponent groups
             if (CheckThreeOpponentGroupsAtTigerMouth(tryMove, capturedBoard))
@@ -2941,42 +2944,32 @@ namespace Go
         /// <summary>
         /// Check covered eye at tiger mouth.
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16738" />
+        /// Check opponent move <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q30225_2" />
         /// Check diagonal at move <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanQiJing_B57_2" />
-        /// Check suicidal move <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q30225_2" />
         /// </summary>
-        private static Boolean CheckCoveredEyeAtTigerMouth(Board tryBoard, Board capturedBoard, GameTryMove opponentMove = null)
+        private static Boolean CheckCoveredEyeAtTigerMouth(GameTryMove tryMove, Board capturedBoard, GameTryMove opponentMove = null)
         {
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             //check is covered
             if (!EyeHelper.IsCovered(tryBoard, move, c.Opposite())) return false;
-
-            List<Point> npoints = capturedBoard.GetStoneNeighbours().Where(n => !n.Equals(move) && capturedBoard[n] != c.Opposite()).ToList();
-            List<Group> killerGroups = GroupHelper.GetKillerGroupsFromPoints(npoints, capturedBoard, c.Opposite());
+            //check opponent move
+            if (opponentMove != null) return true;
 
             //check diagonal at move
-            if (opponentMove == null && KillerFormationHelper.TigerMouthAtDiagonal(tryBoard))
+            List<Point> npoints = capturedBoard.GetStoneNeighbours().Where(n => !n.Equals(move) && capturedBoard[n] != c.Opposite()).ToList();
+            List<Group> killerGroups = GroupHelper.GetKillerGroupsFromPoints(npoints, capturedBoard, c.Opposite());
+            if (KillerFormationHelper.TigerMouthAtDiagonal(tryBoard))
             {
-                if (killerGroups.Count == 0 || killerGroups.Any(n => n.Points.Count(s => capturedBoard[s] == c) <= 2))
+                if (killerGroups.Count == 0 || killerGroups.Any(n => n.Points.Count(s => capturedBoard[s] == c) <= 1))
                     return false;
             }
-
             //check real eye
             if (!killerGroups.Any(n => EyeHelper.FindRealEyeWithinEmptySpace(capturedBoard, n)))
                 return true;
 
-            //check suicidal move
-            if (opponentMove != null)
-            {
-                foreach (Group group in tryBoard.GetGroupsFromStoneNeighbours())
-                {
-                    if (group.Liberties.Count != 1) continue;
-                    Point p = group.Liberties.First();
-                    if (tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Count == 0) continue;
-                    if (ImmovableHelper.IsSuicidalMoveForBothPlayers(capturedBoard, p))
-                        return true;
-                }
-            }
             return false;
         }
 
@@ -3033,16 +3026,40 @@ namespace Go
             return false;
         }
 
+        /// <summary>
+        /// Check immovable at tiger mouth without diagonal.
+        /// </summary>
+        private static Boolean CheckImmovableAtTigerMouthWithoutDiagonal(GameTryMove tryMove, GameTryMove opponentMove = null)
+        {
+            Point move = tryMove.Move;
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            Content c = tryMove.MoveContent;
+            if (!tryBoard.GetDiagonalNeighbours().Any(n => currentBoard.PointWithinMiddleArea(n) && ImmovableHelper.IsImmovablePoint(currentBoard, n, c.Opposite()))) 
+                return false;
+
+            if (opponentMove == null) 
+                return true;
+
+            if (EyeHelper.IsCovered(tryBoard, move, c.Opposite()))
+            {
+                List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(tryBoard, move, c.Opposite()).Where(n => tryBoard[n] == c).ToList();
+                if (diagonals.Any(n => !WallHelper.IsNonKillableGroup(tryBoard, n)))
+                    return false;
+            }
+            return true;
+        }
+
         #endregion
 
-        #region redundant eye diagonal
-        /// <summary>
-        /// Survival eye diagonal move.
-        /// <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_x" />
-        /// Check real eye at all diagonals <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_SiHuoDaQuan_CornerA29_2" />
-        /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B31" />
-        /// Check link to groups <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_WuQingYuan_Q31154" />
-        /// </summary>
+            #region redundant eye diagonal
+            /// <summary>
+            /// Survival eye diagonal move.
+            /// <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_x" />
+            /// Check real eye at all diagonals <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_SiHuoDaQuan_CornerA29_2" />
+            /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B31" />
+            /// Check link to groups <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_WuQingYuan_Q31154" />
+            /// </summary>
         public static Boolean SurvivalEyeDiagonalMove(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
             Board currentBoard = tryMove.CurrentGame.Board;

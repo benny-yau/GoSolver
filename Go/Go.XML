@@ -2175,12 +2175,12 @@
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A28" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.CheckCoveredEyeAtTigerMouth(Go.Board,Go.Board,Go.GameTryMove)">
+        <member name="M:Go.RedundantMoveHelper.CheckCoveredEyeAtTigerMouth(Go.GameTryMove,Go.Board,Go.GameTryMove)">
             <summary>
             Check covered eye at tiger mouth.
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16738" />
+            Check opponent move <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q30225_2" />
             Check diagonal at move <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanQiJing_B57_2" />
-            Check suicidal move <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q30225_2" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckWeakGroupAtTigerMouth(Go.Board,Go.Board)">
@@ -2197,6 +2197,11 @@
             Kill covered eye at diagonal point.
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221231_6" />
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20230423_8" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CheckImmovableAtTigerMouthWithoutDiagonal(Go.GameTryMove,Go.GameTryMove)">
+            <summary>
+            Check immovable at tiger mouth without diagonal.
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SurvivalEyeDiagonalMove(Go.GameTryMove,Go.GameTryMove)">
