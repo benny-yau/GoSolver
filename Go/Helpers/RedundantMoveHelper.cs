@@ -1891,17 +1891,19 @@ namespace Go
 
             if (LifeCheck.GetTargets(tryBoard).Contains(tryBoard.MoveGroup)) return false;
 
-            //check opponent groups
-            List<Point> rc = tryBoard.GetClosestPoints(move, c.Opposite(), 3);
-            if (rc.Count(n => !CheckNonKillableAtDiagonalGroups(tryBoard, tryBoard.GetGroupAt(n))) >= 3)
-                return false;
-
-            if (!WallHelper.StrongNeighbourGroups(tryBoard))
-                return false;
-
             //check leap move to target
             if (CheckLeapMoveToTarget(tryBoard))
                 return false;
+
+            //check opponent groups
+            List<Point> rc = tryBoard.GetClosestPoints(move, c.Opposite(), 3);
+            rc = rc.Where(n => !CheckNonKillableAtDiagonalGroups(tryBoard, tryBoard.GetGroupAt(n))).ToList();
+            if (rc.Count >= 3)
+            {
+                List<Direction> directions = DirectionHelper.GetDirections(tryBoard, move);
+                if (directions.All(n => rc.Any(s => DirectionHelper.CheckPointInDirection(n, move, s)), true))
+                    return false;
+            }
             return true;
         }
 
@@ -1949,10 +1951,10 @@ namespace Go
             if (!tryBoard.GetClosestPoints(p, c, 2, 2).Any(n => n.Equals(r))) return false;
             List<Point> mpoints = GetMidPointsOfLeapMove(p, r).Where(n => tryBoard[n] == c.Opposite()).ToList();
             if (mpoints.Count == 0) return false;
+            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard.CornerPoint(n))) return false;
             Group mgroup = tryBoard.GetGroupAt(mpoints.First());
-            if (CheckNonKillableAtDiagonalGroups(tryBoard, mgroup))
-                return true;
-            return false;
+            if (mgroup.Points.Count == 1 && !WallHelper.StrongNeighbourGroups(tryBoard)) return false;
+            return true;
         }
 
         /// <summary>
@@ -3035,31 +3037,23 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
-            if (!tryBoard.GetDiagonalNeighbours().Any(n => currentBoard.PointWithinMiddleArea(n) && ImmovableHelper.IsImmovablePoint(currentBoard, n, c.Opposite()))) 
+            if (opponentMove != null) return false;
+            if (!tryBoard.GetDiagonalNeighbours().Any(n => currentBoard.PointWithinMiddleArea(n) && ImmovableHelper.IsImmovablePoint(currentBoard, n, c.Opposite())))
                 return false;
 
-            if (opponentMove == null) 
-                return true;
-
-            if (EyeHelper.IsCovered(tryBoard, move, c.Opposite()))
-            {
-                List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(tryBoard, move, c.Opposite()).Where(n => tryBoard[n] == c).ToList();
-                if (diagonals.Any(n => !WallHelper.IsNonKillableGroup(tryBoard, n)))
-                    return false;
-            }
             return true;
         }
 
         #endregion
 
-            #region redundant eye diagonal
-            /// <summary>
-            /// Survival eye diagonal move.
-            /// <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_x" />
-            /// Check real eye at all diagonals <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_SiHuoDaQuan_CornerA29_2" />
-            /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B31" />
-            /// Check link to groups <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_WuQingYuan_Q31154" />
-            /// </summary>
+        #region redundant eye diagonal
+        /// <summary>
+        /// Survival eye diagonal move.
+        /// <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_x" />
+        /// Check real eye at all diagonals <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_SiHuoDaQuan_CornerA29_2" />
+        /// <see cref="UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B31" />
+        /// Check link to groups <see cref="UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_WuQingYuan_Q31154" />
+        /// </summary>
         public static Boolean SurvivalEyeDiagonalMove(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
             Board currentBoard = tryMove.CurrentGame.Board;
@@ -3273,7 +3267,7 @@ namespace Go
 
             if (tryBoard.MoveGroup.Liberties.Count != 3)
                 return false;
-            
+
             //check two-point neighbour group
             if (ngroup.Points.Count == 2 && ngroup.Liberties.Count <= ngroup.Neighbours.Count * 0.5)
                 return false;

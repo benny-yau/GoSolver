@@ -158,26 +158,46 @@ namespace Go
         }
 
 
-        /// <summary>
-        /// Get eye points at the opposite diagonals of the tiger mouth.
-        /// </summary>
-        public static List<Point> TigerMouthEyePoints(Board board, Point tigerMouthPoint, Point libertyPoint)
+        public static List<Direction> GetDirections(Board board, Point p)
         {
-            List<Point> eyePoints = new List<Point>();
-            Direction direction = GetDirectionFromTwoPoints(libertyPoint, tigerMouthPoint).Item1;
-            int rotation = GetRotationIndex(direction);
-            Point pointSide = GetPointInDirection(board, tigerMouthPoint, direction.Opposite());
-            if (!board.PointWithinBoard(pointSide))
-                return eyePoints;
-            Point pointSideLeft = GetPointInDirection(board, pointSide, GetNewDirection(Direction.Left, rotation));
-            Point pointSideRight = GetPointInDirection(board, pointSide, GetNewDirection(Direction.Right, rotation));
-            if (board.PointWithinBoard(pointSideLeft))
-                eyePoints.Add(pointSideLeft);
-            if (board.PointWithinBoard(pointSideRight))
-                eyePoints.Add(pointSideRight);
-            return eyePoints;
+            int n = 2;
+            List<Direction> directions = new List<Direction>();
+            if (board.PointWithinBoard(p.x - n, p.y))
+                directions.Add(Direction.Left);
+            if (board.PointWithinBoard(p.x + n, p.y))
+                directions.Add(Direction.Right);
+            if (board.PointWithinBoard(p.x, p.y - n))
+                directions.Add(Direction.Up);
+            if (board.PointWithinBoard(p.x, p.y + n))
+                directions.Add(Direction.Down);
+            return directions;
         }
 
+
+        public static Boolean CheckPointInDirection(Direction direction, Point p, Point q)
+        {
+            if (direction == Direction.Left)
+            {
+                if (q.x < p.x && Math.Abs(q.y - p.y) <= 1)
+                    return true;
+            }
+            else if (direction == Direction.Right)
+            {
+                if (q.x > p.x && Math.Abs(q.y - p.y) <= 1)
+                    return true;
+            }
+            else if (direction == Direction.Up)
+            {
+                if (q.y < p.y && Math.Abs(q.x - p.x) <= 1)
+                    return true;
+            }
+            else if (direction == Direction.Down)
+            {
+                if (q.y > p.y && Math.Abs(q.x - p.x) <= 1)
+                    return true;
+            }
+            return false;
+        }
 
     }
 }
