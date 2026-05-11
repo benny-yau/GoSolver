@@ -623,11 +623,16 @@ namespace Go
                 if (eyeGroup.Liberties.Count != 2) continue;
                 Point liberty = eyeGroup.Liberties.First(n => !n.Equals(move));
                 if (tryBoard.GetStoneAndDiagonalNeighbours().Any(n => n.Equals(liberty))) continue;
-                if (WallHelper.TargetWithAnyNonKillableGroup(currentBoard, liberty, c)) continue;
+
+                //check if all non killable groups
+                List<Group> opponentGroups = currentBoard.GetGroupsFromStoneNeighbours(liberty, c);
+                if (opponentGroups.Any() && WallHelper.TargetWithAllNonKillableGroups(currentBoard, opponentGroups))
+                    continue;
 
                 //make move at liberty
                 (Boolean connectAndDie, Board b) = ImmovableHelper.ConnectAndDieMove(currentBoard, liberty, c);
-                if (WallHelper.TargetWithAllNonKillableGroups(b)) continue;
+                if (WallHelper.TargetWithAllNonKillableGroups(b))
+                    continue;
 
                 //check covered eye survival
                 if (b.GetGroupsFromStoneNeighbours(move, c.Opposite()).Count == 1 && EyeHelper.FindCoveredEye(b, move, c)) continue;
@@ -717,7 +722,7 @@ namespace Go
                     foreach (Group group in tryBoard.GetGroupsFromStoneNeighbours(liberty, c.Opposite()))
                     {
                         if (group.Equals(tryBoard.MoveGroup)) continue;
-                        if (WallHelper.TargetWithAnyNonKillableGroup(tryBoard, group)) continue;
+                        if (WallHelper.TargetWithAllNonKillableGroups(tryBoard, group)) continue;
                         //check capture at liberty
                         if (group.Liberties.Count == 1 && group.Points.Count >= 3)
                         {

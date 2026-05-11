@@ -328,11 +328,6 @@
             Get the count to rotate to get direction from linked list.
             </summary>
         </member>
-        <member name="M:Go.DirectionHelper.TigerMouthEyePoints(Go.Board,Go.Point,Go.Point)">
-            <summary>
-            Get eye points at the opposite diagonals of the tiger mouth.
-            </summary>
-        </member>
         <member name="M:Go.EyeHelper.FindEye(Go.Board,Go.Point,Go.Content)">
             <summary>
             Find eye.
