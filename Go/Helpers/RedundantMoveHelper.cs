@@ -2754,8 +2754,9 @@ namespace Go
         /// <summary>
         /// Check atari at tiger mouth.
         /// Check diagonal cut <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_Corner_A20" />
+        /// Check two point killer group <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_A4" />
         /// Check capture group <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q30267" />
-        /// Check one point target <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_A4" />
+        /// Check weak groups at diagonal <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260512_7" />
         /// Check multi point target <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31536" />
         /// </summary>
         private static Boolean CheckAtariAtTigerMouth(GameTryMove tryMove, Point diagonal, Board captureBoard = null)
@@ -2770,21 +2771,18 @@ namespace Go
             if (tryBoard.GetGroupsFromStoneNeighbours(diagonal, c.Opposite()).Any(n => LinkHelper.FindDiagonalCut(tryBoard, n).Item1 != null))
                 return true;
 
-            if (!tryBoard.PointWithinMiddleArea()) return false;
-            //check capture group
-            if (captureBoard.MoveGroup.Points.Count > 1 && captureBoard.MoveGroupLiberties == 2)
-                return true;
-            //check suicidal move at liberty
             Group atariTarget = tryBoard.AtariTargets.First();
             Point p = atariTarget.Liberties.First();
-            Boolean twoPointGroup = GroupHelper.CheckKillerGroupPoints(tryBoard, move, c.Opposite()) != null;
-            if (twoPointGroup && ImmovableHelper.IsSuicidalMove(tryBoard, p, c.Opposite()))
-                return false;
-
             if (atariTarget.Points.Count == 1)
             {
-                //check one point target
-                if (twoPointGroup)
+                //check two point killer group
+                if (GroupHelper.CheckKillerGroupPoints(tryBoard, move, c.Opposite()) != null)
+                    return true;
+                //check capture group
+                if (captureBoard.MoveGroup.Points.Count > 1 && captureBoard.MoveGroupLiberties == 2)
+                    return true;
+                //check weak groups at diagonal
+                if (currentBoard.GetGroupsFromStoneNeighbours(diagonal, c).Count(n => n.Liberties.Count <= 2) >= 2)
                     return true;
             }
             else
@@ -2958,7 +2956,8 @@ namespace Go
             //check is covered
             if (!EyeHelper.IsCovered(tryBoard, move, c.Opposite())) return false;
             //check opponent move
-            if (opponentMove != null) return true;
+            if (opponentMove != null && ImmovableHelper.SuicideAtBigTigerMouth(opponentMove).Item1)
+                return true;
 
             //check diagonal at move
             List<Point> npoints = capturedBoard.GetStoneNeighbours().Where(n => !n.Equals(move) && capturedBoard[n] != c.Opposite()).ToList();
@@ -3030,17 +3029,20 @@ namespace Go
 
         /// <summary>
         /// Check immovable at tiger mouth without diagonal.
+        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_AncientJapanese_B6" />
+        /// Check opponent move <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q30225_2" />
         /// </summary>
         private static Boolean CheckImmovableAtTigerMouthWithoutDiagonal(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
-            Point move = tryMove.Move;
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
-            if (opponentMove != null) return false;
+            //check immovable point at diagonal
             if (!tryBoard.GetDiagonalNeighbours().Any(n => currentBoard.PointWithinMiddleArea(n) && ImmovableHelper.IsImmovablePoint(currentBoard, n, c.Opposite())))
                 return false;
-
+            //check opponent move
+            if (opponentMove != null && ImmovableHelper.SuicideAtBigTigerMouth(opponentMove).Item1)
+                return false;
             return true;
         }
 
