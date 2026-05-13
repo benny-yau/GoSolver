@@ -2754,8 +2754,9 @@ namespace Go
         /// <summary>
         /// Check atari at tiger mouth.
         /// Check diagonal cut <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_Corner_A20" />
-        /// Check two point killer group <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_A4" />
         /// Check capture group <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q30267" />
+        /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WuQingYuan_Q31673" />
+        /// Check two point killer group <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_A4" />
         /// Check weak groups at diagonal <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260512_7" />
         /// Check multi point target <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31536" />
         /// </summary>
@@ -2770,16 +2771,15 @@ namespace Go
             //check diagonal cut
             if (tryBoard.GetGroupsFromStoneNeighbours(diagonal, c.Opposite()).Any(n => LinkHelper.FindDiagonalCut(tryBoard, n).Item1 != null))
                 return true;
-
+            //check capture group
+            if (captureBoard.MoveGroup.Points.Count > 1 && captureBoard.MoveGroupLiberties == 2)
+                return true;
             Group atariTarget = tryBoard.AtariTargets.First();
             Point p = atariTarget.Liberties.First();
             if (atariTarget.Points.Count == 1)
             {
                 //check two point killer group
                 if (GroupHelper.CheckKillerGroupPoints(tryBoard, move, c.Opposite()) != null)
-                    return true;
-                //check capture group
-                if (captureBoard.MoveGroup.Points.Count > 1 && captureBoard.MoveGroupLiberties == 2)
                     return true;
                 //check weak groups at diagonal
                 if (currentBoard.GetGroupsFromStoneNeighbours(diagonal, c).Count(n => n.Liberties.Count <= 2) >= 2)
