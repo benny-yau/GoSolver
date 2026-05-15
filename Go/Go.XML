@@ -2254,11 +2254,18 @@
             Redundant non suicidal move.
             <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A23" /> 
             <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_Corner_A84" /> 
-            Check immovable point at diagonal <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_TianLongTu_Q16738" /> 
             Check neighbour groups <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q30064" />
             Check killer group at neighbour group <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
             Check opponent move <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A26" />
             <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q30403" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CheckImmovableAtDiagonalForNonSuicidalMove(Go.Board,Go.Group)">
+            <summary>
+            Check immovable at diagonal for non suicidal move.
+            <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_TianLongTu_Q16738" /> 
+            Check weak diagonal group <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260515_8" /> 
+            Check neighbour group with two liberties <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_TianLongTu_Q15618" /> 
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.RedundantFillerMove(Go.GameTryMove)">
