@@ -1062,10 +1062,10 @@ namespace Go
         /// <summary>
         /// Check one point move diagonals in connect and die.
         /// Check empty point at diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_3" />
-        /// Check eye <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />     
-        /// Check diagonal move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29264" />
-        /// Check weak group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17241_2" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
+        /// Check killer formation <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />     
+        /// Ensure liberty at side <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260516_8" />
+        /// Check diagonal move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A61" />
+        /// Check weak group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
         /// </summary>
         private static Boolean CheckOnePointMoveDiagonalsInConnectAndDie(GameTryMove tryMove, Board captureBoard)
         {
@@ -1076,16 +1076,25 @@ namespace Go
             Point? d = LinkHelper.CheckPointsBetweenDiagonalsAtMove(tryBoard);
             if (d == null) return false;
 
+            //check killer formation
+            Point p = tryBoard.GetStoneNeighbours().FirstOrDefault(n => EyeHelper.FindEye(tryBoard, n, c));
+            if (!p.IsEmpty() && KillerFormationHelper.TryKillFormation(tryBoard, c, new List<Point> { p }).Item1)
+                return false;
+
+            if (tryBoard[d.Value] == c.Opposite())
+                return true;
+
             //check empty point at diagonal
             if (tryBoard[d.Value] == Content.Empty && !WallHelper.HostileNeighbourGroups(tryBoard))
                 return false;
 
-            //check eye
-            if (tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindEye(tryBoard, n, c)))
+            //ensure liberty at side
+            Point q = captureBoard.GetMoveLiberties(move).First();
+            if (captureBoard.PointWithinMiddleArea(q))
                 return false;
 
             //check diagonal move
-            List<Point> dpoints = captureBoard.GetDiagonalNeighbours(move).Where(n => captureBoard[n] == Content.Empty).Intersect(captureBoard.GetStoneNeighbours(captureBoard.GetMoveLiberties(move).First())).ToList();
+            List<Point> dpoints = captureBoard.GetDiagonalNeighbours(move).Where(n => captureBoard[n] == Content.Empty).Intersect(captureBoard.GetStoneNeighbours(q)).ToList();
             if (GameHelper.GetMoveBoards(captureBoard, dpoints, c).Any(b => !ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false)))
                 return false;
 
@@ -1889,8 +1898,6 @@ namespace Go
             if (!tryMove.IsNegligible)
                 return false;
 
-            if (LifeCheck.GetTargets(tryBoard).Contains(tryBoard.MoveGroup)) return false;
-
             //check leap move to target
             if (CheckLeapMoveToTarget(tryBoard))
                 return false;
@@ -1912,9 +1919,13 @@ namespace Go
         /// </summary>
         public static Boolean CheckLeapMoveToTarget(Board tryBoard, HashSet<Group> groups = null)
         {
-            Content c = tryBoard.MoveGroup.Content;
             if (groups == null) groups = new HashSet<Group>() { tryBoard.MoveGroup };
             Group group = groups.Last();
+            Content c = group.Content;
+
+            //check if target found
+            if (LifeCheck.GetTargets(tryBoard).Contains(group))
+                return true;
 
             foreach (Point p in group.Points)
             {
@@ -1930,10 +1941,6 @@ namespace Go
                     if (VerifyLeapMove(tryBoard, p, r, c))
                         continue;
 
-                    //check if target found
-                    if (LifeCheck.GetTargets(tryBoard).Contains(rgroup))
-                        return true;
-
                     //recursive check leap move
                     groups.Add(rgroup);
                     if (CheckLeapMoveToTarget(tryBoard, groups))
@@ -1945,15 +1952,19 @@ namespace Go
 
         /// <summary>
         /// Verify leap move.
+        /// Check point next to corner <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_TianLongTu_Q14992" />
+        /// Check strong neighbour groups <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_GuanZiPu_B7" />
         /// </summary>
         public static Boolean VerifyLeapMove(Board tryBoard, Point p, Point r, Content c)
         {
             if (!tryBoard.GetClosestPoints(p, c, 2, 2).Any(n => n.Equals(r))) return false;
             List<Point> mpoints = GetMidPointsOfLeapMove(p, r).Where(n => tryBoard[n] == c.Opposite()).ToList();
             if (mpoints.Count == 0) return false;
-            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard.CornerPoint(n))) return false;
+            //check point next to corner
+            if (tryBoard.GetStoneNeighbours(p).Any(n => tryBoard.CornerPoint(n))) return false;
             Group mgroup = tryBoard.GetGroupAt(mpoints.First());
-            if (mgroup.Points.Count == 1 && !WallHelper.StrongNeighbourGroups(tryBoard)) return false;
+            //check strong neighbour groups
+            if (mgroup.Points.Count == 1 && !WallHelper.StrongNeighbourGroups(tryBoard, tryBoard.GetGroupAt(p))) return false;
             return true;
         }
 

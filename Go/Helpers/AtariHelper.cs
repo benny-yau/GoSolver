@@ -49,25 +49,9 @@ namespace Go
             {
                 if (ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false)) continue;
                 if (WallHelper.IsNonKillableOrKo(b)) continue;
-                if (CheckWeakGroupMove(b, targetGroup)) continue;
                 return true;
             }
             return false;
-        }
-
-        /// <summary>
-        /// Check weak group move.
-        /// </summary>
-        public static Boolean CheckWeakGroupMove(Board b, Group targetGroup)
-        {
-            Content c = targetGroup.Content;
-            targetGroup = b.GetCurrentGroup(targetGroup);
-            if (targetGroup.Liberties.Count != 1) return false;
-            Point p = targetGroup.Liberties.First();
-            if (!b.GetStoneNeighbours().Contains(p)) return false;
-            if (!LinkHelper.GetMoveDiagonals(b).Any(n => b.GetGroupAt(n).Equals(targetGroup))) return false;
-            if (EyeHelper.FindEye(b, p, c)) return false;
-            return true;
         }
 
         /// <summary>

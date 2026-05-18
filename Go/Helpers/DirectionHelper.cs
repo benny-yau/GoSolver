@@ -160,7 +160,7 @@ namespace Go
 
         public static List<Direction> GetDirections(Board board, Point p)
         {
-            int n = 2;
+            int n = 3;
             List<Direction> directions = new List<Direction>();
             if (board.PointWithinBoard(p.x - n, p.y))
                 directions.Add(Direction.Left);

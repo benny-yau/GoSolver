@@ -206,11 +206,6 @@
             Is weak group.
             </summary>
         </member>
-        <member name="M:Go.AtariHelper.CheckWeakGroupMove(Go.Board,Go.Group)">
-            <summary>
-            Check weak group move.
-            </summary>
-        </member>
         <member name="M:Go.AtariHelper.IsAtariWithoutSuicide(Go.Board)">
             <summary>
             Is atari without suicide.
@@ -1740,10 +1735,10 @@
             <summary>
             Check one point move diagonals in connect and die.
             Check empty point at diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_3" />
-            Check eye <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />     
-            Check diagonal move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29264" />
-            Check weak group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17241_2" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
+            Check killer formation <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />     
+            Ensure liberty at side <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260516_8" />
+            Check diagonal move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A61" />
+            Check weak group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckOnePointMoveWithoutDiagonalsInConnectAndDie(Go.GameTryMove,Go.Board)">
@@ -1940,6 +1935,8 @@
         <member name="M:Go.RedundantMoveHelper.VerifyLeapMove(Go.Board,Go.Point,Go.Point,Go.Content)">
             <summary>
             Verify leap move.
+            Check point next to corner <see cref="!:UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_TianLongTu_Q14992" />
+            Check strong neighbour groups <see cref="!:UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_GuanZiPu_B7" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckNonKillableAtDiagonalGroups(Go.Board,Go.Group)">
