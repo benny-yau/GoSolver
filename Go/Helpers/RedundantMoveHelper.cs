@@ -3292,11 +3292,13 @@ namespace Go
         /// <summary>
         /// Check immovable at diagonal for non suicidal move.
         /// <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_TianLongTu_Q16738" /> 
-        /// Check weak diagonal group <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260515_8" /> 
+        /// Check immovable point <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260515_8" /> 
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260515_8" /> 
         /// Check neighbour group with two liberties <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_TianLongTu_Q15618" /> 
         /// </summary>
         public static Boolean CheckImmovableAtDiagonalForNonSuicidalMove(Board tryBoard, Group ngroup)
         {
+            Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             Point immovablePoint = tryBoard.GetDiagonalNeighbours().FirstOrDefault(n => ImmovableHelper.IsImmovablePoint(tryBoard, n, c.Opposite()));
             if (immovablePoint.IsEmpty()) return false;
@@ -3304,11 +3306,14 @@ namespace Go
             {
                 if (ngroup.Liberties.Count > 2)
                 {
-                    if (!tryBoard.PointWithinMiddleArea())
-                        return true;
-                    //check weak diagonal group
-                    if (LinkHelper.GetDiagonalGroups(tryBoard, ngroup).All(n => n.Points.Count == 1 || n.Liberties.Count > 2))
-                        return true;
+                    //check immovable point
+                    if (!tryBoard.PointWithinMiddleArea() || !tryBoard.PointWithinMiddleArea(immovablePoint)) return true;
+                    Point p = tryBoard.GetDiagonalNeighbours(immovablePoint).First(n => n.x != move.x && n.y != move.y);
+                    if (tryBoard[p] == c)
+                        return false;
+                    if (EyeHelper.FindEye(tryBoard, p, c.Opposite()))
+                        return false;
+                    return true;
                 }
                 if (ngroup.Liberties.Count == 2)
                 {
@@ -3330,19 +3335,19 @@ namespace Go
 
         #endregion
 
-            #region filler move
+        #region filler move
 
-            /// <summary>
-            /// Redundant filler move.
-            /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q17132" /> 
-            /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20250311_8" /> 
-            /// Not redundant <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_B10_2" />
-            /// Check weak group <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260223_8" />
-            /// Check edge points <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q17132" />
-            /// Check diagonal cut <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_A171_101Weiqi" />
-            /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario3dan22" />
-            /// Check diagonal of corner point <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260403_8" />
-            /// </summary>
+        /// <summary>
+        /// Redundant filler move.
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q17132" /> 
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20250311_8" /> 
+        /// Not redundant <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_B10_2" />
+        /// Check weak group <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260223_8" />
+        /// Check edge points <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q17132" />
+        /// Check diagonal cut <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_XuanXuanGo_A171_101Weiqi" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario3dan22" />
+        /// Check diagonal of corner point <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260403_8" />
+        /// </summary>
         public static Boolean RedundantFillerMove(GameTryMove tryMove)
         {
             Board currentBoard = tryMove.CurrentGame.Board;

@@ -2261,7 +2261,8 @@
             <summary>
             Check immovable at diagonal for non suicidal move.
             <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_TianLongTu_Q16738" /> 
-            Check weak diagonal group <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260515_8" /> 
+            Check immovable point <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260515_8" /> 
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260515_8" /> 
             Check neighbour group with two liberties <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_TianLongTu_Q15618" /> 
             </summary>
         </member>
