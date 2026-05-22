@@ -1676,6 +1676,7 @@
             <summary>
             Check non killable in connect and die.
             Check is covered <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_3" />
+            <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_A84_3" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.RedundantOnePointMoveInConnectAndDie(Go.GameTryMove,Go.Board)">
@@ -1800,6 +1801,7 @@
         <member name="M:Go.RedundantMoveHelper.RedundantMultiPointMoveInConnectAndDie(Go.GameTryMove,Go.Board)">
             <summary>
             Redundant multi point move in suicidal connect and die.
+            Check suicide for liberty fight <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260522_4" />
             Check diagonal cut <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
             Check suicidal move <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260321_3" />
             Check for killer formation <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi_2" />

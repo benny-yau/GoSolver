@@ -777,25 +777,19 @@ namespace Go
         /// <summary>
         /// Check non killable in connect and die.
         /// Check is covered <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_3" />
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_Corner_A84_3" />
         /// </summary>
         private static Boolean CheckNonKillableInConnectAndDie(GameTryMove tryMove, Board captureBoard)
         {
-            Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
 
-            if (WallHelper.TargetWithAllNonKillableGroups(captureBoard, tryBoard.MoveGroup))
-            {
-                //check is covered
-                Boolean isCovered = EyeHelper.IsCovered(captureBoard, move, c.Opposite()) || tryBoard.GetMoveLiberties().Any(n => EyeHelper.IsCovered(tryBoard, n, c));
-                if (!isCovered)
-                    return true;
-            }
-
-            if (tryBoard.MoveGroup.Points.Count > 1 && WallHelper.TargetWithAnyNonKillableGroup(tryBoard))
-                return true;
-            return false;
+            if (!WallHelper.TargetWithAllNonKillableGroups(captureBoard, tryBoard.MoveGroup)) return false;
+            //check is covered
+            if (EyeHelper.IsCovered(captureBoard, move, c.Opposite())) return false;
+            if (tryBoard.GetMoveLiberties().Any(n => EyeHelper.IsCovered(tryBoard, n, c))) return false;
+            return true;
         }
 
         /// <summary>
@@ -1389,6 +1383,7 @@ namespace Go
 
         /// <summary>
         /// Redundant multi point move in suicidal connect and die.
+        /// Check suicide for liberty fight <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260522_4" />
         /// Check diagonal cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
         /// Check suicidal move <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260321_3" />
         /// Check for killer formation <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi_2" />
@@ -1401,6 +1396,10 @@ namespace Go
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
             if (tryBoard.MoveGroup.Points.Count == 1) return false;
+
+            //check suicide for liberty fight
+            if (tryBoard.GetGroupsFromStoneNeighbours().Any(n => n.Liberties.Count == 2 && n.Liberties.All(s => ImmovableHelper.IsSuicidalMoveForBothPlayers(tryBoard, s))))
+                return false;
 
             //check diagonal and liberty at move
             if (CheckDiagonalAndLibertyAtMove(tryMove, captureBoard))
