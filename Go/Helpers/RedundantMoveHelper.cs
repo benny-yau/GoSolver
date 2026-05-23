@@ -1398,7 +1398,7 @@ namespace Go
             if (tryBoard.MoveGroup.Points.Count == 1) return false;
 
             //check suicide for liberty fight
-            if (tryBoard.GetGroupsFromStoneNeighbours().Any(n => n.Liberties.Count == 2 && n.Liberties.All(s => ImmovableHelper.IsSuicidalMoveForBothPlayers(tryBoard, s))))
+            if (tryBoard.GetGroupsFromStoneNeighbours().Any(n => n.Liberties.Count == 2 && n.Liberties.All(s => ImmovableHelper.IsSuicidalMoveForBothPlayers(tryBoard, s) && GroupHelper.CheckKillerGroupPoints(tryBoard, s, c.Opposite()) == null)))         
                 return false;
 
             //check diagonal and liberty at move
