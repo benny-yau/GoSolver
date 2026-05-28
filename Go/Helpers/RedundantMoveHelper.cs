@@ -1398,7 +1398,7 @@ namespace Go
             if (tryBoard.MoveGroup.Points.Count == 1) return false;
 
             //check suicide for liberty fight
-            if (tryBoard.GetGroupsFromStoneNeighbours().Any(n => n.Liberties.Count == 2 && n.Liberties.All(s => ImmovableHelper.IsSuicidalMoveForBothPlayers(tryBoard, s) && GroupHelper.CheckKillerGroupPoints(tryBoard, s, c.Opposite()) == null)))         
+            if (tryBoard.GetGroupsFromStoneNeighbours().Any(n => n.Liberties.Count == 2 && n.Liberties.All(s => ImmovableHelper.IsSuicidalMoveForBothPlayers(tryBoard, s) && GroupHelper.CheckKillerGroupPoints(tryBoard, s, c.Opposite()) == null)))
                 return false;
 
             //check diagonal and liberty at move
@@ -1905,11 +1905,7 @@ namespace Go
             List<Point> rc = tryBoard.GetClosestPoints(move, c.Opposite(), 3);
             rc = rc.Where(n => !CheckNonKillableAtDiagonalGroups(tryBoard, tryBoard.GetGroupAt(n))).ToList();
             if (rc.Count >= 3)
-            {
-                List<Direction> directions = DirectionHelper.GetDirections(tryBoard, move);
-                if (directions.All(n => rc.Any(s => DirectionHelper.CheckPointInDirection(n, move, s)), true))
-                    return false;
-            }
+                return false;
             return true;
         }
 
@@ -3235,9 +3231,10 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A23" /> 
         /// <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_Corner_A84" /> 
         /// Check neighbour groups <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q30064" />
-        /// Check killer group at neighbour group <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
-        /// Check opponent move <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A26" />
+        /// Check diagonal group of neighbour group <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260528_7" />
+        /// <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
         /// <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q30403" />
+        /// Check opponent move <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A26" />
         /// </summary>
         public static Boolean RedundantNonSuicidal(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
@@ -3271,18 +3268,18 @@ namespace Go
             List<Point> npoints = tryBoard.GetClosestPoints(move, c.Opposite(), 1);
             if (tryBoard.GetGroupsFromPoints(npoints).Count != 1) return false;
 
-            //check killer group at neighbour group
-            List<Group> kgroups = GroupHelper.GetKillerGroupsFromPoints(ngroup.Neighbours, tryBoard, c.Opposite());
-            if (kgroups.Any(n => n.Points.Count <= 3 && tryBoard.GetNeighbourGroups(n).Any(s => !WallHelper.IsHostileGroup(tryBoard, s))))
-                return false;
+            //check diagonal group of neighbour group
+            foreach (Group group in LinkHelper.GetDiagonalGroups(tryBoard, ngroup))
+            {
+                if (group.Points.Count == 1 && !tryBoard.PointWithinMiddleArea(group.Points.First())) continue;
+                if (!WallHelper.IsHostileGroup(tryBoard, group))
+                    return false;
+            }
 
             //check opponent move
             if (opponentMove != null)
             {
                 if (ngroup.Points.Count == 2 && tryBoard.GetNeighbourGroups(ngroup).Count > 1 && tryBoard.GetDiagonalNeighbours().All(n => tryBoard[n] == Content.Empty))
-                    return false;
-                List<Group> diagonalGroups = LinkHelper.GetDiagonalGroups(tryBoard, ngroup);
-                if (diagonalGroups.Any(n => !WallHelper.IsHostileGroup(tryBoard, n)))
                     return false;
             }
             return true;
