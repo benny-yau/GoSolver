@@ -2457,9 +2457,12 @@ namespace Go
         /// <see cref="UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario_Corner_B21" /> 
         /// <see cref="UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario_WuQingYuan_Q6150" /> 
         /// <see cref="UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario_TianLongTu_Q16490" /> 
+        /// Check weak group within killer group <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260601_8" /> 
         /// </summary>
         private static Boolean SuicideGroupNearCapture(Board board)
         {
+            Point move = board.Move.Value;
+            Content c = board.MoveGroup.Content;
             if (board.MoveGroupLiberties < 2 || board.MoveGroupLiberties > 3) return false;
             if (!WallHelper.IsStrongGroup(board)) return false;
             foreach (Group ngroup in board.GetNeighbourGroups())
@@ -2472,6 +2475,11 @@ namespace Go
                         return true;
                 }
             }
+            //check weak group within killer group
+            if (board.CapturedPoints.Count() != 1) return false;
+            Point p = board.CapturedPoints.First();
+            if (!WallHelper.StrongNeighbourGroups(board, p, c.Opposite()) && GroupHelper.GetDirectKillerGroup(board, move, c.Opposite()) != null)
+                return true;
             return false;
         }
 
