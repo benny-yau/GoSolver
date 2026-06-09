@@ -791,6 +791,7 @@
             Check opponent survival move <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q29475" /> 
             <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245_2" />
             <see cref="!:UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_XuanXuanQiJing_A53" /> 
+            Check liberty fight <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260609_5" />
             Check covered eye survival <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_20230422_8" /> 
             </summary>
         </member>

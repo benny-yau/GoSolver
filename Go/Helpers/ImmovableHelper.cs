@@ -604,6 +604,7 @@ namespace Go
         /// Check opponent survival move <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q29475" /> 
         /// <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245_2" />
         /// <see cref="UnitTestProject.BaseLineKillerMoveTest.BaseLineKillerMoveTest_Scenario_XuanXuanQiJing_A53" /> 
+        /// Check liberty fight <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260609_5" />
         /// Check covered eye survival <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_20230422_8" /> 
         /// </summary>
         public static (Boolean, Board) SuicideAtBigTigerMouth(GameTryMove tryMove)
@@ -662,6 +663,10 @@ namespace Go
                     if (npoints.Any(n => !WallHelper.NoEyeForSurvival(b2, n, c.Opposite())))
                         return (true, b);
                 }
+
+                //check liberty fight
+                if (tryBoard.GetNeighbourGroups().Any(n => ImmovableHelper.CheckConnectAndDie(tryBoard, n) && !ImmovableHelper.CheckConnectAndDie(currentBoard, n)) && LinkHelper.FindDiagonalCut(tryBoard).Item1 != null)
+                    return (true, null);
             }
 
             //check three liberty group
@@ -694,6 +699,7 @@ namespace Go
                 return true;
             //check connect and die
             Board linkBoard = b.MakeMoveOnNewBoard(move, c);
+            if (linkBoard == null) return true;
             if (ImmovableHelper.CheckConnectAndDie(linkBoard, linkBoard.MoveGroup, false))
                 return false;
             //check strong neighbour groups
