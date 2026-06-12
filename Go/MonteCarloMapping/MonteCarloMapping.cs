@@ -18,7 +18,6 @@ namespace Go
 
         public static void MapScenario(Game game)
         {
-            Game.MapMoves = true;
             MonteCarloMapping mctsMapping = new MonteCarloMapping();
 
             //map player moves
@@ -34,7 +33,6 @@ namespace Go
                 mctsMapping.MappingFirstLevel(game);
                 JsonHelper.SerializeJson(game);
             }
-            Game.MapMoves = false;
         }
 
         /// <summary>
@@ -42,6 +40,7 @@ namespace Go
         /// </summary>
         public virtual void MappingFirstLevel(Game game)
         {
+            Game.MapMoves = true;
             Stopwatch watch = Stopwatch.StartNew();
             List<GameTryMove> possibleMoves = GameHelper.GetTryMovesForGame(game);
             Debug.WriteLine("Scenario: " + game.GameInfo.ScenarioName);
@@ -98,6 +97,7 @@ namespace Go
             watch.Stop();
             Debug.WriteLine("Total time taken (verification): " + watch.ElapsedMilliseconds);
             elapsedTime = watch.ElapsedMilliseconds;
+            Game.MapMoves = false;
         }
 
         /// <summary>

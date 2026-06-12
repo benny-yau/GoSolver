@@ -157,10 +157,10 @@ namespace Go
 
         /// <summary>
         /// Check complex seki.
-        /// With diagonal cut <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan22" />
-        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_20230422_8" />
         /// Without diagonal cut <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A123" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18" />
+        /// With diagonal cut <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan22" />
+        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_20230422_8" />
         /// </summary>
         private static Boolean CheckComplexSeki(Board board, Group killerGroup, List<Group> ngroups)
         {
@@ -171,18 +171,21 @@ namespace Go
             if (board.GetGroupsFromPoints(contentPoints).Any(n => n.Liberties.Count == 1)) return false;
 
             //check complex seki without diagonal cut
-            (_, List<Point> diagonals) = LinkHelper.FindDiagonalCut(board, killerGroup, true);
-            if (diagonals == null) return IsComplexSeki(board, killerGroups, ngroups);
+            List<(Point, List<Point>)> diagonalCuts = LinkHelper.FindDiagonalCut(board, killerGroup, true).ToList();
+            if (diagonalCuts.Count == 0) return IsComplexSeki(board, killerGroups, ngroups);
 
             //check complex seki with diagonal cut
-            foreach (Point d in diagonals)
+            foreach ((_, List<Point> diagonals) in diagonalCuts)
             {
-                Group dkillerGroup = GroupHelper.GetDirectKillerGroup(board, d, c);
-                if (dkillerGroup == null) continue;
-                List<Group> cutKillerGroups = killerGroups.Where(n => GroupHelper.GetKillerGroupFromCache(board, n.Points.First(), c) == dkillerGroup).ToList();
-                List<Group> cutTargetGroups = ngroups.Where(n => GroupHelper.GetKillerGroupFromCache(board, n.Points.First(), c) == dkillerGroup).ToList();
-                if (IsComplexSeki(board, cutKillerGroups, cutTargetGroups))
-                    return true;
+                foreach (Point d in diagonals)
+                {
+                    Group dkillerGroup = GroupHelper.GetDirectKillerGroup(board, d, c);
+                    if (dkillerGroup == null) continue;
+                    List<Group> cutKillerGroups = killerGroups.Where(n => GroupHelper.GetKillerGroupFromCache(board, n.Points.First(), c) == dkillerGroup).ToList();
+                    List<Group> cutTargetGroups = ngroups.Where(n => GroupHelper.GetKillerGroupFromCache(board, n.Points.First(), c) == dkillerGroup).ToList();
+                    if (IsComplexSeki(board, cutKillerGroups, cutTargetGroups))
+                        return true;
+                }
             }
             return false;
         }

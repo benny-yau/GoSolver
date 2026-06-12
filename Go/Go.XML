@@ -254,10 +254,10 @@
         <member name="M:Go.BothAliveHelper.CheckComplexSeki(Go.Board,Go.Group,System.Collections.Generic.List{Go.Group})">
             <summary>
             Check complex seki.
-            With diagonal cut <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan22" />
-            <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_20230422_8" />
             Without diagonal cut <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A123" />
             <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18" />
+            With diagonal cut <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan22" />
+            <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_20230422_8" />
             </summary>
         </member>
         <member name="M:Go.BothAliveHelper.IsComplexSeki(Go.Board,System.Collections.Generic.List{Go.Group},System.Collections.Generic.List{Go.Group})">
@@ -2096,14 +2096,13 @@
         <member name="M:Go.RedundantMoveHelper.SpecificKillWithLibertyFight(Go.Board,System.Collections.Generic.List{Go.GameTryMove},System.Collections.Generic.List{Go.Group})">
             <summary>
             Specific kill with liberty fight.
-            Find neighbour groups at diagonal cut <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_20221017_5" />
-            <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario3kyu24_3" />
-            <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario3kyu24_5" />
-            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221017_5" />
+            Check diagonal cut <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_20221017_5" />
+            <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario3kyu24" />
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260609_5" />
+            Real eye found <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario3kyu24" />
             Target group contains killer group <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q2413" />
             <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
-            Real solid eye found <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_B7" />
-            <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario3kyu24" />
+            Real eye found <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_B7" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.GetGenericNeutralMove(Go.Game,System.Collections.Generic.List{Go.GameTryMove})">
