@@ -600,8 +600,8 @@ namespace ScenarioCollection
 
             gi.dictatePoints.Add(new List<Point>() { new Point(5, 18), new Point(4, 18), new Point(0, 16), new Point(0, 17), new Point(1, 18), new Point(1, 17), new Point(2, 18), new Point(4, 17) });
 
-            gi.PlayerMoveJson = gi.PlayerMoveJsonExtension = ResourceHelper.GetXuanXuanQiJingMappedJsonExtensionString("Scenario_XuanXuanGo_A23_PlayerMoveExtension");
-            gi.ChallengeMoveJson = gi.ChallengeMoveJsonExtension = ResourceHelper.GetXuanXuanQiJingMappedJsonExtensionString("Scenario_XuanXuanGo_A23_ChallengeMoveExtension");
+            /*gi.PlayerMoveJson = gi.PlayerMoveJsonExtension = ResourceHelper.GetXuanXuanQiJingMappedJsonExtensionString("Scenario_XuanXuanGo_A23_PlayerMoveExtension");
+            gi.ChallengeMoveJson = gi.ChallengeMoveJsonExtension = ResourceHelper.GetXuanXuanQiJingMappedJsonExtensionString("Scenario_XuanXuanGo_A23_ChallengeMoveExtension");*/
 
             return g;
         }

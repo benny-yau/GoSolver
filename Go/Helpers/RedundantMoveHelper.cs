@@ -2293,7 +2293,7 @@ namespace Go
         private static Boolean CheckLibertyFightAtCoveredEye(Board board, Point eye, Content c)
         {
             Group group = board.GetGroupsFromStoneNeighbours(eye, c.Opposite()).First();
-            if (LinkHelper.GetAllDiagonalGroups(board, group).Any(n => LinkHelper.FindDiagonalCut(board, n, true).Any()))
+            if (LinkHelper.GetAllDiagonalConnectedGroups(board, group).Any(n => LinkHelper.FindDiagonalCut(board, n, true).Any()))
                 return true;
             return false;
         }
@@ -2565,6 +2565,7 @@ namespace Go
         /// Check diagonal cut <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_20221017_5" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario3kyu24" />
         /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260609_5" />
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260614_4" />
         /// Real eye found <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario3kyu24" />
         /// Target group contains killer group <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q2413" />
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
@@ -2580,22 +2581,22 @@ namespace Go
             Board tryBoard = neutralPointMove.TryGame.Board;
             foreach (Group targetGroup in tryBoard.GetGroupsFromStoneNeighbours())
             {
-                List<Point> nliberties = null;
                 //check diagonal cut
                 List<(Point, List<Point>)> diagonalCuts = LinkHelper.FindDiagonalCut(tryBoard, targetGroup, true).ToList();
                 foreach ((_, List<Point> diagonals) in diagonalCuts)
                 {
                     Group ngroup = tryBoard.GetGroupsFromPoints(diagonals).FirstOrDefault(gr => !gr.Equals(tryBoard.MoveGroup) && !WallHelper.IsNonKillableGroup(tryBoard, gr));
                     if (ngroup == null) continue;
-                    nliberties = ngroup.Liberties.ToList();
-
-                    //compare liberties to see if target group can be killed
-                    if (nliberties.Count == targetGroup.Liberties.Count + 1 || nliberties.Count == targetGroup.Liberties.Count + 2)
-                        return neutralPointMove;
-
-                    //real eye found
-                    if (nliberties.Any(n => EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, n, c)))
-                        return neutralPointMove;
+                    foreach (Group gr in LinkHelper.GetAllDiagonalConnectedGroups(tryBoard, ngroup))
+                    {
+                        List<Point> nliberties = gr.Liberties.ToList();
+                        //compare liberties to see if target group can be killed
+                        if (nliberties.Count == targetGroup.Liberties.Count + 1 || nliberties.Count == targetGroup.Liberties.Count + 2)
+                            return neutralPointMove;
+                        //real eye found
+                        if (nliberties.Any(n => EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, n, c)))
+                            return neutralPointMove;
+                    }
                 }
                 //no diagonal cut
                 if (diagonalCuts.Count > 0) continue;
@@ -2604,14 +2605,14 @@ namespace Go
                 if (kgroups.Count != 1) continue;
                 Group kgroup = kgroups.First();
                 if (!kgroup.Points.Any(p => tryBoard[p] == c && tryBoard.GetGroupAt(p).Liberties.Count > 1)) continue;
-                nliberties = kgroup.Points.Where(p => tryBoard[p] == Content.Empty).ToList();
+                List<Point> kliberties = kgroup.Points.Where(p => tryBoard[p] == Content.Empty).ToList();
 
                 //compare liberties to see if target group can be killed
-                if (nliberties.Count == targetGroup.Liberties.Count)
+                if (kliberties.Count == targetGroup.Liberties.Count)
                     return neutralPointMove;
 
                 //real eye found
-                if (nliberties.Any(n => EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, n, c)))
+                if (kliberties.Any(n => EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, n, c)))
                     return neutralPointMove;
             }
             return null;
@@ -2631,7 +2632,7 @@ namespace Go
             if (killerGroups.Count == 0) return null;
             //cover all neutral points
             Board coveredBoard = new Board(g.Board);
-            neutralPointMoves.ForEach(m => coveredBoard[m.Move] = c);
+            neutralPointMoves.ForEach(n => coveredBoard[n.Move] = c);
 
             foreach (Group killerGroup in killerGroups)
             {
