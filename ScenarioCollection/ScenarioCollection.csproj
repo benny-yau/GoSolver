@@ -92,7 +92,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\GoSeigen_MappedJsonExtension.resx" />
     <EmbeddedResource Include="Resources\GuanZiPu_MappedJsonExtension.resx" />
-    <EmbeddedResource Include="Resources\HashimotoUtaro_MappedJsonExtension.resx" />
+    <EmbeddedResource Include="Resources\HashimotoUtaro_MappedJsonExtension.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\KweonKabYong_MappedJsonExtension.resx" />
     <EmbeddedResource Include="Resources\MappedJsonExtension.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
