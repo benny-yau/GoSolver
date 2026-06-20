@@ -202,5 +202,20 @@ namespace Go
             if (groupP == groupQ) return (false, null);
             return (true, groupP);
         }
+
+        /// <summary>
+        /// Check if neighbour killer group.
+        /// </summary>
+        public static IEnumerable<(Group, List<Group>)> CheckIfNeighbourKillerGroup(Board board, Group killerGroup)
+        {
+            List<Group> killerGroups = GroupHelper.GetKillerGroups(board, killerGroup.Content.Opposite());
+            List<Group> ngroups = board.GetNeighbourGroups(killerGroup);
+            foreach (Group kgroup in killerGroups.Where(gr => gr != killerGroup))
+            {
+                List<Group> cgroups = board.GetNeighbourGroups(kgroup);
+                if (cgroups.Intersect(ngroups).Any())
+                    yield return (kgroup, cgroups);
+            }
+        }
     }
 }

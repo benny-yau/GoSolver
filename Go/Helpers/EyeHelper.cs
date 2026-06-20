@@ -389,14 +389,9 @@ namespace Go
                 return false;
 
             //find real eye in neighbour killer groups
-            List<Group> killerGroups = GroupHelper.GetKillerGroups(captureBoard, c.Opposite());
             if (killerGroup == null) killerGroup = tryBoard.MoveGroup;
-            List<Group> ngroups = captureBoard.GetNeighbourGroups(killerGroup);
-
-            foreach (Group kgroup in killerGroups.Where(gr => gr != killerGroup))
+            foreach ((Group kgroup, List<Group> cgroups) in GroupHelper.CheckIfNeighbourKillerGroup(captureBoard, killerGroup))
             {
-                List<Group> cgroups = captureBoard.GetNeighbourGroups(kgroup);
-                if (!cgroups.Intersect(ngroups).Any()) continue;
                 if (cgroups.Count == 1) return true;
                 if (!WallHelper.StrongGroups(captureBoard, cgroups)) continue;
                 if (EyeHelper.FindRealEyeOfAnyKillerGroup(captureBoard, kgroup))

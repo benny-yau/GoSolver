@@ -226,6 +226,11 @@
             Enable pass move for both alive.
             </summary>
         </member>
+        <member name="M:Go.BothAliveHelper.EnableCheckForPassMove(Go.Board,Go.Content,System.Collections.Generic.List{Go.GameTryMove})">
+            <summary>
+            Enable check for pass move.
+            </summary>
+        </member>
         <member name="M:Go.BothAliveHelper.CheckForBothAliveAtMove(Go.Board)">
             <summary>
             Check for both alive at move.
@@ -255,8 +260,9 @@
             <summary>
             Check complex seki.
             Without diagonal cut <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A123" />
-            <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18" />
-            With diagonal cut <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan22" />
+            <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A67" />
+            With diagonal cut <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18" />
+            <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan22" />
             <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_20230422_8" />
             </summary>
         </member>
@@ -275,12 +281,10 @@
             Fill eye point in neighbour group <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275" />
             </summary>
         </member>
-        <member name="M:Go.BothAliveHelper.GetKillerGroupsForBothAlive(Go.Board,Go.Content)">
+        <member name="M:Go.BothAliveHelper.GetKillerGroupsForComplexSeki(Go.Board,Go.Group)">
             <summary>
-            Get killer groups for both alive.
-            Check covered eye in killer group <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30005" />
-            Not covered eye <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A123" />
-            <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30213" />
+            Get killer groups for complex seki.
+            Check covered eye <see cref="!:UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A123" />
             </summary>
         </member>
         <member name="M:Go.BothAliveHelper.AddPassMove(Go.Game)">
@@ -582,6 +586,11 @@
         <member name="M:Go.GroupHelper.CheckIfDifferentKillerGroup(Go.Board,Go.Point,Go.Point,Go.Content)">
             <summary>
             Check if different killer group.
+            </summary>
+        </member>
+        <member name="M:Go.GroupHelper.CheckIfNeighbourKillerGroup(Go.Board,Go.Group)">
+            <summary>
+            Check if neighbour killer group.
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.FindTigerMouth(Go.Board,Go.Point,Go.Content)">

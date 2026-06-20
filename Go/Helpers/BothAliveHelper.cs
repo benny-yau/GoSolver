@@ -28,12 +28,14 @@ namespace Go
             }
         }
 
+        /// <summary>
+        /// Enable check for pass move.
+        /// </summary>
         public static Boolean EnableCheckForPassMove(Board board, Content c = Content.Unknown, List<GameTryMove> tryMoves = null)
         {
             if (tryMoves != null && tryMoves.Any(p => GroupHelper.GetDirectKillerGroup(board, p.Move, c) == null)) return false;
             c = (c == Content.Unknown) ? GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive) : c;
-            IEnumerable<Group> killerGroups = GetKillerGroupsForBothAlive(board, c);
-            if (killerGroups.Any(n => CheckForBothAlive(board, n)))
+            if (GroupHelper.GetKillerGroups(board, c).Any(n => CheckForBothAlive(board, n)))
                 return true;
             return false;
         }
@@ -158,15 +160,17 @@ namespace Go
         /// <summary>
         /// Check complex seki.
         /// Without diagonal cut <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A123" />
-        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18" />
-        /// With diagonal cut <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan22" />
+        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A67" />
+        /// With diagonal cut <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_GuanZiPu_B18" />
+        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario3dan22" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_20230422_8" />
         /// </summary>
         private static Boolean CheckComplexSeki(Board board, Group killerGroup, List<Group> ngroups)
         {
             Content c = killerGroup.Content;
-            List<Group> killerGroups = GetKillerGroupsForBothAlive(board, c.Opposite()).ToList();
-            if (killerGroups.Count < 2) return false;
+            List<Group> killerGroups = GetKillerGroupsForComplexSeki(board, killerGroup).ToList();
+            if (killerGroups.Count == 0) return false;
+            killerGroups.Add(killerGroup);
             List<Point> contentPoints = killerGroup.Points.Where(n => board[n] == c).ToList();
             if (board.GetGroupsFromPoints(contentPoints).Any(n => n.Liberties.Count == 1)) return false;
 
@@ -257,23 +261,22 @@ namespace Go
         }
 
         /// <summary>
-        /// Get killer groups for both alive.
-        /// Check covered eye in killer group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30005" />
-        /// Not covered eye <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A123" />
-        /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WindAndTime_Q30213" />
+        /// Get killer groups for complex seki.
+        /// Check covered eye <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A123" />
         /// </summary>
-        public static IEnumerable<Group> GetKillerGroupsForBothAlive(Board board, Content c = Content.Unknown)
+        public static IEnumerable<Group> GetKillerGroupsForComplexSeki(Board board, Group killerGroup)
         {
-            List<Group> killerGroups = GroupHelper.GetKillerGroups(board, c).Where(n => GroupHelper.CheckNeighbourGroupsOfKillerGroup(board, n).Item1).ToList();
-            foreach (Group group in killerGroups)
+            Content c = killerGroup.Content;
+            foreach ((Group group, _) in GroupHelper.CheckIfNeighbourKillerGroup(board, killerGroup))
             {
+                //check covered eye in neighbour killer group
                 if (group.Points.Count <= 2 && !EyeHelper.FindRealEyeWithinEmptySpace(board, group, EyeType.UnCoveredEye))
                 {
                     foreach (Link<Point> p in LinkHelper.GetGroupDiagonals(board, group))
                     {
-                        if (board[p.Move] != c.Opposite()) continue;
-                        Group killerGroup = GroupHelper.GetDirectKillerGroup(board, p.Move, c);
-                        if (!killerGroups.Contains(killerGroup)) continue;
+                        if (board[p.Move] != c) continue;
+                        Group kgroup = GroupHelper.GetDirectKillerGroup(board, p.Move, c.Opposite());
+                        if (!killerGroup.Equals(kgroup)) continue;
                         if (ImmovableHelper.CheckConnectAndDie(board, board.GetGroupAt(p.Move), false)) continue;
                         Board b = new Board(board);
                         b[p.Move] = Content.Empty;
