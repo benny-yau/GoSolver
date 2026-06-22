@@ -614,7 +614,7 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Content c = tryMove.MoveContent;
 
-            if (tryMove.ConnectAndDie) return (false, null);
+            if (tryMove.MoveConnectAndDie) return (false, null);
             foreach (Point p in currentBoard.OpponentAtStoneNeighbour(move, c.Opposite()))
             {
                 //check opponent at diagonal
@@ -665,7 +665,7 @@ namespace Go
                 }
 
                 //check liberty fight
-                if (tryBoard.GetNeighbourGroups().Any(n => ImmovableHelper.CheckConnectAndDie(tryBoard, n) && !ImmovableHelper.CheckConnectAndDie(currentBoard, n)) && LinkHelper.FindDiagonalCut(tryBoard).Any())
+                if (tryBoard.GetNeighbourGroups().Any(n => ImmovableHelper.CheckConnectAndDie(tryBoard, n) && !ImmovableHelper.CheckConnectAndDie(currentBoard, n)) && LinkHelper.FindDiagonalCut(tryBoard, tryBoard.MoveGroup, true).Any())
                     return (true, null);
             }
 

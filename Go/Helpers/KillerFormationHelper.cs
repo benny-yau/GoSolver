@@ -106,7 +106,7 @@ namespace Go
             Point move = tryMove.Move;
             Content c = tryBoard.MoveGroup.Content;
 
-            if (!tryMove.ConnectAndDie) return false;
+            if (!tryMove.MoveConnectAndDie) return false;
             Board captureBoard = tryMove.CaptureBoard;
 
             //check multipoint snapback after capture
@@ -619,7 +619,7 @@ namespace Go
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             //move binding
-            if (tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c) == 1) return false;
+            if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Count < 2) return false;
             //check diagonals
             List<Point> s = LinkHelper.GetDiagonalsAtStoneNeighbours(tryBoard, move, c);
             if (s.Count != 2) return true;

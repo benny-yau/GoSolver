@@ -127,7 +127,7 @@ namespace Go
                 }
                 else if (tryMove.MakeMoveResult == MakeMoveResult.Legal)
                 {
-                    if (!tryMove.ConnectAndDie)
+                    if (!tryMove.MoveConnectAndDie)
                     {
                         //check if game ended
                         ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Survive, b);
@@ -148,7 +148,7 @@ namespace Go
                 tryMoves.Where(e => e.IsRedundantMove).ToList().ForEach(t => { redundantTryMoves.Add(t); tryMoves.Remove(t); });
 
             //sort game try moves
-            tryMoves = (from tryMove in tryMoves orderby tryMove.AtariResolved descending, tryMove.AtariWithoutSuicide descending, tryMove.Captured descending, tryMove.IncreasedKillerGroups descending, tryMove.MoveGroupLiberties descending select tryMove).ToList();
+            tryMoves = (from tryMove in tryMoves orderby tryMove.ConnectAndDieResolved descending, tryMove.AtariWithoutSuicide descending, tryMove.Captured descending, tryMove.IncreasedKillerGroups descending, tryMove.MoveGroupLiberties descending select tryMove).ToList();
 
             if (tryMoves.Count == 0)
             {
@@ -406,7 +406,7 @@ namespace Go
                 }
                 else if (tryMove.MakeMoveResult == MakeMoveResult.Legal)
                 {
-                    if (!tryMove.ConnectAndDie)
+                    if (!tryMove.MoveConnectAndDie)
                     {
                         //check if game ended
                         ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Kill, b);
@@ -432,7 +432,7 @@ namespace Go
             }
 
             //sort game try moves
-            tryMoves = (from tryMove in tryMoves orderby tryMove.AtariResolved descending, tryMove.AtariWithoutSuicide descending, tryMove.Captured descending, tryMove.MoveGroupLiberties descending select tryMove).ToList();
+            tryMoves = (from tryMove in tryMoves orderby tryMove.ConnectAndDieResolved descending, tryMove.AtariWithoutSuicide descending, tryMove.Captured descending, tryMove.MoveGroupLiberties descending select tryMove).ToList();
 
             //create random move
             CreateRandomMoveForKill(tryMoves, g);

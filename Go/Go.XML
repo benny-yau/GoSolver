@@ -161,9 +161,14 @@
             Is negligible.
             </summary>
         </member>
-        <member name="F:Go.GameTryMove.connectAndDie">
+        <member name="F:Go.GameTryMove.moveConnectAndDie">
             <summary>
-            Connect and die.
+            Move connect and die.
+            </summary>
+        </member>
+        <member name="F:Go.GameTryMove.connectAndDieResolved">
+            <summary>
+            Connect and die resolved.
             </summary>
         </member>
         <member name="P:Go.GameTryMove.IncreasedKillerGroups">
@@ -1826,7 +1831,7 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16605" />
             Check killer formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
             Check move diagonals <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18796_2" />
-            Check is negligible <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B25" />
+            Check atari resolved <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B25" />
             Check one empty space left <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A55" />
             Check opponent at diagonal points <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30403_2" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />

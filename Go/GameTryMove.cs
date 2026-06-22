@@ -129,20 +129,41 @@ namespace Go
         }
 
         /// <summary>
-        /// Connect and die.
+        /// Move connect and die.
         /// </summary>
-        private bool? connectAndDie = null;
-        public bool ConnectAndDie
+        private bool? moveConnectAndDie = null;
+        public bool MoveConnectAndDie
         {
             get
             {
-                if (connectAndDie == null)
+                if (moveConnectAndDie == null)
                 {
                     (Boolean connectAndDie, Board captureBoard) = ImmovableHelper.ConnectAndDie(TryGame.Board, TryGame.Board.MoveGroup, false);
-                    this.connectAndDie = connectAndDie;
+                    this.moveConnectAndDie = connectAndDie;
                     this.CaptureBoard = captureBoard;
                 }
-                return connectAndDie.Value;
+                return moveConnectAndDie.Value;
+            }
+        }
+
+        /// <summary>
+        /// Connect and die resolved.
+        /// </summary>
+        private bool? connectAndDieResolved = null;
+        public bool ConnectAndDieResolved
+        {
+            get
+            {
+                if (connectAndDieResolved == null)
+                {
+                    if (MoveConnectAndDie) return false;
+                    if (AtariResolved) return true;
+                    //check connect and die by opponent move
+                    if (OpponentMove == null) return false;
+                    Board b = OpponentMove.TryGame.Board;
+                    this.connectAndDieResolved = b.GetGroupsFromStoneNeighbours().Any(n => ImmovableHelper.UnescapableGroup(b, n).Item1);
+                }
+                return connectAndDieResolved.Value;
             }
         }
 

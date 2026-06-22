@@ -223,7 +223,7 @@ namespace Go
             //ensure is covered eye
             if (!EyeHelper.FindCoveredEye(currentBoard, move, c)) return false;
 
-            if (tryMove.ConnectAndDie)
+            if (tryMove.MoveConnectAndDie)
             {
                 //check for killer formation
                 if (KillerFormationHelper.SuicidalKillerFormations(tryMove))
@@ -732,7 +732,7 @@ namespace Go
             Content c = tryMove.MoveContent;
 
             //check connect and die
-            if (!tryMove.ConnectAndDie) return false;
+            if (!tryMove.MoveConnectAndDie) return false;
             Board captureBoard = tryMove.CaptureBoard;
 
             if (LifeCheck.GetTargets(tryBoard).All(t => tryBoard.MoveGroup.Equals(t))) return false;
@@ -1435,7 +1435,7 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16605" />
         /// Check killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
         /// Check move diagonals <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18796_2" />
-        /// Check is negligible <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B25" />
+        /// Check atari resolved <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B25" />
         /// Check one empty space left <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A55" />
         /// Check opponent at diagonal points <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30403_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
@@ -1477,8 +1477,8 @@ namespace Go
                 return true;
             }
 
-            //check is negligible
-            if (!tryMove.IsNegligible) return false;
+            //check atari resolved
+            if (tryMove.AtariResolved) return false;
 
             //check one empty space left
             if (KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
@@ -1895,8 +1895,7 @@ namespace Go
             Point move = tryMove.Move;
             Content c = tryBoard.MoveGroup.Content;
 
-            if (!tryMove.IsNegligible)
-                return false;
+            if (KoHelper.IsKoFight(tryBoard)) return false;
 
             //check leap move to target
             if (CheckLeapMoveToTarget(tryBoard))
@@ -2782,7 +2781,7 @@ namespace Go
             if (tryBoard.AtariTargets.Count != 1) return false;
             if (currentBoard[diagonal] != Content.Empty) return false;
             //check diagonal cut
-            if (tryBoard.GetGroupsFromStoneNeighbours(diagonal, c.Opposite()).Any(n => LinkHelper.FindDiagonalCut(tryBoard, n).Any()))
+            if (tryBoard.GetGroupsFromStoneNeighbours(diagonal, c.Opposite()).Any(n => LinkHelper.FindDiagonalCut(tryBoard, n, true).Any()))
                 return true;
             //check capture group
             if (captureBoard.MoveGroup.Points.Count > 1 && captureBoard.MoveGroupLiberties == 2)
