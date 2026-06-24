@@ -111,8 +111,12 @@ namespace Go
 
             //make block move
             Point blockMove = tryBoard.GetStoneNeighbours(d).First(n => !tryBoard.PointWithinMiddleArea(n));
-            Boolean connectAndDie = ImmovableHelper.ConnectAndDieMove(tryBoard, blockMove, c.Opposite()).Item1;
-            return connectAndDie;
+            if (tryBoard.GetMoveLiberties().Contains(blockMove))
+            {
+                Boolean connectAndDie = ImmovableHelper.ConnectAndDieMove(tryBoard, blockMove, c.Opposite()).Item1;
+                return connectAndDie;
+            }
+            return false;
         }
 
         /// <summary>

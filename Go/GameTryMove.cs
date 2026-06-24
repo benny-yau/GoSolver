@@ -138,11 +138,29 @@ namespace Go
             {
                 if (moveConnectAndDie == null)
                 {
-                    (Boolean connectAndDie, Board captureBoard) = ImmovableHelper.ConnectAndDie(TryGame.Board, TryGame.Board.MoveGroup, false);
+                    Board b = TryGame.Board;
+                    (Boolean connectAndDie, Board captureBoard) = ImmovableHelper.ConnectAndDie(b, b.MoveGroup, false);
                     this.moveConnectAndDie = connectAndDie;
                     this.CaptureBoard = captureBoard;
                 }
                 return moveConnectAndDie.Value;
+            }
+        }
+
+        /// <summary>
+        /// Connect and die.
+        /// </summary>
+        private bool? connectAndDie = null;
+        public bool ConnectAndDie
+        {
+            get
+            {
+                if (connectAndDie == null)
+                {
+                    Board b = TryGame.Board;
+                    this.connectAndDie = b.GetGroupsFromStoneNeighbours().Any(n => ImmovableHelper.UnescapableGroup(b, n).Item1); 
+                }
+                return connectAndDie.Value;
             }
         }
 
@@ -160,8 +178,7 @@ namespace Go
                     if (AtariResolved) return true;
                     //check connect and die by opponent move
                     if (OpponentMove == null) return false;
-                    Board b = OpponentMove.TryGame.Board;
-                    this.connectAndDieResolved = b.GetGroupsFromStoneNeighbours().Any(n => ImmovableHelper.UnescapableGroup(b, n).Item1);
+                    this.connectAndDieResolved = OpponentMove.ConnectAndDie;
                 }
                 return connectAndDieResolved.Value;
             }

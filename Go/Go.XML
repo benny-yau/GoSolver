@@ -166,6 +166,11 @@
             Move connect and die.
             </summary>
         </member>
+        <member name="F:Go.GameTryMove.connectAndDie">
+            <summary>
+            Connect and die.
+            </summary>
+        </member>
         <member name="F:Go.GameTryMove.connectAndDieResolved">
             <summary>
             Connect and die resolved.
@@ -2232,9 +2237,9 @@
             Kill eye diagonal move.
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.RedundantSurvivalKoMove(Go.GameTryMove)">
+        <member name="M:Go.RedundantMoveHelper.RedundantKoMove(Go.GameTryMove)">
             <summary>
-            Redundant survival ko move.
+            Redundant ko move.
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_SimpleSeki" />
             </summary>
@@ -2250,13 +2255,20 @@
             ko fight at non killable group <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A27" />
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi" />
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_A64" />
-            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_20221128" /> 
             Check liberty fight <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_20221128_4" />
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanQiJing_A38_2" /> 
             Target with all non killable groups <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q16693_2" /> 
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_x_2" /> 
             Check link for groups <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30152_2" /> 
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q30152" /> 
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CheckSurvivalKoAtNonKillableGroup(Go.Board,Go.Board,System.Nullable{Go.Point})">
+            <summary>
+            Check survival ko at non killable group. 
+            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_3" /> 
+            Check covered eye <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" /> 
+            Check both alive <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q17081" /> 
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.RedundantNonSuicidalMove(Go.GameTryMove)">

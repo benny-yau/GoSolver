@@ -115,7 +115,7 @@ namespace Go
                 {
                     //ko moves
                     tryMove.MakeKoMove(p, SurviveOrKill.Survive);
-                    tryMove.IsRedundantKo = RedundantMoveHelper.RedundantSurvivalKoMove(tryMove);
+                    tryMove.IsRedundantKo = RedundantMoveHelper.RedundantKoMove(tryMove);
                     if (tryMove.IsRedundantKo) redundantTryMoves.Add(tryMove);
                     if (KoHelper.KoContentEnabled(c, gi) && (!tryMove.IsRedundantKo || mappingRange))
                     {
@@ -148,7 +148,7 @@ namespace Go
                 tryMoves.Where(e => e.IsRedundantMove).ToList().ForEach(t => { redundantTryMoves.Add(t); tryMoves.Remove(t); });
 
             //sort game try moves
-            tryMoves = (from tryMove in tryMoves orderby tryMove.ConnectAndDieResolved descending, tryMove.AtariWithoutSuicide descending, tryMove.Captured descending, tryMove.IncreasedKillerGroups descending, tryMove.MoveGroupLiberties descending select tryMove).ToList();
+            tryMoves = (from tryMove in tryMoves orderby tryMove.ConnectAndDieResolved descending, tryMove.ConnectAndDie descending, tryMove.Captured descending, tryMove.IncreasedKillerGroups descending, tryMove.AtariWithoutSuicide descending, tryMove.MoveGroupLiberties descending select tryMove).ToList();
 
             if (tryMoves.Count == 0)
             {
@@ -194,7 +194,7 @@ namespace Go
             tryMove.IsDiagonalEyeMove = RedundantMoveHelper.SurvivalEyeDiagonalMove(tryMove);
             if (tryMove.IsDiagonalEyeMove)
                 return;
-            tryMove.IsRedundantKo = RedundantMoveHelper.RedundantSurvivalKoMove(tryMove);
+            tryMove.IsRedundantKo = RedundantMoveHelper.RedundantKoMove(tryMove);
             if (tryMove.IsRedundantKo)
                 return;
             tryMove.IsRedundantTigerMouth = RedundantMoveHelper.RedundantTigerMouthMove(tryMove);
@@ -243,7 +243,7 @@ namespace Go
             tryMove.IsNeutralPoint = RedundantMoveHelper.KillEyeDiagonalMove(tryMove);
             if (tryMove.IsNeutralPoint)
                 return;
-            tryMove.IsRedundantKo = RedundantMoveHelper.RedundantSurvivalKoMove(tryMove);
+            tryMove.IsRedundantKo = RedundantMoveHelper.RedundantKoMove(tryMove);
             if (tryMove.IsRedundantKo)
                 return;
             tryMove.IsRedundantTigerMouth = RedundantMoveHelper.RedundantTigerMouthMove(tryMove);
@@ -394,7 +394,7 @@ namespace Go
                 {
                     //ko moves
                     tryMove.MakeKoMove(p, SurviveOrKill.Kill);
-                    tryMove.IsRedundantKo = RedundantMoveHelper.RedundantSurvivalKoMove(tryMove);
+                    tryMove.IsRedundantKo = RedundantMoveHelper.RedundantKoMove(tryMove);
                     if (tryMove.IsRedundantKo) redundantTryMoves.Add(tryMove);
                     if (KoHelper.KoContentEnabled(c, gi) && (!tryMove.IsRedundantKo || mappingRange))
                     {
@@ -432,7 +432,7 @@ namespace Go
             }
 
             //sort game try moves
-            tryMoves = (from tryMove in tryMoves orderby tryMove.ConnectAndDieResolved descending, tryMove.AtariWithoutSuicide descending, tryMove.Captured descending, tryMove.MoveGroupLiberties descending select tryMove).ToList();
+            tryMoves = (from tryMove in tryMoves orderby tryMove.ConnectAndDieResolved descending, tryMove.ConnectAndDie descending, tryMove.Captured descending, tryMove.AtariWithoutSuicide descending, tryMove.MoveGroupLiberties descending select tryMove).ToList();
 
             //create random move
             CreateRandomMoveForKill(tryMoves, g);
