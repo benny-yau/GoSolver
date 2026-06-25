@@ -535,7 +535,7 @@ namespace Go
             foreach (Group g in GetDiagonalGroups(board, group))
             {
                 if (groups.Contains(g)) continue;
-                if (func != null && func(g)) continue;
+                if (func != null && !func(g)) continue;
                 groups.Add(g);
                 //get all diagonal groups by recursion
                 GetAllDiagonalGroups(board, g, func, groups);

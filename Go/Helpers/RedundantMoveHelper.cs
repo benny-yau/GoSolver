@@ -1291,6 +1291,7 @@ namespace Go
         /// Check killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113_4" />
         /// Check reverse ko fight <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A30" />
         /// Check for eye at corner point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A67_2" />
+        /// Check groups at covered eye <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260625_7" />        
         /// </summary>
         public static Boolean FindBloatedEyeSuicide(GameTryMove tryMove, Board captureBoard)
         {
@@ -1319,6 +1320,11 @@ namespace Go
                 if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Count > 1)
                     return false;
             }
+
+            //check groups at covered eye
+            Point q = captureBoard.GetMoveLiberties().FirstOrDefault(n => EyeHelper.FindCoveredEye(captureBoard, n, c.Opposite()));
+            if (!q.IsEmpty() && currentBoard.GetGroupsFromStoneNeighbours(q, c).Any(n => ImmovableHelper.CheckConnectAndDie(captureBoard, n, false) && !ImmovableHelper.CheckConnectAndDie(currentBoard, n, false)))
+                return false;
 
             if (EyeHelper.FindEye(tryBoard, liberty, c) || eyeGroups.Count > 1)
                 return true;

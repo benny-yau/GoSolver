@@ -434,6 +434,7 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18472" />
             Check for corner six <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
             Find real eye with strong groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B25" />
+            Check covered eye <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260625_7" />
             </summary>
         </member>
         <member name="M:Go.EyeHelper.CheckDiagonalForKillerGroupOnCapture(Go.Board,Go.Board)">
@@ -1800,6 +1801,7 @@
             Check killer formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113_4" />
             Check reverse ko fight <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A30" />
             Check for eye at corner point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A67_2" />
+            Check groups at covered eye <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260625_7" />        
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckRedundantCornerPoint(Go.GameTryMove,Go.Board)">

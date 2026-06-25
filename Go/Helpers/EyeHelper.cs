@@ -369,6 +369,7 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18472" />
         /// Check for corner six <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
         /// Find real eye with strong groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B25" />
+        /// Check covered eye <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260625_7" />
         /// </summary>
         public static Boolean CheckRealEyeInNeighbourGroups(Board tryBoard, Board captureBoard)
         {
@@ -395,7 +396,12 @@ namespace Go
                 if (cgroups.Count == 1) return true;
                 if (!WallHelper.StrongGroups(captureBoard, cgroups)) continue;
                 if (EyeHelper.FindRealEyeOfAnyKillerGroup(captureBoard, kgroup))
+                {
+                    //check covered eye
+                    if (kgroup.Points.Count == 1 && EyeHelper.FindCoveredEye(captureBoard, kgroup.Points.First(), c.Opposite()))
+                        continue;
                     return true;
+                }
             }
             return false;
         }

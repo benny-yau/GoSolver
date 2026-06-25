@@ -81,7 +81,7 @@ namespace Go
             if (ngroups.Count == 0) return (false, null);
             if (ngroups.Count == 1) return (true, ngroups);
 
-            List<Group> diagonalGroups = LinkHelper.GetAllDiagonalGroups(board, ngroups.First(), s => !ngroups.Contains(s));
+            List<Group> diagonalGroups = LinkHelper.GetAllDiagonalGroups(board, ngroups.First(), s => ngroups.Contains(s));
             if (ngroups.Except(diagonalGroups).Any())
                 return (false, null);
             return (true, ngroups);
