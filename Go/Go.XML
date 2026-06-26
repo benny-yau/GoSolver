@@ -1641,8 +1641,6 @@
             Check for both alive <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_TianLongTu_Q16827" />
             Check link for groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B35" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30358_3" />
-            Set diagonal eye move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie4_4" />
-            <see cref="!:UnitTestProject.RedundantEyeDiagonalMoveTest.RedundantEyeDiagonalMoveTest_Scenario_XuanXuanGo_A16" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.KoFightAtBloatedEye(Go.Board,Go.Board)">
@@ -2244,6 +2242,8 @@
             Redundant ko move.
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_SimpleSeki" />
+            Check redundant ko for opponent <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_3" />
+            Check end game ko <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckRedundantKoMove(Go.Board,Go.Board)">
@@ -2265,7 +2265,7 @@
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WindAndTime_Q30152" /> 
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.CheckSurvivalKoAtNonKillableGroup(Go.Board,Go.Board,System.Nullable{Go.Point})">
+        <member name="M:Go.RedundantMoveHelper.CheckSurvivalKoAtNonKillableGroup(Go.Board,Go.Board)">
             <summary>
             Check survival ko at non killable group. 
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_3" /> 

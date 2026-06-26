@@ -147,15 +147,8 @@ namespace Go
             //sort game try moves
             tryMoves = (from tryMove in tryMoves orderby tryMove.ConnectAndDieResolved descending, tryMove.ConnectAndDie descending, tryMove.Captured descending, tryMove.IncreasedKillerGroups descending, tryMove.AtariWithoutSuicide descending, tryMove.MoveGroupLiberties descending select tryMove).ToList();
 
-            if (tryMoves.Count == 0)
-            {
-                //restore diagonal eye move
-                if (redundantTryMoves.Any(t => t.IsDiagonalEyeMove))
-                    tryMoves.Add(redundantTryMoves.First(t => t.IsDiagonalEyeMove));
-
-                //restore neural net move
-                RedundantMoveHelper.RestoreNeuralNetMove(tryMoves, redundantTryMoves);
-            }
+            //restore neural net move
+            if (tryMoves.Count == 0) RedundantMoveHelper.RestoreNeuralNetMove(tryMoves, redundantTryMoves);
 
             //check for both alive
             BothAliveHelper.EnablePassMoveForBothAlive(g, tryMoves, SurviveOrKill.Survive);
@@ -458,10 +451,11 @@ namespace Go
             {
                 Board tryBoard = koMove.TryGame.Board;
                 Content c = tryBoard.MoveGroup.Content;
+                Point? koPoint = KoHelper.GetKoEyePoint(tryBoard);
+                if (koPoint == null) continue;
                 if (koMove.AtariResolved) continue;
                 if (KoHelper.IsNonKillableGroupKoFight(tryBoard))
                     continue;
-                Point? koPoint = KoHelper.GetKoEyePoint(tryBoard);
                 if (GroupHelper.GetDirectKillerGroup(b, koPoint.Value, c) == null) continue;
 
                 //killer ko within killer group 

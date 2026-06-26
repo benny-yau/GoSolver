@@ -600,11 +600,21 @@ namespace Go
         /// </summary>
         public static Boolean ThreeOpponentGroupsAtMove(Board tryBoard, Point? eyePoint = null)
         {
+            Content c = tryBoard.MoveGroup.Content;
             if (eyePoint == null) eyePoint = tryBoard.Move.Value;
             if (!tryBoard.PointWithinMiddleArea(eyePoint)) return false;
-            if (tryBoard.GetGroupsFromStoneNeighbours(eyePoint).Count >= 3)
-                return true;
-            return false;
+            //check three opponent groups
+            if (tryBoard.GetGroupsFromStoneNeighbours(eyePoint).Count != 3) return false;
+            //check diagonals of tiger mouth
+            List<Point> diagonalPoints = ImmovableHelper.GetDiagonalsOfTigerMouth(tryBoard, eyePoint.Value, c.Opposite());
+            foreach (Point d in diagonalPoints)
+            {
+                if (KoHelper.IsKoFight(tryBoard, d, c.Opposite()).Item1)
+                    return false;
+                if (tryBoard[d] == c && ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.GetGroupAt(d)))
+                    return false;
+            }
+            return true;
         }
 
         /// <summary>
