@@ -180,47 +180,6 @@ namespace Go
             }
         }
 
-        [NonSerialized]
-        private dynamic runtimeScript_KillMove;
-        /// <summary>
-        /// Runtime script for removing kill moves dynamically. Previously used to remove neutral point moves.
-        /// </summary>
-        public dynamic RuntimeScript_KillMove
-        {
-            get
-            {
-                return runtimeScript_KillMove;
-            }
-            set
-            {
-                if (value is string && EnableFullLoading)
-                    runtimeScript_KillMove = CSScriptLibrary.CSScript.Evaluator.LoadCode(value);
-                else
-                    runtimeScript_KillMove = value;
-            }
-        }
-
-        [NonSerialized]
-        private dynamic runtimeScript_SurvivalMove;
-
-        /// <summary>
-        /// Runtime script for removing survival moves dynamically.
-        /// </summary>
-        public dynamic RuntimeScript_SurvivalMove
-        {
-            get
-            {
-                return runtimeScript_SurvivalMove;
-            }
-            set
-            {
-                if (value is string && EnableFullLoading)
-                    runtimeScript_SurvivalMove = CSScriptLibrary.CSScript.Evaluator.LoadCode(value);
-                else
-                    runtimeScript_SurvivalMove = value;
-            }
-        }
-
         public static readonly object _lockFullLoading = new object();
         private static Boolean enableFullLoading = true;
 

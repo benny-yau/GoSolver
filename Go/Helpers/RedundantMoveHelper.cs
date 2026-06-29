@@ -415,7 +415,6 @@ namespace Go
 
         /// <summary>
         /// Move within non killable group.
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3kyu28_2" />
         /// Check for negligible in opponent move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" />
         /// Check any is non killable <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30370" />
         /// Check for covered eye <see cref="UnitTestProject.RedundantTigerMouthMove.RedundantTigerMouthMove_Scenario_WindAndTime_Q30225_2" />
@@ -790,7 +789,6 @@ namespace Go
         /// <summary>
         /// Redundant one point move in connect and die.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3_3" />
-        /// Check box formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_4" />
         /// Ensure all strong neighbour groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_7" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_20230603_4" />
         /// </summary>
@@ -808,8 +806,7 @@ namespace Go
                 return true;
 
             //check box formation
-            Group killerGroup = GroupHelper.GetDirectKillerGroup(currentBoard, move, c.Opposite());
-            if (killerGroup != null && KillerFormationHelper.BoxFormation(tryBoard, killerGroup) && tryBoard.GetNeighbourGroups(killerGroup).Count == 1 && !killerGroup.Points.First().Equals(move))
+            if (KillerFormationHelper.CheckBoxFormationSuicidalMove(tryBoard, currentBoard).Item1)
                 return true;
 
             //check diagonal for real eye
@@ -2069,6 +2066,8 @@ namespace Go
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             if (!tryMove.IsNegligible) return false;
+            //check no eye for survival
+            if (!WallHelper.NoEyeForSurvival(currentBoard, move, c.Opposite())) return false;
             //check middle area
             if (!tryBoard.PointWithinMiddleArea())
             {
@@ -2092,8 +2091,6 @@ namespace Go
                         return false;
                 }
             }
-            //check no eye for survival
-            if (!WallHelper.NoEyeForSurvival(currentBoard, move, c.Opposite())) return false;
             //check one empty space left
             if (KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                 return false;
@@ -3343,7 +3340,6 @@ namespace Go
         /// Check immovable at diagonal for non suicidal move.
         /// <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_TianLongTu_Q16738" /> 
         /// Check immovable point <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260515_8" /> 
-        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260515_8" /> 
         /// Check neighbour group with two liberties <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_TianLongTu_Q15618" /> 
         /// </summary>
         public static Boolean CheckImmovableAtDiagonalForNonSuicidalMove(Board tryBoard, Group ngroup)

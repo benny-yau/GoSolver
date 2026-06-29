@@ -12,9 +12,9 @@ namespace Go
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_ScenarioTestConfirmAlive1" />
         /// Partial alive <see cref="UnitTestProject.PartiallyAliveTest.PartiallyAliveTest_Scenario_WindAndTime_Q30215" />
         /// </summary>
-        public static ConfirmAliveResult ConfirmAlive(Board board, List<Point> targetPoints = null)
+        public static ConfirmAliveResult ConfirmAlive(Board board)
         {
-            List<Group> targets = LifeCheck.GetTargets(board, targetPoints);
+            List<Group> targets = LifeCheck.GetTargets(board);
             if (targets.Any(p => ConfirmAlive(board, p) == ConfirmAliveResult.Alive))
                 return ConfirmAliveResult.Alive;
             return ConfirmAliveResult.Unknown;
@@ -150,22 +150,15 @@ namespace Go
         }
 
         /// <summary>
-        /// Get targets of survival group. Can specify other targets than specified in game info.
+        /// Get targets.
         /// </summary>
-        public static List<Group> GetTargets(Board board, List<Point> target = null)
+        public static List<Group> GetTargets(Board board)
         {
             Content c = Content.Unknown;
-            if (target == null)
-            {
-                //get target from game info
-                target = board.GameInfo.targetPoints;
-                c = GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive);
-                return target.Where(t => board[t] == c).Select(t => board.GetGroupAt(t)).Distinct().ToList(); //get the target that is still alive
-            }
-            else //can specify another target
-            {
-                return target.Where(t => board[t] != Content.Empty).Select(t => board.GetGroupAt(t)).Distinct().ToList();
-            }
+            //get target from game info
+            List<Point> target = board.GameInfo.targetPoints;
+            c = GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive);
+            return target.Where(t => board[t] == c).Select(t => board.GetGroupAt(t)).Distinct().ToList(); //get the target that is still alive
         }
 
         /// <summary>
@@ -174,10 +167,9 @@ namespace Go
         public static ConfirmAliveResult CheckIfTargetGroupKilled(Board board)
         {
             GameInfo gi = board.GameInfo;
-            List<Point> targetGroup = gi.targetPoints;
             Content c = GameHelper.GetContentForSurviveOrKill(gi, SurviveOrKill.Survive);
-            List<Point> killedPoints = targetGroup.Where(q => board[q] != c).ToList();
-            if (killedPoints.Count > 0 && killedPoints.Count == targetGroup.Count)
+            List<Point> killedPoints = gi.targetPoints.Where(q => board[q] != c).ToList();
+            if (killedPoints.Count > 0 && killedPoints.Count == gi.targetPoints.Count)
                 return ConfirmAliveResult.Dead;
             return ConfirmAliveResult.Unknown;
         }
@@ -199,23 +191,31 @@ namespace Go
         /// <summary>
         /// Check if target group is dead or alive.
         /// </summary>
-        public static ConfirmAliveResult CheckIfDeadOrAlive(SurviveOrKill surviveOrKill, Board board)
+        public static ConfirmAliveResult CheckIfDeadOrAlive(SurviveOrKill surviveOrKill, Board board, Boolean? checkSurvival = null)
         {
-            ConfirmAliveResult confirmAlive = ConfirmAliveResult.Unknown;
             //check for survival points
             if (board.CapturedPoints.Intersect(board.GameInfo.survivalPoints).Any())
                 return (surviveOrKill == SurviveOrKill.Survive) ? ConfirmAliveResult.Alive : ConfirmAliveResult.Dead;
 
+            //check target dead
+            if (surviveOrKill == SurviveOrKill.Kill)
+                return LifeCheck.CheckIfTargetGroupKilled(board);
+
+            //check last move
+            if (surviveOrKill != SurviveOrKill.Survive) return ConfirmAliveResult.Unknown;
+            if (checkSurvival == null)
+            {
+                if (!board.LastMoves.Any()) checkSurvival = true;
+                else checkSurvival = !ImmovableHelper.CheckConnectAndDie(board, board.MoveGroup, false);
+            }
+
+            if (!checkSurvival.Value) return ConfirmAliveResult.Unknown;
             //check external link
-            if (surviveOrKill == SurviveOrKill.Survive && board.GameInfo.survivalLinkPoints.Any(n => LinkHelper.IsExternalLinkToTargetGroup(board, n)))
+            if (board.GameInfo.survivalLinkPoints.Any(n => LinkHelper.IsExternalLinkToTargetGroup(board, n)))
                 return ConfirmAliveResult.Alive;
 
-            //check target dead or alive
-            if (surviveOrKill == SurviveOrKill.Survive)
-                confirmAlive = LifeCheck.ConfirmAlive(board);
-            else
-                confirmAlive = LifeCheck.CheckIfTargetGroupKilled(board);
-            return confirmAlive;
+            //check target alive
+            return LifeCheck.ConfirmAlive(board);            
         }
     }
 }

@@ -597,6 +597,7 @@ namespace Go
 
         /// <summary>
         /// Three opponent groups at move.
+        /// Check non semi solid eye <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WindAndTime_Q30302" />
         /// </summary>
         public static Boolean ThreeOpponentGroupsAtMove(Board tryBoard, Point? eyePoint = null)
         {
@@ -613,6 +614,13 @@ namespace Go
                     return false;
                 if (tryBoard[d] == c && ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.GetGroupAt(d)))
                     return false;
+                if (ImmovableHelper.IsImmovablePoint(tryBoard, d, c.Opposite()))
+                {
+                    //check non semi solid eye
+                    if (tryBoard.MoveGroup.Points.Count == 2 && EyeHelper.FindNonSemiSolidEye(tryBoard, d, c.Opposite()))
+                        continue;
+                    return false;
+                }
             }
             return true;
         }
@@ -1276,5 +1284,27 @@ namespace Go
             return p;
         }
 
+        /// <summary>
+        /// Check box formation suicidal move.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_7" />
+        /// </summary>
+        public static (Boolean, Point?) CheckBoxFormationSuicidalMove(Board tryBoard, Board currentBoard)
+        {
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            Group killerGroup = GroupHelper.GetDirectKillerGroup(currentBoard, move, c.Opposite());
+            if (killerGroup != null && KillerFormationHelper.BoxFormation(tryBoard, killerGroup))
+            {
+                List<Group> ngroups = tryBoard.GetNeighbourGroups(killerGroup);
+                if (ngroups.Count != 1) return (false, null);
+                Point p = killerGroup.Points.First();
+                if (!p.Equals(move))
+                    return (true, null);
+                if (ngroups.First().Liberties.Except(killerGroup.Points).Any())
+                    return (true, null);
+                return (false, p);
+            }
+            return (false, null);
+        }
     }
 }

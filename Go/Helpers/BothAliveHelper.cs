@@ -46,7 +46,7 @@ namespace Go
         public static Boolean CheckForBothAliveAtMove(Board board)
         {
             Content c = board.MoveGroup.Content;
-            List<Group> killerGroups = GroupHelper.GetKillerGroupsFromPoints(board.GetStoneAndDiagonalNeighbours(), board, c);
+            List<Group> killerGroups = GroupHelper.GetKillerGroupsFromPoints(board.GetDiagonalNeighbours(), board, c);
             if (killerGroups.Any(n => n != null && CheckForBothAlive(board, n)))
                 return true;
             return false;
@@ -85,7 +85,6 @@ namespace Go
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_20230430_8" />
         /// Check for two liberty formation <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Side_A23_2" />
         /// Check for three or more liberty formation <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31493_4" />
-        /// Check for increased killer groups <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q31445_2" />
         /// Check content group connect and die <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_TianLongTu_Q16424_3" />
         /// Check for two groups <see cref="UnitTestProject.BothAliveTest.BothAliveTest_20230430_8_2" />
         /// </summary>
@@ -132,27 +131,15 @@ namespace Go
             }
 
             //check content group connect and die
-            if (board.Move != null && board[board.Move.Value] == c)
+            HashSet<Group> cGroups = board.GetGroupsFromPoints(contentPoints);
+            if (cGroups.Count == 1)
             {
-                HashSet<Group> cGroups = board.GetGroupsFromPoints(contentPoints);
-                if (cGroups.Count == 1)
+                Group cGroup = cGroups.First();
+                if (ImmovableHelper.CheckConnectAndDie(board, cGroup))
                 {
-                    Group cGroup = cGroups.First();
-                    if (ImmovableHelper.CheckConnectAndDie(board, cGroup))
-                    {
-                        if (cGroup.Points.Count > 3 && !KillerFormationHelper.IsKillerFormationFromFunc(board, cGroup))
-                            return false;
-                    }
+                    if (cGroup.Points.Count > 3 && !KillerFormationHelper.IsKillerFormationFromFunc(board, cGroup))
+                        return false;
                 }
-            }
-
-            //check for increased killer groups
-            List<Point> ePoints = emptyPoints.Where(n => board.GetStoneNeighbours(n).Intersect(emptyPoints).Any()).ToList();
-            if (ePoints.Any())
-            {
-                IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(board, ePoints, c.Opposite());
-                if (moveBoards.Any(b => b.MoveGroupLiberties > 1 && GroupHelper.IncreasedKillerGroups(b, board)))
-                    return false;
             }
             return true;
         }
@@ -231,7 +218,7 @@ namespace Go
 
         /// <summary>
         /// Fill eye points with stone of same content.
-        /// Fill eye point in killer group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_XuanXuanGo_A27" />
+        /// Fill eye point in killer group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A75" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_B43" />
         /// Fill eye point in neighbour group <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275" />
         /// </summary>

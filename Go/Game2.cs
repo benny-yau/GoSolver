@@ -128,7 +128,7 @@ namespace Go
                 else if (tryMove.MakeMoveResult == MakeMoveResult.Legal)
                 {
                     //check if game ended
-                    ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Survive, b);
+                    ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Survive, b, !tryMove.MoveConnectAndDie);
                     if (confirmAlive == ConfirmAliveResult.Alive)
                         return (ConfirmAliveResult.Alive, new List<GameTryMove>() { tryMove }, null);
                     //check recursion

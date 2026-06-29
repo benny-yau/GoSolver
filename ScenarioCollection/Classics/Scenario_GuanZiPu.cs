@@ -3362,36 +3362,6 @@ namespace ScenarioCollection
 
             gi.solutionPoints.Add(new List<Point>() { new Point(1, 18), new Point(1, 17), new Point(0, 17), new Point(4, 16), new Point(2, 17), new Point(2, 18), new Point(0, 16) });
 
-            gi.RuntimeScript_SurvivalMove = @"using System;
-                                    using Go;
-                                    using System.Collections.Generic;
-                                     public class Script
-                                     {
-                                         public List<GameTryMove> ScriptReducedList(List<GameTryMove> sortedGameTryMoves, Game currentGame, Game m = null)
-                                         {
-
-if (currentGame.Board[1, 16] == Content.Black && LifeCheck.ConfirmAlive(currentGame.Board, new List<Point>() { new Point(1, 16)}) == ConfirmAliveResult.Alive)
-    sortedGameTryMoves.Clear(); //killer group is alive - survival group is dead
-
-    return sortedGameTryMoves;
-                                         }
-                                     }";
-
-            gi.RuntimeScript_KillMove = @"using System;
-                                    using Go;
-                                    using System.Collections.Generic;
-                                     public class Script
-                                     {
-                                         public List<GameTryMove> ScriptReducedList(List<GameTryMove> sortedGameTryMoves, Game currentGame, Game m = null)
-                                         {
-
-if (currentGame.Board[1, 16] == Content.Empty && currentGame.Board[3, 17] == Content.Empty)
-    sortedGameTryMoves.Clear(); //killer group is dead = survival group is alive
-
-    return sortedGameTryMoves;
-                                         }
-                                     }";
-
             gi.PlayerMoveJson = gi.PlayerMoveJsonExtension = ResourceHelper.GetGuanZiPuMappedJsonExtensionString("Scenario_GuanZiPu_B3_PlayerMoveExtension");
 
             gi.ChallengeMoveJson = gi.ChallengeMoveJsonExtension = ResourceHelper.GetGuanZiPuMappedJsonExtensionString("Scenario_GuanZiPu_B3_ChallengeMoveExtension");
