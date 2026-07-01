@@ -1128,8 +1128,13 @@
             <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31682_x" />
             Two liberties <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471" />
             <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A132" />
-            <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_x" />
             <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_20230121_8" />
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20250920_6" />
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.EndPointCovered(Go.Point,Go.Board,Go.Group)">
+            <summary>
+            End point covered. 
             </summary>
         </member>
         <member name="M:Go.KillerFormationHelper.CornerThreeFormation(Go.Board,Go.Group)">
@@ -1184,6 +1189,7 @@
             <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
             <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16859_2" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2413_2" /> 
+            Check point next to corner <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" /> 
             Check group diagonals <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30302_2" /> 
             </summary>
         </member>

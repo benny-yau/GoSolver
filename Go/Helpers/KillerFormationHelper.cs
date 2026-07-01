@@ -1047,8 +1047,8 @@ namespace Go
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31682_x" />
         /// Two liberties <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A132" />
-        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_x" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_20230121_8" />
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20250920_6" />
         /// </summary>
         private static Boolean CheckAnyEndPointCovered(Board tryBoard, Group moveGroup)
         {
@@ -1057,6 +1057,9 @@ namespace Go
             return endPoints.Any(q => EndPointCovered((Point)q.point, tryBoard, moveGroup));
         }
 
+        /// <summary>
+        /// End point covered. 
+        /// </summary>
         private static Boolean EndPointCovered(Point endPoint, Board tryBoard, Group moveGroup)
         {
             Content c = moveGroup.Content;
@@ -1066,15 +1069,21 @@ namespace Go
             {
                 if (diagonals.Any(d => tryBoard[d] == c.Opposite())) return false;
                 if (!ImmovableHelper.CheckConnectAndDie(tryBoard, moveGroup)) return false;
+                //check last move to connect or end point
+                if (tryBoard.Move != null && !tryBoard.IsPassMove)
+                { 
+                    if (tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c) == 1 && !tryBoard.Move.Equals(endPoint))
+                        return false;
+                }
                 return true;
             }
             else if (moveGroup.Liberties.Count == 1)
             {
                 if (diagonals.Any(d => tryBoard[d] != c)) return false;
-                //suicide move with one empty space or connect groups
+                //check last move to connect or end point
                 if (tryBoard.Move != null && !tryBoard.IsPassMove)
                 {
-                    if (tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c) == 1 && !tryBoard.GetMoveLiberties().Any() && !tryBoard.Move.Equals(endPoint))
+                    if (tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c) == 1 && !tryBoard.Move.Equals(endPoint) && !tryBoard.GetMoveLiberties().Any())
                         return false;
                 }
                 return true;
@@ -1217,6 +1226,7 @@ namespace Go
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16859_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2413_2" /> 
+        /// Check point next to corner <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" /> 
         /// Check group diagonals <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30302_2" /> 
         /// </summary>
         public static Boolean OpponentBreakKillFormation(Board tryBoard, Board currentBoard)
@@ -1230,8 +1240,12 @@ namespace Go
             if (!KillerFormationHelper.TryKillFormation(currentBoard, c.Opposite(), new List<Point>() { move }).Item1)
                 return false;
             if (KillerFormationHelper.IsKillerFormationFromFunc(currentBoard, targetGroup))
+            {
+                //check point next to corner
+                if (tryBoard.IsPointNextToCorner() && targetGroup.Liberties.Any(n => tryBoard.IsPointNextToCorner(n)))
+                    return true;
                 return false;
-
+            }
             //check group diagonals
             foreach (Link<Point> p in LinkHelper.GetGroupLinkedDiagonals(tryBoard, targetGroup))
             {

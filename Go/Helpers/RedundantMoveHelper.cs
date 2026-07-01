@@ -931,7 +931,7 @@ namespace Go
                     if (!tryBoard.PointWithinMiddleArea())
                     {
                         //check point next to corner
-                        if (tryBoard.GetStoneNeighbours().Any(n => tryBoard.CornerPoint(n))) continue;
+                        if (tryBoard.IsPointNextToCorner()) continue;
                         //check three-point killer group
                         Group kgroup = GroupHelper.GetDirectKillerGroup(captureBoard, move, c.Opposite());
                         if (kgroup != null && kgroup.Points.Count == 3) continue;
@@ -1025,7 +1025,7 @@ namespace Go
             if (e == null || tryBoard[e.Value] != Content.Empty) return false;
 
             //check point next to corner
-            if (tryBoard.GetStoneNeighbours().Any(n => tryBoard.CornerPoint(n)))
+            if (tryBoard.IsPointNextToCorner())
             {
                 Group kgroup = GroupHelper.GetDirectKillerGroup(tryBoard, move, c.Opposite());
                 if (kgroup != null && !GroupHelper.IsSingleGroupWithinKillerGroup(tryBoard))
@@ -1953,7 +1953,7 @@ namespace Go
             List<Point> mpoints = GetMidPointsOfLeapMove(p, r).Where(n => tryBoard[n] == c.Opposite()).ToList();
             if (mpoints.Count == 0) return false;
             //check point next to corner
-            if (tryBoard.GetStoneNeighbours(p).Any(n => tryBoard.CornerPoint(n))) return false;
+            if (tryBoard.IsPointNextToCorner(p)) return false;
             Group mgroup = tryBoard.GetGroupAt(mpoints.First());
             //check strong neighbour groups
             if (mgroup.Points.Count == 1 && !WallHelper.StrongNeighbourGroups(tryBoard, tryBoard.GetGroupAt(p))) return false;

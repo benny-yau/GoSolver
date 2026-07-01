@@ -578,6 +578,15 @@ namespace Go
         }
 
         /// <summary>
+        /// Is point next to corner.
+        /// </summary>
+        public Boolean IsPointNextToCorner(Point? p = null)
+        {
+            if (p == null) p = Move.Value;
+            return GetStoneNeighbours(p).Any(n => CornerPoint(n));
+        }
+
+        /// <summary>
         /// Print board.
         /// </summary>
         public override string ToString()
