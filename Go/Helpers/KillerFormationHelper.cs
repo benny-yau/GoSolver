@@ -1108,6 +1108,7 @@ namespace Go
             if (contentPoints.Count() != 3 || tryBoard.MoveGroupLiberties != 1) return false;
             if (!contentPoints.Any(p => tryBoard.CornerPoint(p)) || contentPoints.Any(p => tryBoard.PointWithinMiddleArea(p))) return false;
             if (MaxLengthOfGrid(moveGroup.Points) != 1) return false;
+            if (!LinkHelper.GetDiagonalGroups(tryBoard).Any()) return false;
             if (tryBoard.AtariTargets.Count == 0) return false;
             return true;
         }
@@ -1149,7 +1150,9 @@ namespace Go
             if (!contentPoints.Any(p => tryBoard.CornerPoint(p)) || contentPoints.Where(p => tryBoard.PointWithinMiddleArea(p)).Count() != 1) return false;
             IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
             if (pointIntersect.Count(p => p.intersectCount == 3) != 2) return false;
-            return (MaxLengthOfGrid(moveGroup.Points) == 2);
+            if (MaxLengthOfGrid(moveGroup.Points) != 2) return false;
+            if (!LinkHelper.GetDiagonalGroups(tryBoard).Any()) return false;
+            return true;
         }
 
         /*

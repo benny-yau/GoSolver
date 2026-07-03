@@ -1807,8 +1807,10 @@ namespace Go
         {
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
             if (!tryBoard.CornerPoint()) return false;
+            if (GroupHelper.CheckKillerGroupPoints(currentBoard, move, c.Opposite()) != null) return false;
 
             //one point target
             if (!tryBoard.AtariTargets.Any())
