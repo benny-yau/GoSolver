@@ -434,6 +434,7 @@ namespace Go
 
         /// <summary>
         /// Create random move for redundant ko.
+        /// Check double ko fight <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_7" />
         /// Killer ko within killer group <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A79" />
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B39" />
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_5" />
@@ -445,7 +446,14 @@ namespace Go
         {
             Board b = g.Board;
             if (b.IsPassMove) return;
-            if (tryMoves.Count == 1 && tryMoves.Select(n => n.TryGame.Board).Any(s => s.IsRandomMove || s.IsPassMove)) return;
+            if (tryMoves.Count > 0)
+            {
+                if (tryMoves.Count != 1) return;
+                Board tryBoard = tryMoves.First().TryGame.Board;
+                if (tryBoard.IsRandomMove || tryBoard.IsPassMove) return;
+                //check double ko fight
+                if (!KoHelper.IsKoFight(b, tryBoard.Move.Value, tryBoard.MoveGroup.Content).Item1) return;
+            }
 
             foreach (GameTryMove koMove in redundantTryMoves.Where(t => t.IsRedundantKo))
             {
@@ -453,6 +461,7 @@ namespace Go
                 Content c = tryBoard.MoveGroup.Content;
                 Point? koPoint = KoHelper.GetKoEyePoint(tryBoard);
                 if (koPoint == null) continue;
+                //check atari resolved
                 if (koMove.AtariResolved) continue;
                 if (KoHelper.IsNonKillableGroupKoFight(tryBoard))
                     continue;

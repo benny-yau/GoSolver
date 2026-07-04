@@ -279,8 +279,8 @@ namespace Go
             if (WholeGroupDying(tryBoard))
             {
                 if (SuicidalEndMove(tryBoard, currentBoard))
-                    return true;
-                return false;
+                    return false;
+                return true;
             }
 
             //corner six formation
@@ -317,6 +317,8 @@ namespace Go
 
         /// <summary>
         /// Suicidal end move.
+        /// Check first point <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A67" />
+        /// Check killer formation <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16693" />
         /// </summary>
         public static Boolean SuicidalEndMove(Board tryBoard, Board currentBoard)
         {
@@ -325,13 +327,21 @@ namespace Go
             //check whole group dying
             if (!WholeGroupDying(tryBoard)) return false;
 
-            //get first point
+            //check first point
             List<Group> previousGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
             if (previousGroups.Count != 1) return false;
             Group group = previousGroups.First();
             if (group.Liberties.Count != 2) return false;
             Point q = group.Liberties.First(p => !p.Equals(move));
-            return IsFirstPoint(currentBoard, move, q);
+            Boolean rc = IsFirstPoint(currentBoard, move, q);
+            if (tryBoard.MoveGroup.Points.Count <= 3) return rc;
+            if (rc)
+                return true;
+            //check killer formation
+            Board b = currentBoard.MakeMoveOnNewBoard(q, c);
+            if (!IsKillerFormationFromFunc(b))
+                return true;
+            return false;
         }
 
         /// <summary>
@@ -1071,7 +1081,7 @@ namespace Go
                 if (!ImmovableHelper.CheckConnectAndDie(tryBoard, moveGroup)) return false;
                 //check last move to connect or end point
                 if (tryBoard.Move != null && !tryBoard.IsPassMove)
-                { 
+                {
                     if (tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c) == 1 && !tryBoard.Move.Equals(endPoint))
                         return false;
                 }

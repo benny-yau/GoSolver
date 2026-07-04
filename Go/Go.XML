@@ -99,6 +99,7 @@
         <member name="M:Go.Game.CreateRandomMoveForRedundantKo(Go.Game,System.Collections.Generic.List{Go.GameTryMove},System.Collections.Generic.List{Go.GameTryMove})">
             <summary>
             Create random move for redundant ko.
+            Check double ko fight <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_7" />
             Killer ko within killer group <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_A79" />
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_Corner_B39" />
             <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_5" />
@@ -926,6 +927,8 @@
         <member name="M:Go.KillerFormationHelper.SuicidalEndMove(Go.Board,Go.Board)">
             <summary>
             Suicidal end move.
+            Check first point <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A67" />
+            Check killer formation <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16693" />
             </summary>
         </member>
         <member name="M:Go.KillerFormationHelper.IsFirstPoint(Go.Board,Go.Point,Go.Point)">
