@@ -247,6 +247,10 @@ namespace Go
         /// Whole group dying <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36" />
         /// Bent four corner formation <see cref="UnitTestProject.BentFourTest.BentFourTest_Scenario7kyu26_3" />
         /// Corner six formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
+        /// Check three-point group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30358_2" />
+        /// Check move diagonals <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16605" />
+        /// Check two liberty group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" />
+        /// Check grid dimension changed <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A113_2" />
         /// Two kill formations <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_XuanXuanGo_A54" />
         /// Check atari target <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40" />
         /// Check end point extension <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_8" />
@@ -289,11 +293,27 @@ namespace Go
 
             //check previous group for killer formation
             Group previousGroup = previousGroups.First();
-            if (tryBoard.MoveGroupLiberties == 1 && IsKillerFormationFromFunc(currentBoard, previousGroup))
-                return true;
+            Boolean previousKillerFormation = IsKillerFormationFromFunc(currentBoard, previousGroup);
+            if (tryBoard.MoveGroupLiberties == 1)
+            {
+                if (previousKillerFormation) return true;
+                //check three-point group
+                if (previousGroup.Points.Count == 3 && !LinkHelper.GetDiagonalGroups(tryBoard).Any())
+                    return true;
+            }
+            //check move diagonals
+            if (tryBoard.MoveGroupLiberties == 2 && LinkHelper.GetMoveDiagonals(tryBoard).Any())
+                return false;
 
-            //grid dimension changed
-            if (!GridDimensionChanged(previousGroup.Points, tryBoard.MoveGroup.Points))
+            //check two liberty group
+            if (tryBoard.MoveGroupLiberties == 2 && previousKillerFormation)
+            {
+                Boolean rc = tryBoard.IsPointNextToCorner() && previousGroup.Liberties.Any(n => tryBoard.IsPointNextToCorner(n));
+                return !rc;
+            }
+
+            //check grid dimension changed
+            if (!previousKillerFormation && !GridDimensionChanged(previousGroup.Points, tryBoard.MoveGroup.Points))
                 return false;
 
             //check atari target
@@ -305,13 +325,8 @@ namespace Go
             }
 
             //check end point extension
-            if (tryBoard.MoveGroup.Points.Count >= 5)
-            {
-                if (tryBoard.MoveGroupLiberties == 1 && LinkHelper.GetMoveDiagonals(tryBoard).Any())
-                    return false;
-                if (tryBoard.MoveGroupLiberties == 2 && !LinkHelper.GetDiagonalPoints(tryBoard).Any(n => tryBoard[n] == c.Opposite()))
-                    return false;
-            }
+            if (tryBoard.MoveGroup.Points.Count >= 5 && CheckAnyEndPointCovered(tryBoard, tryBoard.MoveGroup))
+                return false;
             return true;
         }
 
