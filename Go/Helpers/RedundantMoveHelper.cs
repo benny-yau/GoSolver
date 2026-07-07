@@ -618,8 +618,8 @@ namespace Go
             if (!opponentMove.IsNegligible || opponentBoard.MoveGroupLiberties == 1) return false;
 
             //check connect and die
-            (Boolean connectAndDie, Board captureBoard) = ImmovableHelper.ConnectAndDie(tryBoard, tryBoard.MoveGroup, false);
-            if (!connectAndDie) return false;
+            if (!tryMove.MoveConnectAndDie) return false;
+            Board captureBoard = tryMove.CaptureBoard;
 
             //check killer formation
             if (KillerFormationHelper.IsKillerFormationFromFunc(tryBoard))
@@ -1799,10 +1799,9 @@ namespace Go
         /// Corner point suicide.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A26_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_5" />
-        /// One point target <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A84_2" />
+        /// Check opponent at diagonal  <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A84_2" />
         /// <see cref="UnitTestProject.KoTest.KoTest_Scenario_WuQingYuan_Q31680" />
-        /// Not suicidal <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A95" />
-        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A17_2" />
+        /// No opponent at diagonal <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A95" />
         private static Boolean CornerPointSuicide(GameTryMove tryMove, Board captureBoard)
         {
             Board currentBoard = tryMove.CurrentGame.Board;
@@ -1812,21 +1811,20 @@ namespace Go
             if (!tryBoard.CornerPoint()) return false;
             if (GroupHelper.CheckKillerGroupPoints(currentBoard, move, c.Opposite()) != null) return false;
 
-            //one point target
             if (!tryBoard.AtariTargets.Any())
                 return true;
-            else if (tryBoard.AtariTargets.Count == 1)
+            Group atariTarget = tryBoard.AtariTargets.First();
+            Point diagonal = tryBoard.GetDiagonalNeighbours().First();
+            //no opponent at diagonal
+            if (tryBoard[diagonal] == Content.Empty && captureBoard.MoveGroup.Points.Count == 1)
+                return true;
+            //check opponent at diagonal
+            if (tryBoard[diagonal] == c)
             {
-                Group atariTarget = tryBoard.AtariTargets.First();
-                Point diagonal = tryBoard.GetDiagonalNeighbours().First();
-                if (tryBoard[diagonal] == Content.Empty && captureBoard.MoveGroup.Points.Count == 1)
-                    return true;
-                else if (tryBoard[diagonal] == c)
-                {
-                    Board b = ImmovableHelper.MakeMoveAtLiberty(tryBoard, atariTarget);
-                    if (b != null && b.MoveGroupLiberties > 1)
-                        return true;
-                }
+                Board b = ImmovableHelper.MakeMoveAtLiberty(tryBoard, atariTarget);
+                if (b != null && b.MoveGroupLiberties == 1 && LinkHelper.IsAbsoluteLinkForGroups(tryBoard, b))
+                    return false;
+                return true;
             }
             return false;
         }

@@ -247,9 +247,9 @@ namespace Go
         /// Whole group dying <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36" />
         /// Bent four corner formation <see cref="UnitTestProject.BentFourTest.BentFourTest_Scenario7kyu26_3" />
         /// Corner six formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38" />
-        /// Check three-point group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30358_2" />
+        /// Check three-point group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30358_4" />
         /// Check move diagonals <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16605" />
-        /// Check two liberty group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" />
+        /// Check two liberty group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi_2" />
         /// Check grid dimension changed <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A113_2" />
         /// Two kill formations <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_XuanXuanGo_A54" />
         /// Check atari target <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40" />
@@ -298,7 +298,7 @@ namespace Go
             {
                 if (previousKillerFormation) return true;
                 //check three-point group
-                if (previousGroup.Points.Count == 3 && !LinkHelper.GetDiagonalGroups(tryBoard).Any())
+                if (previousGroup.Points.Count == 3 && !LinkHelper.GetDiagonalGroups(tryBoard).Any() && !tryBoard.GetMoveLiberties().Any())
                     return true;
             }
             //check move diagonals
