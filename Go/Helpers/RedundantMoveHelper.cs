@@ -2733,6 +2733,9 @@ namespace Go
                         //check snapback
                         if (ImmovableHelper.CheckSnapbackFromMove(tryBoard))
                             continue;
+                        //check three liberty group
+                        if (CheckThreeLibertyGroupAtTigerMouth(tryMove, capturedBoard))
+                            continue;
                     }
                     //check kill covered eye
                     if (KillCoveredEyeAtDiagonal(tryBoard, currentBoard))
@@ -2798,6 +2801,41 @@ namespace Go
             {
                 //check multi point target
                 if (tryBoard.PointWithinMiddleArea(p))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Check three liberty group at tiger mouth.
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260708_7" />
+        /// </summary>
+        private static Boolean CheckThreeLibertyGroupAtTigerMouth(GameTryMove tryMove, Board captureBoard)
+        {
+            Point move = tryMove.Move;
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            Content c = tryMove.MoveContent;
+            if (captureBoard.MoveGroup.Points.Count != 1 || captureBoard.MoveGroupLiberties != 2) return false;
+            List<Group> groups = captureBoard.GetGroupsFromStoneNeighbours(move, c);
+            if (captureBoard.GetLibertiesOfGroups(groups).Count != 5) return false;
+
+            //make ko fight move
+            Point p = captureBoard.MoveGroup.Liberties.First(n => !n.Equals(move));
+            Board b = captureBoard.MakeMoveOnNewBoard(p, c);
+            if (b == null) return false;
+
+            //fill ko eye move
+            Board b2 = b.MakeMoveOnNewBoard(move, c.Opposite());
+            if (b2 == null || b2.MoveGroupLiberties != 3) return false;
+            foreach (Point q in b2.MoveGroup.Liberties)
+            {
+                //check connect and die move
+                if (b2.GetMoveLiberties(q).Count() != 2) continue;
+                Board b3 = b2.MakeMoveOnNewBoard(q, c);
+                if (b3 == null || b3.MoveGroupLiberties != 2) continue;
+                if (ImmovableHelper.CheckConnectAndDie(b3)) continue;
+                if (ImmovableHelper.ConnectAndDieMove(currentBoard, q, c).Item1)
                     return true;
             }
             return false;

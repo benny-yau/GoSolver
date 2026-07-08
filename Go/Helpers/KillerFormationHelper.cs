@@ -243,6 +243,7 @@ namespace Go
         /// Check redundant kill group extension.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A8" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A113" />
+        /// Check redundant covered eye <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16693_2" />
         /// Check move liberty <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_B41_2" />
         /// Whole group dying <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36" />
         /// Bent four corner formation <see cref="UnitTestProject.BentFourTest.BentFourTest_Scenario7kyu26_3" />
@@ -259,11 +260,17 @@ namespace Go
         /// </summary>
         private static Boolean CheckRedundantKillGroupExtension(Board tryBoard, Board currentBoard, Board captureBoard)
         {
+            Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             //move group binding
             List<Group> previousGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
             if (previousGroups.Count > 1)
+            {
+                //check redundant covered eye
+                if (previousGroups.Count == 2 && EyeHelper.FindCoveredEye(currentBoard, move, c) && previousGroups.Any(n => n.Points.Count > 1 && !ImmovableHelper.CheckConnectAndDie(currentBoard, n)))
+                    return true;
                 return false;
+            }
 
             //check move liberty
             List<Point> liberties = tryBoard.GetMoveLiberties();
@@ -325,7 +332,7 @@ namespace Go
             }
 
             //check end point extension
-            if (tryBoard.MoveGroup.Points.Count >= 5 && CheckAnyEndPointCovered(tryBoard, tryBoard.MoveGroup))
+            if (previousGroup.Points.Count >= 4 && CheckAnyEndPointCovered(tryBoard, tryBoard.MoveGroup))
                 return false;
             return true;
         }
@@ -1026,7 +1033,10 @@ namespace Go
             if (contentPoints.Count() != 7) return false;
 
             IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
-            if (pointIntersect.Count(p => p.intersectCount == 3) >= 2)
+            List<dynamic> intersectPoints = pointIntersect.Where(p => p.intersectCount == 3).ToList();
+            if (intersectPoints.Count == 2 && !tryBoard.GetStoneAndDiagonalNeighbours(intersectPoints[0].point).Contains(intersectPoints[1].point))
+                return false;
+            if (intersectPoints.Count >= 1)
             {
                 if (CheckAnyEndPointCovered(tryBoard, moveGroup))
                     return true;

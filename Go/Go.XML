@@ -913,6 +913,7 @@
             Check redundant kill group extension.
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A8" />
             <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A113" />
+            Check redundant covered eye <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16693_2" />
             Check move liberty <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_B41_2" />
             Whole group dying <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36" />
             Bent four corner formation <see cref="!:UnitTestProject.BentFourTest.BentFourTest_Scenario7kyu26_3" />
@@ -2174,6 +2175,12 @@
             Check two point killer group <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_A4" />
             Check weak groups at diagonal <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260512_7" />
             Check multi point target <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31536" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CheckThreeLibertyGroupAtTigerMouth(Go.GameTryMove,Go.Board)">
+            <summary>
+            Check three liberty group at tiger mouth.
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260708_7" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.TigerMouthWithoutDiagonalMouth(Go.GameTryMove,Go.Board,Go.GameTryMove)">
