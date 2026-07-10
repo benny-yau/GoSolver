@@ -243,7 +243,6 @@ namespace Go
         /// Check redundant kill group extension.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A8" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A113" />
-        /// Check redundant covered eye <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16693_2" />
         /// Check move liberty <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_B41_2" />
         /// Whole group dying <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_GuanZiPu_A36" />
         /// Bent four corner formation <see cref="UnitTestProject.BentFourTest.BentFourTest_Scenario7kyu26_3" />
@@ -260,17 +259,11 @@ namespace Go
         /// </summary>
         private static Boolean CheckRedundantKillGroupExtension(Board tryBoard, Board currentBoard, Board captureBoard)
         {
-            Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             //move group binding
             List<Group> previousGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
             if (previousGroups.Count > 1)
-            {
-                //check redundant covered eye
-                if (previousGroups.Count == 2 && EyeHelper.FindCoveredEye(currentBoard, move, c) && previousGroups.Any(n => n.Points.Count > 1 && !ImmovableHelper.CheckConnectAndDie(currentBoard, n)))
-                    return true;
                 return false;
-            }
 
             //check move liberty
             List<Point> liberties = tryBoard.GetMoveLiberties();
@@ -406,10 +399,12 @@ namespace Go
 
         /// <summary>
         /// Is link to external group.
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16520_2" />
+        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_XuanXuanQiJing_Weiqi101_18410" />
+        /// Connect three or more groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B3" />
+        /// Check redundant covered eye <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16693_2" />
         /// Check connect and die <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30403" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi_2" />
-        /// Connect three or more groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B3" />
+
         /// Corner three formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18860" />
         /// Two point atari move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" />
         /// No lost groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18402_2" />
@@ -418,20 +413,23 @@ namespace Go
         /// </summary>
         private static Boolean IsLinkToExternalGroup(Board tryBoard, Board currentBoard, Board captureBoard)
         {
+            Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.MoveGroupLiberties != 1) return false;
             Point liberty = tryBoard.MoveGroup.Liberties.First();
+            //connect three or more groups
+            List<Group> previousGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
+            if (previousGroups.Count >= 3) return false;
+            //check redundant covered eye
+            if (previousGroups.Count == 2 && EyeHelper.FindCoveredEye(currentBoard, move, c) && previousGroups.Any(n => n.Points.Count > 1 && !ImmovableHelper.CheckConnectAndDie(currentBoard, n)))
+                return true;
+
+            //ensure link for groups
             (Boolean suicidal, Board linkBoard) = ImmovableHelper.IsSuicidalMove(liberty, c, currentBoard);
             if (suicidal) return false;
-            //ensure link for groups
             if (!LinkHelper.IsAbsoluteLinkForGroups(currentBoard, linkBoard)) return false;
-            //connect three or more groups
-            List<Group> groups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
-            if (groups.Count >= 3) return false;
-
-            List<Group> linkGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, linkBoard);
             //connected to external group not from previous move group
-            if (!linkGroups.Except(groups).Any()) return false;
+            List<Group> linkGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, linkBoard);
+            if (!linkGroups.Except(previousGroups).Any()) return false;
             //check connect and die
             if (ImmovableHelper.CheckConnectAndDie(linkBoard)) return false;
             //corner three formation
@@ -439,11 +437,11 @@ namespace Go
             //two point atari move
             if (TwoPointAtariMove(tryBoard, captureBoard)) return false;
             //saved groups
-            List<Group> savedGroups = linkGroups.Intersect(groups).ToList();
+            List<Group> savedGroups = linkGroups.Intersect(previousGroups).ToList();
             if (savedGroups.Count == 0)
                 return false;
             //no lost groups
-            List<Group> lostGroups = groups.Except(savedGroups).ToList();
+            List<Group> lostGroups = previousGroups.Except(savedGroups).ToList();
             if (lostGroups.Count == 0)
                 return true;
             //single lost group

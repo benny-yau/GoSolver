@@ -15,8 +15,8 @@ namespace Go
     public class MappingVerification : MonteCarloMapping
     {
         public int errorCount = 0;
-        public Boolean logElapsedTime = false;
-        public long elapsedTimeToLog = 30000;
+        public Boolean logElapsedTime = true;
+        public long elapsedTimeToLog = 20000;
 
         public static int VerifyScenario(Game game)
         {

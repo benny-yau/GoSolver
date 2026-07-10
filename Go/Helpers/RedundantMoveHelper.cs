@@ -375,7 +375,9 @@ namespace Go
                 if (SuicidalConnectAndDie(tryMove))
                     return true;
             }
-            if (SuicidalMoveAtNonKillableGroup(tryMove))
+            if (SuicidalMoveWithinKillerGroup(tryMove))
+                return true;
+            if (MoveWithinNonKillableGroup(tryMove))
                 return true;
 
             //test if opponent move at same point is suicidal
@@ -395,26 +397,39 @@ namespace Go
                 if (OpponentSuicidalConnectAndDie(opponentMove, tryMove))
                     return true;
             }
-
-            if (SuicidalMoveAtNonKillableGroup(opponentMove, tryMove))
+            if (MoveWithinNonKillableGroup(opponentMove, tryMove))
                 return true;
             return false;
         }
 
         /// <summary>
-        /// Suicidal move at non killable group.
+        /// Suicidal move within killer group.
+        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_GuanZiPu_Q14971" />
         /// </summary>
-        private static Boolean SuicidalMoveAtNonKillableGroup(GameTryMove tryMove, GameTryMove opponentMove = null)
+        private static Boolean SuicidalMoveWithinKillerGroup(GameTryMove tryMove)
         {
-            if (MoveWithinNonKillableGroup(tryMove, opponentMove))
-                return true;
-            if (opponentMove == null && MoveNextToNonKillableGroup(tryMove))
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            if (tryMove.AtariResolved || tryMove.Captured) return false;
+            if (tryBoard.GetMoveLiberties().Any()) return false;
+            //check last move
+            if (currentBoard.Move == null || currentBoard.IsPassMove) return false;
+            if (currentBoard.MoveGroup.Points.Count != 1) return false;
+            //check killer group
+            Group killerGroup = GroupHelper.GetDirectKillerGroup(currentBoard, currentBoard.Move.Value, c);
+            if (killerGroup == null) return false;
+            if (!GroupHelper.IsSingleGroupWithinKillerGroup(currentBoard)) return false;
+            if (currentBoard.GetNeighbourGroups(killerGroup).Count != 1) return false;            
+            if (killerGroup.Points.Contains(move))
                 return true;
             return false;
         }
 
         /// <summary>
         /// Move within non killable group.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3dan17" />
         /// Check for negligible in opponent move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" />
         /// Check any is non killable <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30370" />
         /// Check for covered eye <see cref="UnitTestProject.RedundantTigerMouthMove.RedundantTigerMouthMove_Scenario_WindAndTime_Q30225_2" />
@@ -468,33 +483,6 @@ namespace Go
                     }
                 }
             }
-            return false;
-        }
-
-        /// <summary>
-        /// Move next to non killable group.
-        /// <see cref="UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario4dan17" />
-        /// Check strong groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17241" />
-        /// </summary>
-        public static Boolean MoveNextToNonKillableGroup(GameTryMove tryMove)
-        {
-            Board currentBoard = tryMove.CurrentGame.Board;
-            Board tryBoard = tryMove.TryGame.Board;
-            Point move = tryBoard.Move.Value;
-            Content c = GameHelper.GetContentForSurviveOrKill(tryBoard.GameInfo, SurviveOrKill.Kill);
-
-            if (currentBoard.GetStoneAndDiagonalNeighbours(move).Any(n => currentBoard[n] == c.Opposite()))
-                return false;
-
-            if (!currentBoard.GetStoneNeighbours(move).Any(n => WallHelper.IsNonKillableGroup(currentBoard, n)))
-                return false;
-
-            //check strong groups
-            if (!WallHelper.StrongGroups(tryBoard, tryBoard.GetGroupsFromStoneNeighbours()))
-                return false;
-
-            if (currentBoard.GetStoneAndDiagonalNeighbours(move).Count(n => currentBoard[n] == c && WallHelper.IsNonKillableGroup(currentBoard, n)) >= 2)
-                return true;
             return false;
         }
 
