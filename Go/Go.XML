@@ -1621,7 +1621,7 @@
         <member name="M:Go.RedundantMoveHelper.SuicidalMoveWithinKillerGroup(Go.GameTryMove)">
             <summary>
             Suicidal move within killer group.
-            <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_GuanZiPu_Q14971" />
+            <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16444" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.MoveWithinNonKillableGroup(Go.GameTryMove,Go.GameTryMove)">

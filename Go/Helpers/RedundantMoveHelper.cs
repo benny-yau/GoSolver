@@ -380,7 +380,7 @@ namespace Go
             if (MoveWithinNonKillableGroup(tryMove))
                 return true;
 
-            //test if opponent move at same point is suicidal
+            //check opponent move
             GameTryMove opponentMove = tryMove.OpponentMove;
             if (opponentMove == null) return false;
             Board opponentBoard = opponentMove.TryGame.Board;
@@ -404,7 +404,7 @@ namespace Go
 
         /// <summary>
         /// Suicidal move within killer group.
-        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_GuanZiPu_Q14971" />
+        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16444" />
         /// </summary>
         private static Boolean SuicidalMoveWithinKillerGroup(GameTryMove tryMove)
         {
@@ -414,17 +414,14 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             if (tryMove.AtariResolved || tryMove.Captured) return false;
             if (tryBoard.GetMoveLiberties().Any()) return false;
-            //check last move
-            if (currentBoard.Move == null || currentBoard.IsPassMove) return false;
-            if (currentBoard.MoveGroup.Points.Count != 1) return false;
             //check killer group
-            Group killerGroup = GroupHelper.GetDirectKillerGroup(currentBoard, currentBoard.Move.Value, c);
+            Group killerGroup = GroupHelper.GetDirectKillerGroup(currentBoard, move, c);
             if (killerGroup == null) return false;
-            if (!GroupHelper.IsSingleGroupWithinKillerGroup(currentBoard)) return false;
-            if (currentBoard.GetNeighbourGroups(killerGroup).Count != 1) return false;            
-            if (killerGroup.Points.Contains(move))
-                return true;
-            return false;
+            List<Group> ngroups = currentBoard.GetNeighbourGroups(killerGroup);
+            if (ngroups.Count > 1 && LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryBoard)) return false;
+            //check suicidal move
+            if (killerGroup.Points.Count(n => tryBoard[n] == c.Opposite()) != 1) return false;
+            return true;
         }
 
         /// <summary>
