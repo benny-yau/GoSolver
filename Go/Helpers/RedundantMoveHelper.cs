@@ -402,9 +402,10 @@ namespace Go
 
         /// <summary>
         /// Suicidal move within killer group.
-        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q30919" />
-        /// Check absolute link for groups <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16444" />
-        /// Check diagonal groups <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanQiJing_A38_2" />
+        /// <see cref="UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_WuQingYuan_Q30919" />
+        /// Check absolute link for groups <see cref="UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_TianLongTu_Q16444" />
+        /// Check diagonal groups <see cref="UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_XuanXuanQiJing_A38_2" />
+        /// Check strong groups <see cref="UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_GuanZiPu_A20" />
         /// </summary>
         private static Boolean SuicidalMoveWithinKillerGroup(GameTryMove tryMove)
         {
@@ -425,9 +426,15 @@ namespace Go
             if (points.Count > 2) return false;
             List<Group> groups = tryBoard.GetGroupsFromPoints(points).ToList();
             if (groups.Count != 1) return false;
-            //check diagonal groups
-            if (ngroups.Count > 1 && LinkHelper.GetDiagonalGroups(tryBoard, groups.First()).Any())
-                return false;
+            if (ngroups.Count > 1)
+            {
+                //check diagonal groups
+                if (LinkHelper.GetDiagonalGroups(tryBoard, groups.First()).Any())
+                    return false;
+                //check strong groups
+                if (points.Count == 2 && !WallHelper.StrongGroups(currentBoard, ngroups))
+                    return false;
+            }
             return true;
         }
 
@@ -435,6 +442,7 @@ namespace Go
         /// Move within non killable group.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29961" />
         /// Check any is non killable <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30370" />
+        /// Convert to non killable groups <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20221206_8" />
         /// </summary>
         private static Boolean MoveWithinNonKillableGroup(GameTryMove tryMove)
         {
@@ -458,6 +466,7 @@ namespace Go
             if (!ngroups.Any(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
                 return false;
 
+            //convert to non killable groups
             foreach (Group ngroup in ngroups)
             {
                 foreach (Link<Point> p in LinkHelper.GetGroupLinkedDiagonals(tryBoard, ngroup))
@@ -472,7 +481,6 @@ namespace Go
                     else //capture opponent at diagonal
                         b = ImmovableHelper.CaptureSuicideGroup(d, tryBoard);
                     if (b == null) continue;
-                    //check if all changed to non killable groups
                     Group kgroup = GroupHelper.GetDirectKillerGroup(b, move, c.Opposite());
                     if (kgroup != null && WallHelper.TargetWithAllNonKillableGroups(b, kgroup))
                         return true;
@@ -1495,17 +1503,19 @@ namespace Go
         /// </summary>
         public static Boolean SinglePointSuicidalMove(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
+            Point move = tryMove.Move;
             Board tryBoard = tryMove.TryGame.Board;
             if (!tryMove.IsNegligible)
                 return false;
 
-            //capture suicide stone
-            (_, Board capturedBoard) = ImmovableHelper.IsSuicidalOnCapture(tryBoard);
-            if (capturedBoard == null) return false;
-            if (capturedBoard.CapturedPoints.Count() > 1) return true;
-            if (SuicideWithinRealEye(tryMove, capturedBoard))
+            //capture suicide move
+            if (!tryMove.MoveConnectAndDie) return false;
+            Board captureBoard = tryMove.CaptureBoard;
+            if (!captureBoard.CapturedPoints.Any(n => n.Equals(move))) return false;
+            if (captureBoard.CapturedPoints.Count() > 1) return true;
+            if (SuicideWithinRealEye(tryMove, captureBoard))
                 return true;
-            if (MiscSinglePointSuicide(tryMove, capturedBoard, opponentMove))
+            if (MiscSinglePointSuicide(tryMove, captureBoard, opponentMove))
                 return true;
             return false;
         }
@@ -1833,15 +1843,17 @@ namespace Go
         public static Boolean MultiPointSuicidalMove(GameTryMove tryMove)
         {
             Board tryBoard = tryMove.TryGame.Board;
-            Board currentBoard = tryMove.CurrentGame.Board;
-            Board capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
+            Point move = tryMove.Move;
+            if (!tryMove.MoveConnectAndDie) return false;
+            Board captureBoard = tryMove.CaptureBoard;
+            if (!captureBoard.CapturedPoints.Any(n => n.Equals(move))) return false;
 
             //killer formations
             if (KillerFormationHelper.SuicidalKillerFormations(tryMove))
                 return false;
 
             //check ko fight
-            if (KillerFormationHelper.CheckKoFightAfterSuicidal(tryBoard, capturedBoard))
+            if (KillerFormationHelper.CheckKoFightAfterSuicidal(tryBoard, captureBoard))
                 return false;
 
             //no hope of escape
