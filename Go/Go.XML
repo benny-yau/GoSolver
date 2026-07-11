@@ -1621,16 +1621,16 @@
         <member name="M:Go.RedundantMoveHelper.SuicidalMoveWithinKillerGroup(Go.GameTryMove)">
             <summary>
             Suicidal move within killer group.
-            <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16444" />
+            <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q30919" />
+            Check absolute link for groups <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16444" />
+            Check diagonal groups <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanQiJing_A38_2" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.MoveWithinNonKillableGroup(Go.GameTryMove,Go.GameTryMove)">
+        <member name="M:Go.RedundantMoveHelper.MoveWithinNonKillableGroup(Go.GameTryMove)">
             <summary>
             Move within non killable group.
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3dan17" />
-            Check for negligible in opponent move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29961" />
             Check any is non killable <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30370" />
-            Check for covered eye <see cref="!:UnitTestProject.RedundantTigerMouthMove.RedundantTigerMouthMove_Scenario_WindAndTime_Q30225_2" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.MultiPointOpponentSuicidalMove(Go.GameTryMove)">

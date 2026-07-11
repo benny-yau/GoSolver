@@ -397,14 +397,14 @@ namespace Go
                 if (OpponentSuicidalConnectAndDie(opponentMove, tryMove))
                     return true;
             }
-            if (MoveWithinNonKillableGroup(opponentMove, tryMove))
-                return true;
             return false;
         }
 
         /// <summary>
         /// Suicidal move within killer group.
-        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16444" />
+        /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q30919" />
+        /// Check absolute link for groups <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16444" />
+        /// Check diagonal groups <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanQiJing_A38_2" />
         /// </summary>
         private static Boolean SuicidalMoveWithinKillerGroup(GameTryMove tryMove)
         {
@@ -417,29 +417,32 @@ namespace Go
             //check killer group
             Group killerGroup = GroupHelper.GetDirectKillerGroup(currentBoard, move, c);
             if (killerGroup == null) return false;
+            //check absolute link for groups
             List<Group> ngroups = currentBoard.GetNeighbourGroups(killerGroup);
             if (ngroups.Count > 1 && LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryBoard)) return false;
             //check suicidal move
-            if (killerGroup.Points.Count(n => tryBoard[n] == c.Opposite()) != 1) return false;
+            List<Point> points = killerGroup.Points.Where(n => tryBoard[n] == c.Opposite()).ToList();
+            if (points.Count > 2) return false;
+            List<Group> groups = tryBoard.GetGroupsFromPoints(points).ToList();
+            if (groups.Count != 1) return false;
+            //check diagonal groups
+            if (ngroups.Count > 1 && LinkHelper.GetDiagonalGroups(tryBoard, groups.First()).Any())
+                return false;
             return true;
         }
 
         /// <summary>
         /// Move within non killable group.
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3dan17" />
-        /// Check for negligible in opponent move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29961" />
         /// Check any is non killable <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30370" />
-        /// Check for covered eye <see cref="UnitTestProject.RedundantTigerMouthMove.RedundantTigerMouthMove_Scenario_WindAndTime_Q30225_2" />
         /// </summary>
-        private static Boolean MoveWithinNonKillableGroup(GameTryMove tryMove, GameTryMove opponentMove = null)
+        private static Boolean MoveWithinNonKillableGroup(GameTryMove tryMove)
         {
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             if (GameHelper.GetContentForSurviveOrKill(tryBoard.GameInfo, SurviveOrKill.Survive) != c) return false;
-            //check for negligible in opponent move
-            if (opponentMove != null && !opponentMove.IsNegligible) return false;
 
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite());
             if (killerGroup == null) return false;
@@ -472,12 +475,7 @@ namespace Go
                     //check if all changed to non killable groups
                     Group kgroup = GroupHelper.GetDirectKillerGroup(b, move, c.Opposite());
                     if (kgroup != null && WallHelper.TargetWithAllNonKillableGroups(b, kgroup))
-                    {
-                        //check for covered eye
-                        if (opponentMove != null && EyeHelper.IsCovered(tryBoard, move, c.Opposite()))
-                            continue;
                         return true;
-                    }
                 }
             }
             return false;
