@@ -1485,7 +1485,7 @@
         </member>
         <member name="M:Go.LinkHelper.CheckDoubleConnectAndDieExceptions(Go.Board,Go.Board)">
             <summary>
-            Check double conenct and die exceptions.
+            Check double connect and die exceptions.
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30315" />
             </summary>
         </member>
@@ -1525,9 +1525,9 @@
         <member name="M:Go.LinkHelper.CheckNegligibleForLinks(Go.Board,Go.Board,System.Func{Go.Group,System.Boolean})">
             <summary>
             Check negligible for links.
-            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_4" />
+            Check capture <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_9" />
+            Check connect and die <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_4" />
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150" />
-            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_9" />
             </summary>
         </member>
         <member name="M:Go.LinkHelper.CheckImmovableNeighbourGroups(Go.Board,Go.Group)">
@@ -1643,6 +1643,12 @@
             Check for both alive <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_TianLongTu_Q16827" />
             Check link for groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B35" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30358_3" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CaptureAtOpponentSuicidalMove(Go.Board,Go.Board)">
+            <summary>
+            Capture at opponent suicidal move.
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16867_2" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.KoFightAtBloatedEye(Go.Board,Go.Board)">

@@ -511,6 +511,10 @@ namespace Go
             if (ImmovableHelper.CheckConnectAndDie(currentBoard, atariTarget, false))
                 return true;
 
+            //check capture
+            if (CaptureAtOpponentSuicidalMove(tryBoard, currentBoard))
+                return false;
+
             //check for weak group
             if (CheckWeakGroupInOpponentSuicide(tryBoard, atariTarget))
                 return false;
@@ -531,6 +535,25 @@ namespace Go
             if (LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard))
                 return false;
             return true;
+        }
+
+        /// <summary>
+        /// Capture at opponent suicidal move.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16867_2" />
+        /// </summary>
+        private static Boolean CaptureAtOpponentSuicidalMove(Board tryBoard, Board currentBoard)
+        {
+            List<Group> previousGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
+            if (previousGroups.Count < 2) return false;
+            Group atariTarget = tryBoard.AtariTargets.First();
+            foreach (Group group in AtariHelper.AtariByGroup(tryBoard, atariTarget).Where(n => n.Points.Count >= 3))
+            {
+                if (WallHelper.TargetWithAnyNonKillableGroup(tryBoard, group)) continue;
+                Board b = ImmovableHelper.CaptureSuicideGroup(currentBoard, group);
+                if (previousGroups.Any(n => ImmovableHelper.CheckConnectAndDie(b, n) && !ImmovableHelper.CheckConnectAndDie(currentBoard, n)))
+                    return true;
+            }
+            return false;
         }
 
         /// <summary>

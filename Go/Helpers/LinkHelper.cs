@@ -712,14 +712,11 @@ namespace Go
         }
 
         /// <summary>
-        /// Check double conenct and die exceptions.
+        /// Check double connect and die exceptions.
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30315" />
         /// </summary>
         public static Boolean CheckDoubleConnectAndDieExceptions(Board board, Board b)
         {
-            if (Board.ResolveAtari(board, b) || b.CapturedList.Any(n => CheckImmovableNeighbourGroups(board, n).Any()))
-                return true;
-
             if (LinkWithImmovableGroup(b, board) || CheckForKoBreak(b))
                 return true;
             return false;
@@ -821,15 +818,17 @@ namespace Go
 
         /// <summary>
         /// Check negligible for links.
-        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_4" />
+        /// Check capture <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_9" />
+        /// Check connect and die <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Nie60_4" />
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150" />
-        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_9" />
         /// </summary>
         public static Boolean CheckNegligibleForLinks(Board b, Board board, Func<Group, Boolean> func = null)
         {
-            if (Board.ResolveAtari(board, b) || b.CapturedList.Any(n => CheckImmovableNeighbourGroups(board, n).Any()))
+            //check capture
+            if (b.CapturedList.Any(n => CheckImmovableNeighbourGroups(board, n).Any()))
                 return true;
 
+            //check connect and die
             List<Group> ngroups = b.GetNeighbourGroups().Where(n => (func != null ? func(n) : true)).ToList();
             if (ngroups.Any(n => ImmovableHelper.CheckConnectAndDie(b, n) && !ImmovableHelper.CheckConnectAndDie(board, n, false)))
                 return true;
@@ -842,7 +841,8 @@ namespace Go
         /// </summary>
         public static IEnumerable<Group> CheckImmovableNeighbourGroups(Board board, Group group)
         {
-            return CheckImmovableGroups(board, board.GetNeighbourGroups(group));
+            List<Group> ngroups = board.GetNeighbourGroups(group).Where(n => n.Liberties.Count <= 2).ToList();
+            return CheckImmovableGroups(board, ngroups);
         }
 
         /// <summary>
@@ -852,11 +852,9 @@ namespace Go
         {
             foreach (Group group in groups)
             {
-                if (group.Liberties.Count != 2) continue;
                 Content c = group.Content;
                 foreach (Point p in group.Liberties)
                 {
-                    if (!ImmovableHelper.IsSuicidalMove(board, p, c)) continue;
                     List<Group> ngroups = board.GetGroupsFromStoneNeighbours(p, c);
                     if (WallHelper.TargetAttackWithKillableGroup(board, ngroups))
                         yield return group;

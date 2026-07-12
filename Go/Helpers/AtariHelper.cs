@@ -86,23 +86,17 @@ namespace Go
                 //check escape by capture
                 Board b = ImmovableHelper.EscapeByCapture(board, targetGroup, false);
                 if (b != null && WallHelper.StrongGroups(b, groups))
-                {
-                    if (groups.All(n => b.GetNeighbourGroups(b.CapturedList.First()).Contains(b.GetCurrentGroup(n))))
-                        return false;
-                    if (WallHelper.IsHostileGroup(b, targetGroup))
-                        return false;
-                }
+                    return false;
                 //make move at liberty
+                Point liberty = targetGroup.Liberties.First();
+                if (b != null && b.Move.Value.Equals(liberty))
+                    continue;
                 Board b2 = ImmovableHelper.MakeMoveAtLiberty(board, targetGroup);
                 if (b2 == null) continue;
-                List<Group> ngroups = groups.Select(n => b2.GetCurrentGroup(n)).Distinct().ToList();
-                if (ngroups.Count < 2) 
+                if (groups.Select(n => b2.GetCurrentGroup(n)).Distinct().Count() < 2)
                     return false;
                 if (WallHelper.StrongGroups(b2, groups))
-                {
-                    if (WallHelper.IsHostileGroup(b2, targetGroup))
-                        return false;
-                }
+                    return false;
             }
             return true;
         }
