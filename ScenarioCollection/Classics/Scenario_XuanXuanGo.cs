@@ -3052,7 +3052,7 @@ namespace ScenarioCollection
             g.SetupMove(10, 17, Content.Black);
             g.SetupMove(10, 18, Content.Black);
             gi.targetPoints = new List<Point>() { new Point(4, 15) };
-            for (int x = 3; x <= 8; x++)
+            for (int x = 3; x <= 9; x++)
             {
                 for (int y = 16; y <= 18; y++)
                     gi.movablePoints.Add(new Point(x, y));

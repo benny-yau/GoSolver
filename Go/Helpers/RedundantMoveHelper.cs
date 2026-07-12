@@ -404,7 +404,7 @@ namespace Go
         /// Suicidal move within killer group.
         /// <see cref="UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_WuQingYuan_Q30919" />
         /// Check absolute link for groups <see cref="UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_TianLongTu_Q16444" />
-        /// Check diagonal groups <see cref="UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_XuanXuanQiJing_A38_2" />
+        /// Check diagonal groups <see cref="UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_WuQingYuan_Q31603" />
         /// Check strong groups <see cref="UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_GuanZiPu_A20" />
         /// </summary>
         private static Boolean SuicidalMoveWithinKillerGroup(GameTryMove tryMove)
@@ -426,15 +426,12 @@ namespace Go
             if (points.Count > 2) return false;
             List<Group> groups = tryBoard.GetGroupsFromPoints(points).ToList();
             if (groups.Count != 1) return false;
-            if (ngroups.Count > 1)
-            {
-                //check diagonal groups
-                if (LinkHelper.GetDiagonalGroups(tryBoard, groups.First()).Any())
-                    return false;
-                //check strong groups
-                if (points.Count == 2 && !WallHelper.StrongGroups(currentBoard, ngroups))
-                    return false;
-            }
+            //check diagonal groups
+            if (LinkHelper.GetDiagonalGroups(tryBoard, groups.First()).Any())
+                return false;
+            //check strong groups
+            if (ngroups.Count > 1 && points.Count == 2 && !WallHelper.StrongGroups(currentBoard, ngroups))
+                return false;
             return true;
         }
 
@@ -1376,7 +1373,7 @@ namespace Go
         /// Check diagonal cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
         /// Check suicidal move <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260321_3" />
         /// Check for killer formation <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi_2" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16748" />
+        /// <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_TianLongTu_Q16424" />
         /// </summary>
         private static Boolean RedundantMultiPointMoveInConnectAndDie(GameTryMove tryMove, Board captureBoard)
         {

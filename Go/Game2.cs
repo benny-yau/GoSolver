@@ -487,17 +487,20 @@ namespace Go
         private void CreateRandomMoveForKill(List<GameTryMove> tryMoves, Game g)
         {
             Board b = g.Board;
-            if (tryMoves.Count > 0)
+            if (tryMoves.Count > 1) return;
+            //check ko fight after suicidal
+            if (tryMoves.Count == 1)
             {
-                //check ko fight after suicidal
-                Boolean suicidal = tryMoves.Count == 1 && KillerFormationHelper.CheckKoFightAfterSuicidal(tryMoves.First().TryGame.Board);
-                if (!suicidal) return;
+                GameTryMove tryMove = tryMoves.First();
+                Boolean rc = tryMove.MoveConnectAndDie && KillerFormationHelper.CheckKoFightAfterSuicidal(tryMove.TryGame.Board, tryMove.CaptureBoard);
+                if (!rc) return;
             }
-            //do not add move if last move is random or pass move
+
+            //check random or pass move
             if (b.IsRandomMove || b.IsPassMove) return;
 
-            GameTryMove tryMove = GetRandomMove(g);
-            if (tryMove != null) tryMoves.Add(tryMove);
+            GameTryMove randomMove = GetRandomMove(g);
+            if (randomMove != null) tryMoves.Add(randomMove);
         }
 
         /// <summary>

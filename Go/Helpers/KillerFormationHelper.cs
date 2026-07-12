@@ -459,11 +459,10 @@ namespace Go
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31498" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935_2" />
         /// </summary>
-        public static Boolean CheckKoFightAfterSuicidal(Board tryBoard, Board capturedBoard = null)
+        public static Boolean CheckKoFightAfterSuicidal(Board tryBoard, Board capturedBoard)
         {
             if (tryBoard.MoveGroup.Points.Count == 1 || tryBoard.MoveGroupLiberties > 1) return false;
             if (tryBoard.CapturedList.Count == 0) return false;
-            if (capturedBoard == null) capturedBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
             if (!WallHelper.IsHostileGroup(capturedBoard))
                 return true;
             return false;
