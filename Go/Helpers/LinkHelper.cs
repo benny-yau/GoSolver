@@ -735,7 +735,7 @@ namespace Go
             if (groups.Count == 1) return false;
             groups = groups.Where(n => n.Liberties.Count == 2).ToList();
             if (func != null) groups.RemoveAll(s => func(s));
-            if (CheckImmovableGroups(board, groups).Any())
+            if (CheckImmovableGroups(b, board, groups).Any())
                 return true;
             return false;
         }
@@ -825,7 +825,7 @@ namespace Go
         public static Boolean CheckNegligibleForLinks(Board b, Board board, Func<Group, Boolean> func = null)
         {
             //check capture
-            if (b.CapturedList.Any(n => CheckImmovableNeighbourGroups(board, n).Any()))
+            if (b.CapturedList.Any(n => CheckImmovableNeighbourGroups(b, board, n).Any()))
                 return true;
 
             //check connect and die
@@ -839,25 +839,32 @@ namespace Go
         /// <summary>
         /// Check immovable neighbour groups.
         /// </summary>
-        public static IEnumerable<Group> CheckImmovableNeighbourGroups(Board board, Group group)
+        public static IEnumerable<Group> CheckImmovableNeighbourGroups(Board b, Board board, Group group)
         {
             List<Group> ngroups = board.GetNeighbourGroups(group).Where(n => n.Liberties.Count <= 2).ToList();
-            return CheckImmovableGroups(board, ngroups);
+            return CheckImmovableGroups(b,board, ngroups);
         }
 
         /// <summary>
         /// Check immovable groups.
         /// </summary>
-        public static IEnumerable<Group> CheckImmovableGroups(Board board, List<Group> groups)
+        public static IEnumerable<Group> CheckImmovableGroups(Board b, Board board, List<Group> groups)
         {
             foreach (Group group in groups)
             {
                 Content c = group.Content;
                 foreach (Point p in group.Liberties)
                 {
+                    if (!ImmovableHelper.IsSuicidalMove(board, p, c)) continue;
+                    //check opponent groups
                     List<Group> ngroups = board.GetGroupsFromStoneNeighbours(p, c);
-                    if (WallHelper.TargetAttackWithKillableGroup(board, ngroups))
-                        yield return group;
+                    if (!WallHelper.TargetAttackWithKillableGroup(board, ngroups)) continue;
+                    //check immovable point at diagonal
+                    List<Point> npoints = LinkHelper.GetDiagonalsAtStoneNeighbours(b, p);
+                    List<Point> diagonals = b.GetDiagonalNeighbours(p).Where(n => b[n] != c.Opposite() && b.GetStoneNeighbours(n).Intersect(npoints).Count() >= 2).ToList();
+                    if (diagonals.All(n => ImmovableHelper.IsImmovablePoint(b, n, c.Opposite())))
+                        continue;
+                    yield return group;
                 }
             }
         }

@@ -1530,12 +1530,12 @@
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q30150" />
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.CheckImmovableNeighbourGroups(Go.Board,Go.Group)">
+        <member name="M:Go.LinkHelper.CheckImmovableNeighbourGroups(Go.Board,Go.Board,Go.Group)">
             <summary>
             Check immovable neighbour groups.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.CheckImmovableGroups(Go.Board,System.Collections.Generic.List{Go.Group})">
+        <member name="M:Go.LinkHelper.CheckImmovableGroups(Go.Board,Go.Board,System.Collections.Generic.List{Go.Group})">
             <summary>
             Check immovable groups.
             </summary>
