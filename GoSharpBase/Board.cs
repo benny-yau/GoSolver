@@ -348,6 +348,16 @@ namespace Go
         }
 
         /// <summary>
+        /// Opponent at stone neighbour.
+        /// </summary>
+        public List<Point> OpponentAtStoneAndDiagonalNeighbour(Point? p = null, Content c = Content.Unknown)
+        {
+            if (p == null) p = this.Move.Value;
+            if (c == Content.Unknown) c = this[p.Value];
+            return this.GetStoneAndDiagonalNeighbours(p).Where(n => this[n] == c.Opposite()).ToList();
+        }
+
+        /// <summary>
         /// Get groups from points.
         /// </summary>
         public HashSet<Group> GetGroupsFromPoints(List<Point> points)

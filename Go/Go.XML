@@ -1333,12 +1333,6 @@
             Check is diagonal linked.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.CheckDoubleLinkage(Go.Board,Go.Link{Go.Point})">
-            <summary>
-            Check for double linkage.
-            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_8" />
-            </summary>
-        </member>
         <member name="M:Go.LinkHelper.CheckDoubleAtariForLinks(Go.Board,Go.Link{Go.Point})">
             <summary>
             Check double atari for links.
@@ -1615,6 +1609,7 @@
             <see cref="!:UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_WuQingYuan_Q30919" />
             Check diagonal groups <see cref="!:UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_WuQingYuan_Q31603" />
             Check strong groups <see cref="!:UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_GuanZiPu_A20" />
+            Check isolated group <see cref="!:UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_WuQingYuan_Q31498" />
             Check previous groups <see cref="!:UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_TianLongTu_Q16444" />
             <see cref="!:UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_WuQingYuan_Q30934" />
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
@@ -1678,7 +1673,8 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_B43" />
             Check point next to corner point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Phenomena_B12" />
             Check corner point <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_B8" />
-            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221109_7" />
+            Check connect and die <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221109_7" />
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221112_5" />
             Check four-point killer formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3_5" />
             Check three liberty group <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A54" />
             </summary>

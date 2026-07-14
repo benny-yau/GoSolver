@@ -454,9 +454,8 @@ namespace Go
         /// </summary>
         public static IEnumerable<Point> FindRealEyeAtDiagonal(Board board, Point p, Content c)
         {
-            foreach (Point d in board.GetDiagonalNeighbours(p))
+            foreach (Point d in ImmovableHelper.GetDiagonalsOfTigerMouth(board, p, c))
             {
-                if (board[d] == c) continue;
                 if (EyeHelper.FindRealEyeWithinEmptySpace(board, d, c))
                     yield return d;
             }

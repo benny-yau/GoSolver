@@ -593,7 +593,8 @@ namespace Go
             Board b = captureBoard.MakeMoveOnNewBoard(move, c);
             if (b == null || b.AtariTargets.Count == 0) return false;
             //check snapback
-            if (b.GetDiagonalNeighbours().Any(n => b[n] == c) && ImmovableHelper.IsSuicidalOnCapture(b).Item1)
+            List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(b, move, c.Opposite());
+            if (diagonals.Any(n => b[n] == c) && ImmovableHelper.IsSuicidalOnCapture(b).Item1)
                 return true;
             //check one point atari move
             return OnePointAtariMove(b, captureBoard);
@@ -1155,7 +1156,8 @@ namespace Go
             Point corner = currentBoard.GetStoneNeighbours(p).FirstOrDefault(n => currentBoard.CornerPoint(n));
             if (corner.IsEmpty() || currentBoard[corner] != Content.Empty) return false;
             if (currentBoard.GetStoneNeighbours(corner).Any(n => currentBoard[n] != Content.Empty)) return false;
-            if (currentBoard.GetDiagonalNeighbours(p).Any(n => currentBoard.PointWithinMiddleArea(n) && EyeHelper.FindRealEyeWithinEmptySpace(currentBoard, n, c)))
+            List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, p, c);
+            if (diagonals.Any(n => currentBoard.PointWithinMiddleArea(n) && EyeHelper.FindRealEyeWithinEmptySpace(currentBoard, n, c)))
             {
                 IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(currentBoard, currentBoard.GetStoneNeighbours(corner), c.Opposite());
                 if (moveBoards.Any(b => !ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false)))

@@ -470,7 +470,7 @@ namespace Go
             else
             {
                 //check base line move
-                if (!board.GetDiagonalNeighbours(eyePoint).Any(d => board[d] != c.Opposite())) return false;
+                if (!ImmovableHelper.GetDiagonalsOfTigerMouth(board, eyePoint.Value, c.Opposite()).Any()) return false;
                 if (board.GetNeighbourGroups(eyeGroup).Any(n => CheckSnapback(board, n, eyeGroup)))
                     return true;
             }
