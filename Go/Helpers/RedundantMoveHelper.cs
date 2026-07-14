@@ -348,7 +348,7 @@ namespace Go
             //check one point atari target
             if (atariTarget.Points.Count == 1 && KillerFormationHelper.BoxFormation(currentBoard, killerGroup))
             {
-                if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] != c && GroupHelper.CheckIfDifferentKillerGroup(tryBoard, n, atariPoint, c).Item1))
+                if (ImmovableHelper.GetDiagonalsOfTigerMouth(tryBoard, move, c).Any(n => GroupHelper.CheckIfDifferentKillerGroup(tryBoard, n, atariPoint, c).Item1))
                     return false;
             }
             return true;
@@ -403,9 +403,11 @@ namespace Go
         /// <summary>
         /// Suicidal move within killer group.
         /// <see cref="UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_WuQingYuan_Q30919" />
-        /// Check absolute link for groups <see cref="UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_TianLongTu_Q16444" />
         /// Check diagonal groups <see cref="UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_WuQingYuan_Q31603" />
         /// Check strong groups <see cref="UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_GuanZiPu_A20" />
+        /// Check previous groups <see cref="UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_TianLongTu_Q16444" />
+        /// <see cref="UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_WuQingYuan_Q30934" />
+        /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
         /// </summary>
         private static Boolean SuicidalMoveWithinKillerGroup(GameTryMove tryMove)
         {
@@ -418,20 +420,28 @@ namespace Go
             //check killer group
             Group killerGroup = GroupHelper.GetDirectKillerGroup(currentBoard, move, c);
             if (killerGroup == null) return false;
-            //check absolute link for groups
-            List<Group> ngroups = currentBoard.GetNeighbourGroups(killerGroup);
-            if (ngroups.Count > 1 && LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryBoard)) return false;
             //check suicidal move
             List<Point> points = killerGroup.Points.Where(n => tryBoard[n] == c.Opposite()).ToList();
             if (points.Count > 2) return false;
             List<Group> groups = tryBoard.GetGroupsFromPoints(points).ToList();
             if (groups.Count != 1) return false;
             //check diagonal groups
-            if (LinkHelper.GetDiagonalGroups(tryBoard, groups.First()).Any())
-                return false;
+            if (LinkHelper.GetDiagonalGroups(tryBoard, groups.First()).Any()) return false;
+            //check neighbour groups
+            List<Group> ngroups = currentBoard.GetNeighbourGroups(killerGroup);
+            if (ngroups.Count == 1) return true;
+
             //check strong groups
-            if (ngroups.Count > 1 && points.Count == 2 && !WallHelper.StrongGroups(currentBoard, ngroups))
+            if (points.Count == 2 && !WallHelper.StrongGroups(currentBoard, ngroups))
                 return false;
+            //check previous groups
+            List<Group> previousGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
+            if (previousGroups.Count > 1)
+            {
+                if (previousGroups.All(n => WallHelper.IsHostileGroup(currentBoard, n)) && ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, move, c).All(n => currentBoard[n] != c.Opposite() && GroupHelper.GetDirectKillerGroup(currentBoard, n, c) == null))
+                    return true;
+                return false;
+            }
             return true;
         }
 

@@ -206,6 +206,7 @@ namespace Go
         private static Boolean CheckTwoOpponentStonesInRealEye(Board board, Group killerGroup)
         {
             if (killerGroup.Points.Count != 3) return false;
+            if (board.GetNeighbourGroups(killerGroup).Count == 1) return false;
             List<Point> nstones = killerGroup.Points.Where(p => board[p] == killerGroup.Content).ToList();
             if (nstones.Count != 2) return false;
             HashSet<Group> ngroups = board.GetGroupsFromPoints(nstones);
@@ -415,6 +416,8 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             foreach (Link<Point> d in LinkHelper.GetGroupDiagonals(tryBoard).Where(n => tryBoard[n.Move] != c.Opposite()))
             {
+                List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(captureBoard, (Point)d.CheckMove, c.Opposite());
+                if (!diagonals.Contains(d.Move)) continue;
                 (Boolean rc, Group groupP) = GroupHelper.CheckIfDifferentKillerGroup(captureBoard, d.Move, move, c.Opposite());
                 if (rc) yield return groupP;
             }
@@ -457,19 +460,6 @@ namespace Go
                 if (EyeHelper.FindRealEyeWithinEmptySpace(board, d, c))
                     yield return d;
             }
-        }
-
-        /// <summary>
-        /// Find real eye at diagonal.
-        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" /> 
-        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_2" /> 
-        /// Three point real eye <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30188" /> 
-        /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WuQingYuan_Q30982" /> 
-        /// </summary>
-        public static Boolean FindRealEyeAtDiagonal(List<Point> diagonals, Board b, Content c)
-        {
-            List<Group> killerGroups = GroupHelper.GetKillerGroupsFromPoints(diagonals, b, c);
-            return killerGroups.All(n => EyeHelper.FindRealEyeOfAnyKillerGroup(b, n));
         }
         #endregion
     }

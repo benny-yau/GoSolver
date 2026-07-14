@@ -457,15 +457,6 @@
             Find real eye at diagonal.
             </summary>
         </member>
-        <member name="M:Go.EyeHelper.FindRealEyeAtDiagonal(System.Collections.Generic.List{Go.Point},Go.Board,Go.Content)">
-            <summary>
-            Find real eye at diagonal.
-            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" /> 
-            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_2" /> 
-            Three point real eye <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WindAndTime_Q30188" /> 
-            <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_WuQingYuan_Q30982" /> 
-            </summary>
-        </member>
         <member name="M:Go.GameHelper.WinOrLose(Go.SurviveOrKill,Go.ConfirmAliveResult,Go.GameInfo)">
             <summary>
             Win or lose.
@@ -1516,7 +1507,7 @@
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A139_2" />
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.LinkBreakage(Go.Board)">
+        <member name="M:Go.LinkHelper.LinkBreakage(Go.Board,Go.Board,System.Nullable{Go.Point})">
             <summary>
             Link breakage.
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_2" />
@@ -1622,9 +1613,11 @@
             <summary>
             Suicidal move within killer group.
             <see cref="!:UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_WuQingYuan_Q30919" />
-            Check absolute link for groups <see cref="!:UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_TianLongTu_Q16444" />
             Check diagonal groups <see cref="!:UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_WuQingYuan_Q31603" />
             Check strong groups <see cref="!:UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_GuanZiPu_A20" />
+            Check previous groups <see cref="!:UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_TianLongTu_Q16444" />
+            <see cref="!:UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_WuQingYuan_Q30934" />
+            <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.MoveWithinNonKillableGroup(Go.GameTryMove)">

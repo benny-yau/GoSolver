@@ -799,18 +799,20 @@ namespace Go
         /// Link breakage.
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_2" />
         /// </summary>
-        public static Boolean LinkBreakage(Board b)
+        public static Boolean LinkBreakage(Board b, Board board, Point? p = null)
         {
-            Point move = b.Move.Value;
+            if (p == null) p = b.Move.Value;
             Content c = b.MoveGroup.Content;
-            List<Point> npoints = LinkHelper.GetDiagonalsAtStoneNeighbours(b);
-            List<Point> diagonals = b.GetDiagonalNeighbours().Where(n => b[n] == Content.Empty && b.GetStoneNeighbours(n).Intersect(npoints).Count() >= 2).ToList();
+            List<Group> ngroups = board.GetGroupsFromStoneNeighbours(p, c);
+            if (!WallHelper.TargetAttackWithKillableGroup(board, ngroups)) return false;
+
+            List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(board, p.Value, c.Opposite());
             if (!diagonals.Any()) return false;
             foreach (Point d in diagonals)
             {
-                if (ImmovableHelper.IsSuicidalMove(b, d, c, true)) continue;
-                HashSet<Group> ngroups = b.GetGroupsFromPoints(LinkHelper.PointsBetweenDiagonals(move, d));
-                if (WallHelper.TargetAttackWithKillableGroup(b, ngroups))
+                List<Point> points = LinkHelper.PointsBetweenDiagonals(d, p.Value);
+                if (!LinkHelper.CheckIsDiagonalLinked(points[0], points[1], board)) continue;
+                if (!LinkHelper.CheckIsDiagonalLinked(points[0], points[1], b))
                     return true;
             }
             return false;
@@ -842,7 +844,7 @@ namespace Go
         public static IEnumerable<Group> CheckImmovableNeighbourGroups(Board b, Board board, Group group)
         {
             List<Group> ngroups = board.GetNeighbourGroups(group).Where(n => n.Liberties.Count <= 2).ToList();
-            return CheckImmovableGroups(b,board, ngroups);
+            return CheckImmovableGroups(b, board, ngroups);
         }
 
         /// <summary>
@@ -856,15 +858,8 @@ namespace Go
                 foreach (Point p in group.Liberties)
                 {
                     if (!ImmovableHelper.IsSuicidalMove(board, p, c)) continue;
-                    //check opponent groups
-                    List<Group> ngroups = board.GetGroupsFromStoneNeighbours(p, c);
-                    if (!WallHelper.TargetAttackWithKillableGroup(board, ngroups)) continue;
-                    //check immovable point at diagonal
-                    List<Point> npoints = LinkHelper.GetDiagonalsAtStoneNeighbours(b, p);
-                    List<Point> diagonals = b.GetDiagonalNeighbours(p).Where(n => b[n] != c.Opposite() && b.GetStoneNeighbours(n).Intersect(npoints).Count() >= 2).ToList();
-                    if (diagonals.All(n => ImmovableHelper.IsImmovablePoint(b, n, c.Opposite())))
-                        continue;
-                    yield return group;
+                    if (LinkBreakage(b, board, p))
+                        yield return group;
                 }
             }
         }

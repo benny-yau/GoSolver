@@ -116,7 +116,7 @@ namespace Go
                 return true;
 
             //check for link breakage
-            if (LinkHelper.LinkBreakage(b))
+            if (LinkHelper.LinkBreakage(b, board))
                 return true;
 
             //check for another tiger mouth at move

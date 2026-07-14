@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace Go
 {
@@ -45,8 +46,10 @@ namespace Go
         /// </summary>
         public static Boolean CheckForBothAliveAtMove(Board board)
         {
+            Point move = board.Move.Value;
             Content c = board.MoveGroup.Content;
-            List<Group> killerGroups = GroupHelper.GetKillerGroupsFromPoints(board.GetDiagonalNeighbours(), board, c);
+            List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(board, move, c);
+            List<Group> killerGroups = GroupHelper.GetKillerGroupsFromPoints(diagonals, board, c);
             if (killerGroups.Any(n => n != null && CheckForBothAlive(board, n)))
                 return true;
             return false;
