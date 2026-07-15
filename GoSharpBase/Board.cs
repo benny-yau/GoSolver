@@ -139,6 +139,20 @@ namespace Go
         }
 
         /// <summary>
+        /// Clear group cache.
+        /// </summary>
+        public void ClearGroupCache()
+        {
+            GroupCache.Clear();
+            GroupCacheFromPoint = null;
+            KillerGroups = null;
+            BlackKillerGroupCache = null;
+            WhiteKillerGroupCache = null;
+            AtariTargets = null;
+            CapturedList.Clear();
+        }
+
+        /// <summary>
         /// Last move.
         /// </summary>
         public Point? LastMove
@@ -150,6 +164,39 @@ namespace Go
             }
         }
 
+        /// <summary>
+        /// Is atari move.
+        /// </summary>
+        public bool IsAtariMove
+        {
+            get
+            {
+                return AtariTargets.Count > 0;
+            }
+        }
+
+        /// <summary>
+        /// Move group liberties.
+        /// </summary>
+        public int MoveGroupLiberties
+        {
+            get
+            {
+                if (this.MoveGroup == null) return 0;
+                return this.MoveGroup.Liberties.Count;
+            }
+        }
+
+        /// <summary>
+        /// Get move liberties.
+        /// </summary>
+        public List<Point> GetMoveLiberties(Point? p = null)
+        {
+            if (p == null) p = this.Move.Value;
+            return GetStoneNeighbours(p).Where(n => this[n] == Content.Empty).ToList();
+        }
+
+        #region capture
         /// <summary>
         /// Captured points.
         /// </summary>
@@ -173,6 +220,36 @@ namespace Go
             return this.CapturedPoints.Any(t => t.Equals(group.Points.First()));
         }
 
+        /// <summary>
+        /// Get captured groups.
+        /// </summary>
+        public HashSet<Group> GetCapturedGroups(Point p)
+        {
+            Content c = this[p];
+            HashSet<Group> captures = new HashSet<Group>();
+            foreach (Group ngroup in GetGroupsFromStoneNeighbours(p, c))
+            {
+                if (ngroup.Liberties.Count == 0)
+                    captures.Add(ngroup);
+            }
+            return captures;
+        }
+
+        /// <summary>
+        /// Capture.
+        /// </summary>
+        private List<Group> Capture(IEnumerable<Group> captures)
+        {
+            foreach (Group g in captures)
+            {
+                List<Point> captured = g.Points.ToList();
+                captured.ForEach(p => this[p] = Content.Empty);
+            }
+            return captures.ToList();
+        }
+        #endregion
+
+        #region get group
         /// <summary>
         /// Get group at point.
         /// </summary>
@@ -211,32 +288,50 @@ namespace Go
         }
 
         /// <summary>
+        /// Get neighbour groups.
+        /// </summary>
+        public List<Group> GetNeighbourGroups(Group group = null)
+        {
+            if (group == null) group = this.MoveGroup;
+            Content c = group.Content.Opposite();
+            HashSet<Group> neighbourGroups = new HashSet<Group>();
+            foreach (Point p in group.Neighbours)
+            {
+                if (this[p] != c) continue;
+                neighbourGroups.Add(this.GetGroupAt(p));
+            }
+            return neighbourGroups.ToList();
+        }
+
+        /// <summary>
+        /// Get groups from stone neighbours.
+        /// </summary>
+        public List<Group> GetGroupsFromStoneNeighbours(Point? p = null, Content c = Content.Unknown)
+        {
+            List<Point> stoneNeighbours = OpponentAtStoneNeighbour(p, c);
+            return this.GetGroupsFromPoints(stoneNeighbours).ToList();
+        }
+
+        /// <summary>
+        /// Get groups from points.
+        /// </summary>
+        public HashSet<Group> GetGroupsFromPoints(List<Point> points)
+        {
+            HashSet<Group> groups = new HashSet<Group>();
+            foreach (Point p in points)
+            {
+                Group group = this.GetGroupAt(p);
+                if (!groups.Contains(group)) groups.Add(group);
+            }
+            return groups;
+        }
+
+        /// <summary>
         /// Get current group from previous group.
         /// </summary>
         public Group GetCurrentGroup(Group group)
         {
             return this.GetGroupAt(group.Points.First());
-        }
-
-        /// <summary>
-        /// Move group liberties.
-        /// </summary>
-        public int MoveGroupLiberties
-        {
-            get
-            {
-                if (this.MoveGroup == null) return 0;
-                return this.MoveGroup.Liberties.Count;
-            }
-        }
-
-        /// <summary>
-        /// Get move liberties.
-        /// </summary>
-        public List<Point> GetMoveLiberties(Point? p = null)
-        {
-            if (p == null) p = this.Move.Value;
-            return GetStoneNeighbours(p).Where(n => this[n] == Content.Empty).ToList();
         }
 
         /// <summary>
@@ -258,20 +353,24 @@ namespace Go
         }
 
         /// <summary>
-        /// Get captured groups.
+        /// One liberty group.
         /// </summary>
-        public HashSet<Group> GetCapturedGroups(Point p)
+        public List<Group> OneLibertyGroup(Point? p = null, Content c = Content.Unknown)
         {
-            Content c = this[p];
-            HashSet<Group> captures = new HashSet<Group>();
-            foreach (Group ngroup in GetGroupsFromStoneNeighbours(p, c))
-            {
-                if (ngroup.Liberties.Count == 0)
-                    captures.Add(ngroup);
-            }
-            return captures;
+            return this.GetGroupsFromStoneNeighbours(p, c).Where(n => n.Liberties.Count == 1).ToList();
         }
 
+        /// <summary>
+        /// One liberty neighbour group.
+        /// </summary>
+        public List<Group> OneLibertyNeighbourGroup(Group group = null)
+        {
+            if (group == null) group = this.MoveGroup;
+            return GetNeighbourGroups(group).Where(n => n.Liberties.Count == 1).ToList();
+        }
+        #endregion
+
+        #region stone and diagonal neighbours
         /// <summary>
         /// Get stone neighbours.
         /// </summary>
@@ -313,31 +412,6 @@ namespace Go
         }
 
         /// <summary>
-        /// Get neighbour groups.
-        /// </summary>
-        public List<Group> GetNeighbourGroups(Group group = null)
-        {
-            if (group == null) group = this.MoveGroup;
-            Content c = group.Content.Opposite();
-            HashSet<Group> neighbourGroups = new HashSet<Group>();
-            foreach (Point p in group.Neighbours)
-            {
-                if (this[p] != c) continue;
-                neighbourGroups.Add(this.GetGroupAt(p));
-            }
-            return neighbourGroups.ToList();
-        }
-
-        /// <summary>
-        /// Get groups from stone neighbours.
-        /// </summary>
-        public List<Group> GetGroupsFromStoneNeighbours(Point? p = null, Content c = Content.Unknown)
-        {
-            List<Point> stoneNeighbours = OpponentAtStoneNeighbour(p, c);
-            return this.GetGroupsFromPoints(stoneNeighbours).ToList();
-        }
-
-        /// <summary>
         /// Opponent at stone neighbour.
         /// </summary>
         public List<Point> OpponentAtStoneNeighbour(Point? p = null, Content c = Content.Unknown)
@@ -348,7 +422,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Opponent at stone neighbour.
+        /// Opponent at stone and diagonal neighbour.
         /// </summary>
         public List<Point> OpponentAtStoneAndDiagonalNeighbour(Point? p = null, Content c = Content.Unknown)
         {
@@ -356,60 +430,9 @@ namespace Go
             if (c == Content.Unknown) c = this[p.Value];
             return this.GetStoneAndDiagonalNeighbours(p).Where(n => this[n] == c.Opposite()).ToList();
         }
+        #endregion
 
-        /// <summary>
-        /// Get groups from points.
-        /// </summary>
-        public HashSet<Group> GetGroupsFromPoints(List<Point> points)
-        {
-            HashSet<Group> groups = new HashSet<Group>();
-            foreach (Point p in points)
-            {
-                Group group = this.GetGroupAt(p);
-                if (!groups.Contains(group)) groups.Add(group);
-            }
-            return groups;
-        }
-
-        /// <summary>
-        /// Is atari move.
-        /// </summary>
-        public bool IsAtariMove
-        {
-            get
-            {
-                return AtariTargets.Count > 0;
-            }
-        }
-
-
-        /// <summary>
-        /// Capture.
-        /// </summary>
-        private List<Group> Capture(IEnumerable<Group> captures)
-        {
-            foreach (Group g in captures)
-            {
-                List<Point> captured = g.Points.ToList();
-                captured.ForEach(p => this[p] = Content.Empty);
-            }
-            return captures.ToList();
-        }
-
-        /// <summary>
-        /// Clear group cache.
-        /// </summary>
-        public void ClearGroupCache()
-        {
-            GroupCache.Clear();
-            GroupCacheFromPoint = null;
-            KillerGroups = null;
-            BlackKillerGroupCache = null;
-            WhiteKillerGroupCache = null;
-            AtariTargets = null;
-            CapturedList.Clear();
-        }
-
+        #region make move
         /// <summary>
         /// Make move on new board.
         /// </summary>
@@ -483,7 +506,9 @@ namespace Go
             Point p = new Point(x, y);
             return InternalMakeMove(p, c, overrideKo);
         }
+        #endregion
 
+        #region common functions
         /// <summary>
         /// Point within board.
         /// </summary>
@@ -516,23 +541,6 @@ namespace Go
             if (p == null) p = this.Move.Value;
             int x = p.Value.x; int y = p.Value.y;
             return (x == 0 || x == SizeX - 1) && (y == 0 || y == SizeY - 1);
-        }
-
-        /// <summary>
-        /// One liberty group.
-        /// </summary>
-        public List<Group> OneLibertyGroup(Point? p = null, Content c = Content.Unknown)
-        {
-            return this.GetGroupsFromStoneNeighbours(p, c).Where(n => n.Liberties.Count == 1).ToList();
-        }
-
-        /// <summary>
-        /// One liberty neighbour group.
-        /// </summary>
-        public List<Group> OneLibertyNeighbourGroup(Group group = null)
-        {
-            if (group == null) group = this.MoveGroup;
-            return GetNeighbourGroups(group).Where(n => n.Liberties.Count == 1).ToList();
         }
 
         /// <summary>
@@ -663,5 +671,6 @@ namespace Go
         {
             return this.LastMoves.GetConcatenatedString();
         }
+        #endregion
     }
 }

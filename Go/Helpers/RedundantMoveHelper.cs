@@ -719,7 +719,8 @@ namespace Go
                 return false;
 
             //check connect and die
-            if (tryBoard.OpponentAtStoneAndDiagonalNeighbour().Any(n => ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.GetGroupAt(n)) && !ImmovableHelper.CheckConnectAndDie(opponentBoard, opponentBoard.GetGroupAt(n))))
+            HashSet<Group> opponentGroups = tryBoard.GetGroupsFromPoints(tryBoard.OpponentAtStoneAndDiagonalNeighbour());
+            if (opponentGroups.Any(n => ImmovableHelper.CheckConnectAndDie(tryBoard, n) && !ImmovableHelper.CheckConnectAndDie(opponentBoard, n)))
                 return false;
 
             //check four-point killer formation
@@ -1766,7 +1767,7 @@ namespace Go
                     return true;
 
                 //covered point suicidal move
-                if (CoveredPointSuicidalWithCornerFormation(tryMove, capturedBoard)) return false;
+                if (CoveredPointSuicidalWithCornerFormation(tryMove)) return false;
 
                 if (diagonals.Any(n => LinkHelper.FindLibertyBetweenDiagonals(tryBoard, move, n).Any()))
                     return true;
@@ -2139,7 +2140,7 @@ namespace Go
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221214_5" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221214_6" />
         /// </summary>
-        public static Boolean CoveredPointSuicidalWithCornerFormation(GameTryMove tryMove, Board captureBoard = null)
+        public static Boolean CoveredPointSuicidalWithCornerFormation(GameTryMove tryMove)
         {
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryBoard.Move.Value;
@@ -2148,7 +2149,8 @@ namespace Go
             if (!tryBoard.PointWithinMiddleArea()) return false;
 
             if (!KillerFormationHelper.TigerMouthAtDiagonal(tryBoard)) return false;
-            if (captureBoard == null) captureBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
+            if (!tryMove.MoveConnectAndDie) return false;
+            Board captureBoard = tryMove.CaptureBoard;
             if (captureBoard.GetMoveLiberties().Count != 1) return false;
             if (!EyeHelper.FindCoveredEye(captureBoard, move, c.Opposite())) return false;
             if (!LinkHelper.GetGroupDiagonals(captureBoard).Any(n => captureBoard[n.Move] == Content.Empty && KillerFormationHelper.CornerKillFormation(captureBoard, n.Move, c)))
@@ -2342,7 +2344,8 @@ namespace Go
             //check connect and die
             if (tryBoard.MoveGroup.Points.Count == 1 && tryBoard.MoveGroupLiberties == 1 && EyeHelper.IsCovered(currentBoard, move, c.Opposite()))
             {
-                Board captureBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
+                if (!tryMove.MoveConnectAndDie) return false;
+                Board captureBoard = tryMove.CaptureBoard;
                 List<Group> ngroups = captureBoard.GetGroupsFromStoneNeighbours(move, c);
                 if (ngroups.Any(n => n.Points.Count >= 3 && ImmovableHelper.CheckConnectAndDie(captureBoard, n)))
                     return true;
@@ -2725,7 +2728,7 @@ namespace Go
             if (capturedBoard == null) return false;
 
             //check covered point suicidal move
-            if (CoveredPointSuicidalWithCornerFormation(tryMove, capturedBoard))
+            if (CoveredPointSuicidalWithCornerFormation(tryMove))
                 return false;
 
             //check one point atari move

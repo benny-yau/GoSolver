@@ -6,6 +6,7 @@ namespace Go
 {
     public class KillerFormationHelper
     {
+        #region killer formation functions
         static Dictionary<int, List<Func<Board, Group, Boolean>>> killerFormationFuncs;
         public static Dictionary<int, List<Func<Board, Group, Boolean>>> KillerFormationFuncs
         {
@@ -577,19 +578,15 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q15017" />
         /// Check snapback <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31469" />
         /// </summary>
-        public static Boolean TwoPointAtariMove(Board tryBoard, Board captureBoard = null)
+        public static Boolean TwoPointAtariMove(Board tryBoard, Board captureBoard)
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             if (tryBoard.MoveGroup.Points.Count != 2 || tryBoard.MoveGroupLiberties != 1 || !tryBoard.IsAtariMove) return false;
             //check for three groups
             if (ThreeOpponentGroupsAtMove(tryBoard))
-            {
-                Boolean tm = LinkHelper.GetDiagonalPoints(tryBoard).Any(n => ImmovableHelper.FindTigerMouth(tryBoard, n, c.Opposite()) != null);
-                if (!tm) return true;
-            }
+                return true;
 
-            if (captureBoard == null) captureBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard);
             Board b = captureBoard.MakeMoveOnNewBoard(move, c);
             if (b == null || b.AtariTargets.Count == 0) return false;
             //check snapback
@@ -709,7 +706,9 @@ namespace Go
             }
             return false;
         }
+        #endregion
 
+        #region kill formation patterns
 
         /*
  15 . . . . . . . . . . . . . . . . . . .
@@ -1257,7 +1256,9 @@ namespace Go
             int maxLength = Math.Max(xLength, yLength);
             return maxLength;
         }
+        #endregion
 
+        #region miscellaneous kill formation functions
         /// <summary>
         /// Opponent break kill formation.
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
@@ -1357,5 +1358,6 @@ namespace Go
             }
             return (false, null);
         }
+        #endregion
     }
 }

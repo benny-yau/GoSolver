@@ -665,37 +665,6 @@
             Two and three liberties connect and die.
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.EscapePreAtari(Go.Board,Go.Group)">
-            <summary>
-            Escape pre atari.
-            </summary>
-        </member>
-        <member name="M:Go.ImmovableHelper.EscapeCaptureLink(Go.Board,Go.Group)">
-            <summary>
-            Escape capture link.
-            <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_3" />
-            </summary>
-        </member>
-        <member name="M:Go.ImmovableHelper.UnescapableGroup(Go.Board,Go.Group,System.Boolean)">
-            <summary>
-            Unescapable group. Ensure target group cannot escape by moving at liberty point or capturing neighbour groups.   
-            <see cref="!:UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_Scenario_Corner_A85" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q14981" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A12" />
-            Check killer ko within killer group <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_A28_101Weiqi" />
-            Recursive connect and die <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A44_101Weiqi" />
-            <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q17255" />
-            </summary>
-        </member>
-        <member name="M:Go.ImmovableHelper.EscapeByCapture(Go.Board,Go.Group,System.Boolean)">
-            <summary>
-            Escape by capture.
-            Check snapback <see cref="!:UnitTestProject.AtariResponseMoveTest.AtariResponseMoveTest_Scenario_TianLongTu_Q16605" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_2282" />
-            Connect and die <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
-            Connect and die for move group <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_GuanZiPu_A3" />
-            </summary>
-        </member>
         <member name="M:Go.ImmovableHelper.PrecheckNotSuicidal(Go.Board,Go.Point,Go.Content)">
             <summary>
             Precheck not suicidal.
@@ -769,6 +738,16 @@
             Is snapback.
             </summary>
         </member>
+        <member name="M:Go.ImmovableHelper.CheckConnectAndDie(Go.Board,Go.Group,System.Boolean)">
+            <summary>
+            Check connect and die.
+            </summary>
+        </member>
+        <member name="M:Go.ImmovableHelper.ConnectAndDieMove(Go.Board,Go.Point,Go.Content,System.Boolean)">
+            <summary>
+            Connect and die move.
+            </summary>
+        </member>
         <member name="M:Go.ImmovableHelper.ConnectAndDie(Go.Board,Go.Group,System.Boolean)">
             <summary>
             Connect and die.
@@ -778,14 +757,24 @@
             <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_Corner_A55" />
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.CheckConnectAndDie(Go.Board,Go.Group,System.Boolean)">
+        <member name="M:Go.ImmovableHelper.UnescapableGroup(Go.Board,Go.Group,System.Boolean)">
             <summary>
-            Check connect and die.
+            Unescapable group. Ensure target group cannot escape by moving at liberty point or capturing neighbour groups.   
+            <see cref="!:UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_Scenario_Corner_A85" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q14981" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A12" />
+            Check killer ko within killer group <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_A28_101Weiqi" />
+            Recursive connect and die <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A44_101Weiqi" />
+            <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_TianLongTu_Q17255" />
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.ConnectAndDieMove(Go.Board,Go.Point,Go.Content,System.Boolean)">
+        <member name="M:Go.ImmovableHelper.EscapeByCapture(Go.Board,Go.Group,System.Boolean)">
             <summary>
-            Connect and die move.
+            Escape by capture.
+            Check snapback <see cref="!:UnitTestProject.AtariResponseMoveTest.AtariResponseMoveTest_Scenario_TianLongTu_Q16605" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_2282" />
+            Connect and die <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
+            Connect and die for move group <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_GuanZiPu_A3" />
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.SuicideAtBigTigerMouth(Go.GameTryMove)">
@@ -821,6 +810,17 @@
             Check capture at liberty <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18_2" />
             Check suicidal group <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18_3" /> 
             <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18_4" /> 
+            </summary>
+        </member>
+        <member name="M:Go.ImmovableHelper.EscapePreAtari(Go.Board,Go.Group)">
+            <summary>
+            Escape pre atari.
+            </summary>
+        </member>
+        <member name="M:Go.ImmovableHelper.EscapeCaptureLink(Go.Board,Go.Group)">
+            <summary>
+            Escape capture link.
+            <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_3" />
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.PreAtariMove(Go.GameTryMove)">
@@ -1308,14 +1308,20 @@
             Validate leap move.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.IsExternalLinkToTargetGroup(Go.Board,Go.Point)">
+        <member name="M:Go.LinkHelper.PossibleLinkToAnyGroup(Go.Board,Go.Group,Go.Group)">
             <summary>
-            Is external link to target group.
+            Possible link to any group.
+            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_XuanXuanQiJing_Weiqi101_18497_4" />
+            Link for kill <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
+            Link through move group <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" /> 
+            <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q16902" /> 
+            Captured eye point <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" />
+            <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_Q18340" /> 
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.IsAbsoluteLinkForGroups(Go.Board,Go.Board)">
+        <member name="M:Go.LinkHelper.CheckPossibleLink(Go.Board,Go.Group,Go.Group)">
             <summary>
-            Is absolute link for groups.
+            Check possible link.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.CheckIsDiagonalLinked(Go.Point,Go.Point,Go.Board,System.Boolean)">
@@ -1339,19 +1345,14 @@
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_DoubleAtariOnSemiSolidEye" />
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.GetAllDiagonalConnectedGroups(Go.Board,Go.Group,System.Func{Go.Group,System.Boolean})">
+        <member name="M:Go.LinkHelper.GetDiagonalGroups(Go.Board,Go.Group)">
             <summary>
-            Get all diagonal connected groups.
+            Get diagonal groups.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.GetGroupLinkedDiagonals(Go.Board,Go.Group,System.Boolean)">
             <summary>
             Get group diagonals with same content.
-            </summary>
-        </member>
-        <member name="M:Go.LinkHelper.GetDiagonalGroups(Go.Board,Go.Group)">
-            <summary>
-            Get diagonal groups.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.GetGroupDiagonals(Go.Board,Go.Group)">
@@ -1369,45 +1370,24 @@
             Get move diagonals of same content that are not part of the move group.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.IsDiagonallyConnectedGroups(System.Collections.Generic.HashSet{Go.Group},Go.Board,System.Func{Go.Group,System.Boolean})">
-            <summary>
-            Is diagonally connected groups.  Use func to find specific group else look for all connected groups.
-            </summary>
-        </member>
         <member name="M:Go.LinkHelper.IsDiagonallyConnectedGroups(Go.Board,Go.Group,Go.Group)">
             <summary>
             Is diagonally connected groups. 
             </summary>
         </member>
+        <member name="M:Go.LinkHelper.GetAllDiagonalConnectedGroups(Go.Board,Go.Group,System.Func{Go.Group,System.Boolean})">
+            <summary>
+            Get all diagonal connected groups.
+            </summary>
+        </member>
+        <member name="M:Go.LinkHelper.IsDiagonallyConnectedGroups(System.Collections.Generic.HashSet{Go.Group},Go.Board,System.Func{Go.Group,System.Boolean})">
+            <summary>
+            Is diagonally connected groups.  Use func to find specific group else look for all connected groups.
+            </summary>
+        </member>
         <member name="M:Go.LinkHelper.IsImmediateDiagonallyConnected(Go.Board,Go.Group,Go.Group)">
             <summary>
             Is immediate diagonally connected. 
-            </summary>
-        </member>
-        <member name="M:Go.LinkHelper.PossibleLinkToAnyGroup(Go.Board,Go.Group,Go.Group)">
-            <summary>
-            Possible link to any group.
-            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_XuanXuanQiJing_Weiqi101_18497_4" />
-            Link for kill <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
-            Link through move group <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" /> 
-            <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q16902" /> 
-            Captured eye point <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" />
-            <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_Q18340" /> 
-            </summary>
-        </member>
-        <member name="M:Go.LinkHelper.CheckPossibleLink(Go.Board,Go.Group,Go.Group)">
-            <summary>
-            Check possible link.
-            </summary>
-        </member>
-        <member name="M:Go.LinkHelper.CheckTigerMouthExceptionsForLinks(Go.Board,Go.Link{Go.Point})">
-            <summary>
-            Check tiger mouth exceptions for links.
-            </summary>
-        </member>
-        <member name="M:Go.LinkHelper.GetTigerMouthsOfLinks(Go.Board,Go.Link{Go.Point})">
-            <summary>
-            Get tiger mouth of links.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.GetAllDiagonalGroups(Go.Board,Go.Group,System.Func{Go.Group,System.Boolean},System.Collections.Generic.List{Go.Group})">
@@ -1423,6 +1403,16 @@
         <member name="M:Go.LinkHelper.CheckPointsBetweenDiagonalsAtMove(Go.Board,Go.Content)">
             <summary>
             Check points between diagonals at move.
+            </summary>
+        </member>
+        <member name="M:Go.LinkHelper.IsExternalLinkToTargetGroup(Go.Board,Go.Point)">
+            <summary>
+            Is external link to target group.
+            </summary>
+        </member>
+        <member name="M:Go.LinkHelper.IsAbsoluteLinkForGroups(Go.Board,Go.Board)">
+            <summary>
+            Is absolute link for groups.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.FindDiagonalCut(Go.Board,Go.Group,System.Boolean)">
@@ -1448,6 +1438,16 @@
         <member name="M:Go.LinkHelper.GetDiagonalsAtStoneNeighbours(Go.Board,System.Nullable{Go.Point},Go.Content)">
             <summary>
             Get diagonals at stone neighbours.
+            </summary>
+        </member>
+        <member name="M:Go.LinkHelper.CheckTigerMouthExceptionsForLinks(Go.Board,Go.Link{Go.Point})">
+            <summary>
+            Check tiger mouth exceptions for links.
+            </summary>
+        </member>
+        <member name="M:Go.LinkHelper.GetTigerMouthsOfLinks(Go.Board,Go.Link{Go.Point})">
+            <summary>
+            Get tiger mouth of links.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.TigerMouthThreatGroup(Go.Board,Go.Point,Go.Content)">
@@ -1991,7 +1991,7 @@
             Check connect and die <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_B31" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.CoveredPointSuicidalWithCornerFormation(Go.GameTryMove,Go.Board)">
+        <member name="M:Go.RedundantMoveHelper.CoveredPointSuicidalWithCornerFormation(Go.GameTryMove)">
             <summary>
             Covered point suicidal with corner formation.
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20221214_5" />

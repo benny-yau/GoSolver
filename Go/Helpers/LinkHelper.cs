@@ -8,6 +8,7 @@ namespace Go
 {
     public class LinkHelper
     {
+        #region possible link for groups
         /// <summary>
         /// Possible link for groups.
         /// <see cref="UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario5dan25" />
@@ -196,24 +197,39 @@ namespace Go
         }
 
         /// <summary>
-        /// Is external link to target group.
+        /// Possible link to any group.
+        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_XuanXuanQiJing_Weiqi101_18497_4" />
+        /// Link for kill <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
+        /// Link through move group <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" /> 
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q16902" /> 
+        /// Captured eye point <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" />
+        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_Q18340" /> 
         /// </summary>
-        public static Boolean IsExternalLinkToTargetGroup(Board board, Point linkPoint)
+        public static Boolean PossibleLinkToAnyGroup(Board tryBoard, Group group, Group findGroup)
         {
-            if (board.GameInfo.targetPoints.Any(n => LinkHelper.IsDiagonallyConnectedGroups(board, board.GetGroupAt(linkPoint), board.GetGroupAt(n))))
+            //link between the two groups
+            if (CheckPossibleLink(tryBoard, group, findGroup))
                 return true;
-            return false;
+
+            //link through move group
+            Boolean isLinked = (group == tryBoard.MoveGroup || CheckPossibleLink(tryBoard, group, tryBoard.MoveGroup));
+            Boolean isLinked2 = (findGroup == tryBoard.MoveGroup || CheckPossibleLink(tryBoard, findGroup, tryBoard.MoveGroup));
+
+            return isLinked && isLinked2;
         }
 
         /// <summary>
-        /// Is absolute link for groups.
+        /// Check possible link.
         /// </summary>
-        public static Boolean IsAbsoluteLinkForGroups(Board currentBoard, Board tryBoard)
+        private static Boolean CheckPossibleLink(Board tryBoard, Group group, Group findGroup)
         {
-            if (tryBoard.MoveGroup.Points.Count <= 2) return false;
-            return (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Count > 1);
+            if (GetGroupLinkedDiagonals(tryBoard, group).Any(d => tryBoard.GetGroupAt(d.Move) == findGroup))
+                return true;
+            return false;
         }
+        #endregion
 
+        #region diagonal connected groups
         /// <summary>
         /// Check is diagonal linked.
         /// Both diagonals empty <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_4" />
@@ -290,13 +306,11 @@ namespace Go
         }
 
         /// <summary>
-        /// Get all diagonal connected groups.
+        /// Get diagonal groups.
         /// </summary>
-        public static HashSet<Group> GetAllDiagonalConnectedGroups(Board board, Group group, Func<Group, Boolean> func = null)
+        public static List<Group> GetDiagonalGroups(Board board, Group group = null)
         {
-            HashSet<Group> allConnectedGroups = new HashSet<Group>() { group };
-            IsDiagonallyConnectedGroups(allConnectedGroups, board, func);
-            return allConnectedGroups;
+            return LinkHelper.GetGroupLinkedDiagonals(board, group).Select(t => board.GetGroupAt(t.Move)).ToList();
         }
 
         /// <summary>
@@ -321,14 +335,6 @@ namespace Go
                 }
             }
             return rc;
-        }
-
-        /// <summary>
-        /// Get diagonal groups.
-        /// </summary>
-        public static List<Group> GetDiagonalGroups(Board board, Group group = null)
-        {
-            return LinkHelper.GetGroupLinkedDiagonals(board, group).Select(t => board.GetGroupAt(t.Move)).ToList();
         }
 
         /// <summary>
@@ -363,6 +369,25 @@ namespace Go
         {
             Content c = tryBoard.MoveGroup.Content;
             return tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] == c && !tryBoard.GetGroupAt(n).Equals(tryBoard.MoveGroup)).ToList();
+        }
+
+        /// <summary>
+        /// Is diagonally connected groups. 
+        /// </summary>
+        public static Boolean IsDiagonallyConnectedGroups(Board board, Group group, Group findGroup)
+        {
+            if (group.Equals(findGroup)) return true;
+            return IsDiagonallyConnectedGroups(new HashSet<Group>() { group }, board);
+        }
+
+        /// <summary>
+        /// Get all diagonal connected groups.
+        /// </summary>
+        public static HashSet<Group> GetAllDiagonalConnectedGroups(Board board, Group group, Func<Group, Boolean> func = null)
+        {
+            HashSet<Group> allConnectedGroups = new HashSet<Group>() { group };
+            IsDiagonallyConnectedGroups(allConnectedGroups, board, func);
+            return allConnectedGroups;
         }
 
         /// <summary>
@@ -405,15 +430,6 @@ namespace Go
         }
 
         /// <summary>
-        /// Is diagonally connected groups. 
-        /// </summary>
-        public static Boolean IsDiagonallyConnectedGroups(Board board, Group group, Group findGroup)
-        {
-            if (group.Equals(findGroup)) return true;
-            return IsDiagonallyConnectedGroups(new HashSet<Group>() { group }, board);
-        }
-
-        /// <summary>
         /// Is immediate diagonally connected. 
         /// </summary>
         public static Boolean IsImmediateDiagonallyConnected(Board board, Group group, Group findGroup)
@@ -421,65 +437,6 @@ namespace Go
             Link<Point> diagonalLink = GetGroupLinkedDiagonals(board, group).FirstOrDefault(d => board.GetGroupAt(d.Move) == findGroup);
             if (diagonalLink == null) return false;
             return CheckIsDiagonalLinked(diagonalLink, board, true);
-        }
-
-        /// <summary>
-        /// Possible link to any group.
-        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_XuanXuanQiJing_Weiqi101_18497_4" />
-        /// Link for kill <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
-        /// Link through move group <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497" /> 
-        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q16902" /> 
-        /// Captured eye point <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" />
-        /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_Q18340" /> 
-        /// </summary>
-        public static Boolean PossibleLinkToAnyGroup(Board tryBoard, Group group, Group findGroup)
-        {
-            //link between the two groups
-            if (CheckPossibleLink(tryBoard, group, findGroup))
-                return true;
-
-            //link through move group
-            Boolean isLinked = (group == tryBoard.MoveGroup || CheckPossibleLink(tryBoard, group, tryBoard.MoveGroup));
-            Boolean isLinked2 = (findGroup == tryBoard.MoveGroup || CheckPossibleLink(tryBoard, findGroup, tryBoard.MoveGroup));
-
-            return isLinked && isLinked2;
-        }
-
-        /// <summary>
-        /// Check possible link.
-        /// </summary>
-        private static Boolean CheckPossibleLink(Board tryBoard, Group group, Group findGroup)
-        {
-            if (GetGroupLinkedDiagonals(tryBoard, group).Any(d => tryBoard.GetGroupAt(d.Move) == findGroup))
-                return true;
-            return false;
-        }
-
-        /// <summary>
-        /// Check tiger mouth exceptions for links.
-        /// </summary>
-        public static Boolean CheckTigerMouthExceptionsForLinks(Board board, Link<Point> diagonalPoint)
-        {
-            Content c = board[diagonalPoint.Move];
-            List<Point> tigerMouthList = GetTigerMouthsOfLinks(board, diagonalPoint);
-            if (LifeCheck.CheckTigerMouthExceptions(board, tigerMouthList, c))
-                return true;
-            return false;
-        }
-
-        /// <summary>
-        /// Get tiger mouth of links.
-        /// </summary>
-        public static List<Point> GetTigerMouthsOfLinks(Board board, Link<Point> diagonalPoint)
-        {
-            Content c = board[diagonalPoint.Move];
-            List<Point> tigerMouthList = new List<Point>();
-            foreach (Point q in LinkHelper.PointsBetweenDiagonals(diagonalPoint))
-            {
-                if (ImmovableHelper.FindTigerMouthForLink(board, q, c))
-                    tigerMouthList.Add(q);
-            }
-            return tigerMouthList;
         }
 
         /// <summary>
@@ -503,7 +460,9 @@ namespace Go
             }
             return groups;
         }
+        #endregion
 
+        #region common link functions
         /// <summary>
         /// Points between diagonals.
         /// </summary>
@@ -539,6 +498,26 @@ namespace Go
                 return q;
             }
             return null;
+        }
+
+
+        /// <summary>
+        /// Is external link to target group.
+        /// </summary>
+        public static Boolean IsExternalLinkToTargetGroup(Board board, Point linkPoint)
+        {
+            if (board.GameInfo.targetPoints.Any(n => LinkHelper.IsDiagonallyConnectedGroups(board, board.GetGroupAt(linkPoint), board.GetGroupAt(n))))
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Is absolute link for groups.
+        /// </summary>
+        public static Boolean IsAbsoluteLinkForGroups(Board currentBoard, Board tryBoard)
+        {
+            if (tryBoard.MoveGroup.Points.Count <= 2) return false;
+            return (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Count > 1);
         }
 
         /// <summary>
@@ -608,6 +587,35 @@ namespace Go
             if (npoints.Count == 0) return npoints;
             npoints = npoints.Where(n => board.GetDiagonalNeighbours(n).Intersect(npoints).Any()).ToList();
             return npoints;
+        }
+        #endregion
+
+        #region link exceptions
+        /// <summary>
+        /// Check tiger mouth exceptions for links.
+        /// </summary>
+        public static Boolean CheckTigerMouthExceptionsForLinks(Board board, Link<Point> diagonalPoint)
+        {
+            Content c = board[diagonalPoint.Move];
+            List<Point> tigerMouthList = GetTigerMouthsOfLinks(board, diagonalPoint);
+            if (LifeCheck.CheckTigerMouthExceptions(board, tigerMouthList, c))
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Get tiger mouth of links.
+        /// </summary>
+        public static List<Point> GetTigerMouthsOfLinks(Board board, Link<Point> diagonalPoint)
+        {
+            Content c = board[diagonalPoint.Move];
+            List<Point> tigerMouthList = new List<Point>();
+            foreach (Point q in LinkHelper.PointsBetweenDiagonals(diagonalPoint))
+            {
+                if (ImmovableHelper.FindTigerMouthForLink(board, q, c))
+                    tigerMouthList.Add(q);
+            }
+            return tigerMouthList;
         }
 
         /// <summary>
@@ -824,5 +832,6 @@ namespace Go
                 }
             }
         }
+        #endregion
     }
 }

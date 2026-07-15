@@ -50,7 +50,7 @@ namespace Go
             Content c = board.MoveGroup.Content;
             List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(board, move, c);
             List<Group> killerGroups = GroupHelper.GetKillerGroupsFromPoints(diagonals, board, c);
-            if (killerGroups.Any(n => n != null && CheckForBothAlive(board, n)))
+            if (killerGroups.Any(n => CheckForBothAlive(board, n)))
                 return true;
             return false;
         }

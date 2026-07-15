@@ -132,6 +132,7 @@ namespace Go
         }
         #endregion
 
+        #region common killer group functions
         /// <summary>
         /// Is single group within killer group.
         /// </summary>
@@ -217,5 +218,6 @@ namespace Go
                     yield return (kgroup, cgroups);
             }
         }
+        #endregion
     }
 }

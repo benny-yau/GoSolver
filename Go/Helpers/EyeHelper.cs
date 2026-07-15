@@ -16,7 +16,7 @@ namespace Go
 
     public class EyeHelper
     {
-
+        #region find eye
         /// <summary>
         /// Find eye.
         /// </summary>
@@ -160,7 +160,9 @@ namespace Go
             }
             return null;
         }
+        #endregion
 
+        #region find real eye within empty space
         /// <summary>
         /// Find real eye within empty space, not more than three points. 
         /// Check snapback <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Scenario_XuanXuanGo_B31" /> 
@@ -362,6 +364,7 @@ namespace Go
                 return true;
             return false;
         }
+        #endregion
 
         #region check real eye at diagonal or neighbour group
         /// <summary>
