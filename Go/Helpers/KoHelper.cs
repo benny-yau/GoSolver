@@ -117,7 +117,7 @@ namespace Go
             Content c = targetGroup.Content;
             if (targetGroup.Points.Count != 1 || targetGroup.Liberties.Count != 2) return false;
             if (tryBoard.PointWithinMiddleArea(targetGroup.Points.First())) return false;
-            foreach (Group dgroup in LinkHelper.GetDiagonalGroups(tryBoard, targetGroup))
+            foreach (Group dgroup in LinkHelper.GetDiagonalGroupsWithoutCut(tryBoard, targetGroup))
             {
                 if (dgroup.Points.Count != 1 || dgroup.Liberties.Count != 2) continue;
                 Point lib = tryBoard.GetMoveLiberties(dgroup.Points.First()).FirstOrDefault(p => !tryBoard.PointWithinMiddleArea(p));

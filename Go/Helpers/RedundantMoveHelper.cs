@@ -938,7 +938,7 @@ namespace Go
         /// Check side point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31510_2" />
         /// Check real eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A12_2" />
         /// Without diagonal cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16483" />
-        /// With diagonal cut <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_ScenarioHighLevel28" />
+        /// With diagonal cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie74" />
         /// Check killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18474" />
         /// </summary>
         private static Boolean CheckImmovablePointAtDiagonal(GameTryMove tryMove, Board captureBoard)
@@ -983,7 +983,7 @@ namespace Go
                     if (ngroups.All(n => n.Points.Count > 1))
                     {
                         //check diagonal group
-                        if (ngroups.Any(n => LinkHelper.GetDiagonalGroups(tryBoard, n).Any(s => !WallHelper.IsHostileGroup(tryBoard, s))))
+                        if (ngroups.Any(n => LinkHelper.GetDiagonalGroupsWithoutCut(tryBoard, n).Any(s => !WallHelper.IsHostileGroup(tryBoard, s))))
                             continue;
                         //check side point
                         if (!tryBoard.PointWithinMiddleArea() && !captureBoard.PointWithinMiddleArea() && ImmovableHelper.GetDiagonalsOfTigerMouth(captureBoard, d, c.Opposite()).Count(n => !captureBoard.PointWithinMiddleArea(n)) == 2)
@@ -2944,7 +2944,7 @@ namespace Go
             foreach (Point p in EyeHelper.FindRealEyeAtDiagonal(capturedBoard, move, c.Opposite()))
             {
                 //check connect and die at diagonal
-                if (tryBoard.AtariTargets.Any() && LinkHelper.GetDiagonalGroups(tryBoard).Select(n => currentBoard.GetCurrentGroup(n)).Any(n => n.Points.Count > 1 && n.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(currentBoard, n)))
+                if (tryBoard.AtariTargets.Any() && ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, move, c.Opposite()).Where(n => currentBoard[n] == c).Select(n => currentBoard.GetGroupAt(n)).Any(n => n.Points.Count > 1 && n.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(currentBoard, n)))
                     continue;
                 return false;
             }
@@ -3392,7 +3392,7 @@ namespace Go
             if (tryBoard.GetGroupsFromPoints(npoints).Count != 1) return false;
 
             //check diagonal group of neighbour group
-            foreach (Group group in LinkHelper.GetDiagonalGroups(tryBoard, ngroup))
+            foreach (Group group in LinkHelper.GetDiagonalGroupsWithoutCut(tryBoard, ngroup))
             {
                 if (group.Points.Count == 1 && !tryBoard.PointWithinMiddleArea(group.Points.First())) continue;
                 if (!WallHelper.IsHostileGroup(tryBoard, group))

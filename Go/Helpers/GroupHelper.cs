@@ -125,9 +125,7 @@ namespace Go
             Group killerGroup = GroupHelper.GetDirectKillerGroup(board, p, c);
             if (killerGroup == null) return null;
 
-            List<Group> groups = board.GetNeighbourGroups(killerGroup);
-            if (!WallHelper.StrongGroups(board, groups)) return null;
-            if (LinkHelper.DoubleKillAtariOnTargetGroups(board, groups)) return null;
+            if (!WallHelper.StrongNeighbourGroups(board, killerGroup)) return null;
             return killerGroup;
         }
         #endregion

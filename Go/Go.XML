@@ -416,7 +416,7 @@
         <member name="M:Go.EyeHelper.RealEyeOfDiagonallyConnectedGroups(Go.Board,Go.Group)">
             <summary>
             Real eye of diagonally connected groups.
-            Ensure all groups are connected <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_ScenarioHighLevel28" /> 
+            Check all groups connected <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_ScenarioHighLevel28" /> 
             Check four point group <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_B28_2" />
             Check opponent stones within killer group <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_A67_101Weiqi" /> 
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" /> 
@@ -1485,7 +1485,6 @@
             <summary>
             Move at tiger mouth.
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_B3" />
-            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571" />
             <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571" />
             </summary>
         </member>
@@ -1732,7 +1731,7 @@
             Check side point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31510_2" />
             Check real eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A12_2" />
             Without diagonal cut <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16483" />
-            With diagonal cut <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_ScenarioHighLevel28" />
+            With diagonal cut <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie74" />
             Check killer group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18474" />
             </summary>
         </member>

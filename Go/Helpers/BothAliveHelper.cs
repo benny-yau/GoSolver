@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace Go
 {
@@ -103,32 +102,32 @@ namespace Go
                 return false;
 
             //fill eye points with content
-            Board filledBoard = FillEyePointsBoard(board, killerGroup);
-            killerGroup = GroupHelper.GetKillerGroupFromCache(filledBoard, killerGroup.Points.First(), c.Opposite());
+            Board fBoard = FillEyePointsBoard(board, killerGroup);
+            killerGroup = GroupHelper.GetKillerGroupFromCache(fBoard, killerGroup.Points.First(), c.Opposite());
             if (killerGroup == null) return false;
 
             //two content groups
-            List<Group> contentGroups = filledBoard.GetGroupsFromPoints(contentPoints).ToList();
+            List<Group> contentGroups = fBoard.GetGroupsFromPoints(contentPoints).ToList();
             if (contentGroups.Count > 2 || contentGroups.Any(n => n.Liberties.Count == 1)) return false;
 
             //ensure at least two liberties within killer group
-            List<Group> ngroups = GroupHelper.GetNeighbourGroupsOfKillerGroup(filledBoard, killerGroup);
-            if (ngroups.Any(n => n.Liberties.Count(p => GroupHelper.GetDirectKillerGroup(filledBoard, p, c.Opposite()) == killerGroup) < 2))
+            List<Group> ngroups = GroupHelper.GetNeighbourGroupsOfKillerGroup(fBoard, killerGroup);
+            if (ngroups.Any(n => n.Liberties.Count(p => GroupHelper.GetDirectKillerGroup(fBoard, p, c.Opposite()) == killerGroup) < 2))
                 return false;
 
             if (contentGroups.Count() == 1)
             {
-                int emptyPointCount = killerGroup.Points.Count(k => filledBoard[k] == Content.Empty);
+                int emptyPointCount = killerGroup.Points.Count(k => fBoard[k] == Content.Empty);
                 if (emptyPointCount >= 3)
                 {
                     //check for three or more liberty formation
-                    if (!KillerFormationHelper.DeadFormationInBothAlive(filledBoard, killerGroup, emptyPointCount, 2).Item1)
+                    if (!KillerFormationHelper.DeadFormationInBothAlive(fBoard, killerGroup, emptyPointCount, 2).Item1)
                         return false;
                 }
                 else if (emptyPointCount == 2)
                 {
                     //check for two liberty formation
-                    if (KillerFormationHelper.DeadFormationInBothAlive(filledBoard, killerGroup, emptyPointCount).Item1)
+                    if (KillerFormationHelper.DeadFormationInBothAlive(fBoard, killerGroup, emptyPointCount).Item1)
                         return false;
                 }
             }
@@ -228,14 +227,14 @@ namespace Go
         public static Board FillEyePointsBoard(Board board, Group killerGroup)
         {
             Content c = killerGroup.Content;
-            Board filledBoard = null;
+            Board fBoard = null;
 
             //fill eye point in killer group
             List<Point> eyePoints = killerGroup.Points.Where(t => EyeHelper.FindCoveredEye(board, t, c)).ToList();
             if (eyePoints.Count > 0)
             {
-                filledBoard = new Board(board);
-                eyePoints.ForEach(p => filledBoard[p] = c);
+                fBoard = new Board(board);
+                eyePoints.ForEach(p => fBoard[p] = c);
             }
 
             //fill eye point in neighbour group
@@ -243,11 +242,11 @@ namespace Go
             {
                 if (!EyeHelper.FindEye(board, p.Move, c.Opposite())) continue;
                 if (board[(Point)p.CheckMove] != Content.Empty) continue;
-                if (filledBoard == null) filledBoard = new Board(board);
-                filledBoard[p.Move] = c.Opposite();
+                if (fBoard == null) fBoard = new Board(board);
+                fBoard[p.Move] = c.Opposite();
             }
-            if (filledBoard == null) filledBoard = board;
-            return filledBoard;
+            if (fBoard == null) fBoard = board;
+            return fBoard;
         }
 
         /// <summary>

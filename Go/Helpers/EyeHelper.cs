@@ -291,7 +291,7 @@ namespace Go
 
         /// <summary>
         /// Real eye of diagonally connected groups.
-        /// Ensure all groups are connected <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_ScenarioHighLevel28" /> 
+        /// Check all groups connected <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_ScenarioHighLevel28" /> 
         /// Check four point group <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_B28_2" />
         /// Check opponent stones within killer group <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_A67_101Weiqi" /> 
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" /> 
@@ -301,26 +301,26 @@ namespace Go
             Content c = killerGroup.Content;
             if (killerGroup.Points.Count <= 3) return false;
 
-            //ensure killer group is surrounded by diagonal groups
-            (Boolean isKillerGroup, List<Group> diagonalGroups) = GroupHelper.CheckNeighbourGroupsOfKillerGroup(board, killerGroup);
+            //check neighbour groups
+            (Boolean isKillerGroup, List<Group> ngroups) = GroupHelper.CheckNeighbourGroupsOfKillerGroup(board, killerGroup);
             if (!isKillerGroup)
                 return false;
 
-            if (!WallHelper.StrongGroups(board, diagonalGroups))
+            if (!WallHelper.StrongGroups(board, ngroups))
                 return false;
 
-            //ensure all groups are connected
-            List<Link<Point>> checkedDiagonals = new List<Link<Point>>();
-            foreach (Group diagonalGroup in diagonalGroups)
+            //check all groups connected
+            List<Link<Point>> diagonals = new List<Link<Point>>();
+            foreach (Group ngroup in ngroups)
             {
-                foreach (Link<Point> diagonal in LinkHelper.GetGroupLinkedDiagonals(board, diagonalGroup))
+                foreach (Link<Point> diagonal in LinkHelper.GetGroupLinkedDiagonals(board, ngroup))
                 {
                     Group group = board.GetGroupAt(diagonal.Move);
-                    if (!diagonalGroups.Contains(group)) continue;
-                    if (checkedDiagonals.Any(n => n.EqualLink(diagonal))) continue;
-                    if (!LinkHelper.IsImmediateDiagonallyConnected(board, diagonalGroup, group))
+                    if (!ngroups.Contains(group)) continue;
+                    if (diagonals.Any(n => n.EqualLink(diagonal))) continue;
+                    if (!LinkHelper.CheckIsDiagonalLinked(diagonal, board))
                         return false;
-                    checkedDiagonals.Add(diagonal);
+                    diagonals.Add(diagonal);
                 }
             }
 
@@ -339,7 +339,7 @@ namespace Go
                     return false;
                 foreach (Link<Point> p in LinkHelper.GetGroupLinkedDiagonals(board, group))
                 {
-                    if (LinkHelper.PointsBetweenDiagonals(p).All(n => board[n] == c.Opposite() && diagonalGroups.Contains(board.GetGroupAt(n))))
+                    if (LinkHelper.PointsBetweenDiagonals(p).All(n => board[n] == c.Opposite() && ngroups.Contains(board.GetGroupAt(n))))
                         return false;
                 }
             }

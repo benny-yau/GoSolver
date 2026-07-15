@@ -396,8 +396,7 @@ namespace Go
         public static Boolean IsDiagonallyConnectedGroups(HashSet<Group> connectedGroups, Board board, Func<Group, Boolean> func = null)
         {
             Group group = connectedGroups.Last();
-            //find group diagonals of same content
-            List<Link<Point>> diagonals = GetGroupLinkedDiagonals(board, group).OrderBy(d => board.GetGroupAt(d.Move).Liberties.Count).ToList();
+            List<Link<Point>> diagonals = GetGroupLinkedDiagonals(board, group);
 
             foreach (Link<Point> d in diagonals)
             {
@@ -664,7 +663,7 @@ namespace Go
         {
             if (targetGroups.Count == 0) return false;
             Content c = targetGroups.First().Content;
-            targetGroups = targetGroups.Where(t => board.GetGroupLiberties(t).Count == 3 || board.GetGroupLiberties(t).Count == 4).ToList();
+            targetGroups = targetGroups.Where(t => board.GetGroupLiberties(t).Count == 3).ToList();
             if (targetGroups.Count == 0) return false;
 
             HashSet<Point> liberties = board.GetLibertiesOfGroups(targetGroups);
@@ -712,7 +711,6 @@ namespace Go
         /// <summary>
         /// Move at tiger mouth.
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_B3" />
-        /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571" />
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571" />
         /// </summary>
         public static List<Point> MoveAtTigerMouth(Board b, Board board)
@@ -747,10 +745,10 @@ namespace Go
         {
             Point p = b.GetMoveLiberties(tigerMouth).FirstOrDefault();
             if (p.IsEmpty()) return false;
-            List<Point> nPoints = b.GetStoneNeighbours(p).Where(n => !n.Equals(tigerMouth)).ToList();
-            List<Point> rc = nPoints.Where(n => b[n] == c.Opposite()).ToList();
-            if (rc.Count != nPoints.Count - 1) return false;
-            Point q = nPoints.Except(rc).First();
+            List<Point> points = b.GetStoneNeighbours(p).Where(n => !n.Equals(tigerMouth)).ToList();
+            List<Point> rc = points.Where(n => b[n] == c.Opposite()).ToList();
+            if (rc.Count != points.Count - 1) return false;
+            Point q = points.Except(rc).First();
             if (b[q] != Content.Empty) return false;
             //make move to form tiger mouth
             (_, Board b2) = ImmovableHelper.IsSuicidalMove(q, c.Opposite(), b, true);
