@@ -246,19 +246,17 @@ namespace Go
             if (diagonals.Any(d => board[d] == c))
                 return true;
 
+            //check immovable at any diagonal
+            if (diagonals.Any(d => board[d] == Content.Empty && ImmovableHelper.IsImmovablePoint(board, d, c)))
+                return true;
+
             //if both diagonals empty then is linked
             if (diagonals.All(d => board[d] == Content.Empty))
             {
-                //check is immovable
-                if (diagonals.Any(d => ImmovableHelper.IsImmovablePoint(board, d, c))) return true;
+                if (immediateLink) return true;
+                //check negligible for links
                 foreach (Board b in GameHelper.GetMoveBoards(board, diagonals, c.Opposite(), true))
                 {
-                    //make connection at other diagonal
-                    Point q = diagonals.First(d => !d.Equals(b.Move.Value));
-                    if (ImmovableHelper.ConnectAndDieMove(b, q, c).Item1) return false;
-
-                    //check negligible for links
-                    if (immediateLink) continue;
                     if (LinkHelper.CheckNegligibleForLinks(b, board, n => !n.Equals(b.GetGroupAt(pointA)) && !n.Equals(b.GetGroupAt(pointB))))
                         return false;
                 }
@@ -269,11 +267,8 @@ namespace Go
             {
                 if (!ImmovableHelper.IsImmovablePoint(board, p, c)) continue;
                 if (immediateLink) return true;
-                if (board[p] == c.Opposite())
-                {
-                    Group killerGroup = GroupHelper.GetKillerGroupOfStrongNeighbourGroups(board, p, c);
-                    if (killerGroup == null) continue;
-                }
+                if (board[p] == c.Opposite() && GroupHelper.GetKillerGroupOfStrongNeighbourGroups(board, p, c) == null)
+                    continue;
                 return true;
             }
             return false;
@@ -286,22 +281,6 @@ namespace Go
         {
             if (CheckIsDiagonalLinked(diagonal.Move, (Point)diagonal.CheckMove, board, immediateLink))
                 return true;
-            return false;
-        }
-
-        /// <summary>
-        /// Check double atari for links.
-        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_DoubleAtariOnSemiSolidEye" />
-        /// </summary>
-        private static Boolean CheckDoubleAtariForLinks(Board board, Link<Point> diagonalPoint)
-        {
-            Content c = board[diagonalPoint.Move];
-            foreach (Point d in LinkHelper.PointsBetweenDiagonals(diagonalPoint))
-            {
-                List<Group> ngroups = board.GetGroupsFromStoneNeighbours(d, c.Opposite());
-                if (DoubleKillAtariOnTargetGroups(board, ngroups))
-                    return true;
-            }
             return false;
         }
 
@@ -377,7 +356,7 @@ namespace Go
         public static Boolean IsDiagonallyConnectedGroups(Board board, Group group, Group findGroup)
         {
             if (group.Equals(findGroup)) return true;
-            return IsDiagonallyConnectedGroups(new HashSet<Group>() { group }, board);
+            return IsDiagonallyConnectedGroups(new HashSet<Group>() { group }, board, n => n.Equals(findGroup));
         }
 
         /// <summary>
@@ -391,7 +370,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Is diagonally connected groups.  Use func to find specific group else look for all connected groups.
+        /// Is diagonally connected groups. Use func to find specific group else look for all connected groups.
         /// </summary>
         public static Boolean IsDiagonallyConnectedGroups(HashSet<Group> connectedGroups, Board board, Func<Group, Boolean> func = null)
         {
@@ -403,8 +382,12 @@ namespace Go
                 Group g = board.GetGroupAt(d.Move);
                 if (g.Liberties.Count == 1 || connectedGroups.Contains(g)) continue;
 
-                //check if diagonally linked
+                //check diagonal link
                 if (!CheckIsDiagonalLinked(d, board, false))
+                    continue;
+
+                //check double linkage
+                if (CheckDoubleLinkage(board, d))
                     continue;
 
                 //check tiger mouth exceptions
@@ -415,6 +398,7 @@ namespace Go
                 if (CheckDoubleAtariForLinks(board, d))
                     continue;
 
+                //add group
                 connectedGroups.Add(g);
 
                 //check if group found
@@ -422,7 +406,7 @@ namespace Go
                     return true;
 
                 //get diagonal connected groups recursively
-                if (IsDiagonallyConnectedGroups(connectedGroups, board, func)) 
+                if (IsDiagonallyConnectedGroups(connectedGroups, board, func))
                     return true;
             }
             return false;
@@ -491,12 +475,8 @@ namespace Go
         {
             Point move = board.Move.Value;
             List<Point> epoints = GetDiagonalsAtStoneNeighbours(board, move, c);
-            if (epoints.Count == 2)
-            {
-                Point q = PointsBetweenDiagonals(epoints[0], epoints[1]).First(n => !n.Equals(move));
-                return q;
-            }
-            return null;
+            if (epoints.Count != 2) return null;
+            return PointsBetweenDiagonals(epoints[0], epoints[1]).First(n => !n.Equals(move));
         }
 
 
@@ -591,6 +571,32 @@ namespace Go
 
         #region link exceptions
         /// <summary>
+        /// Check for double linkage.
+        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_3" />
+        /// </summary>
+        private static Boolean CheckDoubleLinkage(Board board, Link<Point> diagonalLink)
+        {
+            Content c = board[diagonalLink.Move];
+            List<Point> diagonals = LinkHelper.PointsBetweenDiagonals(diagonalLink);
+            foreach (Point p in diagonals.Where(d => board[d] == Content.Empty))
+            {
+                //ensure three opponent groups
+                List<Point> opponentStones = board.OpponentAtStoneNeighbour(p, c.Opposite());
+                if (opponentStones.Count < 3 || board.GetGroupsFromPoints(opponentStones).Count < 3) continue;
+
+                //make opponent move at diagonal
+                (Boolean connectAndDie, Board b) = ImmovableHelper.ConnectAndDieMove(board, p, c.Opposite(), false);
+                if (connectAndDie || b == null) continue;
+
+                //check diagonal links
+                Point middleStone = opponentStones.First(n => b.GetDiagonalNeighbours(n).Count(d => opponentStones.Contains(d)) >= 2);
+                if (opponentStones.Where(n => !n.Equals(middleStone)).All(n => CheckIsDiagonalLinked(middleStone, n, board) && !CheckIsDiagonalLinked(middleStone, n, b)))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Check tiger mouth exceptions for links.
         /// </summary>
         public static Boolean CheckTigerMouthExceptionsForLinks(Board board, Link<Point> diagonalPoint)
@@ -629,6 +635,22 @@ namespace Go
             if (threatGroup.Liberties.Count == 2)
                 return threatGroup;
             return null;
+        }
+
+        /// <summary>
+        /// Check double atari for links.
+        /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_DoubleAtariOnSemiSolidEye" />
+        /// </summary>
+        private static Boolean CheckDoubleAtariForLinks(Board board, Link<Point> diagonalPoint)
+        {
+            Content c = board[diagonalPoint.Move];
+            foreach (Point d in LinkHelper.PointsBetweenDiagonals(diagonalPoint))
+            {
+                List<Group> ngroups = board.GetGroupsFromStoneNeighbours(d, c.Opposite());
+                if (DoubleKillAtariOnTargetGroups(board, ngroups))
+                    return true;
+            }
+            return false;
         }
 
         /// <summary>

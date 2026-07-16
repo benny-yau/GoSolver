@@ -470,6 +470,7 @@ namespace Go
         /// </summary>
         public static (Boolean, Board) ConnectAndDieMove(Board board, Point p, Content c, Boolean koEnabled = true)
         {
+            if (!GameHelper.SetupMoveAvailable(board, p, c)) return (false, null);
             Board b = board.MakeMoveOnNewBoard(p, c, !koEnabled);
             if (b == null) return (true, b);
             if (ImmovableHelper.CheckConnectAndDie(b, b.GetGroupAt(p), koEnabled))
@@ -614,7 +615,7 @@ namespace Go
 
                 //make move at liberty
                 (Boolean connectAndDie, Board b) = ImmovableHelper.ConnectAndDieMove(currentBoard, liberty, c);
-                if (WallHelper.TargetWithAllNonKillableGroups(b))
+                if (b == null || WallHelper.TargetWithAllNonKillableGroups(b))
                     continue;
 
                 //check covered eye survival

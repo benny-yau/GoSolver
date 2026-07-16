@@ -1339,12 +1339,6 @@
             Check is diagonal linked.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.CheckDoubleAtariForLinks(Go.Board,Go.Link{Go.Point})">
-            <summary>
-            Check double atari for links.
-            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_DoubleAtariOnSemiSolidEye" />
-            </summary>
-        </member>
         <member name="M:Go.LinkHelper.GetDiagonalGroups(Go.Board,Go.Group)">
             <summary>
             Get diagonal groups.
@@ -1382,7 +1376,7 @@
         </member>
         <member name="M:Go.LinkHelper.IsDiagonallyConnectedGroups(System.Collections.Generic.HashSet{Go.Group},Go.Board,System.Func{Go.Group,System.Boolean})">
             <summary>
-            Is diagonally connected groups.  Use func to find specific group else look for all connected groups.
+            Is diagonally connected groups. Use func to find specific group else look for all connected groups.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.IsImmediateDiagonallyConnected(Go.Board,Go.Group,Go.Group)">
@@ -1440,6 +1434,12 @@
             Get diagonals at stone neighbours.
             </summary>
         </member>
+        <member name="M:Go.LinkHelper.CheckDoubleLinkage(Go.Board,Go.Link{Go.Point})">
+            <summary>
+            Check for double linkage.
+            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_3" />
+            </summary>
+        </member>
         <member name="M:Go.LinkHelper.CheckTigerMouthExceptionsForLinks(Go.Board,Go.Link{Go.Point})">
             <summary>
             Check tiger mouth exceptions for links.
@@ -1453,6 +1453,12 @@
         <member name="M:Go.LinkHelper.TigerMouthThreatGroup(Go.Board,Go.Point,Go.Content)">
             <summary>
             Tiger mouth threat group.
+            </summary>
+        </member>
+        <member name="M:Go.LinkHelper.CheckDoubleAtariForLinks(Go.Board,Go.Link{Go.Point})">
+            <summary>
+            Check double atari for links.
+            <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_DoubleAtariOnSemiSolidEye" />
             </summary>
         </member>
         <member name="M:Go.LinkHelper.DoubleKillAtariOnTargetGroups(Go.Board,System.Collections.Generic.List{Go.Group})">

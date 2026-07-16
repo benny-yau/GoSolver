@@ -99,6 +99,7 @@ namespace Go
         {
             //make move at liberty point
             (Boolean connectAndDie, Board b) = ImmovableHelper.ConnectAndDieMove(board, libertyPoint, c.Opposite(), false);
+            if (b == null) return false;
             if (connectAndDie)
             {
                 if (!KillerFormationHelper.PossibleCornerThreeFormation(board, tigerMouth, c))
@@ -215,7 +216,7 @@ namespace Go
                 return ConfirmAliveResult.Alive;
 
             //check target alive
-            return LifeCheck.ConfirmAlive(board);            
+            return LifeCheck.ConfirmAlive(board);
         }
     }
 }

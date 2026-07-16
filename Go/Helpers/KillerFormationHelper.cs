@@ -671,7 +671,7 @@ namespace Go
             Point q = LinkHelper.PointsBetweenDiagonals(s[0], s[1]).First(n => !n.Equals(move));
             if (tryBoard[q] != Content.Empty) return true;
             //return first point
-            if (tryBoard.GetStoneNeighbours(q).Count(n => tryBoard[n] == c) == 2 && KillerFormationHelper.IsFirstPoint(tryBoard, move, q))
+            if (KillerFormationHelper.IsFirstPoint(tryBoard, move, q))
                 return true;
             //check covered eye
             if (EyeHelper.FindCoveredEye(currentBoard, q, c))
