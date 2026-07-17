@@ -1419,6 +1419,11 @@
             Get diagonal groups without cut.
             </summary>
         </member>
+        <member name="M:Go.LinkHelper.GetDiagonalGroupsWithCut(Go.Board,Go.Group)">
+            <summary>
+            Get diagonal groups with cut.
+            </summary>
+        </member>
         <member name="M:Go.LinkHelper.FindLibertyBetweenDiagonals(Go.Board,Go.Point,Go.Point)">
             <summary>
             Find liberty between diagonals.
@@ -1636,6 +1641,7 @@
             Check for both alive <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_TianLongTu_Q16827" />
             Check link for groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B35" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30358_3" />
+            Check killer formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14992" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CaptureAtOpponentSuicidalMove(Go.Board,Go.Board)">

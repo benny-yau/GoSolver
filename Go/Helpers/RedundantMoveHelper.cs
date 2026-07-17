@@ -506,6 +506,7 @@ namespace Go
         /// Check for both alive <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_TianLongTu_Q16827" />
         /// Check link for groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B35" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30358_3" />
+        /// Check killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14992" />
         /// </summary>
         private static Boolean MultiPointOpponentSuicidalMove(GameTryMove tryMove)
         {
@@ -547,6 +548,13 @@ namespace Go
             //check link for groups
             if (LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard))
                 return false;
+
+            //check killer formation
+            if (LinkHelper.GetDiagonalGroupsWithCut(tryBoard, atariTarget).Count() >= 2)
+            {
+                if (tryBoard.MoveGroup.Points.Count == 3 || KillerFormationHelper.IsKillerFormationFromFunc(tryBoard))
+                    return false;
+            }
             return true;
         }
 

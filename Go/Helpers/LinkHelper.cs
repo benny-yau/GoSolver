@@ -537,6 +537,18 @@ namespace Go
         }
 
         /// <summary>
+        /// Get diagonal groups with cut.
+        /// </summary>
+        public static IEnumerable<Group> GetDiagonalGroupsWithCut(Board board, Group group)
+        {
+            foreach (Link<Point> q in LinkHelper.GetGroupLinkedDiagonals(board, group))
+            {
+                if (!LinkHelper.FindLibertyBetweenDiagonals(board, q.Move, (Point)q.CheckMove).Any())
+                    yield return board.GetGroupAt(q.Move);
+            }
+        }
+
+        /// <summary>
         /// Find liberty between diagonals.
         /// </summary>
         public static List<Point> FindLibertyBetweenDiagonals(Board board, Point p, Point q)
