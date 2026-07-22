@@ -506,7 +506,6 @@ namespace Go
         /// Check for both alive <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_TianLongTu_Q16827" />
         /// Check link for groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B35" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30358_3" />
-        /// Check killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14992" />
         /// </summary>
         private static Boolean MultiPointOpponentSuicidalMove(GameTryMove tryMove)
         {
@@ -549,12 +548,9 @@ namespace Go
             if (LinkHelper.PossibleLinkForGroups(tryBoard, currentBoard))
                 return false;
 
-            //check killer formation
-            if (LinkHelper.GetDiagonalGroupsWithCut(tryBoard, atariTarget).Count() >= 2)
-            {
-                if (tryBoard.MoveGroup.Points.Count == 3 || KillerFormationHelper.IsKillerFormationFromFunc(tryBoard))
-                    return false;
-            }
+            //check covered eye atari target
+            if (CheckCoveredEyeAtariTarget(tryBoard, atariTarget))
+                return false;
             return true;
         }
 
@@ -592,6 +588,21 @@ namespace Go
                 if ((tryBoard.GetStoneNeighbours(d).Any(n => KoHelper.MakeKoFight(currentBoard, n, c)) || KoHelper.IsKoFight(currentBoard, d, c).Item1))
                     return true;
             }
+            return false;
+        }
+
+        /// <summary>
+        /// Check covered eye atari target.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q14992" />
+        /// </summary>
+        private static Boolean CheckCoveredEyeAtariTarget(Board tryBoard, Group atariTarget)
+        {
+            Content c = tryBoard.MoveGroup.Content;
+            if (WallHelper.IsNonKillableGroup(tryBoard)) return false;
+            if (LinkHelper.GetDiagonalGroupsWithCut(tryBoard, atariTarget).Count() != 2) return false;
+            Group s = AtariHelper.AtariByGroup(tryBoard, atariTarget).FirstOrDefault();
+            if (s != null && GroupHelper.CheckKillerGroupPoints(tryBoard, s.Points.First(), c.Opposite(), 3, false) != null)
+                return true;
             return false;
         }
 
@@ -2169,6 +2180,7 @@ namespace Go
         /// <summary>
         /// Essential atari at covered point.
         /// Check ko fight <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario4dan17" />
+        /// Check covered eye at diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_B33" />
         /// Check covered <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A41_2" />
         /// Check reverse ko <see cref="UnitTestProject.BaseLineSurvivalMoveTest.BaseLineSurvivalMoveTest_Scenario_TianLongTu_Q16456" />
         /// Check double atari <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WindAndTime_Q30224" />
@@ -2193,6 +2205,18 @@ namespace Go
                 Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, atariTarget);
                 if (WallHelper.StrongNeighbourGroups(b))
                     return false;
+
+                //check diagonals
+                List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(b, b.Move.Value, c.Opposite());
+                if (diagonals.Count == 1)
+                {
+                    Point s = diagonals.First();
+                    if (b[s] == c && ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.GetGroupAt(s)))
+                        return false;
+                    //check covered eye at diagonal
+                    if (ImmovableHelper.IsImmovablePoint(tryBoard, s, c.Opposite()) && !EyeHelper.FindCoveredEye(b, s, c.Opposite()))
+                        return false;
+                }
                 return true;
             }
 
