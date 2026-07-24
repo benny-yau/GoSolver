@@ -303,11 +303,8 @@ namespace Go
             foreach (Point p in group.Points)
             {
                 if (board[p] != c) continue;
-                foreach (Point q in GetDiagonalPoints(board, p))
+                foreach (Point q in GetMoveDiagonals(board, p))
                 {
-                    if (board[q] != c) continue;
-                    if (board.GetGroupAt(p) == board.GetGroupAt(q)) continue;
-
                     //ensure diagonal is linked
                     if (!checkLinked || CheckIsDiagonalLinked(p, q, board))
                         rc.Add(new Link<Point>(q, p));
@@ -344,10 +341,12 @@ namespace Go
         /// <summary>
         /// Get move diagonals of same content that are not part of the move group.
         /// </summary>
-        public static List<Point> GetMoveDiagonals(Board tryBoard)
+        public static List<Point> GetMoveDiagonals(Board tryBoard, Point? p = null)
         {
-            Content c = tryBoard.MoveGroup.Content;
-            return tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] == c && !tryBoard.GetGroupAt(n).Equals(tryBoard.MoveGroup)).ToList();
+            if (p == null) p = tryBoard.Move.Value;
+            Content c = tryBoard[p.Value];
+            List<Point> points = GetDiagonalPoints(tryBoard, p.Value);
+            return points.Where(n => tryBoard[n] == c && !tryBoard.GetGroupAt(n).Equals(tryBoard.GetGroupAt(p.Value))).ToList();
         }
 
         /// <summary>

@@ -304,37 +304,37 @@
         </member>
         <member name="P:Go.DirectionHelper.DirectionLinkedList">
             <summary>
-            Create linked list of all four directions, in clockwise rotation with direction pointing to center.
+            Direction linked list.
             </summary>
         </member>
         <member name="M:Go.DirectionHelper.GetNewDirection(Go.Direction,System.Int32)">
             <summary>
-            Get new direction based on number of times direction rotated.
+            Get new direction.
             </summary>
         </member>
         <member name="M:Go.DirectionHelper.IsEdgeInDirection(Go.Board,Go.Point,Go.Direction)">
             <summary>
-            Check if point is at edge based on direction specified. 
+            Is edge in direction. 
             </summary>
         </member>
         <member name="M:Go.DirectionHelper.GetPointInDirection(Go.Board,Go.Point,Go.Direction,System.Boolean)">
             <summary>
-            Move point in direction specified.
+            Get point in direction.
             </summary>
         </member>
         <member name="M:Go.DirectionHelper.GetPointInDirection(System.Int32,Go.Board,Go.Point,Go.Direction)">
             <summary>
-            Repeat number of times in same direction to move point.
+            Get point in direction.
             </summary>
         </member>
-        <member name="M:Go.DirectionHelper.GetDirectionFromTwoPoints(Go.Point,Go.Point)">
+        <member name="M:Go.DirectionHelper.GetDirectionsForLeapMove(Go.Board)">
             <summary>
-            Get direction where p is moving away from q.
+            Get directions for leap move.
             </summary>
         </member>
-        <member name="M:Go.DirectionHelper.GetRotationIndex(Go.Direction)">
+        <member name="M:Go.DirectionHelper.VerifyOppponentInAllDirection(Go.Board,System.Collections.Generic.List{Go.Point})">
             <summary>
-            Get the count to rotate to get direction from linked list.
+            Verify opponent in all direction.
             </summary>
         </member>
         <member name="M:Go.EyeHelper.FindEye(Go.Board,Go.Point,Go.Content)">
@@ -1359,7 +1359,7 @@
             Get diagonal points regardless of content.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.GetMoveDiagonals(Go.Board)">
+        <member name="M:Go.LinkHelper.GetMoveDiagonals(Go.Board,System.Nullable{Go.Point})">
             <summary>
             Get move diagonals of same content that are not part of the move group.
             </summary>
@@ -1958,6 +1958,8 @@
             Redundant survival leap move.
             <see cref="!:UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_XuanXuanQiJing_A1" />
             Check opponent groups <see cref="!:UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_GuanZiPu_B3" />
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221030_7" />
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260111_8" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckLeapMoveToTarget(Go.Board,System.Collections.Generic.HashSet{Go.Group})">
@@ -1970,6 +1972,7 @@
             Verify leap move.
             Check point next to corner <see cref="!:UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_TianLongTu_Q14992" />
             Check strong neighbour groups <see cref="!:UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_GuanZiPu_B7" />
+            Check connect and die at diagonal group <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260528_7" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckNonKillableAtDiagonalGroups(Go.Board,Go.Group)">

@@ -39,7 +39,7 @@ namespace Go
     {
         static List<Link<Direction>> directionalLinkedList = null;
         /// <summary>
-        /// Create linked list of all four directions, in clockwise rotation with direction pointing to center.
+        /// Direction linked list.
         /// </summary>
         public static List<Link<Direction>> DirectionLinkedList
         {
@@ -59,7 +59,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Get new direction based on number of times direction rotated.
+        /// Get new direction.
         /// </summary>
         public static Direction GetNewDirection(Direction direction, int count = 0)
         {
@@ -72,7 +72,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Check if point is at edge based on direction specified. 
+        /// Is edge in direction. 
         /// </summary>
         public static Boolean IsEdgeInDirection(Board board, Point p, Direction direction)
         {
@@ -88,7 +88,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Move point in direction specified.
+        /// Get point in direction.
         /// </summary>
         public static Point GetPointInDirection(Board board, Point p, Direction direction, Boolean checkWithinBoard = true)
         {
@@ -109,7 +109,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Repeat number of times in same direction to move point.
+        /// Get point in direction.
         /// </summary>
         public static Point GetPointInDirection(int repeat, Board board, Point p, Direction direction)
         {
@@ -124,79 +124,45 @@ namespace Go
         }
 
         /// <summary>
-        /// Get direction where p is moving away from q.
+        /// Get directions for leap move.
         /// </summary>
-        public static (Direction, int, int) GetDirectionFromTwoPoints(Point p, Point q)
+        public static List<KeyValuePair<Point, Direction>> GetDirectionsForLeapMove(Board board)
         {
-            int x_dist = p.x - q.x;
-            int y_dist = p.y - q.y;
-            Boolean x_only = Math.Abs(x_dist) >= Math.Abs(y_dist);
-
-            if (x_only)
-            {
-                if (x_dist > 0)
-                    return (Direction.Right, x_dist, y_dist);
-                else if (x_dist < 0)
-                    return (Direction.Left, x_dist, y_dist);
-            }
-            else
-            {
-                if (y_dist > 0)
-                    return (Direction.Down, x_dist, y_dist);
-                else if (y_dist < 0)
-                    return (Direction.Up, x_dist, y_dist);
-            }
-            return (Direction.None, x_dist, y_dist);
-        }
-
-        /// <summary>
-        /// Get the count to rotate to get direction from linked list.
-        /// </summary>
-        public static int GetRotationIndex(Direction wallDirection)
-        {
-            return DirectionLinkedList.FindIndex(m => m.Move.Equals(wallDirection));
-        }
-
-
-        public static List<Direction> GetDirections(Board board, Point p)
-        {
-            int n = 3;
-            List<Direction> directions = new List<Direction>();
-            if (board.PointWithinBoard(p.x - n, p.y))
-                directions.Add(Direction.Left);
-            if (board.PointWithinBoard(p.x + n, p.y))
-                directions.Add(Direction.Right);
-            if (board.PointWithinBoard(p.x, p.y - n))
-                directions.Add(Direction.Up);
-            if (board.PointWithinBoard(p.x, p.y + n))
-                directions.Add(Direction.Down);
+            List<KeyValuePair<Point, Direction>> directions = new List<KeyValuePair<Point, Direction>>();
+            int x = 3;
+            Point p = board.Move.Value;
+            //check up direction
+            if (board.PointWithinBoard(p.x, p.y - x))
+                directions.Add(new KeyValuePair<Point, Direction>(p, Direction.Up));
+            //check down direction
+            if (board.PointWithinBoard(p.x, p.y + x))
+                directions.Add(new KeyValuePair<Point, Direction>(p, Direction.Down));
+            //check left direction
+            if (board.PointWithinBoard(p.x - x, p.y))
+                directions.Add(new KeyValuePair<Point, Direction>(p, Direction.Left));
+            //check right direction
+            if (board.PointWithinBoard(p.x + x, p.y))
+                directions.Add(new KeyValuePair<Point, Direction>(p, Direction.Right));
             return directions;
         }
 
-
-        public static Boolean CheckPointInDirection(Direction direction, Point p, Point q)
+        /// <summary>
+        /// Verify opponent in all direction.
+        /// </summary>
+        public static Boolean VerifyOppponentInAllDirection(Board board, List<Point> opponentPoints)
         {
-            if (direction == Direction.Left)
+            foreach (KeyValuePair<Point, Direction> direction in DirectionHelper.GetDirectionsForLeapMove(board))
             {
-                if (q.x < p.x && Math.Abs(q.y - p.y) <= 1)
-                    return true;
+                if (direction.Value == Direction.Up && !opponentPoints.Where(n => n.y < direction.Key.y).Select(n => board.GetGroupAt(n)).Any(n => n.Points.Count >= 2 && n.Liberties.Count <= n.Neighbours.Count * 0.5))
+                    return false;
+                if (direction.Value == Direction.Down && !opponentPoints.Where(n => n.y > direction.Key.y).Select(n => board.GetGroupAt(n)).Any(n => n.Points.Count >= 2 && n.Liberties.Count <= n.Neighbours.Count * 0.5))
+                    return false;
+                if (direction.Value == Direction.Left && !opponentPoints.Where(n => n.x < direction.Key.x).Select(n => board.GetGroupAt(n)).Any(n => n.Points.Count >= 2 && n.Liberties.Count <= n.Neighbours.Count * 0.5))
+                    return false;
+                if (direction.Value == Direction.Right && !opponentPoints.Where(n => n.x > direction.Key.x).Select(n => board.GetGroupAt(n)).Any(n => n.Points.Count >= 2 && n.Liberties.Count <= n.Neighbours.Count * 0.5))
+                    return false;
             }
-            else if (direction == Direction.Right)
-            {
-                if (q.x > p.x && Math.Abs(q.y - p.y) <= 1)
-                    return true;
-            }
-            else if (direction == Direction.Up)
-            {
-                if (q.y < p.y && Math.Abs(q.x - p.x) <= 1)
-                    return true;
-            }
-            else if (direction == Direction.Down)
-            {
-                if (q.y > p.y && Math.Abs(q.x - p.x) <= 1)
-                    return true;
-            }
-            return false;
+            return true;
         }
 
     }

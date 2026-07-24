@@ -2211,7 +2211,6 @@ namespace ScenarioCollection
          */
         public Game Scenario_Corner_A80()
         {
-            //Game.koCaptureRepeatMax > 3 required
             var gi = new GameInfo(SurviveOrKill.Kill, Content.White);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();

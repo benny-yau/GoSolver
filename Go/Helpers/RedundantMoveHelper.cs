@@ -1936,13 +1936,14 @@ namespace Go
         /// Redundant survival leap move.
         /// <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_XuanXuanQiJing_A1" />
         /// Check opponent groups <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_GuanZiPu_B3" />
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20221030_7" />
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260111_8" />
         /// </summary>
         public static Boolean RedundantSurvivalLeapMove(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
             Content c = tryBoard.MoveGroup.Content;
-
             if (KoHelper.IsKoFight(tryBoard)) return false;
 
             //check leap move to target
@@ -1952,7 +1953,7 @@ namespace Go
             //check opponent groups
             List<Point> rc = tryBoard.GetClosestPoints(move, c.Opposite(), 3);
             rc = rc.Where(n => !CheckNonKillableAtDiagonalGroups(tryBoard, tryBoard.GetGroupAt(n))).ToList();
-            if (rc.Count >= 3)
+            if (DirectionHelper.VerifyOppponentInAllDirection(tryBoard, rc))
                 return false;
             return true;
         }
@@ -1997,17 +1998,29 @@ namespace Go
         /// Verify leap move.
         /// Check point next to corner <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_TianLongTu_Q14992" />
         /// Check strong neighbour groups <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_GuanZiPu_B7" />
+        /// Check connect and die at diagonal group <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260528_7" />
         /// </summary>
         public static Boolean VerifyLeapMove(Board tryBoard, Point p, Point r, Content c)
         {
             if (!tryBoard.GetClosestPoints(p, c, 2, 2).Any(n => n.Equals(r))) return false;
-            List<Point> mpoints = GetMidPointsOfLeapMove(p, r).Where(n => tryBoard[n] == c.Opposite()).ToList();
+            List<Point> midpoints = GetMidPointsOfLeapMove(p, r);
+            List<Point> mpoints = midpoints.Where(n => tryBoard[n] == c.Opposite()).ToList();
             if (mpoints.Count == 0) return false;
+
             //check point next to corner
             if (tryBoard.IsPointNextToCorner(p)) return false;
-            Group mgroup = tryBoard.GetGroupAt(mpoints.First());
             //check strong neighbour groups
+            Group mgroup = tryBoard.GetGroupAt(mpoints.First());
             if (mgroup.Points.Count == 1 && !WallHelper.StrongNeighbourGroups(tryBoard, tryBoard.GetGroupAt(p))) return false;
+            //check connect and die at diagonal group
+            if (mpoints.Count == 1)
+            {
+                Point q = mpoints.First();
+                List<Point> points = LinkHelper.GetMoveDiagonals(tryBoard, q);
+                Point k = points.Where(n => LinkHelper.PointsBetweenDiagonals(n, q).Any(s => tryBoard[s] == Content.Empty && midpoints.Contains(s))).FirstOrDefault();
+                if (!k.IsEmpty() && ImmovableHelper.CheckConnectAndDie(tryBoard, tryBoard.GetGroupAt(k)))
+                    return false;
+            }
             return true;
         }
 
@@ -2021,7 +2034,7 @@ namespace Go
 
             if (LinkHelper.GetDiagonalGroupsWithoutCut(tryBoard, group).Any(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
                 return true;
-
+            
             return false;
         }
 
