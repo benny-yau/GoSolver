@@ -145,7 +145,7 @@ namespace Go
                 tryMoves.Where(e => e.IsRedundantMove).ToList().ForEach(t => { redundantTryMoves.Add(t); tryMoves.Remove(t); });
 
             //sort game try moves
-            tryMoves = (from tryMove in tryMoves orderby tryMove.ConnectAndDieResolved descending, tryMove.ConnectAndDie descending, tryMove.Captured descending, tryMove.IncreasedKillerGroups descending, tryMove.AtariWithoutSuicide descending, tryMove.MoveGroupLiberties descending select tryMove).ToList();
+            tryMoves = (from tryMove in tryMoves orderby tryMove.ConnectAndDie descending, tryMove.ConnectAndDieResolved descending, tryMove.Captured descending, tryMove.IncreasedKillerGroups descending, tryMove.AtariWithoutSuicide descending, tryMove.MoveGroupLiberties descending select tryMove).ToList();
 
             //restore neural net move
             if (tryMoves.Count == 0) RedundantMoveHelper.RestoreNeuralNetMove(tryMoves, redundantTryMoves);
@@ -419,7 +419,7 @@ namespace Go
             }
 
             //sort game try moves
-            tryMoves = (from tryMove in tryMoves orderby tryMove.ConnectAndDieResolved descending, tryMove.ConnectAndDie descending, tryMove.Captured descending, tryMove.AtariWithoutSuicide descending, tryMove.MoveGroupLiberties descending select tryMove).ToList();
+            tryMoves = (from tryMove in tryMoves orderby tryMove.ConnectAndDie descending, tryMove.ConnectAndDieResolved descending, tryMove.Captured descending, tryMove.AtariWithoutSuicide descending, tryMove.MoveGroupLiberties descending select tryMove).ToList();
 
             //create random move
             CreateRandomMoveForKill(tryMoves, g);

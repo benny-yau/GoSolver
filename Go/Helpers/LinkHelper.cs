@@ -108,15 +108,12 @@ namespace Go
             List<Point> moveDiagonal = tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] == Content.Empty && !tryBoard.GetStoneNeighbours(n).Intersect(npoints).Any()).ToList();
             if (moveDiagonal.Count != 1) return false;
             Point d = moveDiagonal.First();
-            if (!tryBoard.GameInfo.IsMovablePoint[d.x, d.y]) return false;
+            if (!GameHelper.SetupMoveAvailable(tryBoard, d, c)) return false;
 
             //make block move
             Point blockMove = tryBoard.GetStoneNeighbours(d).First(n => !tryBoard.PointWithinMiddleArea(n));
             if (tryBoard.GetMoveLiberties().Contains(blockMove))
-            {
-                Boolean connectAndDie = ImmovableHelper.ConnectAndDieMove(tryBoard, blockMove, c.Opposite()).Item1;
-                return connectAndDie;
-            }
+                return ImmovableHelper.ConnectAndDieMove(tryBoard, blockMove, c.Opposite()).Item1;
             return false;
         }
 
@@ -128,11 +125,11 @@ namespace Go
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            List<Point> closestPoints = tryBoard.GetClosestPoints(move, c);
-            closestPoints = closestPoints.Except(tryBoard.GetStoneAndDiagonalNeighbours()).ToList();
+            List<Point> points = tryBoard.GetClosestPoints(move, c);
+            points = points.Except(tryBoard.GetStoneAndDiagonalNeighbours()).ToList();
             //validate leap move
             HashSet<Group> leapGroups = new HashSet<Group>();
-            foreach (Point p in closestPoints)
+            foreach (Point p in points)
             {
                 Group group = currentBoard.GetGroupAt(p);
                 if (leapGroups.Contains(group)) continue;
@@ -265,9 +262,10 @@ namespace Go
             //check any diagonal separated by opposite content
             foreach (Point p in diagonals)
             {
+                if (board[p] != c.Opposite()) continue;
                 if (!ImmovableHelper.IsImmovablePoint(board, p, c)) continue;
                 if (immediateLink) return true;
-                if (board[p] == c.Opposite() && GroupHelper.GetKillerGroupOfStrongNeighbourGroups(board, p, c) == null)
+                if (GroupHelper.GetKillerGroupOfStrongNeighbourGroups(board, p, c) == null)
                     continue;
                 return true;
             }

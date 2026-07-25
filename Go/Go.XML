@@ -1962,14 +1962,15 @@
             <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260111_8" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.CheckLeapMoveToTarget(Go.Board,System.Collections.Generic.HashSet{Go.Group})">
+        <member name="M:Go.RedundantMoveHelper.CheckLeapMoveToTarget(Go.GameTryMove,System.Collections.Generic.HashSet{Go.Group})">
             <summary>
             Check leap move to target.
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.VerifyLeapMove(Go.Board,Go.Point,Go.Point,Go.Content)">
+        <member name="M:Go.RedundantMoveHelper.VerifyLeapMove(Go.GameTryMove,Go.Point,Go.Point,Go.Content)">
             <summary>
             Verify leap move.
+            Check atari resolved <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20250311_8" />
             Check point next to corner <see cref="!:UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_TianLongTu_Q14992" />
             Check strong neighbour groups <see cref="!:UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_GuanZiPu_B7" />
             Check connect and die at diagonal group <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260528_7" />
@@ -2006,6 +2007,7 @@
             Check opponent at diagonal neighbour <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_A136" />
             Check middle area <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_A40" />
             Check one empty space left <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WindAndTime_Q29264" />
+            Check opponent eye for survival <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_2026725_8" />
             Check opponent at stone and diagonal neighbour <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" />
             Check connect and die <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_B31" />
             </summary>

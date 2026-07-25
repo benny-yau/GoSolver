@@ -1947,7 +1947,7 @@ namespace Go
             if (KoHelper.IsKoFight(tryBoard)) return false;
 
             //check leap move to target
-            if (CheckLeapMoveToTarget(tryBoard))
+            if (CheckLeapMoveToTarget(tryMove))
                 return false;
 
             //check opponent groups
@@ -1961,8 +1961,9 @@ namespace Go
         /// <summary>
         /// Check leap move to target.
         /// </summary>
-        public static Boolean CheckLeapMoveToTarget(Board tryBoard, HashSet<Group> groups = null)
+        public static Boolean CheckLeapMoveToTarget(GameTryMove tryMove, HashSet<Group> groups = null)
         {
+            Board tryBoard = tryMove.TryGame.Board;
             if (groups == null) groups = new HashSet<Group>() { tryBoard.MoveGroup };
             Group group = groups.Last();
             Content c = group.Content;
@@ -1982,12 +1983,12 @@ namespace Go
                     if (groups.Contains(rgroup)) continue;
 
                     //verify leap move
-                    if (VerifyLeapMove(tryBoard, p, r, c))
+                    if (VerifyLeapMove(tryMove, p, r, c))
                         continue;
 
                     //recursive check leap move
                     groups.Add(rgroup);
-                    if (CheckLeapMoveToTarget(tryBoard, groups))
+                    if (CheckLeapMoveToTarget(tryMove, groups))
                         return true;
                 }
             }
@@ -1996,17 +1997,21 @@ namespace Go
 
         /// <summary>
         /// Verify leap move.
+        /// Check atari resolved <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20250311_8" />
         /// Check point next to corner <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_TianLongTu_Q14992" />
         /// Check strong neighbour groups <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_GuanZiPu_B7" />
         /// Check connect and die at diagonal group <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260528_7" />
         /// </summary>
-        public static Boolean VerifyLeapMove(Board tryBoard, Point p, Point r, Content c)
+        public static Boolean VerifyLeapMove(GameTryMove tryMove, Point p, Point r, Content c)
         {
+            Board tryBoard = tryMove.TryGame.Board;
             if (!tryBoard.GetClosestPoints(p, c, 2, 2).Any(n => n.Equals(r))) return false;
             List<Point> midpoints = GetMidPointsOfLeapMove(p, r);
             List<Point> mpoints = midpoints.Where(n => tryBoard[n] == c.Opposite()).ToList();
             if (mpoints.Count == 0) return false;
 
+            //check atari resolved
+            if (tryMove.AtariResolved) return false;
             //check point next to corner
             if (tryBoard.IsPointNextToCorner(p)) return false;
             //check strong neighbour groups
@@ -2031,10 +2036,8 @@ namespace Go
         {
             if (WallHelper.IsNonKillableGroup(tryBoard, group))
                 return true;
-
             if (LinkHelper.GetDiagonalGroupsWithoutCut(tryBoard, group).Any(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
                 return true;
-            
             return false;
         }
 
@@ -2049,7 +2052,11 @@ namespace Go
             if (isLeapOnX)
             {
                 if (p.y == q.y)
+                {
                     points.Add(new Point(Math.Min(p.x, q.x) + 1, p.y));
+                    if (p.y == 0) points.Add(new Point(Math.Min(p.x, q.x) + 1, p.y + 1));
+                    if (p.y == 18) points.Add(new Point(Math.Min(p.x, q.x) + 1, p.y - 1));
+                }
                 else
                 {
                     points.Add(new Point(Math.Min(p.x, q.x) + 1, p.y));
@@ -2059,7 +2066,11 @@ namespace Go
             else if (isLeapOnY)
             {
                 if (p.x == q.x)
+                {
                     points.Add(new Point(p.x, Math.Min(p.y, q.y) + 1));
+                    if (p.x == 0) points.Add(new Point(p.x + 1, Math.Min(p.y, q.y) + 1));
+                    if (p.x == 18) points.Add(new Point(p.x - 1, Math.Min(p.y, q.y) + 1));
+                }
                 else
                 {
                     points.Add(new Point(p.x, Math.Min(p.y, q.y) + 1));
@@ -2120,6 +2131,7 @@ namespace Go
         /// Check opponent at diagonal neighbour <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_A136" />
         /// Check middle area <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_A40" />
         /// Check one empty space left <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WindAndTime_Q29264" />
+        /// Check opponent eye for survival <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_2026725_8" />
         /// Check opponent at stone and diagonal neighbour <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" />
         /// Check connect and die <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_B31" />
         /// </summary>
@@ -2157,6 +2169,9 @@ namespace Go
             }
             //check one empty space left
             if (KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
+                return false;
+            //check opponent eye for survival
+            if (tryBoard.GetStoneNeighbours().Count(n => !WallHelper.NoEyeForSurvival(currentBoard, n, c.Opposite())) >= 2)
                 return false;
             //check opponent at stone and diagonal neighbour
             List<Point> opponentPoints = tryBoard.OpponentAtStoneAndDiagonalNeighbour();
