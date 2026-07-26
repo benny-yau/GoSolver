@@ -87,6 +87,13 @@ namespace Go
             return false;
         }
 
+        public static Boolean PossibleLinkForGroups(GameTryMove tryMove)
+        {
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            return PossibleLinkForGroups(tryBoard, currentBoard);
+        }
+
         /// <summary>
         /// Check for possible big leap.
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_XuanXuanQiJing_Weiqi101_18497_5" />

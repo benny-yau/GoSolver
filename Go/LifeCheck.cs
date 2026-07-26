@@ -46,7 +46,7 @@ namespace Go
                     eyes.Add(group);
                 //get tiger mouths of eye groups
                 GetTigerMouthsOfEyeGroups(board, group, tigerMouthList);
-                if (eyes.Count + killerGroups.Count - 1 - i < 2)
+                if (eyes.Count + killerGroups.Count - i - 1 < 2)
                     break;
             }
             if (eyes.Count < 2)
@@ -142,8 +142,7 @@ namespace Go
         private static void GetTigerMouthsOfEyeGroups(Board board, Group eye, List<Link<Point>> tigerMouthList)
         {
             Content c = eye.Content;
-            List<Link<Point>> diagonalPoints = LinkHelper.GetGroupDiagonals(board, eye);
-            foreach (Link<Point> p in diagonalPoints)
+            foreach (Link<Point> p in LinkHelper.GetGroupDiagonals(board, eye))
             {
                 if (ImmovableHelper.FindTigerMouthForLink(board, p.Move, c.Opposite()))
                     tigerMouthList.Add(p);
@@ -156,10 +155,9 @@ namespace Go
         public static List<Group> GetTargets(Board board)
         {
             Content c = Content.Unknown;
-            //get target from game info
             List<Point> target = board.GameInfo.targetPoints;
             c = GameHelper.GetContentForSurviveOrKill(board.GameInfo, SurviveOrKill.Survive);
-            return target.Where(t => board[t] == c).Select(t => board.GetGroupAt(t)).Distinct().ToList(); //get the target that is still alive
+            return target.Where(t => board[t] == c).Select(t => board.GetGroupAt(t)).Distinct().ToList();
         }
 
         /// <summary>

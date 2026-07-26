@@ -95,12 +95,12 @@ namespace Go
         }
 
         /// <summary>
-        /// Suicidal killer formations.
+        /// Essential suicidal killer formation.
         /// Check suicide at eye point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B19" />
         /// Check if real eye found in neighbour groups <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario5dan27" />
         /// Check covered eye at non-killable group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
         /// </summary>
-        public static Boolean SuicidalKillerFormations(GameTryMove tryMove)
+        public static Boolean EssentialSuicidalKillerFormation(GameTryMove tryMove)
         {
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
@@ -115,7 +115,7 @@ namespace Go
                 return true;
 
             //check suicide at eye point
-            if (tryBoard.MoveGroupLiberties == 2 && tryBoard.GetStoneNeighbours().All(n => tryBoard[n] == c) && LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).All(n => n.Liberties.Count > 1))
+            if (tryBoard.MoveGroupLiberties == 2 && EyeHelper.FindEye(currentBoard, move, c) && LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).All(n => n.Liberties.Count > 1))
                 return false;
 
             //check if neighbour group is non-killable

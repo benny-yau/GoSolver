@@ -43,20 +43,19 @@ namespace Go
                     atariResolved = Board.ResolveAtari(CurrentGame.Board, TryGame.Board);
                 return atariResolved.Value;
             }
-            set
-            {
-                atariResolved = value;
-            }
         }
 
         /// <summary>
         /// Atari without suicide.
         /// </summary>
+        private bool? atariWithoutSuicide = null;
         public bool AtariWithoutSuicide
         {
             get
             {
-                return AtariHelper.IsAtariWithoutSuicide(TryGame.Board);
+                if (atariWithoutSuicide == null)
+                    atariWithoutSuicide = AtariHelper.IsAtariWithoutSuicide(TryGame.Board);
+                return atariWithoutSuicide.Value;
             }
         }
 
@@ -158,7 +157,7 @@ namespace Go
                 if (connectAndDie == null)
                 {
                     Board b = TryGame.Board;
-                    this.connectAndDie = b.GetGroupsFromStoneNeighbours().Any(n => ImmovableHelper.UnescapableGroup(b, n).Item1); 
+                    this.connectAndDie = b.GetGroupsFromStoneNeighbours().Any(n => ImmovableHelper.UnescapableGroup(b, n).Item1);
                 }
                 return connectAndDie.Value;
             }
@@ -237,11 +236,31 @@ namespace Go
         }
 
         /// <summary>
-        /// Link for groups.
+        /// Essential suicidal killer formation.
         /// </summary>
-        public Boolean LinkForGroups()
+        private bool? essentialSuicidalKillerFormation = null;
+        public bool EssentialSuicidalKillerFormation
         {
-            return LinkHelper.PossibleLinkForGroups(TryGame.Board, CurrentGame.Board);
+            get
+            {
+                if (essentialSuicidalKillerFormation == null)
+                    this.essentialSuicidalKillerFormation = KillerFormationHelper.EssentialSuicidalKillerFormation(this);
+                return essentialSuicidalKillerFormation.Value;
+            }
+        }
+
+        /// <summary>
+        /// Possible link for groups.
+        /// </summary>
+        private bool? possibleLinkForGroups = null;
+        public Boolean PossibleLinkForGroups
+        {
+            get
+            {
+                if (possibleLinkForGroups == null)
+                    this.possibleLinkForGroups = LinkHelper.PossibleLinkForGroups(this);
+                return possibleLinkForGroups.Value;
+            }
         }
 
         public override string ToString()

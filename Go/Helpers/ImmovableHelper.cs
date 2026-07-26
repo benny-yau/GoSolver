@@ -23,12 +23,7 @@ namespace Go
                     return libertyPoint;
                 Group group = board.GetGroupAt(libertyPoint);
                 if (group.Liberties.Count == 2)
-                {
-                    List<Group> targetGroups = AtariHelper.AtariByGroup(board, group);
-                    if (targetGroups.Any())
-                        return targetGroups.First().Liberties.First();
                     return group.Liberties.First(n => !n.Equals(p));
-                }
             }
             else if (content == c.Opposite())
             {
