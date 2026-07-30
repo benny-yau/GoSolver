@@ -186,11 +186,14 @@ namespace Go
         /// <summary>
         /// Increased killer groups.
         /// </summary>
+        private bool? increasedKillerGroups = null;
         public bool IncreasedKillerGroups
         {
             get
             {
-                return GroupHelper.IncreasedKillerGroups(TryGame.Board, CurrentGame.Board);
+                if (increasedKillerGroups == null)
+                    increasedKillerGroups = GroupHelper.IncreasedKillerGroups(TryGame.Board, CurrentGame.Board);
+                return increasedKillerGroups.Value;
             }
         }
 

@@ -153,16 +153,24 @@ namespace Go
         {
             foreach (KeyValuePair<Point, Direction> direction in DirectionHelper.GetDirectionsForLeapMove(board))
             {
-                if (direction.Value == Direction.Up && !opponentPoints.Where(n => n.y < direction.Key.y).Select(n => board.GetGroupAt(n)).Any(n => n.Points.Count >= 2 && n.Liberties.Count <= n.Neighbours.Count * 0.5))
+                if (direction.Value == Direction.Up && !opponentPoints.Where(n => n.y < direction.Key.y).Select(n => board.GetGroupAt(n)).Any(n => CheckOpponentGroup(board, n)))
                     return false;
-                if (direction.Value == Direction.Down && !opponentPoints.Where(n => n.y > direction.Key.y).Select(n => board.GetGroupAt(n)).Any(n => n.Points.Count >= 2 && n.Liberties.Count <= n.Neighbours.Count * 0.5))
+                if (direction.Value == Direction.Down && !opponentPoints.Where(n => n.y > direction.Key.y).Select(n => board.GetGroupAt(n)).Any(n => CheckOpponentGroup(board, n)))
                     return false;
-                if (direction.Value == Direction.Left && !opponentPoints.Where(n => n.x < direction.Key.x).Select(n => board.GetGroupAt(n)).Any(n => n.Points.Count >= 2 && n.Liberties.Count <= n.Neighbours.Count * 0.5))
+                if (direction.Value == Direction.Left && !opponentPoints.Where(n => n.x < direction.Key.x).Select(n => board.GetGroupAt(n)).Any(n => CheckOpponentGroup(board, n)))
                     return false;
-                if (direction.Value == Direction.Right && !opponentPoints.Where(n => n.x > direction.Key.x).Select(n => board.GetGroupAt(n)).Any(n => n.Points.Count >= 2 && n.Liberties.Count <= n.Neighbours.Count * 0.5))
+                if (direction.Value == Direction.Right && !opponentPoints.Where(n => n.x > direction.Key.x).Select(n => board.GetGroupAt(n)).Any(n => CheckOpponentGroup(board, n)))
                     return false;
             }
             return true;
+        }
+
+        /// <summary>
+        /// Check opponent group.
+        /// </summary>
+        private static Boolean CheckOpponentGroup(Board board, Group group)
+        {
+            return (group.Points.Count >= 2 && group.Liberties.Count > 1 && group.Liberties.Count <= group.Neighbours.Count * 0.5);
         }
 
     }

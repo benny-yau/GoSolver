@@ -132,11 +132,13 @@ namespace Go
                 List<GameTryMove> tryMoves = GameHelper.GetTryMovesForGame(this.Game);
 
                 List<State> possibleStates = new List<State>();
-                foreach (GameTryMove tryMove in tryMoves)
+                for (int i = 0; i <= tryMoves.Count - 1; i++)
                 {
+                    GameTryMove tryMove = tryMoves[i];
                     State state = new State(tryMove.TryGame);
                     state.SurviveOrKill = survivalOrKill;
                     state.IsKoBlocked = (tryMove.MakeMoveResult == MakeMoveResult.KoBlocked);
+                    state.AddScore((tryMoves.Count - i) * 3);
                     possibleStates.Add(state);
                 }
                 return possibleStates;

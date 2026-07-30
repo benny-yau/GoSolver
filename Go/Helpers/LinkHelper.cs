@@ -531,8 +531,9 @@ namespace Go
         /// <summary>
         /// Get diagonal groups without cut.
         /// </summary>
-        public static IEnumerable<Group> GetDiagonalGroupsWithoutCut(Board board, Group group)
+        public static IEnumerable<Group> GetDiagonalGroupsWithoutCut(Board board, Group group = null)
         {
+            if (group == null) group = board.MoveGroup;
             foreach (Link<Point> q in LinkHelper.GetGroupLinkedDiagonals(board, group))
             {
                 if (LinkHelper.FindLibertyBetweenDiagonals(board, q.Move, (Point)q.CheckMove).Any())
@@ -543,8 +544,9 @@ namespace Go
         /// <summary>
         /// Get diagonal groups with cut.
         /// </summary>
-        public static IEnumerable<Group> GetDiagonalGroupsWithCut(Board board, Group group)
+        public static IEnumerable<Group> GetDiagonalGroupsWithCut(Board board, Group group = null)
         {
+            if (group == null) group = board.MoveGroup;
             foreach (Link<Point> q in LinkHelper.GetGroupLinkedDiagonals(board, group))
             {
                 if (!LinkHelper.FindLibertyBetweenDiagonals(board, q.Move, (Point)q.CheckMove).Any())
@@ -768,7 +770,7 @@ namespace Go
                 if (!ImmovableHelper.FindTigerMouthForLink(b, p, c)) continue;
                 if (func != null && !func(p)) continue;
                 Point q = b.GetStoneNeighbours(p).First(n => b[n] != c);
-                if (!KoHelper.MakeKoFight(b, q, c)) continue;
+                if (!KoHelper.MakeKoFight(b, q, c).Item1) continue;
                 return true;
             }
             return false;
@@ -792,7 +794,7 @@ namespace Go
             (_, Board b2) = ImmovableHelper.IsSuicidalMove(q, c.Opposite(), b, true);
             if (b2 == null) return false;
             //make ko move
-            if (!KoHelper.MakeKoFight(b2, tigerMouth, c.Opposite()))
+            if (!KoHelper.MakeKoFight(b2, tigerMouth, c.Opposite()).Item1)
                 return false;
             //check for another ko
             if (CheckForKoBreak(b2, s => !s.Equals(p)))

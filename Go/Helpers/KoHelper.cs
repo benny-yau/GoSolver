@@ -80,28 +80,27 @@ namespace Go
         /// <summary>
         /// Make ko fight.
         /// </summary>
-        public static Boolean MakeKoFight(Board tryBoard, Point p, Content c, Boolean checkConnectAndDie = true)
+        public static (Boolean, Board) MakeKoFight(Board tryBoard, Point p, Content c, Boolean checkConnectAndDie = true)
         {
-            if (tryBoard[p] != Content.Empty) return false;
+            if (tryBoard[p] != Content.Empty) return (false, null);
             Board board = tryBoard.MakeMoveOnNewBoard(p, c, true);
-            if (board == null) return false;
-            if (!IsForwardOrReverseKoFight(board)) return false;
+            if (board == null) return (false, null);
+            if (!IsForwardOrReverseKoFight(board)) return (false, null);
             if (checkConnectAndDie && ImmovableHelper.CheckConnectAndDie(board, board.MoveGroup, false))
-                return false;
-            return true;
+                return (false, null);
+            return (true, board);
         }
 
         /// <summary>
         /// Make ko fight from eye point.
         /// </summary>
-        public static Boolean MakeKoFightFromEyePoint(Board board, Point eye, Content c, Boolean checkConnectAndDie = true)
+        public static (Boolean, Board) MakeKoFightFromEyePoint(Board board, Point eye, Content c, Boolean checkConnectAndDie = true)
         {
             List<Point> nstones = board.GetStoneNeighbours(eye);
-            if (nstones.Count(n => board[n] == c) != nstones.Count - 1) return false;
+            if (nstones.Count(n => board[n] == c) != nstones.Count - 1) return (false, null);
             List<Point> eyeNeighbour = nstones.Where(n => board[n] == Content.Empty).ToList();
-            if (eyeNeighbour.Count == 1 && KoHelper.MakeKoFight(board, eyeNeighbour.First(), c, checkConnectAndDie))
-                return true;
-            return false;
+            if (eyeNeighbour.Count != 1) return (false, null);
+            return KoHelper.MakeKoFight(board, eyeNeighbour.First(), c, checkConnectAndDie);
         }
 
         /// <summary>

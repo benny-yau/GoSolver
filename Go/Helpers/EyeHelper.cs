@@ -88,6 +88,7 @@ namespace Go
         /// </summary>
         public static Boolean FindNonSemiSolidEye(Board board, Point eye, Content c)
         {
+            if (!board.PointWithinMiddleArea(eye)) return false;
             return EyeHelper.FindUncoveredEye(board, eye, c) && !EyeHelper.FindSemiSolidEye(board, eye, c);
         }
 

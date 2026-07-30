@@ -1274,6 +1274,7 @@ namespace Go
             List<Group> groups = tryBoard.GetGroupsFromStoneNeighbours();
             if (groups.Count != 1 || groups.First().Points.Count < 4) return false;
             Group targetGroup = groups.First();
+            if (LinkHelper.GetDiagonalGroupsWithCut(tryBoard, targetGroup).Any()) return false;
             //check kill formation
             if (!KillerFormationHelper.TryKillFormation(currentBoard, c.Opposite(), new List<Point>() { move }).Item1)
                 return false;

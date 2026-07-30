@@ -131,7 +131,7 @@ namespace Go
             }
 
             //check for reverse ko fight 
-            if (KoHelper.MakeKoFightFromEyePoint(board, liberty, c))
+            if (KoHelper.MakeKoFightFromEyePoint(board, liberty, c).Item1)
                 return true;
             return false;
         }
