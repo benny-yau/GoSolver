@@ -30,7 +30,6 @@ namespace Go
             {
                 State state = new State(g);
                 rootNode = new Node(state);
-                rootNode.State.Depth = g.GameInfo.SearchDepth;
                 state.SurviveOrKill = GameHelper.KillOrSurvivalForNextMove(g.Board);
             }
             MonteCarloTreeSearch mcts = new MonteCarloTreeSearch(rootNode, mctsDepth);

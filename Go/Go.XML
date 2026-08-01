@@ -952,6 +952,7 @@
             Suicide move valid with one empty space, surrounded by opponent stones.
             Move group with three points <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario1kyu29" />
             Move group binding <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B19_2" />
+            Check covered <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221025_2" />
             </summary>
         </member>
         <!-- Badly formed XML comment ignored for member "M:Go.KillerFormationHelper.IsLinkToExternalGroup(Go.Board,Go.Board,Go.Board)" -->
@@ -1184,8 +1185,7 @@
             <see cref="!:UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
             <see cref="!:UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16859_2" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2413_2" /> 
-            Check point next to corner <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" /> 
-            Check group diagonals <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30302_2" /> 
+            Check group next to corner <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" /> 
             </summary>
         </member>
         <member name="M:Go.KillerFormationHelper.CornerKillFormation(Go.Board,System.Nullable{Go.Point},Go.Content)">
@@ -2304,6 +2304,7 @@
             Check diagonal group with cut <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q16859" />
             Check covered eye <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_8" />
             Check connect and die <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A85" />
+            Check opponent break kill formation <see cref="!:UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi_2" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckRedundantKoMove(Go.Board,Go.Board)">
@@ -2783,11 +2784,6 @@
             <see cref="!:UnitTestProject.PerformanceBenchmarkTest.PerformanceBenchmarkTest_Scenario3dan17" />
             </summary>
         </member>
-        <member name="M:Go.MonteCarloTreeSearch.NodeToExpand(Go.Node)">
-            <summary>
-            Node to expand.
-            </summary>
-        </member>
         <member name="M:Go.MonteCarloTreeSearch.RandomChildNode(Go.Node)">
             <summary>
             Random child node.
@@ -2808,15 +2804,15 @@
             Verify with exhaustive search.
             </summary>
         </member>
-        <member name="M:Go.MonteCarloTreeSearch.PrunePromisingNode(Go.Node,Go.Node,System.Boolean,System.Boolean)">
+        <member name="M:Go.MonteCarloTreeSearch.PrunePromisingNode(Go.Node,Go.Node,System.Boolean)">
             <summary>
             Prune promising node, after verifying with exhaustive search. If result is a win then check if parent node is correct by trying to prune all child nodes.
             After all nodes are pruned, move up the level by recursion to check if current path is correct and the answer node will be the first node of the tree.
             </summary>
         </member>
-        <member name="M:Go.MonteCarloTreeSearch.CheckAllChildNodesPruned(Go.Node,System.Boolean)">
+        <member name="M:Go.MonteCarloTreeSearch.CheckAllChildNodesPruned(Go.Node)">
             <summary>
-            Check all child nodes pruned. Check if answer found else continue to prune parent of current node.
+            Check all child nodes pruned.
             </summary>
         </member>
         <member name="M:Go.MonteCarloTreeSearch.AnswerFound(Go.Node)">
@@ -2836,8 +2832,7 @@
         </member>
         <member name="M:Go.MonteCarloTreeSearch.ExpandNode(Go.Node)">
             <summary>
-            Expansion phase - expand all possible states.
-            Check confirm alive if game ended with objective reached already.
+            Expansion phase - expand all possible states and check confirm alive.
             </summary>
         </member>
         <member name="M:Go.MonteCarloTreeSearch.BackPropagation(Go.Node,System.Boolean,System.Int32)">
@@ -2862,14 +2857,12 @@
         </member>
         <member name="M:Go.MonteCarloTreeSearch.MonteCarloMakeKillMove(System.Int32,Go.Game)">
             <summary>
-            Monte carlo make kill move. Select random move from all possible moves.
-            Include ko moves and set result as KoAlive if ko wins.
+            Monte carlo make kill move. Select random move from all possible moves. Include ko moves.
             </summary>
         </member>
         <member name="M:Go.MonteCarloTreeSearch.MonteCarloMakeSurvivalMove(System.Int32,Go.Game)">
             <summary>
-            Monte carlo make survival move. Select random move from all possible moves.
-            Include ko moves and set result as KoAlive if ko wins.
+            Monte carlo make survival move. Select random move from all possible moves. Include ko moves.
             </summary>
         </member>
         <member name="M:Go.MonteCarloTreeSearch.CheckTimeTaken(System.Diagnostics.Stopwatch)">

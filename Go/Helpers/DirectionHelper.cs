@@ -170,7 +170,7 @@ namespace Go
         /// </summary>
         private static Boolean CheckOpponentGroup(Board board, Group group)
         {
-            return (group.Points.Count >= 2 && group.Liberties.Count > 1 && group.Liberties.Count <= group.Neighbours.Count * 0.5);
+            return group.Points.Count >= 2 && group.Liberties.Count > 1 && group.Liberties.Count <= group.Neighbours.Count * 0.5 && !board.GetNeighbourGroups(group).Any(n => !n.Equals(board.MoveGroup) && ImmovableHelper.IsSuicidalWithoutKo(board, n));
         }
 
     }

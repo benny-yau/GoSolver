@@ -31,7 +31,6 @@ namespace Go
         {
             Game g = new Game(node.State.Game);
             this.State = new State(g);
-            this.State.Depth = node.State.Depth;
             this.State.ConfirmAlive = node.State.ConfirmAlive;
             this.State.WinOrLose = node.State.WinOrLose;
             this.State.SurviveOrKill = node.State.SurviveOrKill;
@@ -137,9 +136,10 @@ namespace Go
         {
             String rc = "Score: " + this.State.WinScore;
             rc += " VisitCount: " + this.State.VisitCount;
+            rc += " WinScore: " + this.State.WinScore;
             rc += " UCT:" + UCT.UctValue(this);
             rc += " Move:" + GetLastMoves();
-            rc += " Depth:" + this.State.Depth;
+            rc += " Depth: " + this.State.Depth;
             return rc;
         }
 

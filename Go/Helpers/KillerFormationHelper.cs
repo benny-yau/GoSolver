@@ -388,13 +388,22 @@ namespace Go
         /// Suicide move valid with one empty space, surrounded by opponent stones.
         /// Move group with three points <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario1kyu29" />
         /// Move group binding <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B19_2" />
+        /// Check covered <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20221025_2" />
         /// </summary>
         public static Boolean SuicideMoveValidWithOneEmptySpaceLeft(Board tryBoard)
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.GetMoveLiberties().Any(n => tryBoard.GetStoneNeighbours(n).Where(q => !q.Equals(move)).All(q => tryBoard[q] == c.Opposite())))
+
+            foreach (Point p in tryBoard.GetMoveLiberties())
+            {
+                Boolean rc = tryBoard.GetStoneNeighbours(p).Where(q => !q.Equals(move)).All(q => tryBoard[q] == c.Opposite());
+                if (!rc) continue;
+                //check covered
+                if (tryBoard.MoveGroup.Points.Count == 1 && EyeHelper.IsCovered(tryBoard, p, c.Opposite()) && !tryBoard.OneLibertyGroup(p, c).Any())
+                    continue;
                 return true;
+            }
             return false;
         }
 
@@ -771,22 +780,20 @@ namespace Go
         public static Boolean TwoByTwoSuicidalFormation(Board tryBoard, Group moveGroup)
         {
             Content c = moveGroup.Content;
-            if (TwoByTwoFormation(tryBoard, moveGroup.Points))
+            if (!TwoByTwoFormation(tryBoard, moveGroup.Points)) return false;
+            //check for atari after capture
+            Board captureBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard, moveGroup);
+            if (captureBoard == null) return false;
+            foreach (Point p in moveGroup.Points)
             {
-                //check for atari after capture
-                Board captureBoard = ImmovableHelper.CaptureSuicideGroup(tryBoard, moveGroup);
-                if (captureBoard == null) return false;
-                foreach (Point p in moveGroup.Points)
-                {
-                    (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c, captureBoard);
-                    if (isSuicidal) continue;
-                    if (b != null && b.AtariTargets.Any(t => t.Points.Count > 1))
-                        return true;
-                }
-                //check end point covered
-                if (CheckAnyEndPointCovered(tryBoard, moveGroup))
+                (Boolean isSuicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c, captureBoard);
+                if (isSuicidal) continue;
+                if (b != null && b.AtariTargets.Any(t => t.Points.Count > 1))
                     return true;
             }
+            //check end point covered
+            if (CheckAnyEndPointCovered(tryBoard, moveGroup))
+                return true;
             return false;
         }
 
@@ -857,16 +864,14 @@ namespace Go
         /// </summary>
         public static Boolean CrowbarEdgeFormation(Board tryBoard, Group moveGroup)
         {
-            if (CrowbarFormation(tryBoard, moveGroup))
-            {
-                if (tryBoard.GetNeighbourGroups(moveGroup).Count <= 1) return false;
-                //check end point covered
-                if (CheckAnyEndPointCovered(tryBoard, moveGroup))
-                    return true;
-                //edge formation
-                if (moveGroup.Points.Count(p => !tryBoard.PointWithinMiddleArea(p)) == 3 && LinkHelper.GetGroupLinkedDiagonals(tryBoard, moveGroup).Any())
-                    return true;
-            }
+            if (!CrowbarFormation(tryBoard, moveGroup)) return false;
+            if (!LinkHelper.GetDiagonalGroups(tryBoard).Any()) return false;
+            //check end point covered
+            if (CheckAnyEndPointCovered(tryBoard, moveGroup))
+                return true;
+            //edge formation
+            if (moveGroup.Points.Count(p => !tryBoard.PointWithinMiddleArea(p)) == 3)
+                return true;
             return false;
         }
 
@@ -1264,8 +1269,7 @@ namespace Go
         /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16859_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2413_2" /> 
-        /// Check point next to corner <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" /> 
-        /// Check group diagonals <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30302_2" /> 
+        /// Check group next to corner <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" /> 
         /// </summary>
         public static Boolean OpponentBreakKillFormation(Board tryBoard, Board currentBoard)
         {
@@ -1274,24 +1278,11 @@ namespace Go
             List<Group> groups = tryBoard.GetGroupsFromStoneNeighbours();
             if (groups.Count != 1 || groups.First().Points.Count < 4) return false;
             Group targetGroup = groups.First();
-            if (LinkHelper.GetDiagonalGroupsWithCut(tryBoard, targetGroup).Any()) return false;
+            if (LinkHelper.GetDiagonalGroups(tryBoard, targetGroup).Any()) return false;
             //check kill formation
-            if (!KillerFormationHelper.TryKillFormation(currentBoard, c.Opposite(), new List<Point>() { move }).Item1)
-                return false;
-            if (KillerFormationHelper.IsKillerFormationFromFunc(currentBoard, targetGroup))
-            {
-                //check point next to corner
-                if (tryBoard.IsPointNextToCorner() && targetGroup.Liberties.Any(n => tryBoard.IsPointNextToCorner(n)))
-                    return true;
-                return false;
-            }
-            //check group diagonals
-            foreach (Link<Point> p in LinkHelper.GetGroupLinkedDiagonals(tryBoard, targetGroup))
-            {
-                if (LinkHelper.FindLibertyBetweenDiagonals(tryBoard, p.Move, (Point)p.CheckMove).Any(n => !EyeHelper.FindCoveredEye(tryBoard, n, c.Opposite())))
-                    return false;
-            }
-            return true;
+            if (KillerFormationHelper.TryKillFormation(currentBoard, c.Opposite(), new List<Point>() { move }).Item1)
+                return true;
+            return false;
         }
 
         /// <summary>

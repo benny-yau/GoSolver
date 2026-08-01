@@ -1069,7 +1069,7 @@ namespace Go
                 //check diagonal group capture
                 Group group = currentBoard.GetGroupAt(diagonals.First());
                 if (group.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(currentBoard, group)) return false;
-                if (group.Liberties.Count == 1)
+                if (group.Liberties.Count == 1 && group.Points.Count == 1 && EyeHelper.IsCovered(captureBoard, group.Points.First(), c.Opposite()))
                 {
                     if (CheckSuicideKoMoveAtCorner(tryBoard))
                         return false;
@@ -3390,6 +3390,7 @@ namespace Go
         /// Check diagonal group with cut <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_TianLongTu_Q16859" />
         /// Check covered eye <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_8" />
         /// Check connect and die <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A85" />
+        /// Check opponent break kill formation <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi_2" />
         /// </summary>
         public static Boolean CheckPreKoMove(GameTryMove tryMove)
         {
@@ -3404,7 +3405,11 @@ namespace Go
             if (LinkHelper.GetDiagonalGroupsWithCut(tryBoard).Any())
                 return true;
             //check covered eye
-            if (EyeHelper.FindCoveredEye(tryBoard, group.Liberties.First(), c.Opposite()))
+            Point p = group.Liberties.First();
+            if (EyeHelper.FindCoveredEye(currentBoard, p, c.Opposite()) && !KoHelper.IsKoFight(tryBoard, p, c.Opposite()).Item1)
+                return true;
+            //check opponent break kill formation
+            if (KillerFormationHelper.OpponentBreakKillFormation(tryBoard, currentBoard))
                 return true;
             //check connect and die
             Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard);

@@ -145,12 +145,12 @@ namespace Go
             }
         }
 
-        internal void IncrementVisit(int multiplier = 1)
+        public void IncrementVisit(int multiplier = 1)
         {
             this.visitCount += multiplier;
         }
 
-        internal void AddScore(double score)
+        public void AddScore(double score)
         {
             if (this.winScore != int.MinValue)
                 this.winScore += score;

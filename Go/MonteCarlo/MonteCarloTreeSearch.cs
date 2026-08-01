@@ -10,7 +10,6 @@ namespace Go
     public class MonteCarloTreeSearch
     {
         public Tree tree = new Tree();
-        public const int winScore = 1;
         public int mctsDepth = 0;
         public int maxIterations = Game.MapMovesOrSearchAnswer ? Int32.MaxValue : 6000;
         public long? elapsedTime;
@@ -93,7 +92,7 @@ namespace Go
                 Node promisingNode = SelectPromisingNode(tree.Root);
 
                 //ensure visit count has reached min requirement
-                if (NodeToExpand(promisingNode) && (promisingNode == tree.Root || promisingNode.State.VisitCount >= VisitCountMinReq))
+                if (!promisingNode.Expanded && (promisingNode == tree.Root || promisingNode.State.VisitCount >= VisitCountMinReq))
                 {
                     //expand possible states
                     ExpandNode(promisingNode);
@@ -101,7 +100,7 @@ namespace Go
                     promisingNode = RandomChildNode(promisingNode);
                 }
                 //all nodes pruned
-                if (promisingNode.ChildArray.Count == 0 && !NodeToExpand(promisingNode))
+                if (promisingNode.ChildArray.Count == 0 && promisingNode.Expanded)
                 {
                     if (promisingNode.CurrentDepth == this.tree.Root.CurrentDepth) break;
                     if (CheckAllChildNodesPruned(promisingNode)) break;
@@ -122,14 +121,6 @@ namespace Go
                     break;
             } while (count <= maxIterations);
             CheckTimeTaken(watch);
-        }
-
-        /// <summary>
-        /// Node to expand.
-        /// </summary>
-        private Boolean NodeToExpand(Node node)
-        {
-            return !node.Expanded && (node.State.Depth > 0 || node.State.SurviveOrKill == SurviveOrKill.Survive);
         }
 
         /// <summary>
@@ -198,7 +189,7 @@ namespace Go
         /// Prune promising node, after verifying with exhaustive search. If result is a win then check if parent node is correct by trying to prune all child nodes.
         /// After all nodes are pruned, move up the level by recursion to check if current path is correct and the answer node will be the first node of the tree.
         /// </summary>
-        private Boolean PrunePromisingNode(Node prunedNode, Node verifyNode, Boolean winResult, Boolean recursion = false)
+        private Boolean PrunePromisingNode(Node prunedNode, Node verifyNode, Boolean winResult)
         {
             Node parentNode = prunedNode.Parent;
             if (prunedNode == null || parentNode == null) return false;
@@ -209,7 +200,7 @@ namespace Go
             if (prunedNode.CurrentDepth == this.tree.Root.CurrentDepth + 1)
             {
                 //return after hitting the top of tree
-                DebugHelper.WriteLine("Hit top at level: " + prunedNode.CurrentDepth + " WinResult: " + winResult + " Recursion: " + recursion, mctsDepth);
+                DebugHelper.WriteLine("Hit top at level: " + prunedNode.CurrentDepth, mctsDepth);
                 return true;
             }
 
@@ -221,20 +212,20 @@ namespace Go
                 {
                     Node siblingNode = siblingNodes[i];
 
-                    //initialize new mcts with sibling node, and loop the loop with each sibling node
+                    //initialize new mcts with sibling node
                     MonteCarloTreeSearch mcts = new MonteCarloTreeSearch(siblingNode, mctsDepth + 1);
                     mcts.FindNextMove();
                     Boolean winOrLose = (mcts.AnswerNode == null);
                     if (!winOrLose)
                     {
-                        //game lost - prune sibling node (default pathway if parent node is correct)
+                        //prune sibling node (default pathway if parent node is correct)
                         DebugHelper.WriteLine("Sibling node pruned.", mctsDepth);
                         Pruning(siblingNode, mcts.AnswerNode);
                         //continue to prune all siblings to confirm answer
                     }
                     else
                     {
-                        //game won - answer found or prune parent node
+                        //answer found or prune parent node
                         if (AnswerFound(siblingNode))
                             return true;
                         if (parentNode.Parent != null)
@@ -247,26 +238,26 @@ namespace Go
                 }
             }
 
-            CheckAllChildNodesPruned(parentNode, winResult);
+            //check all child nodes pruned
+            CheckAllChildNodesPruned(parentNode);
             return true;
         }
 
         /// <summary>
-        /// Check all child nodes pruned. Check if answer found else continue to prune parent of current node.
+        /// Check all child nodes pruned.
         /// </summary>
-        private Boolean CheckAllChildNodesPruned(Node node, Boolean winResult = false)
+        private Boolean CheckAllChildNodesPruned(Node node)
         {
             if (node.ChildArray.Count > 0) return false;
             DebugHelper.WriteLine("All child nodes pruned.", mctsDepth);
+
+            //check if answer found
             if (AnswerFound(node))
                 return true;
 
-            //if parent is not null then prune parent of win node by recursion
-            if (node.Parent != null)
-            {
-                DebugHelper.WriteLine("MCTS recursion up level. WinResult: " + winResult, mctsDepth);
-                PrunePromisingNode(node.Parent, node, winResult, true);
-            }
+            //prune parent node
+            if (node.Parent == null) return false;
+            Pruning(node.Parent, node);
             return false;
         }
 
@@ -277,7 +268,6 @@ namespace Go
         {
             if (node.CurrentDepth == 1 || node.CurrentDepth == this.tree.Root.CurrentDepth + 1)
             {
-                //top node reached and answer found
                 if (Game.debugMode)
                 {
                     String msg = (node.CurrentDepth == 1) ? "Answer move: " + node.State.Game.Board.Move : "Answer move for " + this.tree.Root.GetLastMoves() + ": " + node.State.Game.Board.Move;
@@ -311,7 +301,10 @@ namespace Go
             prunedNode.Parent.ChildArray.Remove(prunedNode);
 
             //increase score for parent
-            BackPropagation(prunedNode.Parent, true, 20 * winScore);
+            int incrementScore = 20;
+            if (prunedNode.CurrentDepth > 0 && prunedNode.CurrentDepth <= 4)
+                incrementScore += (4 / prunedNode.CurrentDepth) * 5;
+            BackPropagation(prunedNode.Parent, true, incrementScore);
 
             DebugHelper.WriteLine("Pruned node: " + prunedNode.GetLastMoves(), mctsDepth);
 
@@ -333,8 +326,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Expansion phase - expand all possible states.
-        /// Check confirm alive if game ended with objective reached already.
+        /// Expansion phase - expand all possible states and check confirm alive.
         /// </summary>
         private void ExpandNode(Node node)
         {
@@ -346,7 +338,7 @@ namespace Go
                 Node childNode = new Node(state);
                 childNode.Parent = node;
                 node.ChildArray.Add(childNode);
-                childNode.State.Depth = node.State.Depth - 1;
+                childNode.State.Depth = node.State.Depth + 1;
 
                 //check if game ended by confirm alive
                 SurviveOrKill surviveOrKill = childNode.State.SurviveOrKill;
@@ -363,11 +355,11 @@ namespace Go
         /// <summary>
         /// Back propagation phase - increase score alternately up the levels for the winner.
         /// </summary>
-        private void BackPropagation(Node node, Boolean winOrLose, int incrementScore = winScore)
+        private void BackPropagation(Node node, Boolean winOrLose, int incrementScore)
         {
             while (node != null)
             {
-                node.State.IncrementVisit(winScore);
+                node.State.IncrementVisit(1);
 
                 if (winOrLose)
                     node.State.AddScore(incrementScore);
@@ -387,7 +379,7 @@ namespace Go
         {
             (ConfirmAliveResult result, Board board) = InitializeMonteCarloPlayout(node);
             Boolean winLose = GameHelper.WinOrLose(node.State.SurviveOrKill, result, node.State.Game.GameInfo);
-            int incrementScore = (winLose && node.State.SurviveOrKill == SurviveOrKill.Survive) ? 10 : 1;
+            int incrementScore = (winLose && node.State.SurviveOrKill == SurviveOrKill.Survive) ? 12 : 6;
             BackPropagation(node, winLose, incrementScore);
             return (result, board);
         }
@@ -415,7 +407,7 @@ namespace Go
             Game g = node.State.Game;
             SurviveOrKill surviveOrKill = node.State.SurviveOrKill;
 
-            int depth = g.GameInfo.SearchDepth;
+            int depth = g.GameInfo.SearchDepth + DepthToVerify;
             ConfirmAliveResult confirmAlive = ConfirmAliveResult.Unknown;
             Board board;
             if (surviveOrKill == SurviveOrKill.Kill)
@@ -426,8 +418,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Monte carlo make kill move. Select random move from all possible moves.
-        /// Include ko moves and set result as KoAlive if ko wins.
+        /// Monte carlo make kill move. Select random move from all possible moves. Include ko moves.
         /// </summary>
         private (ConfirmAliveResult, Board) MonteCarloMakeKillMove(int depth, Game g)
         {
@@ -461,8 +452,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Monte carlo make survival move. Select random move from all possible moves.
-        /// Include ko moves and set result as KoAlive if ko wins.
+        /// Monte carlo make survival move. Select random move from all possible moves. Include ko moves.
         /// </summary>
         private (ConfirmAliveResult, Board) MonteCarloMakeSurvivalMove(int depth, Game g)
         {

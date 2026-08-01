@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace Go
 {
-    class UCT
+    public class UCT
     {
         /// <summary>
         /// UCT value.
@@ -17,7 +17,7 @@ namespace Go
                 return int.MaxValue;
             int totalVisitCount = node.Parent.ChildArray.Sum(n => n.State.VisitCount);
 
-            return (node.State.WinScore / (double)node.State.VisitCount) + 1.41 * Math.Sqrt(Math.Log(totalVisitCount) / (double)node.State.VisitCount);
+            return (node.State.WinScore / (double)node.State.VisitCount) + 1.1 * Math.Sqrt(Math.Log(totalVisitCount) / (double)node.State.VisitCount);
         }
 
         /// <summary>
