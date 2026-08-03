@@ -24,7 +24,7 @@ namespace Go
         {
             get
             {
-                return (Game.MapMovesOrSearchAnswer) ? 5 : 10;
+                return (Game.MapMovesOrSearchAnswer) ? 3 : 10;
             }
         }
 
@@ -51,17 +51,14 @@ namespace Go
         {
             get
             {
+                //mapping or search answer
                 if (Game.MapMovesOrSearchAnswer)
                 {
-                    //mapping or search answer
-                    Boolean mapPlayerMove = (tree.Root.State.Game.GameInfo.UserFirst == PlayerOrComputer.Player);
+                    Boolean mapPlayerMove = (tree.GameInfo.UserFirst == PlayerOrComputer.Player);
                     return searchDepthToVerify + 1 + (mapPlayerMove ? 0 : 1);
                 }
-                else
-                {
-                    //real-time and verification
-                    return tree.AbsoluteRoot.CurrentDepth + realTimeDepthToVerify;
-                }
+                //real-time and verification
+                return tree.AbsoluteRoot.CurrentDepth + realTimeDepthToVerify;
             }
         }
 
@@ -171,9 +168,10 @@ namespace Go
             DebugHelper.WriteLine("Verifying game: " + verifyGame.Board.GetLastMoves(), mctsDepth);
 
             //exhaustive search
-            ConfirmAliveResult verifyResult = verifyGame.MakeExhaustiveSearch();
+            int depth = tree.GameInfo.SearchDepth - verifyNode.State.Depth;
+            ConfirmAliveResult verifyResult = verifyGame.MakeExhaustiveSearch(depth);
 
-            if (GameHelper.WinOrLose(verifyNode.State.SurviveOrKill, verifyResult, verifyGame.GameInfo))
+            if (GameHelper.WinOrLose(verifyNode.State.SurviveOrKill, verifyResult, tree.GameInfo))
             {
                 DebugHelper.WriteLine("Verified: " + verifyNode.GetLastMoves(), mctsDepth);
                 return true;
@@ -378,7 +376,7 @@ namespace Go
         private (ConfirmAliveResult, Board) SimulateRandomPlayout(Node node)
         {
             (ConfirmAliveResult result, Board board) = InitializeMonteCarloPlayout(node);
-            Boolean winLose = GameHelper.WinOrLose(node.State.SurviveOrKill, result, node.State.Game.GameInfo);
+            Boolean winLose = GameHelper.WinOrLose(node.State.SurviveOrKill, result, tree.GameInfo);
             int incrementScore = (winLose && node.State.SurviveOrKill == SurviveOrKill.Survive) ? 12 : 6;
             BackPropagation(node, winLose, incrementScore);
             return (result, board);
@@ -407,7 +405,7 @@ namespace Go
             Game g = node.State.Game;
             SurviveOrKill surviveOrKill = node.State.SurviveOrKill;
 
-            int depth = g.GameInfo.SearchDepth + DepthToVerify;
+            int depth = g.GameInfo.SearchDepth - node.State.Depth;
             ConfirmAliveResult confirmAlive = ConfirmAliveResult.Unknown;
             Board board;
             if (surviveOrKill == SurviveOrKill.Kill)

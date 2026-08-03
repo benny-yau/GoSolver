@@ -45,5 +45,15 @@ namespace Go
             }
         }
 
+        /// <summary>
+        /// Game info.
+        /// </summary>
+        public GameInfo GameInfo
+        {
+            get
+            {
+                return Root.State.Game.GameInfo;
+            }
+        }
     }
 }

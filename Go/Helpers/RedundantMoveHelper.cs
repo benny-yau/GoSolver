@@ -817,6 +817,10 @@ namespace Go
             if (AtariHelper.AtariByGroup(tryBoard).Any(n => AtariHelper.IsDoubleAtari(tryBoard, n.Liberties.First(), c)))
                 return false;
 
+            //check non killable for multi-point group
+            if (tryBoard.MoveGroup.Points.Count > 1 && tryBoard.GetGroupsFromStoneNeighbours().Any(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
+                return true;
+
             //find bloated eye suicide
             if (FindBloatedEyeSuicide(tryMove, captureBoard))
                 return true;
@@ -992,6 +996,7 @@ namespace Go
         /// Check point next to corner <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260111_8" />
         /// Check three-point killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A41" />
         /// Check opponent at diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30196" />
+        /// Check killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A41" />
         /// Check diagonal group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A66" />
         /// Check side point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31510_2" />
         /// Check real eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A12_2" />
@@ -1032,14 +1037,17 @@ namespace Go
                 if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard.PointWithinMiddleArea(n) && ImmovableHelper.IsImmovablePoint(tryBoard, n, c.Opposite())))
                     return true;
 
+                List<Group> ngroups = tryBoard.GetNeighbourGroups();
                 foreach (Point d in tryBoard.GetDiagonalNeighbours())
                 {
                     if (!ImmovableHelper.IsImmovablePoint(captureBoard, d, c.Opposite())) continue;
+                    //check killer group
+                    if (ngroups.Any(n => n.Points.Count > 1) && GroupHelper.GetDirectKillerGroup(captureBoard, move, c.Opposite()) != null)
+                        return true;
                     //check hostile neighbour group
                     if (WallHelper.HostileNeighbourGroups(captureBoard, tryBoard.MoveGroup))
                         return true;
                     //check multi-point neighbour group
-                    List<Group> ngroups = tryBoard.GetNeighbourGroups();
                     if (ngroups.All(n => n.Points.Count > 1))
                     {
                         //check diagonal group

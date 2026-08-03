@@ -135,11 +135,12 @@ namespace Go
         public override String ToString()
         {
             String rc = "Score: " + this.State.WinScore;
-            rc += " VisitCount: " + this.State.VisitCount;
-            rc += " WinScore: " + this.State.WinScore;
-            rc += " UCT:" + UCT.UctValue(this);
-            rc += " Move:" + GetLastMoves();
-            rc += " Depth: " + this.State.Depth;
+            rc += "\tVisitCount: " + this.State.VisitCount;
+            rc += "\tWinScore: " + this.State.WinScore;
+            rc += "\tUCT:" + UCT.UctValue(this).ToString("0.000");
+            rc += "\tEValue:" + (1 - UCT.ExplorationValue(this)).ToString("0.000");
+            rc += "\tMove:" + GetLastMoves();
+            rc += "\tDepth: " + this.State.Depth;
             return rc;
         }
 

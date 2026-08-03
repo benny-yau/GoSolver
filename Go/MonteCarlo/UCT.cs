@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Xml.Linq;
 
 namespace Go
 {
@@ -15,9 +16,17 @@ namespace Go
         {
             if (node.State.VisitCount == 0)
                 return int.MaxValue;
-            int totalVisitCount = node.Parent.ChildArray.Sum(n => n.State.VisitCount);
 
-            return (node.State.WinScore / (double)node.State.VisitCount) + 1.1 * Math.Sqrt(Math.Log(totalVisitCount) / (double)node.State.VisitCount);
+            return (node.State.WinScore / (double)node.State.VisitCount) + (1 - ExplorationValue(node));
+        }
+
+        /// <summary>
+        /// Exploration value.
+        /// </summary>
+        public static double ExplorationValue(Node node)
+        {
+            int totalVisitCount = node.Parent.ChildArray.Sum(n => n.State.VisitCount);
+            return 1.1 * Math.Sqrt(Math.Log(totalVisitCount) / (double)node.State.VisitCount);
         }
 
         /// <summary>

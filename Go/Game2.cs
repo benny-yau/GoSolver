@@ -62,20 +62,20 @@ namespace Go
         /// <summary>
         /// Make exhaustive search.
         /// </summary>
-        public ConfirmAliveResult MakeExhaustiveSearch()
+        public ConfirmAliveResult MakeExhaustiveSearch(int? depth = null)
         {
             if (debugMode) this.RunTimeStopWatch = Stopwatch.StartNew();
 
-            int depth = this.GameInfo.SearchDepth;
+            if (depth == null) depth = this.GameInfo.SearchDepth;
             ConfirmAliveResult confirmAlive = ConfirmAliveResult.Unknown;
             GameTryMove bestResultMove = null;
 
             //start kill or survival move
             SurviveOrKill surviveOrKill = GameHelper.KillOrSurvivalForNextMove(this.Board);
             if (surviveOrKill == SurviveOrKill.Kill)
-                (confirmAlive, bestResultMove) = this.MakeKillMove(depth);
+                (confirmAlive, bestResultMove) = this.MakeKillMove(depth.Value);
             else
-                (confirmAlive, bestResultMove) = this.MakeSurvivalMove(depth);
+                (confirmAlive, bestResultMove) = this.MakeSurvivalMove(depth.Value);
 
             //make the move at initial board
             if (GameHelper.WinOrLose(surviveOrKill, confirmAlive, this.GameInfo))

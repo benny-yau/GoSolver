@@ -59,7 +59,7 @@
             Initialize computer move. Exhaustive search or mcts move.
             </summary>
         </member>
-        <member name="M:Go.Game.MakeExhaustiveSearch">
+        <member name="M:Go.Game.MakeExhaustiveSearch(System.Nullable{System.Int32})">
             <summary>
             Make exhaustive search.
             </summary>
@@ -1764,6 +1764,7 @@
             Check point next to corner <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260111_8" />
             Check three-point killer group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A41" />
             Check opponent at diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30196" />
+            Check killer group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A41" />
             Check diagonal group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A66" />
             Check side point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31510_2" />
             Check real eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A12_2" />
@@ -2880,9 +2881,19 @@
             Root node of initial mcts.
             </summary>
         </member>
+        <member name="P:Go.Tree.GameInfo">
+            <summary>
+            Game info.
+            </summary>
+        </member>
         <member name="M:Go.UCT.UctValue(Go.Node)">
             <summary>
             UCT value.
+            </summary>
+        </member>
+        <member name="M:Go.UCT.ExplorationValue(Go.Node)">
+            <summary>
+            Exploration value.
             </summary>
         </member>
         <member name="M:Go.UCT.FindBestNodeWithUCT(Go.Node)">
