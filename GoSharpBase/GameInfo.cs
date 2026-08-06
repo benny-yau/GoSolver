@@ -29,6 +29,7 @@ namespace Go
         public List<Point> survivalLinkPoints = new List<Point>();
         public List<List<Point>> dictatePoints = new List<List<Point>>();
         public List<CorrectedList> correctedSolutions = new List<CorrectedList>();
+        public Boolean SurvivalWinForBothAlive = true;
 
 
         private List<List<Point>> combinedSolutions;
@@ -184,7 +185,7 @@ namespace Go
         private static Boolean enableFullLoading = true;
 
         /// <summary>
-        /// Enable full loading of json mapping and scripts only on start of each game. Applies only to PlayerMoveExtension and ChallengeMoveExtension which requires getting resource string from ResourceHelper.
+        /// Enable full loading of json mapping at start.
         /// </summary>
         public static Boolean EnableFullLoading
         {

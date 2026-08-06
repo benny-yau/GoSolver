@@ -14,12 +14,16 @@ namespace Go
         {
             if (surviveOrKill == SurviveOrKill.Survive)
             {
-                if (result.HasFlag(ConfirmAliveResult.Alive) || result.HasFlag(ConfirmAliveResult.BothAlive))
+                if (result.HasFlag(ConfirmAliveResult.Alive))
+                    return true;
+                if (gi.SurvivalWinForBothAlive && result.HasFlag(ConfirmAliveResult.BothAlive))
                     return true;
             }
             else if (surviveOrKill == SurviveOrKill.Kill)
             {
                 if (result.HasFlag(ConfirmAliveResult.Dead))
+                    return true;
+                if (!gi.SurvivalWinForBothAlive && result.HasFlag(ConfirmAliveResult.BothAlive))
                     return true;
             }
             if (result.HasFlag(ConfirmAliveResult.KoAlive))

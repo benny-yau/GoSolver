@@ -167,8 +167,12 @@ namespace Go
         {
             GameInfo gi = board.GameInfo;
             Content c = GameHelper.GetContentForSurviveOrKill(gi, SurviveOrKill.Survive);
+            //check all targets killed
             List<Point> killedPoints = gi.targetPoints.Where(q => board[q] != c).ToList();
             if (killedPoints.Count > 0 && killedPoints.Count == gi.targetPoints.Count)
+                return ConfirmAliveResult.Dead;
+            //check for unescapable group
+            if (LifeCheck.GetTargets(board).All(n => ImmovableHelper.UnescapableGroup(board, n).Item1))
                 return ConfirmAliveResult.Dead;
             return ConfirmAliveResult.Unknown;
         }
@@ -188,33 +192,60 @@ namespace Go
 
 
         /// <summary>
-        /// Check if target group is dead or alive.
+        /// Check if dead or alive.
         /// </summary>
         public static ConfirmAliveResult CheckIfDeadOrAlive(SurviveOrKill surviveOrKill, Board board, Boolean? checkSurvival = null)
         {
             //check for survival points
-            if (board.CapturedPoints.Intersect(board.GameInfo.survivalPoints).Any())
+            if (CheckForSurvivalPoints(surviveOrKill, board))
                 return (surviveOrKill == SurviveOrKill.Survive) ? ConfirmAliveResult.Alive : ConfirmAliveResult.Dead;
 
-            //check target dead
+            //check for kill
             if (surviveOrKill == SurviveOrKill.Kill)
                 return LifeCheck.CheckIfTargetGroupKilled(board);
 
-            //check last move
+            //check for survival
             if (surviveOrKill != SurviveOrKill.Survive) return ConfirmAliveResult.Unknown;
-            if (checkSurvival == null)
-            {
-                if (!board.LastMoves.Any()) checkSurvival = true;
-                else checkSurvival = !ImmovableHelper.CheckConnectAndDie(board, board.MoveGroup, false);
-            }
 
-            if (!checkSurvival.Value) return ConfirmAliveResult.Unknown;
+            //check last move valid
+            if (!CheckLastMoveValid(board, checkSurvival)) return ConfirmAliveResult.Unknown;
+            
             //check external link
             if (board.GameInfo.survivalLinkPoints.Any(n => LinkHelper.IsExternalLinkToTargetGroup(board, n)))
                 return ConfirmAliveResult.Alive;
 
             //check target alive
             return LifeCheck.ConfirmAlive(board);
+        }
+
+        /// <summary>
+        /// Check for survival points.
+        /// </summary>
+        public static Boolean CheckForSurvivalPoints(SurviveOrKill surviveOrKill, Board board)
+        {
+            Content c = GameHelper.GetContentForSurviveOrKill(board.GameInfo, surviveOrKill);
+            List<Point> survivalPoints = board.GameInfo.survivalPoints;
+            //check if captured
+            if (board.CapturedPoints.Intersect(survivalPoints).Any())
+                return true;
+            //check for unescapable group
+            HashSet<Group> groups = board.GetGroupsFromPoints(survivalPoints.Where(n => board[n] == c.Opposite()).ToList());
+            if (groups.Any(n => ImmovableHelper.UnescapableGroup(board, n).Item1))
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Check last move valid.
+        /// </summary>
+        public static Boolean CheckLastMoveValid(Board board, Boolean? checkSurvival = null)
+        {
+            if (checkSurvival == null)
+            {
+                if (!board.LastMoves.Any()) return true;
+                return !ImmovableHelper.CheckConnectAndDie(board, board.MoveGroup, false);
+            }
+            return checkSurvival.Value;
         }
     }
 }

@@ -139,7 +139,7 @@ namespace Go
             if (group == null) group = tryBoard.MoveGroup;
             else group = tryBoard.GetCurrentGroup(group);
             Content c = group.Content;
-            Group killerGroup = GroupHelper.GetKillerGroupFromCache(tryBoard, group.Points.First(), c.Opposite());
+            Group killerGroup = GroupHelper.GetDirectKillerGroup(tryBoard, group.Points.First(), c.Opposite());
             if (killerGroup == null || killerGroup.Points.Any(p => tryBoard[p] == c && tryBoard.GetGroupAt(p) != group)) return false;
             if (tryBoard.OneLibertyNeighbourGroup(killerGroup).Any()) return false;
             return true;

@@ -25,6 +25,7 @@ namespace Go
         /// </summary>
         public static double ExplorationValue(Node node)
         {
+            if (node.Parent == null) return 0;
             int totalVisitCount = node.Parent.ChildArray.Sum(n => n.State.VisitCount);
             return 1.1 * Math.Sqrt(Math.Log(totalVisitCount) / (double)node.State.VisitCount);
         }

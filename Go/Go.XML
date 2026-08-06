@@ -1747,6 +1747,13 @@
             <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260322_8" />
             </summary>
         </member>
+        <member name="M:Go.RedundantMoveHelper.CheckOneNeighbourGroupForSuicidalConnectAndDie(Go.GameTryMove,Go.Board)">
+            <summary>
+            Check one neighbour group for suicidal connect and die.
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260804_8" />
+            Check for one neighbour group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31444_2" />
+            </summary>
+        </member>
         <member name="M:Go.RedundantMoveHelper.CheckDiagonalForRealEyeForSuicidalConnectAndDie(Go.GameTryMove,Go.Board)">
             <summary>
             Check diagonal for real eye for suicidal connect and die.
@@ -1987,6 +1994,12 @@
         <member name="M:Go.RedundantMoveHelper.CheckLeapMoveToTarget(Go.GameTryMove,System.Collections.Generic.HashSet{Go.Group})">
             <summary>
             Check leap move to target.
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CheckLeapGroup(Go.GameTryMove,Go.Point,Go.Point)">
+            <summary>
+            Check leap group.
+            Check capture group <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260625_7" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.VerifyLeapMove(Go.GameTryMove,Go.Point,Go.Point,Go.Content)">
@@ -2340,9 +2353,9 @@
             Redundant non suicidal move.
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.RedundantNonSuicidal(Go.GameTryMove,Go.GameTryMove)">
+        <member name="M:Go.RedundantMoveHelper.RedundantNonSuicidalSinglePointMove(Go.GameTryMove,Go.GameTryMove)">
             <summary>
-            Redundant non suicidal move.
+            Redundant non suicidal single point move.
             <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A23" /> 
             <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_Corner_A84" /> 
             Check neighbour groups <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q30064" />
@@ -2359,6 +2372,13 @@
             <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_TianLongTu_Q16738" /> 
             Check immovable point <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260515_8" /> 
             Check neighbour group with two liberties <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_TianLongTu_Q15618" /> 
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.RedundantNonSuicidalMultiPointMove(Go.GameTryMove)">
+            <summary>
+            Redundant non suicidal multi point move.
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260804_8" />
+            Check eye at opponent move <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.RedundantFillerMove(Go.GameTryMove)">
@@ -2709,7 +2729,17 @@
         </member>
         <member name="M:Go.LifeCheck.CheckIfDeadOrAlive(Go.SurviveOrKill,Go.Board,System.Nullable{System.Boolean})">
             <summary>
-            Check if target group is dead or alive.
+            Check if dead or alive.
+            </summary>
+        </member>
+        <member name="M:Go.LifeCheck.CheckForSurvivalPoints(Go.SurviveOrKill,Go.Board)">
+            <summary>
+            Check for survival points.
+            </summary>
+        </member>
+        <member name="M:Go.LifeCheck.CheckLastMoveValid(Go.Board,System.Nullable{System.Boolean})">
+            <summary>
+            Check last move valid.
             </summary>
         </member>
         <member name="M:Go.MonteCarloGame.InitializeMonteCarloComputerMove(Go.Game,Go.Node,System.Int32)">
@@ -2762,14 +2792,14 @@
             Visit count minimum requirement.
             </summary>
         </member>
-        <member name="F:Go.MonteCarloTreeSearch.answerNode">
-            <summary>
-            Answer node.
-            </summary>
-        </member>
         <member name="P:Go.MonteCarloTreeSearch.DepthToVerify">
             <summary>
             Depth to verify.
+            </summary>
+        </member>
+        <member name="F:Go.MonteCarloTreeSearch.answerNode">
+            <summary>
+            Answer node.
             </summary>
         </member>
         <member name="M:Go.MonteCarloTreeSearch.#ctor(Go.Node,System.Int32)">
@@ -2790,6 +2820,11 @@
             Random child node.
             </summary>
         </member>
+        <member name="M:Go.MonteCarloTreeSearch.CheckIfAllNodesPruned(Go.Node)">
+            <summary>
+            Check if all nodes pruned.
+            </summary>
+        </member>
         <member name="M:Go.MonteCarloTreeSearch.ReachedDepthToVerify(Go.Node)">
             <summary>
             Reached depth to verify.
@@ -2807,8 +2842,8 @@
         </member>
         <member name="M:Go.MonteCarloTreeSearch.PrunePromisingNode(Go.Node,Go.Node,System.Boolean)">
             <summary>
-            Prune promising node, after verifying with exhaustive search. If result is a win then check if parent node is correct by trying to prune all child nodes.
-            After all nodes are pruned, move up the level by recursion to check if current path is correct and the answer node will be the first node of the tree.
+            Prune promising node, after verifying with exhaustive search. 
+            Check if parent node is correct by pruning all child nodes. The answer node will be the top node of the tree.
             </summary>
         </member>
         <member name="M:Go.MonteCarloTreeSearch.CheckAllChildNodesPruned(Go.Node)">
@@ -2879,6 +2914,11 @@
         <member name="P:Go.Tree.AbsoluteRoot">
             <summary>
             Root node of initial mcts.
+            </summary>
+        </member>
+        <member name="M:Go.Tree.TopNodeOfTree(Go.Node)">
+            <summary>
+            Top node of tree.
             </summary>
         </member>
         <member name="P:Go.Tree.GameInfo">

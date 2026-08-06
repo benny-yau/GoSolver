@@ -29,22 +29,6 @@ namespace Go
         }
 
         /// <summary>
-        /// Answer node.
-        /// </summary>
-        Node answerNode;
-        public Node AnswerNode
-        {
-            get
-            {
-                return answerNode;
-            }
-            set
-            {
-                answerNode = value;
-            }
-        }
-
-        /// <summary>
         /// Depth to verify.
         /// </summary>
         public int DepthToVerify
@@ -59,6 +43,22 @@ namespace Go
                 }
                 //real-time and verification
                 return tree.AbsoluteRoot.CurrentDepth + realTimeDepthToVerify;
+            }
+        }
+
+        /// <summary>
+        /// Answer node.
+        /// </summary>
+        Node answerNode;
+        public Node AnswerNode
+        {
+            get
+            {
+                return answerNode;
+            }
+            set
+            {
+                answerNode = value;
             }
         }
 
@@ -96,12 +96,9 @@ namespace Go
                     if (HandleConfirmedCases(promisingNode)) continue;
                     promisingNode = RandomChildNode(promisingNode);
                 }
-                //all nodes pruned
-                if (promisingNode.ChildArray.Count == 0 && promisingNode.Expanded)
-                {
-                    if (promisingNode.CurrentDepth == this.tree.Root.CurrentDepth) break;
-                    if (CheckAllChildNodesPruned(promisingNode)) break;
-                }
+                //check if all nodes pruned
+                if (CheckIfAllNodesPruned(promisingNode)) 
+                    break;
 
                 //verify on depth reached or no possible states to expand
                 if (ReachedDepthToVerify(promisingNode) || promisingNode.NoPossibleStates)
@@ -132,6 +129,19 @@ namespace Go
         }
 
         /// <summary>
+        /// Check if all nodes pruned.
+        /// </summary>
+        private Boolean CheckIfAllNodesPruned(Node promisingNode)
+        {
+            if (promisingNode.ChildArray.Count == 0 && promisingNode.Expanded)
+            {
+                if (promisingNode.CurrentDepth == this.tree.Root.CurrentDepth) return true;
+                if (CheckAllChildNodesPruned(promisingNode)) return true;
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Reached depth to verify.
         /// </summary>
         private Boolean ReachedDepthToVerify(Node node)
@@ -144,12 +154,13 @@ namespace Go
         /// </summary>
         private void VerifyOnDepthReached(Node promisingNode)
         {
+            //verify with exhaustive search
             Node verifyNode = (promisingNode.NoPossibleStates) ? promisingNode : promisingNode.Parent;
             Boolean isWin = VerifyWithExhaustiveSearch(verifyNode);
             if (isWin && AnswerFound(verifyNode))
                 return;
 
-            //prune node based on result from exhaustive search
+            //prune node based on result
             if (isWin)
                 PrunePromisingNode(verifyNode.Parent, verifyNode, isWin);
             else
@@ -184,25 +195,22 @@ namespace Go
         }
 
         /// <summary>
-        /// Prune promising node, after verifying with exhaustive search. If result is a win then check if parent node is correct by trying to prune all child nodes.
-        /// After all nodes are pruned, move up the level by recursion to check if current path is correct and the answer node will be the first node of the tree.
+        /// Prune promising node, after verifying with exhaustive search. 
+        /// Check if parent node is correct by pruning all child nodes. The answer node will be the top node of the tree.
         /// </summary>
         private Boolean PrunePromisingNode(Node prunedNode, Node verifyNode, Boolean winResult)
         {
             Node parentNode = prunedNode.Parent;
-            if (prunedNode == null || parentNode == null) return false;
+            if (parentNode == null) return false;
 
             //prune node
             Pruning(prunedNode, verifyNode);
 
-            if (prunedNode.CurrentDepth == this.tree.Root.CurrentDepth + 1)
-            {
-                //return after hitting the top of tree
-                DebugHelper.WriteLine("Hit top at level: " + prunedNode.CurrentDepth, mctsDepth);
+            //check if top node of tree
+            if (tree.TopNodeOfTree(prunedNode))
                 return true;
-            }
 
-            //recursive search through siblings of pruned node to check if parent node is correct
+            //Prune all child nodes to verify parent node is correct
             if (winResult)
             {
                 List<Node> siblingNodes = parentNode.ChildArray.OrderBy(n => n.State.VisitCount).ToList();
@@ -216,10 +224,9 @@ namespace Go
                     Boolean winOrLose = (mcts.AnswerNode == null);
                     if (!winOrLose)
                     {
-                        //prune sibling node (default pathway if parent node is correct)
+                        //prune sibling node
                         DebugHelper.WriteLine("Sibling node pruned.", mctsDepth);
                         Pruning(siblingNode, mcts.AnswerNode);
-                        //continue to prune all siblings to confirm answer
                     }
                     else
                     {
@@ -264,17 +271,16 @@ namespace Go
         /// </summary>
         private Boolean AnswerFound(Node node)
         {
-            if (node.CurrentDepth == 1 || node.CurrentDepth == this.tree.Root.CurrentDepth + 1)
+            if (!tree.TopNodeOfTree(node))
+                return false;
+            if (Game.debugMode)
             {
-                if (Game.debugMode)
-                {
-                    String msg = (node.CurrentDepth == 1) ? "Answer move: " + node.State.Game.Board.Move : "Answer move for " + this.tree.Root.GetLastMoves() + ": " + node.State.Game.Board.Move;
-                    DebugHelper.WriteLine(msg, mctsDepth);
-                }
-                AnswerNode = node;
-                return true;
+                Point move = node.State.Game.Board.Move.Value;
+                String msg = (node.CurrentDepth == 1) ? "Answer move: " + move : "Answer move for " + this.tree.Root.GetLastMoves() + ": " + move;
+                DebugHelper.WriteLine(msg, mctsDepth);
             }
-            return false;
+            AnswerNode = node;
+            return true;
         }
 
         /// <summary>
@@ -282,7 +288,7 @@ namespace Go
         /// </summary>
         private void Pruning(Node prunedNode, Node verifyNode)
         {
-            if (prunedNode == null || prunedNode.Parent == null) return;
+            if (prunedNode.Parent == null) return;
             if (Game.MapMovesOrSearchAnswer && verifyNode != null)
             {
                 //set move of pruned node with corresponding answer from verifyNode in PrunedJson of parent node
