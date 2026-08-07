@@ -98,7 +98,7 @@ namespace Go
         public static Boolean CommonTigerMouthExceptions(Board board, Content c, Point tigerMouth, Point libertyPoint)
         {
             //make move at liberty point
-            (Boolean connectAndDie, Board b) = ImmovableHelper.ConnectAndDieMove(board, libertyPoint, c.Opposite(), false);
+            (Boolean connectAndDie, Board b) = ImmovableHelper.ConnectAndDieMove(board, libertyPoint, c.Opposite(), false, false);
             if (b == null) return false;
             if (connectAndDie)
             {

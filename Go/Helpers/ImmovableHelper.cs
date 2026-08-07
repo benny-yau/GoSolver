@@ -461,11 +461,24 @@ namespace Go
         }
 
         /// <summary>
+        /// Precheck not connect and die move.
+        /// </summary>
+        public static Boolean PrecheckNotConnectAndDieMove(Board board, Point p, Content c)
+        {
+            if (board.GetMoveLiberties(p).Count() >= 3)
+                return true;
+            if (board.GetGroupsFromStoneNeighbours(p, c.Opposite()).Any(n => n.Liberties.Count >= 4))
+                return true;
+            return false;
+        }
+
+        /// <summary>
         /// Connect and die move.
         /// </summary>
-        public static (Boolean, Board) ConnectAndDieMove(Board board, Point p, Content c, Boolean koEnabled = true)
+        public static (Boolean, Board) ConnectAndDieMove(Board board, Point p, Content c, Boolean koEnabled = true, Boolean preCheck = true)
         {
             if (!GameHelper.SetupMoveAvailable(board, p, c)) return (false, null);
+            if (preCheck && PrecheckNotConnectAndDieMove(board, p, c)) return (false, null);
             Board b = board.MakeMoveOnNewBoard(p, c, !koEnabled);
             if (b == null) return (true, b);
             if (ImmovableHelper.CheckConnectAndDie(b, b.GetGroupAt(p), koEnabled))
@@ -609,7 +622,7 @@ namespace Go
                     continue;
 
                 //make move at liberty
-                (Boolean connectAndDie, Board b) = ImmovableHelper.ConnectAndDieMove(currentBoard, liberty, c);
+                (Boolean connectAndDie, Board b) = ImmovableHelper.ConnectAndDieMove(currentBoard, liberty, c, true, false);
                 if (b == null || WallHelper.TargetWithAllNonKillableGroups(b))
                     continue;
 

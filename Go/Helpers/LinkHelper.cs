@@ -237,10 +237,8 @@ namespace Go
         /// <summary>
         /// Check is diagonal linked.
         /// Both diagonals empty <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_4" />
-        /// Check negligible for links <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q17078" />
-        /// Check any diagonal separated by opposite content <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571" />
-        /// Check threat group <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150" />
-        /// Check capture secure <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_2" />
+        /// Check negligible for links <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_8" />
+        /// Check any diagonal separated by opposite content <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_5" />
         /// </summary>
         public static Boolean CheckIsDiagonalLinked(Point pointA, Point pointB, Board board, Boolean immediateLink = true)
         {
@@ -258,9 +256,12 @@ namespace Go
             if (diagonals.All(d => board[d] == Content.Empty))
             {
                 if (immediateLink) return true;
-                //check negligible for links
                 foreach (Board b in GameHelper.GetMoveBoards(board, diagonals, c.Opposite(), true))
                 {
+                    //check connect and die move
+                    Point q = diagonals.First(d => !d.Equals(b.Move.Value));
+                    if (ImmovableHelper.ConnectAndDieMove(b, q, c).Item1) return false;
+                    //check negligible for links
                     if (LinkHelper.CheckNegligibleForLinks(b, board, n => !n.Equals(b.GetGroupAt(pointA)) && !n.Equals(b.GetGroupAt(pointB))))
                         return false;
                 }
@@ -603,7 +604,7 @@ namespace Go
                 if (opponentStones.Count < 3 || board.GetGroupsFromPoints(opponentStones).Count < 3) continue;
 
                 //make opponent move at diagonal
-                (Boolean connectAndDie, Board b) = ImmovableHelper.ConnectAndDieMove(board, p, c.Opposite(), false);
+                (Boolean connectAndDie, Board b) = ImmovableHelper.ConnectAndDieMove(board, p, c.Opposite(), false, false);
                 if (connectAndDie || b == null) continue;
 
                 //check diagonal links

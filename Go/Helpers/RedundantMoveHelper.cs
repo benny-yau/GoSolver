@@ -3254,8 +3254,8 @@ namespace Go
             Board b = tryBoard.MakeMoveOnNewBoard(q, c);
             if (b != null && b.MoveGroup.Points.Count == 1 && b.MoveGroupLiberties == 2 && b[b.GetDiagonalNeighbours(corner).First()] == c.Opposite())
             {
-                //check connect and die
-                if (ImmovableHelper.CheckConnectAndDie(b, b.MoveGroup, false))
+                Point r = b.MoveGroup.Liberties.FirstOrDefault(n => !n.Equals(corner));
+                if (!r.IsEmpty() && !ImmovableHelper.IsSuicidalMove(b, r, c.Opposite()))
                     return false;
                 return true;
             }

@@ -753,7 +753,12 @@
             Check connect and die.
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.ConnectAndDieMove(Go.Board,Go.Point,Go.Content,System.Boolean)">
+        <member name="M:Go.ImmovableHelper.PrecheckNotConnectAndDieMove(Go.Board,Go.Point,Go.Content)">
+            <summary>
+            Precheck not connect and die move.
+            </summary>
+        </member>
+        <member name="M:Go.ImmovableHelper.ConnectAndDieMove(Go.Board,Go.Point,Go.Content,System.Boolean,System.Boolean)">
             <summary>
             Connect and die move.
             </summary>
@@ -1338,10 +1343,8 @@
             <summary>
             Check is diagonal linked.
             Both diagonals empty <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_4" />
-            Check negligible for links <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q17078" />
-            Check any diagonal separated by opposite content <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571" />
-            Check threat group <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150" />
-            Check capture secure <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_TianLongTu_Q16571_2" />
+            Check negligible for links <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_8" />
+            Check any diagonal separated by opposite content <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_5" />
             </summary>
         </member>
         <member name="M:Go.LinkHelper.CheckIsDiagonalLinked(Go.Link{Go.Point},Go.Board,System.Boolean)">
