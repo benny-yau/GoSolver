@@ -1812,9 +1812,6 @@
             Check move diagonals <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17154_3" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31445" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_3" />
-            Check no diagonal groups <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260111_8" />
-            Check weak diagonal group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17250_3" />
-            Check multi-point group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245_2" />
             Check move liberties <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_4" />
             Check move at diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A37" />
             Check ko fight <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie1" />
@@ -1826,6 +1823,14 @@
             Check capture move at empty space.
             Check opponent group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31453_2" />
             Check diagonal groups <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260726_8" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CheckNeighbourGroupForOnePointMoveWithoutDiagonals(Go.GameTryMove)">
+            <summary>
+            Check neighbour group for one point move without diagonals.
+            Check no diagonal groups <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260111_8" />
+            Check weak diagonal group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17250_3" />
+            Check multi-point group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245_2" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckWeakGroup(Go.Board,Go.Group)">

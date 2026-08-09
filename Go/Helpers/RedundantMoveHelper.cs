@@ -1232,9 +1232,6 @@ namespace Go
         /// Check move diagonals <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17154_3" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31445" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_3" />
-        /// Check no diagonal groups <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260111_8" />
-        /// Check weak diagonal group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17250_3" />
-        /// Check multi-point group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245_2" />
         /// Check move liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_4" />
         /// Check move at diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A37" />
         /// Check ko fight <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie1" />
@@ -1265,27 +1262,9 @@ namespace Go
             if (CheckCaptureMoveAtEmptySpace(tryMove, captureBoard))
                 return true;
 
-            //check for weak groups
-            foreach (Group ngroup in ngroups)
-            {
-                if (ngroup.Points.Count == 1)
-                {
-                    //check no diagonal groups
-                    List<Group> diagonalGroups = LinkHelper.GetDiagonalGroups(tryBoard, ngroup);
-                    if (diagonalGroups.Count == 0) continue;
-                    //check weak diagonal group
-                    if (diagonalGroups.Any(s => !WallHelper.IsHostileGroup(tryBoard, s) && tryBoard.GetClosestPoints(move, c.Opposite()).Any(n => s.Equals(tryBoard.GetGroupAt(n))))) continue;
-                    return true;
-                }
-                else
-                {
-                    //check multi-point group
-                    if (!tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite())) continue;
-                    if (LinkHelper.GetGroupDiagonals(tryBoard, ngroup).Any(n => tryBoard[n.Move] == c)) continue;
-                    if (tryBoard.GetNeighbourGroups(ngroup).Count(s => s != tryBoard.MoveGroup) <= 1)
-                        return true;
-                }
-            }
+            //check neighbour group
+            if (CheckNeighbourGroupForOnePointMoveWithoutDiagonals(tryMove))
+                return true;
 
             //check move liberties
             foreach (Point p in tryBoard.GetMoveLiberties())
@@ -1343,6 +1322,41 @@ namespace Go
             {
                 //check diagonal groups
                 if (LinkHelper.GetDiagonalGroupsWithoutCut(tryBoard, ngroups.First()).All(n => n.Liberties.Count >= n.Neighbours.Count * 0.5))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Check neighbour group for one point move without diagonals.
+        /// Check no diagonal groups <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260111_8" />
+        /// Check weak diagonal group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17250_3" />
+        /// Check multi-point group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245_2" />
+        /// </summary>
+        private static Boolean CheckNeighbourGroupForOnePointMoveWithoutDiagonals(GameTryMove tryMove)
+        {
+            Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryBoard.Move.Value;
+            Content c = tryMove.MoveContent;
+            List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours();
+            if (ngroups.Count != 1) return false;
+            Group ngroup = ngroups.First();
+            if (ngroup.Points.Count == 1)
+            {
+                //check no diagonal groups
+                List<Group> diagonalGroups = LinkHelper.GetDiagonalGroups(tryBoard, ngroup);
+                if (diagonalGroups.Count == 0) return false;
+                //check weak diagonal group
+                if (diagonalGroups.Any(s => !WallHelper.IsHostileGroup(tryBoard, s) && tryBoard.GetClosestPoints(move, c.Opposite()).Any(n => s.Equals(tryBoard.GetGroupAt(n)))))
+                    return false;
+                return true;
+            }
+            else
+            {
+                //check multi-point group
+                if (!tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c.Opposite())) return false;
+                if (LinkHelper.GetGroupDiagonals(tryBoard, ngroup).Any(n => tryBoard[n.Move] == c)) return false;
+                if (tryBoard.GetNeighbourGroups(ngroup).Count(s => s != tryBoard.MoveGroup) <= 1)
                     return true;
             }
             return false;
