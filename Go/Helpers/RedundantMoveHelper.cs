@@ -2843,6 +2843,7 @@ namespace Go
         /// Get generic neutral move. Killer group required.
         /// Check diagonal cut <see cref="UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_XuanXuanGo_A55" />
         /// Check covered eye <see cref="UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18410" />
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260810_8" />
         /// </summary>
         public static GameTryMove GetGenericNeutralMove(Game g, List<GameTryMove> neutralPointMoves)
         {
@@ -2868,7 +2869,7 @@ namespace Go
                     if (WallHelper.StrongNeighbourGroups(coveredBoard, neutralMove.Move, c)) continue;
 
                     //check covered eye
-                    if (LinkHelper.GetGroupDiagonals(g.Board, killerGroup).Any(n => EyeHelper.FindCoveredEye(g.Board, n.Move, c.Opposite())))
+                    if (LinkHelper.GetGroupDiagonals(g.Board, killerGroup).Any(n => EyeHelper.FindCoveredEye(g.Board, n.Move, c.Opposite()) || EyeHelper.CoveredPointWithinTwoPointGroup(g.Board, n.Move, c.Opposite())))
                         return neutralMove;
 
                     //check diagonal cut

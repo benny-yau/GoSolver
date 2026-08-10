@@ -2191,6 +2191,7 @@
             Get generic neutral move. Killer group required.
             Check diagonal cut <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_XuanXuanGo_A55" />
             Check covered eye <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18410" />
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260810_8" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.RedundantTigerMouthMove(Go.GameTryMove)">
