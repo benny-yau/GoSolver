@@ -3596,7 +3596,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q17160()
         {
             //https://www.101weiqi.com/book/tianlongtu/38/17160/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 13);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3722,7 +3722,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q17132()
         {
             //https://www.101weiqi.com/book/tianlongtu/38/17132/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 15);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 
@@ -3765,7 +3765,7 @@ namespace ScenarioCollection
 
             gi.PlayerMoveJson = gi.PlayerMoveJsonExtension = ResourceHelper.GetKweonKabYongMappedJsonExtensionString("Scenario_TianLongTu_Q17132_PlayerMoveExtension");
             gi.ChallengeMoveJson = gi.ChallengeMoveJsonExtension = ResourceHelper.GetKweonKabYongMappedJsonExtensionString("Scenario_TianLongTu_Q17132_ChallengeMoveExtension");
-
+            
             return g;
         }
     }
