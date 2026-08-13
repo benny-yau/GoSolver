@@ -209,13 +209,19 @@ namespace Go
 
             //check last move valid
             if (!CheckLastMoveValid(board, checkSurvival)) return ConfirmAliveResult.Unknown;
-            
+
+            //check target alive
+            if (LifeCheck.ConfirmAlive(board) == ConfirmAliveResult.Alive)
+                return ConfirmAliveResult.Alive;
+
             //check external link
             if (board.GameInfo.survivalLinkPoints.Any(n => LinkHelper.IsExternalLinkToTargetGroup(board, n)))
                 return ConfirmAliveResult.Alive;
 
-            //check target alive
-            return LifeCheck.ConfirmAlive(board);
+            if (UniquePatternsHelper.CheckForTenThousandYearKo(board))
+                return ConfirmAliveResult.Alive;
+
+            return ConfirmAliveResult.Unknown;
         }
 
         /// <summary>

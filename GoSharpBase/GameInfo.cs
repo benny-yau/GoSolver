@@ -30,6 +30,7 @@ namespace Go
         public List<List<Point>> dictatePoints = new List<List<Point>>();
         public List<CorrectedList> correctedSolutions = new List<CorrectedList>();
         public Boolean SurvivalWinForBothAlive = true;
+        public Boolean IncludeTenThousandYearKo = false;
 
 
         private List<List<Point>> combinedSolutions;

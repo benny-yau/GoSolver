@@ -1754,6 +1754,7 @@
             <summary>
             Check one neighbour group for suicidal connect and die.
             <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260804_8" />
+            Check diagonal cut <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_20260813_8" />
             Check for one neighbour group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31444_2" />
             </summary>
         </member>
@@ -2490,14 +2491,9 @@
             Game ended message.
             </summary>
         </member>
-        <member name="T:Go.UniquePatternsHelper">
-            <summary>
-            Unique patterns such as BentFour and Ten Thousand Year Ko have to identified and return the correct result that can be different from calculated result.
-            </summary>
-        </member>
         <member name="M:Go.UniquePatternsHelper.CheckForBentFour(Go.Board,System.Collections.Generic.List{Go.GameTryMove})">
             <summary>
-            Bent four is a unique scenario where it appears to be ko alive but is essentially dead. 
+            Bent four is a unique scenario which appears to be ko alive but is essentially dead. 
             https://senseis.xmp.net/?BentFourInTheCorner
             <see cref="!:UnitTestProject.BentFourTest.BentFourTest_Scenario7kyu26_2" />
             Check for covered eye <see cref="!:UnitTestProject.BentFourTest.BentFourTest_Scenario_Corner_A87" />
@@ -2508,10 +2504,11 @@
             Bent three or straight three formation at corner with two liberty points in killer group.
             </summary>
         </member>
-        <member name="M:Go.UniquePatternsHelper.CheckForTenThousandYearKo(Go.Game)">
+        <member name="M:Go.UniquePatternsHelper.CheckForTenThousandYearKo(Go.Board)">
             <summary>
-            The ten thousand year ko appears to be ko alive but is essentially alive. 
+            Check for ten thousand year ko. 
             https://senseis.xmp.net/?TenThousandYearKo
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260813_8" />
             <see cref="!:UnitTestProject.TenThousandYearKoTest.TenThousandYearKoTest_Scenario_XuanXuanGo_Q18500" />
             </summary>
         </member>

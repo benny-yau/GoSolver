@@ -969,6 +969,7 @@ namespace Go
         /// <summary>
         /// Check one neighbour group for suicidal connect and die.
         /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260804_8" />
+        /// Check diagonal cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_20260813_8" />
         /// Check for one neighbour group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31444_2" />
         /// </summary>
         private static Boolean CheckOneNeighbourGroupForSuicidalConnectAndDie(GameTryMove tryMove, Board captureBoard)
@@ -978,6 +979,8 @@ namespace Go
             Content c = tryMove.MoveContent;
             if (GroupHelper.GetKillerGroupFromCache(tryBoard, move, c.Opposite()) != null) return false;
             if (captureBoard.GetMoveLiberties().Any()) return false;
+            //check diagonal cut
+            if (!LinkHelper.FindDiagonalCut(captureBoard).Any()) return false;
             //check for one neighbour group
             Group kgroup = GroupHelper.GetDirectKillerGroup(captureBoard, move, c.Opposite());
             if (kgroup != null && captureBoard.GetNeighbourGroups(kgroup).Count == 1)

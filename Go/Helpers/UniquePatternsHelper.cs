@@ -6,13 +6,11 @@ using dh = Go.DirectionHelper;
 
 namespace Go
 {
-    /// <summary>
-    /// Unique patterns such as BentFour and Ten Thousand Year Ko have to identified and return the correct result that can be different from calculated result.
-    /// </summary>
     public class UniquePatternsHelper
     {
+        #region bent four
         /// <summary>
-        /// Bent four is a unique scenario where it appears to be ko alive but is essentially dead. 
+        /// Bent four is a unique scenario which appears to be ko alive but is essentially dead. 
         /// https://senseis.xmp.net/?BentFourInTheCorner
         /// <see cref="UnitTestProject.BentFourTest.BentFourTest_Scenario7kyu26_2" />
         /// Check for covered eye <see cref="UnitTestProject.BentFourTest.BentFourTest_Scenario_Corner_A87" />
@@ -79,39 +77,45 @@ namespace Go
             }
             return false;
         }
+        #endregion
 
+        #region ten thousand year ko
         /// <summary>
-        /// The ten thousand year ko appears to be ko alive but is essentially alive. 
+        /// Check for ten thousand year ko. 
         /// https://senseis.xmp.net/?TenThousandYearKo
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260813_8" />
         /// <see cref="UnitTestProject.TenThousandYearKoTest.TenThousandYearKoTest_Scenario_XuanXuanGo_Q18500" />
         /// </summary>
-        public static Boolean CheckForTenThousandYearKo(Game game)
+        public static Boolean CheckForTenThousandYearKo(Board board)
         {
-            Board board = game.Board;
-            List<Group> killerGroups = GroupHelper.GetKillerGroups(board);
-            if (killerGroups.Count != 1)
-                return false;
-            //check for only one neighbour group
-            Group killerGroup = killerGroups[0];
-            List<Group> survivalGroups = board.GetNeighbourGroups(killerGroup);
-            if (survivalGroups.Count != 1)
-                return false;
-            //at least 7 points in killer group with 3 empty points
-            if (killerGroup.Points.Count >= 7)
+            GameInfo gi = board.GameInfo;
+            if (!gi.IncludeTenThousandYearKo) return false;
+            if (gi.Survival != SurviveOrKill.Survive && gi.Survival != SurviveOrKill.KillWithKo) return false;
+            foreach (Group kgroup in GroupHelper.GetKillerGroups(board))
             {
-                List<Point> emptyPoints = killerGroup.Points.Where(m => board[m] == Content.Empty).ToList();
-                //ensure at least 3 external liberties 
-                if (emptyPoints.Count == 3 && survivalGroups.First().Liberties.Except(emptyPoints).Count() >= 3)
-                {
-                    //one ten thousand year eye plus one empty group with two points
-                    List<Point> eyeFound = emptyPoints.Where(p => TenThousandYearKoEye(board, p, killerGroup.Content)).ToList();
-                    if (eyeFound.Count == 1 && emptyPoints.Except(eyeFound).All(e => !board.CornerPoint(e) && board.GetStoneNeighbours(e).Count(n => board[n] == Content.Empty) == 1))
-                        return true;
-                }
+                Content c = kgroup.Content;
+                List<Group> ngroups = board.GetNeighbourGroups(kgroup);
+                if (ngroups.Count != 1) continue;
+                Group ngroup = ngroups.First();
+                if (kgroup.Points.Count < 7) continue;
+                //check target group
+                if (!LifeCheck.GetTargets(board).Any(n => n.Equals(ngroup))) continue;
+                //check empty points
+                List<Point> emptyPoints = kgroup.Points.Where(n => board[n] == Content.Empty).ToList();
+                if (emptyPoints.Count != 3) continue;
+                //check ten thousand year eye
+                List<Point> eye = emptyPoints.Where(p => TenThousandYearKoEye(board, p, kgroup.Content)).ToList();
+                if (eye.Count != 1) continue;
+                //check content points
+                List<Point> contentPoints = kgroup.Points.Where(n => board[n] == c).ToList();
+                if (board.GetGroupsFromPoints(contentPoints).Count != 2) continue;
+                //check points in empty space
+                Boolean rc = emptyPoints.Except(eye).All(n => board.GetStoneNeighbours(n).Count(s => board[s] == Content.Empty) == 1);
+                if (!rc) continue;
+                return true;
             }
             return false;
         }
-
 
         /// <summary>
         /// Ten thousand year ko eye.
@@ -121,59 +125,16 @@ namespace Go
 16 X X X X X O . . . . . . . . . . . . . 
 17 X O O . X O . O . . . . . . . . . . . 
 18 O . O . X O . . . . . . . . . . . . .
-        currentDirection == Direction.Up
         */
         public static Boolean TenThousandYearKoEye(Board board, Point p, Content c)
         {
             if (!EyeHelper.FindEye(board, p, c)) return false;
-            int isOppositeContent = 0;
-            //ensure eye found at the edge only
-            if (board.PointWithinMiddleArea(p)) //middle area
+            if (board.PointWithinMiddleArea(p))
                 return false;
-
-            Direction currentDirection;
-            for (int i = 0; i <= dh.DirectionLinkedList.Count - 1; i++)
-            {
-                //start with eye at bottom edge
-                currentDirection = dh.GetNewDirection(Direction.Up, i);
-                Point upPoint = dh.GetPointInDirection(board, p, currentDirection, false);
-                if (dh.IsEdgeInDirection(board, p, currentDirection.Opposite()))
-                {
-                    Point leftPoint = dh.GetPointInDirection(board, upPoint, dh.GetNewDirection(Direction.Left, i));
-                    if (leftPoint.Equals(Game.PassMove)) return false;
-
-                    Point rightPoint = dh.GetPointInDirection(board, upPoint, dh.GetNewDirection(Direction.Right, i));
-                    if (rightPoint.Equals(Game.PassMove)) return false;
-
-                    if (board[leftPoint] == c.Opposite())
-                    {
-                        isOppositeContent += 1;
-                        Point leftLeftPoint = dh.GetPointInDirection(2, board, p, dh.GetNewDirection(Direction.Left, i));
-                        if (!leftLeftPoint.Equals(Game.PassMove) && board[leftLeftPoint] != c.Opposite())
-                            return false;
-                        if (board[rightPoint] != c)
-                            return false;
-                        break;
-                    }
-                    if (board[rightPoint] == c.Opposite())
-                    {
-                        isOppositeContent += 1;
-                        Point rightRightPoint = dh.GetPointInDirection(2, board, p, dh.GetNewDirection(Direction.Right, i));
-                        if (!rightRightPoint.Equals(Game.PassMove) && board[rightRightPoint] != c.Opposite())
-                            return false;
-                        if (board[leftPoint] != c)
-                            return false;
-                        break;
-                    }
-                }
-            }
-
-            if (isOppositeContent == 1)
+            if (KoHelper.IsKoFight(board, p, c).Item1)
                 return true;
-
             return false;
         }
-
-
+        #endregion
     }
 }
