@@ -903,8 +903,8 @@ namespace Go
             if (KillerFormationHelper.CheckBoxFormationSuicidalMove(tryBoard, currentBoard).Item1)
                 return true;
 
-            //check one neighbour group
-            if (CheckOneNeighbourGroupForSuicidalConnectAndDie(tryMove, captureBoard))
+            //check killer group
+            if (CheckKillerGroupForSuicidalConnectAndDie(tryMove, captureBoard))
                 return true;
 
             //check diagonal for real eye
@@ -967,12 +967,12 @@ namespace Go
         }
 
         /// <summary>
-        /// Check one neighbour group for suicidal connect and die.
+        /// Check killer group for suicidal connect and die.
         /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260804_8" />
         /// Check diagonal cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_20260813_8" />
-        /// Check for one neighbour group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31444_2" />
+        /// Check killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31444_2" />
         /// </summary>
-        private static Boolean CheckOneNeighbourGroupForSuicidalConnectAndDie(GameTryMove tryMove, Board captureBoard)
+        private static Boolean CheckKillerGroupForSuicidalConnectAndDie(GameTryMove tryMove, Board captureBoard)
         {
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
@@ -981,9 +981,8 @@ namespace Go
             if (captureBoard.GetMoveLiberties().Any()) return false;
             //check diagonal cut
             if (!LinkHelper.FindDiagonalCut(captureBoard).Any()) return false;
-            //check for one neighbour group
-            Group kgroup = GroupHelper.GetDirectKillerGroup(captureBoard, move, c.Opposite());
-            if (kgroup != null && captureBoard.GetNeighbourGroups(kgroup).Count == 1)
+            //check killer group
+            if (GroupHelper.IsSingleGroupWithinKillerGroup(captureBoard, tryBoard.MoveGroup))
                 return true;
             return false;
         }
@@ -1182,7 +1181,7 @@ namespace Go
         /// Check one point move diagonals in connect and die.
         /// Check empty point at diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_3" />
         /// Check killer formation <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />     
-        /// Ensure liberty at side <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260516_8" />
+        /// Check strong neighbour groups <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260516_8" />
         /// Check diagonal move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A61" />
         /// Check weak group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
         /// </summary>
@@ -1207,9 +1206,9 @@ namespace Go
             if (tryBoard[d.Value] == Content.Empty && !WallHelper.HostileNeighbourGroups(tryBoard))
                 return false;
 
-            //ensure liberty at side
+            //check strong neighbour groups
             Point q = captureBoard.GetMoveLiberties(move).First();
-            if (captureBoard.PointWithinMiddleArea(q))
+            if (tryBoard[d.Value] != Content.Empty && captureBoard.PointWithinMiddleArea(q) && !WallHelper.StrongNeighbourGroups(tryBoard))
                 return false;
 
             //check diagonal move
@@ -1223,7 +1222,9 @@ namespace Go
                 if (ngroup.Liberties.Count != 2) continue;
                 foreach (Board b in GameHelper.GetMoveBoards(captureBoard, ngroup.Liberties, c, true))
                 {
-                    if (b.GetStoneAndDiagonalNeighbours().Any(n => !n.Equals(move) && !WallHelper.NoEyeForSurvival(captureBoard, n, c.Opposite())))
+                    Board b2 = ImmovableHelper.CaptureSuicideGroup(b, tryBoard.MoveGroup);
+                    if (b2 == null) continue;
+                    if (b2.GetStoneAndDiagonalNeighbours(b.Move.Value).Any(n => b2[n] == Content.Empty && !WallHelper.NoEyeForSurvival(b2, n, c)))
                         return false;
                 }
             }

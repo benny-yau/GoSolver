@@ -104,14 +104,16 @@ namespace Go
                 List<Point> emptyPoints = kgroup.Points.Where(n => board[n] == Content.Empty).ToList();
                 if (emptyPoints.Count != 3) continue;
                 //check ten thousand year eye
-                List<Point> eye = emptyPoints.Where(p => TenThousandYearKoEye(board, p, kgroup.Content)).ToList();
-                if (eye.Count != 1) continue;
+                Point eye = emptyPoints.FirstOrDefault(p => TenThousandYearKoEye(board, p, c));
+                if (eye.IsEmpty()) continue;
                 //check content points
                 List<Point> contentPoints = kgroup.Points.Where(n => board[n] == c).ToList();
                 if (board.GetGroupsFromPoints(contentPoints).Count != 2) continue;
                 //check points in empty space
-                Boolean rc = emptyPoints.Except(eye).All(n => board.GetStoneNeighbours(n).Count(s => board[s] == Content.Empty) == 1);
-                if (!rc) continue;
+                emptyPoints.Remove(eye);
+                if (emptyPoints.Any(n => board.CornerPoint(n))) continue;
+                if (!emptyPoints.Any(n => board.GetGroupsFromStoneNeighbours(n, c).Contains(ngroup))) continue;
+                if (!board.GetStoneNeighbours(emptyPoints[0]).Contains(emptyPoints[1])) continue;
                 return true;
             }
             return false;
@@ -128,12 +130,13 @@ namespace Go
         */
         public static Boolean TenThousandYearKoEye(Board board, Point p, Content c)
         {
-            if (!EyeHelper.FindEye(board, p, c)) return false;
             if (board.PointWithinMiddleArea(p))
                 return false;
-            if (KoHelper.IsKoFight(board, p, c).Item1)
-                return true;
-            return false;
+            if (!KoHelper.IsKoFight(board, p, c).Item1)
+                return false;
+            if (board.GetGroupsFromStoneNeighbours(p, c.Opposite()).Count != 2)
+                return false;
+            return true;
         }
         #endregion
     }
