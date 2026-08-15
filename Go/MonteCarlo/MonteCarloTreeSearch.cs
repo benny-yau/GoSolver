@@ -85,34 +85,28 @@ namespace Go
             do
             {
                 count++;
-                //select best node
+                //select promising node
                 Node promisingNode = SelectPromisingNode(tree.Root);
 
-                //ensure visit count has reached min requirement
-                if (!promisingNode.Expanded && (promisingNode == tree.Root || promisingNode.State.VisitCount >= VisitCountMinReq))
+                //expand node
+                if (ExpandNode(promisingNode))
                 {
-                    //expand possible states
-                    ExpandNode(promisingNode);
                     if (HandleConfirmedCases(promisingNode)) continue;
                     promisingNode = RandomChildNode(promisingNode);
                 }
-                //check if all nodes pruned
-                if (CheckIfAllNodesPruned(promisingNode)) 
+
+                //check if game ended
+                if (CheckIfGameEnded(promisingNode)) 
                     break;
 
-                //verify on depth reached or no possible states to expand
-                if (ReachedDepthToVerify(promisingNode) || promisingNode.NoPossibleStates)
-                    VerifyOnDepthReached(promisingNode);
+                //verify on depth reached
+                VerifyOnDepthReached(promisingNode);
 
                 //simulate random playout
                 SimulateRandomPlayout(promisingNode);
 
                 if (count % 60 == 0)
                     DebugHelper.WriteLine("Count: " + count + " | Last moves: " + promisingNode.GetLastMoves(), mctsDepth);
-
-                //break on answer found or no answer
-                if (AnswerNode != null || tree.Root.ChildArray.Count == 0)
-                    break;
             } while (count <= maxIterations);
             CheckTimeTaken(watch);
         }
@@ -129,10 +123,12 @@ namespace Go
         }
 
         /// <summary>
-        /// Check if all nodes pruned.
+        /// Check if game ended.
         /// </summary>
-        private Boolean CheckIfAllNodesPruned(Node promisingNode)
+        private Boolean CheckIfGameEnded(Node promisingNode)
         {
+            if (AnswerNode != null || tree.Root.ChildArray.Count == 0)
+                return true;
             if (promisingNode.ChildArray.Count == 0 && promisingNode.Expanded)
             {
                 if (promisingNode.CurrentDepth == this.tree.Root.CurrentDepth) return true;
@@ -154,17 +150,21 @@ namespace Go
         /// </summary>
         private void VerifyOnDepthReached(Node promisingNode)
         {
-            //verify with exhaustive search
-            Node verifyNode = (promisingNode.NoPossibleStates) ? promisingNode : promisingNode.Parent;
-            Boolean isWin = VerifyWithExhaustiveSearch(verifyNode);
-            if (isWin && AnswerFound(verifyNode))
-                return;
+            //reached depth to verify or no possible states to expand
+            if (ReachedDepthToVerify(promisingNode) || promisingNode.NoPossibleStates)
+            {
+                //verify with exhaustive search
+                Node verifyNode = (promisingNode.NoPossibleStates) ? promisingNode : promisingNode.Parent;
+                Boolean isWin = VerifyWithExhaustiveSearch(verifyNode);
+                if (isWin && AnswerFound(verifyNode))
+                    return;
 
-            //prune node based on result
-            if (isWin)
-                PrunePromisingNode(verifyNode.Parent, verifyNode, isWin);
-            else
-                PrunePromisingNode(verifyNode, null, isWin);
+                //prune node based on result
+                if (isWin)
+                    PrunePromisingNode(verifyNode.Parent, verifyNode, isWin);
+                else
+                    PrunePromisingNode(verifyNode, null, isWin);
+            }
         }
 
         /// <summary>
@@ -332,28 +332,34 @@ namespace Go
         /// <summary>
         /// Expansion phase - expand all possible states and check confirm alive.
         /// </summary>
-        private void ExpandNode(Node node)
+        private Boolean ExpandNode(Node node)
         {
-            if (node.Expanded) return;
-            List<State> possibleStates = node.State.AllPossibleStates;
-            for (int i = 0; i <= possibleStates.Count - 1; i++)
+            if (node.Expanded) return false;
+            //check visit count reached min requirement
+            if (node.State.VisitCount >= VisitCountMinReq || node == tree.Root)
             {
-                State state = possibleStates[i];
-                Node childNode = new Node(state);
-                childNode.Parent = node;
-                node.ChildArray.Add(childNode);
-                childNode.State.Depth = node.State.Depth + 1;
+                List<State> possibleStates = node.State.AllPossibleStates;
+                for (int i = 0; i <= possibleStates.Count - 1; i++)
+                {
+                    State state = possibleStates[i];
+                    Node childNode = new Node(state);
+                    childNode.Parent = node;
+                    node.ChildArray.Add(childNode);
+                    childNode.State.Depth = node.State.Depth + 1;
 
-                //check if game ended by confirm alive
-                SurviveOrKill surviveOrKill = childNode.State.SurviveOrKill;
-                Game g = childNode.State.Game;
-                ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(surviveOrKill, g.Board);
-                childNode.State.ConfirmAlive = confirmAlive;
-                if (confirmAlive != ConfirmAliveResult.Unknown && GameHelper.WinOrLose(surviveOrKill, confirmAlive, g.GameInfo))
-                    childNode.State.WinOrLose = true;
+                    //check if game ended by confirm alive
+                    SurviveOrKill surviveOrKill = childNode.State.SurviveOrKill;
+                    Game g = childNode.State.Game;
+                    ConfirmAliveResult confirmAlive = LifeCheck.CheckIfDeadOrAlive(surviveOrKill, g.Board);
+                    childNode.State.ConfirmAlive = confirmAlive;
+                    if (confirmAlive != ConfirmAliveResult.Unknown && GameHelper.WinOrLose(surviveOrKill, confirmAlive, g.GameInfo))
+                        childNode.State.WinOrLose = true;
+                }
+                node.Expanded = true;
+                if (node.ChildArray.Count == 0) node.NoPossibleStates = true;
+                return true;
             }
-            node.Expanded = true;
-            if (node.ChildArray.Count == 0) node.NoPossibleStates = true;
+            return false;
         }
 
         /// <summary>

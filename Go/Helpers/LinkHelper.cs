@@ -112,15 +112,18 @@ namespace Go
             if (npoints.Count > 1 && !tryBoard.GetStoneNeighbours(npoints[0]).Contains(npoints[1])) return false;
 
             //get diagonal in leap direction
-            List<Point> moveDiagonal = tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] == Content.Empty && !tryBoard.GetStoneNeighbours(n).Intersect(npoints).Any()).ToList();
-            if (moveDiagonal.Count != 1) return false;
-            Point d = moveDiagonal.First();
+            List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] == Content.Empty && !tryBoard.GetStoneNeighbours(n).Intersect(npoints).Any()).ToList();
+            if (diagonals.Count != 1) return false;
+            Point d = diagonals.First();
             if (!GameHelper.SetupMoveAvailable(tryBoard, d, c)) return false;
 
             //make block move
-            Point blockMove = tryBoard.GetStoneNeighbours(d).First(n => !tryBoard.PointWithinMiddleArea(n));
-            if (tryBoard.GetMoveLiberties().Contains(blockMove))
-                return ImmovableHelper.ConnectAndDieMove(tryBoard, blockMove, c.Opposite()).Item1;
+            Point blockMove = tryBoard.GetMoveLiberties().FirstOrDefault(n => !tryBoard.PointWithinMiddleArea(n) && tryBoard.GetStoneNeighbours(n).Contains(d));
+            if (blockMove.IsEmpty()) return false;
+            Board b = tryBoard.MakeMoveOnNewBoard(blockMove, c.Opposite(), true);
+            if (b == null) return false;
+            if (b.MoveGroupLiberties == 1 && b.GetNeighbourGroups().Count > 1) return true;
+            if (b.MoveGroupLiberties == 2 && ImmovableHelper.CheckConnectAndDie(b)) return true;
             return false;
         }
 
@@ -236,15 +239,15 @@ namespace Go
         #region diagonal connected groups
         /// <summary>
         /// Check is diagonal linked.
-        /// Both diagonals empty <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_4" />
+        /// Check both diagonals empty <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_TianLongTu_Q16571_4" />
         /// Check negligible for links <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_8" />
-        /// Check any diagonal separated by opposite content <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_5" />
+        /// Check killer group <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30150_5" />
         /// </summary>
         public static Boolean CheckIsDiagonalLinked(Point pointA, Point pointB, Board board, Boolean immediateLink = true)
         {
             Content c = board[pointA];
             List<Point> diagonals = LinkHelper.PointsBetweenDiagonals(pointA, pointB);
-            //if any diagonal is same content then is linked
+            //check any diagonal same content
             if (diagonals.Any(d => board[d] == c))
                 return true;
 
@@ -252,7 +255,7 @@ namespace Go
             if (diagonals.Any(d => board[d] == Content.Empty && ImmovableHelper.IsImmovablePoint(board, d, c)))
                 return true;
 
-            //if both diagonals empty then is linked
+            //check both diagonals empty
             if (diagonals.All(d => board[d] == Content.Empty))
             {
                 if (immediateLink) return true;
@@ -267,12 +270,14 @@ namespace Go
                 }
                 return true;
             }
-            //check any diagonal separated by opposite content
+            //check any diagonal opposite content
             foreach (Point p in diagonals)
             {
                 if (board[p] != c.Opposite()) continue;
+                //check immovable at diagonal
                 if (!ImmovableHelper.IsImmovablePoint(board, p, c)) continue;
                 if (immediateLink) return true;
+                //check killer group
                 if (GroupHelper.GetKillerGroupOfStrongNeighbourGroups(board, p, c) == null)
                     continue;
                 return true;
