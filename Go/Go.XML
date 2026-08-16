@@ -1947,6 +1947,12 @@
             Without opposite content <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B4" />
             </summary>
         </member>
+        <member name="M:Go.RedundantMoveHelper.CheckMoveBeyondNonKillableGroup(Go.GameTryMove)">
+            <summary>
+            Check move beyond non killable group.
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260816_6" />
+            </summary>
+        </member>
         <member name="M:Go.RedundantMoveHelper.CoveredPointSideMove(Go.GameTryMove,Go.GameTryMove)">
             <summary>
             Covered point side move.

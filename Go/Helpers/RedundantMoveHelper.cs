@@ -1880,7 +1880,11 @@ namespace Go
             if (GameHelper.GetContentForSurviveOrKill(tryBoard.GameInfo, SurviveOrKill.Survive) == c)
             {
                 if (WallHelper.TargetWithAnyNonKillableGroup(tryBoard) && WallHelper.StrongNeighbourGroups(capturedBoard, move, c))
+                {
+                    if (opponentMove != null && CheckMoveBeyondNonKillableGroup(tryMove))
+                        return false;
                     return true;
+                }
             }
             else
             {
@@ -1907,6 +1911,35 @@ namespace Go
                         return true;
                 }
             }
+            return false;
+        }
+
+        /// <summary>
+        /// Check move beyond non killable group.
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260816_6" />
+        /// </summary>
+        private static Boolean CheckMoveBeyondNonKillableGroup(GameTryMove tryMove)
+        {
+            Point move = tryMove.Move;
+            Board tryBoard = tryMove.TryGame.Board;
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Content c = tryMove.MoveContent;
+            if (!currentBoard.GetMoveLiberties(move).Any()) return false;
+            Point? libertyPoint = ImmovableHelper.FindTigerMouth(currentBoard, move, c.Opposite());
+            if (libertyPoint == null) return false;
+            if (KoHelper.IsKoFight(tryBoard)) return false;
+            if (currentBoard.PointWithinMiddleArea(libertyPoint.Value) && !currentBoard.PointWithinMiddleArea(move)) return false;
+            //check move available at liberty point
+            if (!GameHelper.SetupMoveAvailable(currentBoard, libertyPoint.Value, c)) return false;
+            //capture atari target
+            if (tryBoard.AtariTargets.Count != 1) return false;
+            Group target = tryBoard.AtariTargets.First();
+            if (target.Points.Count != 1) return false;
+            Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, target);
+            if (KoHelper.IsKoFight(b)) return false;
+            //check block move at liberty point
+            if (ImmovableHelper.ConnectAndDieMove(b, libertyPoint.Value, c.Opposite(), true).Item1)
+                return true;
             return false;
         }
 
@@ -2437,6 +2470,9 @@ namespace Go
                 if (MustHaveMoveAtBigTigerMouth(suicideBoard, tryMove))
                     return true;
             }
+            //check move beyond non killable group
+            if (CheckMoveBeyondNonKillableGroup(opponentMove))
+                return true;
             return false;
         }
 
