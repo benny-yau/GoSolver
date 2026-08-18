@@ -992,12 +992,11 @@ namespace ScenarioCollection
         }
 
 
-
         /*
  14 . . . . . X X . . . . . . . . . . . . 
  15 . . X X X O . X . X . . . . . . . . . 
- 16 . X O O O O . O X . . . . . . . . . . 
- 17 . X X O . . . O O X . . . . . . . . . 
+ 16 . X O O O O . O X . X . . . . . . . . 
+ 17 . X X O . . . O O X . . O . . . . . . 
  18 . . . . . . . . . . . . . . . . . . . 
          */
         public Game Scenario_WuQingYuan_Q31240()
@@ -1028,9 +1027,11 @@ namespace ScenarioCollection
             g.SetupMove(8, 17, Content.White);
             g.SetupMove(9, 15, Content.Black);
             g.SetupMove(9, 17, Content.Black);
+            g.SetupMove(10, 16, Content.Black);
+            g.SetupMove(12, 17, Content.White);
 
             gi.targetPoints = new List<Point>() { new Point(3, 17) };
-            for (int x = 2; x <= 9; x++)
+            for (int x = 2; x <= 12; x++)
             {
                 for (int y = 17; y <= 18; y++)
                     gi.movablePoints.Add(new Point(x, y));
@@ -1039,17 +1040,10 @@ namespace ScenarioCollection
             gi.movablePoints.Add(new Point(6, 16));
             gi.killMovablePoints.AddRange(gi.movablePoints);
             gi.killMovablePoints.Add(new Point(1, 18));
-            gi.killMovablePoints.Add(new Point(10, 18));
+            gi.survivalLinkPoints.Add(new Point(12, 17));
             gi.solutionPoints.Add(new List<Point>() { new Point(3, 18), new Point(4, 18), new Point(6, 17), new Point(5, 17), new Point(6, 16), new Point(6, 15), new Point(6, 18) });
-
-            //move outside boundary
-            gi.correctedSolutions.Add(new CorrectedList(new List<Point>() { new Point(8, 18), new Point(5, 17), new Point(4, 18), new Point(3, 18), new Point(7, 18), new Point(6, 18), new Point(6, 16), new Point(9, 18) }));
-            gi.correctedSolutions.Add(new CorrectedList(new List<Point>() { new Point(8, 18), new Point(5, 17), new Point(7, 18), new Point(6, 18) }));
-
             gi.PlayerMoveJson = gi.PlayerMoveJsonExtension = ResourceHelper.GetGoSeigenMappedJsonExtensionString("Scenario_WuQingYuan_Q31240_PlayerMoveExtension");
             gi.ChallengeMoveJson = gi.ChallengeMoveJsonExtension = ResourceHelper.GetGoSeigenMappedJsonExtensionString("Scenario_WuQingYuan_Q31240_ChallengeMoveExtension");
-
-
             return g;
         }
 

@@ -1053,7 +1053,8 @@ namespace Go
                     if (!tryBoard.PointWithinMiddleArea())
                     {
                         //check point next to corner
-                        if (tryBoard.IsPointNextToCorner()) continue;
+                        if (tryBoard.IsPointNextToCorner() && !WallHelper.IsHostileGroup(captureBoard))
+                            continue;
                         //check three-point killer group
                         Group kgroup = GroupHelper.GetDirectKillerGroup(captureBoard, move, c.Opposite());
                         if (kgroup != null && kgroup.Points.Count == 3) continue;
@@ -1179,11 +1180,11 @@ namespace Go
 
         /// <summary>
         /// Check one point move diagonals in connect and die.
-        /// Check empty point at diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_3" />
         /// Check killer formation <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />     
         /// Check strong neighbour groups <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260516_8" />
         /// Check diagonal move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A61" />
         /// Check weak group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_3" />
         /// </summary>
         private static Boolean CheckOnePointMoveDiagonalsInConnectAndDie(GameTryMove tryMove, Board captureBoard)
         {
@@ -1201,10 +1202,6 @@ namespace Go
 
             if (tryBoard[d.Value] == c.Opposite())
                 return true;
-
-            //check empty point at diagonal
-            if (tryBoard[d.Value] == Content.Empty && !WallHelper.HostileNeighbourGroups(tryBoard))
-                return false;
 
             //check strong neighbour groups
             Point q = captureBoard.GetMoveLiberties(move).First();
@@ -1518,6 +1515,7 @@ namespace Go
         /// <summary>
         /// Check real eye in suicidal connect and die.
         /// Check four-point group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A67_2" />
+        /// Check rectangle six formation <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260818_7" />
         /// </summary>
         private static Boolean CheckRealEyeInSuicidalConnectAndDie(GameTryMove tryMove, Board captureBoard)
         {
@@ -1540,6 +1538,10 @@ namespace Go
 
                 //check four-point group
                 if (tryBoard.MoveGroup.Points.Count == 4 && !EyeHelper.CheckRealEyeInNeighbourGroups(tryBoard, captureBoard))
+                    return false;
+
+                //check rectangle six formation
+                if (KillerFormationHelper.RectangleSixFormation(tryBoard))
                     return false;
             }
             return true;
@@ -1927,10 +1929,10 @@ namespace Go
             if (!currentBoard.GetMoveLiberties(move).Any()) return false;
             Point? libertyPoint = ImmovableHelper.FindTigerMouth(currentBoard, move, c.Opposite());
             if (libertyPoint == null) return false;
-            if (KoHelper.IsKoFight(tryBoard)) return false;
-            if (currentBoard.PointWithinMiddleArea(libertyPoint.Value) && !currentBoard.PointWithinMiddleArea(move)) return false;
             //check move available at liberty point
             if (!GameHelper.SetupMoveAvailable(currentBoard, libertyPoint.Value, c)) return false;
+            if (KoHelper.IsKoFight(tryBoard)) return false;
+            if (currentBoard.PointWithinMiddleArea(libertyPoint.Value) && !currentBoard.PointWithinMiddleArea(move)) return false;
             //capture atari target
             if (tryBoard.AtariTargets.Count != 1) return false;
             Group target = tryBoard.AtariTargets.First();
@@ -2015,7 +2017,7 @@ namespace Go
                 if (b != null && b.MoveGroupLiberties == 1)
                 {
                     List<Group> groups = LinkHelper.GetPreviousMoveGroup(tryBoard, b);
-                    if (groups.Count >= 2 && !groups.All(n => n.Liberties.Count == 1))
+                    if (groups.Count == 2 && !groups.All(n => n.Liberties.Count == 1))
                         return false;
                 }
                 return true;

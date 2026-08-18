@@ -26,14 +26,10 @@ namespace Go
         /// <summary>
         /// Get solution move.
         /// </summary>
-        public static Point? GetSolutionMove(Board b, Boolean combinedSolutions = true)
+        public static Point? GetSolutionMove(Board b)
         {
             List<Point> solutionMoves = new List<Point>();
-            List<List<Point>> solutions;
-            if (combinedSolutions)
-                solutions = b.GameInfo.CombinedSolutions.Where(s => s.Count > b.LastMoves.Count).ToList();
-            else
-                solutions = b.GameInfo.solutionPoints.Where(s => s.Count > b.LastMoves.Count).ToList();
+            List<List<Point>> solutions = b.GameInfo.solutionPoints.Where(s => s.Count > b.LastMoves.Count).ToList();
 
             int? solutionIndex = FollowedSolution(solutions, b.LastMoves).FirstOrDefault();
             if (solutionIndex != null)
@@ -49,22 +45,17 @@ namespace Go
         /// </summary>
         public static ConfirmAliveResult CheckSolutionComplete(Board b)
         {
-            List<List<Point>> solutions = b.GameInfo.CombinedSolutions.Where(s => s.Count == b.LastMoves.Count).ToList();
+            List<List<Point>> solutions = b.GameInfo.solutionPoints.Where(s => s.Count == b.LastMoves.Count).ToList();
             int? solutionIndex = FollowedSolution(solutions, b.LastMoves).FirstOrDefault();
             if (solutionIndex == null)
                 return ConfirmAliveResult.Unknown;
             else
             {
                 List<Point> solution = solutions[solutionIndex.Value];
-                if (solution is CorrectedList)
-                    return ConfirmAliveResult.CorrectedSolution;
+                if (b.GameInfo.UserFirst == PlayerOrComputer.Computer)
+                    return ConfirmAliveResult.SolutionDisplayed;
                 else
-                {
-                    if (b.GameInfo.UserFirst == PlayerOrComputer.Computer)
-                        return ConfirmAliveResult.SolutionDisplayed;
-                    else
-                        return ConfirmAliveResult.Answer;
-                }
+                    return ConfirmAliveResult.Answer;
             }
         }
 
@@ -89,7 +80,7 @@ namespace Go
         /// </summary>
         public static Boolean AnswerFound(Game g)
         {
-            List<List<Point>> solutions = g.GameInfo.CombinedSolutions.Where(s => s.Count == g.Board.LastMoves.Count).ToList();
+            List<List<Point>> solutions = g.GameInfo.solutionPoints.Where(s => s.Count == g.Board.LastMoves.Count).ToList();
             return (FollowedSolution(solutions, g.Board.LastMoves).Any());
         }
 
@@ -326,8 +317,6 @@ namespace Go
                 else
                     msg = "Question solved" + (isKo ? " (Ko)." : ".");
             }
-            else if (result.HasFlag(ConfirmAliveResult.CorrectedSolution))
-                msg = "Incorrect move. Try again.";
             else if (result.HasFlag(ConfirmAliveResult.KoAlive))
                 msg = "Computer Ko move. Try again.";
             else if (result.HasFlag(ConfirmAliveResult.BothAlive))

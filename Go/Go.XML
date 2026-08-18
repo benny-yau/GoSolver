@@ -1138,27 +1138,6 @@
             End point covered. 
             </summary>
         </member>
-        <member name="M:Go.KillerFormationHelper.CornerThreeFormation(Go.Board,Go.Group)">
-            <summary>
-            Corner three formation.
-            </summary>
-        </member>
-        <member name="M:Go.KillerFormationHelper.PossibleCornerThreeFormation(Go.Board,Go.Point,Go.Content)">
-            <summary>
-            Possible corner three formation. 
-            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A139_2" />
-            </summary>
-        </member>
-        <member name="M:Go.KillerFormationHelper.CornerSixFormation(Go.Board,Go.Group)">
-            <summary>
-            Corner six formation.
-            </summary>
-        </member>
-        <member name="M:Go.KillerFormationHelper.BentFourCornerFormation(Go.Board,Go.Group)">
-            <summary>
-            Bent four corner formation.
-            </summary>
-        </member>
         <member name="M:Go.KillerFormationHelper.GetPointIntersect(Go.Board,System.Collections.Generic.IEnumerable{Go.Point})">
             <summary>
             Get point intersect.
@@ -1182,6 +1161,32 @@
         <member name="M:Go.KillerFormationHelper.MaxLengthOfGrid(System.Collections.Generic.IEnumerable{Go.Point})">
             <summary>
             Max length of x and y length of grid.
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.CornerThreeFormation(Go.Board,Go.Group)">
+            <summary>
+            Corner three formation.
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.PossibleCornerThreeFormation(Go.Board,Go.Point,Go.Content)">
+            <summary>
+            Possible corner three formation. 
+            <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_A139_2" />
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.CornerSixFormation(Go.Board,Go.Group)">
+            <summary>
+            Corner six formation.
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.BentFourCornerFormation(Go.Board,Go.Group)">
+            <summary>
+            Bent four corner formation.
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.RectangleSixFormation(Go.Board,Go.Group)">
+            <summary>
+            Rectangle six formation.
             </summary>
         </member>
         <member name="M:Go.KillerFormationHelper.OpponentBreakKillFormation(Go.Board,Go.Board)">
@@ -1800,11 +1805,11 @@
         <member name="M:Go.RedundantMoveHelper.CheckOnePointMoveDiagonalsInConnectAndDie(Go.GameTryMove,Go.Board)">
             <summary>
             Check one point move diagonals in connect and die.
-            Check empty point at diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_3" />
             Check killer formation <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />     
             Check strong neighbour groups <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260516_8" />
             Check diagonal move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A61" />
             Check weak group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A39" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_3" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckOnePointMoveWithoutDiagonalsInConnectAndDie(Go.GameTryMove,Go.Board)">
@@ -1873,6 +1878,7 @@
             <summary>
             Check real eye in suicidal connect and die.
             Check four-point group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A67_2" />
+            Check rectangle six formation <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260818_7" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.RedundantMultiPointMoveInConnectAndDie(Go.GameTryMove,Go.Board)">
@@ -2437,7 +2443,7 @@
             Use solution points.
             </summary>
         </member>
-        <member name="M:Go.SolutionHelper.GetSolutionMove(Go.Board,System.Boolean)">
+        <member name="M:Go.SolutionHelper.GetSolutionMove(Go.Board)">
             <summary>
             Get solution move.
             </summary>

@@ -28,26 +28,8 @@ namespace Go
         public List<Point> survivalPoints = new List<Point>();
         public List<Point> survivalLinkPoints = new List<Point>();
         public List<List<Point>> dictatePoints = new List<List<Point>>();
-        public List<CorrectedList> correctedSolutions = new List<CorrectedList>();
         public Boolean SurvivalWinForBothAlive = true;
         public Boolean IncludeTenThousandYearKo = false;
-
-
-        private List<List<Point>> combinedSolutions;
-        public List<List<Point>> CombinedSolutions
-        {
-            get
-            {
-                if (correctedSolutions.Count == 0)
-                    return solutionPoints;
-                else
-                {
-                    if (combinedSolutions == null)
-                        combinedSolutions = solutionPoints.Union(correctedSolutions).ToList();
-                    return combinedSolutions;
-                }
-            }
-        }
 
         Boolean[,] isMovablePoint;
         public Boolean[,] IsMovablePoint
@@ -213,11 +195,5 @@ namespace Go
             UserFirst = PlayerOrComputer.Player;
             SearchDepth = searchDepth;
         }
-    }
-
-    [Serializable]
-    public class CorrectedList : List<Point>
-    {
-        public CorrectedList(IEnumerable<Point> points) : base(points) { }
     }
 }

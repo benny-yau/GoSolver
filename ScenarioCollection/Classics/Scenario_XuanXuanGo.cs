@@ -2307,13 +2307,6 @@ namespace ScenarioCollection
             gi.killMovablePoints.Add(new Point(1, 18));
             gi.killMovablePoints.Add(new Point(9, 18));
             gi.solutionPoints.Add(new List<Point>() { new Point(3, 17), new Point(5, 18), new Point(7, 18), new Point(4, 17), new Point(6, 17), new Point(6, 18), new Point(6, 16) });
-
-            //move outside boundary
-            gi.correctedSolutions.Add(new CorrectedList(new List<Point>() { new Point(6, 15), new Point(6, 16), new Point(6, 18), new Point(7, 18), new Point(5, 18), new Point(4, 17) }));
-            gi.correctedSolutions.Add(new CorrectedList(new List<Point>() { new Point(6, 15), new Point(6, 16), new Point(6, 18), new Point(7, 18), new Point(3, 18), new Point(4, 17) }));
-
-            gi.PlayerMoveJson = gi.PlayerMoveJsonExtension = ResourceHelper.GetXuanXuanQiJingMappedJsonExtensionString("Scenario_XuanXuanGo_A59_PlayerMoveExtension");
-            gi.ChallengeMoveJson = gi.ChallengeMoveJsonExtension = ResourceHelper.GetXuanXuanQiJingMappedJsonExtensionString("Scenario_XuanXuanGo_A59_ChallengeMoveExtension");
             return g;
         }
         /*
@@ -3553,13 +3546,6 @@ namespace ScenarioCollection
 
             gi.solutionPoints.Add(new List<Point>() { new Point(2, 18), new Point(1, 16), new Point(2, 16), new Point(1, 18), new Point(0, 17), new Point(3, 14), new Point(0, 16), new Point(3, 18), new Point(2, 15), new Point(0, 13), new Point(0, 15) });
             gi.solutionPoints.Add(new List<Point>() { new Point(2, 18), new Point(1, 16), new Point(2, 16), new Point(1, 18), new Point(0, 16), new Point(3, 14), new Point(0, 17), new Point(3, 18), new Point(2, 15), new Point(0, 13), new Point(0, 15) });
-
-            gi.correctedSolutions.Add(new CorrectedList(new List<Point>() { new Point(2, 18), new Point(1, 16), new Point(2, 16), new Point(1, 15), new Point(0, 17), new Point(0, 13), new Point(0, 14), new Point(0, 16), new Point(1, 18), new Point(3, 14), new Point(2, 15), new Point(0, 18), new Point(0, 12), new Point(3, 18), new Point(1, 11) }));
-            gi.correctedSolutions.Add(new CorrectedList(new List<Point>() { new Point(2, 18), new Point(1, 16), new Point(2, 16), new Point(1, 15), new Point(0, 17), new Point(0, 13), new Point(0, 14), new Point(3, 14), new Point(2, 15), new Point(0, 16), new Point(1, 18), new Point(0, 18), new Point(0, 12), new Point(3, 18), new Point(1, 11) }));
-            gi.correctedSolutions.Add(new CorrectedList(new List<Point>() { new Point(2, 18), new Point(1, 16), new Point(2, 16), new Point(1, 15), new Point(0, 17), new Point(0, 13), new Point(0, 14), new Point(0, 16), new Point(1, 18), new Point(0, 18), new Point(0, 12), new Point(3, 18), new Point(1, 11) }));
-            gi.correctedSolutions.Add(new CorrectedList(new List<Point>() { new Point(2, 18), new Point(1, 16), new Point(2, 16), new Point(1, 15), new Point(0, 17), new Point(0, 13), new Point(0, 14), new Point(0, 16), new Point(1, 18), new Point(0, 18), new Point(0, 12), new Point(3, 14), new Point(2, 15), new Point(3, 18), new Point(1, 11) }));
-            gi.correctedSolutions.Add(new CorrectedList(new List<Point>() { new Point(2, 18), new Point(1, 16), new Point(2, 16), new Point(1, 15), new Point(0, 17), new Point(0, 16), new Point(1, 18), new Point(0, 13), new Point(2, 15), new Point(0, 18), new Point(0, 14) }));
-
             gi.PlayerMoveJson = gi.PlayerMoveJsonExtension = ResourceHelper.GetXuanXuanQiJingMappedJsonExtensionString("Scenario_XuanXuanGo_A28_101Weiqi_PlayerMoveExtension");
             gi.ChallengeMoveJson = gi.ChallengeMoveJsonExtension = ResourceHelper.GetXuanXuanQiJingMappedJsonExtensionString("Scenario_XuanXuanGo_A28_101Weiqi_ChallengeMoveExtension");
             return g;

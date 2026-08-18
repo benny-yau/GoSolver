@@ -1128,6 +1128,56 @@ namespace Go
             return false;
         }
 
+        /// <summary>
+        /// Get point intersect.
+        /// </summary>
+        public static IEnumerable<dynamic> GetPointIntersect(Board tryBoard, IEnumerable<Point> contentPoints)
+        {
+            return contentPoints.Select(p => new { point = p, intersectCount = tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() });
+        }
+
+        /// <summary>
+        /// Killer group within 3 by 2 grid.
+        /// </summary>
+        public static Boolean WithinThreeByTwoGrid(Group moveGroup)
+        {
+            (int xLength, int yLength) = WithinGrid(moveGroup.Points);
+            return ((xLength <= 2 && yLength <= 1) || (xLength <= 1 && yLength <= 2));
+        }
+
+        /// <summary>
+        /// Within grid, or rectangular space defining the max and min of points in x-axis and y-axis.
+        /// </summary>
+        public static (int, int) WithinGrid(IEnumerable<Point> points)
+        {
+            int xLength = points.Max(p => p.x) - points.Min(p => p.x);
+            int yLength = points.Max(p => p.y) - points.Min(p => p.y);
+            return (xLength, yLength);
+        }
+
+        /// <summary>
+        /// Grid dimension changed.
+        /// </summary>
+        public static Boolean GridDimensionChanged(IEnumerable<Point> pointsA, IEnumerable<Point> pointsB)
+        {
+            (int xLengthA, int yLengthA) = WithinGrid(pointsA);
+            (int xLengthB, int yLengthB) = WithinGrid(pointsB);
+            return (xLengthA != xLengthB || yLengthA != yLengthB);
+        }
+
+        /// <summary>
+        /// Max length of x and y length of grid.
+        /// </summary>
+        public static int MaxLengthOfGrid(IEnumerable<Point> points)
+        {
+            (int xLength, int yLength) = WithinGrid(points);
+            int maxLength = Math.Max(xLength, yLength);
+            return maxLength;
+        }
+        #endregion
+
+        #region exclusive killer formation patterns
+
         /*
     15 . . . . . . . . . . . . . . . . . . .
     16 . . . . . . . . . . . . . . . . . . . 
@@ -1215,52 +1265,28 @@ namespace Go
             return true;
         }
 
+        /*
+    15 . . . . . . . . . . . . . . . . . . .
+    16 . . . . X X X . . . . . . . . . . . . 
+    17 . . . . X X X . . . . . . . . . . . . 
+    18 . . . . . . . . . . . . . . . . . . . 
+            */
         /// <summary>
-        /// Get point intersect.
+        /// Rectangle six formation.
         /// </summary>
-        public static IEnumerable<dynamic> GetPointIntersect(Board tryBoard, IEnumerable<Point> contentPoints)
+        public static Boolean RectangleSixFormation(Board tryBoard, Group moveGroup = null)
         {
-            return contentPoints.Select(p => new { point = p, intersectCount = tryBoard.GetStoneNeighbours(p).Intersect(contentPoints).Count() });
+            if (moveGroup == null) moveGroup = tryBoard.MoveGroup;
+            if (!KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard)) return false;
+            if (!LinkHelper.FindDiagonalCut(tryBoard).Any()) return false;
+            HashSet<Point> contentPoints = moveGroup.Points;
+            if (contentPoints.Count() != 6) return false;
+            IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
+            if (pointIntersect.Count(p => p.intersectCount == 3) == 2 && pointIntersect.Count(p => p.intersectCount == 2) == 4)
+                return true;
+            return false;
         }
 
-        /// <summary>
-        /// Killer group within 3 by 2 grid.
-        /// </summary>
-        public static Boolean WithinThreeByTwoGrid(Group moveGroup)
-        {
-            (int xLength, int yLength) = WithinGrid(moveGroup.Points);
-            return ((xLength <= 2 && yLength <= 1) || (xLength <= 1 && yLength <= 2));
-        }
-
-        /// <summary>
-        /// Within grid, or rectangular space defining the max and min of points in x-axis and y-axis.
-        /// </summary>
-        public static (int, int) WithinGrid(IEnumerable<Point> points)
-        {
-            int xLength = points.Max(p => p.x) - points.Min(p => p.x);
-            int yLength = points.Max(p => p.y) - points.Min(p => p.y);
-            return (xLength, yLength);
-        }
-
-        /// <summary>
-        /// Grid dimension changed.
-        /// </summary>
-        public static Boolean GridDimensionChanged(IEnumerable<Point> pointsA, IEnumerable<Point> pointsB)
-        {
-            (int xLengthA, int yLengthA) = WithinGrid(pointsA);
-            (int xLengthB, int yLengthB) = WithinGrid(pointsB);
-            return (xLengthA != xLengthB || yLengthA != yLengthB);
-        }
-
-        /// <summary>
-        /// Max length of x and y length of grid.
-        /// </summary>
-        public static int MaxLengthOfGrid(IEnumerable<Point> points)
-        {
-            (int xLength, int yLength) = WithinGrid(points);
-            int maxLength = Math.Max(xLength, yLength);
-            return maxLength;
-        }
         #endregion
 
         #region miscellaneous kill formation functions

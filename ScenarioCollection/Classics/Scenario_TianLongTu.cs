@@ -3394,7 +3394,6 @@ namespace ScenarioCollection
             return g;
         }
 
-
         /*
  13 . X . . . . . . . . . . . . . . . . . 
  14 . O X X X . . . . . . . . . . . . . . 
@@ -3431,25 +3430,22 @@ namespace ScenarioCollection
             g.SetupMove(7, 15, Content.Black);
             g.SetupMove(7, 16, Content.Black);
             gi.targetPoints = new List<Point>() { new Point(3, 17) };
-            for (int x = 0; x <= 4; x++)
+            for (int x = 0; x <= 7; x++)
             {
                 for (int y = 14; y <= 18; y++)
                     gi.movablePoints.Add(new Point(x, y));
             }
             gi.movablePoints.Add(new Point(0, 13));
+            gi.movablePoints.Add(new Point(0, 14));
+            gi.movablePoints.Add(new Point(0, 15));
+            gi.movablePoints.Add(new Point(8, 18));
             gi.killMovablePoints.AddRange(gi.movablePoints);
             gi.killMovablePoints.Add(new Point(0, 12));
-            gi.killMovablePoints.Add(new Point(5, 18));
             gi.killMovablePoints.Add(new Point(5, 15));
-
+            gi.killMovablePoints.Add(new Point(8, 17));
+            gi.killMovablePoints.Add(new Point(9, 18));
+            gi.survivalPoints.Add(new Point(4, 17));
             gi.solutionPoints.Add(new List<Point>() { new Point(1, 18), new Point(3, 18), new Point(0, 17), new Point(0, 14), new Point(0, 16), new Point(1, 16), new Point(1, 17) });
-
-            //move outside boundary
-            gi.correctedSolutions.Add(new CorrectedList(new List<Point>() { new Point(3, 18), new Point(1, 17), new Point(1, 18), new Point(2, 16), new Point(2, 18), new Point(4, 18), new Point(5, 18), new Point(0, 16) }));
-
-            gi.PlayerMoveJson = gi.PlayerMoveJsonExtension = ResourceHelper.GetKweonKabYongMappedJsonExtensionString("Scenario_TianLongTu_Q2413_PlayerMoveExtension");
-            gi.ChallengeMoveJson = gi.ChallengeMoveJsonExtension = ResourceHelper.GetKweonKabYongMappedJsonExtensionString("Scenario_TianLongTu_Q2413_ChallengeMoveExtension");
-
             return g;
         }
 

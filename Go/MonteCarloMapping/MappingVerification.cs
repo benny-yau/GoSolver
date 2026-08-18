@@ -81,7 +81,7 @@ namespace Go
                     continue;
 
                 //check if solution move available
-                if (SolutionHelper.GetSolutionMove(g.Board, false) != null)
+                if (SolutionHelper.GetSolutionMove(g.Board) != null)
                 {
                     if (game.GameInfo.UserFirst == PlayerOrComputer.Player)
                         FinalVerification(g);

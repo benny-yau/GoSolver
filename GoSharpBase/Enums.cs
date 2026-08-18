@@ -72,12 +72,11 @@ namespace Go
         UseSolution = 16,
         Answer = 32,
         SolutionDisplayed = 64,
-        CorrectedSolution = 128,
-        Incorrect = 256,
-        Mapped = 512,
-        TargetKilled = 1024,
-        TargetSurvived = 2048,
-        NoSolution = 4096
+        Incorrect = 128,
+        Mapped = 256,
+        TargetKilled = 512,
+        TargetSurvived = 1024,
+        NoSolution = 2048
     }
 
 }
