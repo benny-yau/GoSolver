@@ -2509,8 +2509,7 @@ namespace ScenarioCollection
             gi.killMovablePoints.Add(new Point(3, 14));
             gi.killMovablePoints.Add(new Point(1, 18));
             gi.solutionPoints.Add(new List<Point>() { new Point(3, 18), new Point(4, 18), new Point(6, 18), new Point(8, 18), new Point(5, 18), new Point(4, 16), new Point(4, 17) });
-            gi.dictatePoints.Add(new List<Point>() { new Point(3, 18), new Point(4, 18), new Point(6, 18), new Point(8, 18), new Point(5, 18), new Point(2, 18), new Point(5, 16), new Point(5, 15), new Point(4, 17), new Point(3, 18), new Point(6, 15) });
-
+            
             gi.PlayerMoveJson = gi.PlayerMoveJsonExtension = ResourceHelper.GetKweonKabYongMappedJsonExtensionString("Scenario_TianLongTu_Q17255_PlayerMoveExtension");
             gi.ChallengeMoveJson = gi.ChallengeMoveJsonExtension = ResourceHelper.GetKweonKabYongMappedJsonExtensionString("Scenario_TianLongTu_Q17255_ChallengeMoveExtension");
             return g;
@@ -2958,8 +2957,6 @@ namespace ScenarioCollection
             gi.killMovablePoints.Add(new Point(9, 16));
 
             gi.solutionPoints.Add(new List<Point>() { new Point(6, 16), new Point(7, 16), new Point(6, 17), new Point(5, 17), new Point(6, 18), new Point(7, 18), new Point(3, 18), new Point(4, 18), new Point(2, 18), new Point(3, 16), new Point(9, 16) });
-
-            gi.dictatePoints.Add(new List<Point>() { new Point(6, 17), new Point(6, 16), new Point(5, 17), new Point(4, 17), new Point(7, 17), new Point(6, 18), new Point(3, 18), new Point(4, 18) });
 
             gi.PlayerMoveJson = gi.PlayerMoveJsonExtension = ResourceHelper.GetKweonKabYongMappedJsonExtensionString("Scenario_TianLongTu_Q16735_PlayerMoveExtension");
             gi.ChallengeMoveJson = gi.ChallengeMoveJsonExtension = ResourceHelper.GetKweonKabYongMappedJsonExtensionString("Scenario_TianLongTu_Q16735_ChallengeMoveExtension");
@@ -3573,9 +3570,7 @@ namespace ScenarioCollection
 
             gi.solutionPoints.Add(new List<Point>() { new Point(4, 14), new Point(5, 14), new Point(4, 13), new Point(5, 13), new Point(4, 15), new Point(3, 12), new Point(5, 12), new Point(3, 14), new Point(6, 13) });
             gi.solutionPoints.Add(new List<Point>() { new Point(4, 14), new Point(5, 14), new Point(4, 13), new Point(5, 13), new Point(4, 15), new Point(3, 12), new Point(5, 12), new Point(3, 14), new Point(4, 11), new Point(3, 15), new Point(6, 13) });
-            gi.dictatePoints.Add(new List<Point>() { new Point(4, 14), new Point(5, 12), new Point(3, 14), new Point(3, 15), new Point(4, 13), new Point(3, 12), new Point(5, 14), new Point(6, 14), new Point(7, 12) });
-            gi.dictatePoints.Add(new List<Point>() { new Point(4, 14), new Point(5, 14), new Point(4, 13), new Point(3, 12), new Point(5, 12), new Point(5, 13), new Point(4, 15), new Point(3, 14) });
-
+            
             gi.PlayerMoveJson = gi.PlayerMoveJsonExtension = ResourceHelper.GetKweonKabYongMappedJsonExtensionString("Scenario_TianLongTu_Q17198_PlayerMoveExtension");
             gi.ChallengeMoveJson = gi.ChallengeMoveJsonExtension = ResourceHelper.GetKweonKabYongMappedJsonExtensionString("Scenario_TianLongTu_Q17198_ChallengeMoveExtension");
             return g;
@@ -3756,9 +3751,7 @@ namespace ScenarioCollection
             gi.killMovablePoints.Add(new Point(11, 18));
 
             gi.solutionPoints.Add(new List<Point>() { new Point(3, 18), new Point(4, 17), new Point(5, 18), new Point(6, 18), new Point(7, 18), new Point(7, 17), new Point(6, 17), new Point(5, 17), new Point(6, 18) });
-            gi.dictatePoints.Add(new List<Point>() { new Point(3, 18), new Point(4, 17), new Point(5, 18), new Point(6, 18), new Point(6, 17), new Point(7, 18), new Point(7, 17), new Point(5, 17), new Point(8, 18), new Point(7, 16), new Point(4, 18), new Point(6, 18), new Point(7, 18), new Point(9, 18) });
-            gi.dictatePoints.Add(new List<Point>() { new Point(3, 18), new Point(4, 17), new Point(5, 18), new Point(6, 18), new Point(6, 17), new Point(7, 18), new Point(7, 17), new Point(5, 17), new Point(8, 18), new Point(7, 16), new Point(9, 18), new Point(7, 18), new Point(6, 18), new Point(4, 18), new Point(10, 18), new Point(7, 18) });
-
+            
             gi.PlayerMoveJson = gi.PlayerMoveJsonExtension = ResourceHelper.GetKweonKabYongMappedJsonExtensionString("Scenario_TianLongTu_Q17132_PlayerMoveExtension");
             gi.ChallengeMoveJson = gi.ChallengeMoveJsonExtension = ResourceHelper.GetKweonKabYongMappedJsonExtensionString("Scenario_TianLongTu_Q17132_ChallengeMoveExtension");
             

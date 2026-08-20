@@ -27,7 +27,6 @@ namespace Go
 
         public List<Point> survivalPoints = new List<Point>();
         public List<Point> survivalLinkPoints = new List<Point>();
-        public List<List<Point>> dictatePoints = new List<List<Point>>();
         public Boolean SurvivalWinForBothAlive = true;
         public Boolean IncludeTenThousandYearKo = false;
 

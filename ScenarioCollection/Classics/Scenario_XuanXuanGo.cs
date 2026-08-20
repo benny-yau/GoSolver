@@ -598,8 +598,6 @@ namespace ScenarioCollection
 
             gi.solutionPoints.Add(new List<Point>() { new Point(4, 18), new Point(3, 18), new Point(5, 18), new Point(4, 17), new Point(2, 17), new Point(1, 17), new Point(0, 16), new Point(0, 17), new Point(1, 18) });
 
-            gi.dictatePoints.Add(new List<Point>() { new Point(5, 18), new Point(4, 18), new Point(0, 16), new Point(0, 17), new Point(1, 18), new Point(1, 17), new Point(2, 18), new Point(4, 17) });
-
             gi.PlayerMoveJson = gi.PlayerMoveJsonExtension = ResourceHelper.GetXuanXuanQiJingMappedJsonExtensionString("Scenario_XuanXuanGo_A23_PlayerMoveExtension");
             gi.ChallengeMoveJson = gi.ChallengeMoveJsonExtension = ResourceHelper.GetXuanXuanQiJingMappedJsonExtensionString("Scenario_XuanXuanGo_A23_ChallengeMoveExtension");
 
@@ -1992,7 +1990,6 @@ namespace ScenarioCollection
             gi.killMovablePoints.Add(new Point(0, 11));
             gi.killMovablePoints.Add(new Point(3, 18));
             gi.solutionPoints.Add(new List<Point>() { new Point(1, 14), new Point(1, 16), new Point(0, 17), new Point(1, 18), new Point(0, 15) });
-            gi.dictatePoints.Add(new List<Point>() { new Point(1, 14), new Point(1, 16), new Point(0, 16), new Point(0, 17), new Point(0, 18), new Point(1, 18), new Point(2, 18), new Point(0, 15) });
             gi.survivalPoints.Add(new Point(1, 17));
 
             gi.PlayerMoveJson = gi.PlayerMoveJsonExtension = ResourceHelper.GetXuanXuanQiJingMappedJsonExtensionString("Scenario_XuanXuanQiJing_Weiqi101_18331_PlayerMoveExtension");
@@ -4185,8 +4182,6 @@ namespace ScenarioCollection
             gi.solutionPoints.Add(new List<Point>() { new Point(8, 18), new Point(10, 18), new Point(9, 16), new Point(9, 17), new Point(3, 18) });
             gi.solutionPoints.Add(new List<Point>() { new Point(8, 18), new Point(10, 18), new Point(9, 16), new Point(9, 17), new Point(4, 18) });
 
-            gi.dictatePoints.Add(new List<Point>() { new Point(8, 18), new Point(10, 18), new Point(6, 18), new Point(9, 16), new Point(3, 18), new Point(5, 17), new Point(8, 17), new Point(7, 17) });
-
             gi.PlayerMoveJson = gi.PlayerMoveJsonExtension = ResourceHelper.GetXuanXuanQiJingMappedJsonExtensionString("Scenario_XuanXuanGo_Q18500_PlayerMoveExtension");
             gi.ChallengeMoveJson = gi.ChallengeMoveJsonExtension = ResourceHelper.GetXuanXuanQiJingMappedJsonExtensionString("Scenario_XuanXuanGo_Q18500_ChallengeMoveExtension");
             return g;
@@ -4311,8 +4306,6 @@ namespace ScenarioCollection
             gi.killMovablePoints.Add(new Point(3, 12));
             gi.solutionPoints.Add(new List<Point>() { new Point(0, 15), new Point(0, 14), new Point(0, 10), new Point(0, 11), new Point(1, 12), new Point(1, 13), new Point(0, 12), new Point(0, 13), new Point(2, 14) });
             gi.solutionPoints.Add(new List<Point>() { new Point(0, 15), new Point(0, 14), new Point(0, 10), new Point(0, 11), new Point(1, 12), new Point(1, 13), new Point(0, 12), new Point(0, 13), new Point(2, 10), new Point(0, 9), new Point(2, 14) });
-
-            gi.dictatePoints.Add(new List<Point>() { new Point(0, 15), new Point(0, 14), new Point(0, 10), new Point(0, 11), new Point(1, 12), new Point(3, 15), new Point(1, 14), new Point(0, 16), new Point(1, 13) });
 
             gi.PlayerMoveJson = gi.PlayerMoveJsonExtension = ResourceHelper.GetXuanXuanQiJingMappedJsonExtensionString("Scenario_XuanXuanGo_A151_101Weiqi_PlayerMoveExtension");
             gi.ChallengeMoveJson = gi.ChallengeMoveJsonExtension = ResourceHelper.GetXuanXuanQiJingMappedJsonExtensionString("Scenario_XuanXuanGo_A151_101Weiqi_ChallengeMoveExtension");

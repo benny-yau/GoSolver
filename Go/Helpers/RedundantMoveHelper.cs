@@ -1143,9 +1143,9 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18500_3" />
         /// Check point next to corner <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20221027_6" />
         /// Check for one neighbour group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_4" />
-        /// Check connect and die <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260206_6" />
-        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260114_8" />
+        /// Check connect and die <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260114_8" />
         /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260401_8" />
+        /// Check possible ko move <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260401_8" />
         /// </summary>
         private static Boolean CheckEmptyPointsAtStoneAndDiagonal(GameTryMove tryMove)
         {
@@ -1171,9 +1171,13 @@ namespace Go
             {
                 //check connect and die
                 Group ngroup = ngroups.First();
-                Boolean connectAndDie = ngroup.Points.Count == 2 && !WallHelper.StrongNeighbourGroups(currentBoard, ngroup);
-                if (!connectAndDie)
-                    return true;
+                if (ngroup.Points.Count == 2 && !WallHelper.StrongNeighbourGroups(currentBoard, ngroup))
+                    return false;
+                //check possible ko move
+                List<Group> sgroups = tryBoard.GetGroupsFromStoneNeighbours(e.Value, c.Opposite());
+                if (sgroups.Count == 2 && LinkHelper.GetDiagonalGroupsWithoutCut(tryBoard, sgroups[0]).Contains(sgroups[1]))
+                    return false;
+                return true;
             }
             return false;
         }
@@ -3708,7 +3712,7 @@ namespace Go
             {
                 List<Group> sgroups = tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite());
                 if (sgroups.Count != 2) continue;
-                if (LinkHelper.GetDiagonalGroupsWithoutCut(tryBoard, sgroups[0]).Any(n => n.Equals(sgroups[1])))
+                if (LinkHelper.GetDiagonalGroupsWithoutCut(tryBoard, sgroups[0]).Contains(sgroups[1]))
                     return false;
             }
 

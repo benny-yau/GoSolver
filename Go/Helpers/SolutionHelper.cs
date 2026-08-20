@@ -85,21 +85,6 @@ namespace Go
         }
 
         /// <summary>
-        /// Get dictate move.
-        /// </summary>
-        public static Point? GetDictateMove(Game g)
-        {
-            List<List<Point>> dictates = g.GameInfo.dictatePoints.Where(m => m.Count > g.Board.LastMoves.Count).ToList();
-            int? solutionIndex = FollowedSolution(dictates, g.Board.LastMoves).FirstOrDefault();
-            if (solutionIndex != null)
-            {
-                List<Point> solution = dictates[solutionIndex.Value];
-                return solution[g.Board.LastMoves.Count];
-            }
-            return null;
-        }
-
-        /// <summary>
         /// Followed solution.
         /// </summary>
         public static IEnumerable<int?> FollowedSolution(List<List<Point>> solutions, List<Point> lastMoves)
@@ -159,9 +144,6 @@ namespace Go
 
             //check mapped points
             if (!result.HasFlag(ConfirmAliveResult.Mapped))
-                result = UseDictatePoints(g, result);
-
-            if (!result.HasFlag(ConfirmAliveResult.Mapped))
             {
                 int isChallenge = Convert.ToInt32(g.GameInfo.UserFirst == PlayerOrComputer.Computer);
                 if (g.Board.LastMoves.Count == 1 + isChallenge)
@@ -186,20 +168,6 @@ namespace Go
                     return FindSixthMoveMapped(g, json);
                 }
             }
-            return result;
-        }
-
-        /// <summary>
-        /// Use dictate points.
-        /// </summary>
-        private static ConfirmAliveResult UseDictatePoints(Game g, ConfirmAliveResult result)
-        {
-            Point? p = SolutionHelper.GetDictateMove(g);
-            if (p == null) return result;
-            MakeMoveResult moveResult = g.MakeMove(p.Value);
-            result = ConfirmAliveResult.Incorrect | ConfirmAliveResult.Mapped;
-            if (moveResult == MakeMoveResult.KoBlocked)
-                result |= ConfirmAliveResult.KoAlive;
             return result;
         }
 

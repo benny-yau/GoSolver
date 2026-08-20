@@ -327,8 +327,7 @@ namespace ScenarioCollection
             gi.survivalPoints.Add(new Point(2, 13));
 
             gi.solutionPoints.Add(new List<Point>() { new Point(3, 15), new Point(0, 14), new Point(2, 14), new Point(0, 16), new Point(1, 15), new Point(0, 15), new Point(4, 14) });
-            gi.dictatePoints.Add(new List<Point>() { new Point(3, 15), new Point(1, 15), new Point(0, 16), new Point(4, 14), new Point(3, 14), new Point(1, 14), new Point(1, 13) });
-
+            
             gi.PlayerMoveJson = gi.PlayerMoveJsonExtension = ResourceHelper.GetMappedJsonExtensionString("Scenario5dan9_PlayerMoveExtension");
             gi.ChallengeMoveJson = gi.ChallengeMoveJsonExtension = ResourceHelper.GetMappedJsonExtensionString("Scenario5dan9_ChallengeMoveExtension");
             return g;

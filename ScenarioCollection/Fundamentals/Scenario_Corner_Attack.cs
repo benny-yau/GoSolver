@@ -2918,8 +2918,7 @@ namespace ScenarioCollection
             gi.solutionPoints.Add(new List<Point>() { new Point(0, 16), new Point(0, 17), new Point(1, 17), new Point(0, 15), new Point(2, 17) });
             gi.solutionPoints.Add(new List<Point>() { new Point(0, 17), new Point(0, 16), new Point(1, 17), new Point(4, 18), new Point(2, 17), new Point(2, 16), new Point(1, 18), new Point(2, 18) });
             gi.solutionPoints.Add(new List<Point>() { new Point(0, 16), new Point(0, 17), new Point(2, 17) });
-            gi.dictatePoints.Add(new List<Point>() { new Point(1, 17), new Point(0, 17), new Point(2, 17), new Point(1, 18), new Point(2, 18), new Point(3, 18), new Point(0, 18) });
-
+            
             gi.PlayerMoveJson = gi.PlayerMoveJsonExtension = ResourceHelper.GetMappedJsonExtensionString("Scenario_Corner_A120_PlayerMoveExtension");
             gi.ChallengeMoveJson = gi.ChallengeMoveJsonExtension = ResourceHelper.GetMappedJsonExtensionString("Scenario_Corner_A120_ChallengeMoveExtension");
 

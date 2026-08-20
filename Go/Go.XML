@@ -1797,9 +1797,9 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18500_3" />
             Check point next to corner <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221027_6" />
             Check for one neighbour group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_4" />
-            Check connect and die <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260206_6" />
-            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260114_8" />
+            Check connect and die <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260114_8" />
             <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260401_8" />
+            Check possible ko move <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260401_8" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckOnePointMoveDiagonalsInConnectAndDie(Go.GameTryMove,Go.Board)">
@@ -2463,11 +2463,6 @@
             Answer found.
             </summary>
         </member>
-        <member name="M:Go.SolutionHelper.GetDictateMove(Go.Game)">
-            <summary>
-            Get dictate move.
-            </summary>
-        </member>
         <member name="M:Go.SolutionHelper.FollowedSolution(System.Collections.Generic.List{System.Collections.Generic.List{Go.Point}},System.Collections.Generic.List{Go.Point})">
             <summary>
             Followed solution.
@@ -2476,11 +2471,6 @@
         <member name="M:Go.SolutionHelper.CheckSolutionAndMappedPoints(Go.Game)">
             <summary>
             Check solution and mapped points. 
-            </summary>
-        </member>
-        <member name="M:Go.SolutionHelper.UseDictatePoints(Go.Game,Go.ConfirmAliveResult)">
-            <summary>
-            Use dictate points.
             </summary>
         </member>
         <member name="M:Go.SolutionHelper.FindSecondMoveMapped(Go.Game,System.Object)">
