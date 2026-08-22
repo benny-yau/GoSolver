@@ -1184,7 +1184,7 @@
             Bent four corner formation.
             </summary>
         </member>
-        <member name="M:Go.KillerFormationHelper.RectangleSixFormation(Go.Board,Go.Group)">
+        <member name="M:Go.KillerFormationHelper.RectangleSixFormation(Go.Board)">
             <summary>
             Rectangle six formation.
             </summary>
@@ -1845,6 +1845,7 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_x" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B6" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B17" />
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260822_8" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckWeakGroupInConnectAndDie(Go.GameTryMove,Go.Board)">
@@ -2061,12 +2062,18 @@
             Neutral point kill move only.
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A26_3" />
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18410" />
-            Check opponent at diagonal neighbour <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_A136" />
-            Check middle area <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_A40" />
             Check one empty space left <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WindAndTime_Q29264" />
             Check opponent eye for survival <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_2026725_8" />
-            Check opponent at stone and diagonal neighbour <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" />
             Check connect and die <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_B31" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CheckOpponentForNeutralPointKillMoveOnly(Go.GameTryMove)">
+            <summary>
+            Check opponent for neutral point kill move only.
+            Check opponent groups <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" />
+            Check one point move <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_A40" />
+            Check opponent at diagonal neighbour <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_A136" />
+            Check non killable groups at stone neighbour <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260821_8" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CoveredPointSuicidalWithCornerFormation(Go.GameTryMove)">
@@ -2643,7 +2650,12 @@
         </member>
         <member name="T:Go.MonteCarloMapping">
             <summary>
-            Map all possible moves for two or three levels on a json map.
+            Map all possible moves on a json map.
+            </summary>
+        </member>
+        <member name="M:Go.MonteCarloMapping.MapScenario(Go.Game)">
+            <summary>
+            Map scenario.
             </summary>
         </member>
         <member name="M:Go.MonteCarloMapping.MappingFirstLevel(Go.Game)">
@@ -2671,14 +2683,19 @@
             Map all three levels from answer node to json map.
             </summary>
         </member>
+        <member name="M:Go.MonteCarloMapping.MonteCarloMapFirstSecondMove(Go.Game,Go.Point,Go.Point)">
+            <summary>
+            Map first and second move from answer node to json map.
+            </summary>
+        </member>
         <member name="M:Go.MonteCarloMapping.MonteCarloMapThirdFourthMove(Go.Game,Go.Point,Go.Point,Go.Node)">
             <summary>
-            Map second and third levels from answer node to json map.
+            Map third and fourth move from answer node to json map.
             </summary>
         </member>
         <member name="M:Go.MonteCarloMapping.MonteCarloMapFifthSixthMove(Go.Game,Go.Point,Go.Point,Go.Node)">
             <summary>
-            Map third level from answer node to json map.
+            Map fifth and sixth move from answer node to json map.
             </summary>
         </member>
         <member name="M:Go.MonteCarloMapping.MappingRange(Go.Board)">

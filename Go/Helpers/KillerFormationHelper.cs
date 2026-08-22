@@ -1274,17 +1274,14 @@ namespace Go
         /// <summary>
         /// Rectangle six formation.
         /// </summary>
-        public static Boolean RectangleSixFormation(Board tryBoard, Group moveGroup = null)
+        public static Boolean RectangleSixFormation(Board tryBoard)
         {
-            if (moveGroup == null) moveGroup = tryBoard.MoveGroup;
             if (!KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard)) return false;
             if (!LinkHelper.FindDiagonalCut(tryBoard).Any()) return false;
-            HashSet<Point> contentPoints = moveGroup.Points;
+            HashSet<Point> contentPoints = tryBoard.MoveGroup.Points;
             if (contentPoints.Count() != 6) return false;
-            IEnumerable<dynamic> pointIntersect = GetPointIntersect(tryBoard, contentPoints);
-            if (pointIntersect.Count(p => p.intersectCount == 3) == 2 && pointIntersect.Count(p => p.intersectCount == 2) == 4)
-                return true;
-            return false;
+            (int xLength, int yLength) = WithinGrid(contentPoints);
+            return (xLength == 2 && yLength == 1) || (xLength == 1 && yLength == 2);
         }
 
         #endregion

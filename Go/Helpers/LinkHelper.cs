@@ -540,9 +540,11 @@ namespace Go
         public static IEnumerable<Group> GetDiagonalGroupsWithoutCut(Board board, Group group = null)
         {
             if (group == null) group = board.MoveGroup;
+            Content c = group.Content;
             foreach (Link<Point> q in LinkHelper.GetGroupLinkedDiagonals(board, group))
             {
-                if (LinkHelper.FindLibertyBetweenDiagonals(board, q.Move, (Point)q.CheckMove).Any())
+                List<Point> points = LinkHelper.PointsBetweenDiagonals(q.Move, (Point)q.CheckMove);
+                if (points.Count(n => board[n] == c.Opposite()) == 1 && points.Count(n => board[n] == Content.Empty) == 1)
                     yield return board.GetGroupAt(q.Move);
             }
         }

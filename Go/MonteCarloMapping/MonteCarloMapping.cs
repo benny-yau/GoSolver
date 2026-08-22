@@ -9,13 +9,17 @@ using System.Linq;
 namespace Go
 {    
     /// <summary>
-    /// Map all possible moves for two or three levels on a json map.
+    /// Map all possible moves on a json map.
     /// </summary>
     public class MonteCarloMapping
     {
-        public static Boolean ThreeLevelMapping = Convert.ToBoolean(ConfigurationSettings.AppSettings["ONE_STOP_MAPPING"]);
+        //set two or three levels
+        public static Boolean ThreeLevelMapping = Convert.ToBoolean(ConfigurationSettings.AppSettings["ONE_STOP_MAPPING"]); 
         public long? elapsedTime;
 
+        /// <summary>
+        /// Map scenario.
+        /// </summary>
         public static void MapScenario(Game game)
         {
             Game.MapMoves = true;
@@ -255,6 +259,9 @@ namespace Go
             return firstLevel;
         }
 
+        /// <summary>
+        /// Map first and second move from answer node to json map.
+        /// </summary>
         private static JObject MonteCarloMapFirstSecondMove(Game g, Point firstMovePt, Point secondMovePt)
         {
             JArray json = JsonHelper.GetMappedJson(g);
@@ -263,7 +270,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Map second and third levels from answer node to json map.
+        /// Map third and fourth move from answer node to json map.
         /// </summary>
         private static void MonteCarloMapThirdFourthMove(Game g, Point thirdMovePt, Point fourthMovePt, Node answerNode = null)
         {
@@ -286,7 +293,7 @@ namespace Go
         }
 
         /// <summary>
-        /// Map third level from answer node to json map.
+        /// Map fifth and sixth move from answer node to json map.
         /// </summary>
         private static void MonteCarloMapFifthSixthMove(Game g, Point fifthMovePt, Point sixthMovePt, Node answerNode)
         {
