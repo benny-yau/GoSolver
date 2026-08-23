@@ -562,7 +562,7 @@ namespace ScenarioCollection
          */
         public Game Scenario_XuanXuanGo_A23()
         {
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 17);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 19);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
             g.SetupMove(1, 15, Content.Black);

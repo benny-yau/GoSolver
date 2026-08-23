@@ -2694,35 +2694,35 @@ namespace Go
             neutralPointMoves.RemoveAll(n => n.MoveGroupLiberties == 1);
             neutralPointMoves.RemoveAll(n => !n.TryGame.Board.OpponentAtStoneAndDiagonalNeighbour().Any());
             if (neutralPointMoves.Count == 0) return;
-            //specific neutral point
+
+            //check specific neutral point
+            Boolean neutralPointAdded = false;
             GameTryMove specificNeutralMove = GetSpecificNeutralMove(g, neutralPointMoves);
             if (specificNeutralMove != null)
             {
                 tryMoves.Add(specificNeutralMove);
                 neutralPointMoves.Remove(specificNeutralMove);
+                neutralPointAdded = true;
             }
-            else
+
+            //check pre-atari moves       
+            List<GameTryMove> preAtariMoves = neutralPointMoves.Where(n => ImmovableHelper.PreAtariMove(n)).ToList();
+            for (int i = preAtariMoves.Count - 1; i >= 0; i--)
             {
-                //check pre-atari moves
-                Boolean preAtariAdded = false;
-                List<GameTryMove> preAtariMoves = neutralPointMoves.Where(n => ImmovableHelper.PreAtariMove(n)).ToList();
-                for (int i = preAtariMoves.Count - 1; i >= 0; i--)
+                GameTryMove tryMove = preAtariMoves[i];
+                preAtariMoves.Remove(tryMove);
+                tryMoves.Add(tryMove);
+                neutralPointMoves.Remove(tryMove);
+                neutralPointAdded = true;
+            }
+            //check generic neutral point
+            if (!neutralPointAdded)
+            {
+                GameTryMove tryMove = GetGenericNeutralMove(g, neutralPointMoves);
+                if (tryMove != null)
                 {
-                    GameTryMove tryMove = preAtariMoves[i];
-                    preAtariMoves.Remove(tryMove);
                     tryMoves.Add(tryMove);
                     neutralPointMoves.Remove(tryMove);
-                    preAtariAdded = true;
-                }
-                if (!preAtariAdded)
-                {
-                    //generic neutral point
-                    GameTryMove tryMove = GetGenericNeutralMove(g, neutralPointMoves);
-                    if (tryMove != null)
-                    {
-                        tryMoves.Add(tryMove);
-                        neutralPointMoves.Remove(tryMove);
-                    }
                 }
             }
             if (neutralPointMoves.Count == 0) return;
@@ -2856,7 +2856,6 @@ namespace Go
         /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260614_4" />
         /// Real eye found <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario3kyu24" />
         /// Target group contains killer group <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q2413" />
-        /// <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_TianLongTu_Q16827" />
         /// Real eye found <see cref="UnitTestProject.SpecificNeutralMoveTest.SpecificNeutralMoveTest_Scenario_XuanXuanGo_B7" />
         /// </summary>
         public static GameTryMove SpecificKillWithLibertyFight(Board board, List<GameTryMove> neutralPointMoves, List<Group> killerGroups)
@@ -2894,11 +2893,11 @@ namespace Go
                 Group kgroup = kgroups.First();
                 if (!kgroup.Points.Any(p => tryBoard[p] == c && tryBoard.GetGroupAt(p).Liberties.Count > 1)) continue;
                 List<Point> kliberties = kgroup.Points.Where(p => tryBoard[p] == Content.Empty).ToList();
-
+                if (!GroupHelper.GetKillerGroupsFromPoints(kliberties, tryBoard, c).Any())
+                    continue;
                 //compare liberties to see if target group can be killed
                 if (kliberties.Count == targetGroup.Liberties.Count)
                     return neutralPointMove;
-
                 //real eye found
                 if (kliberties.Any(n => EyeHelper.FindRealEyeWithinEmptySpace(tryBoard, n, c)))
                     return neutralPointMove;
