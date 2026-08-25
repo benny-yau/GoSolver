@@ -827,11 +827,6 @@
             <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18_4" /> 
             </summary>
         </member>
-        <member name="M:Go.ImmovableHelper.EscapePreAtari(Go.Board,Go.Group)">
-            <summary>
-            Escape pre atari.
-            </summary>
-        </member>
         <member name="M:Go.ImmovableHelper.EscapeCaptureLink(Go.Board,Go.Group)">
             <summary>
             Escape capture link.

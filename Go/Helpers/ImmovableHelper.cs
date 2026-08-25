@@ -740,20 +740,6 @@ namespace Go
 
         #region common functions
         /// <summary>
-        /// Escape pre atari.
-        /// </summary>
-        public static Boolean EscapePreAtari(Board board, Group targetGroup)
-        {
-            foreach (Board b in GameHelper.GetMoveBoards(board, targetGroup.Liberties, targetGroup.Content))
-            {
-                if (!LinkHelper.IsAbsoluteLinkForGroups(board, b)) continue;
-                if (!ImmovableHelper.CheckConnectAndDie(b, targetGroup, false))
-                    return true;
-            }
-            return false;
-        }
-
-        /// <summary>
         /// Escape capture link.
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A26_3" />
         /// </summary>
@@ -790,16 +776,26 @@ namespace Go
                 //check connect and die at each liberty
                 foreach (Board b in GameHelper.GetMoveBoards(tryBoard, targetGroup.Liberties, c))
                 {
+                    if (b.MoveGroup.Points.Count != 1 || b.GetGroupsFromStoneNeighbours().Count == 1) continue;
+                    if (EyeHelper.IsCovered(b, b.Move.Value, c.Opposite())) continue;
+                    //check connect and die
                     if (!UnescapableGroup(b, targetGroup).Item1) continue;
-                    if (b.MoveGroup.Points.Count == 1 && b.GetGroupsFromStoneNeighbours().Count > 1 && EscapePreAtari(tryBoard, targetGroup))
+                    //check escape move
+                    if (!ImmovableHelper.ConnectAndDieMove(tryBoard, b.Move.Value, c.Opposite(), false).Item1)
                         return true;
                 }
                 //check unescapable group       
-                foreach (Board b in GameHelper.GetMoveBoards(currentBoard, currentBoard.GetGroupLiberties(targetGroup), c.Opposite()))
+                foreach (Point liberty in currentBoard.GetGroupLiberties(targetGroup))
                 {
-                    if (!b.AtariTargets.Any(t => UnescapableGroup(b, t).Item1)) continue;
-                    if (IsSuicidalMoveForBothPlayers(tryBoard, b.Move.Value))
+                    if (!IsSuicidalMoveForBothPlayers(tryBoard, liberty)) continue;
+                    Board b = currentBoard.MakeMoveOnNewBoard(liberty, c.Opposite());
+                    if (b == null) continue;
+                    foreach (Group group in b.AtariTargets)
+                    {
+                        if (!UnescapableGroup(b, group).Item1) continue;
+                        if (GroupHelper.IsSingleGroupWithinKillerGroup(b, group)) continue;
                         return true;
+                    }
                 }
             }
             return false;
