@@ -3153,7 +3153,7 @@ namespace Go
             if (CheckThreeOpponentGroupsAtTigerMouth(tryMove, capturedBoard))
                 return false;
             //check weak group
-            if (CheckWeakGroupAtTigerMouth(tryBoard, capturedBoard))
+            if (CheckWeakGroupAtTigerMouth(tryMove, capturedBoard))
                 return false;
             //check side move
             if (CheckSideMoveAtTigerMouth(tryMove, capturedBoard))
@@ -3350,28 +3350,52 @@ namespace Go
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A26_3" />
         /// Check hostile group <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_A2Q29_101Weiqi" />
         /// </summary>
-        private static Boolean CheckWeakGroupAtTigerMouth(Board tryBoard, Board capturedBoard)
+        private static Boolean CheckWeakGroupAtTigerMouth(GameTryMove tryMove, Board capturedBoard)
         {
+            Board tryBoard = tryMove.TryGame.Board;
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             List<Group> ngroups = capturedBoard.GetGroupsFromStoneNeighbours(move, c);
             if (ngroups.Count == 1) return false;
+            //check ko fight
+            if (CheckKoFightAtWeakGroupForTigerMouth(tryMove, capturedBoard))
+                return true;
             if (!ngroups.Any(n => n.Liberties.Count <= 2 && n.Points.Count > 1)) return false;
             List<Group> diagonals = LinkHelper.GetDiagonalGroups(tryBoard);
             if (diagonals.Any(n => n.Points.Count >= 2 && n.Liberties.Count == 1)) return false;
             //check snapback
             if (diagonals.Any(n => ImmovableHelper.IsSnapback(tryBoard, tryBoard.MoveGroup, n)))
                 return true;
-
             //check diagonal at move
             if (capturedBoard.GetMoveLiberties().Count == 1 && KillerFormationHelper.TigerMouthAtDiagonal(tryBoard))
                 return true;
-
             //check hostile group
-            if (capturedBoard.MoveGroup.Points.Count > 1 && capturedBoard.MoveGroupLiberties == 2)
+            if (capturedBoard.MoveGroup.Points.Count > 1 && capturedBoard.MoveGroupLiberties == 2 && !WallHelper.IsHostileGroup(capturedBoard))
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Check ko fight at weak group for tiger mouth.
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260825_8" />
+        /// </summary>
+        private static Boolean CheckKoFightAtWeakGroupForTigerMouth(GameTryMove tryMove, Board capturedBoard)
+        {
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            if (!capturedBoard.PointWithinMiddleArea(move)) return false;
+            foreach (Group ngroup in capturedBoard.GetGroupsFromStoneNeighbours(move, c))
             {
-                if (!WallHelper.IsHostileGroup(capturedBoard))
-                    return true;
+                if (ngroup.Points.Count != 1 || ngroup.Liberties.Count != 2) continue;
+                foreach (Board b in GameHelper.GetMoveBoards(capturedBoard, ngroup.Liberties, c, true))
+                {
+                    (Boolean koFight, Group koGroup) = KoHelper.IsKoFight(b, move, c.Opposite());
+                    if (!koFight) continue;
+                    if (currentBoard.GetNeighbourGroups(koGroup).Any(n => !ImmovableHelper.IsSuicidalWithoutKo(currentBoard, n) && ImmovableHelper.CheckConnectAndDie(currentBoard, n)))
+                        return true;
+                }
             }
             return false;
         }

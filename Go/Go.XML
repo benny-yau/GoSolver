@@ -2289,13 +2289,19 @@
             Check connect and die <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_ScenarioHighLevel23" /> 
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.CheckWeakGroupAtTigerMouth(Go.Board,Go.Board)">
+        <member name="M:Go.RedundantMoveHelper.CheckWeakGroupAtTigerMouth(Go.GameTryMove,Go.Board)">
             <summary>
             Check weak group at tiger mouth.
             Check snapback <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q17081" />
             Check diagonal at move <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A26_2" />
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A26_3" />
             Check hostile group <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_A2Q29_101Weiqi" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CheckKoFightAtWeakGroupForTigerMouth(Go.GameTryMove,Go.Board)">
+            <summary>
+            Check ko fight at weak group for tiger mouth.
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260825_8" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.KillCoveredEyeAtDiagonal(Go.Board,Go.Board)">
