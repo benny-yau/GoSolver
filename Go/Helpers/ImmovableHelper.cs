@@ -187,11 +187,9 @@ namespace Go
 
         #region three liberty connect and die
         /// <summary>
-        /// Three liberty connect and die. Only for tiger mouth at liberty.
-        /// <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_TianLongTu_Q14992_2" />
+        /// Three liberty connect and die. Only for covered tiger mouth.
         /// <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_TianLongTu_Q14992" />
-        /// Check is covered <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_Side_B19" />
-        /// Check if escapable <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_Corner_A86" />
+        /// <see cref="UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_TianLongTu_Q14992_2" />
         /// </summary>
         public static (Boolean, Board) ThreeLibertyConnectAndDie(Board board, Group targetGroup = null, Boolean koEnabled = true)
         {
@@ -199,17 +197,16 @@ namespace Go
             else targetGroup = board.GetCurrentGroup(targetGroup);
             if (targetGroup.Liberties.Count != 3) return (false, null);
             Content c = targetGroup.Content;
-            //find tiger mouth at liberty
+            //find covered tiger mouth
             List<Point> liberties = targetGroup.Liberties.Where(n => ImmovableHelper.FindEmptyTigerMouth(board, n, c) && EyeHelper.IsCovered(board, n, c)).ToList();
             foreach (Point p in liberties)
             {
                 Board b = board.MakeMoveOnNewBoard(p, c.Opposite(), false);
                 if (b == null || b.MoveGroupLiberties != 1) continue;
 
-                Board b2 = ImmovableHelper.CaptureSuicideGroup(b);
-                if (b2.MoveGroupLiberties != 2) continue;
-                if (!EyeHelper.FindCoveredEye(b2, p, c)) continue;
-                if (CheckConnectAndDie(b2, targetGroup, koEnabled))
+                Point q = b.MoveGroup.Liberties.First();
+                (Boolean connectAndDie, Board b2) = ImmovableHelper.ConnectAndDieMove(b, q, c, !koEnabled);
+                if (connectAndDie && b2.MoveGroupLiberties == 2 && EyeHelper.FindCoveredEye(b2, p, c))
                     return (true, b2);
             }
             return (false, null);
@@ -672,6 +669,7 @@ namespace Go
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_Q14906" /> 
         /// Check one liberty group <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_TianLongTu_Q17132" /> 
         /// Check eye at liberty <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario6kyu13" /> 
+        /// Check strong neighbour groups <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_B3" /> 
         /// </summary>
         private static Boolean CheckSuicideMoveAtBigTigerMouth(GameTryMove tryMove, Board b)
         {
@@ -689,12 +687,10 @@ namespace Go
             if (EyeHelper.FindEye(currentBoard, b.Move.Value, c) && b.MoveGroupLiberties == 2 && ImmovableHelper.CheckConnectAndDie(b))
                 return true;
             //check connect and die
-            Board linkBoard = b.MakeMoveOnNewBoard(move, c);
-            if (linkBoard == null) return true;
-            if (ImmovableHelper.CheckConnectAndDie(linkBoard, linkBoard.MoveGroup, false))
-                return false;
+            (Boolean connectAndDie, Board linkBoard) = ImmovableHelper.ConnectAndDieMove(b, move, c, true, false);
+            if (connectAndDie) return false;
             //check strong neighbour groups
-            if (!WallHelper.StrongNeighbourGroups(linkBoard, b.Move.Value, c))
+            if (linkBoard != null && !WallHelper.StrongNeighbourGroups(linkBoard, b.Move.Value, c))
                 return true;
             return false;
         }

@@ -1746,7 +1746,6 @@ namespace Go
                 return true;
             if (capturedBoard.MoveGroupLiberties == 1) return false;
 
-
             //check for snapback
             if (ImmovableHelper.CheckSnapbackFromMove(tryBoard))
                 return false;
@@ -1804,12 +1803,7 @@ namespace Go
 
             //check atari move
             if (tryBoard.IsAtariMove)
-            {
-                Boolean twoPointGroup = eyeGroup != null && eyeGroup.Points.Count == 2;
-                if (!twoPointGroup && CheckAtariMoveInSuicideRealEye(tryMove, capturedBoard))
-                    return true;
-                return false;
-            }
+                return CheckAtariMoveInSuicideRealEye(tryMove, capturedBoard);
             return true;
         }
 
@@ -1823,10 +1817,11 @@ namespace Go
         /// </summary>
         private static Boolean CheckAtariMoveInSuicideRealEye(GameTryMove tryMove, Board captureBoard)
         {
-            Point move = tryMove.Move;
+            Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
-
+            if (GroupHelper.CheckKillerGroupPoints(currentBoard, move, c.Opposite()) != null) return false;
             if (EyeHelper.FindRealSolidEye(captureBoard, move, c.Opposite()))
                 return true;
 
@@ -3124,9 +3119,7 @@ namespace Go
             {
                 //check connect and die move
                 if (b2.GetMoveLiberties(q).Count() != 2) continue;
-                Board b3 = b2.MakeMoveOnNewBoard(q, c);
-                if (b3 == null || b3.MoveGroupLiberties != 2) continue;
-                if (ImmovableHelper.CheckConnectAndDie(b3)) continue;
+                if (ImmovableHelper.ConnectAndDieMove(b2, q, c).Item1) continue;
                 if (ImmovableHelper.ConnectAndDieMove(currentBoard, q, c).Item1)
                     return true;
             }
@@ -3377,7 +3370,7 @@ namespace Go
 
         /// <summary>
         /// Check ko fight at weak group for tiger mouth.
-        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260825_8" />
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260826_8" />
         /// </summary>
         private static Boolean CheckKoFightAtWeakGroupForTigerMouth(GameTryMove tryMove, Board capturedBoard)
         {

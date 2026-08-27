@@ -663,11 +663,9 @@
         </member>
         <member name="M:Go.ImmovableHelper.ThreeLibertyConnectAndDie(Go.Board,Go.Group,System.Boolean)">
             <summary>
-            Three liberty connect and die. Only for tiger mouth at liberty.
-            <see cref="!:UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_TianLongTu_Q14992_2" />
+            Three liberty connect and die. Only for covered tiger mouth.
             <see cref="!:UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_TianLongTu_Q14992" />
-            Check is covered <see cref="!:UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_Side_B19" />
-            Check if escapable <see cref="!:UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_Corner_A86" />
+            <see cref="!:UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario_TianLongTu_Q14992_2" />
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.TwoAndThreeLibertiesConnectAndDie(Go.Board,Go.Group,System.Boolean)">
@@ -817,6 +815,7 @@
             <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_Q14906" /> 
             Check one liberty group <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_TianLongTu_Q17132" /> 
             Check eye at liberty <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario6kyu13" /> 
+            Check strong neighbour groups <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_B3" /> 
             </summary>
         </member>
         <member name="M:Go.ImmovableHelper.CheckThreeLibertyGroupAtBigTigerMouth(Go.Board,Go.Board)">
@@ -2301,7 +2300,7 @@
         <member name="M:Go.RedundantMoveHelper.CheckKoFightAtWeakGroupForTigerMouth(Go.GameTryMove,Go.Board)">
             <summary>
             Check ko fight at weak group for tiger mouth.
-            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260825_8" />
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260826_8" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.KillCoveredEyeAtDiagonal(Go.Board,Go.Board)">

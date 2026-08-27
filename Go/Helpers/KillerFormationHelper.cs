@@ -685,8 +685,8 @@ namespace Go
             //check covered eye
             if (EyeHelper.FindCoveredEye(currentBoard, q, c))
             {
-                Board b = currentBoard.MakeMoveOnNewBoard(q, c);
-                if (b.MoveGroup.Liberties.Any(n => EyeHelper.IsCovered(b, n, c)) && ImmovableHelper.CheckConnectAndDie(b))
+                (Boolean connectAndDie, Board b) = ImmovableHelper.ConnectAndDieMove(currentBoard, q, c, false);
+                if (connectAndDie && b.MoveGroup.Liberties.Any(n => EyeHelper.IsCovered(b, n, c)))
                     return true;
             }
             return false;
