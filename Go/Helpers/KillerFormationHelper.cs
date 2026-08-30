@@ -123,7 +123,7 @@ namespace Go
                 return false;
 
             //find killer formation
-            if (!FindSuicidalKillerFormation(tryBoard, currentBoard, captureBoard))
+            if (!FindSuicidalKillerFormation(tryMove, captureBoard))
                 return false;
 
             //check if real eye found in neighbour groups
@@ -168,8 +168,10 @@ namespace Go
         /// Check for snapback <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234" />
         /// Corner three formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18860" />
         /// </summary>
-        private static Boolean FindSuicidalKillerFormation(Board tryBoard, Board currentBoard, Board captureBoard)
+        private static Boolean FindSuicidalKillerFormation(GameTryMove tryMove, Board captureBoard)
         {
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
             if (tryBoard.MoveGroupLiberties > 2)
                 return false;
 
@@ -231,7 +233,7 @@ namespace Go
                 if (IsKillerFormationFromFunc(tryBoard))
                 {
                     //check kill group extension
-                    if (CheckRedundantKillGroupExtension(tryBoard, currentBoard, captureBoard))
+                    if (CheckRedundantKillGroupExtension(tryMove, captureBoard))
                         return false;
                     return true;
                 }
@@ -257,9 +259,13 @@ namespace Go
         /// Check end point extension <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_8" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_9" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_10" />
+        /// Check both alive <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_XuanXuanGo_A151_101Weiqi" />
         /// </summary>
-        private static Boolean CheckRedundantKillGroupExtension(Board tryBoard, Board currentBoard, Board captureBoard)
+        private static Boolean CheckRedundantKillGroupExtension(GameTryMove tryMove, Board captureBoard)
         {
+            Point move = tryMove.Move;
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
             Content c = tryBoard.MoveGroup.Content;
             //move group binding
             List<Group> previousGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
@@ -328,6 +334,15 @@ namespace Go
             //check end point extension
             if (previousGroup.Points.Count >= 4 && CheckAnyEndPointCovered(tryBoard, tryBoard.MoveGroup))
                 return false;
+
+            //check both alive
+            if (tryBoard.MoveGroupLiberties == 2 && tryBoard.GetMoveLiberties().Any() && GroupHelper.GetDirectKillerGroup(tryBoard, move, c.Opposite()) != null)
+            {
+                Board opponentBoard = tryMove.OpponentMove.TryGame.Board;
+                Group kgroup = GroupHelper.GetDirectKillerGroup(opponentBoard, opponentBoard.GetMoveLiberties().First(), c.Opposite());
+                if (kgroup != null && BothAliveHelper.CheckForBothAlive(opponentBoard, kgroup))
+                    return false;
+            }
             return true;
         }
 
@@ -1324,7 +1339,19 @@ namespace Go
         /// <summary>
         /// Tiger mouth at diagonal.
         /// </summary>
-        public static Boolean TigerMouthAtDiagonal(Board tryBoard)
+        public static List<Group> TigerMouthAtDiagonal(Board tryBoard)
+        {
+            Content c = tryBoard.MoveGroup.Content;
+            if (tryBoard.MoveGroup.Points.Count != 1 || tryBoard.MoveGroupLiberties != 1) return null;
+            Point liberty = tryBoard.MoveGroup.Liberties.First();
+            List<Point> points = LinkHelper.GetMoveDiagonals(tryBoard).Where(n => tryBoard.GetStoneNeighbours(n).Contains(liberty)).ToList();
+            return tryBoard.GetGroupsFromPoints(points).Where(n => n.Liberties.Count > 1).ToList();
+        }
+
+        /// <summary>
+        /// Tiger mouth at diagonal.
+        /// </summary>
+        public static Boolean TigerMouthAtDiagonal0(Board tryBoard)
         {
             Content c = tryBoard.MoveGroup.Content;
             if (tryBoard.MoveGroup.Points.Count != 1 || tryBoard.MoveGroupLiberties != 1) return false;

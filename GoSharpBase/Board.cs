@@ -422,13 +422,14 @@ namespace Go
         }
 
         /// <summary>
-        /// Opponent at stone and diagonal neighbour.
+        /// Opponent groups at stone and diagonal neighbour.
         /// </summary>
-        public List<Point> OpponentAtStoneAndDiagonalNeighbour(Point? p = null, Content c = Content.Unknown)
+        public HashSet<Group> OpponentGroupsAtStoneAndDiagonalNeighbour(Point? p = null, Content c = Content.Unknown)
         {
             if (p == null) p = this.Move.Value;
-            if (c == Content.Unknown) c = this[p.Value];
-            return this.GetStoneAndDiagonalNeighbours(p).Where(n => this[n] == c.Opposite()).ToList();
+            if (c == Content.Unknown) c = this[p.Value];            
+            List<Point> opponentPoints = this.GetStoneAndDiagonalNeighbours(p).Where(n => this[n] == c.Opposite()).ToList();
+            return this.GetGroupsFromPoints(opponentPoints);
         }
         #endregion
 

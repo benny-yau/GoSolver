@@ -59,7 +59,7 @@ namespace Go
         /// Simple seki <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_SimpleSeki" />
         /// Complex seki <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_2" />
         /// </summary>
-        private static Boolean CheckForBothAlive(Board board, Group killerGroup)
+        public static Boolean CheckForBothAlive(Board board, Group killerGroup)
         {
             Content c = killerGroup.Content;
             List<Point> emptyPoints = killerGroup.Points.Where(n => board[n] == Content.Empty).ToList();
