@@ -223,6 +223,7 @@ namespace Go
         /// Fill eye point in killer group <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_A75" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_Corner_B43" />
         /// Fill eye point in neighbour group <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113_5" />
         /// </summary>
         public static Board FillEyePointsBoard(Board board, Group killerGroup)
         {
@@ -241,7 +242,6 @@ namespace Go
             foreach (Link<Point> p in LinkHelper.GetGroupDiagonals(board, killerGroup))
             {
                 if (!EyeHelper.FindEye(board, p.Move, c.Opposite())) continue;
-                if (board[(Point)p.CheckMove] != Content.Empty) continue;
                 if (fBoard == null) fBoard = new Board(board);
                 fBoard[p.Move] = c.Opposite();
             }

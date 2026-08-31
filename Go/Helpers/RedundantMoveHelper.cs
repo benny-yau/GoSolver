@@ -706,7 +706,7 @@ namespace Go
             Board captureBoard = tryMove.CaptureBoard;
 
             //check killer formation
-            if (KillerFormationHelper.IsKillerFormationFromFunc(tryBoard))
+            if (KillerFormationHelper.EssentialSuicidalKillerFormation(tryMove))
                 return false;
 
             //check eye
@@ -1953,7 +1953,7 @@ namespace Go
         /// Check diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B29" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3dan8_2" />
         /// Check corner <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A36" />
-        /// Check one opponent group in killer group <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q5971" />
+        /// Check opponent group in killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q5971_2" />
         /// </summary>
         private static Boolean CoveredPointSideMove(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
@@ -1979,13 +1979,13 @@ namespace Go
             //check corner
             if (opponentBoard.GetMoveLiberties().Any(n => opponentBoard.CornerPoint(n)))
                 return false;
-            //check one opponent group in killer group
+            //check opponent group in killer group
             Group kgroup = GroupHelper.GetDirectKillerGroup(currentBoard, move, c);
             if (kgroup != null)
             {
                 List<Point> contentPoints = kgroup.Points.Where(n => currentBoard[n] == c.Opposite()).ToList();
                 HashSet<Group> groups = currentBoard.GetGroupsFromPoints(contentPoints);
-                if (groups.Count == 1 && LinkHelper.FindDiagonalCut(currentBoard, groups.First()).Any())
+                if (groups.Count == 1 && groups.First().Points.Count > 1)
                     return false;
             }
             return true;
