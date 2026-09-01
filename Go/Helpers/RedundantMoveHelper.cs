@@ -706,7 +706,7 @@ namespace Go
             Board captureBoard = tryMove.CaptureBoard;
 
             //check killer formation
-            if (KillerFormationHelper.EssentialSuicidalKillerFormation(tryMove))
+            if (KillerFormationHelper.IsKillerFormationFromFunc(tryBoard))
                 return false;
 
             //check eye
@@ -1361,7 +1361,7 @@ namespace Go
                 List<Group> diagonalGroups = LinkHelper.GetDiagonalGroups(tryBoard, ngroup);
                 if (diagonalGroups.Count == 0) return false;
                 //check weak diagonal group
-                if (diagonalGroups.Any(s => !WallHelper.IsHostileGroup(tryBoard, s) && tryBoard.GetClosestPoints(move, c.Opposite()).Any(n => s.Equals(tryBoard.GetGroupAt(n)))))
+                if (diagonalGroups.Any(n => !WallHelper.IsHostileGroup(tryBoard, n)))
                     return false;
                 return true;
             }
@@ -1620,9 +1620,11 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
         /// Check capture move liberty <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A64_2" />
         /// Check killer formation <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_XuanXuanGo_A151_101Weiqi" />
+        /// Check eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario7kyu25_2" />
         /// </summary>
         private static Boolean CheckDiagonalAndLibertyAtMove(GameTryMove tryMove, Board captureBoard)
         {
+            Point move = tryMove.Move;
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryMove.MoveContent;
@@ -1630,7 +1632,7 @@ namespace Go
             //check diagonal for real eye
             if (EyeHelper.CheckDiagonalForRealEyeOnCapture(tryBoard, captureBoard).Any())
             {
-                Boolean rc = tryBoard.MoveGroup.Points.Count == 2 && KillerFormationHelper.ThreeOpponentGroupsAtMove(captureBoard, tryBoard.Move.Value);
+                Boolean rc = tryBoard.MoveGroup.Points.Count == 2 && KillerFormationHelper.ThreeOpponentGroupsAtMove(captureBoard, move);
                 if (!rc)
                     return true;
             }
@@ -1705,8 +1707,10 @@ namespace Go
             Board captureBoard = tryMove.CaptureBoard;
             if (!captureBoard.CapturedPoints.Any(n => n.Equals(move))) return false;
             if (captureBoard.CapturedPoints.Count() > 1) return true;
+            //check suicide within real eye
             if (SuicideWithinRealEye(tryMove, captureBoard))
                 return true;
+            //check miscellaneous single point suicide
             if (MiscSinglePointSuicide(tryMove, captureBoard, opponentMove))
                 return true;
             return false;
@@ -1994,9 +1998,9 @@ namespace Go
         /// Corner point suicide.
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A26_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_5" />
-        /// Check opponent at diagonal  <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A84_2" />
+        /// Check stone at diagonal  <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A84_2" />
         /// <see cref="UnitTestProject.KoTest.KoTest_Scenario_WuQingYuan_Q31680" />
-        /// No opponent at diagonal <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A95" />
+        /// No stone at diagonal <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_A95" />
         private static Boolean CornerPointSuicide(GameTryMove tryMove, Board captureBoard)
         {
             Board currentBoard = tryMove.CurrentGame.Board;
@@ -2010,10 +2014,10 @@ namespace Go
                 return true;
             Group atariTarget = tryBoard.AtariTargets.First();
             Point diagonal = tryBoard.GetDiagonalNeighbours().First();
-            //no opponent at diagonal
+            //no stone at diagonal
             if (tryBoard[diagonal] == Content.Empty && captureBoard.MoveGroup.Points.Count == 1)
                 return true;
-            //check opponent at diagonal
+            //check stone at diagonal
             if (tryBoard[diagonal] == c)
             {
                 Board b = ImmovableHelper.MakeMoveAtLiberty(tryBoard, atariTarget);
@@ -2736,7 +2740,6 @@ namespace Go
         /// <see cref="UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario_Corner_B21" /> 
         /// <see cref="UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario_WuQingYuan_Q6150" /> 
         /// <see cref="UnitTestProject.RestoreNeutralMoveTest.RestoreNeutralMoveTest_Scenario_TianLongTu_Q16490" /> 
-        /// Check weak group within killer group <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260601_8" /> 
         /// </summary>
         private static Boolean SuicideGroupNearCapture(Board board)
         {
@@ -2754,11 +2757,6 @@ namespace Go
                         return true;
                 }
             }
-            //check weak group within killer group
-            if (board.CapturedPoints.Count() != 1) return false;
-            Point p = board.CapturedPoints.First();
-            if (!WallHelper.StrongNeighbourGroups(board, p, c.Opposite()) && GroupHelper.GetDirectKillerGroup(board, move, c.Opposite()) != null)
-                return true;
             return false;
         }
 
