@@ -535,6 +535,21 @@ namespace Go
         }
 
         /// <summary>
+        /// Get diagonal groups with all liberties.
+        /// </summary>
+        public static IEnumerable<Group> GetDiagonalGroupsWithAllLiberties(Board board, Group group = null)
+        {
+            if (group == null) group = board.MoveGroup;
+            Content c = group.Content;
+            foreach (Link<Point> q in LinkHelper.GetGroupLinkedDiagonals(board, group))
+            {
+                List<Point> points = LinkHelper.PointsBetweenDiagonals(q);
+                if (points.All(n => board[n] == Content.Empty))
+                    yield return board.GetGroupAt(q.Move);
+            }
+        }
+
+        /// <summary>
         /// Get diagonal groups without cut.
         /// </summary>
         public static IEnumerable<Group> GetDiagonalGroupsWithoutCut(Board board, Group group = null)
@@ -543,7 +558,7 @@ namespace Go
             Content c = group.Content;
             foreach (Link<Point> q in LinkHelper.GetGroupLinkedDiagonals(board, group))
             {
-                List<Point> points = LinkHelper.PointsBetweenDiagonals(q.Move, (Point)q.CheckMove);
+                List<Point> points = LinkHelper.PointsBetweenDiagonals(q);
                 if (points.Count(n => board[n] == c.Opposite()) == 1 && points.Count(n => board[n] == Content.Empty) == 1)
                     yield return board.GetGroupAt(q.Move);
             }
@@ -555,9 +570,11 @@ namespace Go
         public static IEnumerable<Group> GetDiagonalGroupsWithCut(Board board, Group group = null)
         {
             if (group == null) group = board.MoveGroup;
+            Content c = group.Content;
             foreach (Link<Point> q in LinkHelper.GetGroupLinkedDiagonals(board, group))
             {
-                if (!LinkHelper.FindLibertyBetweenDiagonals(board, q.Move, (Point)q.CheckMove).Any())
+                List<Point> points = LinkHelper.PointsBetweenDiagonals(q);
+                if (points.All(n => board[n] == c.Opposite()))
                     yield return board.GetGroupAt(q.Move);
             }
         }

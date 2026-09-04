@@ -757,13 +757,14 @@ namespace Go
         /// <see cref="UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_Scenario_TianLongTu_Q16594" />
         /// <see cref="UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_Scenario_WindAndTime_Q30370" />
         /// <see cref="UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_Scenario_TianLongTu_Q16747" />
+        /// Check one point target group <see cref="UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_Scenario_Corner_A125" />
         /// Check unescapable group <see cref="UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_Scenario_Corner_A85" />
         /// <see cref="UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_Scenario_WuQingYuan_Q31154" />
         /// Two pre-atari moves <see cref="UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_Scenario_Corner_A55" />
         /// </summary>
         public static Boolean PreAtariMove(GameTryMove tryMove)
         {
-            Board currentBoard = tryMove.CurrentGame.Board;
+            Board currentBoard = tryMove.CurrentGame.Board; 
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryBoard.MoveGroup.Content;
             foreach (Group targetGroup in tryBoard.GetGroupsFromStoneNeighbours())
@@ -778,7 +779,12 @@ namespace Go
                     if (!UnescapableGroup(b, targetGroup).Item1) continue;
                     //check escape move
                     if (!ImmovableHelper.ConnectAndDieMove(tryBoard, b.Move.Value, c.Opposite(), false).Item1)
+                    {
+                        //check one point target group
+                        if (targetGroup.Points.Count == 1 && !LinkHelper.GetDiagonalGroupsWithAllLiberties(currentBoard, targetGroup).Any())
+                            continue;
                         return true;
+                    }
                 }
                 //check unescapable group       
                 foreach (Point liberty in currentBoard.GetGroupLiberties(targetGroup))

@@ -840,6 +840,7 @@
             <see cref="!:UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_Scenario_TianLongTu_Q16594" />
             <see cref="!:UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_Scenario_WindAndTime_Q30370" />
             <see cref="!:UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_Scenario_TianLongTu_Q16747" />
+            Check one point target group <see cref="!:UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_Scenario_Corner_A125" />
             Check unescapable group <see cref="!:UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_Scenario_Corner_A85" />
             <see cref="!:UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_Scenario_WuQingYuan_Q31154" />
             Two pre-atari moves <see cref="!:UnitTestProject.PreAtariMoveTest.PreAtariMoveTest_Scenario_Corner_A55" />
@@ -1433,6 +1434,11 @@
             Find diagonal cut.
             </summary>
         </member>
+        <member name="M:Go.LinkHelper.GetDiagonalGroupsWithAllLiberties(Go.Board,Go.Group)">
+            <summary>
+            Get diagonal groups with all liberties.
+            </summary>
+        </member>
         <member name="M:Go.LinkHelper.GetDiagonalGroupsWithoutCut(Go.Board,Go.Group)">
             <summary>
             Get diagonal groups without cut.
@@ -1756,14 +1762,6 @@
             <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260322_8" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.CheckKillerGroupForSuicidalConnectAndDie(Go.GameTryMove,Go.Board)">
-            <summary>
-            Check killer group for suicidal connect and die.
-            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260804_8" />
-            Check diagonal cut <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_20260813_8" />
-            Check killer group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31444_2" />
-            </summary>
-        </member>
         <member name="M:Go.RedundantMoveHelper.CheckDiagonalForRealEyeForSuicidalConnectAndDie(Go.GameTryMove,Go.Board)">
             <summary>
             Check diagonal for real eye for suicidal connect and die.
@@ -2063,7 +2061,6 @@
         <member name="M:Go.RedundantMoveHelper.NeutralPointKillMoveOnly(Go.GameTryMove)">
             <summary>
             Neutral point kill move only.
-            <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A26_3" />
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18410" />
             Check one empty space left <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WindAndTime_Q29264" />
             Check opponent eye for survival <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_2026725_8" />
@@ -2076,7 +2073,7 @@
             Check opponent groups <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" />
             Check one point move <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_A40" />
             Check opponent at diagonal neighbour <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_A136" />
-            Check non killable groups at stone neighbour <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260821_8" />
+            Check one point opponent at stone neighbour <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260903_8" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CoveredPointSuicidalWithCornerFormation(Go.GameTryMove)">
@@ -2410,11 +2407,19 @@
             Check neighbour group with two liberties <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_TianLongTu_Q15618" /> 
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.RedundantNonSuicidalMultiPointMove(Go.GameTryMove)">
+        <member name="M:Go.RedundantMoveHelper.RedundantNonSuicidalMultiPointMove(Go.GameTryMove,Go.GameTryMove)">
             <summary>
-            Redundant non suicidal multi point move.
-            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260804_8" />
-            Check eye at opponent move <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />
+            Redundant non suicidal multi-point move.
+            Check multi point move <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260804_8" />
+            Check one empty space left <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CheckNonKillableForMultiPointMove(Go.GameTryMove,Go.GameTryMove)">
+            <summary>
+            Check non killable for multi-point move.
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260821_8" />
+            Check opponent move group <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A26_2" />
+            Check diagonal point <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A26_2" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.RedundantFillerMove(Go.GameTryMove)">
