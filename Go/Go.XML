@@ -2410,14 +2410,14 @@
         <member name="M:Go.RedundantMoveHelper.RedundantNonSuicidalMultiPointMove(Go.GameTryMove,Go.GameTryMove)">
             <summary>
             Redundant non suicidal multi-point move.
-            Check multi point move <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260804_8" />
+            Check multi-point move <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260804_8" />
             Check one empty space left <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckNonKillableForMultiPointMove(Go.GameTryMove,Go.GameTryMove)">
             <summary>
             Check non killable for multi-point move.
-            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260821_8" />
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260902_8" />
             Check opponent move group <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A26_2" />
             Check diagonal point <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A26_2" />
             </summary>

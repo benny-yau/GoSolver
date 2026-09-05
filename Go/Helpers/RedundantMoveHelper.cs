@@ -3780,7 +3780,7 @@ namespace Go
 
         /// <summary>
         /// Redundant non suicidal multi-point move.
-        /// Check multi point move <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260804_8" />
+        /// Check multi-point move <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260804_8" />
         /// Check one empty space left <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />
         /// </summary>
         public static Boolean RedundantNonSuicidalMultiPointMove(GameTryMove tryMove, GameTryMove opponentMove = null)
@@ -3790,7 +3790,7 @@ namespace Go
             Point move = tryMove.Move;
             Content c = tryBoard.MoveGroup.Content;
             if (!tryMove.IsNegligible) return false;
-            if (opponentMove != null && !opponentMove.IsNegligible) return false;
+            if (tryMove.OpponentMove != null && !tryMove.OpponentMove.IsNegligible) return false;
             if (tryBoard.MoveGroup.Points.Count == 1) return false;
             //check stone neighbour
             if (tryBoard.GetStoneNeighbours().Count(n => tryBoard[n] == c) == 1) return false;
@@ -3812,7 +3812,7 @@ namespace Go
 
         /// <summary>
         /// Check non killable for multi-point move.
-        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260821_8" />
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260902_8" />
         /// Check opponent move group <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A26_2" />
         /// Check diagonal point <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A26_2" />
         /// </summary>
