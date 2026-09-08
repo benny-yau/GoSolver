@@ -448,15 +448,14 @@ namespace Go
             if (previousGroups.Count == 2 && EyeHelper.FindCoveredEye(currentBoard, move, c) && previousGroups.Any(n => n.Points.Count > 1 && !ImmovableHelper.CheckConnectAndDie(currentBoard, n)))
                 return true;
 
+            //check connect and die
+            (Boolean connectAndDie, Board linkBoard) = ImmovableHelper.ConnectAndDieMove(currentBoard, liberty, c, true, false);
+            if (connectAndDie || linkBoard == null) return false;
             //ensure link for groups
-            (Boolean suicidal, Board linkBoard) = ImmovableHelper.IsSuicidalMove(liberty, c, currentBoard);
-            if (suicidal) return false;
             if (!LinkHelper.IsAbsoluteLinkForGroups(currentBoard, linkBoard)) return false;
             //connected to external group not from previous move group
             List<Group> linkGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, linkBoard);
             if (!linkGroups.Except(previousGroups).Any()) return false;
-            //check connect and die
-            if (ImmovableHelper.CheckConnectAndDie(linkBoard)) return false;
             //corner three formation
             if (CornerThreeFormation(tryBoard)) return false;
             //two point atari move
@@ -470,8 +469,7 @@ namespace Go
             if (lostGroups.Count == 0)
                 return true;
             //single lost group
-            if (lostGroups.Count != 1) return false;
-            if (lostGroups.First().Points.Count <= 2)
+            if (lostGroups.Count == 1 && lostGroups.First().Points.Count <= 2)
                 return true;
             return false;
         }
