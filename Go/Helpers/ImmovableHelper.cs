@@ -346,6 +346,7 @@ namespace Go
         /// </summary>
         public static Boolean IsSuicidalMoveForBothPlayers(Board board, Point p, Boolean connectAndDie = false)
         {
+            if (EyeHelper.FindEye(board, p)) return false;
             if (!connectAndDie)
             {
                 if (ImmovableHelper.IsSuicidalMove(board, p, Content.Black) && ImmovableHelper.IsSuicidalMove(board, p, Content.White))

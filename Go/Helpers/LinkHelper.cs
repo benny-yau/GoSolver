@@ -552,15 +552,23 @@ namespace Go
         /// <summary>
         /// Get diagonal groups without cut.
         /// </summary>
-        public static IEnumerable<Group> GetDiagonalGroupsWithoutCut(Board board, Group group = null)
+        public static IEnumerable<Group> GetDiagonalGroupsWithoutCut(Board board, Group group = null, Boolean checkCovered = true)
         {
             if (group == null) group = board.MoveGroup;
             Content c = group.Content;
             foreach (Link<Point> q in LinkHelper.GetGroupLinkedDiagonals(board, group))
             {
                 List<Point> points = LinkHelper.PointsBetweenDiagonals(q);
-                if (points.Count(n => board[n] == c.Opposite()) == 1 && points.Count(n => board[n] == Content.Empty) == 1)
-                    yield return board.GetGroupAt(q.Move);
+                if (checkCovered)
+                {
+                    if (points.Count(n => board[n] == c.Opposite()) == 1 && points.Count(n => board[n] == Content.Empty) == 1)
+                        yield return board.GetGroupAt(q.Move);
+                }
+                else
+                {
+                    if (points.Any(n => board[n] == Content.Empty))
+                        yield return board.GetGroupAt(q.Move);
+                }
             }
         }
 
