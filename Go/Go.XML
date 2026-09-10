@@ -1725,9 +1725,18 @@
             Check corner point <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_B8" />
             Check four-point killer formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3_5" />
             Check three liberty group <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A54" />
+            Check connect and die for opponent group <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260827_7" />
             Check diagonal cut for connect and die <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260908_8" />
             <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221112_5" />
-            Check corner point for connect and die <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221109_7" />
+            Check closest points for connect and die <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_20260902_8" />
+             <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221109_7" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CheckTwoPointGroupInOpponentSuicidal(Go.GameTryMove,Go.GameTryMove,Go.Board)">
+            <summary>
+            Check two-point group in opponent suicidal.
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q29366" />
+            Check eye for survival <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario1dan29" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SuicidalConnectAndDie(Go.GameTryMove)">
