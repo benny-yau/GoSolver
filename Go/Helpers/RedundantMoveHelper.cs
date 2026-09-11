@@ -689,11 +689,6 @@ namespace Go
         /// Check corner point <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_B8" />
         /// Check four-point killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3_5" />
         /// Check three liberty group <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A54" />
-        /// Check connect and die for opponent group <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260827_7" />
-        /// Check diagonal cut for connect and die <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260908_8" />
-        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20221112_5" />
-        /// Check closest points for connect and die <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_20260902_8" />
-        ///  <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20221109_7" />
         /// </summary>
         public static Boolean OpponentSuicidalConnectAndDie(GameTryMove tryMove, GameTryMove opponentMove)
         {
@@ -725,12 +720,11 @@ namespace Go
                 return false;
 
             //check one neighbour group
-            Group killerGroup = GroupHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite());
+            Group killerGroup = GroupHelper.GetDirectKillerGroup(currentBoard, move, c.Opposite());
             if (killerGroup != null && GroupHelper.GetNeighbourGroupsOfKillerGroup(currentBoard, killerGroup).Count == 1)
             {
                 //check isolated group
-                List<Group> previousGroup = LinkHelper.GetPreviousMoveGroup(currentBoard, opponentBoard);
-                if (previousGroup.Any(n => !GroupHelper.GetNeighbourGroupsOfKillerGroup(currentBoard, killerGroup).Contains(n)))
+                if (LinkHelper.GetPreviousMoveGroup(currentBoard, opponentBoard).Any(n => !GroupHelper.GetNeighbourGroupsOfKillerGroup(currentBoard, killerGroup).Contains(n)))
                     return false;
                 //get first point
                 Point p = KillerFormationHelper.FirstPointInKillerGroup(currentBoard, killerGroup, true);
@@ -746,8 +740,7 @@ namespace Go
                 //check covered point
                 if (EyeHelper.IsCovered(currentBoard, move, c.Opposite())) return false;
                 //check isolated group
-                List<Group> previousGroup = LinkHelper.GetPreviousMoveGroup(currentBoard, opponentBoard);
-                if (previousGroup.Any(n => !GroupHelper.GetNeighbourGroupsOfKillerGroup(currentBoard, killerGroup).Contains(n)))
+                if (LinkHelper.GetPreviousMoveGroup(currentBoard, opponentBoard).Any(n => !GroupHelper.GetNeighbourGroupsOfKillerGroup(currentBoard, killerGroup).Contains(n)))
                     return false;
                 //get first point with link for groups
                 Point p = killerGroup.Points.FirstOrDefault(n => currentBoard[n] == Content.Empty && currentBoard.GetGroupsFromStoneNeighbours(n, c).Count() > 1);
@@ -757,7 +750,7 @@ namespace Go
             }
 
             //check diagonal not cut
-            if (tryBoard.MoveGroup.Points.Count > 1 && LinkHelper.GetDiagonalGroupsWithoutCut(tryBoard).Any())
+            if (tryBoard.MoveGroup.Points.Count > 1 && LinkHelper.GetDiagonalGroupsWithoutCut(tryBoard).Any() && tryBoard.GetMoveLiberties().Any())
                 return false;
 
             if (tryBoard.GetNeighbourGroups().Count > 1)
@@ -796,18 +789,10 @@ namespace Go
             if (ImmovableHelper.CheckThreeLibertyGroupAtBigTigerMouth(opponentBoard, currentBoard))
                 return false;
 
-            //check connect and die for opponent group
-            foreach (Group group in tryBoard.OpponentGroupsAtStoneAndDiagonalNeighbour())
-            {
-                if (!ImmovableHelper.CheckConnectAndDie(tryBoard, group)) continue;
-                if (ImmovableHelper.CheckConnectAndDie(opponentBoard, group)) continue;
-                //check closest points for connect and die
-                if (opponentBoard.GetClosestPoints(move, c).Any(n => ImmovableHelper.CheckConnectAndDie(opponentBoard, opponentBoard.GetGroupAt(n))))
-                    return false;
-                //check diagonal cut for connect and die
-                if (LinkHelper.FindDiagonalCut(opponentBoard).Any())
-                    return false;
-            }
+            //check connect and die
+            if (CheckConnectAndDieInOpponentSuicidal(tryMove, opponentMove))
+                return false;
+
             return true;
         }
 
@@ -826,12 +811,44 @@ namespace Go
             //check two-point group
             if (tryBoard.MoveGroup.Points.Count != 1) return false;
             if (GroupHelper.CheckKillerGroupPoints(captureBoard, move, c.Opposite()) == null) return false;
-            if (GroupHelper.GetKillerGroupFromCache(currentBoard, move, c.Opposite()) != null) return false;
+            if (GroupHelper.GetDirectKillerGroup(currentBoard, move, c.Opposite()) != null) return false;
             if (KoHelper.GetKoEyePoint(opponentBoard) != null) return false;
             //check eye for survival
             if (opponentBoard.GetMoveLiberties().Any(n => !EyeHelper.FindEye(opponentBoard, n, c.Opposite()) && !WallHelper.NoEyeForSurvival(opponentBoard, n, c.Opposite())))
                 return false;
             return true;
+        }
+
+        /// <summary>
+        /// Check connect and die in opponent suicidal.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2174_2" />
+        /// Check diagonal cut for connect and die <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260908_8" />
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20221112_5" />
+        /// Check closest points for connect and die <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_20260902_8" />
+        /// Check corner point for connect and die <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20221109_7" />
+        /// </summary>
+        private static Boolean CheckConnectAndDieInOpponentSuicidal(GameTryMove tryMove, GameTryMove opponentMove)
+        {
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            Board opponentBoard = opponentMove.TryGame.Board;
+            Point move = tryMove.Move;
+            Content c = tryMove.MoveContent;
+            foreach (Group group in tryBoard.OpponentGroupsAtStoneAndDiagonalNeighbour())
+            {
+                if (!ImmovableHelper.CheckConnectAndDie(tryBoard, group)) continue;
+                if (ImmovableHelper.CheckConnectAndDie(currentBoard, group)) continue;
+                //check diagonal cut for connect and die
+                if (LinkHelper.FindDiagonalCut(opponentBoard).Any())
+                    return true;
+                //check closest points for connect and die
+                if (opponentBoard.GetClosestPoints(move, c).Any(n => !WallHelper.IsStrongGroup(opponentBoard, opponentBoard.GetGroupAt(n)) && WallHelper.IsStrongGroup(currentBoard, currentBoard.GetGroupAt(n))))
+                    return true;
+                //check corner point for connect and die
+                if (tryBoard.MoveGroup.Points.Count == 1 && tryBoard.CornerPoint())
+                    return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -1540,7 +1557,6 @@ namespace Go
         /// <summary>
         /// Check real eye in suicidal connect and die.
         /// Check four-point group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A67_2" />
-        /// Check rectangle six formation <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260818_7" />
         /// </summary>
         private static Boolean CheckRealEyeInSuicidalConnectAndDie(GameTryMove tryMove, Board captureBoard)
         {
@@ -1563,10 +1579,6 @@ namespace Go
 
                 //check four-point group
                 if (tryBoard.MoveGroup.Points.Count == 4 && !EyeHelper.CheckRealEyeInNeighbourGroups(tryBoard, captureBoard))
-                    return false;
-
-                //check rectangle six formation
-                if (KillerFormationHelper.RectangleSixFormation(tryBoard))
                     return false;
             }
             return true;
@@ -1669,7 +1681,7 @@ namespace Go
             if (tryMove.AtariResolved) return false;
 
             //check one empty space left
-            if (KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
+            if (tryBoard.MoveGroup.Points.Count == 2 && KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                 return false;
 
             //check opponent at diagonal points
@@ -1858,8 +1870,10 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario4dan17_2" />
         /// Check eye groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31536" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A139" />
-        /// Check atari target <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A27_3" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31640" />
+        /// Check one-point atari target <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Phenomena_B18" />
+        /// Check one neighbour group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A27_3" />
+        /// Check move at liberty <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31640" />
+        /// Check killer group at diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_B33" />
         /// </summary>
         private static Boolean CheckAtariMoveInSuicideRealEye(GameTryMove tryMove, Board captureBoard)
         {
@@ -1877,22 +1891,24 @@ namespace Go
             if (captureBoard.GetDiagonalNeighbours(move).Where(d => captureBoard[d] == Content.Empty).All(n => !captureBoard.OpponentGroupsAtStoneAndDiagonalNeighbour(n, c.Opposite()).Any(), true))
                 return true;
 
-            //get diagonals next to atari target
-            List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] != c.Opposite() && tryBoard.GetGroupsFromStoneNeighbours(n, c).Intersect(tryBoard.AtariTargets).Any()).ToList();
-            //check killer group
-            if (diagonals.Any(d => GroupHelper.GetDirectKillerGroup(tryBoard, d, c.Opposite()) != null))
-                return true;
-
-            //check atari target
             if (tryBoard.AtariTargets.Count == 1)
             {
                 Group atariTarget = tryBoard.AtariTargets.First();
+                //check one-point atari target
+                if (atariTarget.Points.Count == 1 && LinkHelper.GetDiagonalGroups(tryBoard).Any())
+                    return true;
+                //check one neighbour group
                 if (atariTarget.Points.Count > 1 && tryBoard.GetGroupsFromStoneNeighbours().Count == 1)
                     return true;
+                //check move at liberty
                 Board b = ImmovableHelper.MakeMoveAtLiberty(tryBoard, atariTarget);
                 if (b != null && b.MoveGroupLiberties == 1)
                     return true;
             }
+            //check killer group at diagonal
+            List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] != c.Opposite() && tryBoard.GetGroupsFromStoneNeighbours(n, c).Intersect(tryBoard.AtariTargets).Any()).ToList();
+            if (diagonals.Any(d => GroupHelper.GetDirectKillerGroup(tryBoard, d, c.Opposite()) != null))
+                return true;
             return false;
         }
 

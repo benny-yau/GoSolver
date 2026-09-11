@@ -17,7 +17,7 @@ namespace Go
                     killerFormationFuncs = new Dictionary<int, List<Func<Board, Group, Boolean>>>();
                     killerFormationFuncs.Add(4, new List<Func<Board, Group, Boolean>>() { OneByThreeFormation, BoxFormation, CrowbarEdgeFormation, StraightFourFormation, TwoByTwoSuicidalFormation, BentFourCornerFormation });
                     killerFormationFuncs.Add(5, new List<Func<Board, Group, Boolean>>() { KnifeFiveFormation, CrowbarFiveFormation, BentFiveFormation });
-                    killerFormationFuncs.Add(6, new List<Func<Board, Group, Boolean>>() { FlowerSixFormation, KnifeSixFormation, CornerSixFormation });
+                    killerFormationFuncs.Add(6, new List<Func<Board, Group, Boolean>>() { FlowerSixFormation, KnifeSixFormation, CornerSixFormation, RectangleSixFormation });
                     killerFormationFuncs.Add(7, new List<Func<Board, Group, Boolean>>() { FlowerSevenFormation, OddSevenFormation });
                 }
                 return killerFormationFuncs;
@@ -1287,8 +1287,9 @@ namespace Go
         /// <summary>
         /// Rectangle six formation.
         /// </summary>
-        public static Boolean RectangleSixFormation(Board tryBoard)
+        public static Boolean RectangleSixFormation(Board tryBoard, Group moveGroup)
         {
+            if (tryBoard.Move == null) return false;
             if (!KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard)) return false;
             if (!LinkHelper.FindDiagonalCut(tryBoard).Any()) return false;
             HashSet<Point> contentPoints = tryBoard.MoveGroup.Points;
@@ -1344,19 +1345,6 @@ namespace Go
             Point liberty = tryBoard.MoveGroup.Liberties.First();
             List<Point> points = LinkHelper.GetMoveDiagonals(tryBoard).Where(n => tryBoard.GetStoneNeighbours(n).Contains(liberty)).ToList();
             return tryBoard.GetGroupsFromPoints(points).Where(n => n.Liberties.Count > 1).ToList();
-        }
-
-        /// <summary>
-        /// Tiger mouth at diagonal.
-        /// </summary>
-        public static Boolean TigerMouthAtDiagonal0(Board tryBoard)
-        {
-            Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.MoveGroup.Points.Count != 1 || tryBoard.MoveGroupLiberties != 1) return false;
-            Point liberty = tryBoard.MoveGroup.Liberties.First();
-            if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard[n] == c && tryBoard.GetStoneNeighbours(n).Contains(liberty)))
-                return true;
-            return false;
         }
 
         /// <summary>

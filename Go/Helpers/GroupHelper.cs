@@ -107,11 +107,19 @@ namespace Go
         {
             Group killerGroup = GroupHelper.GetKillerGroupFromCache(board, p, c);
             if (killerGroup == null) return null;
+            //check direct neighbour group
             List<Group> ngroups;
             if (board[p] == Content.Empty)
                 ngroups = board.GetGroupsFromStoneNeighbours(p, c.Opposite());
             else
                 ngroups = board.GetNeighbourGroups(board.GetGroupAt(p));
+            //check corner point
+            if (ngroups.Count == 0 && board.CornerPoint(p))
+            {
+                Point diagonal = board.GetDiagonalNeighbours(p).First();
+                if (board[diagonal] == c) ngroups = new List<Group>() { board.GetGroupAt(diagonal) };
+            }
+            //check neighbour group at exterior of killer group
             if (GroupHelper.GetNeighbourGroupsOfKillerGroup(board, killerGroup).Any(n => ngroups.Contains(n)))
                 return killerGroup;
             return null;
