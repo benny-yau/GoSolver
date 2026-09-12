@@ -1681,19 +1681,16 @@ namespace Go
             if (tryMove.AtariResolved) return false;
 
             //check one empty space left
-            if (tryBoard.MoveGroup.Points.Count == 2)
-            {
-                if (KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
-                    return false;
+            if (tryBoard.MoveGroup.Points.Count == 2 && KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
+                return false;
 
-                //check opponent at diagonal points
-                List<Point> diagonals = LinkHelper.GetDiagonalPoints(tryBoard);
-                if (!diagonals.All(n => tryBoard[n] == c.Opposite()))
-                    return false;
-            }
+            //check opponent at diagonal points
+            List<Point> diagonals = LinkHelper.GetDiagonalPoints(tryBoard);
+            if (!diagonals.All(n => tryBoard[n] == c.Opposite()))
+                return false;
 
             //check capture move liberty
-            if (moveLiberties.Count == 1 && tryBoard.MoveGroup.Points.Count <= 3)
+            if (moveLiberties.Count == 1)
             {
                 Point liberty = moveLiberties.First();
                 Board b = captureBoard;
