@@ -1289,7 +1289,8 @@ namespace Go
         /// </summary>
         public static Boolean RectangleSixFormation(Board tryBoard, Group moveGroup)
         {
-            if (tryBoard.Move == null) return false;
+            if (tryBoard.Move == null || tryBoard.IsPassMove) return false;
+            if (!moveGroup.Equals(tryBoard.MoveGroup)) return false;
             if (!KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard)) return false;
             if (!LinkHelper.FindDiagonalCut(tryBoard).Any()) return false;
             HashSet<Point> contentPoints = tryBoard.MoveGroup.Points;

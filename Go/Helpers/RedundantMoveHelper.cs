@@ -1681,16 +1681,19 @@ namespace Go
             if (tryMove.AtariResolved) return false;
 
             //check one empty space left
-            if (tryBoard.MoveGroup.Points.Count == 2 && KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
-                return false;
+            if (tryBoard.MoveGroup.Points.Count == 2)
+            {
+                if (KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
+                    return false;
 
-            //check opponent at diagonal points
-            List<Point> diagonals = LinkHelper.GetDiagonalPoints(tryBoard);
-            if (!diagonals.All(n => tryBoard[n] == c.Opposite()))
-                return false;
+                //check opponent at diagonal points
+                List<Point> diagonals = LinkHelper.GetDiagonalPoints(tryBoard);
+                if (!diagonals.All(n => tryBoard[n] == c.Opposite()))
+                    return false;
+            }
 
             //check capture move liberty
-            if (moveLiberties.Count == 1)
+            if (moveLiberties.Count == 1 && tryBoard.MoveGroup.Points.Count <= 3)
             {
                 Point liberty = moveLiberties.First();
                 Board b = captureBoard;
@@ -3380,7 +3383,7 @@ namespace Go
                     return false;
 
                 //check immovable for capture move
-                if (!capturedBoard.CornerPoint() && capturedBoard.GetStoneNeighbours().Where(n => !n.Equals(move)).All(s => ImmovableHelper.IsImmovablePoint(capturedBoard, s, c.Opposite())))
+                if (!capturedBoard.CornerPoint() && capturedBoard.GetStoneNeighbours().Where(n => !n.Equals(move)).All(s => ImmovableHelper.IsImmovablePoint(capturedBoard, s, c.Opposite()) && LinkHelper.TigerMouthThreatGroup(capturedBoard, s, c.Opposite()) == null))
                     return false;
             }
             //check real eye
