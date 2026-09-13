@@ -2160,6 +2160,8 @@ namespace Go
                 return false;
 
             //check opponent groups
+            if (KillerFormationHelper.SuicideMoveGroupWithOneEmptySpaceLeft(tryBoard))
+                return false;
             List<Point> rc = tryBoard.GetClosestPoints(move, c.Opposite(), 3);
             rc = rc.Where(n => !CheckNonKillableAtDiagonalGroups(tryBoard, tryBoard.GetGroupAt(n))).ToList();
             if (DirectionHelper.VerifyOppponentInAllDirection(tryBoard, rc))

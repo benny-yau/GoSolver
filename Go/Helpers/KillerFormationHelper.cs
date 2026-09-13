@@ -405,19 +405,33 @@ namespace Go
         /// Move group binding <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B19_2" />
         /// Check covered <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20221025_2" />
         /// </summary>
-        public static Boolean SuicideMoveValidWithOneEmptySpaceLeft(Board tryBoard)
+        public static Boolean SuicideMoveValidWithOneEmptySpaceLeft(Board tryBoard, Point? move = null)
         {
-            Point move = tryBoard.Move.Value;
+            if (move == null) move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
 
-            foreach (Point p in tryBoard.GetMoveLiberties())
+            foreach (Point p in tryBoard.GetMoveLiberties(move))
             {
                 Boolean rc = tryBoard.GetStoneNeighbours(p).Where(q => !q.Equals(move)).All(q => tryBoard[q] == c.Opposite());
                 if (!rc) continue;
                 //check covered
-                if (tryBoard.MoveGroup.Points.Count == 1 && EyeHelper.IsCovered(tryBoard, p, c.Opposite()) && !tryBoard.OneLibertyGroup(p, c).Any())
+                if (tryBoard.GetGroupAt(move.Value).Points.Count == 1 && EyeHelper.IsCovered(tryBoard, p, c.Opposite()) && !tryBoard.OneLibertyGroup(p, c).Any())
                     continue;
                 return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Suicide move group with one empty space left.
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260912_8" />
+        /// </summary>
+        public static Boolean SuicideMoveGroupWithOneEmptySpaceLeft(Board tryBoard)
+        {
+            if (tryBoard.MoveGroup.Points.Count <= 2 && tryBoard.MoveGroupLiberties == 2)
+            {
+                if (tryBoard.MoveGroup.Points.Any(n => SuicideMoveValidWithOneEmptySpaceLeft(tryBoard, n)))
+                    return true;
             }
             return false;
         }

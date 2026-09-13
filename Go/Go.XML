@@ -949,12 +949,18 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3" />
             </summary>
         </member>
-        <member name="M:Go.KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(Go.Board)">
+        <member name="M:Go.KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(Go.Board,System.Nullable{Go.Point})">
             <summary>
             Suicide move valid with one empty space, surrounded by opponent stones.
             Move group with three points <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario1kyu29" />
             Move group binding <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B19_2" />
             Check covered <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221025_2" />
+            </summary>
+        </member>
+        <member name="M:Go.KillerFormationHelper.SuicideMoveGroupWithOneEmptySpaceLeft(Go.Board)">
+            <summary>
+            Suicide move group with one empty space left.
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260912_8" />
             </summary>
         </member>
         <!-- Badly formed XML comment ignored for member "M:Go.KillerFormationHelper.IsLinkToExternalGroup(Go.Board,Go.Board,Go.Board)" -->

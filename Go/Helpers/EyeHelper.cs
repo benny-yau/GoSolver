@@ -397,7 +397,6 @@ namespace Go
             if (killerGroup == null) killerGroup = tryBoard.MoveGroup;
             foreach ((Group kgroup, List<Group> cgroups) in GroupHelper.CheckIfNeighbourKillerGroup(captureBoard, killerGroup))
             {
-                if (cgroups.Count == 1) return true;
                 if (!WallHelper.StrongGroups(captureBoard, cgroups)) continue;
                 if (EyeHelper.FindRealEyeOfAnyKillerGroup(captureBoard, kgroup))
                 {
