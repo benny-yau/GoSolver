@@ -15,7 +15,6 @@ namespace Go
         public MakeMoveResult MakeMoveResult { get; set; }
         public ConfirmAliveResult ConfirmAlive { get; set; }
         public GameTryMove OpponentBestMove { get; set; }
-        public Board CaptureBoard { get; set; }
 
         public bool IsEye { get; set; }
         public bool IsCoveredEyeMove { get; set; }
@@ -127,6 +126,17 @@ namespace Go
             }
         }
 
+        Board captureBoard;
+        public Board CaptureBoard 
+        { 
+            get
+            {
+                Boolean rc = this.MoveConnectAndDie;
+                return captureBoard;
+            }
+        }
+
+
         /// <summary>
         /// Move connect and die.
         /// </summary>
@@ -140,7 +150,7 @@ namespace Go
                     Board b = TryGame.Board;
                     (Boolean connectAndDie, Board captureBoard) = ImmovableHelper.ConnectAndDie(b, b.MoveGroup, false);
                     this.moveConnectAndDie = connectAndDie;
-                    this.CaptureBoard = captureBoard;
+                    this.captureBoard = captureBoard;
                 }
                 return moveConnectAndDie.Value;
             }

@@ -2329,6 +2329,11 @@
             Check diagonal at move <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanQiJing_B57_2" />
             Check move next to corner <see cref="!:UnitTestProject.CheckForRecursionTest.CheckForRecursionTest_20260727_8" />
             Check immovable for capture move <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260903_8" />
+            Check one point neighbour group <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20260914_8" />
+            Check connect and die at diagonal <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221023_5" />
+            Check capture with two neighbour group <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_Q14971" />
+            Check liberty fight <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260601_8" />
+            Check three liberty suicide <see cref="!:UnitTestProject.ThreeLibertySuicidalTest.ThreeLibertySuicidalTest_Scenario5dan18_2" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckSuicideKoMoveAtCorner(Go.Board)">
