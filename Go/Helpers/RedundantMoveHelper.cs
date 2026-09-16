@@ -484,6 +484,10 @@ namespace Go
             if (!ngroups.Any(n => WallHelper.IsNonKillableGroup(tryBoard, n)))
                 return false;
 
+            //check two-point covered eye
+            if (CheckSuicideInTwoPointCoveredEye(tryMove))
+                return false;
+
             //convert to non killable groups
             foreach (Group ngroup in ngroups)
             {
@@ -1952,6 +1956,8 @@ namespace Go
             {
                 if (WallHelper.TargetWithAnyNonKillableGroup(tryBoard) && WallHelper.StrongNeighbourGroups(capturedBoard, move, c))
                 {
+                    if (CheckSuicideInTwoPointCoveredEye(tryMove))
+                        return false;
                     if (opponentMove != null && CheckMoveBeyondNonKillableGroup(tryMove))
                         return false;
                     return true;
@@ -2687,6 +2693,52 @@ namespace Go
                 if (ngroups.Any(n => n.Points.Count >= 3 && ImmovableHelper.CheckConnectAndDie(captureBoard, n)))
                     return true;
             }
+
+            //check two-point covered eye
+            if (CheckSuicideInTwoPointCoveredEye(tryMove))
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Check suicide in two-point covered eye.
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260914_8" />
+        /// </summary>
+        public static Boolean CheckSuicideInTwoPointCoveredEye(GameTryMove tryMove)
+        {
+            Board tryBoard = tryMove.TryGame.Board;
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Point move = tryBoard.Move.Value;
+            Content c = tryMove.MoveContent;
+            if (tryBoard.MoveGroupLiberties != 1) return false;
+            Board b = null;
+            if (tryBoard.MoveGroup.Points.Count == 1)
+            {
+                b = currentBoard;
+                if (GroupHelper.CheckKillerGroupPoints(b, move, c.Opposite()) == null) return false;
+            }
+            else if (tryBoard.MoveGroup.Points.Count == 2)
+            {
+                if (!tryMove.MoveConnectAndDie) return false;
+                b = tryMove.CaptureBoard;
+            }
+            if (b == null) return false;
+            if (!EyeHelper.IsCovered(b, move, c.Opposite())) return false;
+            List<Group> ngroups = b.GetGroupsFromStoneNeighbours(move, c);
+            Group ngroup = ngroups.FirstOrDefault(n => n.Liberties.Count == 2);
+            if (ngroup == null) return false;
+            Board b2 = b.MakeMoveOnNewBoard(move, c);
+            if (b2 == null) return false;
+            Point p = b2.MoveGroup.Liberties.First();
+            if (b2.InternalMakeMove(p, c.Opposite()) != MakeMoveResult.Legal)
+                return false;
+            Point q = ngroup.Liberties.First(n => !n.Equals(move));
+            if (b2.InternalMakeMove(q, c) != MakeMoveResult.Legal)
+                return false;
+            if (b2.InternalMakeMove(move, c.Opposite()) != MakeMoveResult.Legal)
+                return false;
+            if (!WallHelper.IsStrongGroup(b2))
+                return true;
             return false;
         }
 

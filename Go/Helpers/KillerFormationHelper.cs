@@ -119,7 +119,7 @@ namespace Go
                 return false;
 
             //check if neighbour group is non-killable
-            if (WallHelper.TargetWithAnyNonKillableGroup(tryBoard))
+            if (WallHelper.TargetWithAnyNonKillableGroup(tryBoard) && !RedundantMoveHelper.CheckSuicideInTwoPointCoveredEye(tryMove))
                 return false;
 
             //find killer formation

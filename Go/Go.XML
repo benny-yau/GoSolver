@@ -2176,6 +2176,12 @@
             Check connect and die <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260103_8" />
             </summary>
         </member>
+        <member name="M:Go.RedundantMoveHelper.CheckSuicideInTwoPointCoveredEye(Go.GameTryMove)">
+            <summary>
+            Check suicide in two-point covered eye.
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260914_8" />
+            </summary>
+        </member>
         <member name="M:Go.RedundantMoveHelper.ValidateNeutralPoint(Go.GameTryMove,Go.GameTryMove)">
             <summary>
             Validate neutral point.
