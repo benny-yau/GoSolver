@@ -303,9 +303,9 @@ namespace Go
         /// <summary>
         /// Atari redundant move.
         /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Corner_A9_Ext" />
+        /// Make move at the other liberty <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q17154" />
         /// Check increased killer group <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_GuanZiPu_B3" />
         /// Check killer group <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WuQingYuan_Q31503" />
-        /// Make move at the other liberty <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_TianLongTu_Q17154" />
         /// Check killer formation <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_Side_A23" />
         /// Check one point atari target <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WindAndTime_Q30225_3" />
         /// </summary>
@@ -319,6 +319,16 @@ namespace Go
             Group atariTarget = tryBoard.AtariTargets.First();
             Point atariPoint = tryBoard.OpponentAtStoneNeighbour().First(n => tryBoard.GetGroupAt(n).Equals(atariTarget));
 
+            //make move at the other liberty
+            Point q = atariTarget.Liberties.First();
+            (Boolean suicidal, Board board) = ImmovableHelper.IsSuicidalMove(q, c, currentBoard);
+            if (suicidal)
+                return false;
+
+            //check atari redundant at non killable group
+            if (AtariRedundantAtNonKillableGroup(tryMove, board))
+                return true;
+
             //check increased killer group
             Boolean rc = GroupHelper.IncreasedKillerGroups(tryBoard, currentBoard);
             if (rc) return false;
@@ -330,12 +340,6 @@ namespace Go
 
             //ensure capture secure
             if (!ImmovableHelper.CheckCaptureSecure(tryBoard, atariTarget))
-                return false;
-
-            //make move at the other liberty
-            Point q = atariTarget.Liberties.First();
-            (Boolean suicidal, Board board) = ImmovableHelper.IsSuicidalMove(q, c, currentBoard);
-            if (suicidal)
                 return false;
 
             //ensure capture secure
@@ -359,6 +363,37 @@ namespace Go
             }
             return true;
         }
+
+        /// <summary>
+        /// Atari redundant at non killable group.
+        /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WuQingYuan_Q31177" />
+        /// Check link for groups  <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q30225" />
+        /// <see cref="UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WuQingYuan_Q31503" />
+        /// </summary>
+        private static Boolean AtariRedundantAtNonKillableGroup(GameTryMove tryMove, Board b)
+        {
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryMove.Move;
+            Content c = tryBoard.MoveGroup.Content;
+            Group atariTarget = tryBoard.AtariTargets.First();
+            if (!WallHelper.IsNonKillableGroup(tryBoard)) return false;
+            if (!WallHelper.IsNonKillableGroup(b)) return false;
+            //check link for groups
+            if (LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryBoard) && LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Any(n => n.Points.Count >= 2 && n.Liberties.Count <= 2))
+                return false;
+            //check killer group
+            if (GroupHelper.CheckKillerGroupPoints(b, atariTarget.Points.First(), c, atariTarget.Points.Count + 1) != null)
+            {
+                Group kgroup = GroupHelper.CheckKillerGroupPoints(tryBoard, atariTarget.Points.First(), c, atariTarget.Points.Count + 1);
+                if (kgroup == null)
+                    return true;
+                if (!KillerFormationHelper.IsFirstPoint(currentBoard, move, b.Move.Value))
+                    return true;
+            }
+            return false;
+        }
+
         #endregion
 
         #region suicidal move
@@ -738,13 +773,19 @@ namespace Go
             }
 
             //check link for groups
-            if (LinkHelper.IsAbsoluteLinkForGroups(currentBoard, opponentBoard))
+            List<Group> previousGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, opponentBoard);
+            if (previousGroups.Count > 1)
             {
-                if (killerGroup == null) return false;
+                if (killerGroup == null)
+                {
+                    if (previousGroups.Count == 2 && LinkHelper.GetDiagonalGroupsWithAllLiberties(currentBoard, previousGroups[0]).Contains(previousGroups[1]))
+                        return true;
+                    return false;
+                }
                 //check covered point
                 if (EyeHelper.IsCovered(currentBoard, move, c.Opposite())) return false;
                 //check isolated group
-                if (LinkHelper.GetPreviousMoveGroup(currentBoard, opponentBoard).Any(n => !GroupHelper.GetNeighbourGroupsOfKillerGroup(currentBoard, killerGroup).Contains(n)))
+                if (previousGroups.Any(n => !GroupHelper.GetNeighbourGroupsOfKillerGroup(currentBoard, killerGroup).Contains(n)))
                     return false;
                 //get first point with link for groups
                 Point p = killerGroup.Points.FirstOrDefault(n => currentBoard[n] == Content.Empty && currentBoard.GetGroupsFromStoneNeighbours(n, c).Count() > 1);
@@ -1295,8 +1336,18 @@ namespace Go
             //check move diagonals
             if (LinkHelper.GetMoveDiagonals(tryBoard).Any())
             {
-                if (tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindEye(tryBoard, n, c) || ImmovableHelper.FindEmptyTigerMouth(tryBoard, n, c)))
+                if (tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindEye(tryBoard, n, c)))
                     return false;
+                List<Point> a = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.IsCovered(tryBoard, n, c)).ToList();
+
+                foreach (Point p in tryBoard.GetStoneNeighbours().Where(n => EyeHelper.IsCovered(tryBoard, n, c)))
+                {
+                    if (!ImmovableHelper.FindEmptyTigerMouth(tryBoard, p, c)) continue;
+                    if (tryBoard.CornerPoint(p)) return false;
+                    Point q = tryBoard.GetStoneNeighbours(p).First(n => tryBoard[n] == c && !n.Equals(move));
+                    if (WallHelper.StrongNeighbourGroups(currentBoard, currentBoard.GetGroupAt(q)))
+                        return false;
+                }
                 if (EyeHelper.IsCovered(captureBoard, move, c.Opposite()))
                     return false;
             }
@@ -1320,7 +1371,10 @@ namespace Go
                 Board b = tryBoard.MakeMoveOnNewBoard(p, c.Opposite());
                 if (b == null) continue;
                 Group kgroup = GroupHelper.GetDirectKillerGroup(b, move, c.Opposite());
-                if (kgroup != null && !GroupHelper.IsSingleGroupWithinKillerGroup(b, tryBoard.MoveGroup))
+                if (kgroup == null) continue;
+                List<Point> points = kgroup.Points.Where(n => b[n] == c).ToList();
+                HashSet<Group> groups = b.GetGroupsFromPoints(points);
+                if (groups.Any(n => !n.Equals(tryBoard.MoveGroup) && !ImmovableHelper.CheckConnectAndDie(b, n, false)))
                     return false;
             }
 

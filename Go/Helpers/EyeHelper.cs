@@ -46,6 +46,7 @@ namespace Go
         public static Boolean IsCovered(Board board, Point eye, Content c)
         {
             List<Point> diagonals = ImmovableHelper.GetDiagonalsOfTigerMouth(board, eye, c).Where(n => board[n] == c.Opposite()).ToList();
+            if (board.CornerPoint(eye)) diagonals = board.GetDiagonalNeighbours(eye).Where(n => board[n] == c.Opposite()).ToList();
             if (diagonals.All(n => ImmovableHelper.CheckConnectAndDie(board, board.GetGroupAt(n), false))) return false;
             if (board.PointWithinMiddleArea(eye))
                 return (diagonals.Count >= 2);
