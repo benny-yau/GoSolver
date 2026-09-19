@@ -1637,9 +1637,10 @@
         <member name="M:Go.RedundantMoveHelper.AtariRedundantAtNonKillableGroup(Go.GameTryMove,Go.Board)">
             <summary>
             Atari redundant at non killable group.
-            <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WuQingYuan_Q31177" />
+            <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_XuanXuanQiJing_A36" />
             Check link for groups  <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q30225" />
             <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WuQingYuan_Q31503" />
+            Check connected liberties <see cref="!:UnitTestProject.AtariRedundantMoveTest.AtariRedundantMoveTest_Scenario_WuQingYuan_Q31670" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.SuicidalRedundantMove(Go.GameTryMove)">
@@ -1725,6 +1726,7 @@
             Check one neighbour group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2413_4" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16827_3" />
             Check link for groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16925" />
+            Check non semi solid eye at diagonal <see cref="!:UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_TianLongTu_Q16444" />
             Check isolated group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499" />
             Check diagonal not cut <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q27661" />
             Check diagonal cut <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie61" />
@@ -2103,7 +2105,8 @@
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18410" />
             Check one empty space left <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WindAndTime_Q29264" />
             Check opponent eye for survival <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_2026725_8" />
-            Check connect and die <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_B31" />
+            Check connect and die for previous groups <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_B31" />
+            Check connect and die for diagonal groups <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260918_8" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckOpponentForNeutralPointKillMoveOnly(Go.GameTryMove)">
@@ -2453,6 +2456,7 @@
             <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
             <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q30403" />
             Check possible ko move <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260726_8" />
+            Check possible kill move <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_20260918_8" />
             Check opponent move <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A26" />
             </summary>
         </member>

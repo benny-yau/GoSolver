@@ -85,7 +85,7 @@ namespace Go
             foreach (Point tigerMouth in tigerMouthList)
             {
                 Point? libertyPoint = ImmovableHelper.FindTigerMouth(board, tigerMouth, c);
-                if (libertyPoint == null || board[libertyPoint.Value] != Content.Empty) continue;
+                if (libertyPoint == null) continue;
                 if (CommonTigerMouthExceptions(board, c, tigerMouth, libertyPoint.Value))
                     return true;
             }
