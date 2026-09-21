@@ -140,9 +140,14 @@ namespace Go
                 }
             }
 
-            //remove redundant moves
             if (!mappingRange)
+            {
+                //remove all redundant moves
                 tryMoves.Where(e => e.IsRedundantMove).ToList().ForEach(t => { redundantTryMoves.Add(t); tryMoves.Remove(t); });
+
+                //restore neutral move
+                RedundantMoveHelper.RestoreSurvivalNeutralMove(g, tryMoves, redundantTryMoves);
+            }
 
             //sort game try moves
             tryMoves = (from tryMove in tryMoves orderby tryMove.ConnectAndDie descending, tryMove.ConnectAndDieResolved descending, tryMove.Captured descending, tryMove.IncreasedKillerGroups descending, tryMove.AtariWithoutSuicide descending, tryMove.MoveGroupLiberties descending select tryMove).ToList();
@@ -415,7 +420,7 @@ namespace Go
                 tryMoves.Where(e => e.IsRedundantMove).ToList().ForEach(t => { redundantTryMoves.Add(t); tryMoves.Remove(t); });
 
                 //restore neutral move
-                RedundantMoveHelper.RestoreNeutralMove(g, tryMoves, redundantTryMoves);
+                RedundantMoveHelper.RestoreKillNeutralMove(g, tryMoves, redundantTryMoves);
             }
 
             //sort game try moves

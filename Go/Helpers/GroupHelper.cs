@@ -53,7 +53,7 @@ namespace Go
             //cover all empty points
             GameInfo gi = board.GameInfo;
             Boolean isKill = (GameHelper.GetContentForSurviveOrKill(gi, SurviveOrKill.Kill) == c.Opposite());
-            List<Point> coverPoints = (isKill) ? gi.killMovablePoints : gi.movablePoints;
+            List<Point> coverPoints = gi.UnionMovablePoints;
             List<Point> emptyPoints = coverPoints.Where(p => filledBoard[p] == Content.Empty).ToList();
             emptyPoints.ForEach(p => filledBoard[p] = c.Opposite());
 

@@ -56,7 +56,6 @@ namespace Go
                 if (isKillMovablePoint == null)
                 {
                     isKillMovablePoint = new Boolean[BoardSizeX, BoardSizeY];
-                    this.movablePoints.ForEach(p => isKillMovablePoint[p.x, p.y] = true);
                     this.killMovablePoints.ForEach(p => isKillMovablePoint[p.x, p.y] = true);
                 }
                 return isKillMovablePoint;
@@ -64,6 +63,28 @@ namespace Go
             set
             {
                 isKillMovablePoint = value;
+            }
+        }
+
+        List<Point> unionMovablePoints;
+        public List<Point> UnionMovablePoints
+        {
+            get
+            {
+                if (unionMovablePoints == null)
+                    unionMovablePoints = movablePoints.Union(killMovablePoints).ToList();
+                return unionMovablePoints;
+            }
+        }
+
+        Boolean? movablePointsOnly;
+        public Boolean MovablePointsOnly
+        {
+            get
+            {
+                if (movablePointsOnly == null)
+                    movablePointsOnly = movablePoints.Except(killMovablePoints).Any();
+                return movablePointsOnly.Value;
             }
         }
 
