@@ -1318,7 +1318,7 @@ namespace Go
             }
 
             //check weak group
-                foreach (Group ngroup in captureBoard.GetGroupsFromStoneNeighbours(move, c))
+            foreach (Group ngroup in captureBoard.GetGroupsFromStoneNeighbours(move, c))
             {
                 if (ngroup.Liberties.Count != 2) continue;
                 foreach (Board b in GameHelper.GetMoveBoards(captureBoard, ngroup.Liberties, c, true))
@@ -1334,9 +1334,11 @@ namespace Go
 
         /// <summary>
         /// Check one point move diagonals in connect and die.
-        /// Check move diagonals <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17154_3" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31445" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_3" />
+        /// Check eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17154_3" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A113_3" />
+        /// Check tiger mouth <see cref="UnitTestProject.SuicidalRedundantMoveTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31445" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16490_4" />
+        /// Check covered point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_3" />
         /// Check move liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_4" />
         /// Check move at diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A37" />
         /// Check ko fight <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie1" />
@@ -1354,18 +1356,17 @@ namespace Go
             //check move diagonals
             if (LinkHelper.GetMoveDiagonals(tryBoard).Any())
             {
+                //check eye
                 if (tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindEye(tryBoard, n, c)))
                     return false;
-                List<Point> a = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.IsCovered(tryBoard, n, c)).ToList();
-
+                //check tiger mouth
                 foreach (Point p in tryBoard.GetStoneNeighbours().Where(n => EyeHelper.IsCovered(tryBoard, n, c)))
                 {
                     if (!ImmovableHelper.FindEmptyTigerMouth(tryBoard, p, c)) continue;
-                    if (tryBoard.CornerPoint(p)) return false;
-                    Point q = tryBoard.GetStoneNeighbours(p).First(n => tryBoard[n] == c && !n.Equals(move));
-                    if (WallHelper.StrongNeighbourGroups(currentBoard, currentBoard.GetGroupAt(q)))
+                    if (!WallHelper.TargetWithAnyNonKillableGroup(tryBoard))
                         return false;
                 }
+                //check covered point
                 if (EyeHelper.IsCovered(captureBoard, move, c.Opposite()))
                     return false;
             }
