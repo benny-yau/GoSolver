@@ -727,6 +727,7 @@ namespace Go
         /// Get first point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_9" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_B43" />
         /// Check point next to corner point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Phenomena_B12" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B7" />
         /// Check corner point <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_B8" />
         /// Check four-point killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3_5" />
         /// Check three liberty group <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A54" />
@@ -820,8 +821,13 @@ namespace Go
             }
 
             //check point next to corner point
-            if (tryBoard.IsPointNextToCorner() && captureBoard.PointWithinMiddleArea() && captureBoard.MoveGroupLiberties <= 2 && captureBoard.MoveGroup.Points.Count == 1)
-                return false;
+            if (tryBoard.IsPointNextToCorner() && captureBoard.PointWithinMiddleArea())
+            {
+                if (captureBoard.MoveGroupLiberties <= 2 && captureBoard.MoveGroup.Points.Count == 1)
+                    return false;
+                if (opponentBoard.GetMoveLiberties().Any(n => opponentBoard.PointWithinMiddleArea(n) && ImmovableHelper.IsImmovablePoint(opponentBoard, n, c.Opposite()) && opponentBoard.GetGroupsFromStoneNeighbours(n, c).Any(s => LinkHelper.GetDiagonalGroupsWithoutCut(opponentBoard).ToList().Contains(s))))
+                    return false;
+            }
 
             //check corner point
             if (KillerFormationHelper.CornerKillFormation(tryBoard))
