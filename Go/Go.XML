@@ -1932,6 +1932,7 @@
             Check killer formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
             Check move diagonals <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18796_2" />
             Check atari resolved <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B25" />
+            Check atari target <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_20260923_8" />
             Check one empty space left <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A55" />
             Check opponent at diagonal points <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30403_2" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
@@ -2056,9 +2057,6 @@
             <summary>
             Redundant survival leap move.
             <see cref="!:UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_XuanXuanQiJing_A1" />
-            Check opponent groups <see cref="!:UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_GuanZiPu_B3" />
-            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221030_7" />
-            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260111_8" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckLeapMoveToTarget(Go.GameTryMove,System.Collections.Generic.HashSet{Go.Group})">
@@ -2075,14 +2073,22 @@
         <member name="M:Go.RedundantMoveHelper.VerifyLeapMove(Go.GameTryMove,Go.Point,Go.Point,Go.Content)">
             <summary>
             Verify leap move.
+            Check non killable at diagonal group <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260923_8" />
             Check atari resolved <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20250311_8" />
             Check point next to corner <see cref="!:UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_TianLongTu_Q14992" />
             Check connect and die at midpoint group <see cref="!:UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_GuanZiPu_B7" />
-            <see cref="!:UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_WuQingYuan_Q31498" />
             Check connect and die at diagonal group <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260528_7" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.CheckNonKillableAtDiagonalGroups(Go.Board,Go.Group)">
+        <member name="M:Go.RedundantMoveHelper.CheckOpponentGroupsInLeapMove(Go.GameTryMove)">
+            <summary>
+            Check opponent groups in leap move.
+            <see cref="!:UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_GuanZiPu_B3" />
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221030_7" />
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260111_8" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CheckNonKillableAtDiagonalGroups(Go.GameTryMove,Go.Group)">
             <summary>
             Check non killable at diagonal groups.
             </summary>
@@ -2325,6 +2331,7 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q1970" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935" />
             Check atari move <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q29277" />
+            Check two-point group <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260921_8" />
             Check for two empty diagonals <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q17250" />
             Check for real eye at diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Phenomena_B6" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" />

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
+using static System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace Go
 {
@@ -1721,6 +1722,7 @@ namespace Go
         /// Check killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A17_3" />
         /// Check move diagonals <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18796_2" />
         /// Check atari resolved <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B25" />
+        /// Check atari target <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_20260923_8" />
         /// Check one empty space left <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A55" />
         /// Check opponent at diagonal points <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30403_2" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30064" />
@@ -1761,7 +1763,12 @@ namespace Go
                 return true;
 
             //check atari resolved
-            if (tryMove.AtariResolved) return false;
+            if (tryMove.AtariResolved)
+                return false;
+
+            //check atari target
+            if (tryBoard.AtariTargets.Any() && KillerFormationHelper.SuicideMoveGroupWithOneEmptySpaceLeft(tryBoard))
+                return false;
 
             //check one empty space left
             if (tryBoard.MoveGroup.Points.Count == 2 && KillerFormationHelper.SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
@@ -2229,9 +2236,6 @@ namespace Go
         /// <summary>
         /// Redundant survival leap move.
         /// <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_XuanXuanQiJing_A1" />
-        /// Check opponent groups <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_GuanZiPu_B3" />
-        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20221030_7" />
-        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260111_8" />
         /// </summary>
         public static Boolean RedundantSurvivalLeapMove(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
@@ -2245,11 +2249,7 @@ namespace Go
                 return false;
 
             //check opponent groups
-            if (KillerFormationHelper.SuicideMoveGroupWithOneEmptySpaceLeft(tryBoard))
-                return false;
-            List<Point> rc = tryBoard.GetClosestPoints(move, c.Opposite(), 3);
-            rc = rc.Where(n => !CheckNonKillableAtDiagonalGroups(tryBoard, tryBoard.GetGroupAt(n))).ToList();
-            if (DirectionHelper.VerifyOppponentInAllDirection(tryBoard, rc))
+            if (CheckOpponentGroupsInLeapMove(tryMove))
                 return false;
             return true;
         }
@@ -2314,10 +2314,10 @@ namespace Go
 
         /// <summary>
         /// Verify leap move.
+        /// Check non killable at diagonal group <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260923_8" />
         /// Check atari resolved <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20250311_8" />
         /// Check point next to corner <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_TianLongTu_Q14992" />
         /// Check connect and die at midpoint group <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_GuanZiPu_B7" />
-        /// <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_WuQingYuan_Q31498" />
         /// Check connect and die at diagonal group <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260528_7" />
         /// </summary>
         public static Boolean VerifyLeapMove(GameTryMove tryMove, Point p, Point r, Content c)
@@ -2327,13 +2327,16 @@ namespace Go
             List<Point> midpoints = GetMidPointsOfLeapMove(p, r);
             List<Point> mpoints = midpoints.Where(n => tryBoard[n] == c.Opposite()).ToList();
             if (mpoints.Count == 0) return false;
+            Group mgroup = tryBoard.GetGroupAt(mpoints.First());
+            //check non killable at diagonal group
+            if (CheckNonKillableAtDiagonalGroups(tryMove, mgroup)) 
+                return true;
 
             //check atari resolved
             if (tryMove.AtariResolved) return false;
             //check point next to corner
             if (tryBoard.IsPointNextToCorner(p)) return false;
             //check connect and die at midpoint group
-            Group mgroup = tryBoard.GetGroupAt(mpoints.First());
             if (ImmovableHelper.CheckConnectAndDie(tryBoard, mgroup) && (mgroup.Liberties.Count == 1 || !tryMove.MoveConnectAndDie))
                 return false;
             //check connect and die at diagonal group
@@ -2349,14 +2352,49 @@ namespace Go
         }
 
         /// <summary>
+        /// Check opponent groups in leap move.
+        /// <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_GuanZiPu_B3" />
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20221030_7" />
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260111_8" />
+        /// </summary>
+        public static Boolean CheckOpponentGroupsInLeapMove(GameTryMove tryMove)
+        {
+            Board tryBoard = tryMove.TryGame.Board;
+            Point move = tryMove.Move;
+            Content c = tryBoard.MoveGroup.Content;
+            //check one empty space left
+            if (KillerFormationHelper.SuicideMoveGroupWithOneEmptySpaceLeft(tryBoard))
+                return true;
+
+            //check non killable
+            List<Point> rc = tryBoard.GetClosestPoints(move, c.Opposite(), 3);
+            rc = rc.Where(n => !CheckNonKillableAtDiagonalGroups(tryMove, tryBoard.GetGroupAt(n))).ToList();
+            //verify in all direction
+            if (DirectionHelper.VerifyOppponentInAllDirection(tryBoard, rc))
+                return true;
+            return false;
+        }
+
+        /// <summary>
         /// Check non killable at diagonal groups.
         /// </summary>
-        public static Boolean CheckNonKillableAtDiagonalGroups(Board tryBoard, Group group)
+        public static Boolean CheckNonKillableAtDiagonalGroups(GameTryMove tryMove, Group group)
         {
+            Board tryBoard = tryMove.TryGame.Board;
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Content c = group.Content;
             if (WallHelper.IsNonKillableGroup(tryBoard, group))
                 return true;
-            if (LinkHelper.GetGroupLinkedDiagonals(tryBoard, group, true).Any(n => WallHelper.IsNonKillableGroup(tryBoard, tryBoard.GetGroupAt(n.Move))))
-                return true;
+
+            foreach (Link<Point> link in LinkHelper.GetGroupLinkedDiagonals(tryBoard, group))
+            {
+                List<Point> points = LinkHelper.PointsBetweenDiagonals(link);
+                if (!WallHelper.IsNonKillableGroup(tryBoard, link.Move)) continue;
+                if (points.Any(n => tryBoard[n] == Content.Empty && ImmovableHelper.ConnectAndDieMove(currentBoard, n, c.Opposite()).Item1)) 
+                    return true;
+                if (points.Any(n => tryBoard[n] == c.Opposite() && ImmovableHelper.UnescapableGroup(tryBoard, tryBoard.GetGroupAt(n)).Item1))
+                    return true;
+            }
             return false;
         }
 
@@ -3387,6 +3425,7 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q1970" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q30935" />
         /// Check atari move <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_WindAndTime_Q29277" />
+        /// Check two-point group <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260921_8" />
         /// Check for two empty diagonals <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q17250" />
         /// Check for real eye at diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Phenomena_B6" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" />
@@ -3410,6 +3449,11 @@ namespace Go
             //check atari move
             if (tryBoard.AtariTargets.Any(n => n.Points.Count > 1 && !WallHelper.NoEyeForSurvival(capturedBoard, n.Liberties.First(), c.Opposite())))
                 return true;
+
+            //check two-point group
+            Point liberty = tryBoard.MoveGroup.Liberties.First();
+            if (GroupHelper.CheckKillerGroupPoints(currentBoard, move, c.Opposite()) != null && currentBoard.OneLibertyGroup(liberty, c).Any() && !tryBoard.AtariTargets.Any())
+                return false;
 
             //check for two empty diagonals
             if (capturedBoard.GetStoneNeighbours().Intersect(capturedBoard.GetDiagonalNeighbours(move)).Count(n => capturedBoard[n] == Content.Empty) == 2)
@@ -3466,6 +3510,11 @@ namespace Go
             if (tryBoard.PointWithinMiddleArea()) return false;
             //check for real eye at diagonal
             if (EyeHelper.FindRealEyeAtDiagonal(capturedBoard, move, c.Opposite()).Any())
+                return false;
+
+            //check two-point group
+            Point liberty = tryBoard.MoveGroup.Liberties.First();
+            if (GroupHelper.CheckKillerGroupPoints(currentBoard, move, c.Opposite()) != null && currentBoard.OneLibertyGroup(liberty, c).Any() && !tryBoard.AtariTargets.Any())
                 return false;
 
             //check move at diagonal
