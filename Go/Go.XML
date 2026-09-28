@@ -2064,13 +2064,13 @@
             Check leap move to target.
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.CheckLeapGroup(Go.GameTryMove,Go.Point,Go.Point)">
+        <member name="M:Go.RedundantMoveHelper.CheckSuicidalLeapGroup(Go.GameTryMove,Go.Point,Go.Point)">
             <summary>
-            Check leap group.
+            Check suicidal leap group.
             Check capture group <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260625_7" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.VerifyLeapMove(Go.GameTryMove,Go.Point,Go.Point,Go.Content)">
+        <member name="M:Go.RedundantMoveHelper.VerifyLeapMove(Go.GameTryMove,Go.Point,Go.Point)">
             <summary>
             Verify leap move.
             Check non killable at diagonal group <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260923_8" />

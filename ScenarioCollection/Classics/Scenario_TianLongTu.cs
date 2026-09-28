@@ -3713,7 +3713,7 @@ namespace ScenarioCollection
         public Game Scenario_TianLongTu_Q17132()
         {
             //https://www.101weiqi.com/book/tianlongtu/38/17132/
-            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 17);
+            var gi = new GameInfo(SurviveOrKill.Kill, Content.Black, 19);
             var g = new Game(gi);
             gi.ScenarioName = GetCurrentMethod();
 

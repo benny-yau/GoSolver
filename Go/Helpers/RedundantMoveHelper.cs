@@ -2276,12 +2276,12 @@ namespace Go
                 foreach (Point r in points)
                 {
                     Group rgroup = tryBoard.GetGroupAt(r);
-                    if (CheckLeapGroup(tryMove, p, r))
-                        continue;
                     if (groups.Contains(rgroup)) continue;
-
+                    //check suicidal leap group
+                    if (CheckSuicidalLeapGroup(tryMove, p, r))
+                        continue;
                     //verify leap move
-                    if (VerifyLeapMove(tryMove, p, r, c))
+                    if (VerifyLeapMove(tryMove, p, r))
                         continue;
 
                     //recursive check leap move
@@ -2294,21 +2294,24 @@ namespace Go
         }
 
         /// <summary>
-        /// Check leap group.
+        /// Check suicidal leap group.
         /// Check capture group <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260625_7" />
         /// </summary>
-        public static Boolean CheckLeapGroup(GameTryMove tryMove, Point p, Point r)
+        public static Boolean CheckSuicidalLeapGroup(GameTryMove tryMove, Point p, Point r)
         {
             Board tryBoard = tryMove.TryGame.Board;
             Group rgroup = tryBoard.GetGroupAt(r);
             //check suicidal group
             if (!ImmovableHelper.IsSuicidalWithoutKo(tryBoard, rgroup)) return false;
+            //check capture group
             if (rgroup.Points.Count != 1) return true;
             if (!tryBoard.GetDiagonalNeighbours(p).Contains(r)) return true;
-            //check capture group
-            Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, rgroup);
-            if (b != null && b.GetMoveLiberties().Count(n => !n.Equals(r)) == 0)
-                return false;
+            if (!WallHelper.StrongNeighbourGroups(tryBoard, rgroup))
+            {
+                Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, rgroup);
+                if (b != null && b.GetMoveLiberties().Count(n => !n.Equals(r)) == 0)
+                    return false;
+            }
             return true;
         }
 
@@ -2320,17 +2323,22 @@ namespace Go
         /// Check connect and die at midpoint group <see cref="UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_GuanZiPu_B7" />
         /// Check connect and die at diagonal group <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260528_7" />
         /// </summary>
-        public static Boolean VerifyLeapMove(GameTryMove tryMove, Point p, Point r, Content c)
+        public static Boolean VerifyLeapMove(GameTryMove tryMove, Point p, Point r)
         {
             Board tryBoard = tryMove.TryGame.Board;
+            Content c = tryBoard.MoveGroup.Content;
             if (!tryBoard.GetClosestPoints(p, c, 2, 2).Any(n => n.Equals(r))) return false;
             List<Point> midpoints = GetMidPointsOfLeapMove(p, r);
             List<Point> mpoints = midpoints.Where(n => tryBoard[n] == c.Opposite()).ToList();
             if (mpoints.Count == 0) return false;
             Group mgroup = tryBoard.GetGroupAt(mpoints.First());
             //check non killable at diagonal group
-            if (CheckNonKillableAtDiagonalGroups(tryMove, mgroup)) 
-                return true;
+            if (CheckNonKillableAtDiagonalGroups(tryMove, mgroup))
+            {
+                Point q = midpoints.FirstOrDefault(n => tryBoard[n] == Content.Empty);
+                if (q.IsEmpty() || !ImmovableHelper.ConnectAndDieMove(tryBoard, q, c.Opposite()).Item1)
+                    return true;
+            }
 
             //check atari resolved
             if (tryMove.AtariResolved) return false;
