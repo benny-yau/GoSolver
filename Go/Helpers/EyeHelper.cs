@@ -437,7 +437,7 @@ namespace Go
         /// <summary>
         /// Check capture move liberty.
         /// </summary>
-        public static Boolean CheckCaptureMoveLiberty(Board tryBoard, Board captureBoard)
+        public static (Boolean, Group) CheckCaptureMoveLiberty(Board tryBoard, Board captureBoard)
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
@@ -447,9 +447,9 @@ namespace Go
                 if (!rc) continue;
                 if (WallHelper.NoEyeForSurvival(captureBoard, p, c.Opposite())) continue;
                 if (groupP != null && EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, groupP)) continue;
-                return true;
+                return (true, groupP);
             }
-            return false;
+            return (false, null);
         }
 
         /// <summary>

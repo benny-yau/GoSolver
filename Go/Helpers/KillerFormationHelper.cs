@@ -600,7 +600,7 @@ namespace Go
                 return true;
 
             //check capture move liberty
-            if (EyeHelper.CheckCaptureMoveLiberty(tryBoard, captureBoard))
+            if (EyeHelper.CheckCaptureMoveLiberty(tryBoard, captureBoard).Item1)
                 return true;
 
             return false;
