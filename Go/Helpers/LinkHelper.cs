@@ -535,6 +535,33 @@ namespace Go
         }
 
         /// <summary>
+        /// Find diagonal cut for liberty fight.
+        /// </summary>
+        public static Boolean FindDiagonalCutForLibertyFight(Board board, Group group = null)
+        {
+            if (group == null) group = board.MoveGroup;
+            if (WallHelper.IsNonKillableGroup(board, group)) return false;
+            List<(Point, List<Point>)> diagonalCuts = LinkHelper.FindDiagonalCut(board, group, true).ToList();
+            if (diagonalCuts.Any(n => board.GetGroupsFromPoints(n.Item2).Any(s => !WallHelper.IsNonKillableGroup(board, s))))
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Check liberty fight at connected groups.
+        /// </summary>
+        public static Boolean CheckLibertyFightAtConnectedGroups(Board board, Group group = null)
+        {
+            if (group == null) group = board.MoveGroup;
+            foreach (Group sgroup in LinkHelper.GetAllDiagonalConnectedGroups(board, group))
+            {
+                if (FindDiagonalCutForLibertyFight(board, sgroup))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Get diagonal groups with all liberties.
         /// </summary>
         public static IEnumerable<Group> GetDiagonalGroupsWithAllLiberties(Board board, Group group = null)

@@ -55,6 +55,18 @@ namespace Go
         }
 
         /// <summary>
+        /// Is plain covered.
+        /// </summary>
+        public static Boolean IsPlainCovered(Board board, Point eye, Content c)
+        {
+            List<Point> diagonals = board.GetDiagonalNeighbours(eye).Where(n => board[n] == c.Opposite()).ToList();
+            if (board.PointWithinMiddleArea(eye))
+                return (diagonals.Count >= 2);
+            else
+                return (diagonals.Count >= 1);
+        }
+
+        /// <summary>
         /// Covered point within two point group.
         /// </summary>
         public static Boolean CoveredPointWithinTwoPointGroup(Board board, Point move, Content c)

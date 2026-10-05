@@ -654,7 +654,7 @@ namespace Go
                 }
 
                 //check liberty fight
-                if (tryBoard.GetNeighbourGroups().Any(n => ImmovableHelper.CheckConnectAndDie(tryBoard, n) && !ImmovableHelper.CheckConnectAndDie(currentBoard, n)) && LinkHelper.FindDiagonalCut(tryBoard, tryBoard.MoveGroup, true).Any())
+                if (tryBoard.GetNeighbourGroups().Any(n => ImmovableHelper.CheckConnectAndDie(tryBoard, n) && !ImmovableHelper.CheckConnectAndDie(currentBoard, n)) && LinkHelper.FindDiagonalCutForLibertyFight(tryBoard))
                     return (true, null);
             }
 
