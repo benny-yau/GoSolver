@@ -427,7 +427,7 @@ namespace Go
         public HashSet<Group> OpponentGroupsAtStoneAndDiagonalNeighbour(Point? p = null, Content c = Content.Unknown)
         {
             if (p == null) p = this.Move.Value;
-            if (c == Content.Unknown) c = this[p.Value];            
+            if (c == Content.Unknown) c = this[p.Value];
             List<Point> opponentPoints = this.GetStoneAndDiagonalNeighbours(p).Where(n => this[n] == c.Opposite()).ToList();
             return this.GetGroupsFromPoints(opponentPoints);
         }
@@ -603,6 +603,15 @@ namespace Go
         {
             if (p == null) p = Move.Value;
             return GetStoneNeighbours(p).Any(n => CornerPoint(n));
+        }
+
+        /// <summary>
+        /// Is point above side.
+        /// </summary>
+        public Boolean IsPointAboveSide(Point? p = null)
+        {
+            if (p == null) p = Move.Value;
+            return GetStoneNeighbours(p).Any(n => !PointWithinMiddleArea(n));
         }
 
         /// <summary>

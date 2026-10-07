@@ -1743,6 +1743,8 @@
             Check link for groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16925" />
             Check covered eye at diagonal <see cref="!:UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_TianLongTu_Q16444" />
             Check killer group within suicide group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_3" />
+            Empty points at stone and diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16525" />
+            Check connect and die at diagonal groups <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260902_8" />
             Check killer group for three groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30256" />
             Check covered point <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
             Check isolated group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499" />
@@ -1825,6 +1827,7 @@
             Check point next to corner <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260111_8" />
             Check three-point killer group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A41" />
             Check opponent at diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30196" />
+            Check ko fight on capture <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20261007_8" />
             Check killer group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A41" />
             Check diagonal group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A66" />
             Check side point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31510_2" />
@@ -2138,6 +2141,7 @@
             Check connect and die for previous groups <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_B31" />
             Check connect and die for diagonal groups <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260918_8" />
             Check no eye for survival at stone neighbour <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WindAndTime_Q30403" />
+            <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_TianLongTu_Q16571" />
             Check possible ko leap move <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260726_8" />
             Check connect and die for side move <see cref="!:UnitTestProject.LeapMoveTest.LeapMoveTest_Scenario_XuanXuanGo_A23_2" />
             Check connect and die for opponent groups <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A23" />
