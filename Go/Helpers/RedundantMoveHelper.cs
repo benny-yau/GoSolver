@@ -793,7 +793,7 @@ namespace Go
                     if (!rc && !rc2)
                         return true;
                 }
-                if (previousGroups.Count == 2 && tryBoard.MoveGroup.Points.Count == 1 && killerGroup == null && LinkHelper.GetDiagonalGroupsWithoutCut(currentBoard, previousGroups[0]).Contains(previousGroups[1]))
+                if (previousGroups.Count == 2 && tryBoard.MoveGroup.Points.Count == 1 && killerGroup == null && tryBoard.GetNeighbourGroups().Any(n => n.Liberties.Count > 2) && LinkHelper.GetDiagonalGroupsWithoutCut(currentBoard, previousGroups[0]).Contains(previousGroups[1]))
                 {
                     //check empty points at stone and diagonal
                     Point? e = LinkHelper.CheckPointsBetweenDiagonalsAtMove(tryBoard, Content.Empty);
@@ -2579,7 +2579,7 @@ namespace Go
                 if (opponentBoard.PointWithinMiddleArea())
                 {
                     //check no eye for survival at stone neighbour
-                    if ((opponentBoard.MoveGroup.Points.Count > 1 || (opponentBoard.IsPointAboveSide() && LinkHelper.GetDiagonalGroupsWithoutCut(opponentBoard).Any() && opponentBoard.MoveGroupLiberties == 3)) && !opponentBoard.GetStoneNeighbours().All(n => WallHelper.NoEyeForSurvival(opponentBoard, n, c.Opposite())))
+                    if ((opponentBoard.MoveGroup.Points.Count > 1 || (LinkHelper.GetDiagonalGroupsWithoutCut(opponentBoard).Any() && opponentBoard.MoveGroupLiberties == 3)) && !opponentBoard.GetStoneNeighbours().All(n => WallHelper.NoEyeForSurvival(opponentBoard, n, c.Opposite())))
                         return false;
                     //check leap move
                     if (opponentBoard.MoveGroup.Points.Count > 1 && CheckLeapMoveForNeutralPointKillMoveOnly(opponentMove))
@@ -4098,13 +4098,14 @@ namespace Go
         /// Redundant non suicidal single point move.
         /// <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A23" /> 
         /// <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_Corner_A84" /> 
+        /// Check opponent move <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A26" />
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20261008_8" />
         /// Check neighbour groups <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q30064" />
         /// Check diagonal group of neighbour group <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260528_7" />
         /// <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
         /// <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q30403" />
         /// Check possible ko leap move <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260726_8" />
         /// Check possible kill move <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_20260918_8" />
-        /// Check opponent move <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A26" />
         /// </summary>
         public static Boolean RedundantNonSuicidalSinglePointMove(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
@@ -4130,6 +4131,10 @@ namespace Go
             //check immovable at diagonal
             if (CheckImmovableAtDiagonalForNonSuicidalMove(tryBoard, ngroup))
                 return true;
+
+            //check opponent move
+            if (opponentMove != null)
+                return false;
 
             if (tryBoard.MoveGroup.Liberties.Count != 3)
                 return false;
@@ -4159,12 +4164,6 @@ namespace Go
             if (CheckPossibleKoLeapMove(tryMove, c.Opposite()))
                 return false;
 
-            //check opponent move
-            if (opponentMove != null)
-            {
-                if (ngroup.Points.Count == 2 && tryBoard.GetNeighbourGroups(ngroup).Count > 1 && tryBoard.GetDiagonalNeighbours().All(n => tryBoard[n] == Content.Empty))
-                    return false;
-            }
             return true;
         }
 
