@@ -132,6 +132,26 @@ namespace Go
         }
 
         /// <summary>
+        /// Check reverse ko at corner for neutral point move.
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20261009_8" />
+        /// </summary>
+        public static Boolean CheckReverseKoAtCornerForNeutralPoint(Board tryBoard, Group targetGroup = null)
+        {
+            if (targetGroup == null) targetGroup = tryBoard.MoveGroup;
+            else targetGroup = tryBoard.GetCurrentGroup(targetGroup);
+            Content c = targetGroup.Content;
+            if (targetGroup.Points.Count != 1 || targetGroup.Liberties.Count != 1) return false;
+            if (tryBoard.PointWithinMiddleArea(targetGroup.Points.First())) return false;
+            Point p = targetGroup.Liberties.First();
+            Point q = tryBoard.GetStoneNeighbours(p).FirstOrDefault(n => tryBoard.CornerPoint(n));
+            if (q.IsEmpty() || tryBoard[q] != Content.Empty) return false;
+            if (!ImmovableHelper.UnescapableGroup(tryBoard, targetGroup, false).Item1) return false;
+            (_, Board b) = MakeKoFightFromEyePoint(tryBoard, p, c);
+            if (b == null || b.MoveGroup.Points.Count != 1) return false;
+            return true;
+        }
+
+        /// <summary>
         /// Get ko target groups.
         /// </summary>
         public static IEnumerable<Group> GetKoTargetGroups(Board board, Group group, Group excludeGroup = null)

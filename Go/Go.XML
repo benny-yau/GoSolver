@@ -1272,6 +1272,12 @@
             <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_20221229_7" />
             </summary>
         </member>
+        <member name="M:Go.KoHelper.CheckReverseKoAtCornerForNeutralPoint(Go.Board,Go.Group)">
+            <summary>
+            Check reverse ko at corner for neutral point move.
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20261009_8" />
+            </summary>
+        </member>
         <member name="M:Go.KoHelper.GetKoTargetGroups(Go.Board,Go.Group,Go.Group)">
             <summary>
             Get ko target groups.

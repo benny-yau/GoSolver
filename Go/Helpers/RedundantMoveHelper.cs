@@ -2745,6 +2745,10 @@ namespace Go
             if (KoHelper.CheckReverseKoForNeutralPoint(currentBoard, atariTarget))
                 return true;
 
+            //check reverse ko at corner
+            if (KoHelper.CheckReverseKoAtCornerForNeutralPoint(tryBoard, atariTarget))
+                return true;
+
             //check double atari
             if (AtariHelper.IsDoubleAtari(tryBoard, p, c))
                 return true;
