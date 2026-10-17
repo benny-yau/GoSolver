@@ -1751,6 +1751,7 @@
             Check killer group within suicide group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_3" />
             Check empty points at stone and diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16525" />
             Check connect and die at diagonal groups <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260902_8" />
+            Check ko move at non diagonal groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16525_2" />
             Check killer group for three groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30256" />
             Check covered point <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
             Check isolated group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499" />
@@ -2160,6 +2161,7 @@
             Check opponent groups <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" />
             Check one point move <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_A40" />
             Check opponent at diagonal neighbour <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_A136" />
+            Check point above side <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_B6" />
             Check opponent at stone neighbour <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A41_2" />
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WuQingYuan_Q31453" />
             Check one point opponent at stone neighbour <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260903_8" />
@@ -2513,6 +2515,22 @@
             <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q30403" />
             Check possible ko leap move <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260726_8" />
             Check possible kill move <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_20260918_8" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CheckNonSuicidalDiagonalSurvivalMove(Go.GameTryMove,Go.GameTryMove)">
+            <summary>
+            Check non suicidal diagonal survival move.
+            <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q30358_2" />
+            Check opponent move <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A42_2" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CheckNonSuicidalDiagonalKillMove(Go.GameTryMove,Go.GameTryMove)">
+            <summary>
+            Check non suicidal diagonal kill move.
+            <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_Q18340" />
+            Make move at stone neighbour <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_A40" />
+            Check move at stone neighbour <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_Corner_A39" />
+            Check opponent move <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q29366" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckPossibleKoLeapMove(Go.GameTryMove,Go.Content)">
