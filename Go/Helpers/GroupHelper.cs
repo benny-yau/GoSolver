@@ -200,6 +200,24 @@ namespace Go
         }
 
         /// <summary>
+        /// Get opponent groups within killer group.
+        /// </summary>
+        public static List<Group> GetOpponentGroupsWithinKillerGroup(Board board, Point p, Content c)
+        {
+            Group killerGroup = GroupHelper.GetDirectKillerGroup(board, p, c);
+            if (killerGroup == null) return new List<Group>();
+            return GetOpponentGroupsWithinKillerGroup(board, killerGroup);
+        }
+
+        public static List<Group> GetOpponentGroupsWithinKillerGroup(Board board, Group killerGroup)
+        {
+            Content c = killerGroup.Content;
+            List<Point> points = killerGroup.Points.Where(n => board[n] == c).ToList();
+            List<Group> groups = board.GetGroupsFromPoints(points).ToList();
+            return groups;
+        }
+
+        /// <summary>
         /// Check if different killer group.
         /// </summary>
         public static (Boolean, Group) CheckIfDifferentKillerGroup(Board board, Point p, Point q, Content c)

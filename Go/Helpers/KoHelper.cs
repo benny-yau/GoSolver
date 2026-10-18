@@ -73,7 +73,7 @@ namespace Go
         public static Boolean IsForwardOrReverseKoFight(Board tryBoard)
         {
             Content c = tryBoard.MoveGroup.Content;
-            List<Point> eyePoints = tryBoard.GetStoneNeighbours().Where(n => EyeHelper.FindEye(tryBoard, n, c)).ToList();
+            List<Point> eyePoints = EyeHelper.FindEyeAtMove(tryBoard).ToList();
             return eyePoints.Any(p => KoHelper.IsKoFight(tryBoard, p, c).Item1);
         }
 

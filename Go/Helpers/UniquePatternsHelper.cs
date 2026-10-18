@@ -106,9 +106,9 @@ namespace Go
                 //check ten thousand year eye
                 Point eye = emptyPoints.FirstOrDefault(p => TenThousandYearKoEye(board, p, c));
                 if (eye.IsEmpty()) continue;
-                //check content points
-                List<Point> contentPoints = kgroup.Points.Where(n => board[n] == c).ToList();
-                if (board.GetGroupsFromPoints(contentPoints).Count != 2) continue;
+                //check opponent groups
+                List<Group> groups = GroupHelper.GetOpponentGroupsWithinKillerGroup(board, kgroup);
+                if (groups.Count != 2) continue;
                 //check points in empty space
                 emptyPoints.Remove(eye);
                 if (emptyPoints.Any(n => board.CornerPoint(n))) continue;

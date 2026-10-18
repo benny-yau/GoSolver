@@ -1341,7 +1341,7 @@ namespace Go
                 return true;
 
             //check killer formation
-            Point p = tryBoard.GetStoneNeighbours().FirstOrDefault(n => EyeHelper.FindEye(tryBoard, n, c));
+            Point p = EyeHelper.FindEyeAtMove(tryBoard).FirstOrDefault();
             if (!p.IsEmpty() && KillerFormationHelper.TryKillFormation(tryBoard, c, new List<Point> { p }).Item1)
                 return false;
 
@@ -1404,7 +1404,7 @@ namespace Go
             if (LinkHelper.GetMoveDiagonals(tryBoard).Any())
             {
                 //check eye
-                if (tryBoard.GetStoneNeighbours().Any(n => EyeHelper.FindEye(tryBoard, n, c)))
+                if (EyeHelper.FindEyeAtMove(tryBoard).Any())
                     return false;
                 //check tiger mouth
                 foreach (Point p in tryBoard.GetStoneNeighbours().Where(n => EyeHelper.IsCovered(tryBoard, n, c)))
@@ -1436,10 +1436,7 @@ namespace Go
                 if (!sgroups.Any()) continue;
                 Board b = tryBoard.MakeMoveOnNewBoard(p, c.Opposite());
                 if (b == null) continue;
-                Group kgroup = GroupHelper.GetDirectKillerGroup(b, move, c.Opposite());
-                if (kgroup == null) continue;
-                List<Point> points = kgroup.Points.Where(n => b[n] == c).ToList();
-                HashSet<Group> groups = b.GetGroupsFromPoints(points);
+                List<Group> groups = GroupHelper.GetOpponentGroupsWithinKillerGroup(b, move, c.Opposite());
                 if (groups.Any(n => !n.Equals(tryBoard.MoveGroup) && !ImmovableHelper.CheckConnectAndDie(b, n, false)))
                     return false;
             }
@@ -2175,14 +2172,9 @@ namespace Go
             if (opponentBoard.GetMoveLiberties().Any(n => opponentBoard.CornerPoint(n)))
                 return false;
             //check opponent group in killer group
-            Group kgroup = GroupHelper.GetDirectKillerGroup(currentBoard, move, c);
-            if (kgroup != null)
-            {
-                List<Point> contentPoints = kgroup.Points.Where(n => currentBoard[n] == c.Opposite()).ToList();
-                HashSet<Group> groups = currentBoard.GetGroupsFromPoints(contentPoints);
-                if (groups.Count == 1 && groups.First().Points.Count > 1)
-                    return false;
-            }
+            List<Group> groups = GroupHelper.GetOpponentGroupsWithinKillerGroup(currentBoard, move, c);
+            if (groups.Count == 1 && groups.First().Points.Count > 1)
+                return false;
             return true;
         }
 
@@ -3023,8 +3015,7 @@ namespace Go
                 foreach (Group kgroup in kgroups)
                 {
                     if (kgroup.Liberties.Count > 3) continue;
-                    List<Point> contentPoints = kgroup.Points.Where(n => tryBoard[n] == c).ToList();
-                    List<Group> groups = tryBoard.GetGroupsFromPoints(contentPoints).ToList();
+                    List<Group> groups = GroupHelper.GetOpponentGroupsWithinKillerGroup(tryBoard, kgroup);
                     if (groups.Count != 1 || groups.First().Points.Count < 4) continue;
                     //check kill formation
                     Board b = KillerFormationHelper.DeadFormationInBothAlive(tryBoard, kgroup, 3).Item2;
@@ -4198,6 +4189,8 @@ namespace Go
         /// <summary>
         /// Check non suicidal diagonal survival move.
         /// <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q30358_2" />
+        /// Check opponent groups in killer group <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_Side_A15" />
+        /// Check liberty fight <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_x_3" />
         /// Check opponent move <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A42_2" />
         /// </summary>
         public static Boolean CheckNonSuicidalDiagonalSurvivalMove(GameTryMove tryMove, GameTryMove opponentMove = null)
@@ -4211,6 +4204,24 @@ namespace Go
             //make opponent move in middle area
             if (tryBoard.GetStoneNeighbours().Any(n => tryBoard.PointWithinMiddleArea(n) && tryBoard.OpponentAtStoneNeighbour(n, c).Any(s => WallHelper.IsNonKillableGroup(tryBoard, s)) && !ImmovableHelper.ConnectAndDieMove(tryBoard, n, c.Opposite()).Item1))
             {
+                //check opponent groups in killer group
+                foreach (Point p in tryBoard.GetStoneNeighbours())
+                {
+                    if (tryBoard.PointWithinMiddleArea(p)) continue;
+                    List<Group> groups = GroupHelper.GetOpponentGroupsWithinKillerGroup(tryBoard, p, c);
+                    if (groups.Count != 1) continue;
+                    Group group = groups.First();
+                    if (group.Points.Count == 1 || group.Liberties.Count != 2) continue;
+                    Board b = ImmovableHelper.ConnectAndDie(tryBoard, group).Item2;
+                    if (b == null) continue;
+                    if (GroupHelper.CheckKillerGroupPoints(b, p, c) != null)
+                        return false;
+                }
+
+                //check liberty fight
+                if (EyeHelper.FindEyeAtMove(tryBoard).Any() && LinkHelper.CheckLibertyFightAtConnectedGroups(tryBoard))
+                    return false;
+
                 //check opponent move
                 if (opponentMove != null)
                 {

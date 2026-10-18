@@ -32,6 +32,16 @@ namespace Go
         }
 
         /// <summary>
+        /// Find eye at move.
+        /// </summary>
+        public static IEnumerable<Point> FindEyeAtMove(Board board, Point? p = null)
+        {
+            if (p == null) p = board.Move.Value;
+            Content c = board[p.Value];
+            return board.GetStoneNeighbours(p.Value).Where(n => FindEye(board, n, c));
+        }
+
+        /// <summary>
         /// Find uncovered eye.
         /// </summary>
         public static Boolean FindUncoveredEye(Board board, Point eye, Content c)
@@ -306,7 +316,7 @@ namespace Go
         /// Real eye of diagonally connected groups.
         /// Check all groups connected <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_ScenarioHighLevel28" /> 
         /// Check four point group <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_Corner_B28_2" />
-        /// Check opponent stones within killer group <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_A67_101Weiqi" /> 
+        /// Check opponent groups within killer group <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_A67_101Weiqi" /> 
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_3" /> 
         /// </summary>
         public static Boolean RealEyeOfDiagonallyConnectedGroups(Board board, Group killerGroup)
@@ -341,12 +351,8 @@ namespace Go
             if (killerGroup.Points.Count == 4 && !CheckRealEyeWithinEmptySpace(board, killerGroup))
                 return false;
 
-            //check opponent stones within killer group
-            List<Point> opponentStones = killerGroup.Points.Where(p => board[p] == c).ToList();
-            if (!opponentStones.Any())
-                return true;
-
-            foreach (Group group in board.GetGroupsFromPoints(opponentStones))
+            //check opponent groups within killer group
+            foreach (Group group in GroupHelper.GetOpponentGroupsWithinKillerGroup(board, killerGroup))
             {
                 if (!ImmovableHelper.CheckConnectAndDie(board, group, false))
                     return false;

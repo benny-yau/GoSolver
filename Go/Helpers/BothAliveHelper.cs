@@ -160,8 +160,8 @@ namespace Go
             List<Group> killerGroups = GetKillerGroupsForComplexSeki(board, killerGroup).ToList();
             if (killerGroups.Count == 0) return false;
             killerGroups.Add(killerGroup);
-            List<Point> contentPoints = killerGroup.Points.Where(n => board[n] == c).ToList();
-            if (board.GetGroupsFromPoints(contentPoints).Any(n => n.Liberties.Count == 1)) return false;
+            List<Group> groups = GroupHelper.GetOpponentGroupsWithinKillerGroup(board, killerGroup);
+            if (groups.Any(n => n.Liberties.Count == 1)) return false;
 
             //check complex seki without diagonal cut
             List<(Point, List<Point>)> diagonalCuts = LinkHelper.FindDiagonalCut(board, killerGroup, true).ToList();
