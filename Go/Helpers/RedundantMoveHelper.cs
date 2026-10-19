@@ -3508,7 +3508,7 @@ namespace Go
             if (CheckThreeOpponentGroupsAtTigerMouth(tryMove, capturedBoard))
                 return false;
             //check weak group
-            if (CheckWeakGroupAtTigerMouth(tryMove, capturedBoard))
+            if (CheckWeakGroupAtTigerMouth(tryMove, capturedBoard, opponentMove))
                 return false;
             //check side move
             if (CheckSideMoveAtTigerMouth(tryMove, capturedBoard))
@@ -3751,7 +3751,7 @@ namespace Go
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_XuanXuanGo_A26_3" />
         /// Check hostile group <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_GuanZiPu_A2Q29_101Weiqi" />
         /// </summary>
-        private static Boolean CheckWeakGroupAtTigerMouth(GameTryMove tryMove, Board capturedBoard)
+        private static Boolean CheckWeakGroupAtTigerMouth(GameTryMove tryMove, Board capturedBoard, GameTryMove opponentMove = null)
         {
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryBoard.Move.Value;
@@ -3759,7 +3759,7 @@ namespace Go
             List<Group> ngroups = capturedBoard.GetGroupsFromStoneNeighbours(move, c);
             if (ngroups.Count == 1) return false;
             //check ko fight
-            if (CheckKoFightAtWeakGroupForTigerMouth(tryMove, capturedBoard))
+            if (CheckKoFightAtWeakGroupForTigerMouth(tryMove, capturedBoard, opponentMove))
                 return true;
             if (!ngroups.Any(n => n.Liberties.Count <= 2 && n.Points.Count > 1)) return false;
             List<Group> diagonals = LinkHelper.GetDiagonalGroups(tryBoard);
@@ -3778,9 +3778,10 @@ namespace Go
 
         /// <summary>
         /// Check ko fight at weak group for tiger mouth.
-        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260826_8" />
+        /// Check move in the middle <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20261019_8" />
+        /// Check connect and die at neighbour group <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260826_8" />
         /// </summary>
-        private static Boolean CheckKoFightAtWeakGroupForTigerMouth(GameTryMove tryMove, Board capturedBoard)
+        private static Boolean CheckKoFightAtWeakGroupForTigerMouth(GameTryMove tryMove, Board capturedBoard, GameTryMove opponentMove = null)
         {
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
@@ -3794,6 +3795,13 @@ namespace Go
                 {
                     (Boolean koFight, Group koGroup) = KoHelper.IsKoFight(b, move, c.Opposite());
                     if (!koFight) continue;
+                    if (WallHelper.TargetWithAnyNonKillableGroup(tryBoard)) continue;
+                    if (WallHelper.IsNonKillableGroup(b)) continue;
+                    List<Group> ngroups = b.GetNeighbourGroups(koGroup);
+                    //check move in the middle
+                    if (opponentMove != null && b.MoveGroup.Points.Count == 1 && LinkHelper.GetDiagonalGroups(b).Intersect(ngroups).Count() == 2)
+                        return true;
+                    //check connect and die at neighbour group
                     if (currentBoard.GetNeighbourGroups(koGroup).Any(n => !ImmovableHelper.IsSuicidalWithoutKo(currentBoard, n) && ImmovableHelper.CheckConnectAndDie(currentBoard, n)))
                         return true;
                 }
@@ -4188,8 +4196,11 @@ namespace Go
 
         /// <summary>
         /// Check non suicidal diagonal survival move.
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20261012_8" />
         /// <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q30358_2" />
-        /// Check opponent groups in killer group <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_Side_A15" />
+        /// Check two point group <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q30358" />
+        /// Check opponent groups <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_Side_A15" />
+        /// <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
         /// Check liberty fight <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_x_3" />
         /// Check opponent move <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A42_2" />
         /// </summary>
@@ -4200,21 +4211,21 @@ namespace Go
             if (!tryMove.IsNegligible) return false;
             if (tryBoard.PointWithinMiddleArea()) return false;
             if (tryBoard.OpponentAtStoneNeighbour().Any()) return false;
+            //check two point group
             if (tryBoard.GetStoneNeighbours().Any(n => GroupHelper.CheckKillerGroupPoints(tryBoard, n, c) != null)) return false;
-            //make opponent move in middle area
+            //make opponent non killable move
             if (tryBoard.GetStoneNeighbours().Any(n => tryBoard.PointWithinMiddleArea(n) && tryBoard.OpponentAtStoneNeighbour(n, c).Any(s => WallHelper.IsNonKillableGroup(tryBoard, s)) && !ImmovableHelper.ConnectAndDieMove(tryBoard, n, c.Opposite()).Item1))
             {
-                //check opponent groups in killer group
+                //check opponent groups
                 foreach (Point p in tryBoard.GetStoneNeighbours())
                 {
-                    if (tryBoard.PointWithinMiddleArea(p)) continue;
-                    List<Group> groups = GroupHelper.GetOpponentGroupsWithinKillerGroup(tryBoard, p, c);
-                    if (groups.Count != 1) continue;
-                    Group group = groups.First();
-                    if (group.Points.Count == 1 || group.Liberties.Count != 2) continue;
-                    Board b = ImmovableHelper.ConnectAndDie(tryBoard, group).Item2;
-                    if (b == null) continue;
-                    if (GroupHelper.CheckKillerGroupPoints(b, p, c) != null)
+                    if (tryBoard.PointWithinMiddleArea(p) || tryBoard[p] != Content.Empty) continue;
+                    Point? q = ImmovableHelper.FindTigerMouth(tryBoard, p, c);
+                    if (q == null || LinkHelper.TigerMouthThreatGroup(tryBoard, p, c) != null) continue;
+                    if (!tryBoard.GetStoneNeighbours(q).Any(n => tryBoard[n] == c)) continue;
+                    Point r = tryBoard.GetStoneNeighbours(q).FirstOrDefault(n => tryBoard[n] == Content.Empty && !n.Equals(p));
+                    if (r.IsEmpty()) continue;
+                    if (tryBoard.GetGroupsFromStoneNeighbours(r, c).Any(n => n.Points.Count > 1 && ImmovableHelper.CheckConnectAndDie(tryBoard, n)))
                         return false;
                 }
 
