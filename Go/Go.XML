@@ -2054,6 +2054,7 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3dan8_2" />
             Check corner <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A36" />
             Check opponent group in killer group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q5971_2" />
+            Check tiger mouth at side <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20261020_7" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CornerPointSuicide(Go.GameTryMove,Go.Board)">
@@ -2126,9 +2127,9 @@
             <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260111_8" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.CheckNonKillableAtDiagonalGroups(Go.GameTryMove,Go.Group)">
+        <member name="M:Go.RedundantMoveHelper.CheckNonKillableGroupsForLeapMove(Go.GameTryMove,Go.Group)">
             <summary>
-            Check non killable at diagonal groups.
+            Check non killable groups for leap move.
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.GetMidPointsOfLeapMove(Go.Point,Go.Point)">
@@ -2149,9 +2150,9 @@
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_Q18500_2" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.NeutralPointKillMoveOnly(Go.GameTryMove,Go.GameTryMove)">
+        <member name="M:Go.RedundantMoveHelper.NeutralPointAtKillMoveOnly(Go.GameTryMove,Go.GameTryMove)">
             <summary>
-            Neutral point kill move only.
+            Neutral point at kill move only.
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18410" />
             Check one empty space left <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_WindAndTime_Q29264" />
             Check opponent eye for survival <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_2026725_8" />
@@ -2165,9 +2166,9 @@
             Check linkage <see cref="!:UnitTestProject.LinkHelperTest.LinkHelperTest_Scenario_WindAndTime_Q30274" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.CheckOpponentForNeutralPointKillMoveOnly(Go.GameTryMove,Go.GameTryMove)">
+        <member name="M:Go.RedundantMoveHelper.CheckOpponentForNeutralPointAtKillMoveOnly(Go.GameTryMove,Go.GameTryMove)">
             <summary>
-            Check opponent for neutral point kill move only.
+            Check opponent for neutral point at kill move only.
             Check opponent groups <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" />
             Check one point move <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_A40" />
             Check opponent at diagonal neighbour <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_Corner_A136" />
@@ -2177,9 +2178,9 @@
             Check one point opponent at stone neighbour <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260903_8" />
             </summary>
         </member>
-        <member name="M:Go.RedundantMoveHelper.CheckLeapMoveForNeutralPointKillMoveOnly(Go.GameTryMove)">
+        <member name="M:Go.RedundantMoveHelper.CheckLeapMoveForNeutralPointAtKillMoveOnly(Go.GameTryMove)">
             <summary>
-            Check leap move for neutral point kill move only.
+            Check leap move for neutral point at kill move only.
             <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_5" />
             </summary>
         </member>
