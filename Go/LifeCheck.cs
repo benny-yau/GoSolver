@@ -98,7 +98,8 @@ namespace Go
         public static Boolean CommonTigerMouthExceptions(Board board, Content c, Point tigerMouth, Point libertyPoint)
         {
             //make move at liberty point
-            (Boolean connectAndDie, Board b) = ImmovableHelper.ConnectAndDieMove(board, libertyPoint, c.Opposite(), false, false);
+            (Point p, Group threatGroup) = LinkHelper.GetLibertyPointFromThreatGroup(board, tigerMouth, c, libertyPoint);
+            (Boolean connectAndDie, Board b) = ImmovableHelper.ConnectAndDieMove(board, p, c.Opposite(), false, false);
             if (b == null) return false;
             if (connectAndDie)
             {
@@ -112,7 +113,6 @@ namespace Go
                 return true;
 
             //check for tiger mouth threat group
-            Group threatGroup = LinkHelper.TigerMouthThreatGroup(board, tigerMouth, c);
             if (threatGroup != null && LinkHelper.LinkWithImmovableGroup(b, board, s => s == threatGroup))
                 return true;
 

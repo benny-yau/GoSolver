@@ -1517,6 +1517,11 @@
             Tiger mouth threat group.
             </summary>
         </member>
+        <member name="M:Go.LinkHelper.GetLibertyPointFromThreatGroup(Go.Board,Go.Point,Go.Content,Go.Point)">
+            <summary>
+            Get liberty point from threat group.
+            </summary>
+        </member>
         <member name="M:Go.LinkHelper.CheckDoubleAtariForLinks(Go.Board,Go.Link{Go.Point})">
             <summary>
             Check double atari for links.
@@ -1845,7 +1850,7 @@
             Check three-point killer group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A41" />
             Check opponent at diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30196" />
             Check ko fight on capture <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20261007_8" />
-            Check killer group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A41" />
+            Check killer group <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A41_2" />
             Check diagonal group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A66" />
             Check side point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31510_2" />
             Check real eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A12_2" />
@@ -1854,6 +1859,7 @@
             Without diagonal cut <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16483" />
             With diagonal cut <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie74" />
             Check killer group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18474" />
+            Check liberty point at immovable point <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20261021_8" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckEmptyPointsAtStoneAndDiagonal(Go.GameTryMove)">

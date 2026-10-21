@@ -1135,7 +1135,7 @@ namespace Go
             foreach (Point p in tryBoard.GetMoveLiberties())
             {
                 Point? q = ImmovableHelper.FindTigerMouth(tryBoard, p, c);
-                if (q == null || LinkHelper.TigerMouthThreatGroup(tryBoard, q.Value, c) != null) continue;
+                if (q == null || tryBoard[q.Value] != Content.Empty) continue;
                 (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(q.Value, c, tryBoard);
                 if (suicidal) continue;
                 if (EyeHelper.FindCoveredEye(b, p, c))
@@ -1152,7 +1152,7 @@ namespace Go
         /// Check three-point killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A41" />
         /// Check opponent at diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30196" />
         /// Check ko fight on capture <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20261007_8" />
-        /// Check killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A41" />
+        /// Check killer group <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A41_2" />
         /// Check diagonal group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A66" />
         /// Check side point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31510_2" />
         /// Check real eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A12_2" />
@@ -1161,6 +1161,7 @@ namespace Go
         /// Without diagonal cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16483" />
         /// With diagonal cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie74" />
         /// Check killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18474" />
+        /// Check liberty point at immovable point <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20261021_8" />
         /// </summary>
         private static Boolean CheckImmovablePointAtDiagonal(GameTryMove tryMove, Board captureBoard)
         {
@@ -1257,12 +1258,13 @@ namespace Go
                     //with diagonal cut
                     if (tryBoard.GetGroupsFromStoneNeighbours().Any(n => n.Points.Count == 1)) continue;
                     //check killer group
-                    Group kgroup = GroupHelper.GetDirectKillerGroup(captureBoard, p, c.Opposite());
-                    if (kgroup != null && kgroup.Points.Count == 2)
-                    {
-                        if (kgroup.Points.Any(n => captureBoard[n] == c) && !EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, kgroup))
-                            continue;
-                    }
+                    Group kgroup = GroupHelper.CheckKillerGroupPoints(captureBoard, p, c.Opposite());
+                    if (kgroup != null && kgroup.Points.Any(n => captureBoard[n] == c) && !EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, kgroup))
+                        continue;
+                    //check liberty point at immovable point
+                    Point? q = ImmovableHelper.FindTigerMouth(captureBoard, p, c.Opposite());
+                    if (q != null && captureBoard[q.Value] == Content.Empty && captureBoard[p] == Content.Empty && !ImmovableHelper.ConnectAndDieMove(captureBoard, q.Value, c, false).Item1)
+                        continue;
                     return true;
                 }
             }
@@ -1983,9 +1985,9 @@ namespace Go
             if (!EyeHelper.FindSemiSolidEye(captureBoard, move, c.Opposite())) return false;
             List<Point> liberties = captureBoard.GetMoveLiberties().Where(n => !n.Equals(move)).ToList();
             if (liberties.Count != 1) return false;
-            Point? libertyPoint = ImmovableHelper.FindTigerMouth(captureBoard, liberties.First(), c.Opposite());
-            if (libertyPoint == null || LinkHelper.TigerMouthThreatGroup(captureBoard, liberties.First(), c.Opposite()) != null) return false;
-            (Boolean connectAndDie, Board b) = ImmovableHelper.ConnectAndDieMove(captureBoard, libertyPoint.Value, c);
+            Point? p = ImmovableHelper.FindTigerMouth(captureBoard, liberties.First(), c.Opposite());
+            if (p == null || captureBoard[p.Value] != Content.Empty) return false;
+            (Boolean connectAndDie, Board b) = ImmovableHelper.ConnectAndDieMove(captureBoard, p.Value, c);
             if (connectAndDie || b == null) return false;
             if (b.InternalMakeMove(liberties.First(), c.Opposite()) != MakeMoveResult.Legal)
                 return false;
@@ -2121,12 +2123,12 @@ namespace Go
             Board currentBoard = tryMove.CurrentGame.Board;
             Content c = tryMove.MoveContent;
             if (!currentBoard.GetMoveLiberties(move).Any()) return false;
-            Point? libertyPoint = ImmovableHelper.FindTigerMouth(currentBoard, move, c.Opposite());
-            if (libertyPoint == null || LinkHelper.TigerMouthThreatGroup(currentBoard, move, c.Opposite()) != null) return false;
+            Point? p = ImmovableHelper.FindTigerMouth(currentBoard, move, c.Opposite());
+            if (p == null || currentBoard[p.Value] != Content.Empty) return false;
             //check move available at liberty point
-            if (!GameHelper.SetupMoveAvailable(currentBoard, libertyPoint.Value, c)) return false;
+            if (!GameHelper.SetupMoveAvailable(currentBoard, p.Value, c)) return false;
             if (KoHelper.IsKoFight(tryBoard)) return false;
-            if (currentBoard.PointWithinMiddleArea(libertyPoint.Value) && !currentBoard.PointWithinMiddleArea(move)) return false;
+            if (currentBoard.PointWithinMiddleArea(p.Value) && !currentBoard.PointWithinMiddleArea(move)) return false;
             //capture atari target
             if (tryBoard.AtariTargets.Count != 1) return false;
             Group target = tryBoard.AtariTargets.First();
@@ -2134,7 +2136,7 @@ namespace Go
             Board b = ImmovableHelper.CaptureSuicideGroup(tryBoard, target);
             if (KoHelper.IsKoFight(b)) return false;
             //check block move at liberty point
-            if (ImmovableHelper.ConnectAndDieMove(b, libertyPoint.Value, c.Opposite(), true).Item1)
+            if (ImmovableHelper.ConnectAndDieMove(b, p.Value, c.Opposite(), true).Item1)
                 return true;
             return false;
         }
@@ -2181,7 +2183,7 @@ namespace Go
             {
                 if (opponentBoard[q] != Content.Empty) continue;
                 Point? r = ImmovableHelper.FindTigerMouth(opponentBoard, q, c);
-                if (r == null || LinkHelper.TigerMouthThreatGroup(opponentBoard, q, c) != null) continue;
+                if (r == null || opponentBoard[r.Value] != Content.Empty) continue;
                 if (!opponentBoard.PointWithinMiddleArea(r)) continue;
                 if (!opponentBoard.GetGroupsFromStoneNeighbours(r, c).Any(n => n.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(opponentBoard, n))) continue;
                 return false;
@@ -4230,7 +4232,7 @@ namespace Go
                 {
                     if (tryBoard.PointWithinMiddleArea(p) || tryBoard[p] != Content.Empty) continue;
                     Point? q = ImmovableHelper.FindTigerMouth(tryBoard, p, c);
-                    if (q == null || LinkHelper.TigerMouthThreatGroup(tryBoard, p, c) != null) continue;
+                    if (q == null || tryBoard[q.Value] != Content.Empty) continue;
                     if (!tryBoard.GetStoneNeighbours(q).Any(n => tryBoard[n] == c)) continue;
                     Point r = tryBoard.GetStoneNeighbours(q).FirstOrDefault(n => tryBoard[n] == Content.Empty && !n.Equals(p));
                     if (r.IsEmpty()) continue;

@@ -17,14 +17,7 @@ namespace Go
             if (nstones.Count(n => board[n] == c) != nstones.Count - 1) return null;
             if (board.OneLibertyGroup(p, c.Opposite()).Any()) return null;
             if (content == Content.Empty)
-            {
-                Point libertyPoint = nstones.First(n => board[n] != c);
-                if (board[libertyPoint] == Content.Empty)
-                    return libertyPoint;
-                Group group = board.GetGroupAt(libertyPoint);
-                if (group.Liberties.Count == 2)
-                    return group.Liberties.First(n => !n.Equals(p));
-            }
+                return nstones.First(n => board[n] != c);
             else if (content == c.Opposite())
             {
                 Group group = board.GetGroupAt(p);
@@ -176,7 +169,8 @@ namespace Go
             if (eyePoint.IsEmpty()) return false;
             if (!LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).All(n => n.Liberties.Count <= 2)) return false;
 
-            (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(libertyPoint, c, currentBoard);
+            (Point p, Group threatGroup) = LinkHelper.GetLibertyPointFromThreatGroup(currentBoard, move, c.Opposite(), libertyPoint);
+            (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c, currentBoard);
             if (suicidal) return false;
 
             if (ImmovableHelper.IsSuicidalMove(b, move, c.Opposite()))
@@ -765,7 +759,7 @@ namespace Go
         /// </summary>
         public static Boolean PreAtariMove(GameTryMove tryMove)
         {
-            Board currentBoard = tryMove.CurrentGame.Board; 
+            Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
             Content c = tryBoard.MoveGroup.Content;
             foreach (Group targetGroup in tryBoard.GetGroupsFromStoneNeighbours())

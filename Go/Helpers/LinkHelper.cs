@@ -716,6 +716,17 @@ namespace Go
         }
 
         /// <summary>
+        /// Get liberty point from threat group.
+        /// </summary>
+        public static (Point, Group) GetLibertyPointFromThreatGroup(Board board, Point tigerMouth, Content c, Point libertyPoint)
+        {
+            Point p = libertyPoint;
+            Group threatGroup = TigerMouthThreatGroup(board, tigerMouth, c);
+            if (threatGroup != null) p = threatGroup.Liberties.First(n => !n.Equals(tigerMouth));
+            return (p, threatGroup);
+        }
+
+        /// <summary>
         /// Check double atari for links.
         /// <see cref="UnitTestProject.LinkHelperTest.LinkHelperTest_DoubleAtariOnSemiSolidEye" />
         /// </summary>
