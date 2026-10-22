@@ -719,15 +719,6 @@ namespace Go
         /// Check increased killer groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario3dan17_3" />
         /// Check one neighbour group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q2413_4" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16827_3" />
-        /// Check link for groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16925" />
-        /// Check covered eye at diagonal <see cref="UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_TianLongTu_Q16444" />
-        /// Check killer group within suicide group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_3" />
-        /// Check empty points at stone and diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16525" />
-        /// Check connect and die at diagonal groups <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260902_8" />
-        /// Check ko move at non diagonal groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16525_2" />
-        /// Check killer group for three groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30256" />
-        /// Check covered point <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
-        /// Check isolated group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499" />
         /// Check diagonal not cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q27661" />
         /// Check diagonal cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie61" />
         /// Get first point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_9" />
@@ -782,62 +773,8 @@ namespace Go
             }
 
             //check link for groups
-            List<Group> previousGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, opponentBoard);
-            if (previousGroups.Count > 1)
-            {
-                //check diagonal groups with all liberties
-                if (previousGroups.Count == 2 && LinkHelper.GetDiagonalGroupsWithAllLiberties(currentBoard, previousGroups[0]).Contains(previousGroups[1]))
-                {
-                    //check covered eye at diagonal
-                    Boolean rc = killerGroup != null && tryBoard.MoveGroup.Points.Count > 1 && tryBoard.GetDiagonalNeighbours().Any(n => EyeHelper.FindCoveredEye(tryBoard, n, c.Opposite()));
-                    //check killer group within suicide group
-                    Boolean rc2 = killerGroup != null && GroupHelper.GetKillerGroupsFromPoints(tryBoard.MoveGroup.Liberties, tryBoard, c).Any();
-                    if (!rc && !rc2)
-                        return true;
-                }
-                //check diagonal groups without cut
-                if (previousGroups.Count == 2 && tryBoard.MoveGroup.Points.Count == 1 && killerGroup == null && tryBoard.GetNeighbourGroups().Any(n => n.Liberties.Count > 2) && LinkHelper.GetDiagonalGroupsWithoutCut(currentBoard, previousGroups[0]).Contains(previousGroups[1]))
-                {
-                    //check empty points at stone and diagonal
-                    Point? e = LinkHelper.CheckPointsBetweenDiagonalsAtMove(tryBoard, Content.Empty);
-                    Boolean rc = (e == null || tryBoard[e.Value] == c.Opposite());
-                    //check connect and die at diagonal groups
-                    Boolean rc2 = LinkHelper.GetDiagonalGroupsWithoutCut(opponentBoard, opponentBoard.MoveGroup, false).Any(n => ImmovableHelper.CheckConnectAndDie(currentBoard, n) && !ImmovableHelper.CheckConnectAndDie(opponentBoard, n));
-                    if (!rc && !rc2)
-                        return true;
-                }
-                //check non diagonal groups
-                if (previousGroups.Count == 2 && tryBoard.MoveGroup.Points.Count == 1 && !LinkHelper.GetDiagonalGroups(currentBoard, previousGroups[0]).Contains(previousGroups[1]))
-                {
-                    if (previousGroups.Any(n => n.Points.Count == 1))
-                        return true;
-                    if (tryBoard.GetGroupsFromStoneNeighbours().All(n => n.Liberties.Count > 2))
-                    {
-                        //check ko move at non diagonal groups
-                        Point k = captureBoard.GetCurrentGroup(tryBoard.MoveGroup).Liberties.First();
-                        Boolean rc = KoHelper.MakeKoFightFromEyePoint(captureBoard, k, c).Item1;
-                        if (!rc) return true;
-                    }
-                }
-                if (previousGroups.Count > 2)
-                {
-                    //check killer group for three groups
-                    if (GroupHelper.CheckKillerGroupPoints(tryBoard, move, c.Opposite(), tryBoard.MoveGroup.Points.Count + 2) != null)
-                        return false;
-                    return true;
-                }
-                if (killerGroup == null) return false;
-                //check covered point
-                if (EyeHelper.IsCovered(currentBoard, move, c.Opposite())) return false;
-                //check isolated group
-                if (previousGroups.Any(n => !GroupHelper.GetNeighbourGroupsOfKillerGroup(currentBoard, killerGroup).Contains(n)))
-                    return false;
-                //get first point with link for groups
-                Point p = killerGroup.Points.FirstOrDefault(n => currentBoard[n] == Content.Empty && currentBoard.GetGroupsFromStoneNeighbours(n, c).Count() > 1);
-                if (p.IsEmpty() || move.Equals(p))
-                    return false;
-                return true;
-            }
+            if (LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryBoard))
+                return CheckLinkForGroupsInOpponentSuicidalConnectAndDie(tryMove, opponentMove, captureBoard);
 
             //check diagonal not cut
             if (tryBoard.MoveGroup.Points.Count > 1 && LinkHelper.GetDiagonalGroupsWithoutCut(tryBoard).Any() && tryBoard.GetMoveLiberties().Any())
@@ -888,6 +825,84 @@ namespace Go
             if (CheckConnectAndDieInOpponentSuicidal(tryMove, opponentMove))
                 return false;
 
+            return true;
+        }
+
+        /// <summary>
+        /// Check link for groups in opponent suicidal connect and die.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16925" />
+        /// Check covered eye at diagonal <see cref="UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_TianLongTu_Q16444" />
+        /// Check killer group within suicide group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A28_101Weiqi_3" />
+        /// Check empty points at stone and diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16525" />
+        /// Check connect and die at diagonal groups <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260902_8" />
+        /// Check liberty of weak group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31493_2" />
+        /// Check ko move at non diagonal groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16525_2" />
+        /// Check killer group for three groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30256" />
+        /// Check covered point <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
+        /// Check isolated group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31499" />
+        /// </summary>
+        private static Boolean CheckLinkForGroupsInOpponentSuicidalConnectAndDie(GameTryMove tryMove, GameTryMove opponentMove, Board captureBoard)
+        {
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            Board opponentBoard = opponentMove.TryGame.Board;
+            Point move = tryMove.Move;
+            Content c = tryMove.MoveContent;
+            Group killerGroup = GroupHelper.GetDirectKillerGroup(currentBoard, move, c.Opposite());
+            List<Group> previousGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, opponentBoard);
+            //check diagonal groups with all liberties
+            if (previousGroups.Count == 2 && LinkHelper.GetDiagonalGroupsWithAllLiberties(currentBoard, previousGroups[0]).Contains(previousGroups[1]))
+            {
+                //check covered eye at diagonal
+                Boolean rc = killerGroup != null && tryBoard.MoveGroup.Points.Count > 1 && tryBoard.GetDiagonalNeighbours().Any(n => EyeHelper.FindCoveredEye(tryBoard, n, c.Opposite()));
+                //check killer group within suicide group
+                Boolean rc2 = killerGroup != null && GroupHelper.GetKillerGroupsFromPoints(tryBoard.MoveGroup.Liberties, tryBoard, c).Any();
+                if (!rc && !rc2)
+                    return true;
+            }
+            //check diagonal groups without cut
+            if (previousGroups.Count == 2 && tryBoard.MoveGroup.Points.Count == 1 && killerGroup == null && tryBoard.GetNeighbourGroups().Any(n => n.Liberties.Count > 2) && LinkHelper.GetDiagonalGroupsWithoutCut(currentBoard, previousGroups[0]).Contains(previousGroups[1]))
+            {
+                //check empty points at stone and diagonal
+                Point? e = LinkHelper.CheckPointsBetweenDiagonalsAtMove(tryBoard, Content.Empty);
+                Boolean rc = (e == null || tryBoard[e.Value] == c.Opposite());
+                //check connect and die at diagonal groups
+                Boolean rc2 = LinkHelper.GetDiagonalGroupsWithoutCut(opponentBoard, opponentBoard.MoveGroup, false).Any(n => ImmovableHelper.CheckConnectAndDie(currentBoard, n) && !ImmovableHelper.CheckConnectAndDie(opponentBoard, n));
+                //check liberty of weak group
+                Boolean rc3 = tryBoard.GetNeighbourGroups().Any(n => !WallHelper.IsHostileGroup(tryBoard, n) && n.Liberties.Any(s => tryBoard.GetGroupsFromStoneNeighbours(s, c).Count == 2 && !LinkHelper.GetDiagonalsAtStoneNeighbours(tryBoard, s, c.Opposite()).Any()));
+                if (!rc && !rc2 && !rc3)
+                    return true;
+            }
+            //check non diagonal groups
+            if (previousGroups.Count == 2 && tryBoard.MoveGroup.Points.Count == 1 && !LinkHelper.GetDiagonalGroups(currentBoard, previousGroups[0]).Contains(previousGroups[1]))
+            {
+                if (previousGroups.Any(n => n.Points.Count == 1))
+                    return true;
+                if (tryBoard.GetGroupsFromStoneNeighbours().All(n => n.Liberties.Count > 2))
+                {
+                    //check ko move at non diagonal groups
+                    Point k = captureBoard.GetCurrentGroup(tryBoard.MoveGroup).Liberties.First();
+                    Boolean rc = KoHelper.MakeKoFightFromEyePoint(captureBoard, k, c).Item1;
+                    if (!rc) return true;
+                }
+            }
+            if (previousGroups.Count > 2)
+            {
+                //check killer group for three groups
+                if (GroupHelper.CheckKillerGroupPoints(tryBoard, move, c.Opposite(), tryBoard.MoveGroup.Points.Count + 2) != null)
+                    return false;
+                return true;
+            }
+            if (killerGroup == null) return false;
+            //check covered point
+            if (EyeHelper.IsCovered(currentBoard, move, c.Opposite())) return false;
+            //check isolated group
+            if (previousGroups.Any(n => !GroupHelper.GetNeighbourGroupsOfKillerGroup(currentBoard, killerGroup).Contains(n)))
+                return false;
+            //get first point with link for groups
+            Point p = killerGroup.Points.FirstOrDefault(n => currentBoard[n] == Content.Empty && currentBoard.GetGroupsFromStoneNeighbours(n, c).Count() > 1);
+            if (p.IsEmpty() || move.Equals(p))
+                return false;
             return true;
         }
 
