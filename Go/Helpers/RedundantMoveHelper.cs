@@ -773,7 +773,7 @@ namespace Go
             }
 
             //check link for groups
-            if (LinkHelper.IsAbsoluteLinkForGroups(currentBoard, tryBoard))
+            if (LinkHelper.IsAbsoluteLinkForGroups(currentBoard, opponentBoard))
                 return CheckLinkForGroupsInOpponentSuicidalConnectAndDie(tryMove, opponentMove, captureBoard);
 
             //check diagonal not cut
