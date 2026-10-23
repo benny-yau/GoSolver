@@ -17,7 +17,11 @@ namespace Go
             if (nstones.Count(n => board[n] == c) != nstones.Count - 1) return null;
             if (board.OneLibertyGroup(p, c.Opposite()).Any()) return null;
             if (content == Content.Empty)
-                return nstones.First(n => board[n] != c);
+            {
+                Point q = nstones.First(n => board[n] != c);
+                if (board[q] == Content.Empty || board.GetGroupAt(q).Liberties.Count == 2)
+                    return q;
+            }
             else if (content == c.Opposite())
             {
                 Group group = board.GetGroupAt(p);
@@ -141,8 +145,8 @@ namespace Go
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
 
-            Point? libertyPoint = FindTigerMouth(currentBoard, move, c.Opposite());
-            if (libertyPoint == null) return null;
+            Point? p = FindTigerMouth(currentBoard, move, c.Opposite());
+            if (p == null) return null;
 
             Board capturedBoard = CaptureSuicideGroup(move, tryBoard);
             if (capturedBoard == null) return null;
@@ -151,7 +155,7 @@ namespace Go
                 return null;
             if (!WallHelper.StrongNeighbourGroups(capturedBoard, move, c))
                 return null;
-            if (SuicidalAfterMustHaveMove(currentBoard, tryBoard, libertyPoint.Value))
+            if (SuicidalAfterMustHaveMove(currentBoard, tryBoard))
                 return null;
             return capturedBoard;
         }
@@ -161,7 +165,7 @@ namespace Go
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_Q18500" />
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario1dan21" />
         /// </summary>
-        public static Boolean SuicidalAfterMustHaveMove(Board currentBoard, Board tryBoard, Point libertyPoint)
+        public static Boolean SuicidalAfterMustHaveMove(Board currentBoard, Board tryBoard)
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
@@ -169,7 +173,7 @@ namespace Go
             if (eyePoint.IsEmpty()) return false;
             if (!LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).All(n => n.Liberties.Count <= 2)) return false;
 
-            (Point p, Group threatGroup) = LinkHelper.GetLibertyPointFromThreatGroup(currentBoard, move, c.Opposite(), libertyPoint);
+            (Point p, Group threatGroup) = LinkHelper.GetLibertyPointFromThreatGroup(currentBoard, move, c.Opposite());
             (Boolean suicidal, Board b) = ImmovableHelper.IsSuicidalMove(p, c, currentBoard);
             if (suicidal) return false;
 

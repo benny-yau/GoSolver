@@ -447,9 +447,9 @@ namespace Go
         /// Check diagonal groups <see cref="UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_WuQingYuan_Q31603" />
         /// Check strong groups <see cref="UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_GuanZiPu_A20" />
         /// Check isolated group <see cref="UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_WuQingYuan_Q31498" />
-        /// Check previous groups <see cref="UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_TianLongTu_Q16444" />
-        /// <see cref="UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_WuQingYuan_Q30934" />
+        /// Check killer group at diagonal <see cref="UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_TianLongTu_Q16444" />
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
+        /// <see cref="UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_20261023_6" />
         /// </summary>
         private static Boolean SuicidalMoveWithinKillerGroup(GameTryMove tryMove)
         {
@@ -462,29 +462,28 @@ namespace Go
             //check killer group
             Group killerGroup = GroupHelper.GetDirectKillerGroup(currentBoard, move, c);
             if (killerGroup == null) return false;
-            //check suicidal move
-            List<Point> points = killerGroup.Points.Where(n => tryBoard[n] == c.Opposite()).ToList();
-            if (points.Count > 2) return false;
-            List<Group> groups = tryBoard.GetGroupsFromPoints(points).ToList();
+            List<Group> groups = GroupHelper.GetOpponentGroupsWithinKillerGroup(currentBoard, killerGroup);
             if (groups.Count != 1) return false;
+            Group group = groups.First();
+            if (group.Points.Count > 2) return false;
             //check diagonal groups
-            if (LinkHelper.GetDiagonalGroups(tryBoard, groups.First()).Any()) return false;
+            if (LinkHelper.GetDiagonalGroups(tryBoard, group).Any()) return false;
             //check neighbour groups
             List<Group> ngroups = currentBoard.GetNeighbourGroups(killerGroup);
-            if (ngroups.Count == 1) return true;
+            if (ngroups.Count == 1)
+                return true;
 
             //check strong groups
-            if (points.Count == 2 && !WallHelper.StrongGroups(currentBoard, ngroups))
+            if (group.Points.Count == 2 && !WallHelper.StrongGroups(currentBoard, ngroups))
                 return false;
-            List<Group> previousGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
-            if (previousGroups.Count == 1)
+            if (LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Count == 1)
                 return true;
 
             //check isolated group
             if (ngroups.Except(GroupHelper.GetNeighbourGroupsOfKillerGroup(currentBoard, killerGroup)).Any())
                 return false;
-            //check previous groups
-            if (previousGroups.All(n => WallHelper.IsHostileGroup(currentBoard, n)) && ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, move, c).All(n => currentBoard[n] != c.Opposite() && GroupHelper.GetDirectKillerGroup(currentBoard, n, c) == null))
+            //check killer group at diagonal
+            if (ngroups.All(n => WallHelper.IsHostileGroup(currentBoard, n)) && ImmovableHelper.GetDiagonalsOfTigerMouth(currentBoard, move, c).All(n => currentBoard[n] != c.Opposite() && GroupHelper.GetDirectKillerGroup(currentBoard, n, c) == null))
                 return true;
             return false;
         }
@@ -3291,6 +3290,7 @@ namespace Go
         /// Check diagonal cut <see cref="UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_XuanXuanGo_A55" />
         /// Check covered eye <see cref="UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18410" />
         /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260810_8" />
+        /// Check covered point <see cref="UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_20261023_6" />
         /// </summary>
         public static GameTryMove GetGenericNeutralMove(Game g, List<GameTryMove> neutralPointMoves)
         {
@@ -3311,15 +3311,17 @@ namespace Go
                 {
                     GameTryMove tryMove = neutralPointMoves.FirstOrDefault(n => n.Move.Equals(p));
                     if (tryMove == null) continue;
-
+                    Board b = tryMove.TryGame.Board;
                     //check neighbour groups
                     if (WallHelper.StrongNeighbourGroups(coveredBoard, tryMove.Move, c)) continue;
                     //check diagonal cut
-                    Board b = tryMove.TryGame.Board;
                     if (b.GetGroupsFromStoneNeighbours().Any(n => LinkHelper.FindDiagonalCut(b, n, true).Any()))
                         return tryMove;
                     //check covered eye
                     if (LinkHelper.GetGroupDiagonals(g.Board, killerGroup).Any(n => (EyeHelper.FindCoveredEye(g.Board, n.Move, c.Opposite()) || EyeHelper.CoveredPointWithinTwoPointGroup(g.Board, n.Move, c.Opposite())) && g.Board.GetGroupsFromStoneNeighbours(n.Move, c).All(s => s.Liberties.Count > 1) && g.Board.GetDiagonalNeighbours(n.Move).Any(s => g.Board[s] == c.Opposite() && !WallHelper.IsNonKillableGroup(g.Board, s))))
+                        return tryMove;
+                    //check covered point
+                    if (b.GetGroupsFromStoneNeighbours().Any(n => n.Liberties.Count == 3 && n.Liberties.Any(s => b.PointWithinMiddleArea(s) && ImmovableHelper.FindEmptyTigerMouth(b, s, c.Opposite()) && LinkHelper.TigerMouthThreatGroup(b, s, c.Opposite()) == null && EyeHelper.IsPlainCovered(b, s, c.Opposite()))))
                         return tryMove;
                 }
             }

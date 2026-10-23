@@ -670,7 +670,7 @@
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario1dan21" />
             </summary>.
         </member>
-        <member name="M:Go.ImmovableHelper.SuicidalAfterMustHaveMove(Go.Board,Go.Board,Go.Point)">
+        <member name="M:Go.ImmovableHelper.SuicidalAfterMustHaveMove(Go.Board,Go.Board)">
             <summary>
             Suicide move after must have move.
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanGo_Q18500" />
@@ -1517,7 +1517,7 @@
             Tiger mouth threat group.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.GetLibertyPointFromThreatGroup(Go.Board,Go.Point,Go.Content,Go.Point)">
+        <member name="M:Go.LinkHelper.GetLibertyPointFromThreatGroup(Go.Board,Go.Point,Go.Content)">
             <summary>
             Get liberty point from threat group.
             </summary>
@@ -1691,9 +1691,9 @@
             Check diagonal groups <see cref="!:UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_WuQingYuan_Q31603" />
             Check strong groups <see cref="!:UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_GuanZiPu_A20" />
             Check isolated group <see cref="!:UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_WuQingYuan_Q31498" />
-            Check previous groups <see cref="!:UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_TianLongTu_Q16444" />
-            <see cref="!:UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_WuQingYuan_Q30934" />
+            Check killer group at diagonal <see cref="!:UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_Scenario_TianLongTu_Q16444" />
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_AncientJapanese_B6" />
+            <see cref="!:UnitTestProject.SuicidalMoveWithinKillerGroupTest.SuicidalMoveWithinKillerGroupTest_20261023_6" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.MoveWithinNonKillableGroup(Go.GameTryMove)">
@@ -2342,6 +2342,7 @@
             Check diagonal cut <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_XuanXuanGo_A55" />
             Check covered eye <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18410" />
             <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260810_8" />
+            Check covered point <see cref="!:UnitTestProject.GenericNeutralMoveTest.GenericNeutralMoveTest_20261023_6" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.RedundantTigerMouthMove(Go.GameTryMove)">
@@ -2918,7 +2919,7 @@
             Check tiger mouth exceptions.
             </summary>
         </member>
-        <member name="M:Go.LifeCheck.CommonTigerMouthExceptions(Go.Board,Go.Content,Go.Point,Go.Point)">
+        <member name="M:Go.LifeCheck.CommonTigerMouthExceptions(Go.Board,Go.Point,Go.Content)">
             <summary>
             Common tiger mouth exceptions.
             </summary>

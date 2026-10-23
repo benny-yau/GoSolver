@@ -82,23 +82,16 @@ namespace Go
         /// </summary>
         public static Boolean CheckTigerMouthExceptions(Board board, IEnumerable<Point> tigerMouthList, Content c)
         {
-            foreach (Point tigerMouth in tigerMouthList)
-            {
-                Point? libertyPoint = ImmovableHelper.FindTigerMouth(board, tigerMouth, c);
-                if (libertyPoint == null) continue;
-                if (CommonTigerMouthExceptions(board, c, tigerMouth, libertyPoint.Value))
-                    return true;
-            }
-            return false;
+            return tigerMouthList.Any(n => CommonTigerMouthExceptions(board, n, c));
         }
 
         /// <summary>
         /// Common tiger mouth exceptions.
         /// </summary>
-        public static Boolean CommonTigerMouthExceptions(Board board, Content c, Point tigerMouth, Point libertyPoint)
+        public static Boolean CommonTigerMouthExceptions(Board board, Point tigerMouth, Content c)
         {
             //make move at liberty point
-            (Point p, Group threatGroup) = LinkHelper.GetLibertyPointFromThreatGroup(board, tigerMouth, c, libertyPoint);
+            (Point p, Group threatGroup) = LinkHelper.GetLibertyPointFromThreatGroup(board, tigerMouth, c);
             (Boolean connectAndDie, Board b) = ImmovableHelper.ConnectAndDieMove(board, p, c.Opposite(), false, false);
             if (b == null) return false;
             if (connectAndDie)

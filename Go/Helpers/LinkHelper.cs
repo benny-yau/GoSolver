@@ -718,12 +718,13 @@ namespace Go
         /// <summary>
         /// Get liberty point from threat group.
         /// </summary>
-        public static (Point, Group) GetLibertyPointFromThreatGroup(Board board, Point tigerMouth, Content c, Point libertyPoint)
+        public static (Point, Group) GetLibertyPointFromThreatGroup(Board board, Point tigerMouth, Content c)
         {
-            Point p = libertyPoint;
             Group threatGroup = TigerMouthThreatGroup(board, tigerMouth, c);
-            if (threatGroup != null) p = threatGroup.Liberties.First(n => !n.Equals(tigerMouth));
-            return (p, threatGroup);
+            if (threatGroup == null)
+                return (board.GetStoneNeighbours(tigerMouth).First(n => board[n] != c), null);
+            else
+                return (threatGroup.Liberties.First(n => !n.Equals(tigerMouth)), threatGroup);
         }
 
         /// <summary>
