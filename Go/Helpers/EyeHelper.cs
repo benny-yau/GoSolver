@@ -70,6 +70,7 @@ namespace Go
         public static Boolean IsPlainCovered(Board board, Point eye, Content c)
         {
             List<Point> diagonals = board.GetDiagonalNeighbours(eye).Where(n => board[n] == c.Opposite()).ToList();
+            if (diagonals.All(n => ImmovableHelper.CheckConnectAndDie(board, board.GetGroupAt(n), false))) return false;
             if (board.PointWithinMiddleArea(eye))
                 return (diagonals.Count >= 2);
             else

@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text.RegularExpressions;
-using static System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace Go
 {
@@ -4228,6 +4225,7 @@ namespace Go
         /// Check opponent groups <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_Side_A15" />
         /// <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
         /// Check liberty fight <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_x_3" />
+        /// Check possible reverse ko fight <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20261023_6" />
         /// Check opponent move <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A42_2" />
         /// </summary>
         public static Boolean CheckNonSuicidalDiagonalSurvivalMove(GameTryMove tryMove, GameTryMove opponentMove = null)
@@ -4257,6 +4255,10 @@ namespace Go
 
                 //check liberty fight
                 if (EyeHelper.FindEyeAtMove(tryBoard).Any() && LinkHelper.CheckLibertyFightAtConnectedGroups(tryBoard))
+                    return false;
+
+                //check possible reverse ko fight
+                if (tryBoard.GetStoneNeighbours().Any(n => !tryBoard.PointWithinMiddleArea(n) && tryBoard.GetDiagonalNeighbours(n).Any(s => ImmovableHelper.IsImmovablePoint(tryBoard, s, c) && EyeHelper.IsPlainCovered(tryBoard, s, c))))
                     return false;
 
                 //check opponent move

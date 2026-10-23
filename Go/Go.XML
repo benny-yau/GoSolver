@@ -2550,6 +2550,7 @@
             Check opponent groups <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_Side_A15" />
             <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanQiJing_Weiqi101_7245" />
             Check liberty fight <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_x_3" />
+            Check possible reverse ko fight <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20261023_6" />
             Check opponent move <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A42_2" />
             </summary>
         </member>
