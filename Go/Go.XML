@@ -2540,6 +2540,7 @@
             <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q30403" />
             Check possible ko leap move <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260726_8" />
             Check possible kill move <see cref="!:UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_20260918_8" />
+            Check leap move <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20261027_8" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckNonSuicidalDiagonalSurvivalMove(Go.GameTryMove,Go.GameTryMove)">

@@ -4150,6 +4150,7 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q30403" />
         /// Check possible ko leap move <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260726_8" />
         /// Check possible kill move <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_20260918_8" />
+        /// Check leap move <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20261027_8" />
         /// </summary>
         public static Boolean RedundantNonSuicidalSinglePointMove(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
@@ -4216,6 +4217,14 @@ namespace Go
             if (CheckPossibleKoLeapMove(tryMove, c.Opposite()))
                 return false;
 
+            //check leap move
+            foreach (Point p in tryBoard.GetClosestPoints(move, c, 2, 2).Where(n => (n.x == move.x || n.y == move.y)))
+            {
+                Point q = GetMidPointsOfLeapMove(p, move).First();
+                if (tryBoard[q] != Content.Empty) continue;
+                if (tryBoard.GetGroupsFromStoneNeighbours(q, c).Any()) continue;
+                return false;
+            }
             return true;
         }
 
