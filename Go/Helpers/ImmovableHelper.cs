@@ -40,6 +40,16 @@ namespace Go
         }
 
         /// <summary>
+        /// Find empty tiger mouth at move.
+        /// </summary>
+        public static IEnumerable<Point> FindEmptyTigerMouthAtMove(Board board, Point? p = null)
+        {
+            if (p == null) p = board.Move.Value;
+            Content c = board[p.Value];
+            return board.GetStoneNeighbours(p.Value).Where(n => FindEmptyTigerMouth(board, n, c));
+        }
+
+        /// <summary>
         /// Find tiger mouth for link.
         /// </summary>
         public static Boolean FindTigerMouthForLink(Board board, Point p, Content c)

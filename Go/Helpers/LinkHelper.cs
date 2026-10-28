@@ -479,9 +479,9 @@ namespace Go
         }
 
         /// <summary>
-        /// Check points between diagonals at move.
+        /// Check point between diagonals at move.
         /// </summary>
-        public static Point? CheckPointsBetweenDiagonalsAtMove(Board board, Content c = Content.Unknown)
+        public static Point? CheckPointBetweenDiagonalsAtMove(Board board, Content c = Content.Unknown)
         {
             Point move = board.Move.Value;
             List<Point> epoints = GetDiagonalsAtStoneNeighbours(board, move, c);

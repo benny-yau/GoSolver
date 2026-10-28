@@ -859,8 +859,8 @@ namespace Go
             //check diagonal groups without cut
             if (previousGroups.Count == 2 && tryBoard.MoveGroup.Points.Count == 1 && killerGroup == null && tryBoard.GetNeighbourGroups().Any(n => n.Liberties.Count > 2) && LinkHelper.GetDiagonalGroupsWithoutCut(currentBoard, previousGroups[0]).Contains(previousGroups[1]))
             {
-                //check empty points at stone and diagonal
-                Point? e = LinkHelper.CheckPointsBetweenDiagonalsAtMove(tryBoard, Content.Empty);
+                //check empty point at stone and diagonal
+                Point? e = LinkHelper.CheckPointBetweenDiagonalsAtMove(tryBoard, Content.Empty);
                 Boolean rc = (e == null || tryBoard[e.Value] == c.Opposite());
                 //check connect and die at diagonal groups
                 Boolean rc2 = LinkHelper.GetDiagonalGroupsWithoutCut(opponentBoard, opponentBoard.MoveGroup, false).Any(n => ImmovableHelper.CheckConnectAndDie(currentBoard, n) && !ImmovableHelper.CheckConnectAndDie(opponentBoard, n));
@@ -1290,6 +1290,7 @@ namespace Go
         /// Check connect and die <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260114_8" />
         /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260401_8" />
         /// Check possible ko move <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260820_8" />
+        /// Check tiger mouth at move <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20261028_7" />
         /// </summary>
         private static Boolean CheckEmptyPointsAtStoneAndDiagonal(GameTryMove tryMove)
         {
@@ -1297,8 +1298,8 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
-            //empty points at stone and diagonal
-            Point? e = LinkHelper.CheckPointsBetweenDiagonalsAtMove(tryBoard, Content.Empty);
+            //empty point at stone and diagonal
+            Point? e = LinkHelper.CheckPointBetweenDiagonalsAtMove(tryBoard, Content.Empty);
             if (e == null || tryBoard[e.Value] != Content.Empty) return false;
 
             //check point next to corner
@@ -1325,6 +1326,9 @@ namespace Go
                     if (b != null && KoHelper.IsKoFight(b, tryBoard.MoveGroup))
                         return false;
                 }
+                //check tiger mouth at move
+                if (tryBoard.PointWithinMiddleArea() && ImmovableHelper.FindEmptyTigerMouthAtMove(tryBoard).Any())
+                    return false;
                 return true;
             }
             return false;
@@ -1333,7 +1337,8 @@ namespace Go
         /// <summary>
         /// Check one point move diagonals in connect and die.
         /// Check empty point at diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30241_2" />    
-        /// Check killer formation <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />     
+        /// Check killer formation <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />
+        /// Check tiger mouth at move <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20261028_7" />
         /// Check strong neighbour groups <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260516_8" />
         /// Check non killable group at diagonal move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16735" />
         /// Check connect and die at diagonal move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A61" />
@@ -1346,7 +1351,8 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
-            Point? d = LinkHelper.CheckPointsBetweenDiagonalsAtMove(tryBoard);
+            //check point between diagonals at move
+            Point? d = LinkHelper.CheckPointBetweenDiagonalsAtMove(tryBoard);
             if (d == null) return false;
 
             //check empty point at diagonal
@@ -1356,6 +1362,10 @@ namespace Go
             //check killer formation
             Point p = EyeHelper.FindEyeAtMove(tryBoard).FirstOrDefault();
             if (!p.IsEmpty() && KillerFormationHelper.TryKillFormation(tryBoard, c, new List<Point> { p }).Item1)
+                return false;
+
+            //check tiger mouth at move
+            if (ImmovableHelper.FindEmptyTigerMouthAtMove(tryBoard).Any())
                 return false;
 
             if (tryBoard[d.Value] == c.Opposite())
@@ -1410,7 +1420,8 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Point move = tryMove.Move;
             Content c = tryMove.MoveContent;
-            Point? d = LinkHelper.CheckPointsBetweenDiagonalsAtMove(tryBoard);
+            //check point between diagonals at move
+            Point? d = LinkHelper.CheckPointBetweenDiagonalsAtMove(tryBoard);
             if (d != null) return false;
 
             //check move diagonals
@@ -1490,7 +1501,8 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours();
             if (captureBoard.MoveGroup.Points.Count != 1 || ngroups.Count != 1) return false;
-            Point? v = LinkHelper.CheckPointsBetweenDiagonalsAtMove(captureBoard, Content.Empty);
+            //check point between diagonals at move
+            Point? v = LinkHelper.CheckPointBetweenDiagonalsAtMove(captureBoard, Content.Empty);
             if (v == null || captureBoard[v.Value] != Content.Empty) return false;
             Group ngroup = ngroups.First();
             //check opponent group
@@ -2170,7 +2182,8 @@ namespace Go
             Content c = opponentBoard.MoveGroup.Content;
             if (opponentBoard.PointWithinMiddleArea())
                 return false;
-            Point? p = LinkHelper.CheckPointsBetweenDiagonalsAtMove(opponentBoard, c);
+            //check point between diagonals at move
+            Point? p = LinkHelper.CheckPointBetweenDiagonalsAtMove(opponentBoard, c);
             if (p == null) return false;
             if (opponentBoard[p.Value] != c.Opposite())
                 return false;
@@ -3652,7 +3665,8 @@ namespace Go
                     return false;
             }
 
-            Point? d = LinkHelper.CheckPointsBetweenDiagonalsAtMove(tryBoard);
+            //check point between diagonals at move
+            Point? d = LinkHelper.CheckPointBetweenDiagonalsAtMove(tryBoard);
             if (d == null)
             {
                 //no diagonal at move
@@ -4168,7 +4182,7 @@ namespace Go
                 return false;
             }
             //check side leap move
-            if (!tryBoard.PointWithinMiddleArea() && tryBoard.GetStoneNeighbours().Any(n => ImmovableHelper.FindEmptyTigerMouth(tryBoard, n, c)))
+            if (!tryBoard.PointWithinMiddleArea() && ImmovableHelper.FindEmptyTigerMouthAtMove(tryBoard).Any())
             {
                 if (opponentMove == null && RedundantNonSuicidalSideLeapMove(tryMove))
                     return true;
@@ -4351,7 +4365,8 @@ namespace Go
             Content c = tryBoard.MoveGroup.Content;
             if (tryBoard.GetMoveLiberties().Count > 2) return false;
             //check leap move
-            if (!tryBoard.GetStoneNeighbours().Any(n => ImmovableHelper.FindEmptyTigerMouth(tryBoard, n, c) && WallHelper.TargetWithAnyNonKillableGroup(tryBoard, n, c.Opposite()))) return false;
+            if (!ImmovableHelper.FindEmptyTigerMouthAtMove(tryBoard).Any(n => WallHelper.TargetWithAnyNonKillableGroup(tryBoard, n, c.Opposite()))) return false;
+            
             //make block move
             foreach (Board b in GameHelper.GetMoveBoards(tryBoard, tryBoard.GetMoveLiberties(), c.Opposite(), true))
             {

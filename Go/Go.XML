@@ -631,6 +631,11 @@
             Find empty tiger mouth.
             </summary>
         </member>
+        <member name="M:Go.ImmovableHelper.FindEmptyTigerMouthAtMove(Go.Board,System.Nullable{Go.Point})">
+            <summary>
+            Find empty tiger mouth at move.
+            </summary>
+        </member>
         <member name="M:Go.ImmovableHelper.FindTigerMouthForLink(Go.Board,Go.Point,Go.Content)">
             <summary>
             Find tiger mouth for link.
@@ -1436,9 +1441,9 @@
             Points between diagonals.
             </summary>
         </member>
-        <member name="M:Go.LinkHelper.CheckPointsBetweenDiagonalsAtMove(Go.Board,Go.Content)">
+        <member name="M:Go.LinkHelper.CheckPointBetweenDiagonalsAtMove(Go.Board,Go.Content)">
             <summary>
-            Check points between diagonals at move.
+            Check point between diagonals at move.
             </summary>
         </member>
         <member name="M:Go.LinkHelper.IsExternalLinkToTargetGroup(Go.Board,Go.Point)">
@@ -1877,13 +1882,15 @@
             Check connect and die <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260114_8" />
             <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260401_8" />
             Check possible ko move <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260820_8" />
+            Check tiger mouth at move <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20261028_7" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckOnePointMoveDiagonalsInConnectAndDie(Go.GameTryMove,Go.Board)">
             <summary>
             Check one point move diagonals in connect and die.
             Check empty point at diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30241_2" />    
-            Check killer formation <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />     
+            Check killer formation <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WindAndTime_Q30275" />
+            Check tiger mouth at move <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20261028_7" />
             Check strong neighbour groups <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260516_8" />
             Check non killable group at diagonal move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16735" />
             Check connect and die at diagonal move <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A61" />
