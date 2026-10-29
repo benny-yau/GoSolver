@@ -129,7 +129,7 @@ namespace Go
                 return false;
 
             //get immovable points at all diagonals
-            List<Point> immovablePoints = board.GetDiagonalNeighbours(eye).Where(n => ImmovableHelper.IsImmovablePoint(board, n, c)).ToList();
+            List<Point> immovablePoints = ImmovableHelper.IsImmovablePointAtMoveDiagonal(board, eye, c).ToList();
             Boolean found = false;
             List<Point> diagonals = board.GetDiagonalNeighbours(eye);
             int stoneCount = diagonals.Count(d => board[d] == c);

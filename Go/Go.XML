@@ -657,6 +657,11 @@
             Check for ko possibility <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q30986" />
             </summary>
         </member>
+        <member name="M:Go.ImmovableHelper.IsImmovablePointAtMoveDiagonal(Go.Board,Go.Point,Go.Content)">
+            <summary>
+            Is immovable point at move diagonal.
+            </summary>
+        </member>
         <member name="M:Go.ImmovableHelper.CheckForKoInImmovablePoint(Go.Board,Go.Group)">
             <summary>
             Check for ko in immovable point.
@@ -1852,37 +1857,66 @@
             Find covered eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie1" />
             </summary>
         </member>
+        <member name="M:Go.RedundantMoveHelper.CheckImmovablePointAtDiagonalInConnectAndDie(Go.GameTryMove,Go.Board)">
+            <summary>
+            Check immovable point at diagonal in connect and die.
+            Check ko fight on capture <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20261007_8" />
+            Check opponent at diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16594" />
+            Check covered eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17154_3" />
+            Check diagonal group capture <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221028_7" />
+            Check suicide ko move at corner <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260625_7" />        
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CheckIsolatedNeighbourGroupInConnectAndDie(Go.GameTryMove,Go.Board)">
+            <summary>
+            Check isolated neighbour group in connect and die.
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie137_2" />
+            Check point next to corner <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260111_8" />
+            Check three-point killer group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A41" />
+            </summary>
+        </member>
         <member name="M:Go.RedundantMoveHelper.CheckImmovablePointAtDiagonal(Go.GameTryMove,Go.Board)">
             <summary>
             Check immovable point at diagonal.
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17250_3" />
-            Check isolated neighbour group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie137_2" />
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30240" />
             Check point next to corner <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260111_8" />
-            Check three-point killer group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A41" />
-            Check opponent at diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30196" />
-            Check ko fight on capture <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20261007_8" />
+            Check opponent at diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17250_3" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CheckImmovablePointAtDiagonalOnCapture(Go.GameTryMove,Go.Board)">
+            <summary>
+            Check immovable point at diagonal on capture.
             Check killer group <see cref="!:UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A41_2" />
+            No diagonal cut <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16483" />
+            Check one neighbour group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A63" />
             Check diagonal group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A66" />
             Check side point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31510_2" />
-            Check real eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A12_2" />
-            Check diagonal group capture <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221028_7" />
-            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260625_7" />
-            Without diagonal cut <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16483" />
             With diagonal cut <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie74" />
             Check killer group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18474" />
             Check liberty point at immovable point <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20261021_8" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CheckRealEyeOnCaptureInConnectAndDie(Go.GameTryMove,Go.Board)">
+            <summary>
+            Check real eye on capture in connect and die.
+            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A12_2" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckEmptyPointsAtStoneAndDiagonal(Go.GameTryMove)">
             <summary>
             Check empty points at stone and diagonal.
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18500_3" />
-            Check point next to corner <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221027_6" />
             Check for one neighbour group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74_4" />
             Check connect and die <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260114_8" />
             <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260401_8" />
             Check possible ko move <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260820_8" />
             Check tiger mouth at move <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20261028_7" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CheckPointNextToCornerInConnectAndDie(Go.GameTryMove)">
+            <summary>
+            Check point next to corner in connect and die.
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221027_6" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckOnePointMoveDiagonalsInConnectAndDie(Go.GameTryMove,Go.Board)">
@@ -2048,15 +2082,16 @@
             Miscellaneous single point suicide.
             Check connect and die at diagonal group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_6" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16738_7" />
-            Connect and die  <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A27_2" />
-            <see cref="!:UnitTestProject.ImmovableTest.ImmovableTest_Scenario_XuanXuanGo_B32" />
-            Diagonal non killable groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17160" />
             Opponent suicide <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16490" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A55" />
             <see cref="!:UnitTestProject.SurvivalTigerMouthMoveTest.SurvivalTigerMouthMoveTest_Scenario_Nie67" />
-            Check real eye at diagonal <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17132_3" />
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B25_2" />
-            Without opposite content <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Side_B4" />
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.SinglePointSuicideAtNonKillableGroup(Go.GameTryMove,Go.Board,Go.GameTryMove)">
+            <summary>
+            Single point suicide at non killable group.
+            Check target with non killable group <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A27_2" />
+            Diagonal non killable groups <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17160" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckMoveBeyondNonKillableGroup(Go.GameTryMove)">

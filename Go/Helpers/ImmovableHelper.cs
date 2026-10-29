@@ -111,6 +111,14 @@ namespace Go
         }
 
         /// <summary>
+        /// Is immovable point at move diagonal.
+        /// </summary>
+        public static IEnumerable<Point> IsImmovablePointAtMoveDiagonal(Board board, Point p, Content c)
+        {
+            return board.GetDiagonalNeighbours(p).Where(n => ImmovableHelper.IsImmovablePoint(board, n, c));
+        }
+
+        /// <summary>
         /// Check for ko in immovable point.
         /// Check capture neighbour groups <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WuQingYuan_Q30986" />
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_WindAndTime_Q29998_2" />

@@ -118,7 +118,7 @@ namespace Go
             if (tryBoard.MoveGroupLiberties == 2 && EyeHelper.FindEye(currentBoard, move, c) && LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).All(n => n.Liberties.Count > 1))
                 return false;
 
-            //check if neighbour group is non-killable
+            //check non killable group
             if (WallHelper.TargetWithAnyNonKillableGroup(tryBoard) && !RedundantMoveHelper.CheckSuicideInTwoPointCoveredEye(tryMove))
                 return false;
 
@@ -126,7 +126,7 @@ namespace Go
             if (!FindSuicidalKillerFormation(tryMove, captureBoard))
                 return false;
 
-            //check if real eye found in neighbour groups
+            //check real eye in neighbour groups
             if (EyeHelper.CheckRealEyeInNeighbourGroups(tryBoard, captureBoard))
                 return false;
 
