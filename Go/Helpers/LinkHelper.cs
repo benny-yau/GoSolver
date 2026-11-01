@@ -247,9 +247,10 @@ namespace Go
         {
             Content c = board[pointA];
             List<Point> diagonals = LinkHelper.PointsBetweenDiagonals(pointA, pointB);
+            //check liberties
+            if (board.GetGroupAt(pointA).Liberties.Count == 1 || board.GetGroupAt(pointB).Liberties.Count == 1) return false;
             //check any diagonal same content
-            if (diagonals.Any(d => board[d] == c))
-                return true;
+            if (diagonals.Any(d => board[d] == c)) return true;
 
             //check immovable at any diagonal
             if (diagonals.Any(d => board[d] == Content.Empty && ImmovableHelper.IsImmovablePoint(board, d, c)))

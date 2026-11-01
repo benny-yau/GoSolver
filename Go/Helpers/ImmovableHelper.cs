@@ -245,9 +245,9 @@ namespace Go
         /// </summary>
         public static Boolean PrecheckNotSuicidal(Board board, Point p, Content c)
         {
-            if (board.GetMoveLiberties(p).Count() >= 2)
-                return true;
-            if (board.GetGroupsFromStoneNeighbours(p, c.Opposite()).Any(n => n.Liberties.Count >= 3))
+            List<Point> liberties = board.GetMoveLiberties(p);
+            List<Group> groups = board.GetGroupsFromStoneNeighbours(p, c.Opposite());
+            if (board.GetLibertiesOfGroups(groups).Union(liberties).Count() - (groups.Any() ? 1 : 0) >= 2)
                 return true;
             return false;
         }
@@ -479,9 +479,9 @@ namespace Go
         /// </summary>
         public static Boolean PrecheckNotConnectAndDieMove(Board board, Point p, Content c)
         {
-            if (board.GetMoveLiberties(p).Count() >= 3)
-                return true;
-            if (board.GetGroupsFromStoneNeighbours(p, c.Opposite()).Any(n => n.Liberties.Count >= 4))
+            List<Point> liberties = board.GetMoveLiberties(p);
+            List<Group> groups = board.GetGroupsFromStoneNeighbours(p, c.Opposite());
+            if (board.GetLibertiesOfGroups(groups).Union(liberties).Count() - (groups.Any() ? 1 : 0) >= 3)
                 return true;
             return false;
         }
@@ -652,16 +652,19 @@ namespace Go
                 }
 
                 //check groups at liberty
-                if (b.MoveGroupLiberties != 2) continue;
-                Point liberty2 = b.MoveGroup.Liberties.First(n => !n.Equals(move));
-                List<Group> ngroups = b.GetGroupsFromStoneNeighbours(liberty2, c.Opposite()).Where(n => !n.Equals(b.MoveGroup)).ToList();
-                if (!WallHelper.StrongGroups(b, ngroups))
-                    return (true, b);
+                foreach (Point q in b.MoveGroup.Liberties.Where(n => !n.Equals(move)))
+                {
+                    List<Group> ngroups = b.GetGroupsFromStoneNeighbours(q, c.Opposite()).Where(n => !n.Equals(b.MoveGroup)).ToList();
+                    if (!WallHelper.StrongGroups(b, ngroups))
+                        return (true, b);
+                }
 
                 //check opponent survival move
+                if (b.MoveGroupLiberties != 2) continue;
                 if (b.MoveGroup.Points.Count >= 3)
                 {
                     //make block move
+                    Point liberty2 = b.MoveGroup.Liberties.First(n => !n.Equals(move));
                     (Boolean suicidal, Board b2) = ImmovableHelper.IsSuicidalMove(liberty2, c.Opposite(), b, true);
                     if (suicidal) continue;
                     List<Point> npoints = b2.GetStoneNeighbours().Where(n => b2[n] != c.Opposite() && !n.Equals(b.Move.Value)).ToList();

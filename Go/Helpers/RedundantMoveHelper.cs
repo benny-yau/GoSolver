@@ -27,6 +27,7 @@ namespace Go
                 //check for killer formations
                 if (tryBoard.MoveGroupLiberties == 1 && tryMove.EssentialSuicidalKillerFormation)
                     return false;
+                //check double atari exception
                 if (EyeDoubleAtariException(tryMove))
                     return false;
             }
@@ -197,20 +198,17 @@ namespace Go
         /// <summary>
         /// Fill ko eye move. <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_XuanXuanGo_A46_101Weiqi" />
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WuQingYuan_Q31657" /> 
-        /// Double atari <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30358" /> 
+        /// Check double atari <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30358" /> 
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" /> 
         /// Check both alive <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_SimpleSeki" /> 
         /// <see cref="UnitTestProject.RedundantKoMoveTest.RedundantKoMoveTest_Scenario_XuanXuanGo_A151_101Weiqi_2" /> 
-        /// ensure eye groups not suicidal <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Nie20" /> 
+        /// Check suicidal eye groups <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Nie20" /> 
         /// Check for killer formation <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_Corner_A67" />
         /// Check weak group in connect and die <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_XuanXuanGo_B6" /> 
         /// Check suicide at tiger mouth <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16867" /> 
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_B3" /> 
         /// Two covered eyes <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18" />
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" /> 
-        /// Check double ko <see cref = "UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16975" />
-        /// <see cref = "UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_2" />
-        /// Check possible recursion <see cref = "UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" />
         /// </summary>
         public static Boolean FillKoEyeMove(GameTryMove tryMove)
         {
@@ -235,23 +233,18 @@ namespace Go
             //check ko fight
             List<Group> eyeGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard);
             Boolean isKoFight = eyeGroups.Any(e => KoHelper.IsKoFight(currentBoard, e));
-            if (isKoFight)
-            {
-                if (!KoHelper.KoContentEnabled(c, tryBoard.GameInfo))
-                    return false;
-                //check for target and survival points
-                if (tryMove.OpponentMove != null && LifeCheck.CheckIfDeadOrAlive(SurviveOrKill.Kill, tryMove.OpponentMove.TryGame.Board) == ConfirmAliveResult.Dead)
-                    return false;
-            }
+            if (isKoFight && !KoHelper.KoContentEnabled(c, tryBoard.GameInfo))
+                return false;
 
-            //ensure eye groups not suicidal
+            //check suicidal eye groups
             if (eyeGroups.Any(e => e.Points.Count > 1 && e.Liberties.Count == 1))
                 return false;
 
-            //double atari
+            //check double atari
             if (AtariHelper.IsDoubleAtari(currentBoard, move, c.Opposite()))
                 return false;
 
+            //check double atari exception
             if (EyeDoubleAtariException(tryMove))
                 return false;
 
@@ -271,28 +264,43 @@ namespace Go
                     return false;
             }
 
-            if (isKoFight)
-            {
-                //check double ko
-                Board b = currentBoard.MakeMoveOnNewBoard(move, c.Opposite(), true);
-                if (KoHelper.PossibilityOfDoubleKo(b, currentBoard))
-                    return false;
-                Board b2 = ImmovableHelper.CaptureSuicideGroup(b);
-                if (b2 != null && KoHelper.PossibilityOfDoubleKo(b2, b))
-                    return false;
+            //check ko fight
+            if (isKoFight && CheckKoFightAtRedundantKoEyeMove(tryMove))
+                return false;
+            return true;
+        }
 
-                //check possible recursion
-                if (tryBoard.LastMoves.Count >= 6)
+        /// <summary>
+        /// Check ko fight at redundant ko eye move.
+        /// Check double ko <see cref = "UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16975" />
+        /// <see cref = "UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_WindAndTime_Q30275_2" />
+        /// Check possible recursion <see cref = "UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi" />
+        /// </summary>
+        public static Boolean CheckKoFightAtRedundantKoEyeMove(GameTryMove tryMove)
+        {
+            Point move = tryMove.Move;
+            Board currentBoard = tryMove.CurrentGame.Board;
+            Board tryBoard = tryMove.TryGame.Board;
+            Content c = tryMove.MoveContent;
+            //check double ko
+            Board b = currentBoard.MakeMoveOnNewBoard(move, c.Opposite(), true);
+            if (KoHelper.PossibilityOfDoubleKo(b, currentBoard))
+                return true;
+            Board b2 = ImmovableHelper.CaptureSuicideGroup(b);
+            if (b2 != null && KoHelper.PossibilityOfDoubleKo(b2, b))
+                return true;
+
+            //check possible recursion
+            if (tryBoard.LastMoves.Count >= 6)
+            {
+                Point p = tryBoard.LastMoves[tryBoard.LastMoves.Count - 3];
+                if (tryBoard.GetStoneNeighbours().Any(n => n.Equals(p)))
                 {
-                    Point p = tryBoard.LastMoves[tryBoard.LastMoves.Count - 3];
-                    if (tryBoard.GetStoneNeighbours().Any(n => n.Equals(p)))
-                    {
-                        if (tryBoard.LastMoves.GetRange(tryBoard.LastMoves.Count - 6, 3).Any(n => n.Equals(move)))
-                            return false;
-                    }
+                    if (tryBoard.LastMoves.GetRange(tryBoard.LastMoves.Count - 6, 3).Any(n => n.Equals(move)))
+                        return true;
                 }
             }
-            return true;
+            return false;
         }
         #endregion
 
@@ -2550,13 +2558,18 @@ namespace Go
             Board tryBoard = tryMove.TryGame.Board;
             Board currentBoard = tryMove.CurrentGame.Board;
             Content c = group.Content;
+            if (tryBoard.GetGroupLiberties(group).Count == 1) return false;
+            if (GameHelper.GetContentForSurviveOrKill(tryBoard.GameInfo, SurviveOrKill.Kill) != c) return false;
+            //check non killable group
             if (WallHelper.IsNonKillableGroup(tryBoard, group))
                 return true;
 
             foreach (Link<Point> link in LinkHelper.GetGroupLinkedDiagonals(tryBoard, group))
             {
                 List<Point> points = LinkHelper.PointsBetweenDiagonals(link);
+                //check non killable group at diagonal
                 if (!WallHelper.IsNonKillableGroup(tryBoard, link.Move)) continue;
+                //check opponent connect and die move
                 if (points.Any(n => tryBoard[n] == Content.Empty && ImmovableHelper.ConnectAndDieMove(currentBoard, n, c.Opposite()).Item1))
                     return true;
                 if (points.Any(n => tryBoard[n] == c.Opposite() && ImmovableHelper.UnescapableGroup(tryBoard, tryBoard.GetGroupAt(n)).Item1))
