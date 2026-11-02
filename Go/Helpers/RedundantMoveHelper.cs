@@ -1282,11 +1282,11 @@ namespace Go
         /// <summary>
         /// Check immovable point at diagonal on capture.
         /// Check killer group <see cref="UnitTestProject.NeutralPointMoveTest.NeutralPointMoveTest_Scenario_XuanXuanGo_A41_2" />
-        /// Check side point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31510_2" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_20261031_8" />
+        /// Check opponent within killer group at immovable point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_20261031_8" />
         /// No diagonal cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16483" />
         /// Check one neighbour group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A63" />
         /// Check diagonal group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A66" />
+        /// Check side point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31510_2" />
         /// With diagonal cut <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie74" />
         /// Check killer group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18474" />
         /// Check liberty point at immovable point <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20261021_8" />
@@ -1306,12 +1306,10 @@ namespace Go
                 //check killer group
                 if (ngroups.Any(n => n.Points.Count > 1) && GroupHelper.IsSingleGroupWithinKillerGroup(captureBoard, tryBoard.MoveGroup))
                     return true;
-                //check side point
-                if (!tryBoard.PointWithinMiddleArea() && !captureBoard.PointWithinMiddleArea() && ImmovableHelper.GetDiagonalsOfTigerMouth(captureBoard, d, c.Opposite(), false).Count(n => !captureBoard.PointWithinMiddleArea(n)) == 2)
+                //check opponent within killer group at immovable point
+                if (!tryBoard.PointWithinMiddleArea() && !captureBoard.PointWithinMiddleArea() && LinkHelper.GetDiagonalGroupsWithoutCut(tryBoard).Any(s => !ImmovableHelper.CheckConnectAndDie(tryBoard, s)))
                 {
                     Group killergroup = GroupHelper.GetDirectKillerGroup(captureBoard, d, c.Opposite());
-                    if (killergroup == null && !WallHelper.HostileNeighbourGroups(captureBoard, tryBoard.MoveGroup))
-                        continue;
                     if (killergroup != null && GroupHelper.GetOpponentGroupsWithinKillerGroup(captureBoard, killergroup).Any())
                         continue;
                 }
@@ -1323,6 +1321,9 @@ namespace Go
                 {
                     //check diagonal group
                     if (LinkHelper.GetDiagonalGroupsWithoutCut(tryBoard, ngroups.First()).Any(s => !WallHelper.IsHostileGroup(tryBoard, s)))
+                        continue;
+                    //check side point
+                    if (!tryBoard.PointWithinMiddleArea() && !captureBoard.PointWithinMiddleArea() && ImmovableHelper.GetDiagonalsOfTigerMouth(captureBoard, d, c.Opposite()).Count(n => !captureBoard.PointWithinMiddleArea(n)) == 2)
                         continue;
                     return true;
                 }
