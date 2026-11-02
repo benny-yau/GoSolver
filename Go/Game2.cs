@@ -198,6 +198,9 @@ namespace Go
             tryMove.IsAtariRedundant = RedundantMoveHelper.AtariRedundantMove(tryMove);
             if (tryMove.IsAtariRedundant)
                 return;
+            tryMove.IsSuicidal = RedundantMoveHelper.SuicidalRedundantMove(tryMove);
+            if (tryMove.IsSuicidal)
+                return;
             tryMove.IsLeapMove = RedundantMoveHelper.RedundantSurvivalLeapMove(tryMove);
             if (tryMove.IsLeapMove)
                 return;
@@ -209,9 +212,6 @@ namespace Go
                 return;
             tryMove.IsRedundantNeuralNetMove = RedundantMoveHelper.RedundantNeuralNetMove(tryMove);
             if (tryMove.IsRedundantNeuralNetMove)
-                return;
-            tryMove.IsSuicidal = RedundantMoveHelper.SuicidalRedundantMove(tryMove);
-            if (tryMove.IsSuicidal)
                 return;
         }
 
@@ -247,6 +247,9 @@ namespace Go
             tryMove.IsAtariRedundant = RedundantMoveHelper.AtariRedundantMove(tryMove);
             if (tryMove.IsAtariRedundant)
                 return;
+            tryMove.IsSuicidal = RedundantMoveHelper.SuicidalRedundantMove(tryMove);
+            if (tryMove.IsSuicidal)
+                return;
             tryMove.IsLeapMove = RedundantMoveHelper.RedundantKillLeapMove(tryMove);
             if (tryMove.IsLeapMove)
                 return;
@@ -258,9 +261,6 @@ namespace Go
                 return;
             tryMove.IsRedundantNeuralNetMove = RedundantMoveHelper.RedundantNeuralNetMove(tryMove);
             if (tryMove.IsRedundantNeuralNetMove)
-                return;
-            tryMove.IsSuicidal = RedundantMoveHelper.SuicidalRedundantMove(tryMove);
-            if (tryMove.IsSuicidal)
                 return;
         }
 

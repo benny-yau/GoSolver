@@ -64,10 +64,10 @@ namespace Go
         /// <summary>
         /// Get diagonals of tiger mouth.
         /// </summary>
-        public static List<Point> GetDiagonalsOfTigerMouth(Board board, Point p, Content c)
+        public static List<Point> GetDiagonalsOfTigerMouth(Board board, Point p, Content c, Boolean checkContent = true)
         {
             List<Point> npoints = LinkHelper.GetDiagonalsAtStoneNeighbours(board, p, c);
-            List<Point> diagonals = board.GetDiagonalNeighbours(p).Where(n => board[n] != c && board.GetStoneNeighbours(n).Intersect(npoints).Count() >= 2).ToList();
+            List<Point> diagonals = board.GetDiagonalNeighbours(p).Where(n => (!checkContent || board[n] != c) && board.GetStoneNeighbours(n).Intersect(npoints).Count() >= 2).ToList();
             return diagonals;
         }
         #endregion
