@@ -834,6 +834,9 @@ namespace Go
             if (CheckConnectAndDieInOpponentSuicidal(tryMove, opponentMove))
                 return false;
 
+            //check side leap move
+            if (CheckSideLeapMoveInOpponentSuicidal(opponentMove))
+                return false;
             return true;
         }
 
@@ -966,6 +969,30 @@ namespace Go
                 //check corner point for connect and die
                 if (tryBoard.MoveGroup.Points.Count == 1 && tryBoard.CornerPoint())
                     return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Check side leap move in opponent suicidal.
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20261102_8" />
+        /// </summary>
+        private static Boolean CheckSideLeapMoveInOpponentSuicidal(GameTryMove tryMove)
+        {
+            Board tryBoard = tryMove.TryGame.Board;
+            Content c = tryMove.MoveContent;
+            //check diagonal group with cut
+            if (!tryBoard.PointWithinMiddleArea() && LinkHelper.GetDiagonalGroupsWithCut(tryBoard).Any() && !tryBoard.GetNeighbourGroups().Any(n => ImmovableHelper.CheckConnectAndDie(tryBoard, n, false)))
+            {
+                foreach (Point p in tryBoard.GetMoveLiberties().Where(s => !tryBoard.PointWithinMiddleArea(s)))
+                {
+                    Point q = tryBoard.GetStoneNeighbours(p).FirstOrDefault(n => tryBoard[n] == Content.Empty);
+                    if (q.IsEmpty()) continue;
+                    //make side leap move
+                    Board b = tryBoard.MakeMoveOnNewBoard(q, c);
+                    if (b != null && LinkHelper.GetDiagonalGroupsWithoutCut(b).Any(n => !n.Equals(b.GetCurrentGroup(tryBoard.MoveGroup))))
+                        return true;
+                }
             }
             return false;
         }
@@ -4661,6 +4688,9 @@ namespace Go
                     return false;
                 //check diagonal of corner point
                 if (tryBoard.GetDiagonalNeighbours().Any(n => tryBoard.CornerPoint(n) && npossibleSpace.Any(s => s.Value > possibleSpace && tryBoard.PointWithinMiddleArea(s.Key))))
+                    return false;
+                //check side leap move
+                if (CheckSideLeapMoveInOpponentSuicidal(tryMove))
                     return false;
                 return true;
             }

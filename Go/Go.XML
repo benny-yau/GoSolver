@@ -1820,6 +1820,12 @@
             Check corner point for connect and die <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221109_7" />
             </summary>
         </member>
+        <member name="M:Go.RedundantMoveHelper.CheckSideLeapMoveInOpponentSuicidal(Go.GameTryMove)">
+            <summary>
+            Check side leap move in opponent suicidal.
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20261102_8" />
+            </summary>
+        </member>
         <member name="M:Go.RedundantMoveHelper.SuicidalConnectAndDie(Go.GameTryMove)">
             <summary>
             Suicidal connect and die. 
