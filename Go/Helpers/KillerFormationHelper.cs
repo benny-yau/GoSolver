@@ -415,7 +415,7 @@ namespace Go
                 Boolean rc = tryBoard.GetStoneNeighbours(p).Where(q => !q.Equals(move)).All(q => tryBoard[q] == c.Opposite());
                 if (!rc) continue;
                 //check covered
-                if (tryBoard.GetGroupAt(move.Value).Points.Count == 1 && EyeHelper.IsCovered(tryBoard, p, c.Opposite()) && !tryBoard.OneLibertyGroup(p, c).Any())
+                if (tryBoard.GetGroupAt(move.Value).Points.Count == 1 && EyeHelper.IsCovered(tryBoard, p, c.Opposite()) && !tryBoard.OneLibertyNeighbourGroup(p, c).Any())
                     continue;
                 return true;
             }
@@ -443,7 +443,6 @@ namespace Go
         /// Check redundant covered eye <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_TianLongTu_Q16693_2" />
         /// Check connect and die <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30403" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A4Q11_101Weiqi_2" />
-
         /// Corner three formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18860" />
         /// Two point atari move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A82_101Weiqi" />
         /// No lost groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18402_2" />
@@ -507,6 +506,7 @@ namespace Go
 
         /// <summary>
         /// Suicide for liberty fight.
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40_2" />
         /// Both alive <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_2" />
         /// <see cref="UnitTestProject.BothAliveTest.BothAliveTest_Scenario_WuQingYuan_Q15126_3" />
         /// Not both alive <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40_3" />

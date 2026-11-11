@@ -2937,7 +2937,7 @@ namespace Go
 
             //check capture at liberty point
             Point q = tryBoard.GetMoveLiberties(p).FirstOrDefault();
-            if (!q.IsEmpty() && tryBoard.OneLibertyGroup(q, c).Any())
+            if (!q.IsEmpty() && tryBoard.OneLibertyNeighbourGroup(q, c).Any())
                 return true;
 
             return false;
@@ -3004,7 +3004,7 @@ namespace Go
             //capture at liberty
             List<Group> eyeGroups = LinkHelper.GetPreviousMoveGroup(currentBoard, tryBoard).Where(e => e.Liberties.Count == 2).ToList();
             IEnumerable<Point> moves = eyeGroups.Select(e => e.Liberties.First(n => !n.Equals(move)));
-            if (moves.Any(p => tryBoard.OneLibertyGroup(p, c.Opposite()).Any(n => n.Points.Count >= 3)))
+            if (moves.Any(p => tryBoard.OneLibertyNeighbourGroup(p, c.Opposite()).Any(n => n.Points.Count >= 3)))
                 return true;
             return false;
         }
@@ -3723,7 +3723,7 @@ namespace Go
 
             //check two-point group
             Point liberty = tryBoard.MoveGroup.Liberties.First();
-            if (GroupHelper.CheckKillerGroupPoints(currentBoard, move, c.Opposite()) != null && currentBoard.OneLibertyGroup(liberty, c).Any() && !tryBoard.AtariTargets.Any())
+            if (GroupHelper.CheckKillerGroupPoints(currentBoard, move, c.Opposite()) != null && currentBoard.OneLibertyNeighbourGroup(liberty, c).Any() && !tryBoard.AtariTargets.Any())
                 return false;
 
             //check for two empty diagonals
@@ -3765,6 +3765,7 @@ namespace Go
 
         /// <summary>
         /// Check side move at tiger mouth.
+        /// Check move at diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16456" />
         /// No diagonal at move <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_A84" />
         /// <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_Scenario_TianLongTu_Q16827" />
         /// Check for killer group <see cref="UnitTestProject.SurvivalTigerMouthMoveTest.RedundantTigerMouthMove_20230505_8" />
@@ -3784,7 +3785,7 @@ namespace Go
 
             //check two-point group
             Point liberty = tryBoard.MoveGroup.Liberties.First();
-            if (GroupHelper.CheckKillerGroupPoints(currentBoard, move, c.Opposite()) != null && currentBoard.OneLibertyGroup(liberty, c).Any() && !tryBoard.AtariTargets.Any())
+            if (GroupHelper.CheckKillerGroupPoints(currentBoard, move, c.Opposite()) != null && currentBoard.OneLibertyNeighbourGroup(liberty, c).Any() && !tryBoard.AtariTargets.Any())
                 return false;
 
             //check move at diagonal
@@ -4261,7 +4262,6 @@ namespace Go
         #endregion
 
         #region nonsuicidal move
-
         /// <summary>
         /// Redundant non suicidal move.
         /// </summary>
@@ -4291,7 +4291,9 @@ namespace Go
         /// <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_Corner_A84" /> 
         /// Check opponent move <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A26" />
         /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20261008_8" />
+        /// Check liberties of neighbour groups <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260515_8" />
         /// Check neighbour groups <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q30064" />
+        /// <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q30205" />
         /// Check diagonal group of neighbour group <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260528_7" />
         /// <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_XuanXuanGo_A151_101Weiqi" />
         /// <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WindAndTime_Q30403" />
@@ -4329,7 +4331,7 @@ namespace Go
             if (ngroup.Points.Count == 1) return false;
 
             //check immovable at diagonal
-            if (CheckImmovableAtDiagonalForNonSuicidalMove(tryBoard, ngroup))
+            if (CheckImmovableAtDiagonalForNonSuicidalMove(tryBoard, ngroup, opponentMove))
                 return true;
 
             //check opponent move
@@ -4490,7 +4492,7 @@ namespace Go
 
         /// <summary>
         /// Redundant non suicidal side leap move.
-        /// <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WuQingYuan_Q31602" /> 
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260929_8" /> 
         /// Check immovable point at diagonal <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_Corner_B30" /> 
         /// </summary>
         public static Boolean RedundantNonSuicidalSideLeapMove(GameTryMove tryMove)
@@ -4514,10 +4516,13 @@ namespace Go
         /// <summary>
         /// Check immovable at diagonal for non suicidal move.
         /// <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_TianLongTu_Q16738" /> 
-        /// Check immovable point <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260515_8" /> 
+        /// Check immovable point <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260521_7" /> 
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260515_8" /> 
         /// Check neighbour group with two liberties <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_TianLongTu_Q15618" /> 
+        /// Check side point <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_WuQingYuan_Q31602" /> 
+        /// Check opponent move <see cref="UnitTestProject.RedundantNonSuicidalMoveTest.RedundantNonSuicidalMoveTest_Scenario_Side_B29" /> 
         /// </summary>
-        public static Boolean CheckImmovableAtDiagonalForNonSuicidalMove(Board tryBoard, Group ngroup)
+        public static Boolean CheckImmovableAtDiagonalForNonSuicidalMove(Board tryBoard, Group ngroup, GameTryMove opponentMove = null)
         {
             Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
@@ -4547,9 +4552,16 @@ namespace Go
             }
             else
             {
+                //check side point
                 if (ngroup.Liberties.Count < ngroup.Neighbours.Count * 0.5)
                     return false;
-
+                //check opponent move
+                if (opponentMove != null)
+                {
+                    Board b = opponentMove.TryGame.Board;
+                    if (b.GetStoneNeighbours().Count(n => !WallHelper.NoEyeForSurvival(b, n, c.Opposite())) >= 3)
+                        return false;
+                }
                 return true;
             }
             return false;
@@ -4630,7 +4642,6 @@ namespace Go
         #endregion
 
         #region filler move
-
         /// <summary>
         /// Redundant filler move.
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_TianLongTu_Q17132" /> 

@@ -15,7 +15,7 @@ namespace Go
             Content content = board[p];
             List<Point> nstones = board.GetStoneNeighbours(p);
             if (nstones.Count(n => board[n] == c) != nstones.Count - 1) return null;
-            if (board.OneLibertyGroup(p, c.Opposite()).Any()) return null;
+            if (board.OneLibertyNeighbourGroup(p, c.Opposite()).Any()) return null;
             if (content == Content.Empty)
             {
                 Point q = nstones.First(n => board[n] != c);
@@ -134,7 +134,7 @@ namespace Go
             if (KoHelper.IsKoFight(board, targetGroup))
                 return true;
             //check capture neighbour groups
-            List<Group> ngroups = board.OneLibertyGroup(liberty, c.Opposite());
+            List<Group> ngroups = board.OneLibertyNeighbourGroup(liberty, c.Opposite());
             if (ngroups.Count > 1)
             {
                 foreach (Group group in ngroups)
@@ -701,7 +701,7 @@ namespace Go
             if (KoHelper.IsKoFight(currentBoard, move, c).Item1)
                 return true;
             //check one liberty group
-            if (currentBoard.OneLibertyGroup(b.Move.Value, c.Opposite()).Any(n => n.Points.Count >= 3))
+            if (currentBoard.OneLibertyNeighbourGroup(b.Move.Value, c.Opposite()).Any(n => n.Points.Count >= 3))
                 return true;
             //check eye at liberty
             if (EyeHelper.FindEye(currentBoard, b.Move.Value, c) && b.MoveGroupLiberties == 2 && ImmovableHelper.CheckConnectAndDie(b))

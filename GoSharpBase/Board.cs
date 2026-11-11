@@ -45,7 +45,7 @@ namespace Go
             get
             {
                 if (atariTargets == null)
-                    atariTargets = OneLibertyGroup();
+                    atariTargets = OneLibertyNeighbourGroup();
                 return atariTargets;
             }
             set
@@ -353,9 +353,9 @@ namespace Go
         }
 
         /// <summary>
-        /// One liberty group.
+        /// One liberty neighbour group.
         /// </summary>
-        public List<Group> OneLibertyGroup(Point? p = null, Content c = Content.Unknown)
+        public List<Group> OneLibertyNeighbourGroup(Point? p = null, Content c = Content.Unknown)
         {
             return this.GetGroupsFromStoneNeighbours(p, c).Where(n => n.Liberties.Count == 1).ToList();
         }
@@ -363,9 +363,8 @@ namespace Go
         /// <summary>
         /// One liberty neighbour group.
         /// </summary>
-        public List<Group> OneLibertyNeighbourGroup(Group group = null)
+        public List<Group> OneLibertyNeighbourGroup(Group group)
         {
-            if (group == null) group = this.MoveGroup;
             return GetNeighbourGroups(group).Where(n => n.Liberties.Count == 1).ToList();
         }
         #endregion
@@ -557,7 +556,7 @@ namespace Go
 
             //check group liberty
             if (tryBoard.MoveGroupLiberties == 1) return false;
-            if (currentBoard.OneLibertyGroup(move, c.Opposite()).Any())
+            if (currentBoard.OneLibertyNeighbourGroup(move, c.Opposite()).Any())
                 return true;
             return false;
         }
