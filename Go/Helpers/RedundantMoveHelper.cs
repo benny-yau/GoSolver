@@ -1529,7 +1529,8 @@ namespace Go
         /// Check tiger mouth <see cref="UnitTestProject.SuicidalRedundantMoveTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q31445" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16490_4" />
         /// Check covered point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31680_3" />
-        /// Check move liberties <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_4" />
+        /// Check group at move liberties <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20261113_8" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A38_4" />
         /// Check move at diagonal <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A37" />
         /// Check ko fight <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Nie1" />
         /// Check for strong neighbour groups <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16456" />
@@ -1572,15 +1573,24 @@ namespace Go
             if (CheckNeighbourGroupForOnePointMoveWithoutDiagonals(tryMove))
                 return true;
 
-            //check move liberties
+            //check group at move liberties
             foreach (Point p in tryBoard.GetMoveLiberties())
             {
                 List<Group> sgroups = tryBoard.GetGroupsFromStoneNeighbours(p, c.Opposite()).Where(n => n != tryBoard.MoveGroup).ToList();
                 if (!sgroups.Any()) continue;
+                //make block move
                 Board b = tryBoard.MakeMoveOnNewBoard(p, c.Opposite());
                 if (b == null) continue;
-                List<Group> groups = GroupHelper.GetOpponentGroupsWithinKillerGroup(b, move, c.Opposite());
-                if (groups.Any(n => !n.Equals(tryBoard.MoveGroup) && !ImmovableHelper.CheckConnectAndDie(b, n, false)))
+                //make escape move
+                Point q = tryBoard.GetMoveLiberties().First(n => !n.Equals(p));
+                if (b.InternalMakeMove(q, c) != MakeMoveResult.Legal) continue;
+                if (b.MoveGroup.Liberties.Count != 1) continue;
+                Point r = b.MoveGroup.Liberties.First();
+                List<Group> dgroups = b.GetGroupsFromStoneNeighbours(r, c.Opposite()).Where(n => n != b.MoveGroup && !ImmovableHelper.CheckConnectAndDie(b, n, false)).ToList();
+                if (!dgroups.Any()) continue;
+                if (EyeHelper.FindEye(b, r, c))
+                    return false;
+                if (dgroups.Any(n => GroupHelper.GetDirectKillerGroup(b, n.Points.First(), c.Opposite()) != null))
                     return false;
             }
 
@@ -1588,7 +1598,7 @@ namespace Go
             foreach (Point p in tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] == Content.Empty))
             {
                 if (!captureBoard.GetGroupsFromStoneNeighbours(p, c).Any(s => s.Liberties.Count <= 3)) continue;
-
+                //make move at diagonal
                 Board b = tryBoard.MakeMoveOnNewBoard(p, c, true);
                 if (b == null) continue;
                 (Boolean connectAndDie, Board b2) = ImmovableHelper.ConnectAndDie(b, b.MoveGroup, false);
