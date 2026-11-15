@@ -1584,11 +1584,12 @@ namespace Go
                 //make escape move
                 Point q = tryBoard.GetMoveLiberties().First(n => !n.Equals(p));
                 if (b.InternalMakeMove(q, c) != MakeMoveResult.Legal) continue;
+                if (LinkHelper.IsAbsoluteLinkForGroups(tryBoard, b)) continue;
                 if (b.MoveGroup.Liberties.Count != 1) continue;
                 Point r = b.MoveGroup.Liberties.First();
                 List<Group> dgroups = b.GetGroupsFromStoneNeighbours(r, c.Opposite()).Where(n => n != b.MoveGroup && !ImmovableHelper.CheckConnectAndDie(b, n, false)).ToList();
                 if (!dgroups.Any()) continue;
-                if (EyeHelper.FindEye(b, r, c))
+                if (LinkHelper.GetDiagonalGroupsWithoutCut(b).Any(n => !WallHelper.IsNonKillableGroup(b, n)))
                     return false;
                 if (dgroups.Any(n => GroupHelper.GetDirectKillerGroup(b, n.Points.First(), c.Opposite()) != null))
                     return false;
@@ -4346,7 +4347,11 @@ namespace Go
 
             //check opponent move
             if (opponentMove != null)
-                return false;
+            {
+                Board b = opponentMove.TryGame.Board;
+                if (b.GetStoneNeighbours().Count(n => !WallHelper.NoEyeForSurvival(b, n, c.Opposite())) >= 3 && b.GetStoneNeighbours().Any(n => b.GetGroupsFromStoneNeighbours(n, c).Any(s => s != b.MoveGroup)))
+                    return false;
+            }
 
             if (tryBoard.MoveGroup.Liberties.Count != 3)
                 return false;

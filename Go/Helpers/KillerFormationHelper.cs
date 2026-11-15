@@ -255,7 +255,8 @@ namespace Go
         /// Check two liberty group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2Q28_101Weiqi_2" />
         /// Check grid dimension changed <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_Corner_A113_2" />
         /// Two kill formations <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_XuanXuanGo_A54" />
-        /// Check atari target <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40" />
+        /// Check atari target for one liberty group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_A40" />
+        /// Check atari target for two liberty group <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_20261113_8" />
         /// Check end point extension <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_8" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_9" />
         /// <see cref="UnitTestProject.KillerFormationTest.KillerFormationTest_Scenario_WuQingYuan_Q31471_10" />
@@ -323,11 +324,18 @@ namespace Go
             if (!previousKillerFormation && !GridDimensionChanged(previousGroup.Points, tryBoard.MoveGroup.Points))
                 return false;
 
-            //check atari target
-            if (tryBoard.AtariTargets.Any() && captureBoard.MoveGroupLiberties == 2)
+            //check atari target for one liberty group
+            if (tryBoard.MoveGroupLiberties == 1 && tryBoard.AtariTargets.Any() && captureBoard.MoveGroupLiberties == 2)
             {
                 IEnumerable<Board> moveBoards = GameHelper.GetMoveBoards(captureBoard, captureBoard.MoveGroup.Liberties, c);
                 if (moveBoards.Any(n => n.MoveGroupLiberties > 1 && n.GetGroupsFromStoneNeighbours().Count > 1))
+                    return false;
+            }
+
+            //check atari target for two liberty group
+            if (tryBoard.MoveGroupLiberties == 2 && tryBoard.AtariTargets.Any())
+            {
+                if (KillerFormationHelper.TryKillFormation(tryBoard, c, tryBoard.MoveGroup.Liberties.ToList()).Item1)
                     return false;
             }
 
