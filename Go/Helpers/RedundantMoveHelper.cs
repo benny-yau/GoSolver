@@ -207,7 +207,6 @@ namespace Go
         /// Check weak group in connect and die <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_XuanXuanGo_B6" /> 
         /// Check suicide at tiger mouth <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16867" /> 
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_B3" /> 
-        /// Check connect and die for three liberty group <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_20261031_8" /> 
         /// Two covered eyes <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18" />
         /// <see cref="UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" /> 
         /// </summary>
@@ -253,12 +252,12 @@ namespace Go
             if (BothAliveHelper.CheckForBothAliveAtMove(tryBoard))
                 return false;
 
-            //check suicide at tiger mouth
+            //check suicide at big tiger mouth
             if (ImmovableHelper.SuicideAtBigTigerMouth(tryMove).Item1)
                 return false;
 
-            //check connect and die for three liberty group
-            if (tryBoard.MoveGroup.Liberties.Count == 3 && eyeGroups.Any(n => n.Liberties.Count == 2 && ImmovableHelper.CheckConnectAndDie(currentBoard, n) && LinkHelper.GetDiagonalGroupsWithoutCut(tryBoard).Any(s => !ImmovableHelper.CheckConnectAndDie(tryBoard, s)) && !WallHelper.TargetWithAnyNonKillableGroup(currentBoard, n)))
+            //check connect and die at big tiger mouth
+            if (CheckConnectAndDieAtBigTigerMouthForFillKoEyeMove(tryBoard))
                 return false;
 
             //two covered eyes
@@ -273,6 +272,54 @@ namespace Go
             if (isKoFight && CheckKoFightAtRedundantKoEyeMove(tryMove))
                 return false;
             return true;
+        }
+
+        /// <summary>
+        /// Check connect and die at big tiger mouth for fill ko eye move.
+        /// Check connect and die for two liberty group <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_20261031_8" /> 
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20261120_8" /> 
+        /// Check connect and die for three liberty group <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_20261120_8" />
+        /// </summary>
+        public static Boolean CheckConnectAndDieAtBigTigerMouthForFillKoEyeMove(Board tryBoard)
+        {
+            Point move = tryBoard.Move.Value;
+            Content c = tryBoard.MoveGroup.Content;
+            if (tryBoard.MoveGroupLiberties != 2 && tryBoard.MoveGroupLiberties != 3) return false;
+            if (WallHelper.TargetWithAnyNonKillableGroup(tryBoard)) return false;
+            Group group = LinkHelper.GetDiagonalGroupsWithoutCut(tryBoard).FirstOrDefault(n => !ImmovableHelper.CheckConnectAndDie(tryBoard, n));
+            if (group == null) return false;
+            Point p = tryBoard.MoveGroup.Liberties.First(n => group.Liberties.Contains(n));
+            if (tryBoard.MoveGroupLiberties == 2)
+            {
+                //check suicide move
+                Point q = tryBoard.MoveGroup.Liberties.First(n => !n.Equals(p));
+                if (!ImmovableHelper.FindEmptyTigerMouth(tryBoard, q, c))
+                    return false;
+                List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(q, c);
+                if (ngroups.Count != 1) return false;
+                Group ngroup = ngroups.First();
+                if (ngroup.Liberties.Count != 2) return false;
+                Point r = ngroup.Liberties.First(n => !n.Equals(q));
+                if (tryBoard.GetGroupsFromStoneNeighbours(r, c).Count < 2) return false;
+                //make move at liberty point
+                Board b2 = tryBoard.MakeMoveOnNewBoard(r, c.Opposite());
+                //check connect and die for two liberty group
+                if (b2 != null && ImmovableHelper.CheckConnectAndDie(b2, tryBoard.MoveGroup))
+                    return true;
+            }
+            else if (tryBoard.MoveGroupLiberties == 3)
+            {
+                foreach (Point q in tryBoard.MoveGroup.Liberties.Where(n => !n.Equals(p)))
+                {
+                    Board b = tryBoard.MakeMoveOnNewBoard(q, c.Opposite());
+                    if (b == null) continue;
+                    //check connect and die for three liberty group
+                    if (ImmovableHelper.CheckConnectAndDie(b, tryBoard.MoveGroup))
+                        return true;
+                    return false;
+                }
+            }
+            return false;
         }
 
         /// <summary>

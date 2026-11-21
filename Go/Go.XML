@@ -1678,9 +1678,16 @@
             Check weak group in connect and die <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_XuanXuanGo_B6" /> 
             Check suicide at tiger mouth <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_TianLongTu_Q16867" /> 
             <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario_GuanZiPu_B3" /> 
-            Check connect and die for three liberty group <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_20261031_8" /> 
             Two covered eyes <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_Scenario5dan18" />
             <see cref="!:UnitTestProject.LifeCheckTest.LifeCheckTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" /> 
+            </summary>
+        </member>
+        <member name="M:Go.RedundantMoveHelper.CheckConnectAndDieAtBigTigerMouthForFillKoEyeMove(Go.Board)">
+            <summary>
+            Check connect and die at big tiger mouth for fill ko eye move.
+            Check connect and die for two liberty group <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_20261031_8" /> 
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20261120_8" /> 
+            Check connect and die for three liberty group <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_20261120_8" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckKoFightAtRedundantKoEyeMove(Go.GameTryMove)">
