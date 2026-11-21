@@ -1685,9 +1685,9 @@
         <member name="M:Go.RedundantMoveHelper.CheckConnectAndDieAtBigTigerMouthForFillKoEyeMove(Go.Board)">
             <summary>
             Check connect and die at big tiger mouth for fill ko eye move.
-            Check connect and die for two liberty group <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_20261031_8" /> 
-            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20261120_8" /> 
+            Check connect and die for two liberty group <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20261120_8" /> 
             Check connect and die for three liberty group <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_20261120_8" />
+            <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_20261031_8" /> 
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckKoFightAtRedundantKoEyeMove(Go.GameTryMove)">
