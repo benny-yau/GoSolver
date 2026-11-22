@@ -116,11 +116,10 @@ namespace Go
             Content c = targetGroup.Content;
             if (targetGroup.Points.Count != 1 || targetGroup.Liberties.Count != 2) return false;
             if (tryBoard.PointWithinMiddleArea(targetGroup.Points.First())) return false;
-            foreach (Group dgroup in LinkHelper.GetDiagonalGroupsWithoutCut(tryBoard, targetGroup))
+            foreach ((Group dgroup, Link<Point> link) in LinkHelper.GetDiagonalGroupsWithoutCut(targetGroup, tryBoard))
             {
                 if (dgroup.Points.Count != 1 || dgroup.Liberties.Count != 2) continue;
-                Point lib = tryBoard.GetMoveLiberties(dgroup.Points.First()).FirstOrDefault(p => !tryBoard.PointWithinMiddleArea(p));
-                if (lib.IsEmpty()) continue;
+                Point lib = LinkHelper.PointsBetweenDiagonals(link).First(n => tryBoard[n] == Content.Empty);
                 Point lib2 = tryBoard.GetMoveLiberties(lib).FirstOrDefault();
                 if (lib2.IsEmpty()) continue;
                 Point e = tryBoard.GetDiagonalNeighbours(lib).Intersect(tryBoard.GetStoneNeighbours(lib2)).First();

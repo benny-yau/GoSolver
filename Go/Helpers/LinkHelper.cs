@@ -542,8 +542,7 @@ namespace Go
         {
             if (group == null) group = board.MoveGroup;
             if (WallHelper.IsNonKillableGroup(board, group)) return false;
-            List<(Point, List<Point>)> diagonalCuts = LinkHelper.FindDiagonalCut(board, group, true).ToList();
-            if (diagonalCuts.Any(n => board.GetGroupsFromPoints(n.Item2).Any(s => !WallHelper.IsNonKillableGroup(board, s))))
+            if (LinkHelper.FindDiagonalCut(board, group, true).Any(n => n.Item2.Any(s => !WallHelper.IsNonKillableGroup(board, s))))
                 return true;
             return false;
         }
@@ -583,6 +582,11 @@ namespace Go
         public static IEnumerable<Group> GetDiagonalGroupsWithoutCut(Board board, Group group = null, Boolean checkCovered = true)
         {
             if (group == null) group = board.MoveGroup;
+            return GetDiagonalGroupsWithoutCut(group, board, checkCovered).Select(n => n.Item1);
+        }
+
+        public static IEnumerable<(Group, Link<Point>)> GetDiagonalGroupsWithoutCut(Group group, Board board, Boolean checkCovered = true)
+        {
             Content c = group.Content;
             foreach (Link<Point> q in LinkHelper.GetGroupLinkedDiagonals(board, group))
             {
@@ -590,12 +594,12 @@ namespace Go
                 if (checkCovered)
                 {
                     if (points.Count(n => board[n] == c.Opposite()) == 1 && points.Count(n => board[n] == Content.Empty) == 1)
-                        yield return board.GetGroupAt(q.Move);
+                        yield return (board.GetGroupAt(q.Move), q);
                 }
                 else
                 {
                     if (points.Any(n => board[n] == Content.Empty))
-                        yield return board.GetGroupAt(q.Move);
+                        yield return (board.GetGroupAt(q.Move), q);
                 }
             }
         }

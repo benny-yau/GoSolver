@@ -287,9 +287,9 @@ namespace Go
             if (tryBoard.MoveGroupLiberties != 2 && tryBoard.MoveGroupLiberties != 3) return false;
             if (WallHelper.TargetWithAnyNonKillableGroup(tryBoard)) return false;
             //check diagonal group
-            Group group = LinkHelper.GetDiagonalGroupsWithoutCut(tryBoard).FirstOrDefault(n => !ImmovableHelper.CheckConnectAndDie(tryBoard, n));
+            (Group group, Link<Point> link) = LinkHelper.GetDiagonalGroupsWithoutCut(tryBoard.MoveGroup, tryBoard).FirstOrDefault(n => !ImmovableHelper.CheckConnectAndDie(tryBoard, n.Item1));
             if (group == null) return false;
-            Point p = tryBoard.MoveGroup.Liberties.First(n => group.Liberties.Contains(n));
+            Point p = LinkHelper.PointsBetweenDiagonals(link).First(n => tryBoard[n] == Content.Empty);
             if (tryBoard.MoveGroupLiberties == 2)
             {
                 //check tiger mouth at liberty
@@ -303,9 +303,9 @@ namespace Go
                 Point r = ngroup.Liberties.First(n => !n.Equals(q));
                 if (tryBoard.GetGroupsFromStoneNeighbours(r, c).Count < 2) return false;
                 //make move at liberty point
-                Board b2 = tryBoard.MakeMoveOnNewBoard(r, c.Opposite());
+                Board b = tryBoard.MakeMoveOnNewBoard(r, c.Opposite());
                 //check connect and die for two liberty group
-                if (b2 != null && ImmovableHelper.CheckConnectAndDie(b2, tryBoard.MoveGroup))
+                if (b != null && ImmovableHelper.CheckConnectAndDie(b, tryBoard.MoveGroup))
                     return true;
             }
             else if (tryBoard.MoveGroupLiberties == 3)
@@ -853,7 +853,7 @@ namespace Go
             {
                 if (captureBoard.MoveGroupLiberties <= 2 && captureBoard.MoveGroup.Points.Count == 1)
                     return false;
-                if (opponentBoard.GetMoveLiberties().Any(n => opponentBoard.PointWithinMiddleArea(n) && ImmovableHelper.IsImmovablePoint(opponentBoard, n, c.Opposite()) && opponentBoard.GetGroupsFromStoneNeighbours(n, c).Any(s => LinkHelper.GetDiagonalGroupsWithoutCut(opponentBoard).ToList().Contains(s))))
+                if (opponentBoard.GetMoveLiberties().Any(n => opponentBoard.PointWithinMiddleArea(n) && ImmovableHelper.IsImmovablePoint(opponentBoard, n, c.Opposite()) && opponentBoard.GetGroupsFromStoneNeighbours(n, c).Any(s => LinkHelper.GetDiagonalGroupsWithoutCut(opponentBoard).Contains(s))))
                     return false;
             }
 
@@ -916,19 +916,6 @@ namespace Go
                 if (!rc && !rc2)
                     return true;
             }
-            //check diagonal groups without cut
-            if (previousGroups.Count == 2 && tryBoard.MoveGroup.Points.Count == 1 && killerGroup == null && tryBoard.GetNeighbourGroups().Any(n => n.Liberties.Count > 2) && LinkHelper.GetDiagonalGroupsWithoutCut(currentBoard, previousGroups[0]).Contains(previousGroups[1]))
-            {
-                //check empty point at stone and diagonal
-                Point? e = LinkHelper.CheckPointBetweenDiagonalsAtMove(tryBoard, Content.Empty);
-                Boolean rc = (e == null || tryBoard[e.Value] == c.Opposite());
-                //check connect and die at diagonal groups
-                Boolean rc2 = LinkHelper.GetDiagonalGroupsWithoutCut(opponentBoard, opponentBoard.MoveGroup, false).Any(n => ImmovableHelper.CheckConnectAndDie(currentBoard, n) && !ImmovableHelper.CheckConnectAndDie(opponentBoard, n));
-                //check liberty of weak group
-                Boolean rc3 = tryBoard.GetNeighbourGroups().Any(n => !WallHelper.IsHostileGroup(tryBoard, n) && n.Liberties.Any(s => tryBoard.GetGroupsFromStoneNeighbours(s, c).Count == 2 && !LinkHelper.GetDiagonalsAtStoneNeighbours(tryBoard, s, c.Opposite()).Any()));
-                if (!rc && !rc2 && !rc3)
-                    return true;
-            }
             //check non diagonal groups
             if (previousGroups.Count == 2 && tryBoard.MoveGroup.Points.Count == 1 && !LinkHelper.GetDiagonalGroups(currentBoard, previousGroups[0]).Contains(previousGroups[1]))
             {
@@ -948,6 +935,19 @@ namespace Go
                 if (GroupHelper.CheckKillerGroupPoints(tryBoard, move, c.Opposite(), tryBoard.MoveGroup.Points.Count + 2) != null)
                     return false;
                 return true;
+            }
+            //check diagonal groups without cut
+            if (previousGroups.Count == 2 && tryBoard.MoveGroup.Points.Count == 1 && killerGroup == null && tryBoard.GetNeighbourGroups().Any(n => n.Liberties.Count > 2) && LinkHelper.GetDiagonalGroupsWithoutCut(currentBoard, previousGroups[0]).Contains(previousGroups[1]))
+            {
+                //check empty point at stone and diagonal
+                Point? e = LinkHelper.CheckPointBetweenDiagonalsAtMove(tryBoard, Content.Empty);
+                Boolean rc = (e == null || tryBoard[e.Value] == c.Opposite());
+                //check connect and die at diagonal groups
+                Boolean rc2 = LinkHelper.GetDiagonalGroupsWithoutCut(opponentBoard, opponentBoard.MoveGroup, false).Any(n => ImmovableHelper.CheckConnectAndDie(currentBoard, n) && !ImmovableHelper.CheckConnectAndDie(opponentBoard, n));
+                //check liberty of weak group
+                Boolean rc3 = tryBoard.GetNeighbourGroups().Any(n => !WallHelper.IsHostileGroup(tryBoard, n) && n.Liberties.Any(s => tryBoard.GetGroupsFromStoneNeighbours(s, c).Count == 2 && !LinkHelper.GetDiagonalsAtStoneNeighbours(tryBoard, s, c.Opposite()).Any()));
+                if (!rc && !rc2 && !rc3)
+                    return true;
             }
             if (killerGroup == null) return false;
             //check covered point
@@ -2235,6 +2235,9 @@ namespace Go
                 if (b != null && b.MoveGroupLiberties == 1)
                     return true;
             }
+            //check double atari
+            if (CheckDoubleAtariAtTigerMouth(tryMove, captureBoard))
+                return false;
             //check killer group at diagonal
             List<Point> diagonals = tryBoard.GetDiagonalNeighbours().Where(n => tryBoard[n] != c.Opposite() && tryBoard.GetGroupsFromStoneNeighbours(n, c).Intersect(tryBoard.AtariTargets).Any()).ToList();
             if (diagonals.Any(d => GroupHelper.GetDirectKillerGroup(tryBoard, d, c.Opposite()) != null))
@@ -3614,6 +3617,9 @@ namespace Go
                     //check kill covered eye
                     if (KillCoveredEyeAtDiagonal(tryBoard, currentBoard))
                         continue;
+                    //check double atari
+                    if (CheckDoubleAtariAtTigerMouth(tryMove, capturedBoard))
+                        continue;
                     return true;
                 }
                 else
@@ -3646,7 +3652,7 @@ namespace Go
         /// Check weak groups at diagonal <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20260512_7" />
         /// Check multi point target <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WuQingYuan_Q31536" />
         /// </summary>
-        private static Boolean CheckAtariAtTigerMouth(GameTryMove tryMove, Point diagonal, Board captureBoard = null)
+        private static Boolean CheckAtariAtTigerMouth(GameTryMove tryMove, Point diagonal, Board captureBoard)
         {
             Point move = tryMove.Move;
             Board currentBoard = tryMove.CurrentGame.Board;
@@ -3711,6 +3717,20 @@ namespace Go
                 if (ImmovableHelper.ConnectAndDieMove(currentBoard, q, c).Item1)
                     return true;
             }
+            return false;
+        }
+
+        /// <summary>
+        /// Check double atari at tiger mouth.
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20261122_8" />
+        /// </summary>
+        private static Boolean CheckDoubleAtariAtTigerMouth(GameTryMove tryMove, Board captureBoard)
+        {
+            Board tryBoard = tryMove.TryGame.Board;
+            Content c = tryMove.MoveContent;
+            if (tryBoard.AtariTargets.Count < 2) return false;
+            if (GameHelper.GetMoveBoards(captureBoard, captureBoard.MoveGroup.Liberties, c, true).Any(b => b.AtariTargets.Count >= 2))
+                return true;
             return false;
         }
 

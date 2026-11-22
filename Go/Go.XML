@@ -2458,6 +2458,12 @@
             <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20260708_7" />
             </summary>
         </member>
+        <member name="M:Go.RedundantMoveHelper.CheckDoubleAtariAtTigerMouth(Go.GameTryMove,Go.Board)">
+            <summary>
+            Check double atari at tiger mouth.
+            <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20261122_8" />
+            </summary>
+        </member>
         <member name="M:Go.RedundantMoveHelper.TigerMouthWithoutDiagonalMouth(Go.GameTryMove,Go.Board,Go.GameTryMove)">
             <summary>
             Redundant tiger mouth without diagonal mouth.
