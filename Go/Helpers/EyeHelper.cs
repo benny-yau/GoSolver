@@ -466,6 +466,7 @@ namespace Go
                 if (!rc) continue;
                 if (WallHelper.NoEyeForSurvival(captureBoard, p, c.Opposite())) continue;
                 if (groupP != null && EyeHelper.FindRealEyeWithinEmptySpace(captureBoard, groupP)) continue;
+                if (WallHelper.TargetWithAnyNonKillableGroup(captureBoard, p, c)) continue;
                 return (true, groupP);
             }
             return (false, null);

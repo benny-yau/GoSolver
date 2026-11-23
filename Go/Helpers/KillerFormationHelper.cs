@@ -81,7 +81,7 @@ namespace Go
         /// <summary>
         /// Try kill formation. Make move at each liberty to test if formation created.
         /// </summary>
-        public static (Boolean, Board) TryKillFormation(Board board, Content c, List<Point> emptyPoints, int requiredCount = 1)
+        public static (Boolean, Board) TryKillFormation(Board board, Content c, IEnumerable<Point> emptyPoints, int requiredCount = 1)
         {
             int count = 0;
             foreach (Board b in GameHelper.GetMoveBoards(board, emptyPoints, c))
@@ -335,7 +335,7 @@ namespace Go
             //check atari target for two liberty group
             if (tryBoard.MoveGroupLiberties == 2 && tryBoard.AtariTargets.Any())
             {
-                if (KillerFormationHelper.TryKillFormation(tryBoard, c, tryBoard.MoveGroup.Liberties.ToList()).Item1)
+                if (KillerFormationHelper.TryKillFormation(tryBoard, c, tryBoard.MoveGroup.Liberties).Item1)
                     return false;
             }
 
@@ -574,14 +574,13 @@ namespace Go
         /// <summary>
         /// Two-point suicide at covered eye. 
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31469" />
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B57" />
-        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20250420_7" />
         /// </summary>
         public static Boolean TwoPointSuicideAtCoveredEye(Board tryBoard)
         {
+            Point move = tryBoard.Move.Value;
             Content c = tryBoard.MoveGroup.Content;
             if (tryBoard.MoveGroup.Points.Count != 2) return false;
-            if (tryBoard.MoveGroup.Points.Any(p => EyeHelper.IsCovered(tryBoard, p, c.Opposite())))
+            if (EyeHelper.IsCovered(tryBoard, move, c.Opposite()))
                 return true;
             return false;
         }
@@ -589,8 +588,10 @@ namespace Go
         /// <summary>
         /// Two-point suicide with liberty.
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q16508" />
+        /// Check one empty space left <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20250420_7" />
         /// Check move diagonals <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2" />
-        /// Check capture move liberty <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A48" />
+        /// Check capture move liberty <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B57" />
+        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A48" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q17250" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_Q18472" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A41" />

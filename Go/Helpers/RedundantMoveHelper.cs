@@ -1924,6 +1924,10 @@ namespace Go
             if (LinkHelper.FindDiagonalCutForLibertyFight(tryBoard) && tryBoard.GetGroupsFromStoneNeighbours().Any(n => n.Liberties.Count == 2 && n.Liberties.All(s => ImmovableHelper.IsSuicidalMoveForBothPlayers(tryBoard, s) && GroupHelper.CheckKillerGroupPoints(tryBoard, s, c.Opposite()) == null)))
                 return false;
 
+            //check atari
+            if (CheckAtariForMultiPointMoveInConnectAndDie(tryMove, captureBoard))
+                return false;
+
             //check diagonal and liberty at move
             if (CheckDiagonalAndLibertyAtMove(tryMove, captureBoard))
                 return true;
@@ -1948,6 +1952,25 @@ namespace Go
                 return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// Check atari for multi point move in connect and die.
+        /// <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20261123_8" />
+        /// </summary>
+        private static Boolean CheckAtariForMultiPointMoveInConnectAndDie(GameTryMove tryMove, Board captureBoard)
+        {
+            Board tryBoard = tryMove.TryGame.Board;
+            Content c = tryMove.MoveContent;
+            if (!tryBoard.AtariTargets.Any()) return false;
+            Group atariTarget = AtariHelper.AtariByGroup(captureBoard, tryBoard.MoveGroup).FirstOrDefault();
+            if (atariTarget == null || atariTarget.Points.Count != 1) return false;
+            //capture atari target
+            Board b = ImmovableHelper.CaptureSuicideGroup(captureBoard, atariTarget);
+            if (!KillerFormationHelper.SuicideMoveGroupWithOneEmptySpaceLeft(b)) return false;
+            //check if killer formation
+            if (!KillerFormationHelper.TryKillFormation(b, c, atariTarget.Points).Item1) return false;
+            return true;
         }
 
         /// <summary>
