@@ -164,26 +164,33 @@ namespace Go
 
         /// <summary>
         /// Find suicidal killer formation.        
-        /// Covered eye <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16424_2" />
+        /// Check one empty space left <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20250420_7" />
+        /// Check is covered <see cref="UnitTestProject.SuicidalRedundantMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31469" />
         /// Check for snapback <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234" />
         /// Corner three formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18860" />
         /// </summary>
         private static Boolean FindSuicidalKillerFormation(GameTryMove tryMove, Board captureBoard)
         {
+            Point move = tryMove.Move;
             Board currentBoard = tryMove.CurrentGame.Board;
             Board tryBoard = tryMove.TryGame.Board;
+            Content c = tryBoard.MoveGroup.Content;
             if (tryBoard.MoveGroupLiberties > 2)
                 return false;
 
             int moveCount = tryBoard.MoveGroup.Points.Count;
             if (moveCount == 2)
             {
-                //two-point atari move
-                if (TwoPointAtariMove(tryBoard, captureBoard))
+                //check one empty space left
+                if (SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                     return true;
 
-                //covered eye
-                if (TwoPointSuicideAtCoveredEye(tryBoard))
+                //check is covered
+                if (EyeHelper.IsCovered(tryBoard, move, c.Opposite()))
+                    return true;
+
+                //two-point atari move
+                if (TwoPointAtariMove(tryBoard, captureBoard))
                     return true;
 
                 //two-point suicide with liberty
@@ -204,6 +211,7 @@ namespace Go
             }
             else if (moveCount == 3)
             {
+                //check one empty space left
                 if (SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
                     return true;
 
@@ -572,23 +580,8 @@ namespace Go
         }
 
         /// <summary>
-        /// Two-point suicide at covered eye. 
-        /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31469" />
-        /// </summary>
-        public static Boolean TwoPointSuicideAtCoveredEye(Board tryBoard)
-        {
-            Point move = tryBoard.Move.Value;
-            Content c = tryBoard.MoveGroup.Content;
-            if (tryBoard.MoveGroup.Points.Count != 2) return false;
-            if (EyeHelper.IsCovered(tryBoard, move, c.Opposite()))
-                return true;
-            return false;
-        }
-
-        /// <summary>
         /// Two-point suicide with liberty.
         /// <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q16508" />
-        /// Check one empty space left <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20250420_7" />
         /// Check move diagonals <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2" />
         /// Check capture move liberty <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B57" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A48" />
@@ -600,9 +593,6 @@ namespace Go
         {
             if (tryBoard.MoveGroupLiberties > 1) return false;
             if (!tryBoard.GetMoveLiberties().Any()) return false;
-            //check one empty space left
-            if (SuicideMoveValidWithOneEmptySpaceLeft(tryBoard))
-                return true;
 
             //check move diagonals
             if (LinkHelper.GetMoveDiagonals(tryBoard).Any())

@@ -930,7 +930,8 @@
         <member name="M:Go.KillerFormationHelper.FindSuicidalKillerFormation(Go.GameTryMove,Go.Board)">
             <summary>
             Find suicidal killer formation.        
-            Covered eye <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_TianLongTu_Q16424_2" />
+            Check one empty space left <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20250420_7" />
+            Check is covered <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31469" />
             Check for snapback <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_WindAndTime_Q30234" />
             Corner three formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_Q18860" />
             </summary>
@@ -1028,17 +1029,10 @@
             Ko move on external liberty <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20221024_5" />
             </summary>
         </member>
-        <member name="M:Go.KillerFormationHelper.TwoPointSuicideAtCoveredEye(Go.Board)">
-            <summary>
-            Two-point suicide at covered eye. 
-            <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.CoveredEyeMoveTest_Scenario_WuQingYuan_Q31469" />
-            </summary>
-        </member>
         <member name="M:Go.KillerFormationHelper.TwoPointSuicideWithLiberty(Go.Board,Go.Board)">
             <summary>
             Two-point suicide with liberty.
             <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_WuQingYuan_Q16508" />
-            Check one empty space left <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20250420_7" />
             Check move diagonals <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_A2" />
             Check capture move liberty <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanQiJing_B57" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_A48" />
@@ -1650,7 +1644,6 @@
             Check kill opponent <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A34" />
             Check possible links <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" />
             <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
-            Check ko fight <see cref="!:UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_Q18341_3" />
             </summary>
         </member>
         <member name="M:Go.RedundantMoveHelper.CheckTwoLibertyGroupToCaptureNeighbour(Go.Board,Go.Board,Go.Group)">
@@ -1685,7 +1678,8 @@
         <member name="M:Go.RedundantMoveHelper.CheckConnectAndDieAtBigTigerMouthForFillKoEyeMove(Go.Board)">
             <summary>
             Check connect and die at big tiger mouth for fill ko eye move.
-            Check connect and die for two liberty group <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20261120_8" /> 
+            Check suicidal move for both players <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20261120_8" /> 
+            <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_20261124_7" />
             Check connect and die for three liberty group <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_20261120_8" />
             <see cref="!:UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_20261031_8" /> 
             </summary>
@@ -1806,7 +1800,8 @@
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_B43" />
             Check point next to corner point <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Phenomena_B12" />
             <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B7" />
-            Check corner point <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_B8" />
+            Check corner kill formation <see cref="!:UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_B8" />
+            Check corner point <see cref="!:UnitTestProject.DailyGoProblems.DailyGoProblems_20261124_7" />
             Check four-point killer formation <see cref="!:UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3_5" />
             Check three liberty group <see cref="!:UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A54" />
             </summary>

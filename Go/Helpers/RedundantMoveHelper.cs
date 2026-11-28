@@ -92,7 +92,6 @@ namespace Go
         /// Check kill opponent <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_A34" />
         /// Check possible links <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_18497_2" />
         /// <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanQiJing_Weiqi101_B74" />
-        /// Check ko fight <see cref="UnitTestProject.CoveredEyeMoveTest.CoveredEyeMoveTest_Scenario_XuanXuanGo_Q18341_3" />
         /// </summary>
         public static Boolean FindCoveredEyeMove(GameTryMove tryMove, GameTryMove opponentMove = null)
         {
@@ -149,10 +148,6 @@ namespace Go
 
             //check double ko
             if (KoHelper.IsCoveredEyeDoubleKo(tryBoard))
-                return false;
-
-            //check ko fight
-            if (currentBoard.CornerPoint(move) && KoHelper.MakeKoFightFromEyePoint(currentBoard, move, c.Opposite(), false).Item1)
                 return false;
 
             return true;
@@ -276,7 +271,8 @@ namespace Go
 
         /// <summary>
         /// Check connect and die at big tiger mouth for fill ko eye move.
-        /// Check connect and die for two liberty group <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20261120_8" /> 
+        /// Check suicidal move for both players <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20261120_8" /> 
+        /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_20261124_7" />
         /// Check connect and die for three liberty group <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_20261120_8" />
         /// <see cref="UnitTestProject.FillKoEyeMoveTest.FillKoEyeMoveTest_20261031_8" /> 
         /// </summary>
@@ -292,20 +288,8 @@ namespace Go
             Point p = LinkHelper.PointsBetweenDiagonals(link).First(n => tryBoard[n] == Content.Empty);
             if (tryBoard.MoveGroupLiberties == 2)
             {
-                //check tiger mouth at liberty
-                Point q = tryBoard.MoveGroup.Liberties.First(n => !n.Equals(p));
-                if (!ImmovableHelper.FindEmptyTigerMouth(tryBoard, q, c))
-                    return false;
-                List<Group> ngroups = tryBoard.GetGroupsFromStoneNeighbours(q, c);
-                if (ngroups.Count != 1) return false;
-                Group ngroup = ngroups.First();
-                if (ngroup.Liberties.Count != 2) return false;
-                Point r = ngroup.Liberties.First(n => !n.Equals(q));
-                if (tryBoard.GetGroupsFromStoneNeighbours(r, c).Count < 2) return false;
-                //make move at liberty point
-                Board b = tryBoard.MakeMoveOnNewBoard(r, c.Opposite());
-                //check connect and die for two liberty group
-                if (b != null && ImmovableHelper.CheckConnectAndDie(b, tryBoard.MoveGroup))
+                //check suicidal move for both players
+                if (tryBoard.MoveGroup.Liberties.Any(n => ImmovableHelper.IsSuicidalMoveForBothPlayers(tryBoard, n)))
                     return true;
             }
             else if (tryBoard.MoveGroupLiberties == 3)
@@ -778,7 +762,8 @@ namespace Go
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Corner_B43" />
         /// Check point next to corner point <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_Phenomena_B12" />
         /// <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_XuanXuanGo_B7" />
-        /// Check corner point <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_B8" />
+        /// Check corner kill formation <see cref="UnitTestProject.RedundantEyeFillerTest.RedundantEyeFillerTest_Scenario_Corner_B8" />
+        /// Check corner point <see cref="UnitTestProject.DailyGoProblems.DailyGoProblems_20261124_7" />
         /// Check four-point killer formation <see cref="UnitTestProject.SuicidalRedundantMoveTest.SuicidalRedundantMoveTest_Scenario_GuanZiPu_B3_5" />
         /// Check three liberty group <see cref="UnitTestProject.MustHaveNeutralMoveTest.MustHaveNeutralMoveTest_Scenario_XuanXuanGo_A54" />
         /// </summary>
@@ -857,9 +842,15 @@ namespace Go
                     return false;
             }
 
-            //check corner point
-            if (KillerFormationHelper.CornerKillFormation(tryBoard))
-                return false;
+            if (opponentBoard.CornerPoint() && opponentBoard.MoveGroup.Points.Count == 1)
+            {
+                //check corner kill formation
+                if (KillerFormationHelper.CornerKillFormation(tryBoard))
+                    return false;
+                //check corner point
+                if (LinkHelper.GetDiagonalGroups(opponentBoard).Any(n => ImmovableHelper.CheckConnectAndDie(currentBoard, n, false) && !ImmovableHelper.CheckConnectAndDie(opponentBoard, n, false) && LinkHelper.FindDiagonalCut(opponentBoard, n).Any()))
+                    return false;
+            }
 
             //check four-point killer formation
             Group kgroup = GroupHelper.GetDirectKillerGroup(currentBoard, move, c);
@@ -4721,6 +4712,8 @@ namespace Go
             HashSet<Group> opponentGroups = tryBoard.OpponentGroupsAtStoneAndDiagonalNeighbour();
             if (opponentGroups.Count <= 1)
             {
+                if (opponentGroups.Any(n => ImmovableHelper.CheckConnectAndDie(tryBoard, n) && n.Liberties.Any(s => GroupHelper.CheckKillerGroupPoints(tryBoard, s, c.Opposite()) != null)))
+                    return false;
                 //check opponent move group
                 if (opponentMove != null)
                 {
